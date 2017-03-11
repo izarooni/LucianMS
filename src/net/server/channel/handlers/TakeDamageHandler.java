@@ -74,6 +74,9 @@ public final class TakeDamageHandler extends AbstractMaplePacketHandler {
             List<loseItem> loseItems;
             if (attacker != null) {
                 if (attacker.isBuffed(MonsterStatus.NEUTRALISE)) {
+                	if(player.getArcade() != null) {
+            			player.getArcade().onHit(attacker.getId());
+            		}
                     return;
                 }
                 if (damage > 0) {
