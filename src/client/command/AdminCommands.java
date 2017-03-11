@@ -232,7 +232,7 @@ public class AdminCommands implements CommandPattern {
 			} else if(command.equalsIgnoreCase("servermessage")) {
 				if(args.length >= 2) {
 					StringBuilder builder = new StringBuilder();
-					for(int i = 2; i < args.length; i++) {
+					for(int i = 1; i < args.length; i++) {
 						builder.append(args[i] + " ");
 					}
 					player.getClient().getChannelServer().broadcastGMPacket(MaplePacketCreator.serverMessage(builder.toString()));
