@@ -54,9 +54,8 @@ public abstract class Arcade {
 			stmnt.setInt(3, score);
 			stmnt.setInt(4, score);
 			
-			stmnt.execute();
+			return stmnt.execute();
 			
-			return true;
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
