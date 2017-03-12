@@ -35,6 +35,7 @@ public class FilePrinter {
             UNHANDLED_EVENT = "doesNotExist.txt",
             SESSION = "sessions.txt",
             EXPLOITS = "exploits/",
+            REPORTS = "reports/",
             STORAGE = "storage/",
             PACKET_LOGS = "packetlogs/",
             DELETED_CHARACTERS = "deletedchars/",

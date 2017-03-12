@@ -8,6 +8,7 @@ import client.MapleClient;
 import scripting.npc.NPCScriptManager;
 import server.events.custom.Events;
 import server.maps.MapleMap;
+import tools.FilePrinter;
 import tools.MaplePacketCreator;
 
 public class PlayerCommands implements CommandPattern {
@@ -25,6 +26,10 @@ public class PlayerCommands implements CommandPattern {
 		commands.add("@home - go to the home grounds");
 		commands.add("@online - Show whoever is online");
 		commands.add("@go <town|list> - warps you to a town or shows you a list of warpable towns");
+		commands.add("@style - open the styling npc");
+		commands.add("@kin - alternative to opening the syle npc");
+		commands.add("@callgm <player> <reason> - report a player, insert your own name if it is for another reason.");
+		commands.add("@report <bug> - report a bug, give as much detail as possible.");
 	}
 	HashMap<String, Integer> gotoMap = new HashMap<String, Integer>();
 	{
@@ -101,7 +106,7 @@ public class PlayerCommands implements CommandPattern {
 			} else if(command.equalsIgnoreCase("online")) {
 				String[] playersPerChannel = new String[3];
 				for(MapleCharacter players : player.getClient().getChannelServer().getPlayerStorage().getAllCharacters()) {
-					playersPerChannel[players.getClient().getChannel() - 1] += player.getName() + ",";
+					playersPerChannel[players.getClient().getChannel() - 1] += (player.getName() != null) ? player.getName() + "," : "";
 				}
 				
 				for(int i = 0; i < playersPerChannel.length; i++) {
@@ -135,14 +140,48 @@ public class PlayerCommands implements CommandPattern {
 				player.getMap().clearDrops();
 				player.dropMessage(6, "You succesfully cleared the drops");
 				return true;
-			} else if(command.equalsIgnoreCase("")) {
-				
-			} else if(command.equalsIgnoreCase("")) {
-				
-			} else if(command.equalsIgnoreCase("")) {
-				
-			} else if(command.equalsIgnoreCase("")) {
-				
+			} else if(command.equalsIgnoreCase("save")) {
+				player.saveToDB();
+				player.dropMessage("Sucessfully saved you.");
+				return true;
+			} else if(command.equalsIgnoreCase("callgm")) {
+				StringBuilder sb = new StringBuilder();
+				if(args.length >= 3) {
+					MapleCharacter target = player.getClient().getChannelServer().getPlayerStorage().getCharacterByName(args[1]);
+					if(target != null) {
+				for(int i = 2; i < args.length; i++) {
+					sb.append(args[i] + " ");
+				}
+				for(MapleCharacter targets : player.getClient().getChannelServer().getPlayerStorage().getAllCharacters()) {
+					if(targets.gmLevel() >= 1) {
+						targets.dropMessage(6, "The user " + player.getName() + " requested help with the reason: ");
+						targets.dropMessage(6, sb.toString());
+					}
+					FilePrinter.printError(FilePrinter.REPORTS + c.getPlayer().getName() + ".txt", c.getPlayer().getName() + " reported  " + target.getName() + " with the reason: " + sb.toString() + "\r\n");
+				}
+				} else {
+					player.dropMessage(5, "Please fill in a reason for contacting a Game Master.");
+				}
+				} else {
+					player.dropMessage(5, "This player does not exist, or is not online.");
+				}
+				return true;
+			} else if(command.equalsIgnoreCase("style") || command.equalsIgnoreCase("kin")) {
+				NPCScriptManager.getInstance().start(player.getClient(), 9900000, player);
+				player.dropMessage("Opened the styling npc..");
+				return true;
+			} else if(command.equalsIgnoreCase("report")) {
+				if(args.length >= 2) {
+					StringBuilder sb = new StringBuilder();
+					
+					for(int i = 1; i < args.length; i++) {
+						sb.append(args[i] + " ");
+					}
+					player.dropMessage(6, "You succesfully reported the bug, the responsible staff will be notified");
+					FilePrinter.printError(FilePrinter.REPORTS + c.getPlayer().getName() + ".txt", c.getPlayer().getName() + " reported a bug:  " + sb.toString() + "\r\n");
+					
+				}
+				return true;
 			} else if(command.equalsIgnoreCase("")) {
 				
 			} else if(command.equalsIgnoreCase("")) {
