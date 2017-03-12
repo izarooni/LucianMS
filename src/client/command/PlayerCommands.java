@@ -53,7 +53,7 @@ public class PlayerCommands implements CommandPattern {
 		if(command.startsWith("@")) {
 			command = command.replace("@", "");
 			if (command.equalsIgnoreCase("help") || command.equalsIgnoreCase("commands")) {
-				if (args.length > 0) {
+				if (args.length > 1) {
 					for (int i = args.length * 10; i < args.length * 10 + 10; i++) {
 						if(!(i > commands.size())) {
 							player.dropMessage(5, commands.get(i));
@@ -115,22 +115,26 @@ public class PlayerCommands implements CommandPattern {
 					if(!(arg.equalsIgnoreCase("list"))) {
 						if(gotoMap.containsKey(arg.toLowerCase())) {
 							player.changeMap(gotoMap.get(arg));
-							player.dropMessage("Have fun in " + arg);
+							player.dropMessage(6, "Have fun in (the) " + arg);
 						} else {
 							player.dropMessage(5, "You are not allowed to go to this map.");
 						}
 					} else {
 						for(String key : gotoMap.keySet()) {
-							MapleMap map = player.getClient().getChannelServer().getMapFactory().getMap(gotoMap.get(gotoMap.get(key)));
-							player.dropMessage(6,  "@go " + key + " - warp to " + map.getMapName());
+							MapleMap map = player.getClient().getChannelServer().getMapFactory().getMap(gotoMap.get(key));
+							if(map != null && map.getMapName() != null) {
+								player.dropMessage(6,  "@go " + key + " - warp to " + (map.getMapName().isEmpty() || map.getMapName() == null ? key : map.getMapName()));
+							}
 						}
 					}
 				} else {
 					player.dropMessage(5, "Correct usage: @go <town name> or @go list");
 				}
 				return true;
-			} else if(command.equalsIgnoreCase("")) {
-				
+			} else if(command.equalsIgnoreCase("cleardrops")) {
+				player.getMap().clearDrops();
+				player.dropMessage(6, "You succesfully cleared the drops");
+				return true;
 			} else if(command.equalsIgnoreCase("")) {
 				
 			} else if(command.equalsIgnoreCase("")) {
