@@ -2525,4 +2525,12 @@ public class MapleMap {
 	public short getMobInterval() {
 		return mobInterval;
 	}
+	
+	public void dispose() {
+        for(MapleCharacter player : getCharacters()) {
+        	player.saveToDB();
+        	 removeMapObject(player);
+        }
+    }
+
 }
