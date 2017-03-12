@@ -34,6 +34,7 @@ public abstract class Arcade {
 	public void start() {
 		MapleMapFactory factory = new MapleMapFactory(MapleDataProviderFactory.getDataProvider(new File(System.getProperty("wzpath") + "/Map.wz")), MapleDataProviderFactory.getDataProvider(new File(System.getProperty("wzpath") + "/String.wz")), player.getWorld(), player.getClient().getChannel());
 		player.changeMap(factory.getMap(mapId), factory.getMap(mapId).getPortal(0));
+		player.getMap().setMobInterval((short) 5);
 		if(player.getArcade().arcadeId == 2) {
 			MapleMonster toSpawn = MapleLifeFactory.getMonster(9500365);
 			toSpawn.setHp(4);
