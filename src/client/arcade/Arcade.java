@@ -6,18 +6,22 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Map.Entry;
+import java.util.concurrent.ScheduledFuture;
 
 import client.MapleCharacter;
-import net.server.Server;
 import provider.MapleDataProviderFactory;
+import server.TimerManager;
 import server.life.MapleLifeFactory;
 import server.life.MapleMonster;
+import server.maps.MapleMap;
 import server.maps.MapleMapFactory;
 import tools.DatabaseConnection;
 
 public abstract class Arcade {
 	
 	protected int mapId, arcadeId, highscore;
+	protected ScheduledFuture<?> respawnManager;
 	
 	public MapleCharacter player;
 	
@@ -31,10 +35,18 @@ public abstract class Arcade {
 	public abstract void onHit(int monster);
 	public abstract boolean onBreak(int reactor);
 	
-	public void start() {
+	public synchronized void start() {
 		MapleMapFactory factory = new MapleMapFactory(MapleDataProviderFactory.getDataProvider(new File(System.getProperty("wzpath") + "/Map.wz")), MapleDataProviderFactory.getDataProvider(new File(System.getProperty("wzpath") + "/String.wz")), player.getWorld(), player.getClient().getChannel());
 		player.changeMap(factory.getMap(mapId), factory.getMap(mapId).getPortal(0));
 		player.getMap().setMobInterval((short) 5);
+		
+		respawnManager = TimerManager.getInstance().register(() -> {
+			for(Entry<Integer, MapleMap> map : factory.getMaps().entrySet()) {
+				map.getValue().respawn();
+			}
+			
+		}, 5000);
+		
 		if(player.getArcade().arcadeId == 2) {
 			MapleMonster toSpawn = MapleLifeFactory.getMonster(9500365);
 			toSpawn.setHp(4);
@@ -54,8 +66,9 @@ public abstract class Arcade {
 			stmnt.setInt(2, player.getId());
 			stmnt.setInt(3, score);
 			stmnt.setInt(4, score);
+			stmnt.execute();
 			
-			return stmnt.execute();
+			return true;
 			
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -89,17 +102,17 @@ public abstract class Arcade {
 	
 	public static String getTop(int arcadeId) {
 		StringBuilder sb = new StringBuilder();
-		try(Connection con = DatabaseConnection.getConnection(); PreparedStatement stmnt = con.prepareStatement("SELECT * FROM arcade WHERE id = ? ORDER BY id DESC LIMIT 50")) {
+		try(Connection con = DatabaseConnection.getConnection(); PreparedStatement stmnt = con.prepareStatement("SELECT * FROM arcade WHERE id = ? ORDER BY highscore DESC LIMIT 50")) {
 			stmnt.setInt(1, arcadeId);
 			
 			if(stmnt.execute()) {
 				ResultSet rs = stmnt.getResultSet();
 				int i = 0;
 				while(rs.next()) {
-					MapleCharacter user = Server.getInstance().getWorld(0).getPlayerStorage().getCharacterById(rs.getInt("charid"));
+					String user = MapleCharacter.getNameById(rs.getInt("charid"));
 					if(user != null) {
 						i++;
-						sb.append("#k" + (i <= 3 ? "#b" : "") + (i > 3 && i <= 5 ? "" : "") + i +  ". " + user.getName() + " with a score of " + rs.getInt("highscore") + "\r\n");
+						sb.append("#k" + (i <= 3 ? "#b" : "") + (i > 3 && i <= 5 ? "" : "") + i +  ". " + user + " with a score of " + rs.getInt("highscore") + "\r\n");
 					}
 				}
 			}
