@@ -11,6 +11,7 @@ import client.MapleJob;
 import client.MapleStat;
 import net.server.Server;
 import server.events.custom.Events;
+import server.life.MapleMonster;
 import server.life.MobSkillFactory;
 import server.maps.MapleMap;
 import tools.MaplePacketCreator;
@@ -48,6 +49,8 @@ public class GMCommands implements CommandPattern {
 		commands.add("!revive <player|map> - Revive a player, or the entire map.");
 		commands.add("!kill <player|map> - Kill a player, or the entire map");
 		commands.add("!dc <player|map> - Disconnect a player from the game, or the entire map");
+		commands.add("!reloadmap - Reload the map");
+		commands.add("!killall - Kill all the monsters on the map");
 	}
 
 	@Override
@@ -691,6 +694,15 @@ public class GMCommands implements CommandPattern {
 				} else {
 					player.dropMessage(5, "Correct usage: !dc <player|map>");
 				}
+				return true;
+			} else if(command.equalsIgnoreCase("reloadmap")) {
+				player.getClient().getChannelServer().getMapFactory().reloadField(player.getMapId());
+				return true;
+			} else if(command.equalsIgnoreCase("killall")) {
+				for(MapleMonster monster : player.getMap().getMonsters()) {
+					monster.killBy(player);
+				}
+				player.dropMessage(6, "Sucessfully killed all the monsters on the map.");
 				return true;
 			}
 		}
