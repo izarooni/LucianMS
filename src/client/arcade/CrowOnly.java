@@ -8,6 +8,7 @@ public class CrowOnly extends Arcade {
 	int highscore = 0;
 	int monsterId = 9400000;
 	boolean touched = false;
+	int prevScore = getHighscore(arcadeId, player);
 	
 	public CrowOnly(MapleCharacter player) {
 		super(player);
@@ -18,7 +19,6 @@ public class CrowOnly extends Arcade {
 	@Override
 	public boolean fail() {
 		player.changeMap(910000000, 0);
-		saveData(highscore);
 		player.announce(MaplePacketCreator.serverNotice(1, "Game Over!"));
 		if(saveData(highscore)) {
 			player.dropMessage(5, "[Game Over] Your new highscore for Crow Only is " + highscore);
@@ -32,8 +32,7 @@ public class CrowOnly extends Arcade {
 	@Override
 	public void add() {
 		++highscore;
-		player.announce(MaplePacketCreator.sendHint("#e[Crow only]#n\r\nYou have killed #r" + highscore + "#k crow(s)!", 300, 40));
-		
+		player.announce(MaplePacketCreator.sendHint("#e[Crow only]#n\r\nYou have killed " + ((prevScore < highscore) ?  "#g" : "#r") + highscore + "#k crow(s)!", 300, 40));
 	}
 
 	@Override

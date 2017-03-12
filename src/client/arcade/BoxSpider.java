@@ -19,6 +19,7 @@ public class BoxSpider extends Arcade {
 	int highscore = 0;
 	int monsterId = 2230103;
 	int box = 9500365;
+	int prevScore = getHighscore(arcadeId, player);
 
 	boolean touched = false;
 	
@@ -33,7 +34,7 @@ public class BoxSpider extends Arcade {
 	@Override
 	public boolean fail() {
 		if(touched) {
-		player.setArcade(null);
+		
 		player.changeMap(910000000, 0);
 		player.announce(MaplePacketCreator.serverNotice(1, "Game Over!"));
 		if(saveData(highscore)) {
@@ -42,13 +43,14 @@ public class BoxSpider extends Arcade {
 			player.dropMessage(5, "[Game Over] Your highscore for Box Spider remains at " + Arcade.getHighscore(arcadeId, player));
 		}
 		}
+		player.setArcade(null);
 		return true;
 	}
 
 	@Override
 	public void add() {
 		++highscore;
-		player.announce(MaplePacketCreator.sendHint("#e[Box Spider]#n\r\nYou have destroyed #r" + highscore + "#k box(es)!", 300, 40));
+		player.announce(MaplePacketCreator.sendHint("#e[Box Spider]#n\r\nYou have destroyed "  + ((prevScore < highscore) ?  "#g" : "#r") + highscore +  "#k box(es)!", 300, 40));
 		
 		MapleMonster toSpawn = MapleLifeFactory.getMonster(box);
 		if(toSpawn == null) {

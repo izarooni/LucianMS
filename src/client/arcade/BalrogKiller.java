@@ -13,7 +13,7 @@ public class BalrogKiller extends Arcade {
 
 	int highscore = 0, balrog = 9500140;
 	int currExp = player.getExp();
-	int accumulativeReward = 2;
+	int prevScore = getHighscore(arcadeId, player);
 	
 	
 	public BalrogKiller(MapleCharacter player) {
@@ -25,19 +25,19 @@ public class BalrogKiller extends Arcade {
 
 	@Override
 	public boolean fail() {
-		player.setArcade(null);
+		
 		player.setHp(player.getMaxHp());
 		player.setExp(currExp);
 		player.updateSingleStat(MapleStat.EXP, currExp);
 		player.updateSingleStat(MapleStat.HP, player.getMaxHp());
 		player.changeMap(910000000, 0);
-		saveData(highscore);
 		player.announce(MaplePacketCreator.serverNotice(1, "Game Over!"));
 		if(saveData(highscore)) {
 			player.dropMessage(5, "[Game Over] Your new highscore for Balrog Killer is " + highscore);
 		} else {
 			player.dropMessage(5, "[Game Over] Your highscore for Balrog Killer remains at " + Arcade.getHighscore(arcadeId, player));
 		}
+		player.setArcade(null);
 		return true;
 	}
 
@@ -45,7 +45,7 @@ public class BalrogKiller extends Arcade {
 	public void add() {
 		currExp = player.getExp();
 		++highscore;
-		player.announce(MaplePacketCreator.sendHint("#e[Balrog Killer]#n\r\nYou have killed #r" + highscore + "#k balrog(s)!", 300, 40));
+		player.announce(MaplePacketCreator.sendHint("#e[Balrog Killer]#n\r\nYou have killed " + ((prevScore < highscore) ?  "#g" : "#r") + highscore + "#k balrog(s)!", 300, 40));
 		MapleMonster toSpawn = MapleLifeFactory.getMonster(9500140);
 		toSpawn.setHp(350000);
 		player.getMap().spawnMonsterOnGroudBelow(toSpawn, new Point(206, 35));

@@ -6,6 +6,7 @@ import tools.MaplePacketCreator;
 public class BobOnly extends Arcade {
 
 	int highscore = 0;
+	int prevScore = getHighscore(arcadeId, player);
 	
 	boolean killedWrong = false;
 	
@@ -18,15 +19,15 @@ public class BobOnly extends Arcade {
 	@Override
 	public boolean fail() {
 		if(killedWrong) {
-			player.setArcade(null);
+			
 			player.changeMap(910000000, 0);
-			saveData(highscore);
 			player.announce(MaplePacketCreator.serverNotice(1, "Game Over!"));
 			if(saveData(highscore)) {
 				player.dropMessage(5, "[Game Over] Your new highscore for Bob Only is " + highscore);
 			} else {
 				player.dropMessage(5, "[Game Over] Your highscore for Bob Only remains at " + Arcade.getHighscore(arcadeId, player));
 			}
+			player.setArcade(null);
 		}
 		return true;
 	}
@@ -34,7 +35,7 @@ public class BobOnly extends Arcade {
 	@Override
 	public void add() {
 		++highscore;
-		player.announce(MaplePacketCreator.sendHint("#e[Bob only]#n\r\nYou have killed #r" + highscore + "#k bob(s)!", 300, 40));
+		player.announce(MaplePacketCreator.sendHint("#e[Bob only]#n\r\nYou have killed " + ((prevScore < highscore) ?  "#g" : "#r") + highscore + "#k bob(s)!", 300, 40));
 		
 	}
 
