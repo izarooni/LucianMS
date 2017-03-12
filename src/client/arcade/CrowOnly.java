@@ -25,6 +25,7 @@ public class CrowOnly extends Arcade {
 		} else {
 			player.dropMessage(5, "[Game Over] Your highscore for Crow Only remains at " + Arcade.getHighscore(arcadeId, player));
 		}
+		respawnManager = null;
 		player.setArcade(null);
 		return true;
 	}

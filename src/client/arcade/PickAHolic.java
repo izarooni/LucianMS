@@ -32,6 +32,7 @@ public class PickAHolic extends Arcade {
 			} else {
 				player.dropMessage(5, "[Game Over] Your highscore for Loot-A-Holic remains at " + Arcade.getHighscore(arcadeId, player));
 			}
+			respawnManager = null;
 			player.setArcade(null);
 			return true;
 		}

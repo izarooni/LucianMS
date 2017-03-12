@@ -27,6 +27,7 @@ public class BobOnly extends Arcade {
 			} else {
 				player.dropMessage(5, "[Game Over] Your highscore for Bob Only remains at " + Arcade.getHighscore(arcadeId, player));
 			}
+			respawnManager = null;
 			player.setArcade(null);
 		}
 		return true;
