@@ -11,6 +11,7 @@ import client.inventory.Item;
 import client.inventory.MapleInventoryType;
 import client.inventory.MaplePet;
 import constants.ItemConstants;
+import net.server.channel.Channel;
 import scripting.npc.NPCScriptManager;
 import server.MapleInventoryManipulator;
 import server.MapleItemInformationProvider;
@@ -32,7 +33,7 @@ public class AdminCommands implements CommandPattern {
 		adminCommands.add("!npc <id> - spawn a npc at your location");
 		adminCommands.add("!pnpc <id> - spawn a permanent npc at your location");
 		adminCommands.add("!mob <id> <OPT=amount> - Another way to spawn a monster");
-		adminCommands.add("!pmob <id> - Spawn a permanent monster");
+		adminCommands.add("!pmob <id> <amount> - Spawn a permanent monster");
 		adminCommands.add("!pos - Show the position you're currently at");
 		adminCommands.add("!servermessage <message> change the server message");
 		adminCommands.add("!shout <message> - show a message on everyones screen with text you typed");
@@ -111,7 +112,7 @@ public class AdminCommands implements CommandPattern {
 					player.dropMessage(5, "You need to specify a monster id to spawn");
 				}
 				return true;
-			} else if (command.equalsIgnoreCase("npc") || command.equalsIgnoreCase("pnpc")) {
+			} else if (command.equalsIgnoreCase("npc")) {
 				if (args.length >= 2) {
 					try {
 						int npcid = Integer.parseInt(args[1]);
@@ -124,87 +125,102 @@ public class AdminCommands implements CommandPattern {
 						npc.setFh(player.getMap().getFootholds().findBelow(c.getPlayer().getPosition()).getId());
 						player.getMap().addMapObject(npc);
 						player.getMap().broadcastMessage(MaplePacketCreator.spawnNPC(npc));
-						
-						if (command.equalsIgnoreCase("pnpc")) {
-							try (Connection con = DatabaseConnection.getConnection();
-									PreparedStatement insert = con.prepareStatement(
-											"INSERT INTO spawns (idd, f, fh, type, cy, rx0, rx1, x, y, mobtime, mid) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)")) {
-								insert.setInt(1, npcid);
-								insert.setInt(2, npc.getF());
-								insert.setInt(3, npc.getFh());
-								insert.setString(4, "n");
-								insert.setInt(5, npc.getCy());
-								insert.setInt(6, npc.getRx0());
-								insert.setInt(7, npc.getRx1());
-								insert.setInt(8, (int) player.getPosition().getX());
-								insert.setInt(9, (int) player.getPosition().getY());
-								insert.setInt(10, 0);
-								insert.setInt(11, player.getMapId());
-
-								insert.execute();
-							} catch (SQLException e) {
-								e.printStackTrace();
-							} catch (NumberFormatException e) {
-								player.dropMessage(5, "Please use numbers ONLY for the mob time");
-							}
-						}
-
 					} catch (NumberFormatException e) {
 						player.dropMessage(5, "Please, only use numbers.");
 					}
 				}
 				return true;
-			} else if (command.equalsIgnoreCase("mob") || command.equalsIgnoreCase("pmob")) {
-				if (args.length >= 2) {
-					try {
-						int amount = 1;
-						int monsterid = Integer.parseInt(args[1]);
-
-						if (args.length >= 3) {
-							amount = Integer.parseInt(args[2]);
-						}
-
-						MapleMonster monster = player.getMap().getMonsterById(monsterid);
-						if(monster != null) {
-						if (amount > 1) {
-							for (int i = 0; i < amount; i++) {
-								player.getMap().spawnMonsterOnGroudBelow(monster, player.getPosition());
-							}
-						}
-
-						if (command.equalsIgnoreCase("pmob")) {
-							try (Connection con = DatabaseConnection.getConnection();
-									PreparedStatement insert = con.prepareStatement(
-											"INSERT INTO spawns (idd, f, fh, type, cy, rx0, rx1, x, y, mobtime, mid) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)")) {
-								insert.setInt(1, monster.getId());
-								insert.setInt(2, monster.getF());
-								insert.setInt(3, monster.getFh());
-								insert.setString(4, "m");
-								insert.setInt(5, monster.getCy());
-								insert.setInt(6, monster.getRx0());
-								insert.setInt(7, monster.getRx1());
-								insert.setInt(8, (int) player.getPosition().getX());
-								insert.setInt(9, (int) player.getPosition().getY());
-								insert.setInt(10, args[3] == null ? 330 : Integer.parseInt(args[3]));
-								insert.setInt(11, player.getMapId());
-
-								insert.execute();
-							} catch (SQLException e) {
-								e.printStackTrace();
-							} catch (NumberFormatException e) {
-								player.dropMessage(5, "Please use numbers ONLY for the mob time");
-							}
-						}
-						} else {
-							player.dropMessage(5, "A monster with this id does not exist.");
-						}
-					} catch (NumberFormatException e) {
-						player.dropMessage(5, "Please, only use numbers.");
-					}
-				} else {
-					player.dropMessage(5, "Correct usage: !pmob <monsterid> <OPT=amount>");
-				}
-				return true;
+			} else if (command.equalsIgnoreCase("pnpc")) {
+	            if (args.length == 2) {
+	                int npcId;
+	                try {
+	                    npcId = Integer.parseInt(args[1]);
+	                } catch (NumberFormatException e) {
+	                    player.dropMessage(String.format("'%s' is not a number", args[0]));
+	                    return false;
+	                }
+	                MapleNPC npc = MapleLifeFactory.getNPC(npcId);
+	                npc.setPosition(player.getPosition());
+	                npc.setCy(player.getPosition().y);
+	                npc.setF(player.isFacingLeft() ? 0 : 1);
+	                npc.setFh(0); // You set this to 0 to allow floating NPCs
+	                npc.setRx0(player.getPosition().x - 50);
+	                npc.setRx1(player.getPosition().x + 50);
+	                for (Channel channel : player.getClient().getWorldServer().getChannels()) {
+	                    if (channel.getMapFactory().isMapLoaded(player.getMapId())) {
+	                        channel.getMapFactory().getMap(player.getMapId()).addMapObject(npc);
+	                        channel.getMapFactory().getMap(player.getMapId()).broadcastMessage(MaplePacketCreator.spawnNPC(npc));
+	                    }
+	                }
+	                try {
+	                    try (PreparedStatement ps = DatabaseConnection.getConnection().prepareStatement("INSERT INTO spawns (idd, f, fh, cy, rx0, rx1, type , x, y, mid, mobtime) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)")) {
+	                        ps.setInt(1, npcId);
+	                        ps.setInt(2, npc.getF());
+	                        ps.setInt(3, npc.getFh());
+	                        ps.setInt(4, npc.getCy());
+	                        ps.setInt(5, npc.getRx0());
+	                        ps.setInt(6, npc.getRx1());
+	                        ps.setString(7, "n");
+	                        ps.setInt(8, npc.getPosition().x);
+	                        ps.setInt(9, npc.getPosition().y);
+	                        ps.setInt(10, player.getMapId());
+	                        ps.setInt(11, 1);
+	                        ps.executeUpdate();
+	                        player.dropMessage("Npc created");
+	                    }
+	                } catch (SQLException e) {
+	                    player.dropMessage("An error occured while trying to insert this NPC in the database: " + e.getMessage());
+	                }
+	            }
+	            return false;
+	        } else if (command.equals("pmob")) {
+	            if (args.length == 3) {
+	                int mobId;
+	                int amount;
+	                try {
+	                    mobId = Integer.parseInt(args[1]);
+	                    amount = Integer.parseInt(args[2]);
+	                } catch (NumberFormatException e) {
+	                    player.dropMessage(String.format("'%s' or '%s' is not a number", args[0], args[1]));
+	                    return false;
+	                }
+	                int mobTime = 0;
+	                int xpos = player.getPosition().x;
+	                int ypos = player.getPosition().y;
+	                int fh = player.getMap().getFootholds().findBelow(player.getPosition()).getId();
+	                for (int i = 0; i < amount; i++) {
+	                    MapleMonster mob = MapleLifeFactory.getMonster(mobId);
+	                    if (mob != null && !mob.getName().equals("MISSINGNO")) {
+	                        mob.setPosition(player.getPosition());
+	                        mob.setCy(ypos);
+	                        mob.setRx0(xpos + 50);
+	                        mob.setRx1(xpos - 50);
+	                        mob.setFh(fh);
+	                        try {
+	                            Connection con = DatabaseConnection.getConnection();
+	                            PreparedStatement ps = con.prepareStatement("INSERT INTO spawns ( idd, f, fh, cy, rx0, rx1, type, x, y, mid, mobtime ) VALUES ( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? )");
+	                            ps.setInt(1, mobId);
+	                            ps.setInt(2, 0);
+	                            ps.setInt(3, fh);
+	                            ps.setInt(4, ypos);
+	                            ps.setInt(5, xpos - 50);
+	                            ps.setInt(6, xpos + 50);
+	                            ps.setString(7, "m");
+	                            ps.setInt(8, xpos);
+	                            ps.setInt(9, ypos);
+	                            ps.setInt(10, player.getMapId());
+	                            ps.setInt(11, mobTime);
+	                            ps.executeUpdate();
+	                        } catch (SQLException e) {
+	                            player.dropMessage("An error occured while trying to insert the mob into the database: " + e.getMessage());
+	                        }
+	                        player.getMap().addMonsterSpawn(mob, 0, -1);
+	                    } else {
+	                        player.dropMessage(String.format("The monster '%s' does not exist", args[0]));
+	                        break;
+	                    }
+	                }
+	            }
 			} else if(command.equalsIgnoreCase("playernpc")) {
                 try {
                     if(args.length == 3) {
