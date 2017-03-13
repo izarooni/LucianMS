@@ -128,6 +128,7 @@ import server.events.custom.House;
 import server.events.custom.PlayerTitles;
 import server.events.gm.MapleFitness;
 import server.events.gm.MapleOla;
+import server.events.pvp.PVP;
 import server.life.MapleMonster;
 import server.life.MobSkill;
 import server.maps.AbstractAnimatedMapleMapObject;
@@ -308,6 +309,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
 	private int killType;
 	
 	private Arcade arcade;
+	private PVP pvp;
 
 	private MapleCharacter() {
 		setStance(0);
@@ -5720,6 +5722,14 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
 
 	public void setArcade(Arcade arcade) {
 		this.arcade = arcade;
+	}
+
+	public PVP getPVP() {
+		return pvp;
+	}
+	
+	public void setPVP(PVP pvp) {
+		this.pvp = pvp;
 	}
 
 }

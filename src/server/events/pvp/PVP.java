@@ -1,13 +1,22 @@
 package server.events.pvp;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
+import client.MapleBuffStat;
 import client.MapleCharacter;
+import client.MapleJob;
+import client.MapleStat;
 import net.server.channel.handlers.AbstractDealDamageHandler;
+import net.server.guild.MapleGuild;
+import server.life.MapleLifeFactory;
+import server.life.MapleMonster;
+import server.maps.MapleMap;
+import tools.MaplePacketCreator;
 
 public abstract class PVP {
 
-	protected ArrayList<Integer> PVPers;
+	protected HashMap<String, Integer> PVPers;
 	protected int levelRequirement, mapId;
 	protected PVPType type;
 	protected MapleCharacter pvper;
@@ -18,13 +27,13 @@ public abstract class PVP {
 
 	public PVP(MapleCharacter player) {
 		this.pvper = player;
-		PVPers = new ArrayList<Integer>();
+		PVPers = new HashMap<String, Integer>();
 	}
 
 	public boolean join() {
 		if (pvper.getLevel() >= levelRequirement) {
-			if (!(PVPers.contains(pvper.getId()))) {
-				PVPers.add(pvper.getId());
+			if (!(PVPers.containsValue(pvper.getId()))) {
+				PVPers.put(type.toString().toLowerCase(), pvper.getId());
 				pvper.changeMap(mapId);
 			}
 		}
@@ -34,8 +43,10 @@ public abstract class PVP {
 	
 	
 	public boolean canAttack(AbstractDealDamageHandler.AttackInfo attack) {
-		return PVPers.contains(pvper.getMap().getNearestPvpChar(pvper.getPosition(),(double) getMaxDistance(), (double) getMaxHeight(), pvper.getMap().getCharacters()));
-				
+		for(MapleCharacter targets : pvper.getMap().getNearestPvpChar(pvper.getPosition(),(double) getMaxDistance(), (double) getMaxHeight(), pvper.getMap().getCharacters())) {
+			return PVPers.containsValue(targets.getId());
+		}
+		return false;
 	}
 	
 	public abstract void doDamage(AbstractDealDamageHandler.AttackInfo attack);
@@ -209,6 +220,79 @@ public abstract class PVP {
 		}
 		return pvpDamage;
 	}
+	
+	public void monsterBomb(MapleCharacter player, int pvpDamage, MapleCharacter attackedPlayers, MapleMap map, AbstractDealDamageHandler.AttackInfo attack) { 
+        //level balances 
+        if (attackedPlayers.getLevel() > player.getLevel() + 25) { 
+                pvpDamage *= 1.35; 
+        } else if (attackedPlayers.getLevel() < player.getLevel() - 25) { 
+                pvpDamage /= 1.35; 
+        } else if (attackedPlayers.getLevel() > player.getLevel() + 100) { 
+                pvpDamage *= 1.50; 
+        } else if (attackedPlayers.getLevel() < player.getLevel() - 100) { 
+                pvpDamage /= 1.50; 
+        } 
+        //class balances 
+        if (player.getJob().equals(MapleJob.MAGICIAN)) { 
+                pvpDamage *= 1.20; 
+        } 
+
+        //buff modifiers 
+Integer mguard = attackedPlayers.getBuffedValue(MapleBuffStat.MAGIC_GUARD); 
+Integer mesoguard = attackedPlayers.getBuffedValue(MapleBuffStat.MESOGUARD); 
+if (mguard != null) { 
+    int mploss = (int) (pvpDamage / .5); 
+                pvpDamage *= .70; 
+    if (mploss > attackedPlayers.getMp()) { 
+                        pvpDamage /= .70; 
+        attackedPlayers.cancelBuffStats(MapleBuffStat.MAGIC_GUARD); 
+    } else { 
+                        attackedPlayers.setMp(attackedPlayers.getMp() - mploss); 
+                        attackedPlayers.updateSingleStat(MapleStat.MP, attackedPlayers.getMp()); 
+                } 
+} else if (mesoguard != null) { 
+    int mesoloss = (int) (pvpDamage * .80); 
+                pvpDamage *= .80; 
+    if(mesoloss > attackedPlayers.getMeso()) { 
+                                pvpDamage /= .80; 
+            attackedPlayers.cancelBuffStats(MapleBuffStat.MESOGUARD); 
+    } else { 
+            attackedPlayers.gainMeso(-mesoloss, false); 
+    } 
+        } 
+
+        //set up us teh bonmb 
+        //training thingy = 9409000 
+        MapleMonster pvpMob = MapleLifeFactory.getMonster(9400711); 
+        map.spawnMonsterOnGroundBelow(pvpMob, attackedPlayers.getPosition()); 
+        for (int attacks = 0; attacks < attack.numDamage; attacks++) { 
+        	map.broadcastMessage(MaplePacketCreator.damagePlayer(attack.numDamage, pvpMob.getId(), attackedPlayers.getId(), pvpDamage, attacks, attacks, isAoeAttack(attack), getMaxDistance(), isAoeAttack(attack), getMaxDistance(), getMaxDistance(), getMaxDistance()));
+        	attackedPlayers.addHP(-pvpDamage); 
+        } 
+        int attackedDamage = pvpDamage * attack.numDamage; 
+        attackedPlayers.getClient().getSession().write(MaplePacketCreator.serverNotice(5, player.getName() + " has hit you for " + attackedDamage + " damage!")); 
+        map.killMonster(pvpMob, player, false); 
+
+        //rewards 
+        if (attackedPlayers.getHp() <= 0 && !attackedPlayers.isAlive()) { 
+                int expReward = attackedPlayers.getLevel() * 100; 
+                int gpReward = (int) (Math.floor(Math.random() * (200 - 50) + 50)); 
+                //if (player.getPvpKills() * .25 >= player.getPvpDeaths()) { 
+                //        expReward *= 20; 
+                //} 
+                player.gainExp(expReward, true, false); 
+                if (player.getGuildId() != 0 && player.getGuildId() != attackedPlayers.getGuildId()) { 
+                        try { 
+                                MapleGuild guild = player.getGuild(); 
+                                guild.gainGP(gpReward); 
+                        } catch (Exception e) {} 
+                } 
+                //player.gainPvpKill(); 
+                player.getClient().getSession().write(MaplePacketCreator.serverNotice(6, "You've killed " + attackedPlayers.getName() + "!! You've gained a pvp kill!")); 
+                //attackedPlayers.gainPvpDeath(); 
+                attackedPlayers.getClient().getSession().write(MaplePacketCreator.serverNotice(6, player.getName() + " has killed you!")); 
+        } 
+} 
 
 	public boolean isFacingLeft() {
 		return facingLeft;

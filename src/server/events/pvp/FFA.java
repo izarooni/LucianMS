@@ -12,12 +12,17 @@ public class FFA extends PVP {
 		this.type = PVPType.FFA;
 	}
 
-	
-
 	@Override
 	public void doDamage(AttackInfo attack) {
-		// TODO Auto-generated method stub
-		
+		for (MapleCharacter target : pvper.getMap().getNearestPvpChar(pvper.getPosition(), getMaxDistance(),
+				getMaxHeight(), pvper.getMap().getCharacters())) {
+			if (canAttack(attack)) {
+				if (target.isAlive() && pvper.getId() != target.getId()) {
+					int damage = DamageBalancer(attack);
+					monsterBomb(pvper, damage, target, pvper.getMap(), attack);
+				}
+			}
+		}
 	}
 
 }
