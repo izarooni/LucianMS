@@ -9,6 +9,7 @@ import client.MapleClient;
 import client.MapleDisease;
 import client.MapleJob;
 import client.MapleStat;
+import client.inventory.MapleInventoryType;
 import net.server.Server;
 import server.events.custom.Events;
 import server.life.MapleMonster;
@@ -51,6 +52,7 @@ public class GMCommands implements CommandPattern {
 		commands.add("!dc <player|map> - Disconnect a player from the game, or the entire map");
 		commands.add("!reloadmap - Reload the map");
 		commands.add("!killall - Kill all the monsters on the map");
+		commands.add("!clearslot <inventory> <slot> - clear a slot in a specific inventory type");
 	}
 
 	@Override
@@ -704,6 +706,19 @@ public class GMCommands implements CommandPattern {
 				}
 				player.dropMessage(6, "Sucessfully killed all the monsters on the map.");
 				return true;
+			} else if(command.equalsIgnoreCase("clearslot")) {
+				if(args.length >= 2) {
+					try {
+						String inventoryType = args[1];
+						int slot = Integer.parseInt(args[2]);
+						player.getInventory(MapleInventoryType.getByWZName(inventoryType)).removeItem((short)slot);
+						player.dropMessage(6, "Cleared the slot");
+					} catch(NumberFormatException e) {
+						player.dropMessage(5, "Insert a slotnumber to remove");
+					}
+				} else {
+					player.dropMessage(5, "Correct usage: !clearslot <inventorytype> <slot>");
+				}
 			}
 		}
 		return false;
