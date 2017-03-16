@@ -26,6 +26,7 @@ import net.MaplePacketHandler;
 import tools.data.input.SeekableLittleEndianAccessor;
 
 public class KeepAliveHandler implements MaplePacketHandler {
+
     public void handlePacket(SeekableLittleEndianAccessor slea, MapleClient c) {
         c.pongReceived();
     }

@@ -85,10 +85,10 @@ public final class CreateCharHandler extends AbstractMaplePacketHandler {
 		newchar.setFace(face);
 
 		int [] items = new int [] {weapon, top, bottom, shoes, hair, face};
-		for (int i = 0; i < items.length; i++){
-			if (!isLegal(items[i])) {
+		for (int item : items) {
+			if (!isLegal(item)) {
 				AutobanFactory.PACKET_EDIT.alert(newchar, name + " tried to packet edit in character creation.");
-            	FilePrinter.printError(FilePrinter.EXPLOITS  + newchar + ".txt", "Tried to packet edit in char creation.");	
+				FilePrinter.printError(FilePrinter.EXPLOITS + newchar + ".txt", "Tried to packet edit in char creation.");
 				c.disconnect(true, false);
 				return;
 			}

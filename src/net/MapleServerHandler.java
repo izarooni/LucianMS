@@ -141,9 +141,9 @@ public class MapleServerHandler extends IoHandlerAdapter {
     
     @Override
     public void messageSent(IoSession session, Object message) {
-    	byte[] content = (byte[]) message;
-    	SeekableLittleEndianAccessor slea = new GenericSeekableLittleEndianAccessor(new ByteArrayByteStream(content));
-    	slea.readShort(); //packetId
+//    	byte[] content = (byte[]) message;
+//    	SeekableLittleEndianAccessor slea = new GenericSeekableLittleEndianAccessor(new ByteArrayByteStream(content));
+//    	slea.readShort(); //packetId
     }
     
     @Override

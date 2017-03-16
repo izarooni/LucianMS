@@ -22,6 +22,7 @@
 package server.maps;
 
 public abstract class AbstractAnimatedMapleMapObject extends AbstractMapleMapObject implements AnimatedMapleMapObject {
+
     private int stance;
 
     public int getStance() {

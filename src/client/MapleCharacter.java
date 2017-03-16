@@ -904,7 +904,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
 				return false;
 			}
 		}
-		return getIdByName(name) < 0 && Pattern.compile("[a-zA-Z0-9]{3,12}").matcher(name).matches();
+		return getIdByName(name) < 0 && Pattern.compile("[a-zA-Z0-9]{4,12}").matcher(name).matches();
 	}
 
 	public boolean canDoor() {

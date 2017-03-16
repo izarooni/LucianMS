@@ -32,23 +32,24 @@ import tools.data.input.SeekableLittleEndianAccessor;
 public final class CharSelectedHandler extends AbstractMaplePacketHandler {
 
     @Override
-    public final void handlePacket(SeekableLittleEndianAccessor slea, MapleClient c) {
-        int charId = slea.readInt();
+    public final void handlePacket(SeekableLittleEndianAccessor slea, MapleClient client) {
+        int playerId = slea.readInt();
         String macs = slea.readMapleAsciiString();
-        c.updateMacs(macs);
-        if (c.hasBannedMac()) {
-            c.getSession().close(true);
+        client.updateMacs(macs);
+        if (client.hasBannedMac() || !client.playerBelongs(playerId)) {
+            client.getSession().close(true);
             return;
         }
 
-        if (c.getIdleTask() != null) {
-            c.getIdleTask().cancel(true);
+        if (client.getIdleTask() != null) {
+            client.getIdleTask().cancel(true);
         }
-        c.updateLoginState(MapleClient.LOGIN_SERVER_TRANSITION);
-        String[] socket = Server.getInstance().getIP(c.getWorld(), c.getChannel()).split(":");
         try {
-            c.announce(MaplePacketCreator.getServerIP(InetAddress.getByName(socket[0]), Integer.parseInt(socket[1]), charId));
-        } catch (UnknownHostException | NumberFormatException e) {
+            client.updateLoginState(MapleClient.LOGIN_SERVER_TRANSITION);
+            String[] socket = Server.getInstance().getIP(client.getWorld(), client.getChannel()).split(":");
+            client.announce(MaplePacketCreator.getServerIP(InetAddress.getByName(socket[0]), Integer.parseInt(socket[1]), playerId));
+        } catch (UnknownHostException e) {
+            e.printStackTrace();
         }
     }
 }

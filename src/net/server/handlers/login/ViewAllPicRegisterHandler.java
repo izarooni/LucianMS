@@ -13,28 +13,28 @@ public final class ViewAllPicRegisterHandler extends AbstractMaplePacketHandler 
 
 
     @Override
-    public final void handlePacket(SeekableLittleEndianAccessor slea, MapleClient c) {
+    public final void handlePacket(SeekableLittleEndianAccessor slea, MapleClient client) {
         slea.readByte();
-        int charId = slea.readInt();
-        c.setWorld(slea.readInt()); //world
-        int channel = Randomizer.rand(0, Server.getInstance().getWorld(c.getWorld()).getChannels().size());
-        c.setChannel(channel);
+        int playerId = slea.readInt();
+        client.setWorld(slea.readInt()); //world
+        int channel = Randomizer.rand(0, Server.getInstance().getWorld(client.getWorld()).getChannels().size());
+        client.setChannel(channel);
         String mac = slea.readMapleAsciiString();
-        c.updateMacs(mac);
-        if (c.hasBannedMac()) {
-            c.getSession().close(true);
+        client.updateMacs(mac);
+        if (client.hasBannedMac() || !client.playerBelongs(playerId)) {
+            client.getSession().close(true);
             return;
         }
         slea.readMapleAsciiString();
         String pic = slea.readMapleAsciiString();
-        c.setPic(pic);
-        if (c.getIdleTask() != null) {
-            c.getIdleTask().cancel(true);
+        client.setPic(pic);
+        if (client.getIdleTask() != null) {
+            client.getIdleTask().cancel(true);
         }
-        c.updateLoginState(MapleClient.LOGIN_SERVER_TRANSITION);
-        String[] socket = Server.getInstance().getIP(c.getWorld(), channel).split(":");
+        client.updateLoginState(MapleClient.LOGIN_SERVER_TRANSITION);
+        String[] socket = Server.getInstance().getIP(client.getWorld(), channel).split(":");
         try {
-            c.announce(MaplePacketCreator.getServerIP(InetAddress.getByName(socket[0]), Integer.parseInt(socket[1]), charId));
+            client.announce(MaplePacketCreator.getServerIP(InetAddress.getByName(socket[0]), Integer.parseInt(socket[1]), playerId));
         } catch (UnknownHostException e) {
         }
     }

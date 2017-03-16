@@ -1,43 +1,44 @@
 package net.server.handlers.login;
 
-import java.net.InetAddress;
-import java.net.UnknownHostException;
-
+import client.MapleClient;
+import constants.ServerConstants;
 import net.AbstractMaplePacketHandler;
 import net.server.Server;
 import tools.MaplePacketCreator;
 import tools.data.input.SeekableLittleEndianAccessor;
-import client.MapleClient;
+
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 
 public class CharSelectedWithPicHandler extends AbstractMaplePacketHandler {
 
     @Override
-    public void handlePacket(SeekableLittleEndianAccessor slea, MapleClient c) {
+    public void handlePacket(SeekableLittleEndianAccessor slea, MapleClient client) {
 
         String pic = slea.readMapleAsciiString();
-        int charId = slea.readInt();
+        int playerId = slea.readInt();
         String macs = slea.readMapleAsciiString();
-		String hwid = slea.readMapleAsciiString();
-        c.updateMacs(macs);
-		c.updateHWID(hwid);
+        String hwid = slea.readMapleAsciiString();
+        client.updateMacs(macs);
+        client.updateHWID(hwid);
 
-        if (c.hasBannedMac() || c.hasBannedHWID()) {
-            c.getSession().close(true);
+        if (client.hasBannedMac() || client.hasBannedHWID() || !client.playerBelongs(playerId)) {
+            client.getSession().close(true);
             return;
         }
-        if (c.checkPic(pic)) {
-            if (c.getIdleTask() != null) {
-                c.getIdleTask().cancel(true);
-            }
-            c.updateLoginState(MapleClient.LOGIN_SERVER_TRANSITION);
+        if (ServerConstants.ENABLE_PIC && !client.checkPic(pic)) {
+            client.announce(MaplePacketCreator.wrongPic());
+        }
+        if (client.getIdleTask() != null) {
+            client.getIdleTask().cancel(true);
+        }
+        client.updateLoginState(MapleClient.LOGIN_SERVER_TRANSITION);
 
-            String[] socket = Server.getInstance().getIP(c.getWorld(), c.getChannel()).split(":");
-            try {
-                c.announce(MaplePacketCreator.getServerIP(InetAddress.getByName(socket[0]), Integer.parseInt(socket[1]), charId));
-            } catch (UnknownHostException | NumberFormatException e) {
-            }
-        } else {
-            c.announce(MaplePacketCreator.wrongPic());
+        try {
+            String[] socket = Server.getInstance().getIP(client.getWorld(), client.getChannel()).split(":");
+            client.announce(MaplePacketCreator.getServerIP(InetAddress.getByName(socket[0]), Integer.parseInt(socket[1]), playerId));
+        } catch (UnknownHostException e) {
+            e.printStackTrace();
         }
     }
 }

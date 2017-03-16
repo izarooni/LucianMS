@@ -22,40 +22,42 @@
 package net.server.handlers.login;
 
 import client.MapleClient;
-import java.net.InetAddress;
-import java.net.UnknownHostException;
 import net.AbstractMaplePacketHandler;
 import net.server.Server;
 import tools.MaplePacketCreator;
 import tools.Randomizer;
 import tools.data.input.SeekableLittleEndianAccessor;
 
+import java.net.InetAddress;
+import java.net.UnknownHostException;
+
 public final class PickCharHandler extends AbstractMaplePacketHandler {
 
     @Override
-    public final void handlePacket(SeekableLittleEndianAccessor slea, MapleClient c) {
-        int charId = slea.readInt();
+    public final void handlePacket(SeekableLittleEndianAccessor slea, MapleClient client) {
+        int playerId = slea.readInt();
         int world = slea.readInt();//Wuuu? ):
-        c.setWorld(world);
+        client.setWorld(world);
         String macs = slea.readMapleAsciiString();
-        c.updateMacs(macs);
-        if (c.hasBannedMac()) {
-            c.getSession().close(true);
+        client.updateMacs(macs);
+        if (client.hasBannedMac() || !client.playerBelongs(playerId)) {
+            client.getSession().close(true);
             return;
         }
         try {
-            c.setChannel(Randomizer.nextInt(Server.getInstance().getWorld(world).getChannels().size()));
+            client.setChannel(Randomizer.nextInt(Server.getInstance().getWorld(world).getChannels().size()));
         } catch (Exception e) {
-            c.setChannel(1);
+            client.setChannel(1);
         }
-        if (c.getIdleTask() != null) {
-            c.getIdleTask().cancel(true);
+        if (client.getIdleTask() != null) {
+            client.getIdleTask().cancel(true);
         }
-        c.updateLoginState(MapleClient.LOGIN_SERVER_TRANSITION);
-        String[] socket = Server.getInstance().getIP(c.getWorld(), c.getChannel()).split(":");
         try {
-            c.announce(MaplePacketCreator.getServerIP(InetAddress.getByName(socket[0]), Integer.parseInt(socket[1]), charId));
+            client.updateLoginState(MapleClient.LOGIN_SERVER_TRANSITION);
+            String[] socket = Server.getInstance().getIP(client.getWorld(), client.getChannel()).split(":");
+            client.announce(MaplePacketCreator.getServerIP(InetAddress.getByName(socket[0]), Integer.parseInt(socket[1]), playerId));
         } catch (UnknownHostException e) {
+            e.printStackTrace();
         }
     }
 }
