@@ -43,6 +43,7 @@ import server.MapleItemInformationProvider;
 import server.TimerManager;
 import server.events.AutoEventManager;
 import server.quest.MapleQuest;
+import server.quest.custom.CQuestBuilder;
 import tools.DatabaseConnection;
 import tools.FilePrinter;
 import tools.Pair;
@@ -164,6 +165,9 @@ public class Server implements Runnable {
 		timeToTake = System.currentTimeMillis();
 		MapleQuest.loadAllQuest();
 		System.out.println("Quest loaded in " + ((System.currentTimeMillis() - timeToTake) / 1000.0) + " seconds\r\n");
+
+		CQuestBuilder.loadAllQuests();
+		System.out.println("Custom quests loaded in " + ((System.currentTimeMillis() - timeToTake) / 1000.0) + " seconds\r\n");
 
 		try {
 			for (int i = 0; i < Integer.parseInt(p.getProperty("worlds")); i++) {

@@ -148,6 +148,7 @@ import server.partyquest.MonsterCarnival;
 import server.partyquest.MonsterCarnivalParty;
 import server.partyquest.PartyQuest;
 import server.quest.MapleQuest;
+import server.quest.custom.CQuestData;
 import tools.DatabaseConnection;
 import tools.FilePrinter;
 import tools.MaplePacketCreator;
@@ -240,6 +241,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
 	private SkillMacro[] skillMacros = new SkillMacro[5];
 	private List<Integer> lastmonthfameids;
 	private Map<Short, MapleQuestStatus> quests;
+	private Map<Integer, CQuestData> customQuests;
 	private Set<MapleMonster> controlled = new LinkedHashSet<>();
 	private Map<Integer, String> entered = new LinkedHashMap<>();
 	private Set<MapleMapObject> visibleMapObjects = new LinkedHashSet<>();
@@ -289,7 +291,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
 
 	private int eventPoints;
 	private int shadowPoints;
-	
+
 	private int breakthroughs;
 
 	private AbstractBossPQ pq;
@@ -300,14 +302,14 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
 
 	public static final int[] FISHING_CHAIRS = { 3011000, 3010151, 3010184 };
 	public static int FRECEIVAL_ITEM = 2022323;
-	
+
 	private Timestamp daily;
-	
+
 	private PlayerTitles title;
-	
+
 	private int goal, current;
 	private int killType;
-	
+
 	private Arcade arcade;
 	private PVP pvp;
 
@@ -5634,7 +5636,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
 
 	public boolean breakThrough() {
 		if (canBreakThrough()) {
-			updateSingleStat(MapleStat.LEVEL, 10); 
+			updateSingleStat(MapleStat.LEVEL, 10);
 			this.level = 10; // won't update for serverside otherwise?
 			updateSingleStat(MapleStat.AVAILABLESP, 6);
 			updateSingleStat(MapleStat.EXP, 0);
@@ -5643,7 +5645,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
 		}
 		return false;
 	}
-	
+
 	public boolean addPoints(String pointType, int amount) throws NumberFormatException {
 		switch(pointType) {
 		case "fp":
@@ -5660,26 +5662,26 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
 			return true;
 		case "nx":
 			getCashShop().gainCash(1, amount);
-			
+
 		}
 		return false;
 	}
-	
+
 	public boolean tempban(Timestamp tempban) {
 		try(Connection con = DatabaseConnection.getConnection(); PreparedStatement stmnt = con.prepareStatement("UPDATE accounts SET tempban = " + tempban.getTime() + " WHERE id = " + getClient().getAccID())) {
-			
+
 			return stmnt.execute();
-			
+
 		} catch(SQLException e) {
 			e.printStackTrace();
 		}
 		return false;
 	}
-	
+
 	public boolean canDaily() {
 		return (System.currentTimeMillis()) >= daily.getTime() + 86400000;
 	}
-	
+
 	public void writeDaily() {
 		this.daily = new Timestamp(System.currentTimeMillis());
 	}
@@ -5727,9 +5729,12 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
 	public PVP getPVP() {
 		return pvp;
 	}
-	
+
 	public void setPVP(PVP pvp) {
 		this.pvp = pvp;
 	}
 
+	public Map<Integer, CQuestData> getCustomQuests() {
+	    return customQuests;
+    }
 }
