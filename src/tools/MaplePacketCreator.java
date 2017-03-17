@@ -4586,7 +4586,7 @@ public class MaplePacketCreator {
 				   } else if (forfeit == 1) {
 					   mplew.write(2);
 				   }
-				   mplew.write(0); // owner
+				   mplew.write(game.getLoser());
 				   mplew.writeInt(1); // unknown
 				   mplew.writeInt(game.getOwner().getMiniGamePoints("wins", omok) + win); // wins
 				   mplew.writeInt(game.getOwner().getMiniGamePoints("ties", omok) + tie); // ties
@@ -4674,13 +4674,8 @@ public class MaplePacketCreator {
 				   mplew.writeShort(SendOpcode.PLAYER_INTERACTION.getValue());
 				   mplew.write(PlayerInteractionHandler.Action.START.getCode());
 				   mplew.write(loser);
-				   mplew.write(0x0C);
-				   int last = 13;
-				   if (game.getMatchesToWin() > 10) {
-					   last = 31;
-				   } else if (game.getMatchesToWin() > 6) {
-					   last = 21;
-				   }
+				   mplew.write(game.getMatchesToWin() * 2);
+				   int last = (game.getMatchesToWin() * 2) + 1;
 				   for (int i = 1; i < last; i++) {
 					   mplew.writeInt(game.getCardId(i));
 				   }

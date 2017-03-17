@@ -23,18 +23,19 @@ package server;
 
 import client.MapleCharacter;
 import client.MapleClient;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 import server.maps.AbstractMapleMapObject;
 import server.maps.MapleMapObjectType;
 import tools.MaplePacketCreator;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
 /**
- *
  * @author Matze
  */
 public class MapleMiniGame extends AbstractMapleMapObject {
+
     private MapleCharacter owner;
     private MapleCharacter visitor;
     private String GameType = null;
@@ -43,6 +44,7 @@ public class MapleMiniGame extends AbstractMapleMapObject {
     private List<Integer> list5x4 = new ArrayList<>();
     private List<Integer> list6x5 = new ArrayList<>();
     private String description;
+    private String password;
     private int loser = 1;
     private int piecetype;
     private int firstslot = 0;
@@ -50,9 +52,10 @@ public class MapleMiniGame extends AbstractMapleMapObject {
     private int ownerpoints = 0;
     private int matchestowin = 0;
 
-    public MapleMiniGame(MapleCharacter owner, String description) {
+    public MapleMiniGame(MapleCharacter owner, String description, String password) {
         this.owner = owner;
         this.description = description;
+        this.password = password;
     }
 
     public boolean hasFreeSlot() {
@@ -98,12 +101,12 @@ public class MapleMiniGame extends AbstractMapleMapObject {
         }
     }
 
-    public void setFirstSlot(int type) {
-        firstslot = type;
-    }
-
     public int getFirstSlot() {
         return firstslot;
+    }
+
+    public void setFirstSlot(int type) {
+        firstslot = type;
     }
 
     public void setOwnerPoints() {
@@ -136,16 +139,16 @@ public class MapleMiniGame extends AbstractMapleMapObject {
         }
     }
 
-    public void setMatchesToWin(int type) {
-        matchestowin = type;
+    public int getPieceType() {
+        return piecetype;
     }
 
     public void setPieceType(int type) {
         piecetype = type;
     }
 
-    public int getPieceType() {
-        return piecetype;
+    public String getGameType() {
+        return GameType;
     }
 
     public void setGameType(String game) {
@@ -168,10 +171,6 @@ public class MapleMiniGame extends AbstractMapleMapObject {
                 }
             }
         }
-    }
-
-    public String getGameType() {
-        return GameType;
     }
 
     public void shuffleList() {
@@ -200,12 +199,16 @@ public class MapleMiniGame extends AbstractMapleMapObject {
         return matchestowin;
     }
 
-    public void setLoser(int type) {
-        loser = type;
+    public void setMatchesToWin(int type) {
+        matchestowin = type;
     }
 
     public int getLoser() {
         return loser;
+    }
+
+    public void setLoser(int type) {
+        loser = type;
     }
 
     public void broadcast(final byte[] packet) {
@@ -326,12 +329,16 @@ public class MapleMiniGame extends AbstractMapleMapObject {
         return description;
     }
 
-    @Override
-    public void sendDestroyData(MapleClient client) {
+    public String getPassword() {
+        return password;
     }
 
     @Override
     public void sendSpawnData(MapleClient client) {
+    }
+
+    @Override
+    public void sendDestroyData(MapleClient client) {
     }
 
     @Override
