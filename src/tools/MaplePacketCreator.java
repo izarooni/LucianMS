@@ -1018,8 +1018,7 @@ public class MaplePacketCreator {
 	 * @param chr The character warping to <code>to</code>
 	 * @return The map change packet.
 	 */
-	public static byte[] getWarpToMap(MapleMap to, int spawnPoint, MapleCharacter chr) {
-		System.out.println("getWarpToMap() " + to == null + " " + spawnPoint + " " + chr.getName());
+	public static byte[] getWarpToMap(MapleMap to, int spawnPoint, MapleCharacter chr, Point pos) {
 		final MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
 		mplew.writeShort(SendOpcode.SET_FIELD.getValue());
 		mplew.writeInt(chr.getClient().getChannel() - 1);
@@ -1028,7 +1027,11 @@ public class MaplePacketCreator {
 		mplew.writeInt(to.getId());
 		mplew.write(spawnPoint);
 		mplew.writeShort(chr.getHp());
-		mplew.write(0);
+		mplew.write(pos != null ? 1: 0);
+		if (pos != null) {
+			mplew.writeInt(pos.x);
+			mplew.writeInt(pos.y);
+		}
 		mplew.writeLong(getTime(System.currentTimeMillis()));
 		return mplew.getPacket();
 	}
@@ -4586,7 +4589,7 @@ public class MaplePacketCreator {
 				   } else if (forfeit == 1) {
 					   mplew.write(2);
 				   }
-				   mplew.write(game.getLoser());
+				   mplew.write(game.getLoser()); // owner
 				   mplew.writeInt(1); // unknown
 				   mplew.writeInt(game.getOwner().getMiniGamePoints("wins", omok) + win); // wins
 				   mplew.writeInt(game.getOwner().getMiniGamePoints("ties", omok) + tie); // ties

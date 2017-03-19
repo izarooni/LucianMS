@@ -1124,13 +1124,11 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
 	}
 
 	public void changeMap(final MapleMap to, final MaplePortal pto) {
-		changeMapInternal(to, pto.getPosition(), MaplePacketCreator.getWarpToMap(to, pto.getId(), this));
+		changeMapInternal(to, pto.getPosition(), MaplePacketCreator.getWarpToMap(to, pto.getId(), this, null));
 	}
 
 	public void changeMap(final MapleMap to, final Point pos) {
-		changeMapInternal(to, pos, MaplePacketCreator.getWarpToMap(to, 0x80, this));// Position
-																					// :O
-																					// (LEFT)
+		changeMapInternal(to, pos, MaplePacketCreator.getWarpToMap(to, 0x80, this, pos));
 	}
 
 	public void changeMapBanish(int mapid, String portal, String msg) {
@@ -1140,7 +1138,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
 	}
 
 	private void changeMapInternal(final MapleMap to, final Point pos, final byte[] warpPacket) {
-		if (this.getTrade() != null) {
+		if (getTrade() != null) {
 			MapleTrade.cancelTrade(this);
 		}
 		client.announce(warpPacket);

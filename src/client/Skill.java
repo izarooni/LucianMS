@@ -32,6 +32,7 @@ public class Skill {
     public Element element;
     public int animationTime;
     public int job;
+    public int weapon;
     public boolean action;
 
     public Skill(int id) {

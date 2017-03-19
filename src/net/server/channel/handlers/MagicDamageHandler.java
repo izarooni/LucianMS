@@ -21,65 +21,55 @@
  */
 package net.server.channel.handlers;
 
-import server.MapleStatEffect;
-import server.TimerManager;
-import tools.MaplePacketCreator;
-import tools.data.input.SeekableLittleEndianAccessor;
-import client.MapleBuffStat;
-import client.MapleCharacter;
+import client.*;
 import client.MapleCharacter.CancelCooldownAction;
-import client.MapleClient;
-import client.Skill;
-import client.SkillFactory;
 import constants.skills.Bishop;
 import constants.skills.Evan;
 import constants.skills.FPArchMage;
 import constants.skills.ILArchMage;
+import server.MapleStatEffect;
+import server.TimerManager;
+import tools.MaplePacketCreator;
+import tools.data.input.SeekableLittleEndianAccessor;
 
 public final class MagicDamageHandler extends AbstractDealDamageHandler {
-	@Override
-	public final void handlePacket(SeekableLittleEndianAccessor slea, MapleClient c) {
-		MapleCharacter player = c.getPlayer();
 
-		/*long timeElapsed = System.currentTimeMillis() - player.getAutobanManager().getLastSpam(8);
-		if(timeElapsed < 300) {
-			AutobanFactory.FAST_ATTACK.alert(player, "Time: " + timeElapsed);
-		}
-		player.getAutobanManager().spam(8);*/
+    @Override
+    public final void handlePacket(SeekableLittleEndianAccessor slea, MapleClient c) {
+        MapleCharacter player = c.getPlayer();
+        AttackInfo attack = parseDamage(slea, player, false, true);
 
-		AttackInfo attack = parseDamage(slea, player, false, true);
+        if (player.getBuffEffect(MapleBuffStat.MORPH) != null) {
+            if (player.getBuffEffect(MapleBuffStat.MORPH).isMorphWithoutAttack()) {
+                // How are they attacking when the client won't let them?
+                player.getClient().disconnect(false, false);
+                return;
+            }
+        }
 
-		if (player.getBuffEffect(MapleBuffStat.MORPH) != null) {
-			if(player.getBuffEffect(MapleBuffStat.MORPH).isMorphWithoutAttack()) {
-				// How are they attacking when the client won't let them?
-				player.getClient().disconnect(false, false);
-				return; 
-			}
-		}
-
-		byte[] packet = MaplePacketCreator.magicAttack(player, attack.skill, attack.skilllevel, attack.stance, attack.numAttackedAndDamage, attack.allDamage, -1, attack.speed, attack.direction, attack.display);
-		if (attack.skill == Evan.FIRE_BREATH || attack.skill == Evan.ICE_BREATH || attack.skill == FPArchMage.BIG_BANG || attack.skill == ILArchMage.BIG_BANG || attack.skill == Bishop.BIG_BANG) {
-			packet = MaplePacketCreator.magicAttack(player, attack.skill, attack.skilllevel, attack.stance, attack.numAttackedAndDamage, attack.allDamage, attack.charge, attack.speed, attack.direction, attack.display);
-		}
-		player.getMap().broadcastMessage(player, packet, false, true);
-		MapleStatEffect effect = attack.getAttackEffect(player, null);
-		Skill skill = SkillFactory.getSkill(attack.skill);
-		MapleStatEffect effect_ = skill.getEffect(player.getSkillLevel(skill));
-		if (effect_.getCooldown() > 0) {
-			if (player.skillisCooling(attack.skill)) {
-				return;
-			} else {
-				c.announce(MaplePacketCreator.skillCooldown(attack.skill, effect_.getCooldown()));
-				player.addCooldown(attack.skill, System.currentTimeMillis(), effect_.getCooldown() * 1000, TimerManager.getInstance().schedule(new CancelCooldownAction(player, attack.skill), effect_.getCooldown() * 1000));
-			}
-		}
-		applyAttack(attack, player, effect.getAttackCount());
-		Skill eaterSkill = SkillFactory.getSkill((player.getJob().getId() - (player.getJob().getId() % 10)) * 10000);// MP Eater, works with right job
-		int eaterLevel = player.getSkillLevel(eaterSkill);
-		if (eaterLevel > 0) {
-			for (Integer singleDamage : attack.allDamage.keySet()) {
-				eaterSkill.getEffect(eaterLevel).applyPassive(player, player.getMap().getMapObject(singleDamage), 0);
-			}
-		}
-	}
+        byte[] packet = MaplePacketCreator.magicAttack(player, attack.skill, attack.skilllevel, attack.stance, attack.numAttackedAndDamage, attack.allDamage, -1, attack.speed, attack.direction, attack.display);
+        if (attack.skill == Evan.FIRE_BREATH || attack.skill == Evan.ICE_BREATH || attack.skill == FPArchMage.BIG_BANG || attack.skill == ILArchMage.BIG_BANG || attack.skill == Bishop.BIG_BANG) {
+            packet = MaplePacketCreator.magicAttack(player, attack.skill, attack.skilllevel, attack.stance, attack.numAttackedAndDamage, attack.allDamage, attack.charge, attack.speed, attack.direction, attack.display);
+        }
+        player.getMap().broadcastMessage(player, packet, false, true);
+        MapleStatEffect effect = attack.getAttackEffect(player, null);
+        Skill skill = SkillFactory.getSkill(attack.skill);
+        MapleStatEffect effect_ = skill.getEffect(player.getSkillLevel(skill));
+        if (effect_.getCooldown() > 0) {
+            if (player.skillisCooling(attack.skill)) {
+                return;
+            } else {
+                c.announce(MaplePacketCreator.skillCooldown(attack.skill, effect_.getCooldown()));
+                player.addCooldown(attack.skill, System.currentTimeMillis(), effect_.getCooldown() * 1000, TimerManager.getInstance().schedule(new CancelCooldownAction(player, attack.skill), effect_.getCooldown() * 1000));
+            }
+        }
+        applyAttack(attack, player, effect.getAttackCount());
+        Skill eaterSkill = SkillFactory.getSkill((player.getJob().getId() - (player.getJob().getId() % 10)) * 10000);// MP Eater, works with right job
+        int eaterLevel = player.getSkillLevel(eaterSkill);
+        if (eaterLevel > 0) {
+            for (Integer singleDamage : attack.allDamage.keySet()) {
+                eaterSkill.getEffect(eaterLevel).applyPassive(player, player.getMap().getMapObject(singleDamage), 0);
+            }
+        }
+    }
 }

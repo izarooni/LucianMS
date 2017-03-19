@@ -120,6 +120,7 @@ public class SkillFactory {
         Skill ret = new Skill(id);
         boolean isBuff = false;
         int skillType = MapleDataTool.getInt("skillType", data, -1);
+        ret.weapon =  MapleDataTool.getInt("weapon", data, 0);
         String elem = MapleDataTool.getString("elemAttr", data, null);
         if (elem != null) {
             ret.element = Element.getFromChar(elem.charAt(0));

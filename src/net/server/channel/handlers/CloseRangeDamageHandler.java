@@ -21,50 +21,51 @@
 */
 package net.server.channel.handlers;
 
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
-
+import client.*;
+import client.MapleCharacter.CancelCooldownAction;
+import client.inventory.Item;
+import client.inventory.MapleInventoryType;
+import client.inventory.MapleWeaponType;
+import constants.GameConstants;
+import constants.ItemConstants;
+import constants.skills.*;
 import server.MapleStatEffect;
 import server.TimerManager;
 import tools.MaplePacketCreator;
 import tools.Pair;
 import tools.data.input.SeekableLittleEndianAccessor;
-import client.MapleBuffStat;
-import client.MapleCharacter;
-import client.MapleCharacter.CancelCooldownAction;
-import client.MapleClient;
-import client.MapleJob;
-import client.MapleStat;
-import client.Skill;
-import client.SkillFactory;
-import constants.GameConstants;
-import constants.skills.Crusader;
-import constants.skills.DawnWarrior;
-import constants.skills.DragonKnight;
-import constants.skills.Hero;
-import constants.skills.NightWalker;
-import constants.skills.Rogue;
-import constants.skills.WindArcher;
+
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
 
 public final class CloseRangeDamageHandler extends AbstractDealDamageHandler {
+
     @Override
     public final void handlePacket(SeekableLittleEndianAccessor slea, MapleClient c) {
         MapleCharacter player = c.getPlayer();
-		/*long timeElapsed = System.currentTimeMillis() - player.getAutobanManager().getLastSpam(8);
-		if(timeElapsed < 300) {
-			AutobanFactory.FAST_ATTACK.alert(player, "Time: " + timeElapsed);
-		}
-		player.getAutobanManager().spam(8);*/
         AttackInfo attack = parseDamage(slea, player, false, false);
+
         if (player.getBuffEffect(MapleBuffStat.MORPH) != null) {
-            if(player.getBuffEffect(MapleBuffStat.MORPH).isMorphWithoutAttack()) {
+            if (player.getBuffEffect(MapleBuffStat.MORPH).isMorphWithoutAttack()) {
                 // How are they attacking when the client won't let them?
                 player.getClient().disconnect(false, false);
-                return; 
+                return;
             }
         }
-        
+
+        if (attack.skill > 0) {
+            Skill skill = SkillFactory.getSkill(attack.skill);
+            if (skill != null && skill.weapon > 0) {
+                Item item = player.getInventory(MapleInventoryType.EQUIPPED).getItem((short) -11);
+                if (item != null) {
+                    if (MapleWeaponType.getWeaponType(item.getItemId()) != skill.weapon) {//Ha fuck you
+                        return;
+                    }
+                }
+            }
+        }
+
         player.getMap().broadcastMessage(player, MaplePacketCreator.closeRangeAttack(player, attack.skill, attack.skilllevel, attack.stance, attack.numAttackedAndDamage, attack.allDamage, attack.speed, attack.direction, attack.display), false, true);
         int numFinisherOrbs = 0;
         Integer comboBuff = player.getBuffedValue(MapleBuffStat.COMBO);
@@ -96,7 +97,7 @@ public final class CloseRangeDamageHandler extends AbstractDealDamageHandler {
                     }
                     int duration = combo.getEffect(player.getSkillLevel(oid)).getDuration();
                     List<Pair<MapleBuffStat, Integer>> stat = Collections.singletonList(new Pair<>(MapleBuffStat.COMBO, neworbcount));
-                    player.setBuffedValue(MapleBuffStat.COMBO, neworbcount);                 
+                    player.setBuffedValue(MapleBuffStat.COMBO, neworbcount);
                     duration -= (int) (System.currentTimeMillis() - player.getBuffedStarttime(MapleBuffStat.COMBO));
                     c.announce(MaplePacketCreator.giveBuff(oid, duration, stat));
                     player.getMap().broadcastMessage(player, MaplePacketCreator.giveForeignBuff(player.getId(), stat), false);
