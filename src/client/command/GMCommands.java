@@ -158,7 +158,7 @@ public class GMCommands implements CommandPattern {
 
                 }
                 return true;
-            } else if (command.equalsIgnoreCase("str") || command.equalsIgnoreCase("dex") || command.equalsIgnoreCase("luk") || command.equalsIgnoreCase("int")) {
+            } else if (command.equalsIgnoreCase("hp") || command.equalsIgnoreCase("mp") || command.equalsIgnoreCase("str") || command.equalsIgnoreCase("dex") || command.equalsIgnoreCase("luk") || command.equalsIgnoreCase("int")) {
                 if (args.length == 2) {
                     short statToIncrease = Short.parseShort(args[1]);
 
@@ -204,6 +204,26 @@ public class GMCommands implements CommandPattern {
                                 player.dropMessage(5, "You can add another " + available + " Luk.");
                             }
                             break;
+                        case "hp":
+                        	if (!(player.getMaxHp() + statToIncrease > 30000)) {
+                                player.setMaxHp(player.getMaxHp() + statToIncrease);
+                                player.updateSingleStat(MapleStat.MAXHP, player.getMaxHp() + statToIncrease);
+                                player.dropMessage(6, "You updated your hp.");
+                            } else {
+                                int available = 32767 - player.getMaxHp();
+                                player.dropMessage(5, "You can add another " + available + " hp.");
+                            }
+                        	break;
+                        case "mp":
+                        	if (!(player.getMaxMp() + statToIncrease > 30000)) {
+                                player.setMaxMp(player.getMaxMp() + statToIncrease);
+                                player.updateSingleStat(MapleStat.MAXMP, player.getMaxMp() + statToIncrease);
+                                player.dropMessage(6, "You updated your mp.");
+                            } else {
+                                int available = 32767 - player.getMaxMp();
+                                player.dropMessage(5, "You can add another " + available + " mp.");
+                            }
+                        	break;
                     }
                 }
                 return true;
