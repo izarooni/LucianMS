@@ -1534,7 +1534,7 @@ public class MapleMap {
 		}
 		if (chr.isHidden()) {
 			broadcastGMMessage(chr, MaplePacketCreator.spawnPlayerMapobject(chr), false);
-			chr.announce(MaplePacketCreator.getGMEffect(0x10, (byte) chr.getHidingLevel()));
+			chr.announce(MaplePacketCreator.getGMEffect(0x10, (byte) 1));
 
 			List<Pair<MapleBuffStat, Integer>> dsstat = Collections
 					.singletonList(new Pair<MapleBuffStat, Integer>(MapleBuffStat.DARKSIGHT, 0));
