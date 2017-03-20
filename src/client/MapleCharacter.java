@@ -32,8 +32,22 @@ import java.sql.Statement;
 import java.sql.Timestamp;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.EnumMap;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
+import java.util.TimeZone;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.regex.Pattern;
@@ -300,6 +314,8 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
 
 	private Arcade arcade;
 	private PVP pvp;
+	
+	private int hidingLevel = 1;
 
 	private MapleCharacter() {
 		setStance(0);
@@ -5767,4 +5783,13 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
 	public Map<Integer, CQuestData> getCustomQuests() {
 	    return customQuests;
     }
+
+	public void setHidingLevel(int hidingLevel) {
+		this.hidingLevel = hidingLevel;
+		
+	}
+	
+	public int getHidingLevel() {
+		return this.hidingLevel;
+	}
 }

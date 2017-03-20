@@ -21,6 +21,27 @@
  */
 package server.maps;
 
+import java.awt.Point;
+import java.awt.Rectangle;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Random;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
+import java.util.concurrent.locks.ReentrantReadWriteLock.ReadLock;
+import java.util.concurrent.locks.ReentrantReadWriteLock.WriteLock;
+
 import client.MapleBuffStat;
 import client.MapleCharacter;
 import client.MapleClient;
@@ -41,9 +62,19 @@ import server.MapleItemInformationProvider;
 import server.MaplePortal;
 import server.MapleStatEffect;
 import server.TimerManager;
-import server.events.gm.*;
-import server.life.*;
+import server.events.gm.MapleCoconut;
+import server.events.gm.MapleFitness;
+import server.events.gm.MapleOla;
+import server.events.gm.MapleOxQuiz;
+import server.events.gm.MapleSnowball;
+import server.life.MapleLifeFactory;
 import server.life.MapleLifeFactory.selfDestruction;
+import server.life.MapleMonster;
+import server.life.MapleMonsterInformationProvider;
+import server.life.MapleNPC;
+import server.life.MonsterDropEntry;
+import server.life.MonsterGlobalDropEntry;
+import server.life.SpawnPoint;
 import server.partyquest.MonsterCarnival;
 import server.partyquest.MonsterCarnivalParty;
 import server.partyquest.Pyramid;
@@ -51,16 +82,6 @@ import tools.FilePrinter;
 import tools.MaplePacketCreator;
 import tools.Pair;
 import tools.Randomizer;
-
-import java.awt.*;
-import java.util.*;
-import java.util.List;
-import java.util.Map.Entry;
-import java.util.concurrent.ScheduledFuture;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.locks.ReentrantReadWriteLock;
-import java.util.concurrent.locks.ReentrantReadWriteLock.ReadLock;
-import java.util.concurrent.locks.ReentrantReadWriteLock.WriteLock;
 
 public class MapleMap {
 
@@ -1513,7 +1534,7 @@ public class MapleMap {
 		}
 		if (chr.isHidden()) {
 			broadcastGMMessage(chr, MaplePacketCreator.spawnPlayerMapobject(chr), false);
-			chr.announce(MaplePacketCreator.getGMEffect(0x10, (byte) 1));
+			chr.announce(MaplePacketCreator.getGMEffect(0x10, (byte) chr.getHidingLevel()));
 
 			List<Pair<MapleBuffStat, Integer>> dsstat = Collections
 					.singletonList(new Pair<MapleBuffStat, Integer>(MapleBuffStat.DARKSIGHT, 0));

@@ -728,6 +728,18 @@ public class GMCommands implements CommandPattern {
                     player.dropMessage(5, "Correct usage: !clearslot <inventorytype>");
                 }
                 return true;
+            } else if(command.equalsIgnoreCase("hide")) {
+            		if(args.length >= 2) {
+            			try {
+            				player.setHidingLevel(Integer.parseInt(args[1]));
+            			} catch(NumberFormatException e) {
+            				player.dropMessage(5, "Please insert a number.");
+            			}
+            			player.dropMessage(6, "toggled your hiding");
+            			player.toggleHide(false);
+            			
+            		}
+            		return true;
             }
         }
         return false;
