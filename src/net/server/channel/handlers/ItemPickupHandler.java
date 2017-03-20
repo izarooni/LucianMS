@@ -157,6 +157,7 @@ public final class ItemPickupHandler extends AbstractMaplePacketHandler {
 								chr.getArcade().add();
 							}
 						}
+						chr.getCustomQuests().values().forEach(q -> q.getToCollect().addToCollect(mapitem.getItemId(), mapitem.getItem().getQuantity()));
                     } else if (mapitem.getItem().getItemId() == 4031868) {
                         chr.getMap().broadcastMessage(MaplePacketCreator.updateAriantPQRanking(chr.getName(), chr.getItemQuantity(4031868, false), false));
 					} else {

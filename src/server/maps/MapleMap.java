@@ -21,27 +21,6 @@
  */
 package server.maps;
 
-import java.awt.Point;
-import java.awt.Rectangle;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Random;
-import java.util.concurrent.ScheduledFuture;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.locks.ReentrantReadWriteLock;
-import java.util.concurrent.locks.ReentrantReadWriteLock.ReadLock;
-import java.util.concurrent.locks.ReentrantReadWriteLock.WriteLock;
-
 import client.MapleBuffStat;
 import client.MapleCharacter;
 import client.MapleClient;
@@ -62,19 +41,9 @@ import server.MapleItemInformationProvider;
 import server.MaplePortal;
 import server.MapleStatEffect;
 import server.TimerManager;
-import server.events.gm.MapleCoconut;
-import server.events.gm.MapleFitness;
-import server.events.gm.MapleOla;
-import server.events.gm.MapleOxQuiz;
-import server.events.gm.MapleSnowball;
-import server.life.MapleLifeFactory;
+import server.events.gm.*;
+import server.life.*;
 import server.life.MapleLifeFactory.selfDestruction;
-import server.life.MapleMonster;
-import server.life.MapleMonsterInformationProvider;
-import server.life.MapleNPC;
-import server.life.MonsterDropEntry;
-import server.life.MonsterGlobalDropEntry;
-import server.life.SpawnPoint;
 import server.partyquest.MonsterCarnival;
 import server.partyquest.MonsterCarnivalParty;
 import server.partyquest.Pyramid;
@@ -82,6 +51,16 @@ import tools.FilePrinter;
 import tools.MaplePacketCreator;
 import tools.Pair;
 import tools.Randomizer;
+
+import java.awt.*;
+import java.util.*;
+import java.util.List;
+import java.util.Map.Entry;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
+import java.util.concurrent.locks.ReentrantReadWriteLock.ReadLock;
+import java.util.concurrent.locks.ReentrantReadWriteLock.WriteLock;
 
 public class MapleMap {
 
@@ -613,7 +592,7 @@ public class MapleMap {
 						if (chr.getBossPQ() != null) {
 							chr.getBossPQ().nextRound();
 						}
-						
+
 						if(chr.getArcade() != null) {
 							chr.getArcade().onKill(monster.getId());
 							if(monster.getId() == 9500365) {
@@ -623,9 +602,9 @@ public class MapleMap {
 								mob.setLevel(Integer.MAX_VALUE);
 		        				spawnMonsterOnGroudBelow(mob, monster.getPosition());
 							}
-							
+
 						}
-						
+
 						if(monster.getId() == chr.getKillType() && chr.getCurrent() < chr.getGoal()) {
 							chr.setCurrent(chr.getCurrent() + 1);
 							if(!(chr.getCurrent() > chr.getGoal())) {
@@ -697,7 +676,9 @@ public class MapleMap {
 			broadcastMessage(MaplePacketCreator.killMonster(monster.getObjectId(), animation), monster.getPosition());
 			removeMapObject(monster);
 			return;
-		}
+		} else {
+		    chr.getCustomQuests().values().forEach(q -> q.getToKill().addToKill(monster.getId(), 1));
+        }
 		if (monster.getStats().getLevel() >= chr.getLevel() + 30 && !chr.isGM()) {
 			AutobanFactory.GENERAL.alert(chr,
 					" for killing a " + monster.getName() + " which is over 30 levels higher.");
@@ -2525,14 +2506,14 @@ public class MapleMap {
 	public short getMobInterval() {
 		return mobInterval;
 	}
-	
+
 	public void dispose() {
         for(MapleCharacter player : getCharacters()) {
         	player.saveToDB();
         	 removeMapObject(player);
         }
     }
-	
+
 	public Collection<MapleCharacter> getNearestPvpChar(Point attacker, double maxRange, double maxHeight, Collection<MapleCharacter> chr) {
         Collection<MapleCharacter> character = new LinkedList<MapleCharacter>();
         for (MapleCharacter a : characters) {

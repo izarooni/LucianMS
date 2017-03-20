@@ -32,21 +32,8 @@ import java.sql.Statement;
 import java.sql.Timestamp;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.EnumMap;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
-import java.util.Set;
-import java.util.TimeZone;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.regex.Pattern;
@@ -148,6 +135,7 @@ import server.partyquest.MonsterCarnival;
 import server.partyquest.MonsterCarnivalParty;
 import server.partyquest.PartyQuest;
 import server.quest.MapleQuest;
+import server.quest.custom.CQuestBuilder;
 import server.quest.custom.CQuestData;
 import tools.DatabaseConnection;
 import tools.FilePrinter;
@@ -241,7 +229,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
 	private SkillMacro[] skillMacros = new SkillMacro[5];
 	private List<Integer> lastmonthfameids;
 	private Map<Short, MapleQuestStatus> quests;
-	private Map<Integer, CQuestData> customQuests;
+	private Map<Integer, CQuestData> customQuests = new HashMap<>();
 	private Set<MapleMonster> controlled = new LinkedHashSet<>();
 	private Map<Integer, String> entered = new LinkedHashMap<>();
 	private Set<MapleMapObject> visibleMapObjects = new LinkedHashSet<>();
@@ -3201,6 +3189,22 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
 					ps.close();
 				}
 				psf.close();
+				ps = con.prepareStatement("select * from cquest where characterid = ?");
+				ps.setInt(1, ret.id);
+				rs = ps.executeQuery();
+				while (rs.next()) {
+					CQuestData cQuest = CQuestBuilder.beginQuest(ret, rs.getInt("questid"));
+					try (PreparedStatement stmt = con.prepareStatement("select * from cquestdata where ctableid = ?")) {
+						stmt.setInt(1, rs.getInt("id"));
+						try (ResultSet res = stmt.executeQuery()) {
+							while (res.next()) {
+								cQuest.getToKill().get(rs.getInt("monsterid")).right = rs.getInt("kills");
+							}
+						}
+					}
+				}
+				rs.close();
+				ps.close();
 				ps = con.prepareStatement(
 						"SELECT skillid,skilllevel,masterlevel,expiration FROM skills WHERE characterid = ?");
 				ps.setInt(1, charid);
@@ -4208,6 +4212,34 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
 			}
 			ps.executeBatch();
 			deleteWhereCharacterId(con, "DELETE FROM eventstats WHERE characterid = ?");
+
+			// I feel like I'm missing something...
+			deleteWhereCharacterId(con, "delete from cquest where characterid = ?");
+			deleteWhereCharacterId(con, "delete from cquestdata where ctableid = (select id from cquest where characterid = ?)");
+			try (PreparedStatement stmt = con.prepareStatement("insert into cquest (questid, characterid, completed) values (?, ?, ?)", PreparedStatement.RETURN_GENERATED_KEYS)) {
+				for (CQuestData data : customQuests.values()) {
+					stmt.setInt(1, data.getId());
+					stmt.setInt(2, getId());
+					stmt.setInt(3, data.isCompleted() ? 1: 0);
+					ps.executeUpdate();
+					if (!data.isCompleted()) {
+						try (ResultSet rs = ps.getGeneratedKeys()) {
+							if (rs.next()) {
+								try (PreparedStatement stmt2 = con.prepareStatement("insert into cquestdata (qtableid, monsterid, kills) values (?, ?, ?)")) {
+									for (Entry<Integer, Pair<Integer, Integer>> entry : data.getToKill().entrySet()) {
+										stmt2.setInt(1, rs.getInt(1));
+										stmt2.setInt(2, entry.getKey());
+										stmt2.setInt(3, entry.getValue().right);
+										stmt2.addBatch();
+									}
+									stmt2.executeBatch();
+								}
+							}
+						}
+					}
+				}
+			}
+
 			deleteWhereCharacterId(con, "DELETE FROM queststatus WHERE characterid = ?");
 			ps = con.prepareStatement(
 					"INSERT INTO queststatus (`queststatusid`, `characterid`, `quest`, `status`, `time`, `forfeited`) VALUES (DEFAULT, ?, ?, ?, ?, ?)",

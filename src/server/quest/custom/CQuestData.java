@@ -1,6 +1,8 @@
 package server.quest.custom;
 
 import client.MapleCharacter;
+import server.quest.custom.requirement.CQuestItemRequirement;
+import server.quest.custom.requirement.CQuestKillRequirement;
 import server.quest.custom.reward.CQuestReward;
 import tools.Pair;
 
@@ -20,12 +22,12 @@ public class CQuestData {
     /**
      * Map of monster ID to kill requirement and kill progress
      */
-    HashMap<Integer, Pair<Integer, Integer>> toKill = new HashMap<>();
+    final CQuestKillRequirement toKill = new CQuestKillRequirement();
 
     /**
      * Map of item ID to quantity requirement and quantity progress
      */
-    HashMap<Integer, Pair<Integer, Integer>> toCollect = new HashMap<>();
+    final CQuestItemRequirement toCollect = new CQuestItemRequirement();
 
     ArrayList<CQuestReward> rewards = new ArrayList<>();
 
@@ -61,61 +63,20 @@ public class CQuestData {
         return name;
     }
 
-    public Map<Integer, Pair<Integer, Integer>> getToKill() {
-        return Collections.unmodifiableMap(toKill);
+    public boolean isCompleted() {
+        return completed;
     }
 
-    /**
-     * Increment monster kill progress
-     * <p>
-     * Progress will never decrease below 0 and will max at the requirement
-     * </p>
-     *
-     * @param monsterId ID of monster to progress
-     * @param amount    amount to increment progress
-     */
-    public void addToKill(int monsterId, int amount) {
-        Pair<Integer, Integer> d = toKill.get(monsterId);
-        if (d.right.equals(d.left)) {
-            return;
-        }
-        if (d.right + amount > d.left) { // progress meets requirement
-            // don't exceed requirement
-            d.right = d.left;
-        } else if (d.right + amount < 0) { // subtract progress
-            // don't go negative
-            d.right = 0;
-        } else {
-            d.right += amount;
-        }
+    public void setCompleted(boolean completed) {
+        this.completed = completed;
     }
 
-    public Map<Integer, Pair<Integer, Integer>> getToCollect() {
-        return Collections.unmodifiableMap(toCollect);
+    public CQuestKillRequirement getToKill() {
+        return toKill;
     }
 
-    /**
-     * Increment an item collection progress.
-     * <p>
-     * Progress will never decrease below 0 but may increase above the requirement
-     * </p>
-     *
-     * @param itemId   ID of item to progress
-     * @param quantity amount to increment progress
-     */
-    public void addToCollect(int itemId, int quantity) {
-        Pair<Integer, Integer> d = toCollect.get(itemId);
-        if (d.right + quantity < 0) {
-            // don't go negative
-            d.right = 0;
-        } else {
-            // going over requirement is ok
-            d.right += quantity;
-        }
-    }
-
-    public List<CQuestReward> getRewards() {
-        return Collections.unmodifiableList(rewards);
+    public CQuestItemRequirement getToCollect() {
+        return toCollect;
     }
 
     /**
@@ -123,7 +84,7 @@ public class CQuestData {
      *
      * @return true if all progress variables meet their requirement, false otherwise
      */
-    public boolean isCompleted() {
+    public boolean isFinished() {
         // all pairs must meet their requirement
         if (!toCollect.values().stream().allMatch(p -> p.right >= p.left)) {
             // items can exceed their requirement
@@ -144,6 +105,8 @@ public class CQuestData {
     public boolean complete(MapleCharacter player) {
         if (player == null) {
             throw new IllegalArgumentException("Can't given rewards to nobody!");
+        } else if (completed) {
+            return false;
         }
         if (rewards.stream().allMatch(r -> r.canAccept(player))) {
             completed = true;
