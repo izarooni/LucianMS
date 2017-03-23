@@ -314,7 +314,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
 
 	private Arcade arcade;
 	private PVP pvp;
-	
+
 	private int hidingLevel = 1;
 
 	private MapleCharacter() {
@@ -682,16 +682,16 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
 				.getChildren()) {
 			try {
 				Skill skill = SkillFactory.getSkill(Integer.parseInt(skill_.getName()));
-				if (skill != SkillFactory.getSkill(Aran.HIDDEN_FULL_DOUBLE)
+				if (skill != null
+						&& skill != SkillFactory.getSkill(Aran.HIDDEN_FULL_DOUBLE)
 						&& skill != SkillFactory.getSkill(Aran.HIDDEN_FULL_TRIPLE)
 						&& skill != SkillFactory.getSkill(Aran.HIDDEN_OVER_DOUBLE)
-						&& skill != SkillFactory.getSkill(Aran.HIDDEN_OVER_TRIPLE)) {
+						&& skill != SkillFactory.getSkill(Aran.HIDDEN_OVER_TRIPLE)
+						&& (skill.getId() / 100) != 9) {
 					changeSkillLevel(skill, (byte) skill.getMaxLevel(), skill.getMaxLevel(), -1);
 				}
-			} catch (NumberFormatException nfe) {
-				nfe.printStackTrace();
-			} catch (NullPointerException npe) {
-				continue;
+			} catch (NumberFormatException | NullPointerException e) {
+				e.printStackTrace();
 			}
 		}
 	}
@@ -1459,11 +1459,9 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
 	}
 
 	public void dispelDebuffs() {
-		dispelDebuff(MapleDisease.CURSE);
-		dispelDebuff(MapleDisease.DARKNESS);
-		dispelDebuff(MapleDisease.POISON);
-		dispelDebuff(MapleDisease.SEAL);
-		dispelDebuff(MapleDisease.WEAKEN);
+		for (MapleDisease disease : MapleDisease.values()) {
+			dispelDebuff(disease);
+		}
 	}
 
 	public void cancelAllDebuffs() {
@@ -5786,9 +5784,9 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
 
 	public void setHidingLevel(int hidingLevel) {
 		this.hidingLevel = hidingLevel;
-		
+
 	}
-	
+
 	public int getHidingLevel() {
 		return this.hidingLevel;
 	}

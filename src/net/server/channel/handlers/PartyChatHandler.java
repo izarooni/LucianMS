@@ -23,6 +23,7 @@ package net.server.channel.handlers;
 
 import client.MapleCharacter;
 import client.MapleClient;
+import client.command.CommandWorker;
 import net.AbstractMaplePacketHandler;
 import net.server.Server;
 import net.server.world.World;
@@ -43,18 +44,23 @@ public final class PartyChatHandler extends AbstractMaplePacketHandler {
         for (int i = 0; i < numRecipients; i++) {
             recipients[i] = slea.readInt();
         }
-        String text = slea.readMapleAsciiString();
+        String message = slea.readMapleAsciiString();
+        if (CommandWorker.isCommand(message)) {
+            if (CommandWorker.process(client, message)) {
+                return;
+            }
+        }
         World world = client.getWorldServer();
         if (type == 0) {
-            world.buddyChat(recipients, player.getId(), player.getName(), text);
+            world.buddyChat(recipients, player.getId(), player.getName(), message);
         } else if (type == 1 && player.getParty() != null) {
-            world.partyChat(player.getParty(), text, player.getName());
+            world.partyChat(player.getParty(), message, player.getName());
         } else if (type == 2 && player.getGuildId() > 0) {
-            Server.getInstance().guildChat(player.getGuildId(), player.getName(), player.getId(), text);
+            Server.getInstance().guildChat(player.getGuildId(), player.getName(), player.getId(), message);
         } else if (type == 3 && player.getGuild() != null) {
             int allianceId = player.getGuild().getAllianceId();
             if (allianceId > 0) {
-                Server.getInstance().allianceMessage(allianceId, MaplePacketCreator.multiChat(player.getName(), text, 3), player.getId(), -1);
+                Server.getInstance().allianceMessage(allianceId, MaplePacketCreator.multiChat(player.getName(), message, 3), player.getId(), -1);
             }
         }
         player.getAutobanManager().spam(7);

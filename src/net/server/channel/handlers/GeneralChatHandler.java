@@ -23,36 +23,34 @@ package net.server.channel.handlers;
 
 import client.MapleCharacter;
 import client.MapleClient;
-import client.command.CommandProcessor;
+import client.command.CommandWorker;
 import tools.MaplePacketCreator;
 import tools.data.input.SeekableLittleEndianAccessor;
 
 public final class GeneralChatHandler extends net.AbstractMaplePacketHandler {
 
-    CommandProcessor processor = new CommandProcessor();
-
+    @Override
     public final void handlePacket(SeekableLittleEndianAccessor slea, MapleClient client) {
         if (!client.getPlayer().isMuted()) {
-            String text = slea.readMapleAsciiString();
+            String message = slea.readMapleAsciiString();
             MapleCharacter player = client.getPlayer();
             if (player.getAutobanManager().getLastSpam(7) + 200 > System.currentTimeMillis()) {
                 return;
             }
-            char heading = text.charAt(0);
-            String[] args = text.split(" ");
-            if (heading == '/' || heading == '!' || heading == '@') {
-                processor.execute(client, heading, args[0], args);
-            } else {
-                int show = slea.readByte();
-                if (player.getMap().isMuted() && !player.isGM()) {
-                    player.dropMessage(5, "The map you are in is currently muted. Please try again later.");
+            if (CommandWorker.isCommand(message)) {
+                if (CommandWorker.process(client, message)) {
                     return;
                 }
-                if (!player.isHidden()) {
-                    player.getMap().broadcastMessage(MaplePacketCreator.getChatText(player.getId(), text, player.getWhiteChat(), show));
-                } else {
-                    player.getMap().broadcastGMMessage(MaplePacketCreator.getChatText(player.getId(), text, player.getWhiteChat(), show));
-                }
+            }
+            int show = slea.readByte();
+            if (player.getMap().isMuted() && !player.isGM()) {
+                player.dropMessage(5, "The map you are in is currently muted. Please try again later.");
+                return;
+            }
+            if (!player.isHidden()) {
+                player.getMap().broadcastMessage(MaplePacketCreator.getChatText(player.getId(), message, player.getWhiteChat(), show));
+            } else {
+                player.getMap().broadcastGMMessage(MaplePacketCreator.getChatText(player.getId(), message, player.getWhiteChat(), show));
             }
             player.getAutobanManager().spam(7);
         } else {
