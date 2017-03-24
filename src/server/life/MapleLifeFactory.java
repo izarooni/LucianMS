@@ -232,5 +232,7 @@ public class MapleLifeFactory {
         public int removeAfter() {
             return removeAfter;
         }
+
+        public void setRemoveAfter(int removeAfter) { this.removeAfter = removeAfter; }
     }
 }

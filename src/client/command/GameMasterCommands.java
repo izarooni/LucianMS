@@ -8,8 +8,12 @@ import client.inventory.MapleInventoryType;
 import constants.ItemConstants;
 import net.server.Server;
 import net.server.channel.Channel;
+import net.server.world.MapleParty;
+import net.server.world.MaplePartyCharacter;
 import server.MapleInventoryManipulator;
 import server.events.custom.Events;
+import server.life.MapleLifeFactory;
+import server.life.MapleMonster;
 import server.life.MobSkill;
 import server.life.MobSkillFactory;
 import server.maps.MapleMap;
@@ -17,6 +21,8 @@ import tools.DatabaseConnection;
 import tools.MaplePacketCreator;
 
 import java.awt.*;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
@@ -72,19 +78,19 @@ public class GameMasterCommands {
                             players.getClient().disconnect(false, players.getCashShop().isOpened());
                         }
                     }
-                    player.dropMessage("Done!");
+                    player.dropMessage(6, "Done!");
                 } else {
                     MapleCharacter target = client.getWorldServer().getPlayerStorage().getCharacterByName(username);
                     if (target != null) {
                         target.getClient().disconnect(false, target.getCashShop().isOpened());
                     } else {
-                        player.dropMessage(String.format("Could not find any player named '%s'", username));
+                        player.dropMessage(5, String.format("Could not find any player named '%s'", username));
                     }
                 }
             } else {
-                player.dropMessage("You must specify a username");
+                player.dropMessage(5, "You must specify a username");
             }
-        } else if (command.equals("map", "warp", "wm", "wmx", "wh", "whx")) {
+        } else if (command.equals("map", "warp", "warpmap", "warpmapx", "wm", "wmx", "wh", "whx")) {
             if (args.length() > 0) {
                 String username = args.get(0);
                 MapleCharacter target = client.getWorldServer().getPlayerStorage().getCharacterByName(username);
@@ -139,13 +145,13 @@ public class GameMasterCommands {
                     int portal = (a2 == null) ? 0 : a2.intValue();
                     MapleMap map = ch.getMapFactory().getMap(mapId);
                     if (map == null) {
-                        player.dropMessage("That map doesn't exist");
+                        player.dropMessage(5, "That map doesn't exist");
                         return;
                     }
                     player.changeMap(map, map.getPortal(portal));
                 }
             } else {
-                player.dropMessage("You must specify a map ID");
+                player.dropMessage(5, "You must specify a map ID");
             }
         } else if (command.equals("mute", "unmute")) {
             if (args.length() == 1) {
@@ -154,13 +160,13 @@ public class GameMasterCommands {
                 MapleCharacter target = ch.getPlayerStorage().getCharacterByName(username);
                 if (target != null) {
                     target.setMuted(mute);
-                    player.dropMessage(String.format("'%s' has been %s", username, mute ? "muted" : "unmuted"));
-                    target.dropMessage(String.format("you have been %s", mute ? "muted" : "unmuted"));
+                    player.dropMessage(6, String.format("'%s' has been %s", username, mute ? "muted" : "unmuted"));
+                    target.dropMessage(6, String.format("you have been %s", mute ? "muted" : "unmuted"));
                 } else {
-                    player.dropMessage(String.format("Could not find any player named '%s'", username));
+                    player.dropMessage(5, String.format("Could not find any player named '%s'", username));
                 }
             } else {
-                player.dropMessage("you must specify a username");
+                player.dropMessage(6, "you must specify a username");
             }
         } else if (command.equals("job")) {
             if (args.length() == 1) {
@@ -174,10 +180,10 @@ public class GameMasterCommands {
                     player.setJob(job);
                     player.updateSingleStat(MapleStat.JOB, job.getId());
                 } else {
-                    player.dropMessage(String.format("'%s' is an invalid job", args.get(0)));
+                    player.dropMessage(5, String.format("'%s' is an invalid job", args.get(0)));
                 }
             } else {
-                player.dropMessage("You must specify a job ID");
+                player.dropMessage(5, "You must specify a job ID");
             }
         } else if (command.equals("hp", "mp", "str", "dex", "int", "luk")) {
             Long a1 = args.parseNumber(0);
@@ -540,7 +546,7 @@ public class GameMasterCommands {
                 player.setLevel(level);
                 player.updateSingleStat(MapleStat.LEVEL, level);
             } else {
-                player.dropMessage("You must specify a level");
+                player.dropMessage(5, "You must specify a level");
             }
         } else if (command.equals("ban")) {
             if (args.length() > 1) {
@@ -549,12 +555,12 @@ public class GameMasterCommands {
                 if (target != null) {
                     target.ban(args.concatFrom(1));
                     target.getClient().disconnect(false, target.getCashShop().isOpened());
-                    player.dropMessage(String.format("'%s' has been banned", username));
+                    player.dropMessage(6, String.format("'%s' has been banned", username));
                 } else {
-                    player.dropMessage(String.format("Could not find any player named '%s'", username));
+                    player.dropMessage(5, String.format("Could not find any player named '%s'", username));
                 }
             } else {
-                player.dropMessage("You must specify a username and a reason");
+                player.dropMessage(5, "You must specify a username and a reason");
             }
         } else if (command.equals("tagrange")) {
             if (args.length() == 1) {
@@ -564,20 +570,20 @@ public class GameMasterCommands {
                     return;
                 }
                 int range = a1.intValue();
-                player.dropMessage("Tag ranged changed to " + range);
+                player.dropMessage(6, "Tag ranged changed to " + range);
             }
         } else if (command.equals("tag")) {
             ArrayList<MapleCharacter> players = new ArrayList<>(player.getMap().getCharacters());
             for (MapleCharacter chrs : player.getMap().getPlayersInRange(new Rectangle(tagRange / 100, tagRange / 100), players)) {
                 if (chrs != player && !chrs.isGM()) {
                     chrs.setHpMp(0);
-                    chrs.dropMessage("You have been tagged!");
+                    chrs.dropMessage(6, "You have been tagged!");
                 }
             }
             players.clear();
         } else if (command.equals("maxskills")) {
             player.maxSkills();
-            player.dropMessage("Your skills are now maxed!");
+            player.dropMessage(6, "Your skills are now maxed!");
         } else if (command.equals("heal", "healmap")) {
             if (command.equals("healmap")) {
                 for (MapleCharacter players : player.getMap().getCharacters()) {
@@ -602,14 +608,14 @@ public class GameMasterCommands {
                 player.setMp(player.getMaxMp());
                 player.updateSingleStat(MapleStat.HP, player.getHp());
                 player.updateSingleStat(MapleStat.MP, player.getMp());
-                player.dropMessage("Healed");
+                player.dropMessage(6, "Healed");
             }
         } else if (command.equals("notice")) {
             if (args.length() > 0) {
                 String message = args.concatFrom(0);
                 ch.broadcastPacket(MaplePacketCreator.serverNotice(6, message));
             } else {
-                player.dropMessage("You must specify a message");
+                player.dropMessage(5, "You must specify a message");
             }
         } else if (command.equals("gift")) {
             if (args.length() == 3) {
@@ -624,15 +630,15 @@ public class GameMasterCommands {
                 MapleCharacter target = ch.getPlayerStorage().getCharacterByName(username);
                 if (target != null) {
                     if (target.addPoints(type, amount)) {
-                        player.dropMessage(target.getName() + " received " + amount + " " + type);
+                        player.dropMessage(6, target.getName() + " received " + amount + " " + type);
                     } else {
-                        player.dropMessage(String.format("'%s' is an invalid point type", type));
+                        player.dropMessage(5, String.format("'%s' is an invalid point type", type));
                     }
                 } else {
-                    player.dropMessage(String.format("Could not find any player named '%s'", username));
+                    player.dropMessage(5, String.format("Could not find any player named '%s'", username));
                 }
             } else {
-                player.dropMessage("Syntax: !gift <point_type> <username> <amount>");
+                player.dropMessage(5, "Syntax: !gift <point_type> <username> <amount>");
             }
         } else if (command.equals("kill", "killmap")) {
             if (command.equals("killmap")) {
@@ -651,7 +657,7 @@ public class GameMasterCommands {
                         }
                     }
                 } else {
-                    player.dropMessage("You must specify at least 1 username");
+                    player.dropMessage(5, "You must specify at least 1 username");
                 }
             }
         } else if (command.equals("dc")) {
@@ -668,7 +674,7 @@ public class GameMasterCommands {
                             }
                         }
                     } else {
-                        player.dropMessage("You must specify at least 1 username");
+                        player.dropMessage(5, "You must specify at least 1 username");
                     }
                 }
             }
@@ -693,7 +699,7 @@ public class GameMasterCommands {
                 } else if (sType.equalsIgnoreCase("cash")) {
                     iType = MapleInventoryType.CASH;
                 } else {
-                    player.dropMessage(String.format("'%s' is not a valid inventory type. Use: equip, use, setup, etc or cash", sType));
+                    player.dropMessage(5, String.format("'%s' is not a valid inventory type. Use: equip, use, setup, etc or cash", sType));
                     return;
                 }
                 MapleInventory inventory = player.getInventory(iType);
@@ -737,13 +743,13 @@ public class GameMasterCommands {
                 }
                 int hLevel = a1.intValue();
                 if (hLevel < 1 || hLevel > player.gmLevel()) {
-                    player.dropMessage("You may only enter a value between " + 1 + " and " + player.gmLevel());
+                    player.dropMessage(6, "You may only enter a value between " + 1 + " and " + player.gmLevel());
                     return;
                 }
                 player.setHidingLevel(hLevel);
-                player.dropMessage("Your hidden value is now " + player.getHidingLevel());
+                player.dropMessage(6, "Your hidden value is now " + player.getHidingLevel());
             } else {
-                player.dropMessage("Your hiding value is " + player.getHidingLevel());
+                player.dropMessage(6, "Your hiding value is " + player.getHidingLevel());
             }
         } else if (command.equals("maxstats")) {
             player.setStr(32767);
@@ -782,9 +788,9 @@ public class GameMasterCommands {
                             target.giveDebuff(MapleDisease.SEAL, skill);
                         }
                     }
-                    player.dropMessage("Done");
+                    player.dropMessage(6, "Done");
                 } else {
-                    player.dropMessage("You must specify at least 1 username");
+                    player.dropMessage(5, "You must specify at least 1 username");
                 }
             }
         } else if (command.equals("reverse", "reversemap", "rev", "revm")) {
@@ -816,11 +822,166 @@ public class GameMasterCommands {
                 }
             } else {
                 if (map) {
-                    player.dropMessage("Syntax: !" + command.getName() +  " <mode>");
+                    player.dropMessage(5, "Syntax: !" + command.getName() + " <mode>");
                 } else {
-                    player.dropMessage("Syntax: !"+ command.getName() + " <mode> <usernames>");
+                    player.dropMessage(5, "Syntax: !" + command.getName() + " <mode> <usernames>");
                 }
             }
+        } else if (command.equals("seduce", "sed", "seducem", "sedm")) {
+            boolean map = command.equals("sedm", "seducem");
+            if (args.length() > 0) {
+                String direction = args.get(0);
+                int level;
+                if (direction.equalsIgnoreCase("right")) {
+                    level = 2;
+                } else if (direction.equalsIgnoreCase("down")) {
+                    level = 7;
+                } else if (direction.equalsIgnoreCase("left")) {
+                    level = 1;
+                } else {
+                    player.dropMessage(5, "The only seduces available are: right, left and down");
+                    return;
+                }
+                MobSkill skill = MobSkillFactory.getMobSkill(128, level);
+                if (!map) { // !<cmd_name> <direction> <usernames>
+                    if (args.length() > 1) {
+                        for (int i = 1; i < args.length(); i++) {
+                            String username = args.get(i);
+                            MapleCharacter target = ch.getPlayerStorage().getCharacterByName(username);
+                            if (target != null) {
+                                target.giveDebuff(MapleDisease.SEDUCE, skill);
+                            }
+                        }
+                    } else {
+                        player.dropMessage(5, "Syntax: !" + command.getName() + " <left/right/down> <usernames>");
+                    }
+                } else { // !<cmd_name> <direction>
+                    for (MapleCharacter players : player.getMap().getCharacters()) {
+                        players.giveDebuff(MapleDisease.SEDUCE, skill);
+                    }
+                }
+            } else {
+                player.dropMessage(5, "Syntax: !" + command.getName() + " <direction>" + (!map ? " <usernames>" : ""));
+            }
+        } else if (command.equals("online")) {
+            for (Channel channel : client.getWorldServer().getChannels()) {
+                StringBuilder sb = new StringBuilder();
+                for (MapleCharacter players : channel.getPlayerStorage().getAllCharacters()) {
+                    if (!players.isGM() || players.getHidingLevel() <= player.getHidingLevel()) {
+                        sb.append(players.getName()).append(" ");
+                    }
+                }
+                player.dropMessage(String.format("Channel(%d): %s", channel.getId(), sb.toString()));
+            }
+        } else if (command.equals("!!")) {
+            if (args.length() > 0) {
+                String message = args.concatFrom(0);
+                client.getWorldServer().broadcastGMPacket(MaplePacketCreator.serverNotice(2, String.format("[GM] %s : %s", player.getName(), message)));
+            } else {
+                player.dropMessage(5, "You must specify a message");
+            }
+        } else if (command.equals("partycheck")) {
+            ArrayList<Integer> parties = new ArrayList<>();
+            ArrayList<String> solo = new ArrayList<>(); // character not in a party
+            // get parties and solo players
+            for (MapleCharacter players : player.getMap().getCharacters()) {
+                if (players.getParty() != null) {
+                    if (players.getParty().getLeader().getId() == players.getId() && !parties.contains(players.getPartyId())) {
+                        parties.add(players.getPartyId());
+                    }
+                } else {
+                    solo.add(players.getName());
+                }
+            }
+            // get characters from each party
+            for (int partyId : parties) {
+                StringBuilder sb = new StringBuilder();
+                MapleParty party = client.getWorldServer().getParty(partyId);
+                sb.append(party.getLeader().getName()).append("'s members: ");
+                for (MaplePartyCharacter members : party.getMembers()) {
+                    if (members.getId() != party.getLeader().getId()) {
+                        sb.append(members.getName()).append(", ");
+                    }
+                }
+                if (party.getMembers().size() > 1) {
+                    sb.setLength(sb.length() - 2);
+                }
+                player.dropMessage(sb.toString());
+            }
+            player.dropMessage("Characters NOT in party:");
+            player.dropMessage(solo.toString());
+        } else if (command.equals("characters")) {
+            if (args.length() == 1) {
+                String username = args.get(0);
+                ArrayList<String> usernames = new ArrayList<>();
+                // will this statement work? who knows
+                try (PreparedStatement ps = DatabaseConnection.getConnection().prepareStatement("select name from characters where account id = (select accountid from characters where name = ?)")) {
+                    ps.setString(1, username);
+                    try (ResultSet rs = ps.executeQuery()) {
+                        if (rs.isBeforeFirst()) {
+                            while (rs.next()) {
+                                usernames.add(rs.getString("name"));
+                            }
+                        } else {
+                            player.dropMessage(5, String.format("Could not find any player named '%s'", username));
+                            return;
+                        }
+                    }
+                    StringBuilder sb = new StringBuilder();
+                    sb.append("characters: ");
+                    usernames.forEach(s -> sb.append(s).append(", "));
+                    sb.setLength(sb.length() - 2);
+                    player.dropMessage(sb.toString());
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                    player.dropMessage(5, "An error occurred");
+                }
+            } else {
+                player.dropMessage(5, "You must specify a username");
+            }
+        } else if (command.equals("ak")) {
+            if (args.length() == 1) {
+                if (args.get(0).equalsIgnoreCase("reset")) {
+                    player.getMap().setAutoKillPosition(null);
+                    player.dropMessage(6, "Auto kill position removed");
+                } else {
+                    player.dropMessage(5, "Use < !ak reset > to remove auto kill");
+                }
+                return;
+            }
+            player.getMap().setAutoKillPosition(player.getPosition());
+            Point ak = player.getMap().getAutoKillPosition();
+            player.dropMessage(6, String.format("Auto kill position set to: x: %d, y: %d", ak.x, ak.y));
+        } else if (command.equals("bomb", "bombmap", "bombm")) {
+            MapleMonster bomb = MapleLifeFactory.getMonster(9300166);
+            if (bomb == null) {
+                player.dropMessage(5, "An error occured");
+                return;
+            }
+            int time = 2;
+            if (args.length() > 0) {
+                int i1;
+                String username = args.get(0);
+                MapleCharacter target = ch.getPlayerStorage().getCharacterByName(username);
+                if (target != null) {
+                    target.getMap().spawnMonsterOnGroudBelow(bomb, player.getPosition());
+                } else {
+                    player.dropMessage(5, String.format("Could not find any player named '%s'", username));
+                }
+                if ((i1 = args.findArg("-t")) > -1) {
+                    Long a1 = args.parseNumber(i1);
+                    if (a1 == null) {
+                        player.dropMessage(args.getError(i1));
+                        return;
+                    }
+                    time = a1.intValue();
+                }
+            }
+            if (time < 0) {
+                time = 0;
+            }
+            bomb.getStats().selfDestruction().setRemoveAfter(time * 1000);
+            player.getMap().spawnMonsterOnGroudBelow(bomb, player.getPosition());
         }
     }
 }

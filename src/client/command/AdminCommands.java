@@ -6,10 +6,15 @@ import client.inventory.Item;
 import client.inventory.MapleInventoryType;
 import client.inventory.MaplePet;
 import constants.ItemConstants;
+import net.server.Server;
 import net.server.channel.Channel;
+import net.server.world.World;
 import scripting.npc.NPCScriptManager;
+import scripting.portal.PortalScriptManager;
+import scripting.reactor.ReactorScriptManager;
 import server.MapleInventoryManipulator;
 import server.MapleItemInformationProvider;
+import server.MapleShopFactory;
 import server.life.MapleLifeFactory;
 import server.life.MapleMonster;
 import server.life.MapleNPC;
@@ -101,13 +106,13 @@ public class AdminCommands {
                 for (int i = 0; i < amount; i++) {
                     MapleMonster monster = MapleLifeFactory.getMonster(monsterId);
                     if (monster == null) {
-                        player.dropMessage(String.format("'%d' is not a valid monster", monsterId));
+                        player.dropMessage(5, String.format("'%d' is not a valid monster", monsterId));
                         return;
                     }
                     player.getMap().spawnMonsterOnGroudBelow(monster, player.getPosition());
                 }
             } else {
-                player.dropMessage("You must specify a monster ID");
+                player.dropMessage(5, "You must specify a monster ID");
             }
         } else if (command.equals("npc", "pnpc")) {
             if (args.length() == 1) {
@@ -149,11 +154,12 @@ public class AdminCommands {
                         ps.setInt(11, 1);
                         ps.executeUpdate();
                     } catch (SQLException e) {
-                        player.dropMessage("An error occured while trying to insert this NPC in the database: " + e.getMessage());
+                        e.printStackTrace();
+                        player.dropMessage(5, "An error occurred");
                     }
                 }
             } else {
-                player.dropMessage("You must specify an NPC ID");
+                player.dropMessage(5, "You must specify an NPC ID");
             }
         } else if (command.equals("pmob")) {
             if (args.length() > 0) {
@@ -193,16 +199,16 @@ public class AdminCommands {
                             ps.setInt(11, 0);
                             ps.executeUpdate();
                         } catch (SQLException e) {
-                            player.dropMessage("An error occurred while trying to insert the mob into the database: " + e.getMessage());
+                            player.dropMessage(5, "An error occurred while trying to insert the mob into the database: " + e.getMessage());
                         }
                         player.getMap().addMonsterSpawn(mob, 0, -1);
                     } else {
-                        player.dropMessage(String.format("'%s' is an invalid monster", args.get(0)));
+                        player.dropMessage(5, String.format("'%s' is an invalid monster", args.get(0)));
                         return;
                     }
                 }
             } else {
-                player.dropMessage("You must specify a monster ID");
+                player.dropMessage(5, "You must specify a monster ID");
             }
         } else if (command.equals("playernpc")) {
             if (args.length() == 2) {
@@ -219,13 +225,13 @@ public class AdminCommands {
                     if (npcId >= 9901000 && npcId <= 9901909) {
                         player.playerNPC(target, npcId);
                     } else {
-                        player.dropMessage("Player NPCs ID must be between 9901000 and 9901909");
+                        player.dropMessage(5, "Player NPCs ID must be between 9901000 and 9901909");
                     }
                 } else {
-                    player.dropMessage(String.format("Could not find any player named '%s'", username));
+                    player.dropMessage(5, String.format("Could not find any player named '%s'", username));
                 }
             } else {
-                player.dropMessage("Syntax: !playernpc <npcId> <username>");
+                player.dropMessage(5, "Syntax: !playernpc <npcId> <username>");
             }
         } else if (command.equals("pos")) {
             player.dropMessage(player.getPosition().toString());
@@ -253,8 +259,24 @@ public class AdminCommands {
                 int npcId = a1.intValue();
                 NPCScriptManager.getInstance().start(client, npcId, player);
             } else {
-                player.dropMessage("You must specify an NPC ID");
+                player.dropMessage(5, "You must specify an NPC ID");
             }
+        } else if (command.equals("reloadevents")) {
+            for (World worlds : Server.getInstance().getWorlds()) {
+                for (Channel channels : worlds.getChannels()) {
+                    channels.reloadEventScriptManager();
+                }
+            }
+            player.dropMessage(6, "Event script reloaded");
+        } else if (command.equals("reloadportals")) {
+            PortalScriptManager.getInstance().reloadPortalScripts();
+            player.dropMessage(6, "Portal scripts reloaded");
+        } else if (command.equals("reloadreactordrops")) {
+            ReactorScriptManager.getInstance().clearDrops();
+            player.dropMessage(6, "Reactor drops reloaded");
+        } else if (command.equals("reloadshosps")) {
+            MapleShopFactory.getInstance().reloadShops();
+            player.dropMessage(6, "Shops reloaded");
         }
     }
 }

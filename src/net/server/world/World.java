@@ -611,6 +611,14 @@ public class World {
         }
     }
 
+    public void broadcastGMPacket(byte[] data) {
+        for (MapleCharacter players : players.getAllCharacters()) {
+            if (players.isGM()) {
+                players.announce(data);
+            }
+        }
+    }
+
     public final void shutdown() {
         for (Channel ch : getChannels()) {
             ch.shutdown();

@@ -124,8 +124,7 @@ public class MapleMap {
 	private ScheduledFuture<?> mapMonitor = null;
 	private Pair<Integer, String> timeMob = null;
 	private short mobInterval = 5000;
-	private boolean allowSummons = true; // All maps should have this true at
-											// the beginning
+	private boolean allowSummons = true; // All maps should have this true at the beginning
 	// HPQ
 	private int riceCakes = 0;
 	private int bunnyDamage = 0;
@@ -139,6 +138,8 @@ public class MapleMap {
 	private final WriteLock chrWLock;
 	private final ReadLock objectRLock;
 	private final WriteLock objectWLock;
+
+	private Point autoKillPosition = null;
 
 	public MapleMap(int mapid, int world, int channel, int returnMapId, float monsterRate) {
 		this.mapid = mapid;
@@ -2559,4 +2560,11 @@ public class MapleMap {
         return character;
 }
 
+	public Point getAutoKillPosition() {
+		return autoKillPosition;
+	}
+
+	public void setAutoKillPosition(Point autoKillPosition) {
+		this.autoKillPosition = autoKillPosition;
+	}
 }

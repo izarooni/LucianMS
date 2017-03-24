@@ -198,5 +198,22 @@ public class CommandWorker {
                 return null;
             }
         }
+
+        /**
+         * Find an argument in the array of args and return the index of the argument + 1
+         *
+         * @param n the argument to search for
+         * @return the index above the found argument
+         */
+        public int findArg(String n) {
+            for (int i = 0; i < args.length; i++) {
+                if (args[i].equalsIgnoreCase(n)) {
+                    if (i + 1 < args.length) {
+                        return i + 1;
+                    }
+                }
+            }
+            return -1;
+        }
     }
 }
