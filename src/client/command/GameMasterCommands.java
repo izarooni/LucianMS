@@ -37,6 +37,7 @@ public class GameMasterCommands {
             commands.add("!commands - another way to see the commands");
             commands.add("!dc <player> | map - DC a player or the entire map");
             commands.add("!warp <mapid> - Warp to the specified map, by ID");
+            commands.add("!warphere <player> - warp a player to your map");
             commands.add("!goto <mapid> - another way to warp to a map by ID");
             commands.add("!event help - view all the event commands");
             commands.add("!event winner remove <name> <OPT=amount> - remove a winner from the list, taking away all their possible points.");
@@ -53,6 +54,7 @@ public class GameMasterCommands {
             commands.add("!heal <OPT=player> - Heal yourself, or a player.");
             commands.add("!notice <message> - Send a notice to the server");
             commands.add("!mute <player> - cancel a player from chatting");
+            commands.add("!clock <time> - add a clock timer for an amount of seconds");
             commands.add("!tag - tag nearby players, range is determined by tagrange");
             commands.add("!tagrange - set the range for players to tag");
             commands.add("!revive <player|map> - Revive a player, or the entire map.");
@@ -60,6 +62,8 @@ public class GameMasterCommands {
             commands.add("!dc <player|map> - Disconnect a player from the game, or the entire map");
             commands.add("!reloadmap - Reload the map");
             commands.add("!killall - Kill all the monsters on the map");
+            commands.add("!maxstats - max your stats");
+            commands.add("!maxskills - max your skills");
             commands.forEach(player::dropMessage);
             commands.clear();
         } else if (command.equals("dc")) {
@@ -147,6 +151,46 @@ public class GameMasterCommands {
             } else {
                 player.dropMessage("You must specify a map ID");
             }
+        } else if(command.equals("warpmap")) {
+        	if(args.length() == 1) {
+        		try {
+        			int warpTo = Integer.parseInt(args.get(0));
+        			
+        			player.getMap().getCharacters().forEach((target) -> {
+        				target.changeMap(warpTo);
+        				target.dropMessage(6, String.format("You have been warped to %s by %s", target.getMap().getStreetName(), player.getName()));
+        			});
+        			player.dropMessage("You have warped the map to " + player.getMap().getStreetName());
+        		} catch(NumberFormatException e) {
+        			player.dropMessage(5, "Please insert a number.");
+        		}
+        	}
+        } else if(command.equals("clock")) {
+        	if(args.length() == 1) {
+        		try {
+        	    int time = Integer.parseInt(args.get(0));
+        	    player.getMap().broadcastMessage(MaplePacketCreator.getClock(time));
+        	    player.dropMessage(6, String.format("You successfully added a timer with %s seconds", time));
+        	    } catch(NumberFormatException e) {
+        			player.dropMessage(5, "Please insert a time in seconds, in a numeric variable.");
+        		}
+        	} else {
+        		
+        	}
+        } else if(command.equals("warphere", "wh")) {
+        	if(args.length() >= 1) {
+        		String username = args.get(0);
+        		MapleCharacter target = ch.getPlayerStorage().getCharacterByName(username);
+        		if(target != null) {
+        			target.changeMap(player.getMapId());
+        			player.dropMessage(String.format("You moved %s to your current map.", username));
+        			target.dropMessage(String.format("You have been moved to %s by %s", player.getMap().getStreetName(), player.getName()));
+        		} else {
+        			player.dropMessage(String.format("Could not find any player named '%s'", username));
+        		}
+        	} else {
+        		player.dropMessage(5, "You must specify a username");
+        	}
         } else if (command.equals("mute", "unmute")) {
             if (args.length() == 1) {
                 boolean mute = command.equals("mute");
