@@ -68,7 +68,7 @@ public class PlayerCommands {
             for (Channel channel : client.getWorldServer().getChannels()) {
                 StringBuilder sb = new StringBuilder();
                 for (MapleCharacter players : channel.getPlayerStorage().getAllCharacters()) {
-                    if (!players.isGM()) {
+                    if (!players.isGM() && player != null && player.getName() != "null") {
                         sb.append(players.getName()).append(" ");
                     }
                 }
