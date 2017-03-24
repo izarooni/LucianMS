@@ -1514,7 +1514,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
 	}
 
 	public void dropMessage(String message) {
-		dropMessage(0, message);
+		dropMessage(6, message);
 	}
 
 	public void dropMessage(int type, String message) {

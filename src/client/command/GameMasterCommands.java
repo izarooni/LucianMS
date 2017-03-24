@@ -43,6 +43,7 @@ public class GameMasterCommands {
             commands.add("!commands - another way to see the commands");
             commands.add("!dc <player> | map - DC a player or the entire map");
             commands.add("!warp <mapid> - Warp to the specified map, by ID");
+            commands.add("!warphere <player> - warp a player to your map");
             commands.add("!goto <mapid> - another way to warp to a map by ID");
             commands.add("!event help - view all the event commands");
             commands.add("!event winner remove <name> <OPT=amount> - remove a winner from the list, taking away all their possible points.");
@@ -59,6 +60,7 @@ public class GameMasterCommands {
             commands.add("!heal <OPT=player> - Heal yourself, or a player.");
             commands.add("!notice <message> - Send a notice to the server");
             commands.add("!mute <player> - cancel a player from chatting");
+            commands.add("!clock <time> - add a clock timer for an amount of seconds");
             commands.add("!tag - tag nearby players, range is determined by tagrange");
             commands.add("!tagrange - set the range for players to tag");
             commands.add("!revive <player|map> - Revive a player, or the entire map.");
@@ -66,6 +68,8 @@ public class GameMasterCommands {
             commands.add("!dc <player|map> - Disconnect a player from the game, or the entire map");
             commands.add("!reloadmap - Reload the map");
             commands.add("!killall - Kill all the monsters on the map");
+            commands.add("!maxstats - max your stats");
+            commands.add("!maxskills - max your skills");
             commands.forEach(player::dropMessage);
             commands.clear();
         } else if (command.equals("dc")) {
@@ -152,6 +156,20 @@ public class GameMasterCommands {
                 }
             } else {
                 player.dropMessage(5, "You must specify a map ID");
+            }
+        } else if (command.equals("clock")) {
+            if (args.length() == 1) {
+                Long a1 = args.parseNumber(0);
+                if (a1 == null) {
+                    player.dropMessage(5, args.getError(0));
+                    return;
+                }
+                int time = a1.intValue();
+                player.getMap().broadcastMessage(MaplePacketCreator.getClock(time));
+                player.dropMessage(6, String.format("You successfully added a timer with %s seconds", time));
+                player.dropMessage(5, "Please insert a time in seconds, in a numeric variable.");
+            } else {
+                player.dropMessage(5, "You must specify a time");
             }
         } else if (command.equals("mute", "unmute")) {
             if (args.length() == 1) {
