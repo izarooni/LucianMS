@@ -29,6 +29,7 @@ public interface MaplePortal {
     public final int DOOR_PORTAL = 6;
     public static boolean OPEN = true;
     public static boolean CLOSED = false;
+    
     int getType();
     int getId();
     Point getPosition();
@@ -41,5 +42,7 @@ public interface MaplePortal {
     int getTargetMapId();
     void enterPortal(MapleClient c);
     void setPortalState(boolean state);
+    void setDisabled(boolean disabled);
+    boolean isDisabled();
     boolean getPortalState();
 }
