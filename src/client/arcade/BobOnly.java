@@ -1,6 +1,7 @@
 package client.arcade;
 
 import client.MapleCharacter;
+import server.MapleInventoryManipulator;
 import tools.MaplePacketCreator;
 
 public class BobOnly extends Arcade {
@@ -14,6 +15,7 @@ public class BobOnly extends Arcade {
 		super(player);
 		this.mapId = 910100000;
 		this.arcadeId = 1;
+		this.rewardPerKill = 0.40;
 	}
 
 	@Override
@@ -27,6 +29,7 @@ public class BobOnly extends Arcade {
 			} else {
 				player.dropMessage(5, "[Game Over] Your highscore for Bob Only remains at " + Arcade.getHighscore(arcadeId, player));
 			}
+			MapleInventoryManipulator.addById(player.getClient(), itemReward, (short) rewardPerKill);
 			respawnManager = null;
 			player.setArcade(null);
 		}

@@ -1,6 +1,7 @@
 package client.arcade;
 
 import client.MapleCharacter;
+import server.MapleInventoryManipulator;
 import tools.MaplePacketCreator;
 
 public class CrowOnly extends Arcade {
@@ -14,6 +15,7 @@ public class CrowOnly extends Arcade {
 		super(player);
 		this.mapId = 677000008;
 		this.arcadeId = 3;
+		this.rewardPerKill = 0.1;
 	}
 
 	@Override
@@ -25,6 +27,7 @@ public class CrowOnly extends Arcade {
 		} else {
 			player.dropMessage(5, "[Game Over] Your highscore for Crow Only remains at " + Arcade.getHighscore(arcadeId, player));
 		}
+		MapleInventoryManipulator.addById(player.getClient(), itemReward, (short) rewardPerKill);
 		respawnManager = null;
 		player.setArcade(null);
 		return true;
