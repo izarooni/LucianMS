@@ -24,7 +24,7 @@ public class AutoEventManager {
 	public void runLater(int eventTime) {
 		TimerManager.getInstance().schedule(() -> {
 			if(!running) {
-				if(curr >= events.size()) curr = 0; else ++curr;
+				if(curr >= events.size()-1) curr = 0; else ++curr;
 				events.get(curr).onStart();
 				runEvent(eventTime);
 				running = true;
@@ -37,7 +37,7 @@ public class AutoEventManager {
 		TimerManager.getInstance().schedule(() -> {
 			if(running) {
 				// if it's not running, you did something wrong.. anders.
-				if(curr >= events.size()) curr = 0; else ++curr;
+				if(curr >= events.size()-1) curr = 0; else ++curr;
 				events.get(curr).onEnd();
 				players.clear();
 				runLater(20);
