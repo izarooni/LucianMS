@@ -17,6 +17,7 @@ public class TestEvent implements AutoEvent {
 		if(!map.hasClock()) {
 			for(MapleCharacter playerOnMap : map.getCharacters()) {
 				playerOnMap.announce(MaplePacketCreator.getClock(20 * 60));
+				playerOnMap.getMap().spawnMonsterOnGroudBelow(MapleLifeFactory.getMonster(8500002), playerOnMap.getPosition());
 			}
 		
 		}
@@ -27,7 +28,6 @@ public class TestEvent implements AutoEvent {
 		MapleMap map = Server.getInstance().getWorld(0).getChannel(channel).getMapFactory().getMap(eventMap);
 		if(!map.hasClock()) {
 			for(MapleCharacter playerOnMap : map.getCharacters()) {
-				playerOnMap.getMap().spawnMonsterOnGroudBelow(MapleLifeFactory.getMonster(8500002), playerOnMap.getPosition());
 				playerOnMap.dropMessage(6, "The event has ended");
 			}
 		
