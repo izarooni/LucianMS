@@ -27,7 +27,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 
 /**
- * @author izarooni
+ * @author izarooni, lucasdieswagger
  */
 public class AdminCommands {
 

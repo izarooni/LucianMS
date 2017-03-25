@@ -12,7 +12,7 @@ import java.util.ArrayList;
 import java.util.WeakHashMap;
 
 /**
- * @author izarooni
+ * @author izarooni, lucasdieswagger
  */
 public class PlayerCommands {
 
@@ -55,7 +55,7 @@ public class PlayerCommands {
             player.dropMessage(6, "Vote Points: " + player.getClient().getVotePoints());
             player.dropMessage("Event points: " + player.getEventPoints());
             player.dropMessage(6, "Donation points: " + 0);
-            player.dropMessage(6, "Shadow points: " + 0);
+            //player.dropMessage(6, "Shadow points: " + 0);
         } else if (command.equals("dispose")) {
             NPCScriptManager.getInstance().dispose(client);
             player.getClient().removeClickedNPC();
