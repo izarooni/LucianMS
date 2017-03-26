@@ -27,10 +27,13 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 
 /**
- * @author izarooni
+ * @author izarooni, lucasdieswagger
  */
 public class GameMasterCommands {
 
+	// TODO correct command argumentation, at every type of commands
+	// TODO correct coloring depending on if it is an error message or not.
+	
     public static int tagRange = 5000;
 
     public static void execute(MapleClient client, CommandWorker.Command command, CommandWorker.CommandArgs args) {

@@ -4,6 +4,7 @@ import java.awt.Point;
 
 import client.MapleCharacter;
 import client.MapleStat;
+import server.MapleInventoryManipulator;
 import server.life.MapleLifeFactory;
 import server.life.MapleMonster;
 import tools.MaplePacketCreator;
@@ -20,7 +21,8 @@ public class BalrogKiller extends Arcade {
 		super(player);
 		this.arcadeId = 4;
 		this.mapId = 677000003;
-		// TODO Auto-generated constructor stub
+		this.rewardPerKill = 0.9;
+		this.itemReward = 4310149;
 	}
 
 	@Override
@@ -31,12 +33,14 @@ public class BalrogKiller extends Arcade {
 		player.updateSingleStat(MapleStat.EXP, currExp);
 		player.updateSingleStat(MapleStat.HP, player.getMaxHp());
 		player.changeMap(910000000, 0);
+		
 		player.announce(MaplePacketCreator.serverNotice(1, "Game Over!"));
 		if(saveData(highscore)) {
 			player.dropMessage(5, "[Game Over] Your new highscore for Balrog Killer is " + highscore);
 		} else {
 			player.dropMessage(5, "[Game Over] Your highscore for Balrog Killer remains at " + Arcade.getHighscore(arcadeId, player));
 		}
+		MapleInventoryManipulator.addById(player.getClient(), itemReward, (short) rewardPerKill);
 		respawnManager = null;
 		player.setArcade(null);
 		return true;

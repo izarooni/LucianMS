@@ -20,10 +20,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 package client.autoban;
 
 import client.MapleCharacter;
-import net.server.Server;
 import tools.FilePrinter;
 import tools.MapleLogger;
-import tools.MaplePacketCreator;
 
 /**
  *
@@ -84,7 +82,7 @@ public enum AutobanFactory {
 		if (chr != null && MapleLogger.ignored.contains(chr.getName())){
 			return;
 		}
-		Server.getInstance().broadcastGMMessage(MaplePacketCreator.sendYellowTip((chr != null ? MapleCharacter.makeMapleReadable(chr.getName()) : "") + " caused " + this.name() + " " + reason));
+		//Server.getInstance().broadcastGMMessage(MaplePacketCreator.sendYellowTip((chr != null ? MapleCharacter.makeMapleReadable(chr.getName()) : "") + " caused " + this.name() + " " + reason));
 	}
 	
 

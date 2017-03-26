@@ -3,6 +3,7 @@ package client.arcade;
 import java.awt.Point;
 
 import client.MapleCharacter;
+import server.MapleInventoryManipulator;
 import server.life.MapleLifeFactory;
 import server.life.MapleMonster;
 import tools.MaplePacketCreator;
@@ -28,6 +29,8 @@ public class BoxSpider extends Arcade {
 		this.mapId = 130000101;
 		this.arcadeId = 2;
 		this.platform = new int[]{88, -210, -569, -897, -1224};
+		this.rewardPerKill = 0.15;
+		this.itemReward = 4310149;
 		
 	}
 
@@ -43,6 +46,7 @@ public class BoxSpider extends Arcade {
 			player.dropMessage(5, "[Game Over] Your highscore for Box Spider remains at " + Arcade.getHighscore(arcadeId, player));
 		}
 		}
+		MapleInventoryManipulator.addById(player.getClient(), itemReward, (short) rewardPerKill);
 		respawnManager = null;
 		player.setArcade(null);
 		return true;

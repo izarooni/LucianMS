@@ -38,6 +38,7 @@ public class MapleGenericPortal implements MaplePortal {
     private int id;
     private String scriptName;
     private boolean portalState;
+    private boolean disabled = false;
 
     public MapleGenericPortal(int type) {
         this.type = type;
@@ -48,7 +49,17 @@ public class MapleGenericPortal implements MaplePortal {
         return id;
     }
 
-    public void setId(int id) {
+    @Override
+    public boolean isDisabled() {
+		return disabled;
+	}
+
+    @Override
+	public void setDisabled(boolean disabled) {
+		this.disabled = disabled;
+	}
+
+	public void setId(int id) {
         this.id = id;
     }
 
@@ -118,7 +129,7 @@ public class MapleGenericPortal implements MaplePortal {
         boolean changed = false;
         if (getScriptName() != null) {
             changed = PortalScriptManager.getInstance().executePortalScript(this, c);
-        } else if (getTargetMapId() != 999999999) {
+        } else if (getTargetMapId() != 999999999 && !disabled) {
             MapleMap to = c.getPlayer().getEventInstance() == null ? c.getChannelServer().getMapFactory().getMap(getTargetMapId()) : c.getPlayer().getEventInstance().getMapInstance(getTargetMapId());
             MaplePortal pto = to.getPortal(getTarget());
             if (pto == null) {// fallback for missing portals - no real life case anymore - intresting for not implemented areas

@@ -12,10 +12,13 @@ import java.util.ArrayList;
 import java.util.WeakHashMap;
 
 /**
- * @author izarooni
+ * @author izarooni, lucasdieswagger
  */
 public class PlayerCommands {
 
+	// TODO correct command argumentation, at every type of commands
+	// TODO correct coloring depending on if it is an error message or not.
+	
     public static void execute(MapleClient client, CommandWorker.Command command, CommandWorker.CommandArgs args) {
         MapleCharacter player = client.getPlayer();
         Channel ch = client.getChannelServer();
@@ -55,7 +58,7 @@ public class PlayerCommands {
             player.dropMessage(6, "Vote Points: " + player.getClient().getVotePoints());
             player.dropMessage("Event points: " + player.getEventPoints());
             player.dropMessage(6, "Donation points: " + 0);
-            player.dropMessage(6, "Shadow points: " + 0);
+            //player.dropMessage(6, "Shadow points: " + 0);
         } else if (command.equals("dispose")) {
             NPCScriptManager.getInstance().dispose(client);
             player.getClient().removeClickedNPC();
@@ -68,7 +71,7 @@ public class PlayerCommands {
             for (Channel channel : client.getWorldServer().getChannels()) {
                 StringBuilder sb = new StringBuilder();
                 for (MapleCharacter players : channel.getPlayerStorage().getAllCharacters()) {
-                    if (!players.isGM()) {
+                    if (!players.isGM() && player != null && player.getName() != "null") {
                         sb.append(players.getName()).append(" ");
                     }
                 }
