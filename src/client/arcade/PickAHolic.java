@@ -15,6 +15,7 @@ public class PickAHolic extends Arcade {
 		this.arcadeId = 0;
 		this.mapId = 677000002;
 		this.rewardPerKill = 0.2;
+		this.itemReward = 4310149;
 		
 	}
 

@@ -16,6 +16,7 @@ public class CrowOnly extends Arcade {
 		this.mapId = 677000008;
 		this.arcadeId = 3;
 		this.rewardPerKill = 0.1;
+		this.itemReward = 4310149;
 	}
 
 	@Override

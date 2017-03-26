@@ -23,7 +23,7 @@ public abstract class Arcade {
 	protected int mapId, arcadeId, highscore;
 	protected ScheduledFuture<?> respawnManager;
 	protected double rewardPerKill;
-	protected int itemReward = 4310149;
+	protected int itemReward;
 	
 	public MapleCharacter player;
 	

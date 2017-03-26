@@ -22,6 +22,7 @@ public class BalrogKiller extends Arcade {
 		this.arcadeId = 4;
 		this.mapId = 677000003;
 		this.rewardPerKill = 0.9;
+		this.itemReward = 4310149;
 	}
 
 	@Override

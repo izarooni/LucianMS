@@ -30,6 +30,7 @@ public class BoxSpider extends Arcade {
 		this.arcadeId = 2;
 		this.platform = new int[]{88, -210, -569, -897, -1224};
 		this.rewardPerKill = 0.15;
+		this.itemReward = 4310149;
 		
 	}
 

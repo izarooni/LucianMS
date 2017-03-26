@@ -16,6 +16,7 @@ public class BobOnly extends Arcade {
 		this.mapId = 910100000;
 		this.arcadeId = 1;
 		this.rewardPerKill = 0.40;
+		this.itemReward = 4310149;
 	}
 
 	@Override
