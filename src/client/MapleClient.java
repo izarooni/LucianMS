@@ -90,6 +90,7 @@ public class MapleClient {
     private byte gender = -1;
     private boolean disconnecting = false;
     private int votePoints;
+    private int donationPoints;
     private int voteTime = -1;
     private long lastNpcClick;
     private long sessionId;
@@ -1241,7 +1242,41 @@ public class MapleClient {
         lastNpcClick = 0;
     }
 
-    private static class CharNameAndId {
+    public int getDonationPoints() {
+    	    int points = 0;
+            try {
+                PreparedStatement ps = DatabaseConnection.getConnection().prepareStatement("SELECT `donationpoints` FROM accounts WHERE id = ?");
+                ps.setInt(1, accId);
+                ResultSet rs = ps.executeQuery();
+
+                if (rs.next()) {
+                    points = rs.getInt("donationpoints");
+                }
+                ps.close();
+                rs.close();
+
+            } catch (SQLException e) {
+            }
+            donationPoints = points;
+            return donationPoints;
+        
+	}
+
+	public void setDonationPoints(int donationPoints) {
+		this.donationPoints = donationPoints;
+		try {
+            Connection con = DatabaseConnection.getConnection();
+            try (PreparedStatement ps = con.prepareStatement("UPDATE accounts SET donationpoints = ? WHERE id = ?")) {
+                ps.setInt(1, donationPoints);
+                ps.setInt(2, accId);
+                ps.executeUpdate();
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+	}
+
+	private static class CharNameAndId {
 
         public String name;
         public int id;
