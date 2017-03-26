@@ -4235,9 +4235,9 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
 					stmt.setInt(1, data.getId());
 					stmt.setInt(2, getId());
 					stmt.setInt(3, data.isCompleted() ? 1: 0);
-					ps.executeUpdate();
+					stmt.executeUpdate();
 					if (!data.isCompleted()) {
-						try (ResultSet rs = ps.getGeneratedKeys()) {
+						try (ResultSet rs = stmt.getGeneratedKeys()) {
 							if (rs.next()) {
 								try (PreparedStatement stmt2 = con.prepareStatement("insert into cquestdata (qtableid, monsterid, kills) values (?, ?, ?)")) {
 									for (Entry<Integer, Pair<Integer, Integer>> entry : data.getToKill().entrySet()) {

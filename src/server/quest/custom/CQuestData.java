@@ -63,10 +63,18 @@ public class CQuestData {
         return name;
     }
 
+    /**
+     * @return true if the quest is completed (i.e. completed and no longer in a state of "ongoing")
+     */
     public boolean isCompleted() {
         return completed;
     }
 
+    /**
+     * Should be set true if the quest is "submited" to the quest provider and the quest rewards are given
+     *
+     * @param completed true or false if the quest is completed
+     */
     public void setCompleted(boolean completed) {
         this.completed = completed;
     }
@@ -80,20 +88,17 @@ public class CQuestData {
     }
 
     /**
-     * Iterate each quest requirement and ensures all progress variables meet the paired requirement
+     * Iterate each quest requirement and ensures all progress variables meet the paired requirement variable
      *
      * @return true if all progress variables meet their requirement, false otherwise
      */
-    public boolean isFinished() {
-        // all pairs must meet their requirement
-        if (!toCollect.values().stream().allMatch(p -> p.right >= p.left)) {
-            // items can exceed their requirement
-            return false;
-        } else if (!toKill.values().stream().allMatch(p -> p.right.equals(p.left))) {
-            // kills have a capacity so progress should never exceed the requirement
-            return false;
-        }
-        return true;
+    public boolean checkRequirements() {
+        // all progress values must be larger than or equal to their paired requirement value
+        boolean tcc = toCollect.values().stream().allMatch(p -> p.right >= p.left); // toCollect check
+        boolean tkc = toKill.values().stream().allMatch(p -> p.right >= p.left); // toKill check
+        toCollect.setFinished(tcc);
+        toKill.setFinished(tkc);
+        return tcc && tkc;
     }
 
     /**

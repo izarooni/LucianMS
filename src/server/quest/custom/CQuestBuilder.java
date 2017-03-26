@@ -29,7 +29,7 @@ public class CQuestBuilder {
     }
 
     public static void loadAllQuests() {
-        File file = new File("test");
+        File file = new File("quests");
         File[] files = file.listFiles();
         if (files != null) {
             for (File qFile : files) {
@@ -41,6 +41,7 @@ public class CQuestBuilder {
                 }
             }
         }
+        System.out.println(quests.size() + " custom quests found and loaded");
     }
 
     /**

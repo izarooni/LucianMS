@@ -7,9 +7,11 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
+ * Pair of quest requirement variable (Pair.left) and progress variable (Pair.right)
+ *
  * @author izarooni
  */
-public class CQuestKillRequirement extends HashMap<Integer, Pair<Integer, Integer>> implements CQuestRequirement {
+public class CQuestKillRequirement extends CQuestRequirement {
 
     /**
      * Increment monster kill progress
@@ -17,22 +19,23 @@ public class CQuestKillRequirement extends HashMap<Integer, Pair<Integer, Intege
      * Progress will never decrease below 0 and will max at the requirement
      * </p>
      *
-     * @param monsterId ID of monster to progress
-     * @param amount    amount to increment progress
+     * @param left ID of monster to progress
+     * @param right    right to increment progress
      */
-    public void addToKill(int monsterId, int amount) {
-        Pair<Integer, Integer> d = get(monsterId);
+    public boolean incrementRequirement(int left, int right) {
+        Pair<Integer, Integer> d = get(left);
         if (d == null || d.right.equals(d.left)) {
-            return;
+            return false;
         }
-        if (d.right + amount > d.left) { // progress meets requirement
+        if (d.right + right > d.left) { // progress meets requirement
             // don't exceed requirement
             d.right = d.left;
-        } else if (d.right + amount < 0) { // subtract progress
+        } else if (d.right + right < 0) { // subtract progress
             // don't go negative
             d.right = 0;
         } else {
-            d.right += amount;
+            d.right += right;
         }
+        return d.right >= d.left;
     }
 }

@@ -886,8 +886,12 @@ public class GameMasterCommands {
                 StringBuilder sb = new StringBuilder();
                 for (MapleCharacter players : channel.getPlayerStorage().getAllCharacters()) {
                     if (!players.isGM() || players.getHidingLevel() <= player.getHidingLevel()) {
-                        sb.append(players.getName()).append(" ");
+                        sb.append(players.getName()).append(", ");
                     }
+                }
+                if (sb.length() > 2) {
+
+
                 }
                 player.dropMessage(String.format("Channel(%d): %s", channel.getId(), sb.toString()));
             }

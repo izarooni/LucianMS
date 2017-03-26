@@ -166,6 +166,7 @@ public class Server implements Runnable {
 		MapleQuest.loadAllQuest();
 		System.out.println("Quest loaded in " + ((System.currentTimeMillis() - timeToTake) / 1000.0) + " seconds\r\n");
 
+		timeToTake = System.currentTimeMillis();
 		CQuestBuilder.loadAllQuests();
 		System.out.println("Custom quests loaded in " + ((System.currentTimeMillis() - timeToTake) / 1000.0) + " seconds\r\n");
 
