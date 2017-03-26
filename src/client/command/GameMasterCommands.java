@@ -784,8 +784,8 @@ public class GameMasterCommands {
 
             player.setMaxHp(30000);
             player.setMaxMp(30000);
-            player.updateSingleStat(MapleStat.HP, 32767);
-            player.updateSingleStat(MapleStat.MP, 32767);
+            player.updateSingleStat(MapleStat.MAXHP, 32767);
+            player.updateSingleStat(MapleStat.MAXMP, 32767);
             player.setHpMp(30000);
 
             player.setFame(32767);
@@ -893,8 +893,7 @@ public class GameMasterCommands {
                     }
                 }
                 if (sb.length() > 2) {
-
-
+                    sb.setLength(sb.length() - 2);
                 }
                 player.dropMessage(String.format("Channel(%d): %s", channel.getId(), sb.toString()));
             }

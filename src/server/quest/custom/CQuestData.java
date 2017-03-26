@@ -1,9 +1,12 @@
 package server.quest.custom;
 
 import client.MapleCharacter;
+import client.inventory.MapleInventoryType;
+import constants.ItemConstants;
 import server.quest.custom.requirement.CQuestItemRequirement;
 import server.quest.custom.requirement.CQuestKillRequirement;
 import server.quest.custom.reward.CQuestReward;
+import tools.MaplePacketCreator;
 import tools.Pair;
 
 import java.util.*;
@@ -52,6 +55,27 @@ public class CQuestData {
         toCollect.forEach((e, v) -> ret.toCollect.put(e, new Pair<>(v.left, 0)));
 
         player.getCustomQuests().put(ret.getId(), ret);
+
+        // update progress of item requirements using the player's inventory
+        for (Integer i : toCollect.keySet()) {
+            MapleInventoryType iType = ItemConstants.getInventoryType(i);
+            if (iType != MapleInventoryType.UNDEFINED) {
+                int q = player.getInventory(iType).countById(i);
+                toCollect.get(i).right += q;
+            }
+        }
+        /*
+        For quests that have only item retrieval requirements, it's possible the player will already have
+        the needed items. It's only worth checking if there are no monster kill requirements because in this case,
+        the quest can be finished as soon as it's started
+         */
+        if (toKill.isEmpty() && !toCollect.isEmpty()) {
+            if (checkRequirements()) { // requirements are met
+                player.announce(MaplePacketCreator.getShowQuestCompletion(1));
+                player.announce(MaplePacketCreator.earnTitleMessage(String.format("Quest '%s' completed!", getName())));
+            }
+        }
+
         return ret;
     }
 

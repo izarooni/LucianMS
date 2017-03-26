@@ -32,5 +32,5 @@ public abstract class CQuestRequirement extends HashMap<Integer, Pair<Integer, I
         this.isFinished = finished;
     }
 
-    public abstract boolean incrementRequirement(int left, int right);
+    public abstract void incrementRequirement(int left, int right);
 }

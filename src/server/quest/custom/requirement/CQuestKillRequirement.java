@@ -22,10 +22,10 @@ public class CQuestKillRequirement extends CQuestRequirement {
      * @param left ID of monster to progress
      * @param right    right to increment progress
      */
-    public boolean incrementRequirement(int left, int right) {
+    public void incrementRequirement(int left, int right) {
         Pair<Integer, Integer> d = get(left);
         if (d == null || d.right.equals(d.left)) {
-            return false;
+            return;
         }
         if (d.right + right > d.left) { // progress meets requirement
             // don't exceed requirement
@@ -36,6 +36,5 @@ public class CQuestKillRequirement extends CQuestRequirement {
         } else {
             d.right += right;
         }
-        return d.right >= d.left;
     }
 }

@@ -483,17 +483,16 @@ public class MapleInventoryManipulator {
         for (CQuestData data : player.getCustomQuests().values()) {
             CQuestItemRequirement toLoot = data.getToCollect();
             if (!data.isCompleted()) {
-                if (toLoot.incrementRequirement(itemId, -quantity)) { // requirement is finished
-                    boolean checked = toLoot.isFinished(); // local bool before updating requirement checks; if false, quest is not finished
-                    if (data.checkRequirements() && !checked) { // update requirement checks - it is important that checkRequirements is executed first
-                    /*
-                    If checkRequirements returns true, the quest is finished. If checked is also false, then
-                    this is check means the quest is finished. The quest completion notification should only
-                    happen once unless a progress variable drops below the requirement
-                     */
-                        c.announce(MaplePacketCreator.getShowQuestCompletion(1));
-                        c.announce(MaplePacketCreator.earnTitleMessage(String.format("Quest '%s' completed!", data.getName())));
-                    }
+                toLoot.incrementRequirement(itemId, -quantity);
+                boolean checked = toLoot.isFinished(); // local bool before updating requirement checks; if false, quest is not finished
+                if (data.checkRequirements() && !checked) { // update requirement checks - it is important that checkRequirements is executed first
+                /*
+                If checkRequirements returns true, the quest is finished. If checked is also false, then
+                this is check means the quest is finished. The quest completion notification should only
+                happen once unless a progress variable drops below the requirement
+                 */
+                    c.announce(MaplePacketCreator.getShowQuestCompletion(1));
+                    c.announce(MaplePacketCreator.earnTitleMessage(String.format("Quest '%s' completed!", data.getName())));
                 }
                 Pair<Integer, Integer> p = toLoot.get(itemId);
                 if (p != null) {

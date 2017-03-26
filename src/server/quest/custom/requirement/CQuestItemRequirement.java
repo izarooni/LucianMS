@@ -22,10 +22,10 @@ public class CQuestItemRequirement extends CQuestRequirement {
      * @return true if the progress variable is larger than or equal to the requirement variable
      */
     @Override
-    public boolean incrementRequirement(int left, int right) {
+    public void incrementRequirement(int left, int right) {
         Pair<Integer, Integer> d = get(left);
         if (d == null) {
-            return false;
+            return;
         }
         if (d.right + right < 0) {
             // don't go negative
@@ -34,6 +34,5 @@ public class CQuestItemRequirement extends CQuestRequirement {
             // going over requirement is ok
             d.right += right;
         }
-        return d.right >= d.left;
     }
 }

@@ -3209,13 +3209,17 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
 				rs = ps.executeQuery();
 				while (rs.next()) {
 					CQuestData cQuest = CQuestBuilder.beginQuest(ret, rs.getInt("questid"));
-					try (PreparedStatement stmt = con.prepareStatement("select * from cquestdata where ctableid = ?")) {
-						stmt.setInt(1, rs.getInt("id"));
-						try (ResultSet res = stmt.executeQuery()) {
-							while (res.next()) {
-								cQuest.getToKill().get(rs.getInt("monsterid")).right = rs.getInt("kills");
+					if (rs.getInt("completed") == 0) {
+						try (PreparedStatement stmt = con.prepareStatement("select * from cquestdata where ctableid = ?")) {
+							stmt.setInt(1, rs.getInt("id"));
+							try (ResultSet res = stmt.executeQuery()) {
+								while (res.next()) {
+									cQuest.getToKill().get(rs.getInt("monsterid")).right = rs.getInt("kills");
+								}
 							}
 						}
+					} else {
+						cQuest.setCompleted(true);
 					}
 				}
 				rs.close();
@@ -4228,10 +4232,16 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
 			}
 			ps.executeBatch();
 			deleteWhereCharacterId(con, "DELETE FROM eventstats WHERE characterid = ?");
+			try (PreparedStatement stmt = con.prepareStatement("select count(*) as total from cquest where characterid = ?")) {
+				stmt.setInt(1, getId());
+				try (ResultSet rs = stmt.executeQuery()) {
+					if (rs.next() && rs.getInt("total") > 0) {
+						deleteWhereCharacterId(con, "delete from cquest where characterid = ?");
+						deleteWhereCharacterId(con, "delete from cquestdata where ctableid = (select id from cquest where characterid = ?)");
 
-			// I feel like I'm missing something...
-			deleteWhereCharacterId(con, "delete from cquest where characterid = ?");
-			deleteWhereCharacterId(con, "delete from cquestdata where ctableid = (select id from cquest where characterid = ?)");
+					}
+				}
+			}
 			try (PreparedStatement stmt = con.prepareStatement("insert into cquest (questid, characterid, completed) values (?, ?, ?)", PreparedStatement.RETURN_GENERATED_KEYS)) {
 				for (CQuestData data : customQuests.values()) {
 					stmt.setInt(1, data.getId());

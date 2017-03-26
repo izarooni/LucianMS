@@ -24,10 +24,10 @@ package constants;
 import client.inventory.MapleInventoryType;
 
 /**
- *
  * @author Jay Estrella
  */
 public final class ItemConstants {
+
     public final static int LOCK = 0x01;
     public final static int SPIKES = 0x02;
     public final static int COLD = 0x04;
@@ -74,10 +74,10 @@ public final class ItemConstants {
     }
 
     public static MapleInventoryType getInventoryType(final int itemId) {
-	final byte type = (byte) (itemId / 1000000);
-	if (type < 1 || type > 5) {
-	    return MapleInventoryType.UNDEFINED;
-	}
-	return MapleInventoryType.getByType(type);
+        final byte type = (byte) (itemId / 1000000);
+        if (type < 1 || type > 5) {
+            return MapleInventoryType.UNDEFINED;
+        }
+        return MapleInventoryType.getByType(type);
     }
 }

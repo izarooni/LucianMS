@@ -162,17 +162,16 @@ public final class ItemPickupHandler extends AbstractMaplePacketHandler {
                         for (CQuestData data : chr.getCustomQuests().values()) {
                             if (!data.isCompleted()) {
                                 CQuestItemRequirement toLoot = data.getToCollect();
-                                if (toLoot.incrementRequirement(mapitem.getItemId(), mapitem.getItem().getQuantity())) { // requirement is finished
-                                    boolean checked = toLoot.isFinished(); // local bool before updating requirement checks; if false, quest is not finished
-                                    if (data.checkRequirements() && !checked) { // update requirement checks - it is important that checkRequirements is executed first
-                                        /*
-                                        If checkRequirements returns true, the quest is finished. If checked is also false, then
-                                        this is check means the quest is finished. The quest completion notification should only
-                                        happen once unless a progress variable drops below the requirement
-                                         */
-                                        c.announce(MaplePacketCreator.getShowQuestCompletion(1));
-                                        c.announce(MaplePacketCreator.earnTitleMessage(String.format("Quest '%s' completed!", data.getName())));
-                                    }
+                                toLoot.incrementRequirement(mapitem.getItemId(), mapitem.getItem().getQuantity());
+                                boolean checked = toLoot.isFinished(); // local bool before updating requirement checks; if false, quest is not finished
+                                if (data.checkRequirements() && !checked) { // update requirement checks - it is important that checkRequirements is executed first
+                                    /*
+                                    If checkRequirements returns true, the quest is finished. If checked is also false, then
+                                    this is check means the quest is finished. The quest completion notification should only
+                                    happen once unless a progress variable drops below the requirement
+                                     */
+                                    c.announce(MaplePacketCreator.getShowQuestCompletion(1));
+                                    c.announce(MaplePacketCreator.earnTitleMessage(String.format("Quest '%s' completed!", data.getName())));
                                 }
                                 Pair<Integer, Integer> p = toLoot.get(mapitem.getItemId());
                                 if (p != null) {
