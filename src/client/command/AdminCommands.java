@@ -31,6 +31,9 @@ import java.util.ArrayList;
  */
 public class AdminCommands {
 
+	// TODO correct command argumentation, at every type of commands
+	// TODO correct coloring depending on if it is an error message or not.
+	
     public static void execute(MapleClient client, CommandWorker.Command command, CommandWorker.CommandArgs args) {
         MapleCharacter player = client.getPlayer();
         Channel ch = client.getChannelServer();
