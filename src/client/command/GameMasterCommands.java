@@ -73,6 +73,22 @@ public class GameMasterCommands {
             commands.add("!killall - Kill all the monsters on the map");
             commands.add("!maxstats - max your stats");
             commands.add("!maxskills - max your skills");
+            commands.add("!hide - change who can see you in hide");
+            commands.add("!clearinv <inventory> - clear all items in the specified inventory");
+            commands.add("!debuff <usernames/map> - remove disease from specified players, or everybody in the map");
+            commands.add("!lock <usernames> - prevent players from using skills");
+            commands.add("!lockm - prevent all players in the map from using skills");
+            commands.add("!reverse <usernames> - flip players movements");
+            commands.add("!reversemap - flip movement of all players in the map");
+            commands.add("!seduce <usernames> - force players to move in a direction");
+            commands.add("!seducemap - force all players in the map to move in a direction");
+            commands.add("!online - list all visible GMs and players online");
+            commands.add("!! <message> - sends a message to all GMs online");
+            commands.add("!partycheck - lists leader and members of all parties in the map");
+            commands.add("!characters <username> - lists other characters that belong to a player");
+            commands.add("!ak <OPT=reset> - set the autokill position of the map to your y-position");
+            commands.add("!bomb <OPT=username> - spawns a bomb at the specified player location, or your location if no name provided");
+            commands.add("!bombmap - spawns bombs everywhere");
             commands.forEach(player::dropMessage);
             commands.clear();
         } else if (command.equals("dc")) {
@@ -187,7 +203,7 @@ public class GameMasterCommands {
                     player.dropMessage(5, String.format("Could not find any player named '%s'", username));
                 }
             } else {
-                player.dropMessage(6, "you must specify a username");
+                player.dropMessage(5, "you must specify a username");
             }
         } else if (command.equals("job")) {
             if (args.length() == 1) {
@@ -753,7 +769,7 @@ public class GameMasterCommands {
                     }
                 }
             } else {
-                player.dropMessage(5, "Syntax: !clearslot <inventory_type>");
+                player.dropMessage(5, "Syntax: !clearinv <inventory_type>");
             }
         } else if (command.equals("hide")) {
             if (args.length() == 1) {
@@ -791,7 +807,22 @@ public class GameMasterCommands {
             player.setFame(32767);
             player.updateSingleStat(MapleStat.FAME, 32767);
         } else if (command.equals("debuff")) {
-            player.getMap().getCharacters().forEach(MapleCharacter::dispelDebuffs);
+            if (args.length() > 0) {
+                if (args.length() == 1 && args.get(0).equalsIgnoreCase("map")) {
+                    player.getMap().getCharacters().forEach(MapleCharacter::dispelDebuffs);
+                } else {
+                   for (int i = 0; i < args.length(); i++) {
+                        String username = args.get(i);
+                        MapleCharacter target = ch.getPlayerStorage().getCharacterByName(username);
+                       if (target != null) {
+                           target.dispelDebuffs();
+                       }
+                    }
+                    player.dropMessage(6, "Done!");
+                }
+            } else {
+                player.dropMessage(5, "Syntax: !debuff <usernames/map>");
+            }
         } else if (command.equals("lock", "lockm")) {
             MobSkill skill = MobSkillFactory.getMobSkill(120, 1);
             if (command.equals("lockm")) {
@@ -840,6 +871,7 @@ public class GameMasterCommands {
                             target.giveDebuff(MapleDisease.CONFUSE, skill);
                         }
                     }
+                    player.dropMessage(6, "Done!");
                 }
             } else {
                 if (map) {
@@ -873,6 +905,7 @@ public class GameMasterCommands {
                                 target.giveDebuff(MapleDisease.SEDUCE, skill);
                             }
                         }
+                        player.dropMessage(6, "Done!");
                     } else {
                         player.dropMessage(5, "Syntax: !" + command.getName() + " <left/right/down> <usernames>");
                     }
@@ -977,35 +1010,54 @@ public class GameMasterCommands {
             Point ak = player.getMap().getAutoKillPosition();
             player.dropMessage(6, String.format("Auto kill position set to: x: %d, y: %d", ak.x, ak.y));
         } else if (command.equals("bomb", "bombmap", "bombm")) {
-            MapleMonster bomb = MapleLifeFactory.getMonster(9300166);
-            if (bomb == null) {
-                player.dropMessage(5, "An error occured");
-                return;
-            }
-            int time = 2;
-            if (args.length() > 0) {
-                int i1;
-                String username = args.get(0);
-                MapleCharacter target = ch.getPlayerStorage().getCharacterByName(username);
-                if (target != null) {
-                    target.getMap().spawnMonsterOnGroudBelow(bomb, player.getPosition());
-                } else {
-                    player.dropMessage(5, String.format("Could not find any player named '%s'", username));
-                }
-                if ((i1 = args.findArg("-t")) > -1) {
-                    Long a1 = args.parseNumber(i1);
-                    if (a1 == null) {
-                        player.dropMessage(args.getError(i1));
+            if (command.equals("bombmap", "bombm")) {
+                for (MapleCharacter players : player.getMap().getCharacters()) {
+                    MapleMonster bomb = MapleLifeFactory.getMonster(9300166);
+                    if (bomb == null) {
+                        player.dropMessage(5, "An error occured");
                         return;
                     }
-                    time = a1.intValue();
+                    for (int i = -5; i < 5; i++) {
+                        Point pos = players.getPosition().getLocation();
+                        pos.x += (i * 30);
+                        player.getMap().spawnMonsterOnGroudBelow(bomb, pos);
+                    }
                 }
+            } else {
+                MapleMonster bomb = MapleLifeFactory.getMonster(9300166);
+                if (bomb == null) {
+                    player.dropMessage(5, "An error occured");
+                    return;
+                }
+                int time = 2;
+                MapleCharacter target;
+                if (args.length() > 0) {
+                    int i1;
+                    String username = args.get(0);
+                    target = ch.getPlayerStorage().getCharacterByName(username);
+                    if (target != null) {
+                        target.getMap().spawnMonsterOnGroudBelow(bomb, player.getPosition());
+                    } else {
+                        player.dropMessage(5, String.format("Could not find any player named '%s'", username));
+                        return;
+                    }
+                    if ((i1 = args.findArg("-t")) > -1) {
+                        Long a1 = args.parseNumber(i1);
+                        if (a1 == null) {
+                            player.dropMessage(args.getError(i1));
+                            return;
+                        }
+                        time = a1.intValue();
+                    }
+                } else {
+                    target = player;
+                }
+                if (time < 0) {
+                    time = 0;
+                }
+                bomb.getStats().selfDestruction().setRemoveAfter(time * 1000);
+                target.getMap().spawnMonsterOnGroudBelow(bomb, target.getPosition());
             }
-            if (time < 0) {
-                time = 0;
-            }
-            bomb.getStats().selfDestruction().setRemoveAfter(time * 1000);
-            player.getMap().spawnMonsterOnGroudBelow(bomb, player.getPosition());
         }
     }
 }

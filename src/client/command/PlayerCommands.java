@@ -16,9 +16,9 @@ import java.util.WeakHashMap;
  */
 public class PlayerCommands {
 
-	// TODO correct command argumentation, at every type of commands
-	// TODO correct coloring depending on if it is an error message or not.
-	
+    // TODO correct command argumentation, at every type of commands
+    // TODO correct coloring depending on if it is an error message or not.
+
     public static void execute(MapleClient client, CommandWorker.Command command, CommandWorker.CommandArgs args) {
         MapleCharacter player = client.getPlayer();
         Channel ch = client.getChannelServer();
@@ -43,9 +43,9 @@ public class PlayerCommands {
             commands.forEach(player::dropMessage);
             commands.clear();
         } else if (command.equals("rates")) {
-            player.dropMessage(5, "EXP rate: " + player.getExpRate());
-            player.dropMessage(5, "Drop rate: " + player.getDropRate());
-            player.dropMessage(5, "Meso rate: " + player.getMesoRate());
+            player.dropMessage(6, "EXP rate: " + player.getExpRate());
+            player.dropMessage(6, "Drop rate: " + player.getDropRate());
+            player.dropMessage(6, "Meso rate: " + player.getMesoRate());
         } else if (command.equals("joinevent", "leaveevent")) {
             Events events = Events.getInstance();
             if (command.equals("joinevent")) {
@@ -63,6 +63,7 @@ public class PlayerCommands {
             NPCScriptManager.getInstance().dispose(client);
             player.getClient().removeClickedNPC();
             player.announce(MaplePacketCreator.enableActions());
+            player.dropMessage(6, "Disposed!");
         } else if (command.equals("achievements")) {
             player.getClient().announce(MaplePacketCreator.getNPCTalk(9040004, (byte) 0, "These are the currently available achievements, blue means they are unlocked, red is locked. \r\n\r\n" + player.getAchievements().getAll(), "00 00", (byte) 3));
         } else if (command.equals("home")) {
@@ -71,11 +72,11 @@ public class PlayerCommands {
             for (Channel channel : client.getWorldServer().getChannels()) {
                 StringBuilder sb = new StringBuilder();
                 for (MapleCharacter players : channel.getPlayerStorage().getAllCharacters()) {
-                    if (!players.isGM() && player != null && player.getName() != "null") {
+                    if (!players.isGM()) {
                         sb.append(players.getName()).append(" ");
                     }
                 }
-                player.dropMessage(String.format("Channel(%d): %s", channel.getId(), sb.toString()));
+                player.dropMessage(6, String.format("Channel(%d): %s", channel.getId(), sb.toString()));
             }
         } else if (command.equals("go")) {
             WeakHashMap<String, Integer> maps = new WeakHashMap<>();
@@ -100,10 +101,8 @@ public class PlayerCommands {
                     MapleMap map = ch.getMapFactory().getMap(maps.get(name));
                     if (map != null) {
                         player.changeMap(map);
-                    } else {
-                        player.dropMessage("An error occurred");
+                        return;
                     }
-                    return;
                 }
             }
             StringBuilder sb = new StringBuilder();
@@ -111,28 +110,25 @@ public class PlayerCommands {
                 sb.append(s).append(", ");
             }
             sb.setLength(sb.length() - 2);
-            player.dropMessage(String.format("'%s' is an invalid map. Try one of the following:", args.get(0)));
-            player.dropMessage(sb.toString());
+            player.dropMessage(5, String.format("'%s' is an invalid map. Try one of the following:", args.get(0)));
+            player.dropMessage(5, sb.toString());
             maps.clear();
         } else if (command.equals("cleardrops")) {
             player.getMap().clearDrops();
         } else if (command.equals("save")) {
             player.saveToDB();
+            player.dropMessage(6, "Saved!");
         } else if (command.equals("callgm")) {
             if (args.length() > 0) {
                 String message = args.concatFrom(0);
                 if (!message.isEmpty()) {
-                    for (MapleCharacter players : client.getWorldServer().getPlayerStorage().getAllCharacters()) {
-                        if (players.isGM()) {
-                            players.dropMessage(String.format("[GM_CALL] %s : %s", player.getName(), message));
-                        }
-                    }
-                    player.dropMessage("Help message sent");
+                    client.getWorldServer().broadcastGMPacket(MaplePacketCreator.serverNotice(6, String.format("[GM_CALL] %s : %s", player.getName(), message)));
+                    player.dropMessage(6, "Help message sent");
                 } else {
-                    player.dropMessage("You must specify a message");
+                    player.dropMessage(5, "You must specify a message");
                 }
             } else {
-                player.dropMessage("You must specify a message");
+                player.dropMessage(5, "You must specify a message");
             }
         } else if (command.equals("style", "styler", "stylist")) {
             NPCScriptManager.getInstance().start(player.getClient(), 9900000, player);
@@ -142,16 +138,12 @@ public class PlayerCommands {
                 String message = args.concatFrom(1);
                 MapleCharacter target = client.getWorldServer().getPlayerStorage().getCharacterByName(username);
                 if (target != null) {
-                    for (MapleCharacter players : client.getWorldServer().getPlayerStorage().getAllCharacters()) {
-                        if (players.isGM()) {
-                            players.dropMessage(String.format("[REPORT] %s : %s", username, message));
-                        }
-                    }
+                    client.getWorldServer().broadcastGMPacket(MaplePacketCreator.serverNotice(6, String.format("[REPORT] %s : (%s) %s", player.getName(), username, message)));
                 } else {
-                    player.dropMessage(String.format("Could not find any player named '%s'", username));
+                    player.dropMessage(5, String.format("Could not find any player named '%s'", username));
                 }
             } else {
-                player.dropMessage("You must specify a username and message");
+                player.dropMessage(5, "You must specify a username and message");
             }
         }
     }

@@ -46,14 +46,17 @@ public class AdminCommands {
             commands.add("!pnpc <id> - spawn a permanent npc at your location");
             commands.add("!mob <id> <OPT=amount> - Another way to spawn a monster");
             commands.add("!pmob <id> <amount> - Spawn a permanent monster");
+            commands.add("!playernpc <player> <scriptId> - Create a player npc");
             commands.add("!pos - Show the position you're currently at");
             commands.add("!servermessage <message> change the server message");
             commands.add("!shout <message> - show a message on everyones screen with text you typed");
-            commands.add("!map - Show information about the map you're currently in");
-            commands.add("!testdialog <dialogid> - test a npc dialog");
-            commands.add("!playernpc <player> <scriptId> - Create a player npc");
+            commands.add("!whereami - Show information about the map you're currently in");
             commands.add("!onpc <npcId> - Remotely open any NPC");
             commands.add("!saveall - Save everything on the server");
+            commands.add("!reloadevents - Reload event scripts");
+            commands.add("!reloadportals - Reload portal scripts");
+            commands.add("!reloadreactordrops - Reload reactor drops");
+            commands.add("!reloadshops - Reload shop items");
             commands.forEach(player::dropMessage);
             commands.clear();
         } else if (command.equals("item", "drop")) {
@@ -86,7 +89,7 @@ public class AdminCommands {
                         toDrop = new Item(id, (byte) 0, quantity);
                     }
                     if (toDrop != null) {
-                        player.dropMessage(5, "Dropped the item on the floor.");
+                        player.dropMessage(6, "Dropped the item on the floor.");
                         player.getMap().spawnItemDrop(player, player, toDrop, player.getPosition(), true, true);
                     } else {
                         player.dropMessage(5, "That item does not exist");
@@ -248,7 +251,7 @@ public class AdminCommands {
                     channel.broadcastPacket(MaplePacketCreator.serverMessage(message));
                 }
             }
-        } else if (command.equals("map", "whereami")) {
+        } else if (command.equals("whereami")) {
             player.dropMessage(6, "Map id - " + player.getMapId());
             player.dropMessage(6, "Map name - " + player.getMap().getMapName());
             player.dropMessage(6, "Map street name - " + player.getMap().getStreetName());
@@ -264,6 +267,11 @@ public class AdminCommands {
             } else {
                 player.dropMessage(5, "You must specify an NPC ID");
             }
+        } else if (command.equals("saveall")) {
+            for (World worlds : Server.getInstance().getWorlds()) {
+                worlds.getPlayerStorage().getAllCharacters().forEach(MapleCharacter::saveToDB);
+            }
+            player.dropMessage(6, "All characters saved!");
         } else if (command.equals("reloadevents")) {
             for (World worlds : Server.getInstance().getWorlds()) {
                 for (Channel channels : worlds.getChannels()) {
