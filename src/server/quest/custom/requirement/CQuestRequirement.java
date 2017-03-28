@@ -1,13 +1,9 @@
 package server.quest.custom.requirement;
 
-import tools.Pair;
-
-import java.util.HashMap;
-
 /**
  * @author izarooni
  */
-public abstract class CQuestRequirement extends HashMap<Integer, Pair<Integer, Integer>> {
+public abstract class CQuestRequirement {
 
     private boolean isFinished = false;
 
@@ -19,7 +15,7 @@ public abstract class CQuestRequirement extends HashMap<Integer, Pair<Integer, I
      * This boolean will be used to determine if all progress variables have already been checked and
      * meet their requirement.
      *
-     * @return
+     * @return true if the quest is finished, false otherwise
      */
     public final boolean isFinished() {
         return isFinished;
@@ -31,6 +27,4 @@ public abstract class CQuestRequirement extends HashMap<Integer, Pair<Integer, I
     public final void setFinished(boolean finished) {
         this.isFinished = finished;
     }
-
-    public abstract void incrementRequirement(int left, int right);
 }

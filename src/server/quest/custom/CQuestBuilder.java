@@ -3,18 +3,17 @@ package server.quest.custom;
 import client.MapleCharacter;
 import provider.MapleData;
 import provider.MapleDataTool;
+import provider.wz.MapleDataType;
 import provider.wz.XMLDomMapleData;
+import server.quest.custom.requirement.CQuestItemRequirement;
 import server.quest.custom.reward.CQuestExpReward;
 import server.quest.custom.reward.CQuestItemReward;
 import server.quest.custom.reward.CQuestMesoReward;
-import tools.Pair;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.util.Collections;
 import java.util.HashMap;
-import java.util.Map;
 
 /**
  * Collect quest information from an XML file
@@ -62,37 +61,58 @@ public class CQuestBuilder {
     private static CQuestData parseFile(File file) throws IOException {
         try (FileInputStream fis = new FileInputStream(file)) {
             XMLDomMapleData xml = new XMLDomMapleData(fis, file);
-            int questId = MapleDataTool.getInt(xml.getChildByPath("questid"));
+            int questId = MapleDataTool.getInt(xml.getChildByPath("info/questId"));
             // begin constructing custom quest data
             CQuestData qData = new CQuestData(questId, xml.getName());
             // iterate through monsters to kill, setting all progress to 0
             for (MapleData toKill : xml.getChildByPath("toKill").getChildren()) {
-                qData.toKill.putIfAbsent(Integer.parseInt(toKill.getName()), new Pair<>((int) toKill.getData(), 0));
+                int monsterId = MapleDataTool.getInt(toKill.getChildByPath("monsterId"));
+                int amount = MapleDataTool.getInt(toKill.getChildByPath("amount"), -1);
+                if (monsterId == 0 || amount == -1) {
+                    System.out.println(String.format("Invalid monster kill requirement for quest '%s'", qData.getName()));
+                    continue;
+                }
+                qData.getToKill().add(monsterId, amount);
             }
             // iterate through items that are to be collected, setting all progress to 0
             for (MapleData toCollect : xml.getChildByPath("toCollect").getChildren()) {
-                qData.toCollect.putIfAbsent(Integer.parseInt(toCollect.getName()), new Pair<>((int) toCollect.getData(), 0));
+                // regular item drops
+                int reactorId = MapleDataTool.getInt(toCollect.getChildByPath("reactorId"));
+                int monsterId = MapleDataTool.getInt(toCollect.getChildByPath("monsterId"));
+                int itemId = MapleDataTool.getInt(toCollect.getChildByPath("itemId"));
+                int quantity = MapleDataTool.getInt(toCollect.getChildByPath("quantity"));
+                int chance = MapleDataTool.getInt(toCollect.getChildByPath("chance"));
+                int minQuantity = MapleDataTool.getInt(toCollect.getChildByPath("minDrop"));
+                int maxQuantity = MapleDataTool.getInt(toCollect.getChildByPath("maxDrop"));
+                if (itemId == 0 || quantity == 0) {
+                    System.out.println(String.format("Invalid item requirement for quest '%s'", qData.getName()));
+                    continue;
+                }
+                CQuestItemRequirement.CQuestItem qItem = new CQuestItemRequirement.CQuestItem(itemId, quantity, false);
+                qItem.setMonsterId(monsterId);
+                qItem.setReactorId(reactorId);
+                qItem.setChance(chance);
+                qItem.setMinQuantity(minQuantity);
+                qItem.setMaxQuantity(maxQuantity);
+                System.out.println(qItem);
+                qData.toCollect.add(qItem);
             }
-            // iterate through each reward imgdir child
             for (MapleData rewards : xml.getChildByPath("rewards").getChildren()) {
-                switch (rewards.getName()) {
-                    case "item": {
-                        // equips & loots
-                        for (MapleData mapleData : rewards.getChildren()) {
-                            // when given, equips will have a quantity of 1 regardless of data retrieved here
-                            qData.rewards.add(new CQuestItemReward(Integer.parseInt(mapleData.getName()), (short) mapleData.getData()));
-                        }
-                        break;
-                    }
-                    case "meso": {
-                        rewards.getChildren().forEach(e -> qData.rewards.add(new CQuestMesoReward((int) e.getData())));
-                        break;
-                    }
-                    case "exp": {
-                        rewards.getChildren().forEach(e -> qData.rewards.add(new CQuestExpReward((int) e.getData())));
-                        break;
+                if (rewards.getType() == MapleDataType.INT) {
+                    if (rewards.getName().equalsIgnoreCase("meso")) {
+                        qData.rewards.add(new CQuestMesoReward(MapleDataTool.getInt(rewards)));
+                    } else if (rewards.getName().equalsIgnoreCase("exp")) {
+                        qData.rewards.add(new CQuestExpReward(MapleDataTool.getInt(rewards)));
                     }
                 }
+            }
+            for (MapleData items : xml.getChildByPath("rewards/items").getChildren()) {
+                int itemId = MapleDataTool.getInt(items.getChildByPath("itemId"));
+                short quantity = (short) MapleDataTool.getInt(items.getChildByPath("quantity"));
+                if (itemId == 0 || quantity == 0) {
+                    System.out.println(String.format("Invalid reward item for quest '%s'", qData.getName()));
+                }
+                qData.rewards.add(new CQuestItemReward(itemId, quantity));
             }
             return qData;
         }

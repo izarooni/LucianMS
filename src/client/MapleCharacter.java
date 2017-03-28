@@ -3214,7 +3214,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
 							stmt.setInt(1, rs.getInt("id"));
 							try (ResultSet res = stmt.executeQuery()) {
 								while (res.next()) {
-									cQuest.getToKill().get(rs.getInt("monsterid")).right = rs.getInt("kills");
+									cQuest.getToKill().incrementRequirement(rs.getInt("monsterid"), rs.getInt("kills"));
 								}
 							}
 						}
@@ -4252,7 +4252,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
 						try (ResultSet rs = stmt.getGeneratedKeys()) {
 							if (rs.next()) {
 								try (PreparedStatement stmt2 = con.prepareStatement("insert into cquestdata (qtableid, monsterid, kills) values (?, ?, ?)")) {
-									for (Entry<Integer, Pair<Integer, Integer>> entry : data.getToKill().entrySet()) {
+									for (Entry<Integer, Pair<Integer, Integer>> entry : data.getToKill().getKills().entrySet()) {
 										stmt2.setInt(1, rs.getInt(1));
 										stmt2.setInt(2, entry.getKey());
 										stmt2.setInt(3, entry.getValue().right);

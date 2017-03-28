@@ -22,15 +22,8 @@ public class CQuestData {
     private final String name;
     private boolean completed = false;
 
-    /**
-     * Map of monster ID to kill requirement and kill progress
-     */
-    final CQuestKillRequirement toKill = new CQuestKillRequirement();
-
-    /**
-     * Map of item ID to quantity requirement and quantity progress
-     */
-    final CQuestItemRequirement toCollect = new CQuestItemRequirement();
+    final CQuestKillRequirement toKill = new CQuestKillRequirement(); // monster kill requirements
+    final CQuestItemRequirement toCollect = new CQuestItemRequirement(); // item collect requirements
 
     ArrayList<CQuestReward> rewards = new ArrayList<>();
 
@@ -51,17 +44,17 @@ public class CQuestData {
         CQuestData ret = new CQuestData(id, name);
         ret.rewards.addAll(rewards); // rewards don't have any changeable variables so we can use the same Objects
         // ID and requirement don't change but reset progress then add to new QuestData
-        toKill.forEach((e, v) -> ret.toKill.put(e, new Pair<>(v.left, 0)));
-        toCollect.forEach((e, v) -> ret.toCollect.put(e, new Pair<>(v.left, 0)));
+        toKill.getKills().forEach((e, v) -> ret.toKill.add(e, v.left));
+        toCollect.getItems().forEach((e, v) -> ret.toCollect.add(new CQuestItemRequirement.CQuestItem(v.getItemId(), v.getRequirement(), v.isUnique())));
 
         player.getCustomQuests().put(ret.getId(), ret);
 
         // update progress of item requirements using the player's inventory
-        for (Integer i : toCollect.keySet()) {
-            MapleInventoryType iType = ItemConstants.getInventoryType(i);
+        for (CQuestItemRequirement.CQuestItem qItem : toCollect.getItems().values()) {
+            MapleInventoryType iType = ItemConstants.getInventoryType(qItem.getItemId());
             if (iType != MapleInventoryType.UNDEFINED) {
-                int q = player.getInventory(iType).countById(i);
-                toCollect.get(i).right += q;
+                int q = player.getInventory(iType).countById(qItem.getItemId());
+                toCollect.incrementRequirement(qItem.getItemId(), q);
             }
         }
         /*
@@ -118,8 +111,8 @@ public class CQuestData {
      */
     public boolean checkRequirements() {
         // all progress values must be larger than or equal to their paired requirement value
-        boolean tcc = toCollect.values().stream().allMatch(p -> p.right >= p.left); // toCollect check
-        boolean tkc = toKill.values().stream().allMatch(p -> p.right >= p.left); // toKill check
+        boolean tcc = toCollect.getItems().values().stream().allMatch(p -> p.getProgress() >= p.getRequirement()); // toCollect check
+        boolean tkc = toKill.getKills().values().stream().allMatch(p -> p.right >= p.left); // toKill check
         toCollect.setFinished(tcc);
         toKill.setFinished(tkc);
         return tcc && tkc;

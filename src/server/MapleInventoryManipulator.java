@@ -141,17 +141,28 @@ public class MapleInventoryManipulator {
     }
 
     public static boolean addFromDrop(MapleClient c, Item item, boolean show) {
+        MapleCharacter player = c.getPlayer();
         MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
         MapleInventoryType type = ii.getInventoryType(item.getItemId());
-        if (ii.isPickupRestricted(item.getItemId()) && c.getPlayer().getItemQuantity(item.getItemId(), true) > 0) {
+        if (ii.isPickupRestricted(item.getItemId()) && player.getItemQuantity(item.getItemId(), true) > 0) {
             c.announce(MaplePacketCreator.getInventoryFull());
             c.announce(MaplePacketCreator.showItemUnavailable());
             return false;
         }
+        for (CQuestData qData : player.getCustomQuests().values()) {
+            if (!qData.isCompleted()) {
+                for (CQuestItemRequirement.CQuestItem qItem : qData.getToCollect().getItems().values()) {
+                    if (qItem.isUnique() && player.countItem(item.getItemId()) >= qItem.getRequirement()) {
+                        c.announce(MaplePacketCreator.showItemUnavailable()); // is this the right message to use?
+                        return false;
+                    }
+                }
+            }
+        }
         short quantity = item.getQuantity();
         if (!type.equals(MapleInventoryType.EQUIP)) {
             short slotMax = ii.getSlotMax(c, item.getItemId());
-            List<Item> existing = c.getPlayer().getInventory(type).listById(item.getItemId());
+            List<Item> existing = player.getInventory(type).listById(item.getItemId());
             if (!ItemConstants.isRechargable(item.getItemId())) {
                 if (existing.size() > 0) { // first update all existing slots to slotMax
                     Iterator<Item> i = existing.iterator();
@@ -177,7 +188,7 @@ public class MapleInventoryManipulator {
                     nItem.setExpiration(item.getExpiration());
                     nItem.setOwner(item.getOwner());
                     nItem.setFlag(item.getFlag());
-                    short newSlot = c.getPlayer().getInventory(type).addItem(nItem);
+                    short newSlot = player.getInventory(type).addItem(nItem);
                     if (newSlot == -1) {
                         c.announce(MaplePacketCreator.getInventoryFull());
                         c.announce(MaplePacketCreator.getShowInventoryFull());
@@ -188,7 +199,7 @@ public class MapleInventoryManipulator {
                 }
             } else {
                 Item nItem = new Item(item.getItemId(), (short) 0, quantity);
-                short newSlot = c.getPlayer().getInventory(type).addItem(nItem);
+                short newSlot = player.getInventory(type).addItem(nItem);
                 if (newSlot == -1) {
                     c.announce(MaplePacketCreator.getInventoryFull());
                     c.announce(MaplePacketCreator.getShowInventoryFull());
@@ -198,7 +209,7 @@ public class MapleInventoryManipulator {
                 c.announce(MaplePacketCreator.enableActions());
             }
         } else if (quantity == 1) {
-            short newSlot = c.getPlayer().getInventory(type).addItem(item);
+            short newSlot = player.getInventory(type).addItem(item);
             if (newSlot == -1) {
                 c.announce(MaplePacketCreator.getInventoryFull());
                 c.announce(MaplePacketCreator.getShowInventoryFull());
@@ -494,11 +505,11 @@ public class MapleInventoryManipulator {
                     c.announce(MaplePacketCreator.getShowQuestCompletion(1));
                     c.announce(MaplePacketCreator.earnTitleMessage(String.format("Quest '%s' completed!", data.getName())));
                 }
-                Pair<Integer, Integer> p = toLoot.get(itemId);
-                if (p != null) {
+                CQuestItemRequirement.CQuestItem qItem = toLoot.get(itemId);
+                if (qItem != null) {
                     String name = ii.getName(itemId);
                     name = (name == null) ? "NO-NAME" : name; // hmmm
-                    player.announce(MaplePacketCreator.earnTitleMessage(String.format("[%s] Item Collection '%s' [%d / %d]", data.getName(), name, p.right, p.left)));
+                    player.announce(MaplePacketCreator.earnTitleMessage(String.format("[%s] Item Collection '%s' [%d / %d]", data.getName(), name, qItem.getProgress(), qItem.getRequirement())));
                 }
             }
         }

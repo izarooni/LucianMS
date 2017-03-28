@@ -48,6 +48,7 @@ import server.partyquest.MonsterCarnival;
 import server.partyquest.MonsterCarnivalParty;
 import server.partyquest.Pyramid;
 import server.quest.custom.CQuestData;
+import server.quest.custom.requirement.CQuestItemRequirement;
 import server.quest.custom.requirement.CQuestKillRequirement;
 import tools.FilePrinter;
 import tools.MaplePacketCreator;
@@ -367,6 +368,17 @@ public class MapleMap {
 
         final MapleMonsterInformationProvider mi = MapleMonsterInformationProvider.getInstance();
         final List<MonsterDropEntry> dropEntry = new ArrayList<>(mi.retrieveDrop(mob.getId()));
+
+        for (CQuestData qData : chr.getCustomQuests().values()) {
+            if (!qData.isCompleted()) {
+                for (CQuestItemRequirement.CQuestItem qItem : qData.getToCollect().getItems().values()) {
+                    if (qItem.getMonsterId() == mob.getId()) {
+                        int chance = (999999 / 1000) * qItem.getChance();
+                        dropEntry.add(new MonsterDropEntry(qItem.getItemId(), chance, qItem.getMinQuantity(), qItem.getMaxQuantity(), (short) -1));
+                    }
+                }
+            }
+        }
 
         Collections.shuffle(dropEntry);
         for (final MonsterDropEntry de : dropEntry) {

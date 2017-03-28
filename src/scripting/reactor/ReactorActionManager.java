@@ -25,10 +25,6 @@ import client.MapleClient;
 import client.inventory.Equip;
 import client.inventory.Item;
 import client.inventory.MapleInventoryType;
-import java.awt.Point;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
 import scripting.AbstractPlayerInteraction;
 import server.MapleItemInformationProvider;
 import server.life.MapleLifeFactory;
@@ -36,12 +32,21 @@ import server.life.MapleNPC;
 import server.maps.MapMonitor;
 import server.maps.MapleReactor;
 import server.maps.ReactorDropEntry;
+import server.quest.custom.CQuestData;
+import server.quest.custom.requirement.CQuestItemRequirement;
 import tools.MaplePacketCreator;
+import tools.Randomizer;
+
+import java.awt.*;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  * @author Lerk
  */
 public class ReactorActionManager extends AbstractPlayerInteraction {
+
     private MapleReactor reactor;
     private MapleClient client;
 
@@ -72,6 +77,20 @@ public class ReactorActionManager extends AbstractPlayerInteraction {
             if (Math.random() < (1 / (double) d.chance)) {
                 numItems++;
                 items.add(d);
+            }
+        }
+        for (CQuestData qData : client.getPlayer().getCustomQuests().values()) {
+            if (!qData.isCompleted()) {
+                for (CQuestItemRequirement.CQuestItem qItem : qData.getToCollect().getItems().values()) {
+                    if (qItem.getReactorId() == reactor.getId()) {
+                        if (Randomizer.nextInt(100) < qItem.getChance()) {
+                            int quantity = Randomizer.rand(qItem.getMinQuantity(), qItem.getMaxQuantity());
+                            for (int i = 0; i < quantity; i++) {
+                                items.add(new ReactorDropEntry(qItem.getItemId(), 0, -1));
+                            }
+                        }
+                    }
+                }
             }
         }
         while (items.size() < minItems) {

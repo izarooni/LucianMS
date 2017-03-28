@@ -173,11 +173,11 @@ public final class ItemPickupHandler extends AbstractMaplePacketHandler {
                                     c.announce(MaplePacketCreator.getShowQuestCompletion(1));
                                     c.announce(MaplePacketCreator.earnTitleMessage(String.format("Quest '%s' completed!", data.getName())));
                                 }
-                                Pair<Integer, Integer> p = toLoot.get(mapitem.getItemId());
+                                CQuestItemRequirement.CQuestItem p = toLoot.get(mapitem.getItemId());
                                 if (p != null) {
                                     String name = ii.getName(mapitem.getItemId());
                                     name = (name == null) ? "NO-NAME" : name; // hmmm
-                                    chr.announce(MaplePacketCreator.earnTitleMessage(String.format("[%s] Item Collection '%s' [%d / %d]", data.getName(), name, p.left, p.right)));
+                                    chr.announce(MaplePacketCreator.earnTitleMessage(String.format("[%s] Item Collection '%s' [%d / %d]", data.getName(), name, p.getProgress(), p.getRequirement())));
                                 }
                             }
                         }
