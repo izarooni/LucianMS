@@ -38,7 +38,7 @@ public class BoxSpider extends Arcade {
 	public boolean fail() {
 		if(touched) {
 		
-		player.changeMap(910000000, 0);
+		player.changeMap(970000000, 0);
 		player.announce(MaplePacketCreator.serverNotice(1, "Game Over!"));
 		if(saveData(highscore)) {
 			player.dropMessage(5, "[Game Over] Your new highscore for Box Spider is " + highscore);

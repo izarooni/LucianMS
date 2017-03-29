@@ -21,7 +21,7 @@ public class CrowOnly extends Arcade {
 
 	@Override
 	public boolean fail() {
-		player.changeMap(910000000, 0);
+		player.changeMap(970000000, 0);
 		player.announce(MaplePacketCreator.serverNotice(1, "Game Over!"));
 		if(saveData(highscore)) {
 			player.dropMessage(5, "[Game Over] Your new highscore for Crow Only is " + highscore);
