@@ -307,6 +307,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
 
 	private Timestamp daily;
 
+	// todo (probably for smega use only)
 	private PlayerTitles title;
 
 	private int goal, current;
