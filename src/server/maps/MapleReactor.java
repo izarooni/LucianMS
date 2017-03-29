@@ -24,11 +24,14 @@ package server.maps;
 import java.awt.Rectangle;
 import java.util.List;
 
+import client.MapleCharacter;
 import client.MapleClient;
 import scripting.reactor.ReactorScriptManager;
 import server.TimerManager;
 import server.life.MapleLifeFactory;
 import server.life.MapleMonster;
+import server.quest.custom.CQuestData;
+import server.quest.custom.requirement.CQuestItemRequirement;
 import tools.MaplePacketCreator;
 import tools.Pair;
 
@@ -148,9 +151,10 @@ public class MapleReactor extends AbstractMapleMapObject {
 
     public synchronized void hitReactor(int charPos, short stance, int skillid, MapleClient c) {
         try {
-			if(!this.isAlive()) {
+			if(!isAlive()) {
 				return;
 			}
+            MapleCharacter player = c.getPlayer();
 			if (stats.getType(state) < 999 && stats.getType(state) != -1) {//type 2 = only hit from right (kerning swamp plants), 00 is air left 02 is ground left
 				if (!(stats.getType(state) == 2 && (charPos == 0 || charPos == 2))) { //get next state
 					for (byte b = 0; b < stats.getStateSize(state); b++) {//YAY?
@@ -161,10 +165,10 @@ public class MapleReactor extends AbstractMapleMapObject {
 						state = stats.getNextState(state, b);
 						if (stats.getNextState(state, b) == -1) {//end of reactor
 							if (stats.getType(state) < 100) {//reactor broken
-								if (delay > 0) {
+                                if (delay > 0) {
 									map.destroyReactor(getObjectId());
-						        		if(c.getPlayer().getArcade() != null) {
-						        			if(c.getPlayer().getArcade().onBreak(getId())) {
+						        		if(player.getArcade() != null) {
+						        			if(player.getArcade().onBreak(getId())) {
 						        				MapleMonster monster = MapleLifeFactory.getMonster(2230103);
 						        				monster.setHp(Integer.MAX_VALUE);
 						        				map.spawnMonsterOnGroudBelow(monster, this.getPosition());
@@ -172,8 +176,8 @@ public class MapleReactor extends AbstractMapleMapObject {
 						        		}
 								} else {//trigger as normal
 									map.broadcastMessage(MaplePacketCreator.triggerReactor(this, stance));
-									if(c.getPlayer().getArcade() != null) {
-					        			if(c.getPlayer().getArcade().onBreak(getId())) {
+									if(player.getArcade() != null) {
+					        			if(player.getArcade().onBreak(getId())) {
 					        				MapleMonster monster = MapleLifeFactory.getMonster(2230103);
 					        				monster.setHp(Integer.MAX_VALUE);
 					        				map.spawnMonsterOnGroudBelow(monster, this.getPosition());
@@ -182,8 +186,8 @@ public class MapleReactor extends AbstractMapleMapObject {
 								}
 							} else {//item-triggered on final step
 								map.broadcastMessage(MaplePacketCreator.triggerReactor(this, stance));
-								if(c.getPlayer().getArcade() != null) {
-									if(c.getPlayer().getArcade().onBreak(getId())) {
+								if(player.getArcade() != null) {
+									if(player.getArcade().onBreak(getId())) {
 				        				MapleMonster monster = MapleLifeFactory.getMonster(2230103);
 				        				monster.setHp(Integer.MAX_VALUE);
 				        				map.spawnMonsterOnGroudBelow(monster, this.getPosition());

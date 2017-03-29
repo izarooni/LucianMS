@@ -1,9 +1,12 @@
 package server.quest.custom;
 
 import client.MapleCharacter;
+import client.inventory.MapleInventoryType;
+import constants.ItemConstants;
 import server.quest.custom.requirement.CQuestItemRequirement;
 import server.quest.custom.requirement.CQuestKillRequirement;
 import server.quest.custom.reward.CQuestReward;
+import tools.MaplePacketCreator;
 import tools.Pair;
 
 import java.util.*;
@@ -19,15 +22,8 @@ public class CQuestData {
     private final String name;
     private boolean completed = false;
 
-    /**
-     * Map of monster ID to kill requirement and kill progress
-     */
-    final CQuestKillRequirement toKill = new CQuestKillRequirement();
-
-    /**
-     * Map of item ID to quantity requirement and quantity progress
-     */
-    final CQuestItemRequirement toCollect = new CQuestItemRequirement();
+    final CQuestKillRequirement toKill = new CQuestKillRequirement(); // monster kill requirements
+    final CQuestItemRequirement toCollect = new CQuestItemRequirement(); // item collect requirements
 
     ArrayList<CQuestReward> rewards = new ArrayList<>();
 
@@ -48,10 +44,31 @@ public class CQuestData {
         CQuestData ret = new CQuestData(id, name);
         ret.rewards.addAll(rewards); // rewards don't have any changeable variables so we can use the same Objects
         // ID and requirement don't change but reset progress then add to new QuestData
-        toKill.forEach((e, v) -> ret.toKill.put(e, new Pair<>(v.left, 0)));
-        toCollect.forEach((e, v) -> ret.toCollect.put(e, new Pair<>(v.left, 0)));
+        toKill.getKills().forEach((e, v) -> ret.toKill.add(e, v.left));
+        toCollect.getItems().forEach((e, v) -> ret.toCollect.add(new CQuestItemRequirement.CQuestItem(v.getItemId(), v.getRequirement(), v.isUnique())));
 
         player.getCustomQuests().put(ret.getId(), ret);
+
+        // update progress of item requirements using the player's inventory
+        for (CQuestItemRequirement.CQuestItem qItem : toCollect.getItems().values()) {
+            MapleInventoryType iType = ItemConstants.getInventoryType(qItem.getItemId());
+            if (iType != MapleInventoryType.UNDEFINED) {
+                int q = player.getInventory(iType).countById(qItem.getItemId());
+                toCollect.incrementRequirement(qItem.getItemId(), q);
+            }
+        }
+        /*
+        For quests that have only item retrieval requirements, it's possible the player will already have
+        the needed items. It's only worth checking if there are no monster kill requirements because in this case,
+        the quest can be finished as soon as it's started
+         */
+        if (toKill.isEmpty() && !toCollect.isEmpty()) {
+            if (checkRequirements()) { // requirements are met
+                player.announce(MaplePacketCreator.getShowQuestCompletion(1));
+                player.announce(MaplePacketCreator.earnTitleMessage(String.format("Quest '%s' completed!", getName())));
+            }
+        }
+
         return ret;
     }
 
@@ -63,10 +80,18 @@ public class CQuestData {
         return name;
     }
 
+    /**
+     * @return true if the quest is completed (i.e. completed and no longer in a state of "ongoing")
+     */
     public boolean isCompleted() {
         return completed;
     }
 
+    /**
+     * Should be set true if the quest is "submited" to the quest provider and the quest rewards are given
+     *
+     * @param completed true or false if the quest is completed
+     */
     public void setCompleted(boolean completed) {
         this.completed = completed;
     }
@@ -80,20 +105,17 @@ public class CQuestData {
     }
 
     /**
-     * Iterate each quest requirement and ensures all progress variables meet the paired requirement
+     * Iterate each quest requirement and ensures all progress variables meet the paired requirement variable
      *
      * @return true if all progress variables meet their requirement, false otherwise
      */
-    public boolean isFinished() {
-        // all pairs must meet their requirement
-        if (!toCollect.values().stream().allMatch(p -> p.right >= p.left)) {
-            // items can exceed their requirement
-            return false;
-        } else if (!toKill.values().stream().allMatch(p -> p.right.equals(p.left))) {
-            // kills have a capacity so progress should never exceed the requirement
-            return false;
-        }
-        return true;
+    public boolean checkRequirements() {
+        // all progress values must be larger than or equal to their paired requirement value
+        boolean tcc = toCollect.getItems().values().stream().allMatch(p -> p.getProgress() >= p.getRequirement()); // toCollect check
+        boolean tkc = toKill.getKills().values().stream().allMatch(p -> p.right >= p.left); // toKill check
+        toCollect.setFinished(tcc);
+        toKill.setFinished(tkc);
+        return tcc && tkc;
     }
 
     /**

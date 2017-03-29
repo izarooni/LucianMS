@@ -21,6 +21,8 @@
  */
 package net.server.channel.handlers;
 
+import client.MapleCharacter;
+import client.MapleClient;
 import net.AbstractMaplePacketHandler;
 import net.server.world.MaplePartyCharacter;
 import scripting.item.ItemScriptManager;
@@ -29,13 +31,13 @@ import server.MapleItemInformationProvider;
 import server.MapleItemInformationProvider.scriptedItem;
 import server.maps.MapleMapItem;
 import server.maps.MapleMapObject;
+import server.quest.custom.CQuestData;
+import server.quest.custom.requirement.CQuestItemRequirement;
 import tools.MaplePacketCreator;
+import tools.Pair;
 import tools.data.input.SeekableLittleEndianAccessor;
-import client.MapleCharacter;
-import client.MapleClient;
 
 /**
- *
  * @author Matze
  */
 public final class ItemPickupHandler extends AbstractMaplePacketHandler {
@@ -51,30 +53,31 @@ public final class ItemPickupHandler extends AbstractMaplePacketHandler {
         if (ob == null) {
             return;
         }
-		
+        MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
+
         if (ob instanceof MapleMapItem) {
             MapleMapItem mapitem = (MapleMapItem) ob;
-			if(System.currentTimeMillis() - mapitem.getDropTime() < 900) {
-				c.announce(MaplePacketCreator.enableActions());
+            if (System.currentTimeMillis() - mapitem.getDropTime() < 900) {
+                c.announce(MaplePacketCreator.enableActions());
                 return;
-			} 
-            if (mapitem.getItemId() == 4031865 || mapitem.getItemId() == 4031866 || mapitem.getMeso() > 0 || MapleItemInformationProvider.getInstance().isConsumeOnPickup(mapitem.getItemId()) || MapleInventoryManipulator.checkSpace(c, mapitem.getItemId(), mapitem.getItem().getQuantity(), mapitem.getItem().getOwner())) {
+            }
+            if (mapitem.getItemId() == 4031865 || mapitem.getItemId() == 4031866 || mapitem.getMeso() > 0 || ii.isConsumeOnPickup(mapitem.getItemId()) || MapleInventoryManipulator.checkSpace(c, mapitem.getItemId(), mapitem.getItem().getQuantity(), mapitem.getItem().getOwner())) {
                 if ((chr.getMapId() > 209000000 && chr.getMapId() < 209000016) || (chr.getMapId() >= 990000500 && chr.getMapId() <= 990000502)) {//happyville trees and guild PQ
                     if (!mapitem.isPlayerDrop() || mapitem.getDropper().getObjectId() == c.getPlayer().getObjectId()) {
-                        if(mapitem.getMeso() > 0) {
-							chr.gainMeso(mapitem.getMeso(), true, true, false);
-							chr.getMap().broadcastMessage(MaplePacketCreator.removeItemFromMap(mapitem.getObjectId(), 2, chr.getId()), mapitem.getPosition());
-                            chr.getMap().removeMapObject(ob);
-							mapitem.setPickedUp(true);
-						} else if (MapleInventoryManipulator.addFromDrop(c, mapitem.getItem(), false)) {
+                        if (mapitem.getMeso() > 0) {
+                            chr.gainMeso(mapitem.getMeso(), true, true, false);
                             chr.getMap().broadcastMessage(MaplePacketCreator.removeItemFromMap(mapitem.getObjectId(), 2, chr.getId()), mapitem.getPosition());
                             chr.getMap().removeMapObject(ob);
-							mapitem.setPickedUp(true);
-							if(chr.getArcade() != null) {
-								if(!chr.getArcade().fail()) {
-									chr.getArcade().add();
-								}
-							}
+                            mapitem.setPickedUp(true);
+                        } else if (MapleInventoryManipulator.addFromDrop(c, mapitem.getItem(), false)) {
+                            chr.getMap().broadcastMessage(MaplePacketCreator.removeItemFromMap(mapitem.getObjectId(), 2, chr.getId()), mapitem.getPosition());
+                            chr.getMap().removeMapObject(ob);
+                            mapitem.setPickedUp(true);
+                            if (chr.getArcade() != null) {
+                                if (!chr.getArcade().fail()) {
+                                    chr.getArcade().add();
+                                }
+                            }
                         } else {
                             c.announce(MaplePacketCreator.enableActions());
                             return;
@@ -87,7 +90,7 @@ public final class ItemPickupHandler extends AbstractMaplePacketHandler {
                     c.announce(MaplePacketCreator.enableActions());
                     return;
                 }
-            
+
                 synchronized (mapitem) {
                     if (mapitem.getQuest() > 0 && !chr.needQuestItem(mapitem.getQuest(), mapitem.getItemId())) {
                         c.announce(MaplePacketCreator.showItemUnavailable());
@@ -123,7 +126,6 @@ public final class ItemPickupHandler extends AbstractMaplePacketHandler {
                             chr.gainMeso(mapitem.getMeso(), true, true, false);
                         }
                     } else if (mapitem.getItem().getItemId() / 10000 == 243) {
-                        MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
                         scriptedItem info = ii.getScriptedItemInfo(mapitem.getItem().getItemId());
                         if (info.runOnPickup()) {
                             ItemScriptManager ism = ItemScriptManager.getInstance();
@@ -137,14 +139,14 @@ public final class ItemPickupHandler extends AbstractMaplePacketHandler {
                                 c.announce(MaplePacketCreator.enableActions());
                                 return;
                             } else {
-                            	if(chr.getArcade() != null) {
-    								if(!chr.getArcade().fail()) {
-    									chr.getArcade().add();
-    								}
-    							}
+                                if (chr.getArcade() != null) {
+                                    if (!chr.getArcade().fail()) {
+                                        chr.getArcade().add();
+                                    }
+                                }
                             }
                         }
-					} else if(mapitem.getItemId() == 4031865 || mapitem.getItemId() == 4031866) {
+                    } else if (mapitem.getItemId() == 4031865 || mapitem.getItemId() == 4031866) {
                         // Add NX to account, show effect and make item disapear
                         chr.getCashShop().gainCash(1, mapitem.getItemId() == 4031865 ? 100 : 250);
                     } else if (useItem(c, mapitem.getItem().getItemId())) {
@@ -152,22 +154,43 @@ public final class ItemPickupHandler extends AbstractMaplePacketHandler {
                             chr.getMonsterBook().addCard(c, mapitem.getItem().getItemId());
                         }
                     } else if (MapleInventoryManipulator.addFromDrop(c, mapitem.getItem(), true)) {
-                    	if(chr.getArcade() != null) {
-							if(!chr.getArcade().fail()) {
-								chr.getArcade().add();
-							}
-						}
-						chr.getCustomQuests().values().forEach(q -> q.getToCollect().addToCollect(mapitem.getItemId(), mapitem.getItem().getQuantity()));
+                        if (chr.getArcade() != null) {
+                            if (!chr.getArcade().fail()) {
+                                chr.getArcade().add();
+                            }
+                        }
+                        for (CQuestData data : chr.getCustomQuests().values()) {
+                            if (!data.isCompleted()) {
+                                CQuestItemRequirement toLoot = data.getToCollect();
+                                toLoot.incrementRequirement(mapitem.getItemId(), mapitem.getItem().getQuantity());
+                                boolean checked = toLoot.isFinished(); // local bool before updating requirement checks; if false, quest is not finished
+                                if (data.checkRequirements() && !checked) { // update requirement checks - it is important that checkRequirements is executed first
+                                    /*
+                                    If checkRequirements returns true, the quest is finished. If checked is also false, then
+                                    this is check means the quest is finished. The quest completion notification should only
+                                    happen once unless a progress variable drops below the requirement
+                                     */
+                                    c.announce(MaplePacketCreator.getShowQuestCompletion(1));
+                                    c.announce(MaplePacketCreator.earnTitleMessage(String.format("Quest '%s' completed!", data.getName())));
+                                }
+                                CQuestItemRequirement.CQuestItem p = toLoot.get(mapitem.getItemId());
+                                if (p != null) {
+                                    String name = ii.getName(mapitem.getItemId());
+                                    name = (name == null) ? "NO-NAME" : name; // hmmm
+                                    chr.announce(MaplePacketCreator.earnTitleMessage(String.format("[%s] Item Collection '%s' [%d / %d]", data.getName(), name, p.getProgress(), p.getRequirement())));
+                                }
+                            }
+                        }
                     } else if (mapitem.getItem().getItemId() == 4031868) {
                         chr.getMap().broadcastMessage(MaplePacketCreator.updateAriantPQRanking(chr.getName(), chr.getItemQuantity(4031868, false), false));
-					} else {
+                    } else {
                         c.announce(MaplePacketCreator.enableActions());
                         return;
                     }
                     mapitem.setPickedUp(true);
                     chr.getMap().broadcastMessage(MaplePacketCreator.removeItemFromMap(mapitem.getObjectId(), 2, chr.getId()), mapitem.getPosition());
                     chr.getMap().removeMapObject(ob);
-				}
+                }
             }
         }
         c.announce(MaplePacketCreator.enableActions());

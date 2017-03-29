@@ -125,7 +125,7 @@ public class CommandWorker {
          */
         public String getError(int... index) {
             for (int i : index) {
-                if (errors[i] != null) {
+                if (i > -1 && i < errors.length && errors[i] != null) {
                     return error;
                 }
             }

@@ -21,33 +21,14 @@
  */
 package net;
 
-import java.util.LinkedHashMap;
-import java.util.Map;
-
 import net.server.channel.handlers.*;
 import net.server.handlers.CustomPacketHandler;
 import net.server.handlers.KeepAliveHandler;
 import net.server.handlers.LoginRequiringNoOpHandler;
-import net.server.handlers.login.AcceptToSHandler;
-import net.server.handlers.login.AfterLoginHandler;
-import net.server.handlers.login.CharSelectedHandler;
-import net.server.handlers.login.CharSelectedWithPicHandler;
-import net.server.handlers.login.CharlistRequestHandler;
-import net.server.handlers.login.CheckCharNameHandler;
-import net.server.handlers.login.CreateCharHandler;
-import net.server.handlers.login.DeleteCharHandler;
-import net.server.handlers.login.GuestLoginHandler;
-import net.server.handlers.login.LoginPasswordHandler;
-import net.server.handlers.login.PickCharHandler;
-import net.server.handlers.login.RegisterPicHandler;
-import net.server.handlers.login.RegisterPinHandler;
-import net.server.handlers.login.RelogRequestHandler;
-import net.server.handlers.login.ServerStatusRequestHandler;
-import net.server.handlers.login.ServerlistRequestHandler;
-import net.server.handlers.login.SetGenderHandler;
-import net.server.handlers.login.ViewAllCharSelectedWithPicHandler;
-import net.server.handlers.login.ViewAllPicRegisterHandler;
-import net.server.handlers.login.ViewCharHandler;
+import net.server.handlers.login.*;
+
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 public final class PacketProcessor {
 
@@ -123,6 +104,7 @@ public final class PacketProcessor {
             registerHandler(RecvOpcode.VIEW_ALL_PIC_REGISTER, new ViewAllPicRegisterHandler());
         } else {
             //CHANNEL HANDLERS
+            registerHandler(RecvOpcode.RPS_ACTION, new RockPaperScissorsHandler());
             registerHandler(RecvOpcode.CHANGE_CHANNEL, new ChangeChannelHandler());
             registerHandler(RecvOpcode.STRANGE_DATA, LoginRequiringNoOpHandler.getInstance());
             registerHandler(RecvOpcode.GENERAL_CHAT, new GeneralChatHandler());
