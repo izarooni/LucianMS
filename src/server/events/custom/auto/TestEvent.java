@@ -30,7 +30,6 @@ public class TestEvent implements AutoEvent {
 			for(MapleCharacter playerOnMap : map.getCharacters()) {
 				playerOnMap.dropMessage(6, "The event has ended");
 			}
-		
 		}
 		
 	}

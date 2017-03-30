@@ -39,6 +39,7 @@ public class AutoEventManager {
 				// if it's not running, you did something wrong.. anders.
 				if(curr >= events.size()-1) curr = 0; else curr++;
 				events.get(curr).onEnd();
+				running = false;
 				runLater(20);
 				
 			}
