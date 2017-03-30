@@ -4,27 +4,27 @@ import java.util.ArrayList;
 
 import server.TimerManager;
 import server.events.custom.auto.TestEvent;
+import server.events.custom.auto.TestEvent2;
 
 public class AutoEventManager {
 	
 	private boolean running = false;
 	
-	int curr = 0;
+	private int curr = 0;
 	
-	public static ArrayList<Integer> players;
-	public static ArrayList<AutoEvent> events;
+	private static ArrayList<AutoEvent> events;
 	
 	private int timeInSeconds;
 	
 	public AutoEventManager() {
-		 players = new ArrayList<>();
+		 
 		 events = new ArrayList<>();
 	}
 	
 	public void runLater(int eventTime) {
 		TimerManager.getInstance().schedule(() -> {
 			if(!running) {
-				if(curr >= events.size()-1) curr = 0; else ++curr;
+				if(curr >= events.size()-1) curr = 0; else curr++;
 				events.get(curr).onStart();
 				runEvent(eventTime);
 				running = true;
@@ -37,9 +37,8 @@ public class AutoEventManager {
 		TimerManager.getInstance().schedule(() -> {
 			if(running) {
 				// if it's not running, you did something wrong.. anders.
-				if(curr >= events.size()-1) curr = 0; else ++curr;
+				if(curr >= events.size()-1) curr = 0; else curr++;
 				events.get(curr).onEnd();
-				players.clear();
 				runLater(20);
 				
 			}
@@ -67,14 +66,6 @@ public class AutoEventManager {
 		this.curr = curr;
 	}
 
-	public static ArrayList<Integer> getPlayers() {
-		return players;
-	}
-
-	public static void setPlayers(ArrayList<Integer> players) {
-		AutoEventManager.players = players;
-	}
-
 	public static ArrayList<AutoEvent> getEvents() {
 		return events;
 	}
@@ -93,6 +84,7 @@ public class AutoEventManager {
 	// we're just going to register all the events at the start.
 	public void registerAll() {
 		AutoEventManager.registerEvent(new TestEvent());
+		AutoEventManager.registerEvent(new TestEvent2());
 	}
 	
 	
