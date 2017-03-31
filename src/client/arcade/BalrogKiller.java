@@ -40,7 +40,7 @@ public class BalrogKiller extends Arcade {
 		} else {
 			player.dropMessage(5, "[Game Over] Your highscore for Balrog Killer remains at " + Arcade.getHighscore(arcadeId, player));
 		}
-		MapleInventoryManipulator.addById(player.getClient(), itemReward, (short) rewardPerKill);
+		MapleInventoryManipulator.addById(player.getClient(), itemReward, (short) (rewardPerKill  * highscore));
 		respawnManager = null;
 		player.setArcade(null);
 		return true;
