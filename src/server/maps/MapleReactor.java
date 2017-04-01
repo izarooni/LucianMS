@@ -194,7 +194,9 @@ public class MapleReactor extends AbstractMapleMapObject {
 				        			}
 				        		}
 							}
-							ReactorScriptManager.getInstance().act(c, this);
+							if(this != null) { // what? 
+								ReactorScriptManager.getInstance().act(c, this);
+							}
 						} else { //reactor not broken yet
 							map.broadcastMessage(MaplePacketCreator.triggerReactor(this, stance));
 							if (state == stats.getNextState(state, b)) {//current state = next state, looping reactor
