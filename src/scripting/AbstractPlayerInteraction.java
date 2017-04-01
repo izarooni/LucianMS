@@ -125,6 +125,7 @@ public class AbstractPlayerInteraction {
 		} else {
 			target = getPlayer().getEventInstance().getMapInstance(map);
 		}
+		if(target == null) target = c.getChannelServer().getMapFactory().getMap(1000000000); // if it's null, we go to henesys
 		return target;
 	}
 
