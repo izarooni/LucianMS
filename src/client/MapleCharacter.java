@@ -318,6 +318,16 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
 
 	private int hidingLevel = 1;
 
+	private String spouse; // 
+	private boolean saidYesToMarriage;
+	private boolean saidYesToEngagement;
+	
+	private String engagedTo;
+	
+	private String playerThatSaidYesToMarriage, playerThatSaidYesToEngagement;
+	
+	private boolean engaged;
+		
 	private MapleCharacter() {
 		setStance(0);
 		inventory = new MapleInventory[MapleInventoryType.values().length];
@@ -3034,6 +3044,8 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
 			ret.daily = rs.getTimestamp("daily");
 			ret.breakthroughs = rs.getInt("reborns");
 			ret.eventPoints = rs.getInt("eventpoints");
+			ret.engagedTo = rs.getString("engagedTo");
+			ret.spouse = rs.getString("spouse");
 			if (ret.guildid > 0) {
 				ret.mgc = new MapleGuildCharacter(ret);
 			}
@@ -4021,7 +4033,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
 			con.setAutoCommit(false);
 			PreparedStatement ps;
 			ps = con.prepareStatement(
-					"UPDATE characters SET level = ?, fame = ?, str = ?, dex = ?, luk = ?, `int` = ?, exp = ?, gachaexp = ?, hp = ?, mp = ?, maxhp = ?, maxmp = ?, sp = ?, ap = ?, gm = ?, skincolor = ?, gender = ?, job = ?, hair = ?, face = ?, map = ?, meso = ?, hpMpUsed = ?, spawnpoint = ?, party = ?, buddyCapacity = ?, messengerid = ?, messengerposition = ?, mountlevel = ?, mountexp = ?, mounttiredness= ?, equipslots = ?, useslots = ?, setupslots = ?, etcslots = ?,  monsterbookcover = ?, vanquisherStage = ?, dojoPoints = ?, lastDojoStage = ?, finishedDojoTutorial = ?, vanquisherKills = ?, matchcardwins = ?, matchcardlosses = ?, matchcardties = ?, omokwins = ?, omoklosses = ?, omokties = ?, dataString = ?, fishingpoints = ?, daily = ?, reborns = ?, eventpoints = ? WHERE id = ?",
+					"UPDATE characters SET level = ?, fame = ?, str = ?, dex = ?, luk = ?, `int` = ?, exp = ?, gachaexp = ?, hp = ?, mp = ?, maxhp = ?, maxmp = ?, sp = ?, ap = ?, gm = ?, skincolor = ?, gender = ?, job = ?, hair = ?, face = ?, map = ?, meso = ?, hpMpUsed = ?, spawnpoint = ?, party = ?, buddyCapacity = ?, messengerid = ?, messengerposition = ?, mountlevel = ?, mountexp = ?, mounttiredness= ?, equipslots = ?, useslots = ?, setupslots = ?, etcslots = ?,  monsterbookcover = ?, vanquisherStage = ?, dojoPoints = ?, lastDojoStage = ?, finishedDojoTutorial = ?, vanquisherKills = ?, matchcardwins = ?, matchcardlosses = ?, matchcardties = ?, omokwins = ?, omoklosses = ?, omokties = ?, dataString = ?, fishingpoints = ?, daily = ?, reborns = ?, eventpoints = ?, engagedTo = ?, marriedTo = ? WHERE id = ?",
 					Statement.RETURN_GENERATED_KEYS);
 			if (gmLevel < 1 && level > 199) {
 				ps.setInt(1, isCygnus() ? 120 : 200);
@@ -4119,7 +4131,9 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
 			ps.setTimestamp(50, daily);
 			ps.setInt(51, breakthroughs);
 			ps.setInt(52, eventPoints);
-			ps.setInt(53, id);
+			ps.setString(53, engagedTo);
+			ps.setString(54, spouse);
+			ps.setInt(55, id);
 
 			int updateRows = ps.executeUpdate();
 			if (updateRows < 1) {
@@ -5802,5 +5816,31 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
 
 	public int getHidingLevel() {
 		return this.hidingLevel;
+	}
+
+	public String getSpouse() {
+		return spouse;
+	}
+
+	public void setSpouse(String spouse) {
+		this.spouse = spouse;
+	}
+
+	public boolean getSaidYesToMarriage() {
+		return saidYesToMarriage;
+	}
+
+	public void setSaidYesToMarriage(boolean saidYesToMarriage, MapleCharacter toWho) {
+		this.saidYesToMarriage = saidYesToMarriage;
+		this.playerThatSaidYesToMarriage = toWho.getName();
+	}
+
+	public boolean getSaidYesToEngagement() {
+		return saidYesToEngagement;
+	}
+
+	public void setSaidYesToEngagement(boolean saidYesToEngagement, MapleCharacter toWho) {
+		this.saidYesToEngagement = saidYesToEngagement;
+		this.playerThatSaidYesToMarriage = toWho.getName();
 	}
 }
