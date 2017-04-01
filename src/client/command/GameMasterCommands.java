@@ -114,6 +114,7 @@ public class GameMasterCommands {
                 player.dropMessage(5, "You must specify a username");
             }
         } else if (command.equals("map", "warp", "warpmap", "warpmapx", "wm", "wmx", "wh", "whx")) {
+        	try {
             if (args.length() > 0) {
                 String username = args.get(0);
                 MapleCharacter target = client.getWorldServer().getPlayerStorage().getCharacterByName(username);
@@ -176,6 +177,9 @@ public class GameMasterCommands {
             } else {
                 player.dropMessage(5, "You must specify a map ID");
             }
+        	} catch(NullPointerException e) {
+        		player.dropMessage(5, "That map does not exist.");
+        	}
         } else if (command.equals("clock")) {
             if (args.length() == 1) {
                 Long a1 = args.parseNumber(0);
