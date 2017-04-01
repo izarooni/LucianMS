@@ -338,7 +338,7 @@ public class MapleMapFactory {
         return maps;
     }
 
-	public void reloadField(int fieldId) {
+	public synchronized void reloadField(int fieldId) {
     MapleMap fOld, fNew;
     if ((fOld = maps.get(fieldId)) != null) {
         fNew = getMap(fieldId);
