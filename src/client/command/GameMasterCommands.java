@@ -851,6 +851,7 @@ public class GameMasterCommands {
             }
         } else if (command.equals("reverse", "reversemap", "rev", "revm")) {
             boolean map = command.equals("reversemap", "revm");
+            try {
             if (args.length() > 0) {
                 MobSkill skill = MobSkillFactory.getMobSkill(132, 2);
                 Long a1 = args.parseNumber(0);
@@ -883,6 +884,9 @@ public class GameMasterCommands {
                 } else {
                     player.dropMessage(5, "Syntax: !" + command.getName() + " <mode> <usernames>");
                 }
+            }
+            } catch(NullPointerException e) {
+            	player.dropMessage(5, "An unknown error occurred, but we're too lazy to fix it. Fuck you!");
             }
         } else if (command.equals("seduce", "sed", "seducem", "sedm")) {
             boolean map = command.equals("sedm", "seducem");
