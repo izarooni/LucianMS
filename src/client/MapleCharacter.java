@@ -5825,6 +5825,10 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
 	public void setSpouse(String spouse) {
 		this.spouse = spouse;
 	}
+	
+	public String getEngagedTo() {
+		return engagedTo;
+	}
 
 	public boolean getSaidYesToMarriage() {
 		return saidYesToMarriage;
@@ -5832,7 +5836,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
 
 	public void setSaidYesToMarriage(boolean saidYesToMarriage, MapleCharacter toWho) {
 		this.saidYesToMarriage = saidYesToMarriage;
-		this.playerThatSaidYesToMarriage = toWho.getName();
+		this.setPlayerThatSaidYesToMarriage(toWho.getName());
 	}
 
 	public boolean getSaidYesToEngagement() {
@@ -5841,6 +5845,30 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
 
 	public void setSaidYesToEngagement(boolean saidYesToEngagement, MapleCharacter toWho) {
 		this.saidYesToEngagement = saidYesToEngagement;
-		this.playerThatSaidYesToMarriage = toWho.getName();
+		this.setPlayerThatSaidYesToMarriage(toWho.getName());
+	}
+
+	public boolean isEngaged() {
+		return engaged;
+	}
+
+	public void setEngaged(boolean engaged) {
+		this.engaged = engaged;
+	}
+
+	public String getPlayerThatSaidYesToMarriage() {
+		return playerThatSaidYesToMarriage;
+	}
+
+	public void setPlayerThatSaidYesToMarriage(String playerThatSaidYesToMarriage) {
+		this.playerThatSaidYesToMarriage = playerThatSaidYesToMarriage;
+	}
+
+	public String getPlayerThatSaidYesToEngagement() {
+		return playerThatSaidYesToEngagement;
+	}
+
+	public void setPlayerThatSaidYesToEngagement(String playerThatSaidYesToEngagement) {
+		this.playerThatSaidYesToEngagement = playerThatSaidYesToEngagement;
 	}
 }
