@@ -856,7 +856,7 @@ public class GameMasterCommands {
                 MobSkill skill = MobSkillFactory.getMobSkill(132, 2);
                 Long a1 = args.parseNumber(0);
                 if (a1 == null) {
-                    player.dropMessage(args.getError(1));
+                    player.dropMessage(args.getError(0));
                     return;
                 }
                 if (map) {

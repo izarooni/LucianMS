@@ -3222,17 +3222,19 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
 				rs = ps.executeQuery();
 				while (rs.next()) {
 					CQuestData cQuest = CQuestBuilder.beginQuest(ret, rs.getInt("questid"));
-					if (rs.getInt("completed") == 0) {
-						try (PreparedStatement stmt = con.prepareStatement("select * from cquestdata where ctableid = ?")) {
-							stmt.setInt(1, rs.getInt("id"));
-							try (ResultSet res = stmt.executeQuery()) {
-								while (res.next()) {
-									cQuest.getToKill().incrementRequirement(rs.getInt("monsterid"), rs.getInt("kills"));
+					if (cQuest != null) {
+						if (rs.getInt("completed") == 0) {
+							try (PreparedStatement stmt = con.prepareStatement("select * from cquestdata where ctableid = ?")) {
+								stmt.setInt(1, rs.getInt("id"));
+								try (ResultSet res = stmt.executeQuery()) {
+									while (res.next()) {
+										cQuest.getToKill().incrementRequirement(rs.getInt("monsterid"), rs.getInt("kills"));
+									}
 								}
 							}
+						} else {
+							cQuest.setCompleted(true);
 						}
-					} else {
-						cQuest.setCompleted(true);
 					}
 				}
 				rs.close();

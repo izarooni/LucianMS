@@ -23,6 +23,7 @@ package net.server;
 
 import client.MapleCharacter;
 import client.SkillFactory;
+import client.command.ConsoleCommands;
 import constants.ServerConstants;
 import net.MapleServerHandler;
 import net.mina.MapleCodecFactory;
@@ -209,6 +210,9 @@ public class Server implements Runnable {
 		manager.runLater(20);
 
 		System.out.println("Sucessfully loaded automated events\r\n");
+
+		ConsoleCommands.beginReading();
+		System.out.println("Console now listening for commands");
 
 		System.out.println("Listening on port 8484\r\n\r\n");
 		System.out.println("LucianMS is now online.");
