@@ -4022,6 +4022,26 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
 			}
 		}
 	}
+	
+	public static void changeRow(String player, String row, String type, Object newval) {
+		try(Connection c = DatabaseConnection.getConnection(); PreparedStatement statement = c.prepareStatement("UPDATE characters SET ? = ? WHERE name = ?")) {
+			statement.setString(1, row);
+			switch(type.toLowerCase()) {
+			case "int":
+				statement.setInt(2, (int) newval);
+				break;
+			case "string":
+				statement.setString(2, (String) newval);
+			break;
+			}
+			statement.setString(3, player);
+			
+			statement.execute();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		
+	}
 
 	// synchronize this call instead of trying to give access all at once (?)
 	public synchronized void saveToDB() {
