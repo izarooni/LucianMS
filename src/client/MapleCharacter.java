@@ -5849,7 +5849,11 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
 	}
 
 	public boolean isEngaged() {
-		return engaged;
+		return engaged || engagedTo == null;
+	}
+	
+	public boolean isMarried() {
+		return spouse != null;
 	}
 
 	public void setEngaged(boolean engaged) {
