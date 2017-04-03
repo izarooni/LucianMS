@@ -4024,6 +4024,26 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
 			}
 		}
 	}
+	
+	public static void changeRow(String player, String row, String type, Object newval) {
+		try(Connection c = DatabaseConnection.getConnection(); PreparedStatement statement = c.prepareStatement("UPDATE characters SET ? = ? WHERE name = ?")) {
+			statement.setString(1, row);
+			switch(type.toLowerCase()) {
+			case "int":
+				statement.setInt(2, (int) newval);
+				break;
+			case "string":
+				statement.setString(2, (String) newval);
+			break;
+			}
+			statement.setString(3, player);
+			
+			statement.execute();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		
+	}
 
 	// synchronize this call instead of trying to give access all at once (?)
 	public synchronized void saveToDB() {
@@ -4035,7 +4055,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
 			con.setAutoCommit(false);
 			PreparedStatement ps;
 			ps = con.prepareStatement(
-					"UPDATE characters SET level = ?, fame = ?, str = ?, dex = ?, luk = ?, `int` = ?, exp = ?, gachaexp = ?, hp = ?, mp = ?, maxhp = ?, maxmp = ?, sp = ?, ap = ?, gm = ?, skincolor = ?, gender = ?, job = ?, hair = ?, face = ?, map = ?, meso = ?, hpMpUsed = ?, spawnpoint = ?, party = ?, buddyCapacity = ?, messengerid = ?, messengerposition = ?, mountlevel = ?, mountexp = ?, mounttiredness= ?, equipslots = ?, useslots = ?, setupslots = ?, etcslots = ?,  monsterbookcover = ?, vanquisherStage = ?, dojoPoints = ?, lastDojoStage = ?, finishedDojoTutorial = ?, vanquisherKills = ?, matchcardwins = ?, matchcardlosses = ?, matchcardties = ?, omokwins = ?, omoklosses = ?, omokties = ?, dataString = ?, fishingpoints = ?, daily = ?, reborns = ?, eventpoints = ?, engagedTo = ?, marriedTo = ? WHERE id = ?",
+					"UPDATE characters SET level = ?, fame = ?, str = ?, dex = ?, luk = ?, `int` = ?, exp = ?, gachaexp = ?, hp = ?, mp = ?, maxhp = ?, maxmp = ?, sp = ?, ap = ?, gm = ?, skincolor = ?, gender = ?, job = ?, hair = ?, face = ?, map = ?, meso = ?, hpMpUsed = ?, spawnpoint = ?, party = ?, buddyCapacity = ?, messengerid = ?, messengerposition = ?, mountlevel = ?, mountexp = ?, mounttiredness= ?, equipslots = ?, useslots = ?, setupslots = ?, etcslots = ?,  monsterbookcover = ?, vanquisherStage = ?, dojoPoints = ?, lastDojoStage = ?, finishedDojoTutorial = ?, vanquisherKills = ?, matchcardwins = ?, matchcardlosses = ?, matchcardties = ?, omokwins = ?, omoklosses = ?, omokties = ?, dataString = ?, fishingpoints = ?, daily = ?, reborns = ?, eventpoints = ?, engagedTo = ?, spouse = ? WHERE id = ?",
 					Statement.RETURN_GENERATED_KEYS);
 			if (gmLevel < 1 && level > 199) {
 				ps.setInt(1, isCygnus() ? 120 : 200);
@@ -5827,6 +5847,10 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
 	public void setSpouse(String spouse) {
 		this.spouse = spouse;
 	}
+	
+	public String getEngagedTo() {
+		return engagedTo;
+	}
 
 	public boolean getSaidYesToMarriage() {
 		return saidYesToMarriage;
@@ -5834,7 +5858,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
 
 	public void setSaidYesToMarriage(boolean saidYesToMarriage, MapleCharacter toWho) {
 		this.saidYesToMarriage = saidYesToMarriage;
-		this.playerThatSaidYesToMarriage = toWho.getName();
+		this.setPlayerThatSaidYesToMarriage(toWho.getName());
 	}
 
 	public boolean getSaidYesToEngagement() {
@@ -5843,6 +5867,34 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
 
 	public void setSaidYesToEngagement(boolean saidYesToEngagement, MapleCharacter toWho) {
 		this.saidYesToEngagement = saidYesToEngagement;
-		this.playerThatSaidYesToMarriage = toWho.getName();
+		this.setPlayerThatSaidYesToMarriage(toWho.getName());
+	}
+
+	public boolean isEngaged() {
+		return engaged || engagedTo == null;
+	}
+	
+	public boolean isMarried() {
+		return spouse != null;
+	}
+
+	public void setEngaged(boolean engaged) {
+		this.engaged = engaged;
+	}
+
+	public String getPlayerThatSaidYesToMarriage() {
+		return playerThatSaidYesToMarriage;
+	}
+
+	public void setPlayerThatSaidYesToMarriage(String playerThatSaidYesToMarriage) {
+		this.playerThatSaidYesToMarriage = playerThatSaidYesToMarriage;
+	}
+
+	public String getPlayerThatSaidYesToEngagement() {
+		return playerThatSaidYesToEngagement;
+	}
+
+	public void setPlayerThatSaidYesToEngagement(String playerThatSaidYesToEngagement) {
+		this.playerThatSaidYesToEngagement = playerThatSaidYesToEngagement;
 	}
 }
