@@ -1,6 +1,8 @@
 package client.command;
 
 import client.MapleCharacter;
+import discord.Discord;
+import discord.commands.CommandManagerHelper;
 import net.server.Server;
 import net.server.channel.Channel;
 import net.server.world.World;
@@ -80,6 +82,13 @@ public class ConsoleCommands {
             } else {
                 System.err.println("The server is not online!");
             }
+        } else if (command.equals("d_connectedguilds")) {
+            Discord.println("Connected servers: ");
+            Discord.getBot().getClient().getGuilds().forEach(g -> Discord.println("\t" + g.getName()));
+        } else if (command.equals("d_reloadcommands")) {
+            CommandManagerHelper.unloadAll();
+            System.out.println("Discord command managers unloaded");
+            Discord.LoadExternalCommands();
         }
     }
 }

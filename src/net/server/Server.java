@@ -25,6 +25,7 @@ import client.MapleCharacter;
 import client.SkillFactory;
 import client.command.ConsoleCommands;
 import constants.ServerConstants;
+import discord.Discord;
 import net.MapleServerHandler;
 import net.mina.MapleCodecFactory;
 import net.server.channel.Channel;
@@ -130,6 +131,10 @@ public class Server implements Runnable {
 
 		System.out.println("LucianMS v" + ServerConstants.VERSION + " starting up.\r\n");
 
+		if (!Discord.initialize()) {
+			System.exit(0);
+		}
+
 		if (ServerConstants.SHUTDOWNHOOK) {
 			Runtime.getRuntime().addShutdownHook(new Thread(shutdown()));
 		}
@@ -192,7 +197,6 @@ public class Server implements Runnable {
 				System.out.println("Finished loading world " + i + "\r\n");
 			}
 		} catch (Exception e) {
-			System.out.println("Error in moople.ini, start CreateINI.bat to re-make the file.");
 			e.printStackTrace();// For those who get errors
 			System.exit(0);
 		}
@@ -201,7 +205,8 @@ public class Server implements Runnable {
 		acceptor.setHandler(new MapleServerHandler());
 		try {
 			acceptor.bind(new InetSocketAddress(8484));
-		} catch (IOException ex) {
+		} catch (IOException e) {
+			e.printStackTrace();
 		}
 
 		System.out.println("Loading Automatic Events\r\n");
@@ -560,6 +565,8 @@ public class Server implements Runnable {
 				acceptor.unbind();
 				acceptor.dispose();
 				System.exit(0);
+
+				System.out.println("Shutdown complete");
 			}
 		};
 	}
