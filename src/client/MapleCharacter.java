@@ -53,6 +53,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.regex.Pattern;
 
 import client.arcade.Arcade;
+import client.arcade.RPSGame;
 import client.autoban.AutobanManager;
 import client.inventory.Equip;
 import client.inventory.Item;
@@ -306,6 +307,8 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
 	public static int FRECEIVAL_ITEM = 2022323;
 
 	private Timestamp daily;
+
+	private RPSGame RPSGame = null;
 
 	// todo (probably for smega use only)
 	private PlayerTitles title;
@@ -5896,5 +5899,13 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
 
 	public void setPlayerThatSaidYesToEngagement(String playerThatSaidYesToEngagement) {
 		this.playerThatSaidYesToEngagement = playerThatSaidYesToEngagement;
+	}
+
+	public RPSGame getRPSGame() {
+		return RPSGame;
+	}
+
+	public void setRPSGame(RPSGame RPSGame) {
+		this.RPSGame = RPSGame;
 	}
 }

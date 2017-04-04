@@ -125,8 +125,7 @@ public class FilePrinter {
     }
 
     public static void print(final String name, final String s, boolean line) {
-    	System.out.println("Error thrown: " + name);
-    	System.out.println(s);
+    	System.out.println(String.format("[%s] %s", name, s));
         FileOutputStream out = null;
         String file = FILE_PATH + name;
         try {

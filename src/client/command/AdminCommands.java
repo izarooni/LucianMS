@@ -8,6 +8,7 @@ import client.inventory.MaplePet;
 import constants.ItemConstants;
 import net.server.Server;
 import net.server.channel.Channel;
+import net.server.channel.handlers.RockPaperScissorsHandler;
 import net.server.world.World;
 import scripting.npc.NPCScriptManager;
 import scripting.portal.PortalScriptManager;
@@ -288,6 +289,8 @@ public class AdminCommands {
         } else if (command.equals("reloadshosps")) {
             MapleShopFactory.getInstance().reloadShops();
             player.dropMessage(6, "Shops reloaded");
+        } else if (command.equals("test")) {
+            RockPaperScissorsHandler.startGame(player);
         }
     }
 }
