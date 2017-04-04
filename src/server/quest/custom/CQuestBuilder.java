@@ -65,54 +65,62 @@ public class CQuestBuilder {
             // begin constructing custom quest data
             CQuestData qData = new CQuestData(questId, xml.getName());
             // iterate through monsters to kill, setting all progress to 0
-            for (MapleData toKill : xml.getChildByPath("toKill").getChildren()) {
-                int monsterId = MapleDataTool.getInt(toKill.getChildByPath("monsterId"));
-                int amount = MapleDataTool.getInt(toKill.getChildByPath("amount"), -1);
-                if (monsterId == 0 || amount == -1) {
-                    System.out.println(String.format("Invalid monster kill requirement for quest '%s'", qData.getName()));
-                    continue;
+            if (xml.getChildByPath("toKill") != null) {
+                for (MapleData toKill : xml.getChildByPath("toKill").getChildren()) {
+                    int monsterId = MapleDataTool.getInt(toKill.getChildByPath("monsterId"));
+                    int amount = MapleDataTool.getInt(toKill.getChildByPath("amount"), -1);
+                    if (monsterId == 0 || amount == -1) {
+                        System.out.println(String.format("Invalid monster kill requirement for quest '%s'", qData.getName()));
+                        continue;
+                    }
+                    qData.getToKill().add(monsterId, amount);
                 }
-                qData.getToKill().add(monsterId, amount);
             }
-            // iterate through items that are to be collected, setting all progress to 0
-            for (MapleData toCollect : xml.getChildByPath("toCollect").getChildren()) {
-                // regular item drops
-                int reactorId = MapleDataTool.getInt(toCollect.getChildByPath("reactorId"));
-                int monsterId = MapleDataTool.getInt(toCollect.getChildByPath("monsterId"));
-                int itemId = MapleDataTool.getInt(toCollect.getChildByPath("itemId"));
-                int quantity = MapleDataTool.getInt(toCollect.getChildByPath("quantity"));
-                int chance = MapleDataTool.getInt(toCollect.getChildByPath("chance"));
-                int minQuantity = MapleDataTool.getInt(toCollect.getChildByPath("minDrop"));
-                int maxQuantity = MapleDataTool.getInt(toCollect.getChildByPath("maxDrop"));
-                if (itemId == 0 || quantity == 0) {
-                    System.out.println(String.format("Invalid item requirement for quest '%s'", qData.getName()));
-                    continue;
+
+            if (xml.getChildByPath("toCollect") != null) {
+                // iterate through items that are to be collected, setting all progress to 0
+                for (MapleData toCollect : xml.getChildByPath("toCollect").getChildren()) {
+                    // regular item drops
+                    int reactorId = MapleDataTool.getInt(toCollect.getChildByPath("reactorId"));
+                    int monsterId = MapleDataTool.getInt(toCollect.getChildByPath("monsterId"));
+                    int itemId = MapleDataTool.getInt(toCollect.getChildByPath("itemId"));
+                    int quantity = MapleDataTool.getInt(toCollect.getChildByPath("quantity"));
+                    int chance = MapleDataTool.getInt(toCollect.getChildByPath("chance"));
+                    int minQuantity = MapleDataTool.getInt(toCollect.getChildByPath("minDrop"));
+                    int maxQuantity = MapleDataTool.getInt(toCollect.getChildByPath("maxDrop"));
+                    if (itemId == 0 || quantity == 0) {
+                        System.out.println(String.format("Invalid item requirement for quest '%s'", qData.getName()));
+                        continue;
+                    }
+                    CQuestItemRequirement.CQuestItem qItem = new CQuestItemRequirement.CQuestItem(itemId, quantity, false);
+                    qItem.setMonsterId(monsterId);
+                    qItem.setReactorId(reactorId);
+                    qItem.setChance(chance);
+                    qItem.setMinQuantity(minQuantity);
+                    qItem.setMaxQuantity(maxQuantity);
+                    qData.toCollect.add(qItem);
                 }
-                CQuestItemRequirement.CQuestItem qItem = new CQuestItemRequirement.CQuestItem(itemId, quantity, false);
-                qItem.setMonsterId(monsterId);
-                qItem.setReactorId(reactorId);
-                qItem.setChance(chance);
-                qItem.setMinQuantity(minQuantity);
-                qItem.setMaxQuantity(maxQuantity);
-                System.out.println(qItem);
-                qData.toCollect.add(qItem);
             }
-            for (MapleData rewards : xml.getChildByPath("rewards").getChildren()) {
-                if (rewards.getType() == MapleDataType.INT) {
-                    if (rewards.getName().equalsIgnoreCase("meso")) {
-                        qData.rewards.add(new CQuestMesoReward(MapleDataTool.getInt(rewards)));
-                    } else if (rewards.getName().equalsIgnoreCase("exp")) {
-                        qData.rewards.add(new CQuestExpReward(MapleDataTool.getInt(rewards)));
+            if (xml.getChildByPath("rewards") != null) {
+                for (MapleData rewards : xml.getChildByPath("rewards").getChildren()) {
+                    if (rewards.getType() == MapleDataType.INT) {
+                        if (rewards.getName().equalsIgnoreCase("meso")) {
+                            qData.rewards.add(new CQuestMesoReward(MapleDataTool.getInt(rewards)));
+                        } else if (rewards.getName().equalsIgnoreCase("exp")) {
+                            qData.rewards.add(new CQuestExpReward(MapleDataTool.getInt(rewards)));
+                        }
                     }
                 }
             }
-            for (MapleData items : xml.getChildByPath("rewards/items").getChildren()) {
-                int itemId = MapleDataTool.getInt(items.getChildByPath("itemId"));
-                short quantity = (short) MapleDataTool.getInt(items.getChildByPath("quantity"));
-                if (itemId == 0 || quantity == 0) {
-                    System.out.println(String.format("Invalid reward item for quest '%s'", qData.getName()));
+            if (xml.getChildByPath("rewards/items") != null) {
+                for (MapleData items : xml.getChildByPath("rewards/items").getChildren()) {
+                    int itemId = MapleDataTool.getInt(items.getChildByPath("itemId"));
+                    short quantity = (short) MapleDataTool.getInt(items.getChildByPath("quantity"));
+                    if (itemId == 0 || quantity == 0) {
+                        System.out.println(String.format("Invalid reward item for quest '%s'", qData.getName()));
+                    }
+                    qData.rewards.add(new CQuestItemReward(itemId, quantity));
                 }
-                qData.rewards.add(new CQuestItemReward(itemId, quantity));
             }
             return qData;
         }

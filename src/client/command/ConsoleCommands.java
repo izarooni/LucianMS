@@ -14,7 +14,8 @@ public class ConsoleCommands {
 
     private static volatile boolean reading = false;
 
-    private ConsoleCommands() {}
+    private ConsoleCommands() {
+    }
 
     public static void beginReading() {
         reading = true;
@@ -49,6 +50,10 @@ public class ConsoleCommands {
                 scanner.close();
             }
         }).start();
+    }
+
+    public static void stopReading() {
+        reading = false;
     }
 
     private static void execute(CommandWorker.Command command, CommandWorker.CommandArgs args) {

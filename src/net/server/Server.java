@@ -130,24 +130,25 @@ public class Server implements Runnable {
 
 		System.out.println("LucianMS v" + ServerConstants.VERSION + " starting up.\r\n");
 
-		if (ServerConstants.SHUTDOWNHOOK)
-			Runtime.getRuntime().addShutdownHook(new Thread(shutdown(false)));
+		if (ServerConstants.SHUTDOWNHOOK) {
+			Runtime.getRuntime().addShutdownHook(new Thread(shutdown()));
+		}
 
 		DatabaseConnection.getConnection();
-		Connection c = DatabaseConnection.getConnection();
+		System.out.println("Database connection established");
 		try {
-			PreparedStatement ps = c.prepareStatement("UPDATE accounts SET loggedin = 0");
-			ps.executeUpdate();
-			ps.close();
-			ps = c.prepareStatement("UPDATE characters SET HasMerchant = 0");
-			ps.executeUpdate();
-			ps.close();
-		} catch (SQLException sqle) {
+			DatabaseConnection.getConnection().createStatement().execute("update accounts set loggedin = 0");
+			DatabaseConnection.getConnection().createStatement().execute("update characters set hasmerchant = 0");
+		} catch (SQLException e) {
+			e.printStackTrace();
 		}
+
 		IoBuffer.setUseDirectBuffer(false);
 		IoBuffer.setAllocator(new SimpleBufferAllocator());
 		acceptor = new NioSocketAcceptor();
 		acceptor.getFilterChain().addLast("codec", (IoFilter) new ProtocolCodecFilter(new MapleCodecFactory()));
+		System.out.println("Listening on port 8484");
+
 		TimerManager tMan = TimerManager.getInstance();
 		tMan.start();
 		tMan.register(tMan.purge(), 300000);// Purging ftw...
@@ -214,21 +215,9 @@ public class Server implements Runnable {
 		ConsoleCommands.beginReading();
 		System.out.println("Console now listening for commands");
 
-		System.out.println("Listening on port 8484\r\n\r\n");
 		System.out.println("LucianMS is now online.");
 		online = true;
 
-	}
-
-	public void shutdown() {
-		try {
-			TimerManager.getInstance().stop();
-			acceptor.unbind();
-		} catch (NullPointerException e) {
-			FilePrinter.printError(FilePrinter.EXCEPTION_CAUGHT, e);
-		}
-		System.out.println("Server offline.");
-		System.exit(0);// BOEIEND :D
 	}
 
 	public static void main(String args[]) {
@@ -539,25 +528,14 @@ public class Server implements Runnable {
 		return worlds;
 	}
 
-	public final Runnable shutdown(final boolean restart) {// only once :D
+	public final Runnable shutdown() {// only once :D
 		return new Runnable() {
 			@Override
 			public void run() {
-				System.out.println((restart ? "Restarting" : "Shutting down") + " the server!\r\n");
-				if (getWorlds() == null)
-					return;// already shutdown
+				System.out.println("Shutting down the server!\r\n");
 				for (World w : getWorlds()) {
 					w.shutdown();
 				}
-				/*
-				 * for (World w : getWorlds()) { while
-				 * (w.getPlayerStorage().getAllCharacters().size() > 0) { try {
-				 * Thread.sleep(1000); } catch (InterruptedException ie) {
-				 * System.err.println("FUCK MY LIFE"); } } } for (Channel ch :
-				 * getAllChannels()) { while (ch.getConnectedClients() > 0) {
-				 * try { Thread.sleep(1000); } catch (InterruptedException ie) {
-				 * System.err.println("FUCK MY LIFE"); } } }
-				 */
 
 				TimerManager.getInstance().purge();
 				TimerManager.getInstance().stop();
@@ -571,8 +549,8 @@ public class Server implements Runnable {
 						}
 					}
 				}
+				ConsoleCommands.stopReading();
 				worlds.clear();
-				worlds = null;
 				channels.clear();
 				channels = null;
 				worldRecommendedList.clear();
@@ -580,19 +558,8 @@ public class Server implements Runnable {
 
 				System.out.println("Worlds + Channels are offline.");
 				acceptor.unbind();
-				acceptor = null;
-				if (!restart) {
-					System.exit(0);
-				} else {
-					System.out.println("\r\nRestarting the server....\r\n");
-					try {
-						instance.finalize();// FUU I CAN AND IT'S FREE
-					} catch (Throwable ex) {
-					}
-					instance = null;
-					System.gc();
-					getInstance().run();// DID I DO EVERYTHING?! D:
-				}
+				acceptor.dispose();
+				System.exit(0);
 			}
 		};
 	}

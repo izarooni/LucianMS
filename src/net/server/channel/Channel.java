@@ -120,7 +120,8 @@ public final class Channel {
             closeAllMerchants();
             players.disconnectAll();
             acceptor.unbind();
-            
+            acceptor.dispose();
+
             finishedShutdown = true;
             System.out.println("Successfully shut down Channel " + channel + " on World " + world + "\r\n");          
         } catch (Exception e) {
