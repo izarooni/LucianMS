@@ -75,7 +75,7 @@ public class Discord {
     }
 
     /**
-     * This is not dispose the already existing command managers
+     * This does not dispose the already existing command managers
      */
     public static void LoadExternalCommands() {
         //region loading command managers from external jars
@@ -84,7 +84,6 @@ public class Discord {
             if (cmds.mkdirs()) {
                 println("External command management directory created");
             }
-
             try {
                 File[] files = cmds.listFiles();
                 if (files != null) {
@@ -114,7 +113,7 @@ public class Discord {
                             CommandHelper helper = (CommandHelper) toLoad.newInstance();
                             helper.onLoad();
 
-                            CommandManagerHelper.addCommandManager(name, helper);
+                            CommandManagerHelper.addCommandManager(name, loader, helper);
                             System.out.print(".");
                         }
                     }
@@ -123,11 +122,9 @@ public class Discord {
                 }
             } catch (IOException | ClassNotFoundException | InstantiationException | IllegalAccessException e) {
                 System.err.println("Was unable to load external commands: " + e.getMessage());
-                System.exit(0);
             }
         } catch (SecurityException e) {
             System.err.println("Was unable to create a folder for command managements: " + e.getMessage());
-            System.exit(0);
         }
         //endregion
     }

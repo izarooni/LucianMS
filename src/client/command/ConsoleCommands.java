@@ -85,9 +85,10 @@ public class ConsoleCommands {
         } else if (command.equals("d_connectedguilds")) {
             Discord.println("Connected servers: ");
             Discord.getBot().getClient().getGuilds().forEach(g -> Discord.println("\t" + g.getName()));
-        } else if (command.equals("d_reloadcommands")) {
+        } else if (command.equals("d_unloadcommands")) {
             CommandManagerHelper.unloadAll();
             System.out.println("Discord command managers unloaded");
+        } else if (command.equals("d_loadcommands")) {
             Discord.LoadExternalCommands();
         }
     }
