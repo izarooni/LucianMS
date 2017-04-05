@@ -65,9 +65,12 @@ public class MapleMapFactory {
                 map = maps.get(omapid);
                 if (map != null) {
                     return map;
-                } 
+                }
                 String mapName = getMapName(mapid);
                 MapleData mapData = source.getData(mapName);
+                if (mapData == null) {
+                    return null;
+                }
                 String link = MapleDataTool.getString(mapData.getChildByPath("info/link"), "");
                 if (!link.equals("")) { //nexon made hundreds of dojo maps so to reduce the size they added links.
                     mapName = getMapName(Integer.parseInt(link));
@@ -79,13 +82,13 @@ public class MapleMapFactory {
                     monsterRate = ((Float) mobRate.getData()).floatValue();
                 }
                 map = new MapleMap(mapid, world, channel, MapleDataTool.getInt("info/returnMap", mapData), monsterRate);
-                
+
                 String onFirstEnter = MapleDataTool.getString(mapData.getChildByPath("info/onFirstUserEnter"), String.valueOf(mapid));
                 map.setOnFirstUserEnter(onFirstEnter.equals("") ? String.valueOf(mapid) : onFirstEnter);
-                
+
                 String onEnter = MapleDataTool.getString(mapData.getChildByPath("info/onUserEnter"), String.valueOf(mapid));
                 map.setOnUserEnter(onEnter.equals("") ? String.valueOf(mapid) : onEnter);
-                
+
                 map.setFieldLimit(MapleDataTool.getInt(mapData.getChildByPath("info/fieldLimit"), 0));
                 map.setMobInterval((short) MapleDataTool.getInt(mapData.getChildByPath("info/createMobInterval"), 5000));
                 PortalFactory portalFactory = new PortalFactory();
@@ -141,7 +144,7 @@ public class MapleMapFactory {
                         map.addMapleArea(new Rectangle(x1, y1, (x2 - x1), (y2 - y1)));
                     }
                 }
-                
+
                 try {
                     Connection con = DatabaseConnection.getConnection();
                     PreparedStatement ps = con.prepareStatement("SELECT * FROM spawns WHERE mid = ?");
@@ -172,7 +175,7 @@ public class MapleMapFactory {
                 } catch (SQLException e) {
 
                 }
-                
+
                 try { try (PreparedStatement ps = DatabaseConnection.getConnection().prepareStatement("SELECT * FROM playernpcs WHERE map = ?")) {
                         ps.setInt(1, omapid);
                         try (ResultSet rs = ps.executeQuery()) {
@@ -230,26 +233,26 @@ public class MapleMapFactory {
                 map.setTimeLimit(MapleDataTool.getIntConvert("timeLimit", mapData.getChildByPath("info"), -1));
                 map.setFieldType(MapleDataTool.getIntConvert("info/fieldType", mapData, 0));
                 map.setMobCapacity(MapleDataTool.getIntConvert("fixedMobCapacity", mapData.getChildByPath("info"), 500));//Is there a map that contains more than 500 mobs?
-                
+
                 HashMap<Integer, Integer> backTypes = new HashMap<>();
                 try {
                     for (MapleData layer : mapData.getChildByPath("back")) { // yolo
                         int layerNum = Integer.parseInt(layer.getName());
                         int type = MapleDataTool.getInt(layer.getChildByPath("type"), 0);
-                        
+
                         backTypes.put(layerNum, type);
                     }
                 } catch (Exception e) {
                     // swallow cause I'm cool
                 }
                 map.setBackgroundTypes(backTypes);
-                
+
                 maps.put(omapid, map);
             }
         }
-        
+
         return map;
-        
+
     }
 
     public boolean isMapLoaded(int mapId) {
@@ -323,8 +326,8 @@ public class MapleMapFactory {
         builder.append("/").append(mapid);
         return builder.toString();
     }
-    
-    
+
+
 
     public void setChannel(int channel) {
         this.channel = channel;
@@ -341,19 +344,19 @@ public class MapleMapFactory {
 	public synchronized void reloadField(int fieldId) {
     MapleMap fOld, fNew;
     if ((fOld = maps.get(fieldId)) != null) {
+        maps.remove(fieldId);
         fNew = getMap(fieldId);
         for (MapleMapObject object : fOld.getMapObjects()) {
         	if(object instanceof MapleCharacter) {
-            MapleCharacter player = (MapleCharacter) object;
-            fOld.removeMapObject(player);
-            player.changeMap(fNew);
+                MapleCharacter player = (MapleCharacter) object;
+                fOld.removeMapObject(player);
+                player.changeMap(fNew);
         	}
         }
-        fOld.dispose();
         maps.put(fieldId, fNew);
     }
 }
-	
+
 	private AbstractLoadedMapleLife giveLife(int id, int f, boolean hide, int fh, int cy, int rx0, int rx1, int x, int y, String type) {
         AbstractLoadedMapleLife myLife = MapleLifeFactory.getLife(id, type);
         myLife.setCy(cy);
@@ -365,5 +368,5 @@ public class MapleMapFactory {
         myLife.setHide(hide);
         return myLife;
     }
-	
+
 }

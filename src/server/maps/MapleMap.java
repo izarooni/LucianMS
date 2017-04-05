@@ -2478,13 +2478,6 @@ public class MapleMap {
         return mobInterval;
     }
 
-    public void dispose() {
-        for (MapleCharacter player : getCharacters()) {
-            player.saveToDB();
-            removeMapObject(player);
-        }
-    }
-
     public Collection<MapleCharacter> getNearestPvpChar(Point attacker, double maxRange, double maxHeight, Collection<MapleCharacter> chr) {
         Collection<MapleCharacter> character = new LinkedList<MapleCharacter>();
         for (MapleCharacter a : characters) {

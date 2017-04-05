@@ -58,6 +58,7 @@ public class AdminCommands {
             commands.add("!reloadportals - Reload portal scripts");
             commands.add("!reloadreactordrops - Reload reactor drops");
             commands.add("!reloadshops - Reload shop items");
+            commands.add("!reloadmobs - Reload mob data");
             commands.forEach(player::dropMessage);
             commands.clear();
         } else if (command.equals("item", "drop")) {
@@ -289,6 +290,9 @@ public class AdminCommands {
         } else if (command.equals("reloadshosps")) {
             MapleShopFactory.getInstance().reloadShops();
             player.dropMessage(6, "Shops reloaded");
+        } else if (command.equals("reloadmobs")) {
+            MapleLifeFactory.clear();
+            player.dropMessage(6, "Mobs reloaded");
         } else if (command.equals("test")) {
             RockPaperScissorsHandler.startGame(player);
         }
