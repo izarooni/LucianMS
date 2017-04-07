@@ -256,9 +256,9 @@ public abstract class AbstractDealDamageHandler extends AbstractMaplePacketHandl
 					if(attack.skill == Shadower.BOOMERANG_STEP)
 						distanceToDetect += 60000;
                     
-                    if(distance > distanceToDetect) {
-                        AutobanFactory.DISTANCE_HACK.alert(player, "Distance Sq to monster: " + distance + " SID: " + attack.skill + " MID: " + monster.getId());
-                    }
+                   // if(distance > distanceToDetect) {
+                    //    AutobanFactory.DISTANCE_HACK.alert(player, "Distance Sq to monster: " + distance + " SID: " + attack.skill + " MID: " + monster.getId());
+                   // }
                     
                     int totDamageToOneMonster = 0;
                     List<Integer> onedList = attack.allDamage.get(oned);
