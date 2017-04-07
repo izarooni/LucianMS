@@ -720,11 +720,14 @@ public class GameMasterCommands {
                 }
             }
         } else if (command.equals("reloadmap")) {
-            for (Channel channel : client.getWorldServer().getChannels()) {
-                channel.getMapFactory().reloadField(player.getMapId());
-            }
+                player.getClient().getChannelServer().getMapFactory().reloadField(player.getMapId());
         } else if (command.equals("killall")) {
-            player.getMap().getMonsters().forEach(m -> m.killBy(player));
+        	if(player.getMap().getMonsters() != null) { // important check that wasn't done
+        		player.getMap().getMonsters().forEach(m -> m.killBy(player));
+        		player.dropMessage(6, "The monsters on the map have been killed");
+        	} else {
+        		player.dropMessage(5, "There are no monsters in your map");
+        	}
         } else if (command.equals("clearinv")) {
             if (args.length() == 1) {
                 String sType = args.get(0);
