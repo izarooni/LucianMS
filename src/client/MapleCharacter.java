@@ -127,6 +127,7 @@ import server.events.RescueGaga;
 import server.events.custom.AbstractBossPQ;
 import server.events.custom.Achievements;
 import server.events.custom.House;
+import server.events.custom.JumpQuestController;
 import server.events.custom.PlayerTitles;
 import server.events.gm.MapleFitness;
 import server.events.gm.MapleOla;
@@ -330,6 +331,8 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
 	private String playerThatSaidYesToMarriage, playerThatSaidYesToEngagement;
 	
 	private boolean engaged;
+	
+	private JumpQuestController JQController;
 		
 	private MapleCharacter() {
 		setStance(0);
@@ -5907,5 +5910,13 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
 
 	public void setRPSGame(RPSGame RPSGame) {
 		this.RPSGame = RPSGame;
+	}
+	
+	public JumpQuestController getJQController() {
+		return this.JQController;
+	}
+	
+	public void setJQController(JumpQuestController controller) {
+		this.JQController = controller;
 	}
 }
