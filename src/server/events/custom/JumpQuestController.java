@@ -18,10 +18,11 @@ public class JumpQuestController {
 	private long timeStarted;
 	private int mapComingFrom;
 	
-	public JumpQuestController(MapleCharacter player, int id, int map) {
+	public JumpQuestController(MapleCharacter player, int id, int map, int previousMap) {
 		this.player = player;
 		this.map = map;
 		this.id = id;
+		this.mapComingFrom = previousMap;
 	}
 	
 	public void start() {
@@ -41,6 +42,7 @@ public class JumpQuestController {
 			stmnt.setInt(1, id);
 			stmnt.setInt(2, player.getId());
 			stmnt.setInt(3, (int) (System.currentTimeMillis() - timeStarted) / 1000); // time in seconds
+			stmnt.setInt(4, (int) (System.currentTimeMillis() - timeStarted) / 1000); // time in seconds
 			
 			stmnt.execute();
 			
@@ -53,4 +55,13 @@ public class JumpQuestController {
 		}
 
 	}
+	
+	public int getJQMap() {
+		return this.map;
+	}
+	
+	public int getReturnMap() {
+		return this.mapComingFrom;
+	}
+	
 }
