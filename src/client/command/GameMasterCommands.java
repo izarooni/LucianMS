@@ -99,6 +99,8 @@ public class GameMasterCommands {
             commands.add("!ak <OPT=reset> - set the autokill position of the map to your y-position");
             commands.add("!bomb <OPT=username> - spawns a bomb at the specified player location, or your location if no name provided");
             commands.add("!bombmap - spawns bombs everywhere");
+            commands.add("!jail <player> <OPT=reason> - jail a person, and optionally specify a reason");
+            commands.add("!jail list - list all the jailed people, and the reason if it is specified.");
             commands.forEach(player::dropMessage);
             commands.clear();
         } else if (command.equals("dc")) {
