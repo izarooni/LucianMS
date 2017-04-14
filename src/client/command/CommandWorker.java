@@ -43,7 +43,8 @@ public class CommandWorker {
 
         Command command = new Command(name);
         CommandArgs args = new CommandArgs(sp);
-
+        
+        if(!(player.getMapId() == 80 || player.getMapId() == 81))
         if (h == '!' && player.isGM()) {
             if (player.gmLevel() >= 2) {
                 AdminCommands.execute(client, command, args);

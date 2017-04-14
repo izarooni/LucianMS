@@ -1,6 +1,18 @@
 package client.command;
 
-import client.*;
+import java.awt.Point;
+import java.awt.Rectangle;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.HashMap;
+
+import client.MapleCharacter;
+import client.MapleClient;
+import client.MapleDisease;
+import client.MapleJob;
+import client.MapleStat;
 import client.inventory.Equip;
 import client.inventory.Item;
 import client.inventory.MapleInventory;
@@ -19,20 +31,18 @@ import server.life.MobSkillFactory;
 import server.maps.MapleMap;
 import tools.DatabaseConnection;
 import tools.MaplePacketCreator;
-
-import java.awt.*;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.ArrayList;
+import tools.Randomizer;
 
 /**
  * @author izarooni, lucasdieswagger
  */
 public class GameMasterCommands {
 
+	
 	// TODO correct command argumentation, at every type of commands
 	// TODO correct coloring depending on if it is an error message or not.
+
+	private static HashMap<Integer, String> jailReasons = new HashMap<Integer, String>();
 	
     public static int tagRange = 5000;
 
@@ -1069,6 +1079,36 @@ public class GameMasterCommands {
                 bomb.getStats().selfDestruction().setRemoveAfter(time * 1000);
                 target.getMap().spawnMonsterOnGroudBelow(bomb, target.getPosition());
             }
+        } else if(command.equals("jail")) {
+        	if(args.length() >= 1) {
+        		if(args.get(0) != "list") {
+        		MapleCharacter target = ch.getPlayerStorage().getCharacterByName(args.get(0));
+        		
+        		if(target != null) {
+        			StringBuilder sb = new StringBuilder();
+        			if(args.length() >= 2) { 
+		        				        		
+		        		for(int i = 2; i < args.length(); i++) {
+		        			sb.append(args.get(i)).append(" ");
+		        		}
+	        		}
+        			player.dropMessage(6, String.format("You have been jailed by %s %s", player.getName(), (sb.toString().isEmpty() ? "for " + sb.toString() : "")));
+        			int random = Randomizer.nextInt() * 100;
+        			jailReasons.put(target.getId(), sb.toString() == "" ? "" : sb.toString());
+        			player.changeMap((random <= 50 ? 80 : 81)); // idk, both are jail maps.
+        		} else {
+        			player.dropMessage(5, "This player is not online, or does not exist.");
+        		}
+        		} else {
+            		jailReasons.forEach((id, reason) -> {
+            			MapleCharacter target = ch.getPlayerStorage().getCharacterById(id);
+            			player.dropMessage(String.format("%s: %s", target.getName(), (reason == "" ? "No reason given" : reason)));
+            		});
+            	}
+        		        		
+        	} else {
+        		player.dropMessage(5, "Correct usage: !jail <player> <OPT=reason>");
+        	}
         }
     }
 }
