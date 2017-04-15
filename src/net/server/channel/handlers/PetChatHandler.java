@@ -22,7 +22,6 @@
 package net.server.channel.handlers;
 
 import client.MapleClient;
-import client.autoban.AutobanFactory;
 import net.AbstractMaplePacketHandler;
 import tools.FilePrinter;
 import tools.MaplePacketCreator;
@@ -40,9 +39,6 @@ public final class PetChatHandler extends AbstractMaplePacketHandler {
         }
         String text = slea.readMapleAsciiString();
         if (text.length() > Byte.MAX_VALUE) {
-        	AutobanFactory.PACKET_EDIT.alert(c.getPlayer(), c.getPlayer().getName() + " tried to packet edit with pets.");
-        	FilePrinter.printError(FilePrinter.EXPLOITS + c.getPlayer().getName() + ".txt", c.getPlayer().getName() + " tried to send text with length of " + text.length() + "\r\n");
-        	c.disconnect(true, false);
         	return;
         }
         c.getPlayer().getMap().broadcastMessage(c.getPlayer(), MaplePacketCreator.petChat(c.getPlayer().getId(), pet, act, text), true);

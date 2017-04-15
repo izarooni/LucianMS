@@ -23,7 +23,6 @@ package net.server.channel.handlers;
 
 import client.*;
 import client.MapleCharacter.CancelCooldownAction;
-import client.autoban.AutobanFactory;
 import constants.GameConstants;
 import constants.skills.*;
 import net.AbstractMaplePacketHandler;
@@ -43,12 +42,8 @@ public final class SpecialMoveHandler extends AbstractMaplePacketHandler {
     @Override
     public final void handlePacket(SeekableLittleEndianAccessor slea, MapleClient c) {
         MapleCharacter player = c.getPlayer();
-        player.getAutobanManager().setTimestamp(4, slea.readInt(), 3);
         int skillid = slea.readInt();
         if ((!GameConstants.isPQSkillMap(c.getPlayer().getMapId()) && GameConstants.isPqSkill(skillid)) || (!c.getPlayer().isGM() && GameConstants.isGMSkills(skillid)) || (!GameConstants.isInJobTree(skillid, c.getPlayer().getJob().getId()) && !c.getPlayer().isGM())) {
-            AutobanFactory.PACKET_EDIT.alert(c.getPlayer(), c.getPlayer().getName() + " tried to packet edit skills.");
-            FilePrinter.printError(FilePrinter.EXPLOITS + c.getPlayer().getName() + ".txt", c.getPlayer().getName() + " tried to use skill " + skillid + " without it being in their job.\r\n");
-            c.disconnect(true, false);
             return;
         }
         Point pos = null;

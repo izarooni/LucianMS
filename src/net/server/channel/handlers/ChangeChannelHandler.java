@@ -21,28 +21,36 @@
  */
 package net.server.channel.handlers;
 
+import client.MapleCharacter;
+import client.autoban.Cheater;
+import client.autoban.Cheats;
 import net.AbstractMaplePacketHandler;
+import tools.MaplePacketCreator;
 import tools.data.input.SeekableLittleEndianAccessor;
 import client.MapleClient;
-import client.autoban.AutobanFactory;
 
 /**
  *
  * @author Matze
  */
-public final class ChangeChannelHandler extends AbstractMaplePacketHandler {
+public class ChangeChannelHandler extends AbstractMaplePacketHandler {
 
     @Override
-    public final void handlePacket(SeekableLittleEndianAccessor slea, MapleClient c) {
+    public void handlePacket(SeekableLittleEndianAccessor slea, MapleClient c) {
+        MapleCharacter player = c.getPlayer();
         int channel = slea.readByte() + 1;
-        c.getPlayer().getAutobanManager().setTimestamp(6, slea.readInt(), 2);
         if(c.getChannel() == channel) {
-        	AutobanFactory.GENERAL.alert(c.getPlayer(), "CCing to same channel.");
-            c.disconnect(false, false);
             return;
-        } else if (c.getPlayer().getCashShop().isOpened() || c.getPlayer().getMiniGame() != null || c.getPlayer().getPlayerShop() != null) {
+        }
+        if (c.getPlayer().getCashShop().isOpened() || c.getPlayer().getMiniGame() != null || c.getPlayer().getPlayerShop() != null) {
     		return;
     	}
+        Cheater.CheatEntry entry = player.getCheater().getCheatEntry(Cheats.FastChannelChange);
+        if (System.currentTimeMillis() - entry.latestOperationTimestamp < 1000) {
+            c.announce(MaplePacketCreator.enableActions());
+            return;
+        }
+        entry.latestOperationTimestamp = System.currentTimeMillis();
         c.changeChannel(channel);
     }
 }

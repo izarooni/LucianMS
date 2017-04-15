@@ -23,7 +23,6 @@ package net.server.channel.handlers;
 
 import client.MapleCharacter;
 import client.MapleClient;
-import client.autoban.AutobanFactory;
 import client.inventory.Item;
 import client.inventory.MapleInventory;
 import client.inventory.MapleInventoryType;
@@ -56,9 +55,6 @@ public final class StorageHandler extends AbstractMaplePacketHandler {
 			byte type = slea.readByte();
 			byte slot = slea.readByte();
 			if (slot < 0 || slot > storage.getSlots()) { // removal starts at zero
-				AutobanFactory.PACKET_EDIT.alert(c.getPlayer(), c.getPlayer().getName() + " tried to packet edit with storage.");
-				FilePrinter.printError(FilePrinter.EXPLOITS + c.getPlayer().getName() + ".txt", c.getPlayer().getName() + " tried to work with storage slot " + slot + "\r\n");
-				c.disconnect(true, false);
 				return;
 			}
 			slot = storage.getSlot(MapleInventoryType.getByType(type), slot);
@@ -98,9 +94,6 @@ public final class StorageHandler extends AbstractMaplePacketHandler {
 			MapleInventoryType slotType = ii.getInventoryType(itemId);
 			MapleInventory Inv = chr.getInventory(slotType);
 			if (slot < 1 || slot > Inv.getSlotLimit()) { //player inv starts at one
-				AutobanFactory.PACKET_EDIT.alert(c.getPlayer(), c.getPlayer().getName() + " tried to packet edit with storage.");
-				FilePrinter.printError(FilePrinter.EXPLOITS + c.getPlayer().getName() + ".txt", c.getPlayer().getName() + " tried to store item at slot " + slot + "\r\n");
-				c.disconnect(true, false);
 				return;
 			}
 			if (quantity < 1 || chr.getItemQuantity(itemId, false) < quantity) {

@@ -54,7 +54,7 @@ import java.util.regex.Pattern;
 
 import client.arcade.Arcade;
 import client.arcade.RPSGame;
-import client.autoban.AutobanManager;
+import client.autoban.Cheater;
 import client.inventory.Equip;
 import client.inventory.Item;
 import client.inventory.ItemFactory;
@@ -277,7 +277,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
 	private short combocounter = 0;
 	private List<String> blockedPortals = new ArrayList<>();
 	private Map<Short, String> area_info = new LinkedHashMap<>();
-	private AutobanManager autoban;
+	private Cheater cheater = new Cheater();
 	private boolean isbanned = false;
 	private ScheduledFuture<?> pendantOfSpirit = null; // 1122017
 	private byte pendantExp = 0, lastmobcount = 0;
@@ -3175,7 +3175,6 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
 			rs.close();
 			ps.close();
 			ret.cashshop = new CashShop(ret.accountid, ret.id, ret.getJobType());
-			ret.autoban = new AutobanManager(ret);
 			ret.marriageRing = null; // for now
 			ps = con.prepareStatement(
 					"SELECT name, level FROM characters WHERE accountid = ? AND id != ? ORDER BY level DESC limit 1");
@@ -5451,10 +5450,6 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
 		return rCP;
 	}
 
-	public AutobanManager getAutobanManager() {
-		return autoban;
-	}
-
 	public void equipPendantOfSpirit() {
 		if (pendantOfSpirit == null) {
 			pendantOfSpirit = TimerManager.getInstance().register(new Runnable() {
@@ -5918,5 +5913,9 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
 	
 	public void setJQController(JumpQuestController controller) {
 		this.JQController = controller;
+	}
+
+	public Cheater getCheater() {
+		return cheater;
 	}
 }

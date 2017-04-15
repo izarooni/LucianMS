@@ -44,7 +44,6 @@ public class CommandWorker {
         Command command = new Command(name);
         CommandArgs args = new CommandArgs(sp);
         
-        if(!(player.getMapId() == 80 || player.getMapId() == 81))
         if (h == '!' && player.isGM()) {
             if (player.gmLevel() >= 2) {
                 AdminCommands.execute(client, command, args);
@@ -54,6 +53,10 @@ public class CommandWorker {
             }
             return true;
         } else if (h == '@') {
+            if(player.getMapId() == 80 || player.getMapId() == 81) {
+                player.dropMessage("You may not use commands here");
+                return true;
+            }
             PlayerCommands.execute(client, command, args);
             return true;
         }

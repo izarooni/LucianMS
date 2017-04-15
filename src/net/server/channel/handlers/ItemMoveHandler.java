@@ -21,7 +21,10 @@
 */
 package net.server.channel.handlers;
 
+import client.MapleCharacter;
 import client.MapleClient;
+import client.autoban.Cheater;
+import client.autoban.Cheats;
 import client.inventory.MapleInventoryType;
 import net.AbstractMaplePacketHandler;
 import server.MapleInventoryManipulator;
@@ -29,20 +32,28 @@ import tools.MaplePacketCreator;
 import tools.data.input.SeekableLittleEndianAccessor;
 
 /**
- *
  * @author Matze
  */
-public final class ItemMoveHandler extends AbstractMaplePacketHandler {
-    public final void handlePacket(SeekableLittleEndianAccessor slea, MapleClient c) {
-        slea.skip(4); 
-		if(c.getPlayer().getAutobanManager().getLastSpam(6) + 300 > System.currentTimeMillis()) {
-			c.announce(MaplePacketCreator.enableActions());
-			return;
-		}
+public class ItemMoveHandler extends AbstractMaplePacketHandler {
+
+    @Override
+    public void handlePacket(SeekableLittleEndianAccessor slea, MapleClient c) {
+        MapleCharacter player = c.getPlayer();
+        Cheater.CheatEntry entry = player.getCheater().getCheatEntry(Cheats.FastInventorySort);
+
+        slea.skip(4);
         MapleInventoryType type = MapleInventoryType.getByType(slea.readByte());
         byte src = (byte) slea.readShort();
         byte action = (byte) slea.readShort();
         short quantity = slea.readShort();
+
+        if (System.currentTimeMillis() - entry.latestOperationTimestamp < 300) {
+            entry.spamCount++;
+            c.announce(MaplePacketCreator.enableActions());
+            return;
+        } else {
+            entry.spamCount = 0;
+        }
         if (src < 0 && action > 0) {
             MapleInventoryManipulator.unequip(c, src, action);
         } else if (action < 0) {
@@ -52,6 +63,5 @@ public final class ItemMoveHandler extends AbstractMaplePacketHandler {
         } else {
             MapleInventoryManipulator.move(c, type, src, action);
         }
-		c.getPlayer().getAutobanManager().spam(6);
     }
 }

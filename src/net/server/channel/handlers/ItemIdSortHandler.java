@@ -25,6 +25,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import client.autoban.Cheater;
+import client.autoban.Cheats;
 import constants.ServerConstants;
 import net.AbstractMaplePacketHandler;
 import tools.MaplePacketCreator;
@@ -45,7 +47,15 @@ public final class ItemIdSortHandler extends AbstractMaplePacketHandler {
     @Override
     public final void handlePacket(SeekableLittleEndianAccessor slea, MapleClient c) {
     	MapleCharacter chr = c.getPlayer();
-        chr.getAutobanManager().setTimestamp(4, slea.readInt(), 3);
+        Cheater.CheatEntry entry = chr.getCheater().getCheatEntry(Cheats.FastInventorySort);
+        if (System.currentTimeMillis() - entry.latestOperationTimestamp < 250) {
+            entry.spamCount++;
+            c.announce(MaplePacketCreator.enableActions());
+            return;
+        } else {
+            entry.spamCount = 0;
+        }
+        entry.latestOperationTimestamp = System.currentTimeMillis();
         byte inventoryType = slea.readByte();
         
         if(!chr.isGM() || !ServerConstants.USE_ITEM_SORT) {
