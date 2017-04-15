@@ -23,7 +23,6 @@ package net.server.channel.handlers;
 
 import client.MapleCharacter;
 import client.MapleClient;
-import client.autoban.AutobanFactory;
 import client.inventory.Equip;
 import client.inventory.Item;
 import client.inventory.MapleInventoryType;
@@ -110,9 +109,6 @@ public final class DueyHandler extends AbstractMaplePacketHandler {
             int mesos = slea.readInt();
             String recipient = slea.readMapleAsciiString();
             if (mesos < 0 || (long) mesos > Integer.MAX_VALUE || ((long) mesos + fee + getFee(mesos)) > Integer.MAX_VALUE || amount < 1) {
-            	AutobanFactory.PACKET_EDIT.alert(c.getPlayer(), c.getPlayer().getName() + " tried to packet edit with duey.");
-            	FilePrinter.printError(FilePrinter.EXPLOITS + c.getPlayer().getName() + ".txt", c.getPlayer().getName() + " tried to use duey with mesos " + mesos + " and amount " + amount + "\r\n");           	
-            	c.disconnect(true, false);
             	return;
             }
             int finalcost = mesos + fee + getFee(mesos);

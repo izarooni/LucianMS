@@ -23,39 +23,48 @@ package net.server.channel.handlers;
 
 import client.MapleCharacter;
 import client.MapleClient;
-import client.autoban.AutobanFactory;
-import client.autoban.AutobanManager;
+import client.autoban.Cheater;
+import client.autoban.Cheats;
 import net.AbstractMaplePacketHandler;
+import tools.MaplePacketCreator;
 import tools.data.input.SeekableLittleEndianAccessor;
 
-public final class HealOvertimeHandler extends AbstractMaplePacketHandler {
+public class HealOvertimeHandler extends AbstractMaplePacketHandler {
 
-    public final void handlePacket(SeekableLittleEndianAccessor slea, MapleClient c) {
-        MapleCharacter chr = c.getPlayer();
-        AutobanManager abm = chr.getAutobanManager();
+    @Override
+    public void handlePacket(SeekableLittleEndianAccessor slea, MapleClient c) {
+        MapleCharacter player = c.getPlayer();
+        Cheater.CheatEntry entry = player.getCheater().getCheatEntry(Cheats.HealOvertime);
+
         int timestamp = slea.readInt();
-        abm.setTimestamp(0, timestamp, 3);
         slea.skip(4);
         short healHP = slea.readShort();
-        if (healHP != 0) {
-            if ((abm.getLastSpam(0) + 1500) > timestamp) AutobanFactory.FAST_HP_HEALING.addPoint(abm, "Fast hp healing");
-            
-            int abHeal = 140;
-            if(chr.getMapId() == 105040401 || chr.getMapId() == 105040402 || chr.getMapId() == 809000101 || chr.getMapId() == 809000201) abHeal += 40; // Sleepywood sauna and showa spa...
-            if (healHP > abHeal) {
-                AutobanFactory.HIGH_HP_HEALING.autoban(chr, "Healing: " + healHP + "; Max is " + abHeal + ".");
-                return;
-            }
-            chr.addHP(healHP);
-            //chr.getMap().broadcastMessage(chr, MaplePacketCreator.showHpHealed(chr.getId(), healHP), false);
-            chr.checkBerserk();
-            abm.spam(0, timestamp);
-        }
         short healMP = slea.readShort();
-        if (healMP != 0 && healMP < 1000) {
-            if ((abm.getLastSpam(1) + 1500) > timestamp) AutobanFactory.FAST_MP_HEALING.addPoint(abm, "Fast mp healing");
-            chr.addMP(healMP);
-            abm.spam(1, timestamp);
+
+        if (System.currentTimeMillis() - entry.latestOperationTimestamp < 200) {
+            entry.spamCount++;
+            return;
+        } else {
+            entry.spamCount = 0;
+        }
+        entry.latestOperationTimestamp = System.currentTimeMillis();
+
+        if (healHP != 0) {
+            int abHeal = 140;
+            if (player.getMapId() == 105040401 || player.getMapId() == 105040402 || player.getMapId() == 809000101 || player.getMapId() == 809000201) {
+                abHeal += 40; // Sleepywood sauna and showa spa...
+            }
+            if (healHP > abHeal) {
+                entry.cheatCount++;
+                entry.latestCheatTimestamp = System.currentTimeMillis();
+                entry.announce(c, String.format("%s now has %d cheat points for fast healing", player.getName(), entry.cheatCount), 5000);
+            }
+            player.addHP(healHP);
+            player.checkBerserk();
+        }
+
+        if (healMP > 0 && healMP < 1000) {
+            player.addMP(healMP);
         }
     }
 }

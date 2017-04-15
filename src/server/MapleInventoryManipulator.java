@@ -488,7 +488,7 @@ public class MapleInventoryManipulator {
                 player.setChalkboard(null);
             }
         }
-        if ((!ItemConstants.isRechargable(itemId) && player.getItemQuantity(itemId, true) < quantity) || quantity < 0 || source == null) {
+        if ((!ItemConstants.isRechargable(itemId) && player.getItemQuantity(itemId, true) < quantity) || quantity < 0) {
             return;
         }
         for (CQuestData data : player.getCustomQuests().values()) {

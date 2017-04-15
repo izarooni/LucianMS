@@ -34,6 +34,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import client.autoban.Cheater;
+import client.autoban.Cheats;
 import net.server.Server;
 import provider.MapleData;
 import provider.MapleDataDirectoryEntry;
@@ -50,7 +52,6 @@ import client.MapleCharacter;
 import client.MapleClient;
 import client.MapleJob;
 import client.SkillFactory;
-import client.autoban.AutobanFactory;
 import client.inventory.Equip;
 import client.inventory.Item;
 import client.inventory.MapleInventory;
@@ -1112,10 +1113,9 @@ public class MapleItemInformationProvider {
         
         if (!EquipSlot.getFromTextSlot(islot).isAllowed(dst, isCash(id))) {
             equip.wear(false);
-            String itemName = MapleItemInformationProvider.getInstance().getName(equip.getItemId());
-            Server.getInstance().broadcastGMMessage(MaplePacketCreator.sendYellowTip("[WARNING]: " + chr.getName() + " tried to equip " + itemName + " into slot " + dst + "."));
-            AutobanFactory.PACKET_EDIT.alert(chr, chr.getName() + " tried to forcibly equip an item.");
-            FilePrinter.printError(FilePrinter.EXPLOITS + chr.getName() + ".txt", chr.getName() + " tried to equip " + itemName + " into " + dst + " slot.\r\n");      	
+            Cheater.CheatEntry entry = chr.getCheater().getCheatEntry(Cheats.ForcedEquip);
+            entry.incrementCheatCount();
+            entry.announce(chr.getClient(), String.format("[%s] %d attempted to force equip item %d", entry.cheatCount, chr.getName(), id), 3000);
             return false;
         }
         

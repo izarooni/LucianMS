@@ -28,14 +28,12 @@ import java.sql.SQLException;
 import client.command.CommandWorker;
 import net.AbstractMaplePacketHandler;
 import net.server.world.World;
-import tools.LogHelper;
 import tools.DatabaseConnection;
 import tools.FilePrinter;
 import tools.MaplePacketCreator;
 import tools.data.input.SeekableLittleEndianAccessor;
 import client.MapleCharacter;
 import client.MapleClient;
-import client.autoban.AutobanFactory;
 
 /**
  *
@@ -54,15 +52,6 @@ public final class WhisperHandler extends AbstractMaplePacketHandler {
                 }
             }
             MapleCharacter player = client.getChannelServer().getPlayerStorage().getCharacterByName(recipient);
-			if(client.getPlayer().getAutobanManager().getLastSpam(7) + 200 > System.currentTimeMillis()) {
-				return;
-			}
-            if (message.length() > Byte.MAX_VALUE && !player.isGM()) {
-            	AutobanFactory.PACKET_EDIT.alert(client.getPlayer(), client.getPlayer().getName() + " tried to packet edit with whispers.");
-            	FilePrinter.printError(FilePrinter.EXPLOITS + client.getPlayer().getName() + ".txt", client.getPlayer().getName() + " tried to send text with length of " + message.length() + "\r\n");
-            	client.disconnect(true, false);
-            	return;
-            }
             if (player != null) {
                 player.getClient().announce(MaplePacketCreator.getWhisper(client.getPlayer().getName(), client.getChannel(), message));
                 
@@ -85,7 +74,6 @@ public final class WhisperHandler extends AbstractMaplePacketHandler {
                         client.announce(MaplePacketCreator.getWhisperReply(recipient, (byte) 0));
                     }
             }
-			client.getPlayer().getAutobanManager().spam(7);
         } else if (mode == 5) { // - /find
             String recipient = slea.readMapleAsciiString();
             MapleCharacter victim = client.getChannelServer().getPlayerStorage().getCharacterByName(recipient);

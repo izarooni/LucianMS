@@ -62,8 +62,10 @@ public class CQuestBuilder {
         try (FileInputStream fis = new FileInputStream(file)) {
             XMLDomMapleData xml = new XMLDomMapleData(fis, file);
             int questId = MapleDataTool.getInt(xml.getChildByPath("info/questId"));
+            int pId = MapleDataTool.getInt(xml.getChildByPath("info/preQuest"), -1);
             // begin constructing custom quest data
             CQuestData qData = new CQuestData(questId, xml.getName());
+            qData.setPreQuestId(pId);
             // iterate through monsters to kill, setting all progress to 0
             if (xml.getChildByPath("toKill") != null) {
                 for (MapleData toKill : xml.getChildByPath("toKill").getChildren()) {

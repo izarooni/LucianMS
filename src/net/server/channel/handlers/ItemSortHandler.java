@@ -21,6 +21,8 @@
  */
 package net.server.channel.handlers;
 
+import client.autoban.Cheater;
+import client.autoban.Cheats;
 import constants.ServerConstants;
 import net.AbstractMaplePacketHandler;
 import server.MapleInventoryManipulator;
@@ -31,25 +33,34 @@ import client.MapleClient;
 import client.inventory.MapleInventory;
 import client.inventory.MapleInventoryType;
 
-public final class ItemSortHandler extends AbstractMaplePacketHandler {
+public class ItemSortHandler extends AbstractMaplePacketHandler {
 
     @Override
-    public final void handlePacket(SeekableLittleEndianAccessor slea, MapleClient c) {
-    	MapleCharacter chr = c.getPlayer();
-		chr.getAutobanManager().setTimestamp(2, slea.readInt(), 3);
+    public void handlePacket(SeekableLittleEndianAccessor slea, MapleClient c) {
+    	MapleCharacter player = c.getPlayer();
+		Cheater.CheatEntry entry = player.getCheater().getCheatEntry(Cheats.FastInventorySort);
+
 		MapleInventoryType inventoryType = MapleInventoryType.getByType(slea.readByte());
-		if (inventoryType.equals(MapleInventoryType.UNDEFINED) || c.getPlayer().getInventory(inventoryType).isFull()) {
+		if (inventoryType == MapleInventoryType.UNDEFINED || c.getPlayer().getInventory(inventoryType).isFull()) {
 		    c.getSession().write(MaplePacketCreator.enableActions());
 		    return;
 		}
-		if(!chr.isGM() || !ServerConstants.USE_ITEM_SORT) {
+		if (!player.isGM() || !ServerConstants.USE_ITEM_SORT) {
 			c.announce(MaplePacketCreator.enableActions());
 			return;
 		}
-		
-		MapleInventory inventory = c.getPlayer().getInventory(inventoryType);
+		if (System.currentTimeMillis() - entry.latestOperationTimestamp < 300) {
+			entry.spamCount++;
+			c.announce(MaplePacketCreator.enableActions());
+			return;
+		} else {
+			entry.spamCount = 0;
+		}
+		entry.latestOperationTimestamp = System.currentTimeMillis();
+
+		MapleInventory inventory = player.getInventory(inventoryType);
 		boolean sorted = false;
-		
+
 		while (!sorted) {
 			short freeSlot = inventory.getNextFreeSlot();
 		    if (freeSlot != -1) {

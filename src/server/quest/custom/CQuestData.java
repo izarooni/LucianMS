@@ -7,9 +7,8 @@ import server.quest.custom.requirement.CQuestItemRequirement;
 import server.quest.custom.requirement.CQuestKillRequirement;
 import server.quest.custom.reward.CQuestReward;
 import tools.MaplePacketCreator;
-import tools.Pair;
 
-import java.util.*;
+import java.util.ArrayList;
 
 /**
  * Holds information for a quest (i.e. killed monsters, items looted)
@@ -21,6 +20,7 @@ public class CQuestData {
     private final int id;
     private final String name;
     private boolean completed = false;
+    private int preQuestId = -1;
 
     final CQuestKillRequirement toKill = new CQuestKillRequirement(); // monster kill requirements
     final CQuestItemRequirement toCollect = new CQuestItemRequirement(); // item collect requirements
@@ -78,6 +78,23 @@ public class CQuestData {
 
     public String getName() {
         return name;
+    }
+
+    /**
+     * Quest needed to be completed before a player may begin this current quest
+     *
+     * @return id of pre-quest
+     */
+    public int getPreQuestId() {
+        return preQuestId;
+    }
+
+    /**
+     *
+     * @param preQuestId id of pre-quest
+     */
+    public void setPreQuestId(int preQuestId) {
+        this.preQuestId = preQuestId;
     }
 
     /**

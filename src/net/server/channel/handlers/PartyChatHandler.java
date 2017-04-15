@@ -35,9 +35,6 @@ public final class PartyChatHandler extends AbstractMaplePacketHandler {
     @Override
     public final void handlePacket(SeekableLittleEndianAccessor slea, MapleClient client) {
         MapleCharacter player = client.getPlayer();
-        if (player.getAutobanManager().getLastSpam(7) + 200 > System.currentTimeMillis()) {
-            return;
-        }
         int type = slea.readByte(); // 0 for buddys, 1 for partys
         int numRecipients = slea.readByte();
         int recipients[] = new int[numRecipients];
@@ -63,6 +60,5 @@ public final class PartyChatHandler extends AbstractMaplePacketHandler {
                 Server.getInstance().allianceMessage(allianceId, MaplePacketCreator.multiChat(player.getName(), message, 3), player.getId(), -1);
             }
         }
-        player.getAutobanManager().spam(7);
     }
 }

@@ -26,6 +26,8 @@ import client.MapleCharacter;
 import client.MapleClient;
 import client.Skill;
 import client.SkillFactory;
+import client.autoban.Cheater;
+import client.autoban.Cheats;
 import client.inventory.Item;
 import client.inventory.MapleInventoryType;
 import client.status.MonsterStatus;
@@ -145,10 +147,17 @@ public final class TakeDamageHandler extends AbstractMaplePacketHandler {
         if (damage == -1) {
             fake = 4020002 + (player.getJob().getId() / 10 - 40) * 100000;
         }
+
+        Cheater.CheatEntry entry = player.getCheater().getCheatEntry(Cheats.GodMode);
         if (damage == 0) {
-            player.getAutobanManager().addMiss();
+            entry.spamCount++;
+            if (entry.spamCount > 8) {
+                entry.incrementCheatCount();
+                entry.announce(player.getClient(), String.format("[%d] %s has %d consecutive misses", entry.cheatCount, player.getName(), entry.spamCount), 3000);
+            }
+            entry.latestOperationTimestamp = System.currentTimeMillis();
         } else {
-            player.getAutobanManager().resetMisses();
+            entry.spamCount = 0;
         }
         if (damage > 0 && !player.isHidden()) {
             if (attacker != null && damagefrom == -1 && player.getBuffedValue(MapleBuffStat.POWERGUARD) != null) { // PG works on bosses, but only at half of the rate.
@@ -212,11 +221,11 @@ public final class TakeDamageHandler extends AbstractMaplePacketHandler {
             map.broadcastMessage(player, MaplePacketCreator.damagePlayer(damagefrom, monsteridfrom, player.getId(), damage, fake, direction, is_pgmr, pgmr, is_pg, oid, pos_x, pos_y), false);
             player.checkBerserk();
         }
-        
+
         if(player.getArcade() != null) {
 			player.getArcade().onHit(attacker.getId());
 		}
-        
+
         if (map.getId() >= 925020000 && map.getId() < 925030000) {
             player.setDojoEnergy(player.isGM() ? 300 : player.getDojoEnergy() < 300 ? player.getDojoEnergy() + 1 : 0); //Fking gm's
             player.getClient().announce(MaplePacketCreator.getEnergy("energy", player.getDojoEnergy()));

@@ -24,7 +24,8 @@ package server.maps;
 import client.MapleBuffStat;
 import client.MapleCharacter;
 import client.MapleClient;
-import client.autoban.AutobanFactory;
+import client.autoban.Cheater;
+import client.autoban.Cheats;
 import client.inventory.Equip;
 import client.inventory.Item;
 import client.inventory.MapleInventoryType;
@@ -687,7 +688,9 @@ public class MapleMap {
             }
         }
         if (monster.getStats().getLevel() >= chr.getLevel() + 30 && !chr.isGM()) {
-            AutobanFactory.GENERAL.alert(chr, " for killing a " + monster.getName() + " which is over 30 levels higher.");
+            Cheater.CheatEntry entry = chr.getCheater().getCheatEntry(Cheats.UnderLevelAttack);
+            entry.incrementCheatCount();
+            entry.announce(chr.getClient(), String.format("[%d] %s level %d attacked a monster (%d) too high of level %d", entry.cheatCount, chr.getName(), chr.getLevel(), monster.getId(), monster.getStats().getLevel()), 2500);
         }
 		/*
 		 * if (chr.getQuest(MapleQuest.getInstance(29400)).getStatus().equals(

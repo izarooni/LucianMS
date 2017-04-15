@@ -23,7 +23,6 @@ package net.server.channel.handlers;
 
 import client.MapleCharacter;
 import client.MapleClient;
-import client.autoban.AutobanFactory;
 import client.inventory.Item;
 import client.inventory.MapleInventory;
 import client.inventory.MapleInventoryType;
@@ -457,9 +456,7 @@ public final class PlayerInteractionHandler extends AbstractMaplePacketHandler {
             }
             short perBundle = slea.readShort();
             int price = slea.readInt();
-            if (perBundle <= 0 || perBundle * bundles > 2000 || bundles <= 0 || price <= 0 || price > Integer.MAX_VALUE) {
-                AutobanFactory.PACKET_EDIT.alert(client.getPlayer(), client.getPlayer().getName() + " tried to packet edit with hired merchants.");
-                FilePrinter.printError(FilePrinter.EXPLOITS + client.getPlayer().getName() + ".txt", client.getPlayer().getName() + " might of possibly packet edited Hired Merchants\nperBundle: " + perBundle + "\nperBundle * bundles (This multiplied cannot be greater than 2000): " + perBundle * bundles + "\nbundles: " + bundles + "\nprice: " + price);
+            if (perBundle <= 0 || perBundle * bundles > 2000 || bundles <= 0 || price <= 0 || price < 0) {
                 return;
             }
             Item ivItem = player.getInventory(type).getItem(slot);
@@ -472,7 +469,7 @@ public final class PlayerInteractionHandler extends AbstractMaplePacketHandler {
             MaplePlayerShop shop = player.getPlayerShop();
             HiredMerchant merchant = player.getHiredMerchant();
             if (shop != null && shop.isOwner(client.getPlayer())) {
-                if (ivItem != null && ivItem.getQuantity() >= bundles * perBundle) {
+                if (ivItem.getQuantity() >= bundles * perBundle) {
                     shop.addItem(item);
                     client.announce(MaplePacketCreator.getPlayerShopItemUpdate(shop));
                 }
@@ -490,9 +487,6 @@ public final class PlayerInteractionHandler extends AbstractMaplePacketHandler {
             if (shop != null && shop.isOwner(client.getPlayer())) {
                 int slot = slea.readShort();
                 if (slot >= shop.getItems().size() || slot < 0) {
-                    AutobanFactory.PACKET_EDIT.alert(client.getPlayer(), client.getPlayer().getName() + " tried to packet edit with a player shop.");
-                    FilePrinter.printError(FilePrinter.EXPLOITS + client.getPlayer().getName() + ".txt", client.getPlayer().getName() + " tried to remove item at slot " + slot + "\r\n");
-                    client.disconnect(true, false);
                     return;
                 }
                 MaplePlayerShopItem item = shop.getItems().get(slot);
@@ -551,9 +545,6 @@ public final class PlayerInteractionHandler extends AbstractMaplePacketHandler {
             int item = slea.readByte();
             short quantity = slea.readShort();
             if (quantity < 1) {
-                AutobanFactory.PACKET_EDIT.alert(client.getPlayer(), client.getPlayer().getName() + " tried to packet edit with a hired merchant and or player shop.");
-                FilePrinter.printError(FilePrinter.EXPLOITS + client.getPlayer().getName() + ".txt", client.getPlayer().getName() + " tried to buy item " + item + " with quantity " + quantity + "\r\n");
-                client.disconnect(true, false);
                 return;
             }
             MaplePlayerShop shop = player.getPlayerShop();

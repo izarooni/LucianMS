@@ -260,8 +260,8 @@ public class AdminCommands {
         } else if (command.equals("onpc")) {
             if (args.length() == 1) {
                 Long a1 = args.parseNumber(0);
-                if (a1 == null) {
-                    player.dropMessage(args.getError(0));
+                if (a1 == null && args.getError(0) != null) {
+                    NPCScriptManager.getInstance().start(client, 10200, args.get(0), player);
                     return;
                 }
                 int npcId = a1.intValue();

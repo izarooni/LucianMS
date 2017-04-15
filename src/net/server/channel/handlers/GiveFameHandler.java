@@ -23,7 +23,6 @@ package net.server.channel.handlers;
 
 import client.MapleCharacter;
 import client.MapleCharacter.FameStatus;
-import client.autoban.AutobanFactory;
 import client.MapleClient;
 import client.MapleStat;
 import net.AbstractMaplePacketHandler;
@@ -40,9 +39,6 @@ public final class GiveFameHandler extends AbstractMaplePacketHandler {
         if (target == null || target.getId() == player.getId() || player.getLevel() < 15) {
             return;
         } else if (famechange != 1 && famechange != -1) {
-        	AutobanFactory.PACKET_EDIT.alert(c.getPlayer(), c.getPlayer().getName() + " tried to packet edit fame.");
-        	FilePrinter.printError(FilePrinter.EXPLOITS + c.getPlayer().getName() + ".txt", c.getPlayer().getName() + " tried to fame hack with famechange " + famechange + "\r\n");
-        	c.disconnect(true, false);
         	return;
         }
         FameStatus status = player.canGiveFame(target);

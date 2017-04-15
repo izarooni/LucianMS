@@ -22,7 +22,6 @@
 package net.server.channel.handlers;
 
 import client.MapleClient;
-import client.autoban.AutobanFactory;
 import net.AbstractMaplePacketHandler;
 import scripting.npc.NPCScriptManager;
 import server.MapleItemInformationProvider;
@@ -37,16 +36,10 @@ public final class RemoteGachaponHandler extends AbstractMaplePacketHandler {
 		int ticket = slea.readInt();
 		int gacha = slea.readInt();
 		if (ticket != 5451000){
-			AutobanFactory.GENERAL.alert(c.getPlayer(), " Tried to use RemoteGachaponHandler with item id: " + ticket);
-			c.disconnect(false, false);
 			return;
 		} else if(gacha < 0 || gacha > 11) {
-			AutobanFactory.GENERAL.alert(c.getPlayer(), " Tried to use RemoteGachaponHandler with mode: " + gacha);
-			c.disconnect(false, false);
 			return;
 		} else if (c.getPlayer().getInventory(MapleItemInformationProvider.getInstance().getInventoryType(ticket)).countById(ticket) < 1) {
-			AutobanFactory.GENERAL.alert(c.getPlayer(), " Tried to use RemoteGachaponHandler without a ticket.");
-			c.disconnect(false, false);
 			return;
 		}
 		int npcId = 9100100;

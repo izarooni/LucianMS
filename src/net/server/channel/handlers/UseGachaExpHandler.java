@@ -23,7 +23,6 @@
 package net.server.channel.handlers;
 
 import client.MapleClient;
-import client.autoban.AutobanFactory;
 import net.AbstractMaplePacketHandler;
 import tools.MaplePacketCreator;
 import tools.data.input.SeekableLittleEndianAccessor;
@@ -35,7 +34,7 @@ import tools.data.input.SeekableLittleEndianAccessor;
 public class UseGachaExpHandler extends AbstractMaplePacketHandler {
     public void handlePacket(SeekableLittleEndianAccessor slea, MapleClient c) {
         if (c.getPlayer().getGachaExp() == 0) {
-            AutobanFactory.GACHA_EXP.autoban(c.getPlayer(), "Player tried to redeem GachaEXP, but had none to redeem.");
+            return;
         }
         c.getPlayer().gainGachaExp();
         c.announce(MaplePacketCreator.enableActions());
