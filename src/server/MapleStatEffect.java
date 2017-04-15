@@ -152,7 +152,7 @@ public class MapleStatEffect {
 
 	private static MapleStatEffect loadFromData(MapleData source, int sourceid, boolean skill, boolean overTime) {
         MapleStatEffect ret = new MapleStatEffect();
-        ret.duration = 32767;
+        ret.duration = MapleDataTool.getIntConvert("time", source, -1);
         ret.hp = (short) MapleDataTool.getInt("hp", source, 0);
         ret.hpR = MapleDataTool.getInt("hpR", source, 0) / 100.0;
         ret.mp = (short) MapleDataTool.getInt("mp", source, 0);
