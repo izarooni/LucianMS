@@ -114,7 +114,6 @@ public class CommandWorker {
 
         private final String[] args;
         private final String[] errors;
-        private String error = null;
 
         CommandArgs(String[] args) {
             this.args = args;
@@ -130,7 +129,7 @@ public class CommandWorker {
         public String getError(int... index) {
             for (int i : index) {
                 if (i > -1 && i < errors.length && errors[i] != null) {
-                    return error;
+                    return errors[i];
                 }
             }
             return null;

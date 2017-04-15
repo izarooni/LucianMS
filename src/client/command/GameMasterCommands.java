@@ -2,11 +2,11 @@ package client.command;
 
 import java.awt.Point;
 import java.awt.Rectangle;
+import java.io.File;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.*;
 
 import client.MapleCharacter;
 import client.MapleClient;
@@ -22,16 +22,20 @@ import net.server.Server;
 import net.server.channel.Channel;
 import net.server.world.MapleParty;
 import net.server.world.MaplePartyCharacter;
+import provider.MapleData;
+import provider.MapleDataProvider;
+import provider.MapleDataProviderFactory;
+import provider.MapleDataTool;
+import provider.wz.WZEntry;
 import server.MapleInventoryManipulator;
+import server.MapleItemInformationProvider;
 import server.events.custom.Events;
 import server.life.MapleLifeFactory;
 import server.life.MapleMonster;
 import server.life.MobSkill;
 import server.life.MobSkillFactory;
 import server.maps.MapleMap;
-import tools.DatabaseConnection;
-import tools.MaplePacketCreator;
-import tools.Randomizer;
+import tools.*;
 
 /**
  * @author izarooni, lucasdieswagger
@@ -101,6 +105,7 @@ public class GameMasterCommands {
             commands.add("!bombmap - spawns bombs everywhere");
             commands.add("!jail <player> <OPT=reason> - jail a person, and optionally specify a reason");
             commands.add("!jail list - list all the jailed people, and the reason if it is specified.");
+            commands.add("!search <category> <name> - Search for a map, items, npcs or skills");
             commands.forEach(player::dropMessage);
             commands.clear();
         } else if (command.equals("dc")) {
@@ -1107,10 +1112,106 @@ public class GameMasterCommands {
             			player.dropMessage(String.format("%s: %s", target.getName(), (reason == "" ? "No reason given" : reason)));
             		});
             	}
-        		        		
         	} else {
         		player.dropMessage(5, "Correct usage: !jail <player> <OPT=reason>");
         	}
+        } else if (command.equals("search")) {
+            if (args.length() > 1) {
+                String type = args.get(0);
+                String search = args.concatFrom(1);
+                MapleData data;
+                MapleDataProvider dataProvider = MapleDataProviderFactory.getDataProvider(new File(System.getProperty("wzpath") + "/" + "String.wz"));
+                player.message("<<Type: " + type + " | Search: " + search + ">>");
+                if (type.equalsIgnoreCase("NPC") || type.equalsIgnoreCase("NPCS")) {
+                    List<String> retNpcs = new ArrayList<>();
+                    data = dataProvider.getData("Npc.img");
+                    List<Pair<Integer, String>> npcPairList = new LinkedList<>();
+                    for (MapleData npcIdData : data.getChildren()) {
+                        int npcIdFromData = Integer.parseInt(npcIdData.getName());
+                        String npcNameFromData = MapleDataTool.getString(npcIdData.getChildByPath("name"), "NO-NAME");
+                        npcPairList.add(new Pair<>(npcIdFromData, npcNameFromData));
+                    }
+                    for (Pair<Integer, String> npcPair : npcPairList) {
+                        if (npcPair.getRight().toLowerCase().contains(search.toLowerCase())) {
+                            retNpcs.add(npcPair.getLeft() + " - " + npcPair.getRight());
+                        }
+                    }
+                    if (retNpcs.size() > 0) {
+                        for (String singleRetNpc : retNpcs) {
+                            player.message(singleRetNpc);
+                        }
+                        retNpcs.clear();
+                        npcPairList.clear();
+                    } else {
+                        player.message("No NPC's Found");
+                    }
+                } else if (type.equalsIgnoreCase("MAP") || type.equalsIgnoreCase("MAPS")) {
+                    List<String> retMaps = new ArrayList<>();
+                    data = dataProvider.getData("Map.img");
+                    List<Pair<Integer, String>> mapPairList = new LinkedList<>();
+                    for (MapleData mapAreaData : data.getChildren()) {
+                        for (MapleData mapIdData : mapAreaData.getChildren()) {
+                            int mapIdFromData = Integer.parseInt(mapIdData.getName());
+                            String mapNameFromData = MapleDataTool.getString(mapIdData.getChildByPath("streetName"), "NO-NAME") + " - " + MapleDataTool.getString(mapIdData.getChildByPath("mapName"), "NO-NAME");
+                            mapPairList.add(new Pair<>(mapIdFromData, mapNameFromData));
+                        }
+                    }
+                    for (Pair<Integer, String> mapPair : mapPairList) {
+                        if (mapPair.getRight().toLowerCase().contains(search.toLowerCase())) {
+                            retMaps.add(mapPair.getLeft() + " - " + mapPair.getRight());
+                        }
+                    }
+                    if (retMaps.size() > 0) {
+                        for (String singleRetMap : retMaps) {
+                            player.message(singleRetMap);
+                        }
+                        retMaps.clear();
+                        mapPairList.clear();
+                    } else {
+                        player.message("No Maps Found");
+                    }
+                } else if (type.equalsIgnoreCase("MOB") || type.equalsIgnoreCase("MOBS") || type.equalsIgnoreCase("MONSTER") || type.equalsIgnoreCase("MONSTERS")) {
+                    List<String> retMobs = new ArrayList<>();
+                    data = dataProvider.getData("Mob.img");
+                    List<Pair<Integer, String>> mobPairList = new LinkedList<>();
+                    for (MapleData mobIdData : data.getChildren()) {
+                        int mobIdFromData = Integer.parseInt(mobIdData.getName());
+                        String mobNameFromData = MapleDataTool.getString(mobIdData.getChildByPath("name"), "NO-NAME");
+                        mobPairList.add(new Pair<>(mobIdFromData, mobNameFromData));
+                    }
+                    for (Pair<Integer, String> mobPair : mobPairList) {
+                        if (mobPair.getRight().toLowerCase().contains(search.toLowerCase())) {
+                            retMobs.add(mobPair.getLeft() + " - " + mobPair.getRight());
+                        }
+                    }
+                    if (retMobs.size() > 0) {
+                        for (String singleRetMob : retMobs) {
+                            player.message(singleRetMob);
+                        }
+                        retMobs.clear();
+                        mobPairList.clear();
+                    } else {
+                        player.message("No Mob's Found");
+                    }
+                } else if (type.equalsIgnoreCase("ITEM") || type.equalsIgnoreCase("ITEMS")) {
+                    List<String> retItems = new ArrayList<>();
+                    for (Pair<Integer, String> itemPair : MapleItemInformationProvider.getInstance().getAllItems()) {
+                        if (itemPair.getRight().toLowerCase().contains(search.toLowerCase())) {
+                            retItems.add(itemPair.getLeft() + " - " + itemPair.getRight());
+                        }
+                    }
+                    if (retItems.size() > 0) {
+                        for (String singleRetItem : retItems) {
+                            player.message(singleRetItem);
+                        }
+                        retItems.clear();
+                    } else {
+                        player.message("No Item's Found");
+                    }
+                }
+            } else {
+                player.message("Syntax: !search <type> <name> where type is map, use, etc, cash, equip or mob.");
+            }
         }
     }
 }

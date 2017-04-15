@@ -322,17 +322,19 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
 
 	private int hidingLevel = 1;
 
-	private String spouse; // 
+	private String spouse; //
 	private boolean saidYesToMarriage;
 	private boolean saidYesToEngagement;
-	
+
 	private String engagedTo;
-	
+
 	private String playerThatSaidYesToMarriage, playerThatSaidYesToEngagement;
-	
+
 	private boolean engaged;
-	
+
 	private JumpQuestController JQController;
+
+	private Relationship relationship = new Relationship();
 		
 	private MapleCharacter() {
 		setStance(0);
@@ -5917,5 +5919,9 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
 
 	public Cheater getCheater() {
 		return cheater;
+	}
+
+	public Relationship getRelationship() {
+		return relationship;
 	}
 }
