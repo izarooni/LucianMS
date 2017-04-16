@@ -43,6 +43,10 @@ public class SkillFactory {
     }
 
     public static void loadAllSkills() {
+        if (!skills.isEmpty()) {
+            skills.clear();
+            skills = new HashMap<>();
+        }
         final MapleDataDirectoryEntry root = datasource.getRoot();
         int skillid;
         for (MapleDataFileEntry topDir : root.getFiles()) { // Loop thru jobs

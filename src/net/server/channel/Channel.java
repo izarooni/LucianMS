@@ -89,7 +89,7 @@ public final class Channel {
             IoBuffer.setUseDirectBuffer(false);
             IoBuffer.setAllocator(new SimpleBufferAllocator());
             acceptor = new NioSocketAcceptor();
-            TimerManager.getInstance().register(new respawnMaps(), 10000);
+            TimerManager.getInstance().register(() -> mapFactory.getMaps().values().forEach(MapleMap::respawn), 10000);
             acceptor.setHandler(new MapleServerHandler(world, channel));
             acceptor.getSessionConfig().setIdleTime(IdleStatus.BOTH_IDLE, 30);
             acceptor.getFilterChain().addLast("codec", (IoFilter) new ProtocolCodecFilter(new MapleCodecFactory()));
@@ -215,16 +215,6 @@ public final class Channel {
             }
         }
         return partym;
-    }
-        
-    public class respawnMaps implements Runnable {
-
-        @Override
-        public void run() {
-            for (Entry<Integer, MapleMap> map : mapFactory.getMaps().entrySet()) {
-                map.getValue().respawn();
-            }
-        }
     }
 
     public Map<Integer, HiredMerchant> getHiredMerchants() {

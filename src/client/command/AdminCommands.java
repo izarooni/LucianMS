@@ -2,6 +2,7 @@ package client.command;
 
 import client.MapleCharacter;
 import client.MapleClient;
+import client.SkillFactory;
 import client.inventory.Item;
 import client.inventory.MapleInventoryType;
 import client.inventory.MaplePet;
@@ -58,6 +59,7 @@ public class AdminCommands {
             commands.add("!reloadportals - Reload portal scripts");
             commands.add("!reloadreactordrops - Reload reactor drops");
             commands.add("!reloadshops - Reload shop items");
+            commands.add("!reloadskills - Relaod loaded skill data");
             commands.add("!reloadmobs - Reload mob data");
             commands.forEach(player::dropMessage);
             commands.clear();
@@ -290,6 +292,9 @@ public class AdminCommands {
         } else if (command.equals("reloadshosps")) {
             MapleShopFactory.getInstance().reloadShops();
             player.dropMessage(6, "Shops reloaded");
+        } else if (command.equals("reloadskills")) {
+            SkillFactory.loadAllSkills();
+            player.dropMessage("Loaded all skills");
         } else if (command.equals("reloadmobs")) {
             MapleLifeFactory.clear();
             player.dropMessage(6, "Mobs reloaded");
