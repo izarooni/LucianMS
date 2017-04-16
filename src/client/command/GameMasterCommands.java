@@ -85,6 +85,7 @@ public class GameMasterCommands {
             commands.add("!dc <player|map> - Disconnect a player from the game, or the entire map");
             commands.add("!reloadmap - Reload the map");
             commands.add("!killall - Kill all the monsters on the map");
+            commands.add("!cleardrops - Clears all drops in the map");
             commands.add("!maxstats - max your stats");
             commands.add("!maxskills - max your skills");
             commands.add("!hide - change who can see you in hide");
@@ -739,12 +740,11 @@ public class GameMasterCommands {
         } else if (command.equals("reloadmap")) {
                 player.getClient().getChannelServer().getMapFactory().reloadField(player.getMapId());
         } else if (command.equals("killall")) {
-        	if(player.getMap().getMonsters() != null) { // important check that wasn't done
-        		player.getMap().getMonsters().forEach(m -> m.killBy(player));
-        		player.dropMessage(6, "The monsters on the map have been killed");
-        	} else {
-        		player.dropMessage(5, "There are no monsters in your map");
-        	}
+            player.getMap().killAllMonsters();
+            player.dropMessage("All monsters killed!");
+        } else if (command.equals("cleardrops")) {
+            player.getMap().clearDrops(player);
+            player.dropMessage("Drops cleared!");
         } else if (command.equals("clearinv")) {
             if (args.length() == 1) {
                 String sType = args.get(0);
