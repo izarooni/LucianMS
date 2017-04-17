@@ -57,7 +57,7 @@ public class PlayerCommands {
             player.dropMessage(6, "Fishing Points: " + player.getFishingPoints());
             player.dropMessage(6, "Vote Points: " + player.getClient().getVotePoints());
             player.dropMessage("Event points: " + player.getEventPoints());
-            player.dropMessage(6, "Donation points: " + 0);
+            player.dropMessage(6, "Donation points: " + player.getClient().getDonationPoints());
             //player.dropMessage(6, "Shadow points: " + 0);
         } else if (command.equals("dispose")) {
             NPCScriptManager.getInstance().dispose(client);
@@ -100,6 +100,9 @@ public class PlayerCommands {
                 if (maps.containsKey(name)) {
                     MapleMap map = ch.getMapFactory().getMap(maps.get(name));
                     if (map != null) {
+                    	if(player.getJQController() != null) {
+                    		player.setJQController(null);
+                    	}
                         player.changeMap(map);
                         return;
                     }

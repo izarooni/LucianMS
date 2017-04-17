@@ -148,9 +148,13 @@ public class GameMasterCommands {
                     }
                     if (exact) {
                         target.changeMap(map, player.getPosition());
+                        
                     } else {
                         target.changeMap(map);
                     }
+                    if(player.getJQController() != null) {
+                		player.setJQController(null);
+                	}
                 } else if (command.equals("wm", "wmx")) {
                     MapleMap map;
                     if (args.length() == 1) { // !<warp_cmd> <map_ID>
