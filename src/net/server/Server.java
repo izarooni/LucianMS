@@ -148,11 +148,18 @@ public class Server implements Runnable {
 			e.printStackTrace();
 		}
 
-		IoBuffer.setUseDirectBuffer(false);
-		IoBuffer.setAllocator(new SimpleBufferAllocator());
-		acceptor = new NioSocketAcceptor();
-		acceptor.getFilterChain().addLast("codec", (IoFilter) new ProtocolCodecFilter(new MapleCodecFactory()));
-		System.out.println("Listening on port 8484");
+		try {
+			IoBuffer.setUseDirectBuffer(false);
+			IoBuffer.setAllocator(new SimpleBufferAllocator());
+			acceptor = new NioSocketAcceptor();
+			acceptor.getFilterChain().addLast("codec", (IoFilter) new ProtocolCodecFilter(new MapleCodecFactory()));
+			acceptor.getSessionConfig().setIdleTime(IdleStatus.BOTH_IDLE, 30);
+			acceptor.setHandler(new MapleServerHandler());
+			acceptor.bind(new InetSocketAddress(8484));
+			System.out.println("Listening on port 8484");
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 
 		TimerManager tMan = TimerManager.getInstance();
 		tMan.start();
@@ -178,35 +185,37 @@ public class Server implements Runnable {
 		System.out.println("Custom quests loaded in " + ((System.currentTimeMillis() - timeToTake) / 1000.0) + " seconds\r\n");
 
 		try {
-			for (int i = 0; i < Integer.parseInt(p.getProperty("worlds")); i++) {
+			timeToTake = System.currentTimeMillis();
+			int qWorlds = Integer.parseInt(p.getProperty("worlds"));
+			for (int i = 0; i < qWorlds; i++) {
 				System.out.println("Starting world " + i);
-				World world = new World(i, Integer.parseInt(p.getProperty("flag" + i)),
-						p.getProperty("eventmessage" + i), ServerConstants.EXP_RATE, ServerConstants.DROP_RATE,
+
+				int flag = Integer.parseInt(p.getProperty("flag" + i));
+				String eMessage = p.getProperty("eventmessage" + i);
+				String sMessage = p.getProperty("servermessage" + i);
+
+				World world = new World(i, flag, eMessage,
+						ServerConstants.EXP_RATE, ServerConstants.DROP_RATE,
 						ServerConstants.MESO_RATE, ServerConstants.BOSS_DROP_RATE);
 
-				worldRecommendedList.add(new Pair<>(i, p.getProperty("whyamirecommended" + i)));
 				worlds.add(world);
-				channels.add(new LinkedHashMap<Integer, String>());
-				for (int j = 0; j < Integer.parseInt(p.getProperty("channels" + i)); j++) {
-					int channelid = j + 1;
-					Channel channel = new Channel(i, channelid);
+				worldRecommendedList.add(new Pair<>(i, p.getProperty("whyamirecommended" + i)));
+
+				channels.add(new LinkedHashMap<>());
+				int qChannels = Integer.parseInt(p.getProperty("channels" + i));
+				for (int j = 0; j < qChannels; j++) {
+					int channelId = j + 1;
+					Channel channel = new Channel(i, channelId);
 					world.addChannel(channel);
-					channels.get(i).put(channelid, channel.getIP());
+					channels.get(i).put(channelId, channel.getIP());
 				}
-				world.setServerMessage(p.getProperty("servermessage" + i));
+				world.setServerMessage(sMessage);
 				System.out.println("Finished loading world " + i + "\r\n");
 			}
+			System.out.println("Worlds loaded in " + ((System.currentTimeMillis() - timeToTake) / 1000.0) + " seconds\r\n");
 		} catch (Exception e) {
 			e.printStackTrace();// For those who get errors
 			System.exit(0);
-		}
-
-		acceptor.getSessionConfig().setIdleTime(IdleStatus.BOTH_IDLE, 30);
-		acceptor.setHandler(new MapleServerHandler());
-		try {
-			acceptor.bind(new InetSocketAddress(8484));
-		} catch (IOException e) {
-			e.printStackTrace();
 		}
 
 		System.out.println("Loading Automatic Events\r\n");

@@ -173,7 +173,8 @@ public class MapleStatEffect {
         if (!ret.skill && ret.duration > -1) {
             ret.overTime = true;
         } else {
-            ret.duration *= 1000; // items have their times stored in ms, of course
+//            ret.duration *= 1000; // items have their times stored in ms, of course
+            ret.duration = Integer.MAX_VALUE;
             ret.overTime = overTime;
         }
         ArrayList<Pair<MapleBuffStat, Integer>> statups = new ArrayList<>();

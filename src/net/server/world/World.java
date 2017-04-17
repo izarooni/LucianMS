@@ -58,11 +58,11 @@ public class World {
     private String eventmsg;
     private List<Channel> channels = new ArrayList<>();
     private Map<Integer, MapleParty> parties = new HashMap<>();
-    private AtomicInteger runningPartyId = new AtomicInteger();
     private Map<Integer, MapleMessenger> messengers = new HashMap<>();
-    private AtomicInteger runningMessengerId = new AtomicInteger();
-    private Map<Integer, MapleFamily> families = new LinkedHashMap<>();
     private Map<Integer, MapleGuildSummary> gsStore = new HashMap<>();
+    private Map<Integer, MapleFamily> families = new LinkedHashMap<>();
+    private AtomicInteger runningPartyId = new AtomicInteger(1);
+    private AtomicInteger runningMessengerId = new AtomicInteger(1);
     private PlayerStorage players = new PlayerStorage();
 
     public World(int world, int flag, String eventmsg, int exprate, int droprate, int mesorate, int bossdroprate) {
@@ -73,8 +73,6 @@ public class World {
         this.droprate = droprate;
         this.mesorate = mesorate;
         this.bossdroprate = bossdroprate;
-        runningPartyId.set(1);
-        runningMessengerId.set(1);
     }
 
     public List<Channel> getChannels() {

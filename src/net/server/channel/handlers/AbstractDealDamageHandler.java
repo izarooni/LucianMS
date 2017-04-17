@@ -187,7 +187,6 @@ public abstract class AbstractDealDamageHandler extends AbstractMaplePacketHandl
                     Cheater.CheatEntry entry = player.getCheater().getCheatEntry(Cheats.ConcurrentAttacks);
                     entry.incrementCheatCount();
                     entry.announce(player.getClient(), String.format("[%d] %s attacking too many monsters at once (%d monsters, should be %d)", entry.cheatCount, player.getName(), attack.numAttacked, attackEffect.getMobCount()), 5000);
-                    return;
                 }
             }
             if (!player.isAlive()) {

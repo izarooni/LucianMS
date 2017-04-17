@@ -544,7 +544,7 @@ public class MapleMap {
                             int levelDifference = chr.getLevel() - monster.getLevel();
                             if (levelDifference > ServerConstants.MAX_LEVELS_ABOVE) {
                                 if (random < ServerConstants.BELOW_LEVERANGEL_NX_CHANCE) {
-                                    int receive = (int) (monster.getLevel() * 4 / random);
+                                    int receive = monster.getLevel() * 4 / random;
                                     System.out.println(monster.getLevel());
                                     if (chr.getParty() != null) {
                                         receive = (int) (monster.getLevel() * ServerConstants.LEVEL_TO_NX_MULTIPLIER) / chr.getParty().getMembers().size();
@@ -556,7 +556,7 @@ public class MapleMap {
                                                 players.getPlayer().announce(MaplePacketCreator.earnTitleMessage("You gained " + receive + " NX cash"));
                                             }
                                         }
-                                    } else {
+                                    } else if (receive > 0) {
                                         chr.getCashShop().gainCash(1, receive);
                                         chr.announce(MaplePacketCreator.earnTitleMessage("You gained " + receive + " NX cash"));
                                     }
@@ -574,7 +574,7 @@ public class MapleMap {
                                                 players.getPlayer().announce(MaplePacketCreator.earnTitleMessage("You gained " + receive + " NX cash"));
                                             }
                                         }
-                                    } else {
+                                    } else if (receive > 0) {
                                         chr.getCashShop().gainCash(1, receive);
                                         if (receive >= 1) {
                                             chr.announce(MaplePacketCreator.earnTitleMessage("You gained " + receive + " NX cash"));
