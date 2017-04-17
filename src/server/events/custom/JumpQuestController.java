@@ -49,7 +49,7 @@ public class JumpQuestController {
 			
 			
 			while(rs.next()) {
-				highscore = rs.getInt("highscore");
+				highscore = rs.getInt("time");
 			}
 			
 		} catch (SQLException e) {
@@ -71,7 +71,7 @@ public class JumpQuestController {
 					String user = MapleCharacter.getNameById(rs.getInt("charid"));
 					if(user != null) {
 						i++;
-						sb.append("#k" + (i <= 3 ? "#b" : "") + (i > 3 && i <= 5 ? "#g" : "") + i +  ". " + user + " with a time of " + rs.getInt("highscore") + " seconds\r\n");
+						sb.append("#k" + (i <= 3 ? "#b" : "") + (i > 3 && i <= 5 ? "#g" : "") + i +  ". " + user + " with a time of " + rs.getInt("time") + " seconds\r\n");
 					}
 				}
 			}
