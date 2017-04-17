@@ -26,7 +26,6 @@ import provider.MapleData;
 import provider.MapleDataProvider;
 import provider.MapleDataProviderFactory;
 import provider.MapleDataTool;
-import provider.wz.WZEntry;
 import server.MapleInventoryManipulator;
 import server.MapleItemInformationProvider;
 import server.events.custom.Events;
@@ -42,9 +41,6 @@ import tools.*;
  */
 public class GameMasterCommands {
 
-	
-	// TODO correct command argumentation, at every type of commands
-	// TODO correct coloring depending on if it is an error message or not.
 
 	private static HashMap<Integer, String> jailReasons = new HashMap<Integer, String>();
 	
