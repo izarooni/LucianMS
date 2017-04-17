@@ -169,7 +169,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
 	private static final int[] DEFAULT_ACTION = { 0, 106, 10, 1, 12, 13, 18, 24, 8, 5, 4, 19, 14, 15, 2, 17, 11, 3, 20,
 			16, 9, 50, 51, 6, 7, 53, 100, 101, 102, 103, 104, 105, 54, 22, 52, 21, 25, 26, 23, 27 };
 	private static final String[] BLOCKED_NAMES = { "admin", "owner", "moderator", "intern", "donor", "administrator",
-			"help", "helper", "alert", "notice", "maplestory", "Solaxia", "fuck", "wizet", "fucking", "negro", "fuk",
+			"help", "helper", "alert", "notice", "maplestory", "LucianMS", "fuck", "wizet", "fucking", "negro", "fuk",
 			"fuc", "penis", "pussy", "asshole", "gay", "nigger", "homo", "suck", "cum", "shit", "shitty", "condom",
 			"security", "official", "rape", "nigga", "sex", "tit", "boner", "orgy", "clit", "asshole", "fatass",
 			"bitch", "support", "gamemaster", "cock", "gaay", "gm", "operate", "master", "sysop", "party", "GameMaster",
@@ -302,7 +302,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
 	Achievements achievements;
 
 	private ScheduledFuture<?> fishingTask = null;
-	public static final int[] FISHING_MAPS = { 749050500, 749050501, 749050502};
+	public static final int[] FISHING_MAPS = { 749050500, 749050501, 749050502 };
 
 	public static final int[] FISHING_CHAIRS = { 3011000, 3010151, 3010184 };
 	public static int FRECEIVAL_ITEM = 2022323;
@@ -335,7 +335,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
 	private JumpQuestController JQController;
 
 	private Relationship relationship = new Relationship();
-		
+
 	private MapleCharacter() {
 		setStance(0);
 		inventory = new MapleInventory[MapleInventoryType.values().length];
@@ -701,12 +701,10 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
 				.getChildren()) {
 			try {
 				Skill skill = SkillFactory.getSkill(Integer.parseInt(skill_.getName()));
-				if (skill != null
-						&& skill != SkillFactory.getSkill(Aran.HIDDEN_FULL_DOUBLE)
+				if (skill != null && skill != SkillFactory.getSkill(Aran.HIDDEN_FULL_DOUBLE)
 						&& skill != SkillFactory.getSkill(Aran.HIDDEN_FULL_TRIPLE)
 						&& skill != SkillFactory.getSkill(Aran.HIDDEN_OVER_DOUBLE)
-						&& skill != SkillFactory.getSkill(Aran.HIDDEN_OVER_TRIPLE)
-						&& (skill.getId() / 100) != 9) {
+						&& skill != SkillFactory.getSkill(Aran.HIDDEN_OVER_TRIPLE) && (skill.getId() / 100) != 9) {
 					changeSkillLevel(skill, (byte) skill.getMaxLevel(), skill.getMaxLevel(), -1);
 				}
 			} catch (NumberFormatException | NullPointerException e) {
@@ -2862,7 +2860,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
 		levelUpMessages();
 		guildUpdate();
 		// TODO make gachapon tickets work (5220000)
-		if(MapleInventoryManipulator.checkSpace(client, 5220000, (short) 1, "")) {
+		if (MapleInventoryManipulator.checkSpace(client, 5220000, (short) 1, "")) {
 			MapleInventoryManipulator.addById(client, 5220000, (short) 1);
 		}
 	}
@@ -2923,12 +2921,12 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
 			yellowMessage("You think you are powerful enough? Try facing horntail!");
 		} else if (level == 85) {
 			yellowMessage(
-					"Did you know? The majority of people who hit level 85 in Solaxia don't live to be 85 years old?");
+					"Did you know? The majority of people who hit level 85 in LucianMS don't live to be 85 years old?");
 		} else if (level == 90) {
 			yellowMessage(
 					"Hey do you like the amusement park? I heard Spooky Wood is the best theme park around. I heard they sell cute teddy-bears.");
 		} else if (level == 95) {
-			yellowMessage("100% of people who hit level 95 in Solaxia don't live to be 95 years old.");
+			yellowMessage("100% of people who hit level 95 in LucianMS don't live to be 95 years old.");
 		} else if (level == 100) {
 			yellowMessage("Your drop rate has increased to 3x since you have reached level 100!");
 		} else if (level == 105) {
@@ -3231,11 +3229,13 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
 					CQuestData cQuest = CQuestBuilder.beginQuest(ret, rs.getInt("questid"));
 					if (cQuest != null) {
 						if (rs.getInt("completed") == 0) {
-							try (PreparedStatement stmt = con.prepareStatement("select * from cquestdata where ctableid = ?")) {
+							try (PreparedStatement stmt = con
+									.prepareStatement("select * from cquestdata where ctableid = ?")) {
 								stmt.setInt(1, rs.getInt("id"));
 								try (ResultSet res = stmt.executeQuery()) {
 									while (res.next()) {
-										cQuest.getToKill().incrementRequirement(rs.getInt("monsterid"), rs.getInt("kills"));
+										cQuest.getToKill().incrementRequirement(rs.getInt("monsterid"),
+												rs.getInt("kills"));
 									}
 								}
 							}
@@ -4031,25 +4031,26 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
 			}
 		}
 	}
-	
+
 	public static void changeRow(String player, String row, String type, Object newval) {
-		try(Connection c = DatabaseConnection.getConnection(); PreparedStatement statement = c.prepareStatement("UPDATE characters SET ? = ? WHERE name = ?")) {
+		try (Connection c = DatabaseConnection.getConnection();
+				PreparedStatement statement = c.prepareStatement("UPDATE characters SET ? = ? WHERE name = ?")) {
 			statement.setString(1, row);
-			switch(type.toLowerCase()) {
+			switch (type.toLowerCase()) {
 			case "int":
 				statement.setInt(2, (int) newval);
 				break;
 			case "string":
 				statement.setString(2, (String) newval);
-			break;
+				break;
 			}
 			statement.setString(3, player);
-			
+
 			statement.execute();
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
-		
+
 	}
 
 	// synchronize this call instead of trying to give access all at once (?)
@@ -4276,27 +4277,33 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
 			}
 			ps.executeBatch();
 			deleteWhereCharacterId(con, "DELETE FROM eventstats WHERE characterid = ?");
-			try (PreparedStatement stmt = con.prepareStatement("select count(*) as total from cquest where characterid = ?")) {
+			try (PreparedStatement stmt = con
+					.prepareStatement("select count(*) as total from cquest where characterid = ?")) {
 				stmt.setInt(1, getId());
 				try (ResultSet rs = stmt.executeQuery()) {
 					if (rs.next() && rs.getInt("total") > 0) {
 						deleteWhereCharacterId(con, "delete from cquest where characterid = ?");
-						deleteWhereCharacterId(con, "delete from cquestdata where ctableid = (select id from cquest where characterid = ?)");
+						deleteWhereCharacterId(con,
+								"delete from cquestdata where ctableid = (select id from cquest where characterid = ?)");
 
 					}
 				}
 			}
-			try (PreparedStatement stmt = con.prepareStatement("insert into cquest (questid, characterid, completed) values (?, ?, ?)", PreparedStatement.RETURN_GENERATED_KEYS)) {
+			try (PreparedStatement stmt = con.prepareStatement(
+					"insert into cquest (questid, characterid, completed) values (?, ?, ?)",
+					PreparedStatement.RETURN_GENERATED_KEYS)) {
 				for (CQuestData data : customQuests.values()) {
 					stmt.setInt(1, data.getId());
 					stmt.setInt(2, getId());
-					stmt.setInt(3, data.isCompleted() ? 1: 0);
+					stmt.setInt(3, data.isCompleted() ? 1 : 0);
 					stmt.executeUpdate();
 					if (!data.isCompleted()) {
 						try (ResultSet rs = stmt.getGeneratedKeys()) {
 							if (rs.next()) {
-								try (PreparedStatement stmt2 = con.prepareStatement("insert into cquestdata (qtableid, monsterid, kills) values (?, ?, ?)")) {
-									for (Entry<Integer, Pair<Integer, Integer>> entry : data.getToKill().getKills().entrySet()) {
+								try (PreparedStatement stmt2 = con.prepareStatement(
+										"insert into cquestdata (qtableid, monsterid, kills) values (?, ?, ?)")) {
+									for (Entry<Integer, Pair<Integer, Integer>> entry : data.getToKill().getKills()
+											.entrySet()) {
 										stmt2.setInt(1, rs.getInt(1));
 										stmt2.setInt(2, entry.getKey());
 										stmt2.setInt(3, entry.getValue().right);
@@ -4377,7 +4384,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
 
 	public void sendPolice(int greason, String reason, int duration) {
 		announce(MaplePacketCreator
-				.sendPolice(String.format("You have been blocked by the#b %s Police for %s.#k", "Solaxia", reason)));
+				.sendPolice(String.format("You have been blocked by the#b %s Police for %s.#k", "LucianMS", reason)));
 		this.isbanned = true;
 		TimerManager.getInstance().schedule(new Runnable() {
 			@Override
@@ -5253,7 +5260,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
 	public void autoban(String reason) {
 		this.ban(reason);
 		announce(MaplePacketCreator
-				.sendPolice(String.format("You have been blocked by the#b %s Police for HACK reason.#k", "Solaxia")));
+				.sendPolice(String.format("You have been blocked by the#b %s Police for HACK reason.#k", "LucianMS")));
 		TimerManager.getInstance().schedule(new Runnable() {
 			@Override
 			public void run() {
@@ -5743,7 +5750,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
 	}
 
 	public boolean addPoints(String pointType, int amount) throws NumberFormatException {
-		switch(pointType) {
+		switch (pointType) {
 		case "fp":
 			setFishingPoints(getFishingPoints() + amount);
 			return true;
@@ -5751,7 +5758,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
 			setEventPoints(getEventPoints() + amount);
 			return true;
 		case "dp":
-			//get dp
+			// get dp
 			return true;
 		case "vp":
 			getClient().addVotePoints(amount);
@@ -5764,11 +5771,13 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
 	}
 
 	public boolean tempban(Timestamp tempban) {
-		try(Connection con = DatabaseConnection.getConnection(); PreparedStatement stmnt = con.prepareStatement("UPDATE accounts SET tempban = " + tempban.getTime() + " WHERE id = " + getClient().getAccID())) {
+		try (Connection con = DatabaseConnection.getConnection();
+				PreparedStatement stmnt = con.prepareStatement("UPDATE accounts SET tempban = " + tempban.getTime()
+						+ " WHERE id = " + getClient().getAccID())) {
 
 			return stmnt.execute();
 
-		} catch(SQLException e) {
+		} catch (SQLException e) {
 			e.printStackTrace();
 		}
 		return false;
@@ -5831,8 +5840,8 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
 	}
 
 	public Map<Integer, CQuestData> getCustomQuests() {
-	    return customQuests;
-    }
+		return customQuests;
+	}
 
 	public void setHidingLevel(int hidingLevel) {
 		this.hidingLevel = hidingLevel;
@@ -5850,7 +5859,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
 	public void setSpouse(String spouse) {
 		this.spouse = spouse;
 	}
-	
+
 	public String getEngagedTo() {
 		return engagedTo;
 	}
@@ -5876,7 +5885,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
 	public boolean isEngaged() {
 		return engaged || engagedTo == null;
 	}
-	
+
 	public boolean isMarried() {
 		return spouse != null;
 	}
@@ -5908,11 +5917,11 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
 	public void setRPSGame(RPSGame RPSGame) {
 		this.RPSGame = RPSGame;
 	}
-	
+
 	public JumpQuestController getJQController() {
 		return this.JQController;
 	}
-	
+
 	public void setJQController(JumpQuestController controller) {
 		this.JQController = controller;
 	}

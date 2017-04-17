@@ -2,12 +2,12 @@ package server.events.custom;
 
 import java.io.File;
 import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 
 import client.MapleCharacter;
-import net.server.Server;
 import provider.MapleDataProviderFactory;
-import server.maps.MapleMap;
 import server.maps.MapleMapFactory;
 import tools.DatabaseConnection;
 
@@ -26,6 +26,7 @@ public class JumpQuestController {
 	}
 	
 	public void start() {
+		System.out.println("Map " + map + " came from: " + mapComingFrom + " id: " + id );
 		MapleMapFactory tempFactory = new MapleMapFactory(MapleDataProviderFactory.getDataProvider(new File(System.getProperty("wzpath") + "/Map.wz")), MapleDataProviderFactory.getDataProvider(new File(System.getProperty("wzpath") + "/String.wz")), player.getWorld(), player.getClient().getChannel());
 		player.changeMap(tempFactory.getMap(map));
 		
@@ -36,21 +37,68 @@ public class JumpQuestController {
 	
 	}
 	
+	public int getHighscore() {
+		int highscore = 0;
+		try(Connection con = DatabaseConnection.getConnection(); PreparedStatement stmnt = con.prepareStatement("SELECT time FROM arcade WHERE charid = ? AND id = ?")) {
+			stmnt.setInt(1, player.getId());
+			stmnt.setInt(2, id);
+			
+			stmnt.execute();
+			
+			ResultSet rs = stmnt.getResultSet();
+			
+			
+			while(rs.next()) {
+				highscore = rs.getInt("highscore");
+			}
+			
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return highscore;
+	}
+	
+	
+	public static String getTop(int id) {
+		StringBuilder sb = new StringBuilder();
+		try(Connection con = DatabaseConnection.getConnection(); PreparedStatement stmnt = con.prepareStatement("SELECT * FROM jq_scores WHERE id = ? ORDER BY time DESC LIMIT 50")) {
+			stmnt.setInt(1, id);
+			
+			if(stmnt.execute()) {
+				ResultSet rs = stmnt.getResultSet();
+				int i = 0;
+				while(rs.next()) {
+					String user = MapleCharacter.getNameById(rs.getInt("charid"));
+					if(user != null) {
+						i++;
+						sb.append("#k" + (i <= 3 ? "#b" : "") + (i > 3 && i <= 5 ? "#g" : "") + i +  ". " + user + " with a time of " + rs.getInt("highscore") + " seconds\r\n");
+					}
+				}
+			}
+			
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		
+		return sb.toString();
+	}
 	
 	public void end() {
 		try(Connection c = DatabaseConnection.getConnection(); java.sql.PreparedStatement stmnt = c.prepareStatement("INSERT INTO jq_scores (id, charid, time) VALUES (?, ?, ?) ON DUPLICATE KEY UPDATE time = ?")) {
+			int time = (int) ((System.currentTimeMillis() - timeStarted) / 1000);
+			time = (getHighscore() >= time ? time : getHighscore());
+			
 			stmnt.setInt(1, id);
 			stmnt.setInt(2, player.getId());
-			stmnt.setInt(3, (int) (System.currentTimeMillis() - timeStarted) / 1000); // time in seconds
-			stmnt.setInt(4, (int) (System.currentTimeMillis() - timeStarted) / 1000); // time in seconds
+			stmnt.setInt(3, time); // time in seconds
+			stmnt.setInt(4, time); // time in seconds
 			
 			stmnt.execute();
 			
 		} catch (SQLException e) {
 			e.printStackTrace();
 		} finally {
-			MapleMap previousMapFactoryMap = Server.getInstance().getChannel(player.getWorld(), player.getClient().getChannel()).getMapFactory().getMap(mapComingFrom);
-			player.changeMap(previousMapFactoryMap);
+			player.changeMap(getReturnMap());
 			
 		}
 
