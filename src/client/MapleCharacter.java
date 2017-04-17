@@ -5765,7 +5765,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
 			return true;
 		case "nx":
 			getCashShop().gainCash(1, amount);
-
+		return true;
 		}
 		return false;
 	}
