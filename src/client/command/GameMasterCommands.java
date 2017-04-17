@@ -152,9 +152,7 @@ public class GameMasterCommands {
                     } else {
                         target.changeMap(map);
                     }
-                    if(player.getJQController() != null) {
-                		player.setJQController(null);
-                	}
+                	target.setJQController(null);
                 } else if (command.equals("wm", "wmx")) {
                     MapleMap map;
                     if (args.length() == 1) { // !<warp_cmd> <map_ID>
@@ -173,6 +171,7 @@ public class GameMasterCommands {
                         } else {
                             players.changeMap(map);
                         }
+                        players.setJQController(null);
                     }
                 } else { // !<warp_cmd> <map_ID> (portal_ID)
                     // map, warp
@@ -197,6 +196,9 @@ public class GameMasterCommands {
             }
         	} catch(NullPointerException e) {
         		player.dropMessage(5, "That map does not exist.");
+        	}
+        	if(player.getJQController() != null) {
+        		player.setJQController(null);
         	}
         } else if (command.equals("clock")) {
             if (args.length() == 1) {
