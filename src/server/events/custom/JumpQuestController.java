@@ -39,7 +39,7 @@ public class JumpQuestController {
 	
 	public int getHighscore() {
 		int highscore = 0;
-		try(Connection con = DatabaseConnection.getConnection(); PreparedStatement stmnt = con.prepareStatement("SELECT time FROM arcade WHERE charid = ? AND id = ?")) {
+		try(Connection con = DatabaseConnection.getConnection(); PreparedStatement stmnt = con.prepareStatement("SELECT time FROM jq_scores WHERE charid = ? AND id = ?")) {
 			stmnt.setInt(1, player.getId());
 			stmnt.setInt(2, id);
 			
@@ -84,9 +84,10 @@ public class JumpQuestController {
 	}
 	
 	public void end() {
+		int score = getHighscore();
 		try(Connection c = DatabaseConnection.getConnection(); java.sql.PreparedStatement stmnt = c.prepareStatement("INSERT INTO jq_scores (id, charid, time) VALUES (?, ?, ?) ON DUPLICATE KEY UPDATE time = ?")) {
 			int time = (int) ((System.currentTimeMillis() - timeStarted) / 1000);
-			time = (getHighscore() >= time ? time : getHighscore());
+			time = (score >= time ? time : score);
 			
 			stmnt.setInt(1, id);
 			stmnt.setInt(2, player.getId());
