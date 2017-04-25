@@ -52,7 +52,9 @@ public class BalrogKiller extends Arcade {
 		++highscore;
 		player.announce(MaplePacketCreator.sendHint("#e[Balrog Killer]#n\r\nYou have killed " + ((prevScore < highscore) ?  "#g" : "#r") + highscore + "#k balrog(s)!", 300, 40));
 		MapleMonster toSpawn = MapleLifeFactory.getMonster(9500140);
-		toSpawn.setHp(350000);
+		toSpawn.getStats().setMADamage(500);
+		toSpawn.getStats().setPADamage(100);
+		toSpawn.setHp(50000);
 		player.getMap().spawnMonsterOnGroudBelow(toSpawn, new Point(206, 35));
 	}
 
