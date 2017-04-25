@@ -297,7 +297,7 @@ public class MapleMonster extends AbstractLoadedMapleLife {
                 if (mostDamage) {
                     xp += (exp * 0.20f);
                 }
-                giveExpToCharacter(mc, xp, isKiller, leechCount);
+                giveExpToCharacter(mc, xp * mc.getParty().getMembers().size(), isKiller, leechCount);
             }
         }
     }
