@@ -20,7 +20,7 @@ public abstract class AbstractBossPQ {
 	protected int map;
 	protected int nxWinnings;
 	protected int nxWinningsMultiplier;
-	private static final int RETURN_MAP = 910000000; // is FM right now, could change
+	private static final int RETURN_MAP = 240070101;
 	protected int minLevel = 0;
 	protected Point monsterSpawnLoc;
 	protected int healthMultiplier = 1, damageMultipier = 1;
