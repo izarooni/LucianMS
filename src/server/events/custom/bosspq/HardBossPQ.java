@@ -7,7 +7,7 @@ import server.events.custom.AbstractBossPQ;
 
 public class HardBossPQ extends AbstractBossPQ {
 
-	int[] easyBosses = {100100, 100100, 100100, 100100, 100100, 100100};
+	int[] easyBosses = {7220003, 8220011, 8220010, 8800000, 8810000, 8810001, 8810003, 9001010, 9001009, 9300158};
 	
 	public HardBossPQ(MapleCharacter partyleader) {
 		super(partyleader);
