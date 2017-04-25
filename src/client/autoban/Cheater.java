@@ -1,9 +1,8 @@
 package client.autoban;
 
-import client.MapleClient;
-import tools.MaplePacketCreator;
-
 import java.util.HashMap;
+
+import client.MapleClient;
 
 /**
  * @author izarooni
@@ -29,7 +28,8 @@ public class Cheater {
             if (System.currentTimeMillis() - latestAnnouncement < cooldown) {
                 return;
             }
-            client.getWorldServer().broadcastGMPacket(MaplePacketCreator.earnTitleMessage(message));
+            // TODO log warning using discord bot, in the staff chat in a specific channel. (That'd be epic)
+            //client.getWorldServer().broadcastGMPacket(MaplePacketCreator.earnTitleMessage(message));
             latestAnnouncement = System.currentTimeMillis();
         }
     }
