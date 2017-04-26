@@ -80,7 +80,7 @@ public final class PlayerLoggedinHandler extends AbstractMaplePacketHandler {
         }
         c.setPlayer(player);
         c.setAccID(player.getAccountID());
-        
+
         int state = c.getLoginState();
         boolean allowLogin = true;
         Channel cserv = c.getChannelServer();
@@ -108,39 +108,21 @@ public final class PlayerLoggedinHandler extends AbstractMaplePacketHandler {
             player.silentGiveBuffs(buffs);
         }
         Connection con = DatabaseConnection.getConnection();
-        PreparedStatement ps = null;
-        PreparedStatement pss = null;
-        ResultSet rs = null;
         try {
-            ps = con.prepareStatement("SELECT Mesos FROM dueypackages WHERE RecieverId = ? and Checked = 1");
-            ps.setInt(1, player.getId());
-            rs = ps.executeQuery();
-            if (rs.next()) {
-                try {
-                    pss = DatabaseConnection.getConnection().prepareStatement("UPDATE dueypackages SET Checked = 0 where RecieverId = ?");
-                    pss.setInt(1, player.getId());
-                    pss.executeUpdate();
-                    pss.close();
-                } catch (SQLException e) {
+            try (PreparedStatement ps = con.prepareStatement("SELECT Mesos FROM dueypackages WHERE RecieverId = ? and Checked = 1")) {
+                ps.setInt(1, player.getId());
+                try (ResultSet rs = ps.executeQuery()) {
+                    if (rs.next()) {
+                        try (PreparedStatement pss = DatabaseConnection.getConnection().prepareStatement("UPDATE dueypackages SET Checked = 0 where RecieverId = ?")) {
+                            pss.setInt(1, player.getId());
+                            pss.executeUpdate();
+                        }
+                        c.announce(MaplePacketCreator.sendDueyMSG((byte) 0x1B));
+                    }
                 }
-                c.announce(MaplePacketCreator.sendDueyMSG((byte) 0x1B));
             }
         } catch (SQLException e) {
             e.printStackTrace();
-        } finally {
-            try {
-                if (rs != null) {
-                    rs.close();
-                }
-                if (pss != null) {
-                    pss.close();
-                }
-                if (ps != null) {
-                    ps.close();
-                }
-            } catch (SQLException ex) {
-                //ignore
-            }
         }
         c.announce(MaplePacketCreator.getCharInfo(player));
         if (!player.isHidden()) {
@@ -148,16 +130,16 @@ public final class PlayerLoggedinHandler extends AbstractMaplePacketHandler {
         }
         player.sendKeymap();
         player.sendMacros();
-        
+
         if(player.getKeymap().get(91) != null)
             player.announce(MaplePacketCreator.sendAutoHpPot(player.getKeymap().get(91).getAction()));
         if(player.getKeymap().get(92) != null)
             player.announce(MaplePacketCreator.sendAutoMpPot(player.getKeymap().get(92).getAction()));
-        
+
         player.getMap().addPlayer(player);
         World world = server.getWorld(c.getWorld());
         world.getPlayerStorage().addPlayer(player);
-        
+
         int buddyIds[] = player.getBuddylist().getBuddyIds();
         world.loggedOn(player.getName(), player.getId(), c.getChannel(), buddyIds);
         for (CharacterIdChannelPair onlineBuddy : server.getWorld(c.getWorld()).multiBuddyFind(player.getId(), buddyIds)) {
@@ -218,19 +200,19 @@ public final class PlayerLoggedinHandler extends AbstractMaplePacketHandler {
             player.equipPendantOfSpirit();
         }
         c.announce(MaplePacketCreator.updateBuddylist(player.getBuddylist().getBuddies()));
-        
+
         CharacterNameAndId pendingBuddyRequest = c.getPlayer().getBuddylist().pollPendingRequest();
         if (pendingBuddyRequest != null) {
             c.announce(MaplePacketCreator.requestBuddylistAdd(pendingBuddyRequest.getId(), c.getPlayer().getId(), pendingBuddyRequest.getName()));
         }
-        
+
         if(newcomer) {
             for(MaplePet pet : player.getPets()) {
                 if(pet != null)
                     player.startFullnessSchedule(PetDataFactory.getHunger(pet.getItemId()), pet, player.getPetIndex(pet));
             }
         }
-        
+
         c.announce(MaplePacketCreator.updateGender(player));
         player.checkMessenger();
         c.announce(MaplePacketCreator.enableReport());

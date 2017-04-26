@@ -35,7 +35,7 @@ public class GeneralChatHandler extends net.AbstractMaplePacketHandler {
         if (!player.isMuted()) {
             String message = slea.readMapleAsciiString();
             if (CommandWorker.isCommand(message)) {
-                if (CommandWorker.process(client, message)) {
+                if (CommandWorker.process(client, message, false)) {
                     return;
                 }
             }

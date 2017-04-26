@@ -297,6 +297,14 @@ public class AdminCommands {
             player.dropMessage(6, "Mobs reloaded");
         } else if (command.equals("test")) {
             RockPaperScissorsHandler.startGame(player);
+        } else if (command.equals("sudo")) {
+            if (args.length()> 1) {
+                MapleCharacter target = client.getWorldServer().getPlayerStorage().getCharacterByName(args.get(0));
+                if (target != null) {
+                    String cmd = args.concatFrom(1);
+                    CommandWorker.process(target.getClient(), cmd, true);
+                }
+            }
         }
     }
 }

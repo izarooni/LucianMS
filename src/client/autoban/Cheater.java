@@ -3,6 +3,11 @@ package client.autoban;
 import java.util.HashMap;
 
 import client.MapleClient;
+import discord.Discord;
+import sx.blah.discord.util.DiscordException;
+import sx.blah.discord.util.MessageBuilder;
+import sx.blah.discord.util.MissingPermissionsException;
+import sx.blah.discord.util.RateLimitException;
 
 /**
  * @author izarooni
@@ -24,12 +29,20 @@ public class Cheater {
             latestCheatTimestamp = System.currentTimeMillis();
         }
 
-        public void announce(MapleClient client, String message, int cooldown) {
+        public void announce(final MapleClient client, String message, int cooldown) {
             if (System.currentTimeMillis() - latestAnnouncement < cooldown) {
                 return;
             }
-            // TODO log warning using discord bot, in the staff chat in a specific channel. (That'd be epic)
-            //client.getWorldServer().broadcastGMPacket(MaplePacketCreator.earnTitleMessage(message));
+            try {
+                String channel = Discord.getConfig().getString("cheaterChannel");
+                if (channel != null) {
+                    new MessageBuilder(Discord.getBot().getClient()).withChannel(channel).appendContent(message).build();
+                } else {
+                    System.err.println("No discord channel set to send cheater messages! Edit Discord config file ASAP");
+                }
+            } catch (RateLimitException | MissingPermissionsException | DiscordException e) {
+                System.err.println(String.format("Unable to send %s's cheater message ('%s') due to error: %s", client.getPlayer().getName(), message, e.getMessage()));
+            }
             latestAnnouncement = System.currentTimeMillis();
         }
     }

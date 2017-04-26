@@ -43,7 +43,7 @@ public final class PartyChatHandler extends AbstractMaplePacketHandler {
         }
         String message = slea.readMapleAsciiString();
         if (CommandWorker.isCommand(message)) {
-            if (CommandWorker.process(client, message)) {
+            if (CommandWorker.process(client, message, false)) {
                 return;
             }
         }

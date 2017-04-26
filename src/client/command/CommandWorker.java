@@ -22,7 +22,7 @@ public class CommandWorker {
         return h == '!' || h == '@';
     }
 
-    public static boolean process(MapleClient client, String message) {
+    public static boolean process(MapleClient client, String message, boolean noCheck) {
         MapleCharacter player = client.getPlayer();
 
         char h = message.charAt(0);
@@ -44,7 +44,7 @@ public class CommandWorker {
         Command command = new Command(name);
         CommandArgs args = new CommandArgs(sp);
         
-        if (h == '!' && player.isGM()) {
+        if (h == '!' && (player.isGM() || noCheck)) {
             if (player.gmLevel() >= 2) {
                 AdminCommands.execute(client, command, args);
             }

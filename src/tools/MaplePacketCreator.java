@@ -34,11 +34,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import client.*;
 import net.SendOpcode;
 import net.server.PlayerCoolDownValueHolder;
 import net.server.Server;
 import net.server.channel.Channel;
 import net.server.channel.handlers.PlayerInteractionHandler;
+import net.server.channel.handlers.RingActionHandler;
 import net.server.channel.handlers.SummonDamageHandler.SummonAttackEntry;
 import net.server.guild.MapleAlliance;
 import net.server.guild.MapleGuild;
@@ -75,20 +77,7 @@ import server.movement.LifeMovementFragment;
 import server.partyquest.MonsterCarnivalParty;
 import tools.data.output.LittleEndianWriter;
 import tools.data.output.MaplePacketLittleEndianWriter;
-import client.BuddylistEntry;
-import client.MapleBuffStat;
-import client.MapleCharacter;
 import client.MapleCharacter.SkillEntry;
-import client.MapleClient;
-import client.MapleDisease;
-import client.MapleFamilyEntry;
-import client.MapleKeyBinding;
-import client.MapleMount;
-import client.MapleQuestStatus;
-import client.MapleRing;
-import client.MapleStat;
-import client.Skill;
-import client.SkillMacro;
 import client.inventory.Equip;
 import client.inventory.Equip.ScrollResult;
 import client.inventory.Item;
@@ -663,7 +652,6 @@ public class MaplePacketCreator {
 	 * Gets a successful authentication and PIN Request packet.
 	 *
 	 * @param c
-	 * @param account The account name.
 	 * @return The PIN request packet.
 	 */
 	public static byte[] getAuthSuccess(MapleClient c) {
@@ -1003,7 +991,7 @@ public class MaplePacketCreator {
 				} else if (statupdate.getLeft().getValue() < 0xFFFF) {
 					mplew.writeShort(statupdate.getRight().shortValue());
 				} else {
-					mplew.writeInt(statupdate.getRight().intValue());
+					mplew.writeInt(statupdate.getRight());
 				}
 			}
 		}
@@ -1097,7 +1085,6 @@ public class MaplePacketCreator {
 	 * Gets a packet to spawn a special map object.
 	 *
 	 * @param summon
-	 * @param skillLevel The level of the skill used.
 	 * @param animated Animated spawn?
 	 * @return The spawn packet for the map object.
 	 */
@@ -1178,7 +1165,6 @@ public class MaplePacketCreator {
 	 * 5: Pink Text<br> 6: Lightblue Text
 	 *
 	 * @param type The type of the notice.
-	 * @param channel The channel this notice was sent on.
 	 * @param message The message to convey.
 	 * @return The server notice packet.
 	 */
@@ -1551,8 +1537,7 @@ public class MaplePacketCreator {
 	 *
 	 * @param cidfrom The character ID who sent the chat.
 	 * @param text The text of the chat.
-	 * @param whiteBG
-	 * @param show
+	 * @param show shout the message to the chatbox
 	 * @return The general chat packet.
 	 */
 	public static byte[] getChatText(int cidfrom, String text, boolean gm, int show) {
@@ -1768,7 +1753,7 @@ public class MaplePacketCreator {
 		}
 		if (chr.getBuffedValue(MapleBuffStat.COMBO) != null) {
 			buffmask |= MapleBuffStat.COMBO.getValue();
-			buffvalue = Integer.valueOf(chr.getBuffedValue(MapleBuffStat.COMBO).intValue());
+			buffvalue = chr.getBuffedValue(MapleBuffStat.COMBO);
 		}
 		if (chr.getBuffedValue(MapleBuffStat.SHADOWPARTNER) != null) {
 			buffmask |= MapleBuffStat.SHADOWPARTNER.getValue();
@@ -1777,11 +1762,11 @@ public class MaplePacketCreator {
 			buffmask |= MapleBuffStat.SOULARROW.getValue();
 		}
 		if (chr.getBuffedValue(MapleBuffStat.MORPH) != null) {
-			buffvalue = Integer.valueOf(chr.getBuffedValue(MapleBuffStat.MORPH).intValue());
+			buffvalue = chr.getBuffedValue(MapleBuffStat.MORPH);
 		}
 		if (chr.getBuffedValue(MapleBuffStat.ENERGY_CHARGE) != null) {
 			buffmask |= MapleBuffStat.ENERGY_CHARGE.getValue();
-			buffvalue = Integer.valueOf(chr.getBuffedValue(MapleBuffStat.ENERGY_CHARGE).intValue());
+			buffvalue = chr.getBuffedValue(MapleBuffStat.ENERGY_CHARGE);
 		}//AREN'T THESE 
 		mplew.writeInt((int) ((buffmask >> 32) & 0xffffffffL));
 		if (buffvalue != null) {
@@ -1879,10 +1864,10 @@ public class MaplePacketCreator {
 		} else {
 			rings = chr.getFriendshipRings();
 		}
-		boolean yes = false;
+		boolean yes = false; // has ring equipped
 		for (MapleRing ring : rings) {
 			if (ring.equipped()) {
-				if (yes == false) {
+				if (!yes) {
 					yes = true;
 					mplew.write(1);
 				}
@@ -1893,22 +1878,22 @@ public class MaplePacketCreator {
 				mplew.writeInt(ring.getItemId());
 			}
 		}
-		if (yes == false) {
+		if (!yes) {
 			mplew.write(0);
 		}
 	}
 
-	private static void addMarriageRingLook(final MaplePacketLittleEndianWriter mplew, MapleCharacter chr) {
-		if (chr.getMarriageRing() != null && !chr.getMarriageRing().equipped()) {
+	private static void addMarriageRingLook(final MaplePacketLittleEndianWriter mplew, MapleCharacter player) {
+		MapleRing ring = player.getMarriageRing();
+		if (ring == null || !ring.equipped()) {
 			mplew.write(0);
 			return;
 		}
-		mplew.writeBool(chr.getMarriageRing() != null);
-		if (chr.getMarriageRing() != null) {
-			mplew.writeInt(chr.getId());
-			mplew.writeInt(chr.getMarriageRing().getPartnerChrId());
-			mplew.writeInt(chr.getMarriageRing().getRingId());
-		}
+		Relationship rltn = player.getRelationship();
+		mplew.write(1);
+		mplew.writeInt(player.getId());
+		mplew.writeInt(ring.getPartnerChrId());
+		mplew.writeInt(ring.getItemId());
 	}
 
 	/**
@@ -2049,13 +2034,13 @@ public class MaplePacketCreator {
 		for (Integer oned : damage.keySet()) {
 			List<Integer> onedList = damage.get(oned);
 			if (onedList != null) {
-				lew.writeInt(oned.intValue());
+				lew.writeInt(oned);
 				lew.write(0xFF);
 				if (skill == 4211006) {
 					lew.write(onedList.size());
 				}
 				for (Integer eachd : onedList) {
-					lew.writeInt(eachd.intValue());
+					lew.writeInt(eachd);
 				}
 			}
 		}
@@ -2315,12 +2300,6 @@ public class MaplePacketCreator {
 		 return mplew.getPacket();
 	 }
 
-	 /**
-	  *
-	  * @param chr
-	  * @param isSelf
-	  * @return
-	  */
 	 public static byte[] charInfo(MapleCharacter chr) {
 		 //3D 00 0A 43 01 00 02 00 00 00 00 00 00 00 00 00 00 00 00 00 01 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
 		 final MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
@@ -2431,13 +2410,6 @@ public class MaplePacketCreator {
 		 return mplew.getPacket();
 	 }
 
-	 /**
-	  *
-	  * @param cid
-	  * @param statups
-	  * @param mount
-	  * @return
-	  */
 	 public static byte[] showMonsterRiding(int cid, MapleMount mount) { //Gtfo with this, this is just giveForeignBuff
 		 final MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
 		 mplew.writeShort(SendOpcode.GIVE_FOREIGN_BUFF.getValue());
@@ -2452,24 +2424,7 @@ public class MaplePacketCreator {
 		 mplew.write(0); //Times you have been buffed
 		 return mplew.getPacket();
 	 }
-	 /*        mplew.writeInt(cid);
-     writeLongMask(mplew, statups);
-     for (Pair<MapleBuffStat, Integer> statup : statups) {
-     if (morph) {
-     mplew.writeInt(statup.getRight().intValue());
-     } else {
-     mplew.writeShort(statup.getRight().shortValue());
-     }
-     }
-     mplew.writeShort(0);
-     mplew.write(0);*/
 
-	 /**
-	  *
-	  * @param c
-	  * @param quest
-	  * @return
-	  */
 	 public static byte[] forfeitQuest(short quest) {
 		 final MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
 		 mplew.writeShort(SendOpcode.SHOW_STATUS_INFO.getValue());
@@ -2479,12 +2434,6 @@ public class MaplePacketCreator {
 		 return mplew.getPacket();
 	 }
 
-	 /**
-	  *
-	  * @param c
-	  * @param quest
-	  * @return
-	  */
 	 public static byte[] completeQuest(short quest, long time) {
 		 final MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
 		 mplew.writeShort(SendOpcode.SHOW_STATUS_INFO.getValue());
@@ -2495,14 +2444,6 @@ public class MaplePacketCreator {
 		 return mplew.getPacket();
 	 }
 
-	 /**
-	  *
-	  * @param c
-	  * @param quest
-	  * @param npc
-	  * @param progress
-	  * @return
-	  */
 	 public static byte[] updateQuestInfo(short quest, int npc) {
 		 final MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
 		 mplew.writeShort(SendOpcode.UPDATE_QUEST_INFO.getValue());
@@ -2996,7 +2937,7 @@ public class MaplePacketCreator {
 		  mplew.writeShort(SendOpcode.KEYMAP.getValue());
 		  mplew.write(0);
 		  for (int x = 0; x < 90; x++) {
-			  MapleKeyBinding binding = keybindings.get(Integer.valueOf(x));
+			  MapleKeyBinding binding = keybindings.get(x);
 			  if (binding != null) {
 				  mplew.write(binding.getType());
 				  mplew.writeInt(binding.getAction());
@@ -4094,10 +4035,14 @@ public class MaplePacketCreator {
 				   return mplew.getPacket();
 			   }
 
-			   public static byte[] sendSpouseChat(MapleCharacter wife, String msg) {
+			   public static byte[] sendSpouseChat(MapleCharacter wife, String msg, boolean spouse) {
 				   final MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
 				   mplew.writeShort(SendOpcode.SPOUSE_CHAT.getValue());
-				   mplew.writeMapleAsciiString(wife.getName());
+				   mplew.write(spouse ? 5 : 4);
+				   if (spouse) {
+					   mplew.writeMapleAsciiString(wife.getName());
+				   }
+				   mplew.write(spouse ? 5 : 1);
 				   mplew.writeMapleAsciiString(msg);
 				   return mplew.getPacket();
 			   }
@@ -6348,9 +6293,9 @@ public class MaplePacketCreator {
 				   return mplew.getPacket();
 			   }
 
-			   private static void addRingInfo(final MaplePacketLittleEndianWriter mplew, MapleCharacter chr) {
-				   mplew.writeShort(chr.getCrushRings().size());
-				   for (MapleRing ring : chr.getCrushRings()) {
+			   private static void addRingInfo(final MaplePacketLittleEndianWriter mplew, MapleCharacter player) {
+				   mplew.writeShort(player.getCrushRings().size());
+				   for (MapleRing ring : player.getCrushRings()) {
 					   mplew.writeInt(ring.getPartnerChrId());
 					   mplew.writeAsciiString(getRightPaddedStr(ring.getPartnerName(), '\0', 13));
 					   mplew.writeInt(ring.getRingId());
@@ -6358,8 +6303,8 @@ public class MaplePacketCreator {
 					   mplew.writeInt(ring.getPartnerRingId());
 					   mplew.writeInt(0);
 				   }
-				   mplew.writeShort(chr.getFriendshipRings().size());
-				   for (MapleRing ring : chr.getFriendshipRings()) {
+				   mplew.writeShort(player.getFriendshipRings().size());
+				   for (MapleRing ring : player.getFriendshipRings()) {
 					   mplew.writeInt(ring.getPartnerChrId());
 					   mplew.writeAsciiString(getRightPaddedStr(ring.getPartnerName(), '\0', 13));
 					   mplew.writeInt(ring.getRingId());
@@ -6368,17 +6313,22 @@ public class MaplePacketCreator {
 					   mplew.writeInt(0);
 					   mplew.writeInt(ring.getItemId());
 				   }
-				   mplew.writeShort(chr.getMarriageRing() != null ? 1 : 0);
-				   int marriageId = 30000;
-				   if (chr.getMarriageRing() != null) {
-					   mplew.writeInt(marriageId);
-					   mplew.writeInt(chr.getId());
-					   mplew.writeInt(chr.getMarriageRing().getPartnerChrId());
-					   mplew.writeShort(3);
-					   mplew.writeInt(chr.getMarriageRing().getRingId());
-					   mplew.writeInt(chr.getMarriageRing().getPartnerRingId());
-					   mplew.writeAsciiString(StringUtil.getRightPaddedStr(chr.getGender() == 0 ? chr.getName() : chr.getMarriageRing().getPartnerName(), '\0', 13));
-					   mplew.writeAsciiString(StringUtil.getRightPaddedStr(chr.getGender() == 0 ? chr.getMarriageRing().getPartnerName() : chr.getName(), '\0', 13));
+				   mplew.writeShort(player.getMarriageRing() != null ? 1 : 0);
+				   Relationship rltn = player.getRelationship();
+				   if (rltn.getStatus() == Relationship.Status.Married) {
+				   		MapleRing ring = player.getMarriageRing();
+					   // they could change genders at any time so who fuckin cares my dude
+					   int mPartnerId = (player.getGender() == 0) ? player.getId() : ring.getPartnerChrId();
+					   int fPartnerId = (player.getGender() == 0) ? ring.getPartnerChrId() : player.getId();
+					   mplew.writeInt(30000);
+					   mplew.writeInt(mPartnerId);
+					   mplew.writeInt(fPartnerId);
+					   mplew.writeShort(3); // married ? 3 : 1
+					   // if marriage, wedding rings -- otherwise engagement box & ring
+					   mplew.writeInt(ring.getItemId());
+					   mplew.writeInt(ring.getItemId());
+					   mplew.writeAsciiString(StringUtil.getRightPaddedStr(MapleCharacter.getNameById(mPartnerId), '\0', 13));
+					   mplew.writeAsciiString(StringUtil.getRightPaddedStr(MapleCharacter.getNameById(fPartnerId), '\0', 13));
 				   }
 			   }
 
@@ -6943,7 +6893,7 @@ public class MaplePacketCreator {
 			   /**
 			    * Sends a request to remove Mir<br>
 			    *
-			    * @param charid - Needs the specific Character ID
+			    * @param chrid - Needs the specific Character ID
 			    * @return The packet
 			    *
 			    */

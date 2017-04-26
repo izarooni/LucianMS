@@ -47,7 +47,7 @@ public final class WhisperHandler extends AbstractMaplePacketHandler {
             String recipient = slea.readMapleAsciiString();
             String message = slea.readMapleAsciiString();
             if (CommandWorker.isCommand(message)) {
-                if (CommandWorker.process(client, message)) {
+                if (CommandWorker.process(client, message, false)) {
                     return;
                 }
             }

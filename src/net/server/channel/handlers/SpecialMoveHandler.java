@@ -29,7 +29,6 @@ import net.AbstractMaplePacketHandler;
 import server.MapleStatEffect;
 import server.TimerManager;
 import server.life.MapleMonster;
-import tools.FilePrinter;
 import tools.MaplePacketCreator;
 import tools.data.input.SeekableLittleEndianAccessor;
 
@@ -62,14 +61,13 @@ public class SpecialMoveHandler extends AbstractMaplePacketHandler {
         }
         if (rSkillLevel == 0 || rSkillLevel != pSkillLevel) {
             c.announce(MaplePacketCreator.enableActions());
-            System.err.println(String.format("[%s] Skill %d level %d does not match packet %d",
-                    getClass().getSimpleName(), rSkillLevel, pSkillLevel));
+            System.err.println(String.format("[%s] Skill %d level %d does not match packet %d", getClass().getSimpleName(), skillId, rSkillLevel, pSkillLevel));
             return;
         }
 
         MapleStatEffect effect = skill.getEffect(rSkillLevel);
-        if ((effect.isMorph() && player.getBuffEffect(MapleBuffStat.COMBO) != null)
-                || ((skill.getId() == Crusader.COMBO || skill.getId() == DawnWarrior.COMBO) && player.getBuffedValue(MapleBuffStat.MORPH) != null)) {
+        if ((effect.isMorph() && player.getBuffEffect(MapleBuffStat.COMBO) != null) || ((skill.getId() == Crusader.COMBO || skill.getId() == DawnWarrior.COMBO) && player.getBuffedValue(MapleBuffStat.MORPH) != null)) {
+            System.err.println(String.format("[%s] Attempted map crash by %s", getClass().getSimpleName(), player.getName()));
             return;
         }
         if (effect.getCooldown() > 0) {

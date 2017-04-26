@@ -149,9 +149,9 @@ public final class TakeDamageHandler extends AbstractMaplePacketHandler {
         }
 
         Cheater.CheatEntry entry = player.getCheater().getCheatEntry(Cheats.GodMode);
-        if (damage == 0) {
+        if (damage == 0 && !player.isGM()) {
             entry.spamCount++;
-            if (entry.spamCount % 8 == 0) {
+            if (entry.spamCount % 15 == 0) {
                 entry.incrementCheatCount();
                entry.announce(player.getClient(), String.format("[%d] %s has %d consecutive misses (possible god mode)", entry.cheatCount, player.getName(), entry.spamCount), 10000);
             }
