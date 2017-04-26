@@ -22,11 +22,12 @@
 package client.inventory;
 
 import client.MapleClient;
-import java.util.LinkedList;
-import java.util.List;
 import server.MapleItemInformationProvider;
 import tools.MaplePacketCreator;
 import tools.Pair;
+
+import java.util.LinkedList;
+import java.util.List;
 
 public class Equip extends Item {
 
@@ -43,6 +44,7 @@ public class Equip extends Item {
             return value;
         }
     }
+
     private byte upgradeSlots;
     private byte level, flag, itemLevel;
     private short str, dex, _int, luk, hp, mp, watk, matk, wdef, mdef, acc, avoid, hands, speed, jump, vicious;
@@ -103,6 +105,64 @@ public class Equip extends Item {
     @Override
     public byte getType() {
         return 1;
+    }
+
+    public void setStat(String stat, int value) {
+        // a better way to do this? reflection maybe
+        // is it efficient? no
+        switch (stat) {
+            case "str":
+                this.str = (short) value;
+                break;
+            case "dex":
+                this.dex = (short) value;
+                break;
+            case "int":
+                this._int = (short) value;
+                break;
+            case "luk":
+                this.luk = (short) value;
+                break;
+            case "hp":
+                this.hp = (short) value;
+                break;
+            case "mp":
+                this.mp = (short) value;
+                break;
+            case "watk":
+                this.watk = (short) value;
+                break;
+            case "matk":
+                this.matk = (short) value;
+                break;
+            case "wdef":
+                this.wdef = (short) value;
+                break;
+            case "mdef":
+                this.mdef = (short) value;
+                break;
+            case "acc":
+                this.acc = (short) value;
+                break;
+            case "avoid":
+                this.avoid = (short) value;
+                break;
+            case "hands":
+                this.hands = (short) value;
+                break;
+            case "speed":
+                this.speed = (short) value;
+                break;
+            case "jump":
+                this.jump = (short) value;
+                break;
+            case "vic":
+                this.vicious = (short) value;
+                break;
+            case "upgrades":
+                this.upgradeSlots = (byte) value;
+                break;
+        }
     }
 
     public byte getUpgradeSlots() {

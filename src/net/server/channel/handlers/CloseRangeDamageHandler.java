@@ -59,8 +59,14 @@ public final class CloseRangeDamageHandler extends AbstractDealDamageHandler {
             if (skill != null && skill.weapon > 0) {
                 Item item = player.getInventory(MapleInventoryType.EQUIPPED).getItem((short) -11);
                 if (item != null) {
-                    if (MapleWeaponType.getWeaponType(item.getItemId()) != skill.weapon) {//Ha fuck you
-                        return;
+                    int weaponType = MapleWeaponType.getWeaponType(item.getItemId());
+                    if (weaponType != skill.weapon) {
+                        // seems spear and pole arms can be used for either skills
+                        if ((weaponType != 44 && weaponType != 43) && (skill.getId() >= 1311001 && skill.getId() <= 1311004)) {
+                            // 44 = pole arm, 43 = spear
+                            // crusher & dragon fury | spear & pole arm skills
+                            return;
+                        }
                     }
                 }
             }

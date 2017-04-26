@@ -45,8 +45,11 @@ public class CommandWorker {
         CommandArgs args = new CommandArgs(sp);
         
         if (h == '!' && (player.isGM() || noCheck)) {
+            if (player.gmLevel() >= 6) {
+                AdministratorCommands.execute(client, command, args);
+            }
             if (player.gmLevel() >= 2) {
-                AdminCommands.execute(client, command, args);
+                HGMCommands.execute(client, command, args);
             }
             if (player.gmLevel() >= 1) {
                 GameMasterCommands.execute(client, command, args);

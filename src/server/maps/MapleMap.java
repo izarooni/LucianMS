@@ -545,7 +545,6 @@ public class MapleMap {
                             if (levelDifference > ServerConstants.MAX_LEVELS_ABOVE) {
                                 if (random < ServerConstants.BELOW_LEVERANGEL_NX_CHANCE) {
                                     int receive = monster.getLevel() * 4 / random;
-                                    System.out.println(monster.getLevel());
                                     if (chr.getParty() != null) {
                                         receive = (int) (monster.getLevel() * ServerConstants.LEVEL_TO_NX_MULTIPLIER) / chr.getParty().getMembers().size();
                                         for (MaplePartyCharacter players : chr.getParty().getMembers()) {

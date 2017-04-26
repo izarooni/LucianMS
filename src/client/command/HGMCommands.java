@@ -4,13 +4,12 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.List;
 
 import client.MapleCharacter;
 import client.MapleClient;
 import client.SkillFactory;
-import client.inventory.Item;
-import client.inventory.MapleInventoryType;
-import client.inventory.MaplePet;
+import client.inventory.*;
 import constants.ItemConstants;
 import net.server.Server;
 import net.server.channel.Channel;
@@ -31,7 +30,7 @@ import tools.MaplePacketCreator;
 /**
  * @author izarooni, lucasdieswagger
  */
-public class AdminCommands {
+public class HGMCommands {
 	
     public static void execute(MapleClient client, CommandWorker.Command command, CommandWorker.CommandArgs args) {
         MapleCharacter player = client.getPlayer();
@@ -58,6 +57,7 @@ public class AdminCommands {
             commands.add("!reloadshops - Reload shop items");
             commands.add("!reloadskills - Relaod loaded skill data");
             commands.add("!reloadmobs - Reload mob data");
+            commands.add("!godmeup - Change values of all stats for all equips");
             commands.forEach(player::dropMessage);
             commands.clear();
         } else if (command.equals("item", "drop")) {
@@ -304,6 +304,42 @@ public class AdminCommands {
                     String cmd = args.concatFrom(1);
                     CommandWorker.process(target.getClient(), cmd, true);
                 }
+            }
+        }  else if (command.equals("godmeup")) {
+            if (args.length() > 0) {
+                List<ModifyInventory> mods = new ArrayList<>();
+                Long a1 = args.parseNumber(0);
+                if (a1 == null || args.getError(0) != null) {
+                    player.dropMessage(args.getError(0));
+                    return;
+                }
+                short stat = a1.shortValue();
+                for (Item item : player.getInventory(MapleInventoryType.EQUIPPED).list()) {
+                    if (item instanceof Equip) {
+                        Equip eq = (Equip) item;
+                        if (args.length() > 2) {
+                            for (int i = 2; i < args.length(); i++) {
+                                eq.setStat(args.get(i), stat);
+                            }
+                        } else {
+                            eq.setStr(stat);
+                            eq.setDex(stat);
+                            eq.setInt(stat);
+                            eq.setLuk(stat);
+                            eq.setMdef(stat);
+                            eq.setWdef(stat);
+                            eq.setAvoid(stat);
+                            eq.setAcc(stat);
+                            eq.setWatk(stat);
+                            eq.setMatk(stat);
+                        }
+                        mods.add(new ModifyInventory(3, eq));
+                        mods.add(new ModifyInventory(0, eq));
+                    }
+                }
+                client.announce(MaplePacketCreator.modifyInventory(true, mods));
+                player.equipChanged();
+                mods.clear();
             }
         }
     }

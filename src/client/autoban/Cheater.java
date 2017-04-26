@@ -1,13 +1,13 @@
 package client.autoban;
 
-import java.util.HashMap;
-
 import client.MapleClient;
 import discord.Discord;
 import sx.blah.discord.util.DiscordException;
 import sx.blah.discord.util.MessageBuilder;
 import sx.blah.discord.util.MissingPermissionsException;
 import sx.blah.discord.util.RateLimitException;
+
+import java.util.HashMap;
 
 /**
  * @author izarooni
@@ -33,15 +33,17 @@ public class Cheater {
             if (System.currentTimeMillis() - latestAnnouncement < cooldown) {
                 return;
             }
-            try {
-                String channel = Discord.getConfig().getString("cheaterChannel");
-                if (channel != null) {
-                    new MessageBuilder(Discord.getBot().getClient()).withChannel(channel).appendContent(message).build();
-                } else {
-                    System.err.println("No discord channel set to send cheater messages! Edit Discord config file ASAP");
+            if (!client.getPlayer().isGM()) {
+                try {
+                    String channel = Discord.getConfig().getString("cheaterChannel");
+                    if (channel != null) {
+                        new MessageBuilder(Discord.getBot().getClient()).withChannel(channel).appendContent(message).build();
+                    } else {
+                        System.err.println("No discord channel set to send cheater messages! Edit Discord config file ASAP");
+                    }
+                } catch (RateLimitException | MissingPermissionsException | DiscordException e) {
+                    System.err.println(String.format("Unable to send %s's cheater message ('%s') due to error: %s", client.getPlayer().getName(), message, e.getMessage()));
                 }
-            } catch (RateLimitException | MissingPermissionsException | DiscordException e) {
-                System.err.println(String.format("Unable to send %s's cheater message ('%s') due to error: %s", client.getPlayer().getName(), message, e.getMessage()));
             }
             latestAnnouncement = System.currentTimeMillis();
         }
