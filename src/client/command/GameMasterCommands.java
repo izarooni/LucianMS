@@ -8,11 +8,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.*;
 
-import client.MapleCharacter;
-import client.MapleClient;
-import client.MapleDisease;
-import client.MapleJob;
-import client.MapleStat;
+import client.*;
 import client.inventory.Equip;
 import client.inventory.Item;
 import client.inventory.MapleInventory;
@@ -43,7 +39,7 @@ public class GameMasterCommands {
 
 
 	private static HashMap<Integer, String> jailReasons = new HashMap<Integer, String>();
-	
+
     public static int tagRange = 5000;
 
     public static void execute(MapleClient client, CommandWorker.Command command, CommandWorker.CommandArgs args) {
@@ -103,6 +99,7 @@ public class GameMasterCommands {
             commands.add("!jail <player> <OPT=reason> - jail a person, and optionally specify a reason");
             commands.add("!jail list - list all the jailed people, and the reason if it is specified.");
             commands.add("!search <category> <name> - Search for a map, items, npcs or skills");
+            commands.add("!chattype <type> - Change your general chat color");
             commands.forEach(player::dropMessage);
             commands.clear();
         } else if (command.equals("dc")) {
@@ -129,71 +126,83 @@ public class GameMasterCommands {
             }
         } else if (command.equals("map", "warp", "warpmap", "warpmapx", "wm", "wmx", "wh", "whx")) {
         	try {
-            if (args.length() > 0) {
-                String username = args.get(0);
-                MapleCharacter target = client.getWorldServer().getPlayerStorage().getCharacterByName(username);
-                boolean exact = command.getName().endsWith("x");
-                if (target != null && command.equals("warp", "wh", "whx")) { // !<warp_cmd> <username>
-                    if (target.getClient().getChannel() != client.getChannel()) {
-                        target.getClient().changeChannel(client.getChannel());
-                    }
-                    MapleMap map = player.getMap();
-                    if (args.length() == 2) { // !<warp_cmd> <username> <target_map>
-                        Long a1 = args.parseNumber(1);
-                        if (a1 == null) {
-                            player.dropMessage(args.getError(1));
-                            return;
+                if (args.length() > 0) {
+                    String username = args.get(0);
+                    MapleCharacter target = client.getWorldServer().getPlayerStorage().getCharacterByName(username);
+                    boolean exact = command.getName().endsWith("x");
+                    if (target != null && command.equals("warp", "wh", "whx")) { // !<warp_cmd> <username>
+                        if (target.getClient().getChannel() != client.getChannel()) {
+                            target.getClient().changeChannel(client.getChannel());
                         }
-                        map = ch.getMapFactory().getMap(a1.intValue());
-                    }
-                    if (exact) {
-                        target.changeMap(map, player.getPosition());
-                        
-                    } else {
-                        target.changeMap(map);
-                    }
-                	target.setJQController(null);
-                } else if (command.equals("wm", "wmx")) {
-                    MapleMap map;
-                    if (args.length() == 1) { // !<warp_cmd> <map_ID>
-                        Long a1 = args.parseNumber(0);
-                        if (a1 == null) {
-                            player.dropMessage(args.getError(0));
-                            return;
+                        if (args.length() == 1 && command.equals("warp", "wh", "whx")) { // !warp <username>
+                            MapleCharacter warpie = (command.equals("warp") ? player : target); // LUL
+                            MapleCharacter warper = (command.equals("warp") ? target : player);
+                            if (exact) {
+                                warpie.changeMap(warper.getMap(), warper.getPosition());
+                            } else {
+                                warpie.changeMap(warper.getMap());
+                            }
+                        } else if (args.length() == 2) { // !<warp_cmd> <username> <map_ID>
+                            Long a1 = args.parseNumber(1);
+                            if (a1 == null) {
+                                player.dropMessage(5, args.getError(1));
+                                return;
+                            }
+                            MapleMap map = ch.getMapFactory().getMap(a1.intValue());
+                            if (map != null) {
+                                target.changeMap(map);
+                            } else {
+                                player.dropMessage(5, "That is an invalid map");
+                            }
                         }
-                        map = ch.getMapFactory().getMap(a1.intValue());
-                    } else { // !<warp_cmd> - rewarping players, typically for events
-                        map = player.getMap();
-                    }
-                    for (MapleCharacter players : player.getMap().getCharacters()) {
-                        if (exact) {
-                            players.changeMap(map, player.getPosition());
+                    } else if (command.equals("wm", "wmx")) {
+                        MapleMap map = null;
+                        if (args.length() == 1) { // !<warp_cmd> <map_ID>
+                            Long a1 = args.parseNumber(0);
+                            if (a1 == null) {
+                                if (args.get(1).equalsIgnoreCase("here")) {
+                                    map = player.getMap();
+                                } else {
+                                    player.dropMessage(5, args.getError(0));
+                                    return;
+                                }
+                            } else {
+                                map = ch.getMapFactory().getMap(a1.intValue());
+                            }
+                        }
+                        if (map != null) {
+                            for (MapleCharacter players : player.getMap().getCharacters()) {
+                                if (exact) {
+                                    players.changeMap(map, player.getPosition());
+                                } else {
+                                    players.changeMap(map);
+                                }
+                                players.setJQController(null);
+                            }
                         } else {
-                            players.changeMap(map);
+                            player.dropMessage(5, "That is an invalid map");
                         }
-                        players.setJQController(null);
+                    } else { // !<warp_cmd> <map_ID> (portal_ID)
+                        // map, warp
+                        Long a1 = args.parseNumber(0);
+                        Long a2 = args.parseNumber(1);
+                        String error = args.getError(0, 1);
+                        if (a1 == null || error != null) {
+                            player.dropMessage(5, args.getError(0));
+                            return;
+                        }
+                        int mapId = a1.intValue();
+                        int portal = (a2 == null) ? 0 : a2.intValue();
+                        MapleMap map = ch.getMapFactory().getMap(mapId);
+                        if (map == null) {
+                            player.dropMessage(5, "That map doesn't exist");
+                            return;
+                        }
+                        player.changeMap(map, map.getPortal(portal));
                     }
-                } else { // !<warp_cmd> <map_ID> (portal_ID)
-                    // map, warp
-                    Long a1 = args.parseNumber(0);
-                    Long a2 = args.parseNumber(1);
-                    String error = args.getError(0, 1);
-                    if (a1 == null || error != null) {
-                        player.dropMessage(args.getError(0));
-                        return;
-                    }
-                    int mapId = a1.intValue();
-                    int portal = (a2 == null) ? 0 : a2.intValue();
-                    MapleMap map = ch.getMapFactory().getMap(mapId);
-                    if (map == null) {
-                        player.dropMessage(5, "That map doesn't exist");
-                        return;
-                    }
-                    player.changeMap(map, map.getPortal(portal));
+                } else {
+                    player.dropMessage(5, "You must specify a map ID");
                 }
-            } else {
-                player.dropMessage(5, "You must specify a map ID");
-            }
         	} catch(NullPointerException e) {
         		player.dropMessage(5, "That map does not exist.");
         	}
@@ -233,7 +242,7 @@ public class GameMasterCommands {
             if (args.length() == 1) {
                 Long a1 = args.parseNumber(0);
                 if (a1 == null) {
-                    player.dropMessage(args.getError(0));
+                    player.dropMessage(5, args.getError(0));
                     return;
                 }
                 MapleJob job = MapleJob.getById(a1.intValue());
@@ -249,7 +258,7 @@ public class GameMasterCommands {
         } else if (command.equals("hp", "mp", "str", "dex", "int", "luk")) {
             Long a1 = args.parseNumber(0);
             if (a1 == null) {
-                player.dropMessage(args.getError(0));
+                player.dropMessage(5, args.getError(0));
                 return;
             }
             short amount = a1.shortValue();
@@ -600,7 +609,7 @@ public class GameMasterCommands {
             if (args.length() == 1) {
                 Long a1 = args.parseNumber(0);
                 if (a1 == null) {
-                    player.dropMessage(args.getError(0));
+                    player.dropMessage(5, args.getError(0));
                     return;
                 }
                 int level = a1.intValue();
@@ -627,7 +636,7 @@ public class GameMasterCommands {
             if (args.length() == 1) {
                 Long a1 = args.parseNumber(0);
                 if (a1 == null) {
-                    player.dropMessage(args.getError(0));
+                    player.dropMessage(5, args.getError(0));
                     return;
                 }
                 int range = a1.intValue();
@@ -684,7 +693,7 @@ public class GameMasterCommands {
                 String username = args.get(1);
                 Long a1 = args.parseNumber(2);
                 if (a1 == null) {
-                    player.dropMessage(args.getError(2));
+                    player.dropMessage(5, args.getError(2));
                     return;
                 }
                 int amount = a1.intValue();
@@ -801,7 +810,7 @@ public class GameMasterCommands {
             if (args.length() == 1) {
                 Long a1 = args.parseNumber(0);
                 if (a1 == null) {
-                    player.dropMessage(args.getError(0));
+                    player.dropMessage(5, args.getError(0));
                     return;
                 }
                 int hLevel = a1.intValue();
@@ -878,7 +887,7 @@ public class GameMasterCommands {
                 MobSkill skill = MobSkillFactory.getMobSkill(132, 2);
                 Long a1 = args.parseNumber(0);
                 if (a1 == null) {
-                    player.dropMessage(args.getError(0));
+                    player.dropMessage(5, args.getError(0));
                     return;
                 }
                 if (map) {
@@ -1074,7 +1083,7 @@ public class GameMasterCommands {
                     if ((i1 = args.findArg("-t")) > -1) {
                         Long a1 = args.parseNumber(i1);
                         if (a1 == null) {
-                            player.dropMessage(args.getError(i1));
+                            player.dropMessage(5, args.getError(i1));
                             return;
                         }
                         time = a1.intValue();
@@ -1092,11 +1101,11 @@ public class GameMasterCommands {
         	if(args.length() >= 1) {
         		if(args.get(0) != "list") {
         		MapleCharacter target = ch.getPlayerStorage().getCharacterByName(args.get(0));
-        		
+
         		if(target != null) {
         			StringBuilder sb = new StringBuilder();
-        			if(args.length() >= 2) { 
-		        				        		
+        			if(args.length() >= 2) {
+
 		        		for(int i = 2; i < args.length(); i++) {
 		        			sb.append(args.get(i)).append(" ");
 		        		}
@@ -1213,6 +1222,25 @@ public class GameMasterCommands {
                 }
             } else {
                 player.message("Syntax: !search <type> <name> where type is map, use, etc, cash, equip or mob.");
+            }
+        } else if (command.equals("chattype")) {
+            if (args.length() == 1) {
+                Long a1 = args.parseNumber(0);
+                if (a1 == null || args.getError(0) != null) {
+                    player.dropMessage(5, args.getError(0));
+                    return;
+                }
+                int ordinal = a1.intValue();
+                ChatType[] types = ChatType.values();
+                player.setChatType(types[ordinal]);
+                player.dropMessage("Chat type set to '" + types[ordinal].name().toLowerCase() + "'");
+            } else {
+                StringBuilder sb = new StringBuilder();
+                sb.append("Available chat types:\r\n");
+                for (ChatType type : ChatType.values()) {
+                    sb.append("\r\n").append(type.ordinal()).append(" - ").append(type.name().toLowerCase());
+                }
+                player.dropMessage(1, sb.toString());
             }
         }
     }

@@ -173,8 +173,12 @@ public class MapleStatEffect {
         if (!ret.skill && ret.duration > -1) {
             ret.overTime = true;
         } else {
-//            ret.duration *= 1000; // items have their times stored in ms, of course
-            ret.duration = Integer.MAX_VALUE;
+            ret.duration *= 1000; // items have their times stored in ms, of course
+
+            if (!ret.isMist() && !ret.isMorph() && !ret.isPoison() && !ret.isMagicDoor() && !ret.isDs()) {
+                // is it better to condition which skills not to include than a list of allowed skills?
+                ret.duration = Integer.MAX_VALUE;
+            }
             ret.overTime = overTime;
         }
         ArrayList<Pair<MapleBuffStat, Integer>> statups = new ArrayList<>();
@@ -772,7 +776,7 @@ public class MapleStatEffect {
             door = new MapleDoor(door); //The town door
             if (applyto.getParty() != null) {// update town doors
                 for (MaplePartyCharacter partyMembers : applyto.getParty().getMembers()) {
-                	partyMembers.getPlayer().addDoor(door);
+                    partyMembers.getPlayer().addDoor(door);
                 	partyMembers.updateDoor(door);
                 }
                 applyto.silentPartyUpdate();

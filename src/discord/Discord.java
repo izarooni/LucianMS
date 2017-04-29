@@ -103,6 +103,8 @@ public class Discord {
                             String main = (String) props.get("main");
 
                             if (CommandManagerHelper.getCommandManager(name) != null) {
+                                in.close();
+                                jar.close();
                                 throw new DuplicateEntryException(String.format("Command processor with name %s already exists", name));
                             }
 

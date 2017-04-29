@@ -21,28 +21,53 @@
 */
 package net.server.channel.handlers;
 
+import client.MapleCharacter;
 import client.MapleClient;
+import com.sun.java.accessibility.util.TopLevelWindowListener;
 import net.AbstractMaplePacketHandler;
 import server.maps.MapleDoor;
 import server.maps.MapleMapObject;
+import tools.MaplePacketCreator;
 import tools.data.input.SeekableLittleEndianAccessor;
+
+import java.util.List;
 
 /**
  *
- * @author Matze
+ * @author izarooni
  */
-public final class DoorHandler extends AbstractMaplePacketHandler {
-    public final void handlePacket(SeekableLittleEndianAccessor slea, MapleClient c) {
-        int oid = slea.readInt();
-        boolean mode = (slea.readByte() == 0); // specifies if backwarp or not, 1 town to target, 0 target to town
-        for (MapleMapObject obj : c.getPlayer().getMap().getMapObjects()) {
-            if (obj instanceof MapleDoor) {
-                MapleDoor door = (MapleDoor) obj;
-                if (door.getOwner().getId() == oid) {
-                    door.warp(c.getPlayer(), mode);
-                    return;
+public class DoorHandler extends AbstractMaplePacketHandler {
+
+    @Override
+    public void handlePacket(SeekableLittleEndianAccessor slea, MapleClient client) {
+        MapleCharacter player = client.getPlayer();
+        int doorOwnerId = slea.readInt();
+        boolean toTown = (slea.readByte() == 0);
+        boolean isPartyLeaderDoor = false;
+        List<MapleDoor> doors = player.getDoors();
+
+        if (doorOwnerId != player.getId()) {
+            if (player.getParty() != null) {
+                if (player.getParty().getLeader().getId() == doorOwnerId) {
+                    doors = player.getParty().getLeader().getDoors();
+                    isPartyLeaderDoor = true;
                 }
             }
         }
+
+        if (!doors.isEmpty()) {
+            for (MapleDoor door : doors) {
+                MapleMapObject mapObject = player.getMap().getMapObject(door.getObjectId());
+                if (mapObject != null) {
+                    if (door.getOwner().getId() == doorOwnerId || isPartyLeaderDoor) {
+                        if (player.getMap().isTown() ^ toTown) {
+                            door.warp(player, toTown);
+                            return;
+                        }
+                    }
+                }
+            }
+        }
+        client.announce(MaplePacketCreator.enableActions());
     }
 }

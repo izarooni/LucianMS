@@ -225,7 +225,7 @@ public class MapleMapFactory {
 
                 map.setClock(mapData.getChildByPath("clock") != null);
                 map.setEverlast(mapData.getChildByPath("everlast") != null);
-                map.setTown(mapData.getChildByPath("info/town") != null);
+                map.setTown(MapleDataTool.getInt("info/town", mapData, 0) == 1);
                 map.setHPDec(MapleDataTool.getIntConvert("info/decHP", mapData, 0));
                 map.setHPDecProtect(MapleDataTool.getIntConvert("info/protectItem", mapData, 0));
                 map.setForcedReturnMap(MapleDataTool.getInt(mapData.getChildByPath("info/forcedReturn"), 999999999));

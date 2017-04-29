@@ -230,6 +230,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
     private JumpQuestController JQController;
 
     private Relationship relationship = new Relationship();
+    private ChatType chatType = ChatType.NORMAL;
 
     private MapleCharacter() {
         setStance(0);
@@ -5642,5 +5643,13 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
 
     public Relationship getRelationship() {
         return relationship;
+    }
+
+    public ChatType getChatType() {
+        return chatType;
+    }
+
+    public void setChatType(ChatType chatType) {
+        this.chatType = chatType;
     }
 }

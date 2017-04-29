@@ -35,25 +35,23 @@ public class MaplePartyCharacter {
     private int channel, world;
     private int jobid;
     private int mapid;
-	private ArrayList<MapleDoor> door = new ArrayList<MapleDoor>();
+	private ArrayList<MapleDoor> door = new ArrayList<>();
     private boolean online;
     private MapleJob job;
     private MapleCharacter character;
     
-    public MaplePartyCharacter(MapleCharacter maplechar) {
-        this.character = maplechar;
-    	this.name = maplechar.getName();
-        this.level = maplechar.getLevel();
-        this.channel = maplechar.getClient().getChannel();
-        this.world = maplechar.getWorld();
-        this.id = maplechar.getId();
-        this.jobid = maplechar.getJob().getId();
-        this.mapid = maplechar.getMapId();
+    public MaplePartyCharacter(MapleCharacter player) {
+        this.character = player;
+    	this.name = player.getName();
+        this.level = player.getLevel();
+        this.channel = player.getClient().getChannel();
+        this.world = player.getWorld();
+        this.id = player.getId();
+        this.jobid = player.getJob().getId();
+        this.mapid = player.getMapId();
         this.online = true;
-        this.job = maplechar.getJob();
-        for (MapleDoor doors : maplechar.getDoors()) {
-        	this.door.add(doors);
-        }
+        this.job = player.getJob();
+        this.door.addAll(player.getDoors());
     }
 
     public MaplePartyCharacter() {
@@ -112,7 +110,7 @@ public class MaplePartyCharacter {
     	this.door.add(door);
     }
     
-    public Collection<MapleDoor> getDoors() {
+    public ArrayList<MapleDoor> getDoors() {
     	return door;
     }
     

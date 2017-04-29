@@ -689,7 +689,7 @@ public class MapleMap {
         if (monster.getStats().getLevel() >= chr.getLevel() + 30 && !chr.isGM()) {
             Cheater.CheatEntry entry = chr.getCheater().getCheatEntry(Cheats.UnderLevelAttack);
             entry.incrementCheatCount();
-            entry.announce(chr.getClient(), String.format("[%d] %s level %d attacked a monster (%d) too high of level %d", entry.cheatCount, chr.getName(), chr.getLevel(), monster.getId(), monster.getStats().getLevel()), 2500);
+            entry.announce(chr.getClient(), String.format("[%d] %s (level %d) attacked a monster (%d) too high of level (level %d)", entry.cheatCount, chr.getName(), chr.getLevel(), monster.getId(), monster.getStats().getLevel()), 2500);
         }
 		/*
 		 * if (chr.getQuest(MapleQuest.getInstance(29400)).getStatus().equals(
