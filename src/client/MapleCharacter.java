@@ -1044,6 +1044,14 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
         if (getTrade() != null) {
             MapleTrade.cancelTrade(this);
         }
+        ManualPlayerEvent playerEvent = client.getWorldServer().getPlayerEvent();
+        if (playerEvent != null) {
+            if (to != playerEvent.getMap() && getMap() == playerEvent.getMap()) {
+                if (playerEvent.participants.containsKey(getId())) {
+                    playerEvent.participants.remove(getId());
+                }
+            }
+        }
         client.announce(warpPacket);
         map.removePlayer(MapleCharacter.this);
         if (client.getChannelServer().getPlayerStorage().getCharacterById(getId()) != null) {
@@ -2892,6 +2900,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
             ret.daily = rs.getTimestamp("daily");
             ret.breakthroughs = rs.getInt("reborns");
             ret.eventPoints = rs.getInt("eventpoints");
+            ret.shadowPoints = rs.getInt("shadowpoints");
             if (ret.guildid > 0) {
                 ret.mgc = new MapleGuildCharacter(ret);
             }
@@ -3874,7 +3883,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
             con.setTransactionIsolation(Connection.TRANSACTION_READ_UNCOMMITTED);
             con.setAutoCommit(false);
             PreparedStatement ps;
-            ps = con.prepareStatement("UPDATE characters SET level = ?, fame = ?, str = ?, dex = ?, luk = ?, `int` = ?, exp = ?, gachaexp = ?, hp = ?, mp = ?, maxhp = ?, maxmp = ?, sp = ?, ap = ?, gm = ?, skincolor = ?, gender = ?, job = ?, hair = ?, face = ?, map = ?, meso = ?, hpMpUsed = ?, spawnpoint = ?, party = ?, buddyCapacity = ?, messengerid = ?, messengerposition = ?, mountlevel = ?, mountexp = ?, mounttiredness= ?, equipslots = ?, useslots = ?, setupslots = ?, etcslots = ?,  monsterbookcover = ?, vanquisherStage = ?, dojoPoints = ?, lastDojoStage = ?, finishedDojoTutorial = ?, vanquisherKills = ?, matchcardwins = ?, matchcardlosses = ?, matchcardties = ?, omokwins = ?, omoklosses = ?, omokties = ?, dataString = ?, fishingpoints = ?, daily = ?, reborns = ?, eventpoints = ? WHERE id = ?", Statement.RETURN_GENERATED_KEYS);
+            ps = con.prepareStatement("UPDATE characters SET level = ?, fame = ?, str = ?, dex = ?, luk = ?, `int` = ?, exp = ?, gachaexp = ?, hp = ?, mp = ?, maxhp = ?, maxmp = ?, sp = ?, ap = ?, gm = ?, skincolor = ?, gender = ?, job = ?, hair = ?, face = ?, map = ?, meso = ?, hpMpUsed = ?, spawnpoint = ?, party = ?, buddyCapacity = ?, messengerid = ?, messengerposition = ?, mountlevel = ?, mountexp = ?, mounttiredness= ?, equipslots = ?, useslots = ?, setupslots = ?, etcslots = ?,  monsterbookcover = ?, vanquisherStage = ?, dojoPoints = ?, lastDojoStage = ?, finishedDojoTutorial = ?, vanquisherKills = ?, matchcardwins = ?, matchcardlosses = ?, matchcardties = ?, omokwins = ?, omoklosses = ?, omokties = ?, dataString = ?, fishingpoints = ?, daily = ?, reborns = ?, eventpoints = ?, shadowpoints = ? WHERE id = ?", Statement.RETURN_GENERATED_KEYS);
             if (gmLevel < 1 && level > 199) {
                 ps.setInt(1, isCygnus() ? 120 : 200);
             } else {
@@ -3971,7 +3980,8 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
             ps.setTimestamp(50, daily);
             ps.setInt(51, breakthroughs);
             ps.setInt(52, eventPoints);
-            ps.setInt(53, id);
+            ps.setInt(53, shadowPoints)
+            ps.setInt(54, id);
 
             int updateRows = ps.executeUpdate();
             if (updateRows < 1) {
@@ -5537,6 +5547,16 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
                 return true;
             case "nx":
                 getCashShop().gainCash(1, amount);
+                return true;
+            case "ap":
+                setRemainingAp(amount);
+                updateSingleStat(MapleStat.AVAILABLEAP, getRemainingAp());
+            case "sp":
+                setRemainingSp(amount);
+                updateSingleStat(MapleStat.AVAILABLESP, getRemainingSp());
+                return true;
+            case "shp":
+                setShadowPoints(getShadowPoints() + amount);
                 return true;
         }
         return false;

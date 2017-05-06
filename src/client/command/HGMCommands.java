@@ -297,6 +297,8 @@ public class HGMCommands {
             player.dropMessage(6, "Mobs reloaded");
         } else if (command.equals("test")) {
             RockPaperScissorsHandler.startGame(player);
+        } else if (command.equals("reloaditems")) {
+
         } else if (command.equals("sudo")) {
             if (args.length()> 1) {
                 MapleCharacter target = client.getWorldServer().getPlayerStorage().getCharacterByName(args.get(0));

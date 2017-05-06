@@ -44,6 +44,7 @@ import net.server.channel.CharacterIdChannelPair;
 import net.server.guild.MapleGuild;
 import net.server.guild.MapleGuildCharacter;
 import net.server.guild.MapleGuildSummary;
+import server.events.custom.ManualPlayerEvent;
 import tools.LogHelper;
 import tools.DatabaseConnection;
 import tools.MaplePacketCreator;
@@ -64,6 +65,7 @@ public class World {
     private AtomicInteger runningPartyId = new AtomicInteger(1);
     private AtomicInteger runningMessengerId = new AtomicInteger(1);
     private PlayerStorage players = new PlayerStorage();
+    private ManualPlayerEvent playerEvent;
 
     public World(int world, int flag, String eventmsg, int exprate, int droprate, int mesorate, int bossdroprate) {
         this.id = world;
@@ -91,12 +93,12 @@ public class World {
         channels.remove(channel);
     }
 
-    public void setFlag(byte b) {
-        this.flag = b;
-    }
-
     public int getFlag() {
         return flag;
+    }
+
+    public void setFlag(byte b) {
+        this.flag = b;
     }
 
     public String getEventMessage() {
@@ -154,6 +156,14 @@ public class World {
                 families.put(id, f);
             }
         }
+    }
+
+    public ManualPlayerEvent getPlayerEvent() {
+        return playerEvent;
+    }
+
+    public void setPlayerEvent(ManualPlayerEvent playerEvent) {
+        this.playerEvent = playerEvent;
     }
 
     public MapleFamily getFamily(int id) {

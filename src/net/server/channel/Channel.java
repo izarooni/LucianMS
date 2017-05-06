@@ -76,7 +76,7 @@ public final class Channel {
     private List<MapleExpeditionType> expedType = new ArrayList<>();
     private MapleEvent event;
     private boolean finishedShutdown = false;
-    
+
     public Channel(final int world, final int channel) {
         this.world = world;
         this.channel = channel;
@@ -99,13 +99,13 @@ public final class Channel {
             	expedType.add(exped);
             }
             eventSM.init();
-            
+
             System.out.println("    Channel " + getId() + ": Listening on port " + port);
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
-    
+
     public void reloadEventScriptManager(){
     	eventSM.cancel();
     	eventSM = null;
@@ -116,14 +116,14 @@ public final class Channel {
     public final void shutdown() {
         try {
             System.out.println("Shutting down Channel " + channel + " on World " + world);
-            
+
             closeAllMerchants();
             players.disconnectAll();
             acceptor.unbind();
             acceptor.dispose();
 
             finishedShutdown = true;
-            System.out.println("Successfully shut down Channel " + channel + " on World " + world + "\r\n");          
+            System.out.println("Successfully shut down Channel " + channel + " on World " + world + "\r\n");
         } catch (Exception e) {
             System.err.println("Error while shutting down Channel " + channel + " on World " + world + "\r\n" + e);
         }
@@ -144,7 +144,7 @@ public final class Channel {
             wlock.unlock();
         }
     }
-    
+
     public MapleMapFactory getMapFactory() {
         return mapFactory;
     }
@@ -175,7 +175,7 @@ public final class Channel {
             chr.announce(data);
         }
     }
-    
+
     public final int getId() {
         return channel;
     }
@@ -234,7 +234,7 @@ public final class Channel {
     public void removeHiredMerchant(int chrid) {
         WriteLock wlock = merchant_lock.writeLock();
         wlock.lock();
-        try {        
+        try {
             hiredMerchants.remove(chrid);
         } finally {
             wlock.unlock();
@@ -259,24 +259,24 @@ public final class Channel {
         }
         return retArr;
     }
-    
+
     public List<MapleExpedition> getExpeditions() {
     	return expeditions;
     }
-    
+
     public boolean isConnected(String name) {
         return getPlayerStorage().getCharacterByName(name) != null;
     }
-    
+
     public boolean finishedShutdown() {
         return finishedShutdown;
     }
-    
+
     public void setServerMessage(String message) {
         this.serverMessage = message;
         broadcastPacket(MaplePacketCreator.serverMessage(message));
     }
-    
+
     private static String [] getEvents(){
     	List<String> events = new ArrayList<String>();
     	for (File file : new File("scripts/event").listFiles()){
@@ -284,13 +284,13 @@ public final class Channel {
     	}
     	return events.toArray(new String[0]);
     }
-	
+
 	public int getStoredVar(int key) {
 		if(storedVars.containsKey(key))
             return storedVars.get(key);
         return 0;
     }
-    
+
     public void setStoredVar(int key, int val) {
         this.storedVars.put(key, val);
     }

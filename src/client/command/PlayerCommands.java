@@ -4,7 +4,7 @@ import client.MapleCharacter;
 import client.MapleClient;
 import net.server.channel.Channel;
 import scripting.npc.NPCScriptManager;
-import server.events.custom.Events;
+import server.events.custom.ManualPlayerEvent;
 import server.maps.MapleMap;
 import tools.MaplePacketCreator;
 
@@ -47,18 +47,34 @@ public class PlayerCommands {
             player.dropMessage(6, "Drop rate: " + player.getDropRate());
             player.dropMessage(6, "Meso rate: " + player.getMesoRate());
         } else if (command.equals("joinevent", "leaveevent")) {
-            Events events = Events.getInstance();
-            if (command.equals("joinevent")) {
-                events.joinEvent(player);
+            boolean join = command.equals("joinevent");
+            ManualPlayerEvent playerEvent = client.getWorldServer().getPlayerEvent();
+            if (playerEvent != null) {
+                if (join) {
+                    if (player.getMap() != playerEvent.getMap() && !playerEvent.participants.containsKey(player.getId())) {
+                        ManualPlayerEvent.Participant p = new ManualPlayerEvent.Participant(player.getId(), player.getMapId());
+                        playerEvent.participants.put(player.getId(), p);
+                        player.changeMap(playerEvent.getMap(), playerEvent.getSpawnPoint());
+                    } else {
+                        player.dropMessage("You are already in the event!");
+                    }
+                } else {
+                    ManualPlayerEvent.Participant p = playerEvent.participants.get(player.getId());
+                    if (p != null) {
+                        player.changeMap(p.returnMapId);
+                    } else {
+                        player.dropMessage("You are not in an event");
+                    }
+                }
             } else {
-                events.leaveEvent(player);
+                player.dropMessage("There is no event going on right now");
             }
         } else if (command.equals("points")) {
             player.dropMessage(6, "Fishing Points: " + player.getFishingPoints());
             player.dropMessage(6, "Vote Points: " + player.getClient().getVotePoints());
             player.dropMessage("Event points: " + player.getEventPoints());
             player.dropMessage(6, "Donation points: " + player.getClient().getDonationPoints());
-            //player.dropMessage(6, "Shadow points: " + 0);
+            player.dropMessage(6, "Shadow points: " + player.getShadowPoints());
         } else if (command.equals("dispose")) {
             NPCScriptManager.getInstance().dispose(client);
             player.getClient().removeClickedNPC();
@@ -100,9 +116,9 @@ public class PlayerCommands {
                 if (maps.containsKey(name)) {
                     MapleMap map = ch.getMapFactory().getMap(maps.get(name));
                     if (map != null) {
-                    	if(player.getJQController() != null) {
-                    		player.setJQController(null);
-                    	}
+                        if (player.getJQController() != null) {
+                            player.setJQController(null);
+                        }
                         player.changeMap(map);
                         return;
                     }
