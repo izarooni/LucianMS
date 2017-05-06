@@ -100,6 +100,7 @@ public class GameMasterCommands {
             commands.add("!jail list - list all the jailed people, and the reason if it is specified.");
             commands.add("!search <category> <name> - Search for a map, items, npcs or skills");
             commands.add("!chattype <type> - Change your general chat color");
+            commands.add("!ap <amount> - give yourself an amount of AP");
             commands.forEach(player::dropMessage);
             commands.clear();
         } else if (command.equals("dc")) {
