@@ -1242,6 +1242,23 @@ public class GameMasterCommands {
                 }
                 player.dropMessage(1, sb.toString());
             }
+        } else if(command.equals("ap")) {
+        	if(args.length() >= 1) {
+        		try {
+        		short gainableAP = (short) (32767 - player.getRemainingAp()); // Because going past this will result in a negative number (it's a short)
+        		int requestToGain = Integer.parseInt(args.get(1));
+        		if(!(requestToGain > gainableAP)) {
+        			player.gainAp(requestToGain); // don't even have to update the single stat anymore, how luxurious
+        			player.dropMessage(6, String.format("Added %s AP to your remaining AP, you now have %s AP", gainableAP, player.getRemainingAp()));
+        		} else {
+        			player.dropMessage(5, String.format("You cannot add %s AP to your current AP, the max you can add is %s", requestToGain, gainableAP));
+        		}
+        		} catch(NumberFormatException e) {
+        			player.dropMessage(5, "Please only use numeric characters.");
+        		}
+        	} else {
+        		player.dropMessage(5, "Correct usage: !ap <amount>");
+        	}
         }
     }
 }
