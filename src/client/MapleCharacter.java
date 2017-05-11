@@ -3980,7 +3980,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
             ps.setTimestamp(50, daily);
             ps.setInt(51, breakthroughs);
             ps.setInt(52, eventPoints);
-            ps.setInt(53, shadowPoints)
+            ps.setInt(53, shadowPoints);
             ps.setInt(54, id);
 
             int updateRows = ps.executeUpdate();

@@ -93,7 +93,6 @@ public class GenericEvent {
             if (tasks.containsKey(id)) {
                 tasks.get(id).cancel();
             }
-            throw new NullPointerException("Invalid task specified");
         } finally {
             lock.unlock();
         }

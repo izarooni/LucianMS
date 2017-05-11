@@ -2,10 +2,20 @@ package client.command;
 
 import client.MapleCharacter;
 import client.MapleClient;
+import client.MapleDisease;
 import net.server.channel.Channel;
+import net.server.world.MapleParty;
+import net.server.world.MaplePartyCharacter;
 import net.server.world.World;
 import server.events.custom.ManualPlayerEvent;
+import server.life.MapleLifeFactory;
+import server.life.MapleMonster;
+import server.life.MobSkill;
+import server.life.MobSkillFactory;
+import tools.MaplePacketCreator;
 
+import java.awt.*;
+import java.util.ArrayList;
 import java.util.Map;
 
 /**
@@ -36,8 +46,8 @@ public class EventCommands {
             return true;
         } else if (command.equals("cancelevent")) {
             if (playerEvent != null) {
-                playerEvent.dispose();
                 world.setPlayerEvent(null);
+                playerEvent.dispose();
                 player.dropMessage("You have cancelled the event");
             } else {
                 player.dropMessage("There is no event on this channel right now");
@@ -123,8 +133,8 @@ public class EventCommands {
                                 sb.append(" on winning ").append(name);
                                 playerEvent.broadcastMessage(sb.toString());
                             }
-                            playerEvent.dispose();
                             world.setPlayerEvent(null);
+                            playerEvent.dispose();
                             player.dropMessage("Event ended");
                             break;
                         }
@@ -190,6 +200,201 @@ public class EventCommands {
                 }
             } else {
                 player.dropMessage("There is no event on this channel right now");
+            }
+            return true;
+        } else if (command.equals("lock", "lockm")) {
+            MobSkill skill = MobSkillFactory.getMobSkill(120, 1);
+            if (command.equals("lockm")) {
+                for (MapleCharacter players : player.getMap().getCharacters()) {
+                    if (!players.isGM()) {
+                        player.giveDebuff(MapleDisease.SEAL, skill);
+                    }
+                }
+            } else {
+                if (args.length() > 0) {
+                    for (int i = 0; i < args.length(); i++) {
+                        String username = args.get(i);
+                        MapleCharacter target = ch.getPlayerStorage().getCharacterByName(username);
+                        if (target != null && !target.isGM()) {
+                            target.giveDebuff(MapleDisease.SEAL, skill);
+                        }
+                    }
+                    player.dropMessage(6, "Done");
+                } else {
+                    player.dropMessage(5, "You must specify at least 1 username");
+                }
+            }
+            return true;
+        } else if (command.equals("reverse", "reversemap", "rev", "revm")) {
+            boolean map = command.equals("reversemap", "revm");
+            try {
+                if (args.length() > 0) {
+                    MobSkill skill = MobSkillFactory.getMobSkill(132, 2);
+                    Long a1 = args.parseNumber(0);
+                    if (a1 == null) {
+                        player.dropMessage(5, args.getError(0));
+                        return true;
+                    }
+                    if (map) {
+                        for (MapleCharacter players : player.getMap().getCharacters()) {
+                            if (!players.isGM()) {
+                                players.giveDebuff(MapleDisease.CONFUSE, skill);
+                            }
+                        }
+                    } else {
+                        for (int i = 1; i < args.length(); i++) {
+                            String username = args.get(i);
+                            MapleCharacter target = ch.getPlayerStorage().getCharacterByName(username);
+                            if (target != null && !target.isGM()) {
+                                target.setChair(0);
+                                target.announce(MaplePacketCreator.cancelChair(-1));
+                                target.getMap().broadcastMessage(target, MaplePacketCreator.showChair(target.getId(), 0), false);
+                                target.giveDebuff(MapleDisease.CONFUSE, skill);
+                            }
+                        }
+                        player.dropMessage(6, "Done!");
+                    }
+                } else {
+                    if (map) {
+                        player.dropMessage(5, "Syntax: !" + command.getName() + " <mode>");
+                    } else {
+                        player.dropMessage(5, "Syntax: !" + command.getName() + " <mode> <usernames>");
+                    }
+                }
+            } catch (NullPointerException e) {
+                player.dropMessage(5, "An unknown error occurred, but we're too lazy to fix it. Fuck you!");
+            }
+            return true;
+        } else if (command.equals("seduce", "sed", "seducem", "sedm")) {
+            boolean map = command.equals("sedm", "seducem");
+            if (args.length() > 0) {
+                String direction = args.get(0);
+                int level;
+                if (direction.equalsIgnoreCase("right")) {
+                    level = 2;
+                } else if (direction.equalsIgnoreCase("down")) {
+                    level = 7;
+                } else if (direction.equalsIgnoreCase("left")) {
+                    level = 1;
+                } else {
+                    player.dropMessage(5, "The only seduces available are: right, left and down");
+                    return true;
+                }
+                MobSkill skill = MobSkillFactory.getMobSkill(128, level);
+                if (!map) { // !<cmd_name> <direction> <usernames>
+                    if (args.length() > 1) {
+                        for (int i = 1; i < args.length(); i++) {
+                            String username = args.get(i);
+                            MapleCharacter target = ch.getPlayerStorage().getCharacterByName(username);
+                            if (target != null) {
+                                target.giveDebuff(MapleDisease.SEDUCE, skill);
+                            }
+                        }
+                        player.dropMessage(6, "Done!");
+                    } else {
+                        player.dropMessage(5, "Syntax: !" + command.getName() + " <left/right/down> <usernames>");
+                    }
+                } else { // !<cmd_name> <direction>
+                    for (MapleCharacter players : player.getMap().getCharacters()) {
+                        players.giveDebuff(MapleDisease.SEDUCE, skill);
+                    }
+                }
+            } else {
+                player.dropMessage(5, "Syntax: !" + command.getName() + " <direction>" + (!map ? " <usernames>" : ""));
+            }
+            return true;
+        } else if (command.equals("partycheck")) {
+            ArrayList<Integer> parties = new ArrayList<>();
+            ArrayList<String> solo = new ArrayList<>(); // character not in a party
+            // get parties and solo players
+            for (MapleCharacter players : player.getMap().getCharacters()) {
+                if (players.getParty() != null) {
+                    if (players.getParty().getLeader().getId() == players.getId() && !parties.contains(players.getPartyId())) {
+                        parties.add(players.getPartyId());
+                    }
+                } else {
+                    solo.add(players.getName());
+                }
+            }
+            // get characters from each party
+            for (int partyId : parties) {
+                StringBuilder sb = new StringBuilder();
+                MapleParty party = client.getWorldServer().getParty(partyId);
+                sb.append(party.getLeader().getName()).append("'s members: ");
+                for (MaplePartyCharacter members : party.getMembers()) {
+                    if (members.getId() != party.getLeader().getId()) {
+                        sb.append(members.getName()).append(", ");
+                    }
+                }
+                if (party.getMembers().size() > 1) {
+                    sb.setLength(sb.length() - 2);
+                }
+                player.dropMessage(sb.toString());
+            }
+            player.dropMessage("Characters NOT in party:");
+            player.dropMessage(solo.toString());
+            return true;
+        } else if (command.equals("ak")) {
+            if (args.length() == 1) {
+                if (args.get(0).equalsIgnoreCase("reset")) {
+                    player.getMap().setAutoKillPosition(null);
+                    player.dropMessage(6, "Auto kill position removed");
+                } else {
+                    player.dropMessage(5, "Use < !ak reset > to remove auto kill");
+                }
+                return true;
+            }
+            player.getMap().setAutoKillPosition(player.getPosition());
+            Point ak = player.getMap().getAutoKillPosition();
+            player.dropMessage(6, String.format("Auto kill position set to: x: %d, y: %d", ak.x, ak.y));
+        } else if (command.equals("bomb", "bombmap", "bombm")) {
+            if (command.equals("bombmap", "bombm")) {
+                for (MapleCharacter players : player.getMap().getCharacters()) {
+                    MapleMonster bomb = MapleLifeFactory.getMonster(9300166);
+                    if (bomb == null) {
+                        player.dropMessage(5, "An error occured");
+                        return true;
+                    }
+                    for (int i = -5; i < 5; i++) {
+                        Point pos = players.getPosition().getLocation();
+                        pos.x += (i * 30);
+                        player.getMap().spawnMonsterOnGroudBelow(bomb, pos);
+                    }
+                }
+            } else {
+                MapleMonster bomb = MapleLifeFactory.getMonster(9300166);
+                if (bomb == null) {
+                    player.dropMessage(5, "An error occured");
+                    return true;
+                }
+                int time = 2;
+                MapleCharacter target;
+                if (args.length() > 0) {
+                    int i1;
+                    String username = args.get(0);
+                    target = ch.getPlayerStorage().getCharacterByName(username);
+                    if (target != null) {
+                        target.getMap().spawnMonsterOnGroudBelow(bomb, player.getPosition());
+                    } else {
+                        player.dropMessage(5, String.format("Could not find any player named '%s'", username));
+                        return true;
+                    }
+                    if ((i1 = args.findArg("-t")) > -1) {
+                        Long a1 = args.parseNumber(i1);
+                        if (a1 == null) {
+                            player.dropMessage(5, args.getError(i1));
+                            return true;
+                        }
+                        time = a1.intValue();
+                    }
+                } else {
+                    target = player;
+                }
+                if (time < 0) {
+                    time = 0;
+                }
+                bomb.getStats().selfDestruction().setRemoveAfter(time * 1000);
+                target.getMap().spawnMonsterOnGroudBelow(bomb, target.getPosition());
             }
             return true;
         }
