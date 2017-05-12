@@ -92,6 +92,7 @@ public class GameMasterCommands {
             commands.add("!search <category> <name> - Search for a map, items, npcs or skills");
             commands.add("!chattype <type> - Change your general chat color");
             commands.add("!buff <OPT=username> - Buff yourself or a specified player");
+            commands.add("!ap <amount> - give yourself an amount of AP");
             commands.forEach(player::dropMessage);
             commands.clear();
         } else if (command.equals("dc")) {
@@ -764,6 +765,23 @@ public class GameMasterCommands {
                 }
                 player.dropMessage(1, sb.toString());
             }
+        } else if(command.equals("ap")) {
+        	if(args.length() >= 1) {
+        		try {
+        		short gainableAP = (short) (32767 - player.getRemainingAp()); // Because going past this will result in a negative number (it's a short)
+        		int requestToGain = Integer.parseInt(args.get(1));
+        		if(!(requestToGain > gainableAP)) {
+        			player.gainAp(requestToGain); // don't even have to update the single stat anymore, how luxurious
+        			player.dropMessage(6, String.format("Added %s AP to your remaining AP, you now have %s AP", gainableAP, player.getRemainingAp()));
+        		} else {
+        			player.dropMessage(5, String.format("You cannot add %s AP to your current AP, the max you can add is %s", requestToGain, gainableAP));
+        		}
+        		} catch(NumberFormatException e) {
+        			player.dropMessage(5, "Please only use numeric characters.");
+        		}
+        	} else {
+        		player.dropMessage(5, "Correct usage: !ap <amount>");
+        	}
         } else if (command.equals("buff")) {
             int[] skills = {1001003, 2001002, 1101006, 1101007, 1301007, 2201001, 2121004, 2111005, 2311003, 1121002, 4211005, 3121002, 1121000, 2311003, 1101004, 1101006, 4101004, 4111001, 2111005, 1111002, 2321005, 3201002, 4101003, 4201002, 5101006, 1321010, 1121002, 1120003};
             MapleCharacter target = player;

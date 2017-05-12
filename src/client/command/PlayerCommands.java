@@ -5,6 +5,8 @@ import client.MapleClient;
 import net.server.channel.Channel;
 import scripting.npc.NPCScriptManager;
 import server.events.custom.ManualPlayerEvent;
+import server.events.custom.Events;
+import server.events.pvp.FFA;
 import server.maps.MapleMap;
 import tools.MaplePacketCreator;
 
@@ -164,6 +166,10 @@ public class PlayerCommands {
             } else {
                 player.dropMessage(5, "You must specify a username and message");
             }
+        } else if(command.equals("joinpvp")) {
+        	player.setPVP(new FFA(player));
+        	player.getPVP().join();
+        	player.dropMessage(6, "Joined PVP");
         }
     }
 }
