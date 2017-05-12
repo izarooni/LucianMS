@@ -1,6 +1,5 @@
 package server.events.pvp;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 
 import client.MapleBuffStat;
