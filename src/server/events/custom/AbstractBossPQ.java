@@ -12,7 +12,7 @@ import server.life.MapleMonster;
 import server.maps.MapleMapFactory;
 import tools.MaplePacketCreator;
 
-public abstract class AbstractBossPQ {
+public class AbstractBossPQ {
 
 	private int round = 1;
 	protected int points;
@@ -28,7 +28,7 @@ public abstract class AbstractBossPQ {
 	
 	private MapleCharacter leader;
 	
-	public AbstractBossPQ(MapleCharacter partyleader) {
+	public AbstractBossPQ(MapleCharacter partyleader, int points, int map, int[] bosses, int nxWinnings, int nxWinningsMultiplier, int minLevel, int healthMultiplier, int damageMultiplier) {
 		this.leader = partyleader;
 	}
 	
