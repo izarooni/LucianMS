@@ -15,21 +15,27 @@ import tools.MaplePacketCreator;
 public class AbstractBossPQ {
 
 	private int round = 1;
-	protected int points;
-	protected int[] bosses;
-	protected int map;
-	protected int nxWinnings;
-	protected int nxWinningsMultiplier;
+	private int points;
+	private int[] bosses;
+	private int map;
+	private int nxWinnings;
+	private int nxWinningsMultiplier;
 	private static final int RETURN_MAP = 240070101;
-	protected int minLevel = 0;
-	protected Point monsterSpawnLoc;
-	protected int healthMultiplier = 1, damageMultipier = 1;
-	protected Point spawnLoc;
+	private int minLevel = 0;
+	private int healthMultiplier = 1, damageMultipier = 1;
 	
 	private MapleCharacter leader;
 	
 	public AbstractBossPQ(MapleCharacter partyleader, int points, int map, int[] bosses, int nxWinnings, int nxWinningsMultiplier, int minLevel, int healthMultiplier, int damageMultiplier) {
 		this.leader = partyleader;
+		this.points = points;
+		this.map = map;
+		this.bosses = bosses;
+		this.nxWinnings = nxWinnings;
+		this.nxWinningsMultiplier = nxWinningsMultiplier;
+		this.minLevel = minLevel;
+		this.healthMultiplier = healthMultiplier;
+		this.damageMultipier = damageMultiplier;
 	}
 	
 	public boolean nextRound() {
@@ -54,7 +60,7 @@ public class AbstractBossPQ {
 					monster.setMp(monster.getMp() * healthMultiplier);
 					monster.setVenomMulti(damageMultipier);
 					monster.setBoss(true);
-					leader.getMap().spawnMonsterOnGroudBelow(monster, monsterSpawnLoc);
+					leader.getMap().spawnMonsterOnGroudBelow(monster, new Point(leader.getPosition().x + 150, leader.getPosition().y));
 					leader.getMap().broadcastGMMessage(MaplePacketCreator.earnTitleMessage("Boss Arena: round " + round));
 					//leader.getMap().broadcastGMMessage(MaplePacketCreator.message);
 					if(leader.getParty() != null && leader.getParty().getMembers().size() > 1) {
