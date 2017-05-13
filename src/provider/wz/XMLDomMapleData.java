@@ -49,11 +49,7 @@ public class XMLDomMapleData implements MapleData {
 			DocumentBuilder documentBuilder = documentBuilderFactory.newDocumentBuilder();
 			Document document = documentBuilder.parse(fis);
 			this.node = document.getFirstChild();
-		} catch (ParserConfigurationException e) {
-			throw new RuntimeException(e);
-		} catch (SAXException e) {
-			throw new RuntimeException(e);
-		} catch (IOException e) {
+		} catch (ParserConfigurationException | SAXException | IOException e) {
 			throw new RuntimeException(e);
 		}
 		this.imageDataDir = imageDataDir;
@@ -71,12 +67,12 @@ public class XMLDomMapleData implements MapleData {
 		}
 
 		Node myNode = node;
-		for (int x = 0; x < segments.length; x++) {
+		for (String segment : segments) {
 			NodeList childNodes = myNode.getChildNodes();
 			boolean foundChild = false;
 			for (int i = 0; i < childNodes.getLength(); i++) {
 				Node childNode = childNodes.item(i);
-				if (childNode.getNodeType() == Node.ELEMENT_NODE && childNode.getAttributes().getNamedItem("name").getNodeValue().equals(segments[x])) {
+				if (childNode.getNodeType() == Node.ELEMENT_NODE && childNode.getAttributes().getNamedItem("name").getNodeValue().equals(segment)) {
 					myNode = childNode;
 					foundChild = true;
 					break;
@@ -93,7 +89,7 @@ public class XMLDomMapleData implements MapleData {
 
 	@Override
 	public List<MapleData> getChildren() {
-		List<MapleData> ret = new ArrayList<MapleData>();
+		List<MapleData> ret = new ArrayList<>();
 		NodeList childNodes = node.getChildNodes();
 		for (int i = 0; i < childNodes.getLength(); i++) {
 			Node childNode = childNodes.item(i);
@@ -120,13 +116,13 @@ public class XMLDomMapleData implements MapleData {
 			String value = attributes.getNamedItem("value").getNodeValue();
 			switch (type) {
 			case DOUBLE:
-				return Double.valueOf(Double.parseDouble(value));
+				return Double.parseDouble(value);
 			case FLOAT:
-				return Float.valueOf(Float.parseFloat(value));
+				return Float.parseFloat(value);
 			case INT:
-				return Integer.valueOf(Integer.parseInt(value));
+				return Integer.parseInt(value);
 			case SHORT:
-				return Short.valueOf(Short.parseShort(value));
+				return Short.parseShort(value);
 			case STRING:
 			case UOL:
 				return value;
@@ -153,30 +149,31 @@ public class XMLDomMapleData implements MapleData {
 	@Override
 	public MapleDataType getType() {
 		String nodeName = node.getNodeName();
-		if (nodeName.equals("imgdir")) {
-			return MapleDataType.PROPERTY;
-		} else if (nodeName.equals("canvas")) {
-			return MapleDataType.CANVAS;
-		} else if (nodeName.equals("convex")) {
-			return MapleDataType.CONVEX;
-		} else if (nodeName.equals("sound")) {
-			return MapleDataType.SOUND;
-		} else if (nodeName.equals("uol")) {
-			return MapleDataType.UOL;
-		} else if (nodeName.equals("double")) {
-			return MapleDataType.DOUBLE;
-		} else if (nodeName.equals("float")) {
-			return MapleDataType.FLOAT;
-		} else if (nodeName.equals("int")) {
-			return MapleDataType.INT;
-		} else if (nodeName.equals("short")) {
-			return MapleDataType.SHORT;
-		} else if (nodeName.equals("string")) {
-			return MapleDataType.STRING;
-		} else if (nodeName.equals("vector")) {
-			return MapleDataType.VECTOR;
-		} else if (nodeName.equals("null")) {
-			return MapleDataType.IMG_0x00;
+		switch (nodeName) {
+			case "imgdir":
+				return MapleDataType.PROPERTY;
+			case "canvas":
+				return MapleDataType.CANVAS;
+			case "convex":
+				return MapleDataType.CONVEX;
+			case "sound":
+				return MapleDataType.SOUND;
+			case "uol":
+				return MapleDataType.UOL;
+			case "double":
+				return MapleDataType.DOUBLE;
+			case "float":
+				return MapleDataType.FLOAT;
+			case "int":
+				return MapleDataType.INT;
+			case "short":
+				return MapleDataType.SHORT;
+			case "string":
+				return MapleDataType.STRING;
+			case "vector":
+				return MapleDataType.VECTOR;
+			case "null":
+				return MapleDataType.IMG_0x00;
 		}
 		return null;
 	}
@@ -200,5 +197,9 @@ public class XMLDomMapleData implements MapleData {
 	@Override
 	public Iterator<MapleData> iterator() {
 		return getChildren().iterator();
+	}
+
+	public String getValue(String property) {
+		return node.getAttributes().getNamedItem(property).getNodeValue();
 	}
 }
