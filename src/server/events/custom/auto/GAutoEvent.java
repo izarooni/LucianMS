@@ -12,14 +12,14 @@ import java.io.File;
 /**
  * @author izarooni
  */
-public abstract class GenericAutoEvent extends GenericEvent {
+public abstract class GAutoEvent extends GenericEvent {
 
     private final World world;
     private static final int Channel_ID = 1;
     private MapleMapFactory mapleMapFactory = null;
     private Task respawnTask = null;
 
-    public GenericAutoEvent(World world, boolean nMapInstances) {
+    public GAutoEvent(World world, boolean nMapInstances) {
         this.world = world;
         if (nMapInstances) {
             mapleMapFactory = new MapleMapFactory(
@@ -35,10 +35,13 @@ public abstract class GenericAutoEvent extends GenericEvent {
         if (message == null || message.toString().isEmpty()) {
             throw new IllegalArgumentException("Can't broadcast an empty messeage");
         }
-        world.broadcastPacket(MaplePacketCreator.serverNotice(6, message.toString()));
+        world.broadcastPacket(MaplePacketCreator.serverNotice(6, "[AutoEvent] " + message.toString()));
     }
 
     public final MapleMap getMapInstance(int mapId) {
+        if (mapleMapFactory == null) {
+            throw new NullPointerException("");
+        }
         return mapleMapFactory.getMap(mapId);
     }
 

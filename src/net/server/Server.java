@@ -44,21 +44,16 @@ import org.apache.mina.transport.socket.nio.NioSocketAcceptor;
 import server.CashShop.CashItemFactory;
 import server.MapleItemInformationProvider;
 import server.TimerManager;
-import server.events.AutoEventManager;
+import server.events.custom.auto.GAutoEventManager;
 import server.quest.MapleQuest;
 import server.quest.custom.CQuestBuilder;
-import tools.ArrayMap;
 import tools.DatabaseConnection;
-import tools.FilePrinter;
 import tools.Pair;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.net.InetSocketAddress;
-import java.sql.Array;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.*;
 
@@ -75,7 +70,6 @@ public class Server implements Runnable {
 	private Map<Integer, MapleAlliance> alliances = new LinkedHashMap<>();
 	private boolean online = false;
 	public static long uptime = System.currentTimeMillis();
-	private AutoEventManager manager;
 
 	public static Server getInstance() {
 		if (instance == null) {
@@ -262,6 +256,7 @@ public class Server implements Runnable {
 					channels.get(i).put(channelId, channel.getIP());
 				}
 				world.setServerMessage(sMessage);
+				GAutoEventManager.startRandomEvent(world);
 				System.out.println("Finished loading world " + i + "\r\n");
 			}
 			System.out.println("Worlds loaded in " + ((System.currentTimeMillis() - timeToTake) / 1000.0) + " seconds\r\n");
@@ -269,14 +264,6 @@ public class Server implements Runnable {
 			e.printStackTrace();// For those who get errors
 			System.exit(0);
 		}
-
-		System.out.println("Loading Automatic Events\r\n");
-
-		manager = new AutoEventManager();
-		manager.registerAll();
-		manager.runLater(20);
-
-		System.out.println("Sucessfully loaded automated events\r\n");
 
 		ConsoleCommands.beginReading();
 		System.out.println("Console now listening for commands");
