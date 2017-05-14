@@ -21,34 +21,49 @@
 */
 package net.server.channel.handlers;
 
-import net.server.channel.handlers.AbstractMovementPacketHandler;
-import java.awt.Point;
-import java.util.Collection;
-import java.util.List;
 import client.MapleCharacter;
 import client.MapleClient;
+import net.PacketHandler;
 import server.maps.MapleSummon;
 import server.movement.LifeMovementFragment;
+import server.movement.MovementPacketHelper;
 import tools.MaplePacketCreator;
 import tools.data.input.SeekableLittleEndianAccessor;
 
-public final class MoveSummonHandler extends AbstractMovementPacketHandler {
-    public final void handlePacket(SeekableLittleEndianAccessor slea, MapleClient c) {
-        int oid = slea.readInt();
-        Point startPos = new Point(slea.readShort(), slea.readShort());
-        List<LifeMovementFragment> res = parseMovement(slea);
-        MapleCharacter player = c.getPlayer();
+import java.awt.*;
+import java.util.Collection;
+import java.util.List;
+
+public final class MoveSummonHandler extends PacketHandler {
+
+    private int objectId;
+
+    private short xStart, yStart;
+
+    private List<LifeMovementFragment> movements;
+
+    @Override
+    public void process(SeekableLittleEndianAccessor slea) {
+        objectId = slea.readInt();
+        xStart = slea.readShort();
+        yStart = slea.readShort();
+        movements = MovementPacketHelper.parse(null, slea);
+    }
+
+    @Override
+    public void onPacket() {
+        MapleCharacter player = getClient().getPlayer();
         Collection<MapleSummon> summons = player.getSummons().values();
         MapleSummon summon = null;
         for (MapleSummon sum : summons) {
-            if (sum.getObjectId() == oid) {
+            if (sum.getObjectId() == objectId) {
                 summon = sum;
                 break;
             }
         }
         if (summon != null) {
-            updatePosition(res, summon, 0);
-            player.getMap().broadcastMessage(player, MaplePacketCreator.moveSummon(player.getId(), oid, startPos, res), summon.getPosition());
+            MovementPacketHelper.updatePosition(movements, summon, 0);
+            player.getMap().broadcastMessage(player, MaplePacketCreator.moveSummon(player.getId(), objectId, new Point(xStart, yStart), movements), summon.getPosition());
         }
     }
 }

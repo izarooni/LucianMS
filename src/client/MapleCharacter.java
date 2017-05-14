@@ -189,6 +189,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
     private List<Integer> trockmaps = new ArrayList<>();
     private List<Integer> viptrockmaps = new ArrayList<>();
     private Map<String, MapleEvents> events = new LinkedHashMap<>();
+    private List<GenericEvent> genericEvents = new ArrayList<>();
     private PartyQuest partyQuest = null;
     private boolean loggedIn = false;
     private MapleDragon dragon = null;
@@ -5671,5 +5672,20 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
 
     public void setChatType(ChatType chatType) {
         this.chatType = chatType;
+    }
+
+    public List<GenericEvent> getGenericEvents() {
+        return Collections.unmodifiableList(genericEvents);
+    }
+
+    public void addGenericEvent(GenericEvent event) {
+        if (genericEvents.contains(event)) {
+            throw new RuntimeException(String.format("Player '%s' is already registered under the '%s' generic event", getName(), event.getClass().getSimpleName()));
+        }
+        genericEvents.add(event);
+    }
+
+    public void removeGenericEvent(GenericEvent event) {
+        genericEvents.remove(event);
     }
 }

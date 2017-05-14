@@ -1,5 +1,6 @@
 package server.events.custom.auto;
 
+import client.MapleCharacter;
 import net.server.world.World;
 
 /**
@@ -18,5 +19,15 @@ public class ABeCareful extends GAutoEvent {
 
     @Override
     public void stop() {
+    }
+
+    @Override
+    public void playerRegistered(MapleCharacter player) {
+
+    }
+
+    @Override
+    public void playerUnregistered(MapleCharacter player) {
+
     }
 }

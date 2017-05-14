@@ -23,7 +23,9 @@ package net;
 
 import client.MapleClient;
 
+@Deprecated
 public abstract class AbstractMaplePacketHandler implements MaplePacketHandler {
+
     @Override
     public boolean validateState(MapleClient c) {
         return c.isLoggedIn();

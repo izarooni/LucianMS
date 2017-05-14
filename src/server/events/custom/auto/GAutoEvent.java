@@ -1,5 +1,6 @@
 package server.events.custom.auto;
 
+import client.MapleCharacter;
 import net.server.world.World;
 import provider.MapleDataProviderFactory;
 import server.events.custom.GenericEvent;
@@ -8,6 +9,7 @@ import server.maps.MapleMapFactory;
 import tools.MaplePacketCreator;
 
 import java.io.File;
+import java.util.HashMap;
 
 /**
  * @author izarooni
@@ -19,15 +21,12 @@ public abstract class GAutoEvent extends GenericEvent {
     private MapleMapFactory mapleMapFactory = null;
     private Task respawnTask = null;
 
+    private HashMap<Integer, MapleCharacter> players = new HashMap<>();
+
     public GAutoEvent(World world, boolean nMapInstances) {
         this.world = world;
         if (nMapInstances) {
-            mapleMapFactory = new MapleMapFactory(
-                    MapleDataProviderFactory.getDataProvider(
-                            new File(System.getProperty("wzpath") + "/Map.wz")),
-                    MapleDataProviderFactory.getDataProvider(
-                            new File(System.getProperty("wzpath") + "/String.wz")),
-                    world.getId(), Channel_ID);
+            mapleMapFactory = new MapleMapFactory(MapleDataProviderFactory.getDataProvider(new File(System.getProperty("wzpath") + "/Map.wz")), MapleDataProviderFactory.getDataProvider(new File(System.getProperty("wzpath") + "/String.wz")), world.getId(), Channel_ID);
         }
     }
 
@@ -57,7 +56,21 @@ public abstract class GAutoEvent extends GenericEvent {
         return world;
     }
 
+    public final void registerPlayer(MapleCharacter player) {
+        players.putIfAbsent(player.getId(), player);
+        playerRegistered(player);
+    }
+
+    public final void unregisterPlayer(MapleCharacter player) {
+        players.remove(player.getId());
+        playerUnregistered(player);
+    }
+
     public abstract void start();
 
     public abstract void stop();
+
+    public abstract void playerRegistered(MapleCharacter player);
+
+    public abstract void playerUnregistered(MapleCharacter player);
 }

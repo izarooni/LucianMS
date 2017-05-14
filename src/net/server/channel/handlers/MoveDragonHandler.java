@@ -22,29 +22,42 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 package net.server.channel.handlers;
 
 import client.MapleCharacter;
-import client.MapleClient;
-import java.awt.Point;
-import java.util.List;
+import net.PacketHandler;
 import server.maps.MapleDragon;
 import server.movement.LifeMovementFragment;
+import server.movement.MovementPacketHelper;
 import tools.MaplePacketCreator;
 import tools.data.input.SeekableLittleEndianAccessor;
 
+import java.awt.*;
+import java.util.List;
 
-public class MoveDragonHandler extends AbstractMovementPacketHandler {
+
+public class MoveDragonHandler extends PacketHandler {
+
+    private short xStart, yStart;
+
+    private List<LifeMovementFragment> movements;
 
     @Override
-    public void handlePacket(SeekableLittleEndianAccessor slea, MapleClient c) {
-        final MapleCharacter chr = c.getPlayer();
-        final Point startPos = new Point(slea.readShort(), slea.readShort());
-        List<LifeMovementFragment> res = parseMovement(slea);
-        final MapleDragon dragon = chr.getDragon();
-        if (dragon != null && res != null && res.size() > 0) {
-            updatePosition(res, dragon, 0);
-            if (chr.isHidden()) {
-                chr.getMap().broadcastGMMessage(chr, MaplePacketCreator.moveDragon(dragon, startPos, res));
+    public void process(SeekableLittleEndianAccessor slea) {
+        xStart = slea.readShort();
+        yStart = slea.readShort();
+
+        movements = MovementPacketHelper.parse(null, slea);
+    }
+
+    @Override
+    public void onPacket() {
+        final MapleCharacter player = getClient().getPlayer();
+        final MapleDragon dragon = player.getDragon();
+        if (dragon != null && movements != null) {
+            MovementPacketHelper.updatePosition(movements, dragon, 0);
+            Point pos = new Point(xStart, yStart);
+            if (player.isHidden()) {
+                player.getMap().broadcastGMMessage(player, MaplePacketCreator.moveDragon(dragon, pos, movements));
             } else {
-                chr.getMap().broadcastMessage(chr, MaplePacketCreator.moveDragon(dragon, startPos, res), dragon.getPosition());
+                player.getMap().broadcastMessage(player, MaplePacketCreator.moveDragon(dragon, pos, movements), dragon.getPosition());
             }
         }
     }

@@ -30,6 +30,7 @@ import net.server.handlers.login.*;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+@Deprecated
 public final class PacketProcessor {
 
     private final static Map<String, PacketProcessor> instances = new LinkedHashMap<>();
@@ -118,12 +119,10 @@ public final class PacketProcessor {
             registerHandler(RecvOpcode.MESO_DROP, new MesoDropHandler());
             registerHandler(RecvOpcode.PLAYER_LOGGEDIN, new PlayerLoggedinHandler());
             registerHandler(RecvOpcode.CHANGE_MAP, new ChangeMapHandler());
-            registerHandler(RecvOpcode.MOVE_LIFE, new MoveLifeHandler());
             registerHandler(RecvOpcode.CLOSE_RANGE_ATTACK, new CloseRangeDamageHandler());
             registerHandler(RecvOpcode.RANGED_ATTACK, new RangedAttackHandler());
             registerHandler(RecvOpcode.MAGIC_ATTACK, new MagicDamageHandler());
             registerHandler(RecvOpcode.TAKE_DAMAGE, new TakeDamageHandler());
-            registerHandler(RecvOpcode.MOVE_PLAYER, new MovePlayerHandler());
             registerHandler(RecvOpcode.USE_CASH_ITEM, new UseCashItemHandler());
             registerHandler(RecvOpcode.USE_ITEM, new UseItemHandler());
             registerHandler(RecvOpcode.USE_RETURN_SCROLL, new UseItemHandler());
@@ -151,7 +150,6 @@ public final class PacketProcessor {
             registerHandler(RecvOpcode.ENTER_MTS, new EnterMTSHandler());
             registerHandler(RecvOpcode.ENTER_CASHSHOP, new EnterCashShopHandler());
             registerHandler(RecvOpcode.DAMAGE_SUMMON, new DamageSummonHandler());
-            registerHandler(RecvOpcode.MOVE_SUMMON, new MoveSummonHandler());
             registerHandler(RecvOpcode.SUMMON_ATTACK, new SummonDamageHandler());
             registerHandler(RecvOpcode.BUDDYLIST_MODIFY, new BuddylistModifyHandler());
             registerHandler(RecvOpcode.USE_ITEMEFFECT, new UseItemEffectHandler());
@@ -168,7 +166,6 @@ public final class PacketProcessor {
             registerHandler(RecvOpcode.CASHSHOP_OPERATION, new CashOperationHandler());
             registerHandler(RecvOpcode.COUPON_CODE, new CouponCodeHandler());
             registerHandler(RecvOpcode.SPAWN_PET, new SpawnPetHandler());
-            registerHandler(RecvOpcode.MOVE_PET, new MovePetHandler());
             registerHandler(RecvOpcode.PET_CHAT, new PetChatHandler());
             registerHandler(RecvOpcode.PET_COMMAND, new PetCommandHandler());
             registerHandler(RecvOpcode.PET_FOOD, new PetFoodHandler());
@@ -227,7 +224,6 @@ public final class PacketProcessor {
             registerHandler(RecvOpcode.REMOTE_STORE, new RemoteStoreHandler());
             registerHandler(RecvOpcode.WEDDING_ACTION, new WeddingHandler());
             registerHandler(RecvOpcode.ADMIN_CHAT, new AdminChatHandler());
-            registerHandler(RecvOpcode.MOVE_DRAGON, new MoveDragonHandler());
         }
     }
 }
