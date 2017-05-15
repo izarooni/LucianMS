@@ -9,7 +9,11 @@ import server.maps.MapleMapFactory;
 import tools.MaplePacketCreator;
 
 import java.io.File;
-import java.util.HashMap;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * @author izarooni
@@ -21,7 +25,8 @@ public abstract class GAutoEvent extends GenericEvent {
     private MapleMapFactory mapleMapFactory = null;
     private Task respawnTask = null;
 
-    private HashMap<Integer, MapleCharacter> players = new HashMap<>();
+    // [f]irst time using this
+    private ConcurrentHashMap<Integer, MapleCharacter> players = new ConcurrentHashMap<>();
 
     public GAutoEvent(World world, boolean nMapInstances) {
         this.world = world;
@@ -56,6 +61,16 @@ public abstract class GAutoEvent extends GenericEvent {
         return world;
     }
 
+    public final Collection<MapleCharacter> getPlayers() {
+        List<MapleCharacter> ret = new ArrayList<>();
+        ret.addAll(players.values());
+        return Collections.unmodifiableList(ret);
+    }
+
+    public final int countPlayers() {
+        return players.size();
+    }
+
     public final void registerPlayer(MapleCharacter player) {
         players.putIfAbsent(player.getId(), player);
         playerRegistered(player);
@@ -65,7 +80,6 @@ public abstract class GAutoEvent extends GenericEvent {
         players.remove(player.getId());
         playerUnregistered(player);
     }
-
     public abstract void start();
 
     public abstract void stop();

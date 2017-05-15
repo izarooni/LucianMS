@@ -26,6 +26,7 @@ import net.server.Server;
 import net.server.channel.Channel;
 import net.server.guild.MapleGuild;
 import net.server.guild.MapleGuildCharacter;
+import net.server.handlers.PlayerDisconnectHandler;
 import net.server.world.*;
 import org.apache.mina.core.session.IoSession;
 import scripting.npc.NPCConversationManager;
@@ -769,6 +770,7 @@ public class MapleClient {
         }
         disconnecting = true;
         if (player != null && player.isLoggedin() && player.getClient() != null) {
+            player.getGenericEvents().forEach(e -> e.onPacketEvent(new PlayerDisconnectHandler()));
             MapleMap map = player.getMap();
             final MapleParty party = player.getParty();
             final int idz = player.getId();

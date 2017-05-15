@@ -87,6 +87,15 @@ public class GenericEvent {
         }
     }
 
+    public final void dispose() {
+        lock.lock();
+        try {
+            tasks.values().forEach(Task::cancel);
+        } finally {
+            lock.unlock();
+        }
+    }
+
     private Task setupTask(ScheduledFuture<?> future) {
         lock.lock();
         try {

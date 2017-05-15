@@ -41,5 +41,11 @@ public final class PacketManager {
         handlers.set(RecvOpcode.MOVE_SUMMON.getValue(), MoveSummonHandler.class);
         handlers.set(RecvOpcode.MOVE_PET.getValue(), MovePetHandler.class);
         handlers.set(RecvOpcode.MOVE_DRAGON.getValue(), MoveDragonHandler.class);
+
+        handlers.set(RecvOpcode.CLOSE_RANGE_ATTACK.getValue(), CloseRangeDamageHandler.class);
+        handlers.set(RecvOpcode.RANGED_ATTACK.getValue(), RangedAttackHandler.class);
+        handlers.set(RecvOpcode.MAGIC_ATTACK.getValue(), MagicDamageHandler.class);
+        handlers.set(RecvOpcode.TOUCH_MONSTER_ATTACK.getValue(), TouchMonsterDamageHandler.class);
+        handlers.set(RecvOpcode.TAKE_DAMAGE.getValue(), TakeDamageHandler.class);
     }
 }

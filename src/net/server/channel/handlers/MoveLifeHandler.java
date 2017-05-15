@@ -60,7 +60,7 @@ public final class MoveLifeHandler extends PacketHandler {
         moveId = slea.readShort();
         bSkill = slea.readByte();
         skill = slea.readByte();
-        skill_1 = slea.readInt() & 0xFF;
+        skill_1 = slea.readByte() & 0xFF;
         skill_2 = slea.readByte();
         skill_3 = slea.readByte();
         skill_4 = slea.readByte();

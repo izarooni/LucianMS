@@ -65,6 +65,7 @@ import tools.Randomizer;
 public class MapleMonster extends AbstractLoadedMapleLife {
 
     private MapleMonsterStats stats;
+    private MapleMonsterStats overrideStats = null;
     private int hp, mp;
     private WeakReference<MapleCharacter> controller = new WeakReference<>(null);
     private boolean controllerHasAggro, controllerKnowsAboutAggro;
@@ -101,6 +102,12 @@ public class MapleMonster extends AbstractLoadedMapleLife {
         mp = stats.getMp();
     }
 
+    public void setOverrideStats(MapleMonsterStats overrideStats) {
+        this.overrideStats = overrideStats;
+        hp = overrideStats.getHp();
+        mp = overrideStats.getMp();
+    }
+
     public void disableDrops() {
         this.dropsDisabled = true;
     }
@@ -122,6 +129,9 @@ public class MapleMonster extends AbstractLoadedMapleLife {
     }
 
     public int getMaxHp() {
+        if (overrideStats != null  && overrideStats.getHp() > 0) {
+            return stats.getHp();
+        }
         return stats.getHp();
     }
 
@@ -137,17 +147,23 @@ public class MapleMonster extends AbstractLoadedMapleLife {
     }
 
     public int getMaxMp() {
+        if (overrideStats != null) {
+            return overrideStats.getMp();
+        }
         return stats.getMp();
     }
 
     public int getExp() {
+        if (overrideStats != null) {
+            return overrideStats.getExp();
+        }
         return stats.getExp();
     }
 
     public int getLevel() {
         return stats.getLevel();
     }
-    
+
     public void setLevel(int level) {
     	stats.setLevel(level);
     }

@@ -7,6 +7,8 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 
 /**
+ * Does not record each event last instantiate for multiple worlds simply because there is no need to
+ *
  * @author izarooni
  */
 public enum GAutoEventManager {
@@ -50,7 +52,20 @@ public enum GAutoEventManager {
         GAutoEventManager.currentEvent = currentEvent;
     }
 
+    /**
+     * Pick a random event that {@link #getLastInstantiate()} was at least 2 hours ago
+     * <p>
+     * The selected child auto event class will instantiate using the {@code World} method parameter.
+     * The last instantiate will be set and {@link GAutoEvent#start()} will be invoked
+     * </p>
+     *
+     * @param world the world the auto event will be hosted in
+     */
     public static void startRandomEvent(World world) {
+        if (getCurrentEvent() != null) {
+            // maybe implement a force cancel function
+            getCurrentEvent().stop();
+        }
         final int interval = ((1000 * 60) * 60) * 2;
         GAutoEventManager[] events = GAutoEventManager.values();
         ArrayList<GAutoEventManager> available = new ArrayList<>();

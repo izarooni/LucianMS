@@ -119,10 +119,6 @@ public final class PacketProcessor {
             registerHandler(RecvOpcode.MESO_DROP, new MesoDropHandler());
             registerHandler(RecvOpcode.PLAYER_LOGGEDIN, new PlayerLoggedinHandler());
             registerHandler(RecvOpcode.CHANGE_MAP, new ChangeMapHandler());
-            registerHandler(RecvOpcode.CLOSE_RANGE_ATTACK, new CloseRangeDamageHandler());
-            registerHandler(RecvOpcode.RANGED_ATTACK, new RangedAttackHandler());
-            registerHandler(RecvOpcode.MAGIC_ATTACK, new MagicDamageHandler());
-            registerHandler(RecvOpcode.TAKE_DAMAGE, new TakeDamageHandler());
             registerHandler(RecvOpcode.USE_CASH_ITEM, new UseCashItemHandler());
             registerHandler(RecvOpcode.USE_ITEM, new UseItemHandler());
             registerHandler(RecvOpcode.USE_RETURN_SCROLL, new UseItemHandler());
@@ -183,7 +179,6 @@ public final class PacketProcessor {
             registerHandler(RecvOpcode.SPOUSE_CHAT, new SpouseChatHandler());
             registerHandler(RecvOpcode.PET_AUTO_POT, new PetAutoPotHandler());
             registerHandler(RecvOpcode.PET_EXCLUDE_ITEMS, new PetExcludeItemsHandler());
-            registerHandler(RecvOpcode.TOUCH_MONSTER_ATTACK, new TouchMonsterDamageHandler());
             registerHandler(RecvOpcode.TROCK_ADD_MAP, new TrockAddMapHandler());
             registerHandler(RecvOpcode.HIRED_MERCHANT_REQUEST, new HiredMerchantRequest());
             registerHandler(RecvOpcode.MOB_DAMAGE_MOB, new MobDamageMobHandler());

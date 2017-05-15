@@ -125,4 +125,26 @@ public class StringUtil {
 		}
 		return ret;
 	}
+
+	public static String getTimeElapse(long time) {
+		int seconds = (int) (time / 1000 % 60);
+		int minutes = (int) ((time / (1000 * 60)) % 60);
+		int hours = (int) ((time / (1000 * 60 * 60)) % 24);
+		int days = (int) ((time / (1000 * 60 * 60 * 24) % 30));
+		String ret = "";
+		if (days > 0) {
+			ret += days + " day" + ((days > 1) ? "s" : "");
+		}
+		if (hours > 0) {
+			ret += ((days > 0) ? " " : "") + // spacing from previous string concat
+					hours + " hour" + ((hours > 1) ? "s" : "");
+		}
+		if (minutes > 0) {
+			ret += ((hours > 0 || days > 0) ? " " : "") +
+					minutes + " minute" + ((minutes > 1) ? "s" : "");
+		}
+		ret += ((minutes > 0 || hours > 0 || days > 0) ? " " : "") +
+				seconds + " second" + ((seconds > 1) ? "s" : "");
+		return ret;
+	}
 }
