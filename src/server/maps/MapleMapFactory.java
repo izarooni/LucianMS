@@ -23,6 +23,7 @@ package server.maps;
 
 import java.awt.Point;
 import java.awt.Rectangle;
+import java.io.File;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -35,6 +36,7 @@ import java.util.Map;
 import client.MapleCharacter;
 import provider.MapleData;
 import provider.MapleDataProvider;
+import provider.MapleDataProviderFactory;
 import provider.MapleDataTool;
 import server.PortalFactory;
 import server.life.AbstractLoadedMapleLife;
@@ -52,9 +54,9 @@ public class MapleMapFactory {
 
     private Boolean skipMonsters = null;
 
-    public MapleMapFactory(MapleDataProvider source, MapleDataProvider stringSource, int world, int channel) {
-        this.source = source;
-        this.nameData = stringSource.getData("Map.img");
+    public MapleMapFactory(int world, int channel) {
+        this.source = MapleDataProviderFactory.getDataProvider(new File(System.getProperty("wzpath") + "/Map.wz"));
+        this.nameData = MapleDataProviderFactory.getDataProvider(new File(System.getProperty("wzpath") + "/String.wz")).getData("Map.img");
         this.world = world;
         this.channel = channel;
     }

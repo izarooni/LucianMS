@@ -31,7 +31,7 @@ public abstract class GAutoEvent extends GenericEvent {
     public GAutoEvent(World world, boolean nMapInstances) {
         this.world = world;
         if (nMapInstances) {
-            mapleMapFactory = new MapleMapFactory(MapleDataProviderFactory.getDataProvider(new File(System.getProperty("wzpath") + "/Map.wz")), MapleDataProviderFactory.getDataProvider(new File(System.getProperty("wzpath") + "/String.wz")), world.getId(), Channel_ID);
+            mapleMapFactory = new MapleMapFactory(world.getId(), Channel_ID);
         }
     }
 

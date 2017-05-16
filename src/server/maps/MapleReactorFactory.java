@@ -67,7 +67,7 @@ public class MapleReactorFactory {
                             for (MapleData fknexon : eventData.getChildren()) {
                                 if (fknexon.getName().equals("timeOut")) continue;
                                 Pair<Integer, Integer> reactItem = null;
-                                int type = MapleDataTool.getIntConvert("type", fknexon);
+                                int type = MapleDataTool.getIntConvert("type", fknexon, -1);
                                 if (type == 100) { //reactor waits for item
                                     reactItem = new Pair<Integer, Integer>(MapleDataTool.getIntConvert("0", fknexon), MapleDataTool.getIntConvert("1", fknexon));
                                     if (!areaSet || loadArea) { //only set area of effect for item-triggered reactors once

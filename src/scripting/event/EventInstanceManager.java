@@ -63,7 +63,7 @@ public class EventInstanceManager {
 	public EventInstanceManager(EventManager em, String name) {
 		this.em = em;
 		this.name = name;
-		mapFactory = new MapleMapFactory(MapleDataProviderFactory.getDataProvider(new File(System.getProperty("wzpath") + "/Map.wz")), MapleDataProviderFactory.getDataProvider(new File(System.getProperty("wzpath") + "/String.wz")), (byte) 0, (byte) 1);//Fk this
+		mapFactory = new MapleMapFactory((byte) 0, (byte) 1);//Fk this
 		mapFactory.setChannel(em.getChannelServer().getId());
 	}
 

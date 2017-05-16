@@ -3,6 +3,8 @@ package constants;
 import client.MapleJob;
 import constants.skills.Aran;
 
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 
 /*
@@ -10,6 +12,9 @@ import java.util.ArrayList;
  */
 public class GameConstants {
 
+    /**
+     * @author izarooni
+     */
     public final static class Styles {
 
         public static final Styles fStyles = new Styles();
@@ -17,6 +22,29 @@ public class GameConstants {
 
         public final ArrayList<Integer> hairs = new ArrayList<>();
         public final ArrayList<Integer> faces = new ArrayList<>();
+
+        public static boolean changing = false;
+
+        public static void save(String fileName) throws IOException {
+            StringBuilder sb = new StringBuilder();
+            sb.append("mHairs=");
+            mStyles.hairs.forEach(i -> sb.append(i).append(", "));
+            sb.setLength(sb.length() - 2); // remove comma
+            sb.append("\r\nfHairs=");
+            fStyles.hairs.forEach(i -> sb.append(i).append(", "));
+            sb.setLength(sb.length() - 2); // remove comma
+
+            sb.append("\r\nmFaces=");
+            mStyles.faces.forEach(i -> sb.append(i).append(", "));
+            sb.setLength(sb.length() - 2); // remove comma
+            sb.append("\r\nfFaces=");
+            fStyles.faces.forEach(i -> sb.append(i).append(", "));
+            sb.setLength(sb.length() - 2); // remove comma
+            try (FileOutputStream fos = new FileOutputStream(fileName, false)) {
+                fos.write(sb.toString().getBytes());
+                fos.flush();
+            }
+        }
     }
 
     public static int getHiddenSkill(final int skill) {

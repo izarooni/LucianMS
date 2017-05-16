@@ -68,7 +68,7 @@ public class House {
 					return false;
 				}
 				// because you can't warp to the map by creating a new maplemap, null stuff..
-				this.mapFactory = new MapleMapFactory(MapleDataProviderFactory.getDataProvider(new File(System.getProperty("wzpath") + "/Map.wz")), MapleDataProviderFactory.getDataProvider(new File(System.getProperty("wzpath") + "/String.wz")), player.getWorld(), player.getClient().getChannel());
+				this.mapFactory = new MapleMapFactory(player.getWorld(), player.getClient().getChannel());
 				
 				
 				this.mapId = rs.getInt("mapId");

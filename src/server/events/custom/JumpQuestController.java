@@ -27,7 +27,7 @@ public class JumpQuestController {
 	
 	public void start() {
 		System.out.println("Map " + map + " came from: " + mapComingFrom + " id: " + id );
-		MapleMapFactory tempFactory = new MapleMapFactory(MapleDataProviderFactory.getDataProvider(new File(System.getProperty("wzpath") + "/Map.wz")), MapleDataProviderFactory.getDataProvider(new File(System.getProperty("wzpath") + "/String.wz")), player.getWorld(), player.getClient().getChannel());
+		MapleMapFactory tempFactory = new MapleMapFactory(player.getWorld(), player.getClient().getChannel());
 		player.changeMap(tempFactory.getMap(map));
 		
 		player.getMap().getPortals().forEach((portal) -> { portal.setDisabled(true); }); // disabling portals.

@@ -70,6 +70,7 @@ import java.util.List;
 import java.util.Map.Entry;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Predicate;
 import java.util.regex.Pattern;
 
 public class MapleCharacter extends AbstractAnimatedMapleMapObject {
@@ -204,7 +205,6 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
 
     private int breakthroughs;
 
-    private AbstractBossPQ pq;
     Achievements achievements;
 
     private ScheduledFuture<?> fishingTask = null;
@@ -5494,14 +5494,6 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
         this.shadowPoints = shadowPoints;
     }
 
-    public void setBossPQ(AbstractBossPQ pq) {
-        this.pq = pq;
-    }
-
-    public AbstractBossPQ getBossPQ() {
-        return pq;
-    }
-
     public PlayerTitles getTitleManager() {
         if (this.title == null) {
             title = new PlayerTitles(this);
@@ -5675,7 +5667,9 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
     }
 
     public List<GenericEvent> getGenericEvents() {
-        return Collections.unmodifiableList(genericEvents);
+        List<GenericEvent> events = new ArrayList<>();
+        genericEvents.forEach(events::add);
+        return Collections.unmodifiableList(events);
     }
 
     public void addGenericEvent(GenericEvent event) {

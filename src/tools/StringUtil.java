@@ -21,130 +21,143 @@
 */
 package tools;
 
+import java.text.DecimalFormat;
+
 public class StringUtil {
-	/**
-	 * Gets a string padded from the left to <code>length</code> by
-	 * <code>padchar</code>.
-	 *
-	 * @param in The input string to be padded.
-	 * @param padchar The character to pad with.
-	 * @param length The length to pad to.
-	 * @return The padded string.
-	 */
-	public static String getLeftPaddedStr(String in, char padchar, int length) {
-		StringBuilder builder = new StringBuilder(length);
-		for (int x = in.length(); x < length; x++) {
-			builder.append(padchar);
-		}
-		builder.append(in);
-		return builder.toString();
-	}
 
-	/**
-	 * Gets a string padded from the right to <code>length</code> by
-	 * <code>padchar</code>.
-	 *
-	 * @param in The input string to be padded.
-	 * @param padchar The character to pad with.
-	 * @param length The length to pad to.
-	 * @return The padded string.
-	 */
-	public static String getRightPaddedStr(String in, char padchar, int length) {
-		StringBuilder builder = new StringBuilder(in);
-		for (int x = in.length(); x < length; x++) {
-			builder.append(padchar);
-		}
-		return builder.toString();
-	}
+    private static final DecimalFormat df = new DecimalFormat("#,###,###,###,###,###,###");
 
-	/**
-	 * Joins an array of strings starting from string <code>start</code> with
-	 * a space.
-	 *
-	 * @param arr The array of strings to join.
-	 * @param start Starting from which string.
-	 * @return The joined strings.
-	 */
-	public static String joinStringFrom(String arr[], int start) {
-		return joinStringFrom(arr, start, " ");
-	}
+    /**
+     * Gets a string padded from the left to <code>length</code> by
+     * <code>padchar</code>.
+     *
+     * @param in      The input string to be padded.
+     * @param padchar The character to pad with.
+     * @param length  The length to pad to.
+     * @return The padded string.
+     */
+    public static String getLeftPaddedStr(String in, char padchar, int length) {
+        StringBuilder builder = new StringBuilder(length);
+        for (int x = in.length(); x < length; x++) {
+            builder.append(padchar);
+        }
+        builder.append(in);
+        return builder.toString();
+    }
 
-	/**
-	 * Joins an array of strings starting from string <code>start</code> with
-	 * <code>sep</code> as a seperator.
-	 *
-	 * @param arr The array of strings to join.
-	 * @param start Starting from which string.
-	 * @return The joined strings.
-	 */
-	public static String joinStringFrom(String arr[], int start, String sep) {
-		StringBuilder builder = new StringBuilder();
-		for (int i = start; i < arr.length; i++) {
-			builder.append(arr[i]);
-			if (i != arr.length - 1) {
-				builder.append(sep);
-			}
-		}
-		return builder.toString();
-	}
+    /**
+     * Gets a string padded from the right to <code>length</code> by
+     * <code>padchar</code>.
+     *
+     * @param in      The input string to be padded.
+     * @param padchar The character to pad with.
+     * @param length  The length to pad to.
+     * @return The padded string.
+     */
+    public static String getRightPaddedStr(String in, char padchar, int length) {
+        StringBuilder builder = new StringBuilder(in);
+        for (int x = in.length(); x < length; x++) {
+            builder.append(padchar);
+        }
+        return builder.toString();
+    }
 
-	/**
-	 * Makes an enum name human readable (fixes spaces, capitalization, etc)
-	 *
-	 * @param enumName The name of the enum to neaten up.
-	 * @return The human-readable enum name.
-	 */
-	public static String makeEnumHumanReadable(String enumName) {
-		StringBuilder builder = new StringBuilder(enumName.length() + 1);
-		String[] words = enumName.split("_");
-		for (String word : words) {
-			if (word.length() <= 2) {
-				builder.append(word); // assume that it's an abbrevation
-			} else {
-				builder.append(word.charAt(0));
-				builder.append(word.substring(1).toLowerCase());
-			}
-			builder.append(' ');
-		}
-		return builder.substring(0, enumName.length());
-	}
+    /**
+     * Joins an array of strings starting from string <code>start</code> with
+     * a space.
+     *
+     * @param arr   The array of strings to join.
+     * @param start Starting from which string.
+     * @return The joined strings.
+     */
+    public static String joinStringFrom(String arr[], int start) {
+        return joinStringFrom(arr, start, " ");
+    }
 
-	/**
-	 * Counts the number of <code>chr</code>'s in <code>str</code>.
-	 *
-	 * @param str The string to check for instances of <code>chr</code>.
-	 * @param chr The character to check for.
-	 * @return The number of times <code>chr</code> occurs in <code>str</code>.
-	 */
-	public static int countCharacters(String str, char chr) {
-		int ret = 0;
-		for (int i = 0; i < str.length(); i++) {
-			if (str.charAt(i) == chr) {
-				ret++;
-			}
-		}
-		return ret;
-	}
+    /**
+     * Joins an array of strings starting from string <code>start</code> with
+     * <code>sep</code> as a seperator.
+     *
+     * @param arr   The array of strings to join.
+     * @param start Starting from which string.
+     * @return The joined strings.
+     */
+    public static String joinStringFrom(String arr[], int start, String sep) {
+        StringBuilder builder = new StringBuilder();
+        for (int i = start; i < arr.length; i++) {
+            builder.append(arr[i]);
+            if (i != arr.length - 1) {
+                builder.append(sep);
+            }
+        }
+        return builder.toString();
+    }
 
-	public static String getTimeElapse(long time) {
-		int seconds = (int) (time / 1000 % 60);
-		int minutes = (int) ((time / (1000 * 60)) % 60);
-		int hours = (int) ((time / (1000 * 60 * 60)) % 24);
-		int days = (int) ((time / (1000 * 60 * 60 * 24) % 30));
-		String ret = "";
-		if (days > 0) {
-			ret += days + " day" + ((days > 1) ? "s" : "");
-		}
-		if (hours > 0) {
-			ret += ((days > 0) ? " " : "") + // spacing from previous string concat
-					hours + " hour" + ((hours > 1) ? "s" : "");
-		}
-		if (minutes > 0) {
-			ret += ((hours > 0 || days > 0) ? " " : "") +
-					minutes + " minute" + ((minutes > 1) ? "s" : "");
-		}
-		ret += ((minutes > 0 || hours > 0 || days > 0) ? " " : "") +
-				seconds + " second" + ((seconds > 1) ? "s" : "");
-		return ret;
-	}
+    /**
+     * Makes an enum name human readable (fixes spaces, capitalization, etc)
+     *
+     * @param enumName The name of the enum to neaten up.
+     * @return The human-readable enum name.
+     */
+    public static String makeEnumHumanReadable(String enumName) {
+        StringBuilder builder = new StringBuilder(enumName.length() + 1);
+        String[] words = enumName.split("_");
+        for (String word : words) {
+            if (word.length() <= 2) {
+                builder.append(word); // assume that it's an abbrevation
+            } else {
+                builder.append(word.charAt(0));
+                builder.append(word.substring(1).toLowerCase());
+            }
+            builder.append(' ');
+        }
+        return builder.substring(0, enumName.length());
+    }
+
+    /**
+     * Counts the number of <code>chr</code>'s in <code>str</code>.
+     *
+     * @param str The string to check for instances of <code>chr</code>.
+     * @param chr The character to check for.
+     * @return The number of times <code>chr</code> occurs in <code>str</code>.
+     */
+    public static int countCharacters(String str, char chr) {
+        int ret = 0;
+        for (int i = 0; i < str.length(); i++) {
+            if (str.charAt(i) == chr) {
+                ret++;
+            }
+        }
+        return ret;
+    }
+
+    /**
+     * Get the formatted string value of the specified number
+     *
+     * @param num the number to be formatted
+     * @return the string value of the given number object argument
+     */
+    public static String formatNumber(long num) {
+        return df.format(num);
+    }
+
+    public static String getTimeElapse(long time) {
+        int seconds = (int) (time / 1000 % 60);
+        int minutes = (int) ((time / (1000 * 60)) % 60);
+        int hours = (int) ((time / (1000 * 60 * 60)) % 24);
+        int days = (int) ((time / (1000 * 60 * 60 * 24) % 30));
+        String ret = "";
+        if (days > 0) {
+            ret += days + " day" + ((days > 1) ? "s" : "");
+        }
+        if (hours > 0) {
+            ret += ((days > 0) ? " " : "") + // spacing from previous string concat
+                    hours + " hour" + ((hours > 1) ? "s" : "");
+        }
+        if (minutes > 0) {
+            ret += ((hours > 0 || days > 0) ? " " : "") + minutes + " minute" + ((minutes > 1) ? "s" : "");
+        }
+        ret += ((minutes > 0 || hours > 0 || days > 0) ? " " : "") + seconds + " second" + ((seconds > 1) ? "s" : "");
+        return ret;
+    }
 }

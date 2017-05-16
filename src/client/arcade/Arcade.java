@@ -38,7 +38,7 @@ public abstract class Arcade {
 	public abstract boolean onBreak(int reactor);
 	
 	public synchronized void start() {
-		MapleMapFactory factory = new MapleMapFactory(MapleDataProviderFactory.getDataProvider(new File(System.getProperty("wzpath") + "/Map.wz")), MapleDataProviderFactory.getDataProvider(new File(System.getProperty("wzpath") + "/String.wz")), player.getWorld(), player.getClient().getChannel());
+		MapleMapFactory factory = new MapleMapFactory(player.getWorld(), player.getClient().getChannel());
 		player.changeMap(factory.getMap(mapId), factory.getMap(mapId).getPortal(0));
 		player.getMap().setMobInterval((short) 5);
 		
