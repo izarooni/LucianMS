@@ -5,7 +5,8 @@ import client.MapleClient;
 import net.server.channel.Channel;
 import scripting.npc.NPCScriptManager;
 import server.events.custom.ManualPlayerEvent;
-import server.events.custom.Events;
+import server.events.custom.auto.GAutoEvent;
+import server.events.custom.auto.GAutoEventManager;
 import server.events.pvp.FFA;
 import server.maps.MapleMap;
 import tools.MaplePacketCreator;
@@ -32,6 +33,8 @@ public class PlayerCommands {
             commands.add("@rates - show the server rates");
             commands.add("@joinevent - join the event");
             commands.add("@leaveevent - leave the event");
+            commands.add("@jautoevent - join the auto event");
+            commands.add("@lautoevent - leave the auto event");
             commands.add("@dispose - Dispose yourself (if you can't interact with npcs, etc) ");
             commands.add("@points = Everything about your points");
             commands.add("@achievements - Shows your current achievements");
@@ -70,6 +73,27 @@ public class PlayerCommands {
                 }
             } else {
                 player.dropMessage("There is no event going on right now");
+            }
+        } else if (command.equals("jautoevent", "lautoevent")) {
+            boolean join = command.equals("jautoevent");
+            GAutoEvent event = GAutoEventManager.getCurrentEvent();
+            if (event != null) {
+                boolean registered = event.isPlayerRegistered(player);
+                if (join) {
+                    if (registered) {
+                        player.dropMessage("You are already in this auto event");
+                    } else {
+                        event.registerPlayer(player);
+                    }
+                } else {
+                    if (registered) {
+                        event.unregisterPlayer(player);
+                    } else {
+                        player.dropMessage("You are not in the auto event");
+                    }
+                }
+            } else {
+                player.dropMessage("There is not auto event going on right now");
             }
         } else if (command.equals("points")) {
             player.dropMessage(6, "Fishing Points: " + player.getFishingPoints());
@@ -166,10 +190,10 @@ public class PlayerCommands {
             } else {
                 player.dropMessage(5, "You must specify a username and message");
             }
-        } else if(command.equals("joinpvp")) {
-        	player.setPVP(new FFA(player));
-        	player.getPVP().join();
-        	player.dropMessage(6, "Joined PVP");
+        } else if (command.equals("joinpvp")) {
+            player.setPVP(new FFA(player));
+            player.getPVP().join();
+            player.dropMessage(6, "Joined PVP");
         }
     }
 }

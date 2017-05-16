@@ -73,7 +73,7 @@ public class ManualPlayerEvent extends GenericEvent {
         }, 1000).getId());
     }
 
-    public void dispose() {
+    public void garbage() {
         channel = null;
         if (gateTask > 0) {
             cancelTask(gateTask);

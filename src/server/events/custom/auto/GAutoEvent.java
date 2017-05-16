@@ -42,9 +42,17 @@ public abstract class GAutoEvent extends GenericEvent {
         world.broadcastPacket(MaplePacketCreator.serverNotice(6, "[AutoEvent] " + message.toString()));
     }
 
+    public final void loadMapInstance(int mapId, boolean skipMonsters) {
+        if (mapleMapFactory == null) {
+            throw new NullPointerException("Can't load map instances when auto event is set to not need them");
+        }
+        // haha slowly turning this factory into a builder FUCK
+        mapleMapFactory.skipMonsters(skipMonsters).getMap(mapId);
+    }
+
     public final MapleMap getMapInstance(int mapId) {
         if (mapleMapFactory == null) {
-            throw new NullPointerException("");
+            throw new NullPointerException("Can't load map instances when auto event is set to not need them");
         }
         return mapleMapFactory.getMap(mapId);
     }
@@ -71,6 +79,10 @@ public abstract class GAutoEvent extends GenericEvent {
         return players.size();
     }
 
+    public final boolean isPlayerRegistered(MapleCharacter player) {
+        return players.containsKey(player.getId());
+    }
+
     public final void registerPlayer(MapleCharacter player) {
         players.putIfAbsent(player.getId(), player);
         playerRegistered(player);
@@ -80,6 +92,7 @@ public abstract class GAutoEvent extends GenericEvent {
         players.remove(player.getId());
         playerUnregistered(player);
     }
+
     public abstract void start();
 
     public abstract void stop();

@@ -31,7 +31,6 @@ public class GenericEvent {
         public void cancel() {
             if (!schedule.isCancelled()) {
                 schedule.cancel(true);
-                tasks.remove(getId());
             }
         }
 

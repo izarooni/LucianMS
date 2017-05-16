@@ -9,6 +9,7 @@ import server.life.MapleMonster;
 import server.life.MapleMonsterStats;
 import server.maps.MapleMap;
 import server.maps.MapleMapObject;
+import tools.MaplePacketCreator;
 import tools.Randomizer;
 import tools.StringUtil;
 import tools.annotation.PacketWorker;
@@ -26,11 +27,11 @@ import java.util.concurrent.ConcurrentHashMap;
  *
  * @author izarooni
  */
-public class ABeCareful extends GAutoEvent {
+public class ACursedCastle extends GAutoEvent {
 
-    private static final int EventMap = 910010000;
-    private static final int MonsterId = 100100;
-    private static final int SpawnQuantity = 15;
+    private static final int EventMap = 82;
+    private static final int MonsterId = 9895244;
+    private static final int SpawnQuantity = 25;
     private static final int xLow = 0, xHigh = 50, yLow = 0, yHigh = 50;
 
     private static long startTimestamp = 0L;
@@ -38,7 +39,7 @@ public class ABeCareful extends GAutoEvent {
     private ConcurrentHashMap<Integer, Long> hits = new ConcurrentHashMap<>();
     private HashMap<Integer, Integer> returnMaps = new HashMap<>();
 
-    public ABeCareful(World world) {
+    public ACursedCastle(World world) {
         super(world, true);
     }
 
@@ -65,14 +66,21 @@ public class ABeCareful extends GAutoEvent {
             returnMaps.put(player.getId(), player.getMapId());
             player.changeMap(getMapInstance(EventMap));
             player.dropMessage("Welcome to Be Careful!");
+            long endTimestamp = (startTimestamp + 60000);
+            long timeLeft = (endTimestamp - System.currentTimeMillis());
+            if (timeLeft > 0) {
+                player.announce(MaplePacketCreator.getClock((int) (timeLeft / 1000)));
+            }
         }
     }
 
     @Override
     public void playerUnregistered(MapleCharacter player) {
         player.removeGenericEvent(this);
-        int returnMap = returnMaps.remove(player.getId());
-        player.changeMap(returnMap);
+        if (returnMaps.containsKey(player.getId())) {
+            int returnMap = returnMaps.remove(player.getId());
+            player.changeMap(returnMap);
+        }
     }
 
     @PacketWorker
@@ -152,20 +160,24 @@ public class ABeCareful extends GAutoEvent {
     }
 
     private void summonMonsters() {
-        for (int i = 0; i < SpawnQuantity; i++) {
-            MapleMonster monster = MapleLifeFactory.getMonster(MonsterId);
-            if (monster != null) {
-                MapleMonsterStats stats = new MapleMonsterStats();
-                stats.setHp(Integer.MAX_VALUE);
-                stats.setExp(0);
-                stats.setMp(0);
-                monster.setOverrideStats(stats);
-                Point pos = new Point(Randomizer.rand(xLow, xHigh), Randomizer.rand(yLow, yHigh));
-                getMapInstance(EventMap).spawnMonsterOnGroudBelow(monster, pos);
-            } else {
-                broadcastWorldMessage("Be Careful! is being canceled due to an error");
-                stop();
-                break;
+        MapleMap eventMap = getMapInstance(EventMap);
+        int toSpawn = SpawnQuantity - eventMap.countMonster(MonsterId);
+        if (toSpawn > 0) {
+            for (int i = 0; i < toSpawn; i++) {
+                MapleMonster monster = MapleLifeFactory.getMonster(MonsterId);
+                if (monster != null) {
+                    MapleMonsterStats stats = new MapleMonsterStats();
+                    stats.setHp(Integer.MAX_VALUE);
+                    stats.setExp(0);
+                    stats.setMp(0);
+                    monster.setOverrideStats(stats);
+                    Point pos = new Point(Randomizer.rand(xLow, xHigh), Randomizer.rand(yLow, yHigh));
+                    eventMap.spawnMonsterOnGroudBelow(monster, pos);
+                } else {
+                    broadcastWorldMessage("Be Careful! is being canceled due to an error");
+                    stop();
+                    break;
+                }
             }
         }
     }

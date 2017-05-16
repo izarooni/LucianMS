@@ -20,10 +20,11 @@ import java.util.HashMap;
  */
 public class AWhispyWoods extends GAutoEvent {
 
-    private static final int EventMap = 910040002;
-    private static final int MonsterId = 100100;
+    private static final long TimeGiven = (1000 * 60) * 8; // :d
+
+    private static final int EventMap = 4;
+    private static final int MonsterId = 9895243;
     private static final int xSpawn = 68, ySpawn = 155;
-    private static final int SixMinutes = (1000 * 60) * 6; // :d
 
     private long startTimestamp = 0L;
 
@@ -60,7 +61,7 @@ public class AWhispyWoods extends GAutoEvent {
     @Override
     public void playerRegistered(MapleCharacter player) {
         // show countdown timer to those entering late
-        long endTimestamp = startTimestamp + SixMinutes;
+        long endTimestamp = startTimestamp + TimeGiven;
         long timeLeft = (endTimestamp - System.currentTimeMillis());
         if (timeLeft > 0) {
             returnMaps.put(player.getId(), player.getMapId());
@@ -76,19 +77,21 @@ public class AWhispyWoods extends GAutoEvent {
     @Override
     public void playerUnregistered(MapleCharacter player) {
         player.removeGenericEvent(this);
-        int returnMap = returnMaps.remove(player.getId());
-        player.changeMap(returnMap);
+        if (returnMaps.containsKey(player.getId())) {
+            int returnMap = returnMaps.remove(player.getId());
+            player.changeMap(returnMap);
+        }
     }
 
     private void summonBoss() {
-        getMapInstance(EventMap).broadcastMessage(MaplePacketCreator.getClock(SixMinutes / 1000));
+        getMapInstance(EventMap).broadcastMessage(MaplePacketCreator.getClock((int) (TimeGiven / 1000)));
 
         timeoutTask = createTask(new Runnable() {
             @Override
             public void run() {
                 eventFailed();
             }
-        }, SixMinutes);
+        }, TimeGiven);
         MapleMonster monster = MapleLifeFactory.getMonster(MonsterId);
         if (monster != null) {
             MapleMonsterStats stats = new MapleMonsterStats();

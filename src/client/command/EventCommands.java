@@ -47,7 +47,7 @@ public class EventCommands {
         } else if (command.equals("cancelevent")) {
             if (playerEvent != null) {
                 world.setPlayerEvent(null);
-                playerEvent.dispose();
+                playerEvent.garbage();
                 player.dropMessage("You have cancelled the event");
             } else {
                 player.dropMessage("There is no event on this channel right now");
@@ -134,7 +134,7 @@ public class EventCommands {
                                 playerEvent.broadcastMessage(sb.toString());
                             }
                             world.setPlayerEvent(null);
-                            playerEvent.dispose();
+                            playerEvent.garbage();
                             player.dropMessage("Event ended");
                             break;
                         }

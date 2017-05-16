@@ -24,9 +24,11 @@ import java.util.List;
  */
 public class AHeartlessWall extends GAutoEvent {
 
-    private static final int EventMap = 910040002;
-    private static final int TheWall = 100100; // monster
-    private static final int xSpawn = 68, ySpawn = 155;
+    private static final long TimeGiven = (1000 * 60) * 15;
+
+    private static final int EventMap = 910000025;
+    private static final int TheWall = 9895215; // monster
+    private static final int xSpawn = 1226, ySpawn = 56;
 
     private long startTimestamp = 0L;
 
@@ -44,7 +46,8 @@ public class AHeartlessWall extends GAutoEvent {
         startTimestamp = System.currentTimeMillis();
 
         broadcastWorldMessage("Heartless Wall will begin momentarily");
-        getMapInstance(EventMap);
+        MapleMap eventMap = getMapInstance(EventMap);
+        eventMap.killAllMonsters();
         createTask(new Runnable() {
             @Override
             public void run() {
@@ -82,8 +85,10 @@ public class AHeartlessWall extends GAutoEvent {
     @Override
     public void playerUnregistered(MapleCharacter player) {
         player.removeGenericEvent(this);
-        int returnMap = returnMaps.remove(player.getId());
-        player.changeMap(returnMap);
+        if (returnMaps.containsKey(player.getId())) {
+            int returnMap = returnMaps.remove(player.getId());
+            player.changeMap(returnMap);
+        }
     }
 
     @PacketWorker
@@ -122,6 +127,22 @@ public class AHeartlessWall extends GAutoEvent {
     }
 
     private void summonWall() {
+        MapleMap eventMap = getMapInstance(EventMap);
+
+        Task timeoutTask = createTask(new Runnable() {
+            @Override
+            public void run() {
+                MapleMapObject object = eventMap.getMapObject(objectId);
+                if (object != null && object instanceof MapleMonster) {
+                    MapleMonster monster = (MapleMonster) object;
+                    if (monster.isAlive()) {
+                        eventMap.broadcastMessage(MaplePacketCreator.serverNotice(5, "You are being moved due to being unable to defeat the wall"));
+                        stop();
+                    }
+                }
+            }
+        }, TimeGiven);
+
         MapleMonster monster = MapleLifeFactory.getMonster(TheWall);
         if (monster != null) {
             MapleMonsterStats stats = new MapleMonsterStats();
@@ -130,11 +151,12 @@ public class AHeartlessWall extends GAutoEvent {
             monster.addListener(new MonsterListener() {
                 @Override
                 public void monsterKilled(int aniTime) {
+                    timeoutTask.cancel();
                     distributeRewards();
                     stop();
                 }
             });
-            getMapInstance(EventMap).spawnMonsterOnGroudBelow(monster, new Point(xSpawn, ySpawn));
+            eventMap.spawnMonsterOnGroudBelow(monster, new Point(xSpawn, ySpawn));
             objectId = monster.getObjectId();
         } else {
             broadcastWorldMessage("Heartless Wall is being canceled due to an error");

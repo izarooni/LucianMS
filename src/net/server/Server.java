@@ -256,7 +256,8 @@ public class Server implements Runnable {
 					channels.get(i).put(channelId, channel.getIP());
 				}
 				world.setServerMessage(sMessage);
-				GAutoEventManager.startRandomEvent(world);
+				final long repeat = (1000 * 60 * 60) * 4;
+				TimerManager.getInstance().register(() -> GAutoEventManager.startRandomEvent(world), repeat, repeat);
 				System.out.println("Finished loading world " + i + "\r\n");
 			}
 			System.out.println("Worlds loaded in " + ((System.currentTimeMillis() - timeToTake) / 1000.0) + " seconds\r\n");

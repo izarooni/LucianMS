@@ -18,7 +18,7 @@ import java.util.HashMap;
  */
 public class AFlappyBird extends GAutoEvent {
 
-    private static final int EventMap = (int) 1E8;
+    private static final int EventMap = 21;
 
     private HashMap<Integer, Integer> returnMaps = new HashMap<>();
 
@@ -66,7 +66,9 @@ public class AFlappyBird extends GAutoEvent {
     @Override
     public void playerUnregistered(MapleCharacter player) {
         player.removeGenericEvent(this);
-        int returnMap = returnMaps.remove(player.getId());
-        player.changeMap(returnMap);
+        if (returnMaps.containsKey(player.getId())) {
+            int returnMap = returnMaps.remove(player.getId());
+            player.changeMap(returnMap);
+        }
     }
 }

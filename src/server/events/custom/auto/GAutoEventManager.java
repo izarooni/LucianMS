@@ -16,7 +16,7 @@ public enum GAutoEventManager {
     FlappyBird("Flappy Bird", AFlappyBird.class),
     HeartlessWall("Heartless Wall", AHeartlessWall.class),
     WhispyWoods("Whispy Woods", AWhispyWoods.class),
-    BeCareful("Be Careful!", ABeCareful.class);
+    CursedCastle("Cursed Castle", ACursedCastle.class);
     private final String name;
     private final Class<? extends GAutoEvent> clazz;
     private long lastInstantiate = 0L;
