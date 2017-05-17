@@ -65,7 +65,7 @@ public final class MoveLifeHandler extends PacketHandler {
         skill_3 = slea.readByte();
         skill_4 = slea.readByte();
         slea.skip(8);
-        slea.skip(2);
+        slea.skip(1);
         slea.skip(4);
         xStart = slea.readShort();
         yStart = slea.readShort();

@@ -241,6 +241,10 @@ public final class TakeDamageHandler extends PacketHandler {
         return damage;
     }
 
+    public void setDamage(int damage) {
+        this.damage = damage;
+    }
+
     public int getMonsterIdFrom() {
         return monsterIdFrom;
     }

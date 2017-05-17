@@ -585,10 +585,6 @@ public class MapleMap {
                             }
                         }
 
-                        if (chr.getBossPQ() != null) {
-                            chr.getBossPQ().nextRound();
-                        }
-
                         if (chr.getArcade() != null) {
                             chr.getArcade().onKill(monster.getId());
                             if (monster.getId() == 9500365) {
