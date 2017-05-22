@@ -31,15 +31,17 @@ import tools.data.input.SeekableLittleEndianAccessor;
  *
  * @author Generic
  */
-public final class TouchReactorHandler extends AbstractMaplePacketHandler {
-    public final void handlePacket(SeekableLittleEndianAccessor slea, MapleClient c) {
+public class TouchReactorHandler extends AbstractMaplePacketHandler {
+
+    @Override
+    public void handlePacket(SeekableLittleEndianAccessor slea, MapleClient c) {
         int oid = slea.readInt();
         MapleReactor reactor = c.getPlayer().getMap().getReactorByOid(oid);
         if (reactor != null) {
             if (slea.readByte() != 0) {
-                ReactorScriptManager.getInstance().touch(c, reactor);
+                ReactorScriptManager.touch(c, reactor);
             } else {
-                ReactorScriptManager.getInstance().untouch(c, reactor);
+                ReactorScriptManager.untouch(c, reactor);
             }
         }
     }

@@ -71,40 +71,40 @@ import constants.skills.NightWalker;
 public class MapleItemInformationProvider {
 
     private static MapleItemInformationProvider instance = null;
-    protected MapleDataProvider itemData;
-    protected MapleDataProvider equipData;
-    protected MapleDataProvider stringData;
-    protected MapleData cashStringData;
-    protected MapleData consumeStringData;
-    protected MapleData eqpStringData;
-    protected MapleData etcStringData;
-    protected MapleData insStringData;
-    protected MapleData petStringData;
-    protected Map<Integer, Short> slotMaxCache = new HashMap<>();
-    protected Map<Integer, MapleStatEffect> itemEffects = new HashMap<>();
-    protected Map<Integer, Map<String, Integer>> equipStatsCache = new HashMap<>();
-    protected Map<Integer, Equip> equipCache = new HashMap<>();
-    protected Map<Integer, Double> priceCache = new HashMap<>();
-    protected Map<Integer, Integer> wholePriceCache = new HashMap<>();
-    protected Map<Integer, Integer> projectileWatkCache = new HashMap<>();
-    protected Map<Integer, String> nameCache = new HashMap<>();
+    private MapleDataProvider itemData;
+    private MapleDataProvider equipData;
+    private MapleDataProvider stringData;
+    private MapleData cashStringData;
+    private MapleData consumeStringData;
+    private MapleData eqpStringData;
+    private MapleData etcStringData;
+    private MapleData insStringData;
+    private MapleData petStringData;
+    private Map<Integer, Short> slotMaxCache = new HashMap<>();
+    private Map<Integer, MapleStatEffect> itemEffects = new HashMap<>();
+    private Map<Integer, Map<String, Integer>> equipStatsCache = new HashMap<>();
+    private Map<Integer, Equip> equipCache = new HashMap<>();
+    private Map<Integer, Double> priceCache = new HashMap<>();
+    private Map<Integer, Integer> wholePriceCache = new HashMap<>();
+    private Map<Integer, Integer> projectileWatkCache = new HashMap<>();
+    private Map<Integer, String> nameCache = new HashMap<>();
     protected Map<Integer, String> descCache = new HashMap<>();
-    protected Map<Integer, String> msgCache = new HashMap<>();
-    protected Map<Integer, Boolean> dropRestrictionCache = new HashMap<>();
-    protected Map<Integer, Boolean> pickupRestrictionCache = new HashMap<>();
-    protected Map<Integer, Integer> getMesoCache = new HashMap<>();
-    protected Map<Integer, Integer> monsterBookID = new HashMap<>();
-    protected Map<Integer, Boolean> onEquipUntradableCache = new HashMap<>();
-    protected Map<Integer, scriptedItem> scriptedItemCache = new HashMap<>();
-    protected Map<Integer, Boolean> karmaCache = new HashMap<>();
-    protected Map<Integer, Integer> triggerItemCache = new HashMap<>();
-    protected Map<Integer, Integer> expCache = new HashMap<>();
-    protected Map<Integer, Integer> levelCache = new HashMap<>();
-    protected Map<Integer, Pair<Integer, List<RewardItem>>> rewardCache = new HashMap<>();
-    protected List<Pair<Integer, String>> itemNameCache = new ArrayList<>();
-    protected Map<Integer, Boolean> consumeOnPickupCache = new HashMap<>();
-    protected Map<Integer, Boolean> isQuestItemCache = new HashMap<>();
-    protected Map<Integer, String> equipmentSlotCache = new HashMap<>();
+    private Map<Integer, String> msgCache = new HashMap<>();
+    private Map<Integer, Boolean> dropRestrictionCache = new HashMap<>();
+    private Map<Integer, Boolean> pickupRestrictionCache = new HashMap<>();
+    private Map<Integer, Integer> getMesoCache = new HashMap<>();
+    private Map<Integer, Integer> monsterBookID = new HashMap<>();
+    private Map<Integer, Boolean> onEquipUntradableCache = new HashMap<>();
+    private Map<Integer, scriptedItem> scriptedItemCache = new HashMap<>();
+    private Map<Integer, Boolean> karmaCache = new HashMap<>();
+    private Map<Integer, Integer> triggerItemCache = new HashMap<>();
+    private Map<Integer, Integer> expCache = new HashMap<>();
+    private Map<Integer, Integer> levelCache = new HashMap<>();
+    private Map<Integer, Pair<Integer, List<RewardItem>>> rewardCache = new HashMap<>();
+    private List<Pair<Integer, String>> itemNameCache = new ArrayList<>();
+    private Map<Integer, Boolean> consumeOnPickupCache = new HashMap<>();
+    private Map<Integer, Boolean> isQuestItemCache = new HashMap<>();
+    private Map<Integer, String> equipmentSlotCache = new HashMap<>();
 
     private MapleItemInformationProvider() {
         loadCardIdData();
@@ -417,7 +417,7 @@ public class MapleItemInformationProvider {
         return pEntry;
     }
     
-    protected String getEquipmentSlot(int itemId) {
+    private String getEquipmentSlot(int itemId) {
         if (equipmentSlotCache.containsKey(itemId)) {
             return equipmentSlotCache.get(itemId);
         }
@@ -652,7 +652,7 @@ public class MapleItemInformationProvider {
         return getEquipById(equipId, -1);
     }
 
-    Item getEquipById(int equipId, int ringId) {
+    private Item getEquipById(int equipId, int ringId) {
         Equip nEquip;
         nEquip = new Equip(equipId, (byte) 0, ringId);
         nEquip.setQuantity((short) 1);

@@ -66,7 +66,7 @@ public final class UseItemHandler extends AbstractMaplePacketHandler {
                 remove(c, slot);
                 return;
             } else if(itemId == 2000039) {
-            	NPCScriptManager.getInstance().start(c, 9990248, c.getPlayer());
+            	NPCScriptManager.start(c, 9990248, c.getPlayer());
             	remove(c, slot); 
             	return;
             }

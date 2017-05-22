@@ -102,7 +102,7 @@ public class PlayerCommands {
             player.dropMessage(6, "Donation points: " + player.getClient().getDonationPoints());
             player.dropMessage(6, "Shadow points: " + player.getShadowPoints());
         } else if (command.equals("dispose")) {
-            NPCScriptManager.getInstance().dispose(client);
+            NPCScriptManager.dispose(client);
             player.getClient().removeClickedNPC();
             player.announce(MaplePacketCreator.enableActions());
             player.dropMessage(6, "Disposed!");
@@ -176,7 +176,7 @@ public class PlayerCommands {
                 player.dropMessage(5, "You must specify a message");
             }
         } else if (command.equals("style", "styler", "stylist")) {
-            NPCScriptManager.getInstance().start(player.getClient(), 9900000, player);
+            NPCScriptManager.start(player.getClient(), 9900000, player);
         } else if (command.equals("report")) {
             if (args.length() > 1) {
                 String username = args.get(0);

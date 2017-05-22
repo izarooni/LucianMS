@@ -21,144 +21,126 @@
  */
 package scripting.quest;
 
-import java.lang.reflect.UndeclaredThrowableException;
+import client.MapleClient;
+import client.MapleQuestStatus;
+import scripting.ScriptUtil;
+import server.quest.MapleQuest;
+import tools.FilePrinter;
+import tools.Pair;
+
+import javax.script.Invocable;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.script.Invocable;
-
-import scripting.AbstractScriptManager;
-import server.quest.MapleQuest;
-import tools.FilePrinter;
-import client.MapleClient;
-import client.MapleQuestStatus;
-
 /**
- *
  * @author RMZero213
+ * @author izarooni
  */
-public class QuestScriptManager extends AbstractScriptManager {
-	private Map<MapleClient, QuestActionManager> qms = new HashMap<>();
-	private Map<MapleClient, Invocable> scripts = new HashMap<>();
-	private static QuestScriptManager instance = new QuestScriptManager();
+public class QuestScriptManager {
 
-	public synchronized static QuestScriptManager getInstance() {
-		return instance;
-	}
+    private static Map<MapleClient, Pair<Invocable, QuestActionManager>> storage = new HashMap<>();
 
-	public void start(MapleClient c, short questid, int npc) {
-		MapleQuest quest = MapleQuest.getInstance(questid);
-		if (!c.getPlayer().getQuest(quest).getStatus().equals(MapleQuestStatus.Status.NOT_STARTED)) {
-			dispose(c);
-			return;
-		}
-		try {
-			QuestActionManager qm = new QuestActionManager(c, questid, npc, true);
-			if (qms.containsKey(c)) {
-				return;
-			}
-			if(c.canClickNPC()) {
-				qms.put(c, qm);
-				Invocable iv = getInvocable("quest/" + questid + ".js", c);
-				if (iv == null) {
-					FilePrinter.printError(FilePrinter.QUEST_UNCODED, "Quest " + questid + " is uncoded.\r\n");
-				}
-				if (iv == null || QuestScriptManager.getInstance() == null) {
-					qm.dispose();
-					return;
-				}
-				engine.put("qm", qm);
-				scripts.put(c, iv);
-				c.setClickedNPC();
-				iv.invokeFunction("start", (byte) 1, (byte) 0, 0);
-			}
-		} catch (final UndeclaredThrowableException ute) {
-			FilePrinter.printError(FilePrinter.QUEST + questid + ".txt", ute);
-			dispose(c);
-		} catch (final Throwable t) {
-			FilePrinter.printError(FilePrinter.QUEST + getQM(c).getQuest() + ".txt", t);
-			dispose(c);
-		}
-	}
+    private QuestScriptManager() {
+    }
 
-	public void start(MapleClient c, byte mode, byte type, int selection) {
-		Invocable iv = scripts.get(c);
-		if (iv != null) {
-			try {
-				c.setClickedNPC();
-				iv.invokeFunction("start", mode, type, selection);
-			} catch (final UndeclaredThrowableException ute) {
-				FilePrinter.printError(FilePrinter.QUEST + getQM(c).getQuest() + ".txt", ute);
-				dispose(c);
-			} catch (final Throwable t) {
-				FilePrinter.printError(FilePrinter.QUEST + getQM(c).getQuest() + ".txt", t);
-				dispose(c);
-			}
-		}
-	}
+    public static void start(MapleClient client, short questId, int npc) {
+        MapleQuest quest = MapleQuest.getInstance(questId);
+        if (!client.getPlayer().getQuest(quest).getStatus().equals(MapleQuestStatus.Status.NOT_STARTED)) {
+            dispose(client);
+            return;
+        }
+        try {
+            if (storage.containsKey(client)) {
+                return;
+            }
+            QuestActionManager qm = new QuestActionManager(client, questId, npc, true);
+            Collection<Pair<String, Object>> binds = Collections.singletonList(new Pair<>("qm", qm));
+            if (client.canClickNPC()) {
+                Invocable iv = ScriptUtil.eval(client, "quest/" + questId + ".js", binds);
+                if (iv == null) {
+                    FilePrinter.printError(FilePrinter.QUEST_UNCODED, "Quest " + questId + " is uncoded.\r\n");
+                    qm.dispose();
+                    return;
+                }
+                storage.put(client, new Pair<>(iv, qm));
+                iv.invokeFunction("start", (byte) 1, (byte) 0, 0);
+                client.setClickedNPC();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            dispose(client);
+        }
+    }
 
-	public void end(MapleClient c, short questid, int npc) {
-		MapleQuest quest = MapleQuest.getInstance(questid);
-		if (!c.getPlayer().getQuest(quest).getStatus().equals(MapleQuestStatus.Status.STARTED) || !c.getPlayer().getMap().containsNPC(npc)) {
-			dispose(c);
-			return;
-		}
-		try {
-			QuestActionManager qm = new QuestActionManager(c, questid, npc, false);
-			if (qms.containsKey(c)) {
-				return;
-			}
-			if(c.canClickNPC()){
-				qms.put(c, qm);
-				Invocable iv = getInvocable("quest/" + questid + ".js", c);
-				if (iv == null) {
-					qm.dispose();
-					return;
-				}
-				engine.put("qm", qm);
-				scripts.put(c, iv);
-				c.setClickedNPC();
-				iv.invokeFunction("end", (byte) 1, (byte) 0, 0);
-			}
-		} catch (final UndeclaredThrowableException ute) {
-			FilePrinter.printError(FilePrinter.QUEST + questid + ".txt", ute);
-			dispose(c);
-		} catch (final Throwable t) {
-			FilePrinter.printError(FilePrinter.QUEST + getQM(c).getQuest() + ".txt", t);
-			dispose(c);
-		}
-	}
+    public static void start(MapleClient client, byte mode, byte type, int selection) {
+        if (storage.containsKey(client)) {
+            try {
+                storage.get(client).left.invokeFunction("start", mode, type, selection);
+                client.setClickedNPC();
+            } catch (Exception e) {
+                e.printStackTrace();
+                dispose(client);
+            }
+        }
+    }
 
-	public void end(MapleClient c, byte mode, byte type, int selection) {
-		Invocable iv = scripts.get(c);
-		if (iv != null) {
-			try {
-				c.setClickedNPC();
-				iv.invokeFunction("end", mode, type, selection);
-			} catch (final UndeclaredThrowableException ute) {
-				FilePrinter.printError(FilePrinter.QUEST + getQM(c).getQuest() + ".txt", ute);
-				dispose(c);
-			} catch (final Throwable t) {
-				FilePrinter.printError(FilePrinter.QUEST + getQM(c).getQuest() + ".txt", t);
-				dispose(c);
-			}
-		}
-	}
+    public static void end(MapleClient client, short questid, int npc) {
+        MapleQuest quest = MapleQuest.getInstance(questid);
+        if (!client.getPlayer().getQuest(quest).getStatus().equals(MapleQuestStatus.Status.STARTED) || !client.getPlayer().getMap().containsNPC(npc)) {
+            dispose(client);
+            return;
+        }
+        try {
+            QuestActionManager qm = new QuestActionManager(client, questid, npc, false);
+            if (storage.containsKey(client)) {
+                return;
+            }
+            if (client.canClickNPC()) {
+                Invocable iv = ScriptUtil.eval(client, "quest/" + questid + ".js", Collections.singletonList(new Pair<>("qm", qm)));
+                storage.put(client, new Pair<>(iv, qm));
+                if (iv == null) {
+                    qm.dispose();
+                    return;
+                }
+                iv.invokeFunction("end", (byte) 1, (byte) 0, 0);
+                client.setClickedNPC();
+            }
+        } catch (Throwable e) {
+            e.printStackTrace();
+            dispose(client);
+        }
+    }
 
-	public void dispose(QuestActionManager qm, MapleClient c) {
-		qms.remove(c);
-		scripts.remove(c);
-		resetContext("quest/" + qm.getQuest() + ".js", c);
-	}
+    public static void end(MapleClient client, byte mode, byte type, int selection) {
+        if (storage.containsKey(client)) {
+            Invocable iv = storage.get(client).left;
+            try {
+                client.setClickedNPC();
+                iv.invokeFunction("end", mode, type, selection);
+            } catch (Exception e) {
+                e.printStackTrace();
+                dispose(client);
+            }
+        }
+    }
 
-	public void dispose(MapleClient c) {
-		QuestActionManager qm = qms.get(c);
-		if (qm != null) {
-			dispose(qm, c);
-		}
-	}
+    public static void dispose(QuestActionManager qm, MapleClient client) {
+        storage.remove(client);
+        ScriptUtil.removeScript(client, "quest/" + qm.getQuest() + ".js");
+    }
 
-	public QuestActionManager getQM(MapleClient c) {
-		return qms.get(c);
-	}
+    public static void dispose(MapleClient client) {
+        if (storage.containsKey(client)) {
+            dispose(storage.get(client).right, client);
+        }
+    }
+
+    public static QuestActionManager getActionManager(MapleClient client) {
+        if (storage.containsKey(client)) {
+            return storage.get(client).right;
+        }
+        return null;
+    }
 }

@@ -747,8 +747,8 @@ public class MapleClient {
                     game.removeVisitor(player);
                 }
             }
-            NPCScriptManager.getInstance().dispose(this);
-            QuestScriptManager.getInstance().dispose(this);
+            NPCScriptManager.dispose(this);
+            QuestScriptManager.dispose(this);
             if (player.getTrade() != null) {
                 MapleTrade.cancelTrade(player);
             }
@@ -1009,15 +1009,15 @@ public class MapleClient {
         return gmlevel;
     }
 
-    public void setScriptEngine(String name, ScriptEngine e) {
+    public void setEngine(String name, ScriptEngine e) {
         engines.put(name, e);
     }
 
-    public ScriptEngine getScriptEngine(String name) {
+    public ScriptEngine getEngine(String name) {
         return engines.get(name);
     }
 
-    public void removeScriptEngine(String name) {
+    public void removeEngine(String name) {
         engines.remove(name);
     }
 
@@ -1030,11 +1030,11 @@ public class MapleClient {
     }
 
     public NPCConversationManager getCM() {
-        return NPCScriptManager.getInstance().getCM(this);
+        return NPCScriptManager.getConversationManager(this);
     }
 
     public QuestActionManager getQM() {
-        return QuestScriptManager.getInstance().getQM(this);
+        return QuestScriptManager.getActionManager(this);
     }
 
     public boolean acceptToS() {

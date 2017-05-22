@@ -195,12 +195,12 @@ public class MapleReactor extends AbstractMapleMapObject {
 				        		}
 							}
 							if(this != null) { // what? 
-								ReactorScriptManager.getInstance().act(c, this);
+								ReactorScriptManager.act(c, this);
 							}
 						} else { //reactor not broken yet
 							map.broadcastMessage(MaplePacketCreator.triggerReactor(this, stance));
 							if (state == stats.getNextState(state, b)) {//current state = next state, looping reactor
-								ReactorScriptManager.getInstance().act(c, this);
+								ReactorScriptManager.act(c, this);
 							}
 						}
 						break;
@@ -209,7 +209,7 @@ public class MapleReactor extends AbstractMapleMapObject {
 			} else {
 				state++;
 				map.broadcastMessage(MaplePacketCreator.triggerReactor(this, stance));
-				ReactorScriptManager.getInstance().act(c, this);
+				ReactorScriptManager.act(c, this);
 			}
 		} catch(Exception e) {
 			e.printStackTrace();

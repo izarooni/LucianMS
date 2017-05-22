@@ -1,90 +1,53 @@
-/*
-	This file is part of the OdinMS Maple Story Server
-    Copyright (C) 2008 Patrick Huy <patrick.huy@frz.cc>
-		       Matthias Butz <matze@odinms.de>
-		       Jan Christian Meyer <vimes@odinms.de>
-
-    This program is free software: you can redistribute it and/or modify
-    it under the terms of the GNU Affero General Public License as
-    published by the Free Software Foundation version 3 as published by
-    the Free Software Foundation. You may not use, modify or distribute
-    this program under any other version of the GNU Affero General Public
-    License.
-
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU Affero General Public License for more details.
-
-    You should have received a copy of the GNU Affero General Public License
-    along with this program.  If not, see <http://www.gnu.org/licenses/>.
-*/
 package scripting.event;
 
-import java.util.LinkedHashMap;
-import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import net.server.channel.Channel;
+import scripting.ScriptUtil;
+import tools.Pair;
 
 import javax.script.Invocable;
-import javax.script.ScriptEngine;
-
-import net.server.channel.Channel;
-import scripting.AbstractScriptManager;
+import javax.script.ScriptException;
+import java.util.Collections;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
- *
- * @author Matze
+ * @author izarooni
  */
-public class EventScriptManager extends AbstractScriptManager {
-    private class EventEntry {
-        public EventEntry(Invocable iv, EventManager em) {
-            this.iv = iv;
-            this.em = em;
-        }
-        public Invocable iv;
-        public EventManager em;
-    }
-    private Map<String, EventEntry> events = new LinkedHashMap<>();
+public class EventScriptManager {
 
-    public EventScriptManager(Channel cserv, String[] scripts) {
-        super();
-        for (String script : scripts) {
-            if (!script.equals("")) {
-                Invocable iv = getInvocable("event/" + script + ".js", null);
-                events.put(script, new EventEntry(iv, new EventManager(cserv, iv, script)));
-            }
-        }
+    private final Channel channel;
+    private ConcurrentHashMap<String, EventManager> events = new ConcurrentHashMap<>();
+
+    public EventScriptManager(Channel channel) {
+        this.channel = channel;
     }
 
-    public EventManager getEventManager(String event) {
-        EventEntry entry = events.get(event);
-        if (entry == null) {
-            return null;
+    public EventManager getManager(String event) {
+        return events.get(event);
+    }
+
+    public void putManager(String event) {
+        events.put(event, new EventManager(channel, event));
+    }
+
+    public void removeManager(String event) {
+        if (events.containsKey(event)) {
+            events.get(event).cancel();
         }
-        return entry.em;
     }
 
     public void init() {
-        for (EventEntry entry : events.values()) {
+        for (EventManager manager : events.values()) {
             try {
-                ((ScriptEngine) entry.iv).put("em", entry.em);
-                entry.iv.invokeFunction("init", (Object) null);
-            } catch (Exception ex) {
-                Logger.getLogger(EventScriptManager.class.getName()).log(Level.SEVERE, null, ex);
-                System.out.println("Error on script: " + entry.em.getName());
+                manager.getInvocable().invokeFunction("init", (Object) null);
+            } catch (ScriptException | NoSuchMethodException e) {
+                System.err.println(String.format("Unable to invoke init function in script '%s'", manager.getScriptName()));
+                e.printStackTrace();
             }
         }
     }
-    
-    public void reload(){
-    	cancel();
-    	init();
-    }
 
-    public void cancel() {
-        for (EventEntry entry : events.values()) {
-            entry.em.cancel();
-        }
+    public void close()
+    {
+        events.values().forEach(EventManager::cancel);
     }
 }

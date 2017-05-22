@@ -48,6 +48,6 @@ public final class RemoteGachaponHandler extends AbstractMaplePacketHandler {
 		} else {
 			npcId = gacha == 8 ? 9100109 : 9100117;
 		}
-		NPCScriptManager.getInstance().start(c, npcId, "gachaponRemote", null);
+		NPCScriptManager.start(c, npcId, "gachaponRemote", null);
 	}
 }

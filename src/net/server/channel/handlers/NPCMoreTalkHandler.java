@@ -41,13 +41,13 @@ public final class NPCMoreTalkHandler extends AbstractMaplePacketHandler {
                 if (c.getQM() != null) {
                     c.getQM().setGetText(returnText);
                     if (c.getQM().isStart()) {
-                        QuestScriptManager.getInstance().start(c, action, lastMsg, -1);
+                        QuestScriptManager.start(c, action, lastMsg, -1);
                     } else {
-                        QuestScriptManager.getInstance().end(c, action, lastMsg, -1);
+                        QuestScriptManager.end(c, action, lastMsg, -1);
                     }
                 } else {
                     c.getCM().setGetText(returnText);
-                    NPCScriptManager.getInstance().action(c, action, lastMsg, -1);
+                    NPCScriptManager.action(c, action, lastMsg, -1);
                 }
             } else if (c.getQM() != null) {
                 c.getQM().dispose();
@@ -63,12 +63,12 @@ public final class NPCMoreTalkHandler extends AbstractMaplePacketHandler {
             }
             if (c.getQM() != null) {
                 if (c.getQM().isStart()) {
-                    QuestScriptManager.getInstance().start(c, action, lastMsg, selection);
+                    QuestScriptManager.start(c, action, lastMsg, selection);
                 } else {
-                    QuestScriptManager.getInstance().end(c, action, lastMsg, selection);
+                    QuestScriptManager.end(c, action, lastMsg, selection);
                 }
             } else if (c.getCM() != null) {
-                NPCScriptManager.getInstance().action(c, action, lastMsg, selection);
+                NPCScriptManager.action(c, action, lastMsg, selection);
             }
         }
     }

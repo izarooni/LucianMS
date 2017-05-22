@@ -117,7 +117,12 @@ public abstract class BossPQ extends GenericEvent {
                         MapleMap map = getMapInstance(mapId);
                         if (map != null) {
                             MapleMonsterStats stats = new MapleMonsterStats();
-                            stats.setHp(monster.getHp() * getHealthMultiplier());
+                            int newHp = monster.getHp() * getHealthMultiplier();
+                            if (newHp < 1) {
+                                // number overflow
+                                newHp = Integer.MAX_VALUE;
+                            }
+                            stats.setHp(newHp);
                             stats.setMp(monster.getMp() * getHealthMultiplier());
                             monster.setBoss(true);
                             final long spawnTimestamp = System.currentTimeMillis();
@@ -132,7 +137,7 @@ public abstract class BossPQ extends GenericEvent {
                                     } else {
                                         time = StringUtil.getTimeElapse(elapse);
                                     }
-                                    broadcastMessage(String.format("Round %d completed! It took you %s to kill that boss", round, time));
+                                    broadcastMessage(String.format("Round %d completed! It took you %s to kill that boss", (round + 1), time));
 
                                     int gain = (getCashWinnings() * getCashMultiplier());
                                     for (MapleCharacter players : map.getCharacters()) {

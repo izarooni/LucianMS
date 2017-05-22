@@ -462,7 +462,7 @@ public final class UseCashItemHandler extends AbstractMaplePacketHandler {
             ii.getItemEffect(itemId).applyTo(player);
             remove(c, itemId);
         } else if (itemType == 533) {
-            NPCScriptManager.getInstance().start(c, 9010009, null);
+            NPCScriptManager.start(c, 9010009, null);
         } else if (itemType == 537) {
             player.setChalkboard(slea.readMapleAsciiString());
             player.getMap().broadcastMessage(MaplePacketCreator.useChalkboard(player, false));

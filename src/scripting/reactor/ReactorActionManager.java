@@ -122,7 +122,7 @@ public class ReactorActionManager extends AbstractPlayerInteraction {
     }
 
     private List<ReactorDropEntry> getDropChances() {
-        return ReactorScriptManager.getInstance().getDrops(reactor.getId());
+        return ReactorScriptManager.getDrops(reactor.getId());
     }
 
     public void spawnMonster(int id) {

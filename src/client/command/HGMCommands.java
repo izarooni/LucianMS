@@ -1,11 +1,5 @@
 package client.command;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.List;
-
 import client.MapleCharacter;
 import client.MapleClient;
 import client.SkillFactory;
@@ -27,14 +21,21 @@ import server.life.MapleNPC;
 import tools.DatabaseConnection;
 import tools.MaplePacketCreator;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * @author izarooni, lucasdieswagger
  */
 public class HGMCommands {
-	
+
     public static void execute(MapleClient client, CommandWorker.Command command, CommandWorker.CommandArgs args) {
+
         MapleCharacter player = client.getPlayer();
-        Channel ch = client.getChannelServer();
+
         if (command.equals("help", "commands")) {
             ArrayList<String> commands = new ArrayList<>();
             commands.add("!item <id> <OPT=amount> - spawn an item, and optionally choose an amount");
@@ -51,7 +52,6 @@ public class HGMCommands {
             commands.add("!whereami - Show information about the map you're currently in");
             commands.add("!onpc <npcId> - Remotely open any NPC");
             commands.add("!saveall - Save everything on the server");
-            commands.add("!reloadevents - Reload event scripts");
             commands.add("!reloadportals - Reload portal scripts");
             commands.add("!reloadreactordrops - Reload reactor drops");
             commands.add("!reloadshops - Reload shop items");
@@ -259,12 +259,12 @@ public class HGMCommands {
         } else if (command.equals("onpc")) {
             if (args.length() == 1) {
                 Long a1 = args.parseNumber(0);
-                if (a1 == null && args.getError(0) != null) {
-                    NPCScriptManager.getInstance().start(client, 10200, args.get(0), player);
+                if (args.getError(0) != null) {
+                    NPCScriptManager.start(client, 10200, args.get(0), player);
                     return;
                 }
                 int npcId = a1.intValue();
-                NPCScriptManager.getInstance().start(client, npcId, player);
+                NPCScriptManager.start(client, npcId, player);
             } else {
                 player.dropMessage(5, "You must specify an NPC ID");
             }
@@ -273,18 +273,11 @@ public class HGMCommands {
                 worlds.getPlayerStorage().getAllCharacters().forEach(MapleCharacter::saveToDB);
             }
             player.dropMessage(6, "All characters saved!");
-        } else if (command.equals("reloadevents")) {
-            for (World worlds : Server.getInstance().getWorlds()) {
-                for (Channel channels : worlds.getChannels()) {
-                    channels.reloadEventScriptManager();
-                }
-            }
-            player.dropMessage(6, "Event script reloaded");
         } else if (command.equals("reloadportals")) {
             PortalScriptManager.getInstance().reloadPortalScripts();
             player.dropMessage(6, "Portal scripts reloaded");
         } else if (command.equals("reloadreactordrops")) {
-            ReactorScriptManager.getInstance().clearDrops();
+            ReactorScriptManager.clearDrops();
             player.dropMessage(6, "Reactor drops reloaded");
         } else if (command.equals("reloadshosps")) {
             MapleShopFactory.getInstance().reloadShops();
@@ -297,17 +290,15 @@ public class HGMCommands {
             player.dropMessage(6, "Mobs reloaded");
         } else if (command.equals("test")) {
             RockPaperScissorsHandler.startGame(player);
-        } else if (command.equals("reloaditems")) {
-
         } else if (command.equals("sudo")) {
-            if (args.length()> 1) {
+            if (args.length() > 1) {
                 MapleCharacter target = client.getWorldServer().getPlayerStorage().getCharacterByName(args.get(0));
                 if (target != null) {
                     String cmd = args.concatFrom(1);
                     CommandWorker.process(target.getClient(), cmd, true);
                 }
             }
-        }  else if (command.equals("godmeup")) {
+        } else if (command.equals("godmeup")) {
             if (args.length() > 0) {
                 List<ModifyInventory> mods = new ArrayList<>();
                 Long a1 = args.parseNumber(0);

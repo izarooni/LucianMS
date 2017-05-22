@@ -22,47 +22,41 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 package scripting.reactor;
 
 import client.MapleClient;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import javax.script.Invocable;
-import javax.script.ScriptException;
-import scripting.AbstractScriptManager;
+import scripting.ScriptUtil;
 import server.maps.MapleReactor;
 import server.maps.ReactorDropEntry;
 import tools.DatabaseConnection;
 import tools.FilePrinter;
+import tools.Pair;
+
+import javax.script.Invocable;
+import javax.script.ScriptException;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.util.*;
 
 /**
  * @author Lerk
+ * @author izarooni
  */
-public class ReactorScriptManager extends AbstractScriptManager {
+public class ReactorScriptManager {
 
-    private static ReactorScriptManager instance = new ReactorScriptManager();
-    private Map<Integer, List<ReactorDropEntry>> drops = new HashMap<>();
+    private static Map<Integer, List<ReactorDropEntry>> drops = new HashMap<>();
 
-    public synchronized static ReactorScriptManager getInstance() {
-        return instance;
-    }
-
-    public void act(MapleClient c, MapleReactor reactor) {
+    public static void act(MapleClient c, MapleReactor reactor) {
         try {
             ReactorActionManager rm = new ReactorActionManager(c, reactor);
-            Invocable iv = getInvocable("reactor/" + reactor.getId() + ".js", c);
+            Invocable iv = ScriptUtil.eval(c, "reactor/" + reactor.getId() + ".js", Collections.singleton(new Pair<>("rm", rm)));
             if (iv == null) {
-            	return;
+                return;
             }
-            engine.put("rm", rm);
             iv.invokeFunction("act");
         } catch (final ScriptException | NoSuchMethodException | NullPointerException e) {
             FilePrinter.printError(FilePrinter.REACTOR + reactor.getId() + ".txt", e);
         }
     }
 
-    public List<ReactorDropEntry> getDrops(int rid) {
+    public static List<ReactorDropEntry> getDrops(int rid) {
         List<ReactorDropEntry> ret = drops.get(rid);
         if (ret == null) {
             ret = new LinkedList<>();
@@ -83,26 +77,25 @@ public class ReactorScriptManager extends AbstractScriptManager {
         return ret;
     }
 
-    public void clearDrops() {
+    public static void clearDrops() {
         drops.clear();
     }
 
-    public void touch(MapleClient c, MapleReactor reactor) {
+    public static void touch(MapleClient c, MapleReactor reactor) {
         touching(c, reactor, true);
     }
 
-    public void untouch(MapleClient c, MapleReactor reactor) {
+    public static void untouch(MapleClient c, MapleReactor reactor) {
         touching(c, reactor, false);
     }
 
-    public void touching(MapleClient c, MapleReactor reactor, boolean touching) {
+    public static void touching(MapleClient c, MapleReactor reactor, boolean touching) {
         try {
             ReactorActionManager rm = new ReactorActionManager(c, reactor);
-            Invocable iv = getInvocable("reactor/" + reactor.getId() + ".js", c);
+            Invocable iv = ScriptUtil.eval(c, "reactor/" + reactor.getId() + ".js", Collections.singleton(new Pair<>("rm", rm)));
             if (iv == null) {
                 return;
             }
-            engine.put("rm", rm);
             if (touching) {
                 iv.invokeFunction("touch");
             } else {

@@ -21,7 +21,6 @@
 */
 package net.server.channel.handlers;
 
-import net.server.channel.handlers.DueyHandler;
 import client.MapleClient;
 import net.AbstractMaplePacketHandler;
 import scripting.npc.NPCScriptManager;
@@ -31,8 +30,10 @@ import server.maps.PlayerNPCs;
 import tools.MaplePacketCreator;
 import tools.data.input.SeekableLittleEndianAccessor;
 
-public final class NPCTalkHandler extends AbstractMaplePacketHandler {
-    public final void handlePacket(SeekableLittleEndianAccessor slea, MapleClient c) {
+public class NPCTalkHandler extends AbstractMaplePacketHandler {
+
+    @Override
+    public void handlePacket(SeekableLittleEndianAccessor slea, MapleClient c) {
         if (!c.getPlayer().isAlive()) {
             c.announce(MaplePacketCreator.enableActions());
             return;
@@ -53,15 +54,15 @@ public final class NPCTalkHandler extends AbstractMaplePacketHandler {
                     c.announce(MaplePacketCreator.enableActions());
                     return;
                 }
-                if(npc.getId() >= 9100100 && npc.getId() <= 9100200) {
+                if (npc.getId() >= 9100100 && npc.getId() <= 9100200) {
                     // Custom handling for gachapon scripts to reduce the amount of scripts needed.
-                    NPCScriptManager.getInstance().start(c, npc.getId(), "gachapon", null);
+                    NPCScriptManager.start(c, npc.getId(), "gachapon", null);
                 } else {
-                    NPCScriptManager.getInstance().start(c, npc.getId(), null);
+                    NPCScriptManager.start(c, npc.getId(), null);
                 }
             }
         } else if (obj instanceof PlayerNPCs) {
-            NPCScriptManager.getInstance().start(c, ((PlayerNPCs) obj).getId(), null);
+            NPCScriptManager.start(c, ((PlayerNPCs) obj).getId(), null);
         }
     }
 }

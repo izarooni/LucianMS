@@ -1,111 +1,90 @@
-/*
-	This file is part of the OdinMS Maple Story Server
-    Copyright (C) 2008 Patrick Huy <patrick.huy@frz.cc>
-		       Matthias Butz <matze@odinms.de>
-		       Jan Christian Meyer <vimes@odinms.de>
-
-    This program is free software: you can redistribute it and/or modify
-    it under the terms of the GNU Affero General Public License as
-    published by the Free Software Foundation version 3 as published by
-    the Free Software Foundation. You may not use, modify or distribute
-    this program under any other version of the GNU Affero General Public
-    License.
-
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU Affero General Public License for more details.
-
-    You should have received a copy of the GNU Affero General Public License
-    along with this program.  If not, see <http://www.gnu.org/licenses/>.
-*/
 package scripting.event;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Properties;
-import java.util.concurrent.ScheduledFuture;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import client.MapleCharacter;
+import net.server.channel.Channel;
+import net.server.world.MapleParty;
+import scripting.ScriptUtil;
+import server.events.custom.GenericEvent;
+import server.expeditions.MapleExpedition;
+import server.maps.MapleMap;
+import tools.Pair;
 
 import javax.script.Invocable;
 import javax.script.ScriptException;
-
-import net.server.channel.Channel;
-import net.server.world.MapleParty;
-import server.TimerManager;
-import server.expeditions.MapleExpedition;
-import server.maps.MapleMap;
-import client.MapleCharacter;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Properties;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
- *
- * @author Matze
+ * @author izarooni
  */
-public class EventManager {
-    private Invocable iv;
-    private Channel cserv;
-    private Map<String, EventInstanceManager> instances = new HashMap<String, EventInstanceManager>();
-    private Properties props = new Properties();
-    private String name;
-    private ScheduledFuture<?> schedule = null;
+public class EventManager extends GenericEvent {
 
-    public EventManager(Channel cserv, Invocable iv, String name) {
-        this.iv = iv;
-        this.cserv = cserv;
-        this.name = name;
+    private final Channel channel;
+    private final String scriptName;
+    private final Invocable invocable;
+
+    private ConcurrentHashMap<String, EventInstanceManager> instances = new ConcurrentHashMap<>();
+    private Properties props = new Properties();
+
+    public EventManager(Channel channel, String scriptName) {
+        this.channel = channel;
+        this.scriptName = scriptName;
+
+        invocable = ScriptUtil.eval(null, "event/" + scriptName + ".js", Collections.singletonList(new Pair<>("em", this)));
+    }
+
+    public Channel getChannel() {
+        return channel;
+    }
+
+    public String getScriptName() {
+        return scriptName;
+    }
+
+    public Invocable getInvocable() {
+        return invocable;
     }
 
     public void cancel() {
         try {
-            iv.invokeFunction("cancelSchedule", (Object) null);
-        } catch (ScriptException ex) {
-            ex.printStackTrace();
-        } catch (NoSuchMethodException ex) {
+            getInvocable().invokeFunction("cancelSchedule", (Object) null);
+        } catch (ScriptException | NoSuchMethodException ex) {
             ex.printStackTrace();
         }
     }
 
-    public void schedule(String methodName, long delay) {
-        schedule(methodName, null, delay);
+    public Task schedule(String function, long delay) {
+        return schedule(function, null, delay);
     }
 
-    public void schedule(final String methodName, final EventInstanceManager eim, long delay) {
-        schedule = TimerManager.getInstance().schedule(new Runnable() {
+    public Task schedule(final String function, final EventInstanceManager eim, long delay) {
+        return createTask(new Runnable() {
             public void run() {
                 try {
-                    iv.invokeFunction(methodName, eim);
-                } catch (ScriptException ex) {
-                    Logger.getLogger(EventManager.class.getName()).log(Level.SEVERE, null, ex);
-                } catch (NoSuchMethodException ex) {
-                    Logger.getLogger(EventManager.class.getName()).log(Level.SEVERE, null, ex);
+                    getInvocable().invokeFunction(function, eim);
+                } catch (ScriptException | NoSuchMethodException e) {
+                    System.err.println(String.format("Unable to invoke function '%s' in script '%s'", function, getScriptName()));
+                    e.printStackTrace();
                 }
             }
         }, delay);
     }
 
-    public void cancelSchedule() {
-        schedule.cancel(true);
-    }
-
-    public ScheduledFuture<?> scheduleAtTimestamp(final String methodName, long timestamp) {
-        return TimerManager.getInstance().scheduleAtTimestamp(new Runnable() {
+    public Task scheduleAtTimestamp(final String function, long timestamp) {
+        return createTask(new Runnable() {
             public void run() {
                 try {
-                    iv.invokeFunction(methodName, (Object) null);
-                } catch (ScriptException ex) {
-                    Logger.getLogger(EventManager.class.getName()).log(Level.SEVERE, null, ex);
-                } catch (NoSuchMethodException ex) {
-                    Logger.getLogger(EventManager.class.getName()).log(Level.SEVERE, null, ex);
+                    getInvocable().invokeFunction(function, (Object) null);
+                } catch (ScriptException | NoSuchMethodException e) {
+                    System.err.println(String.format("Unable to invoke function '%s' in script '%s'", function, getScriptName()));
+                    e.printStackTrace();
                 }
             }
-        }, timestamp);
-    }
-
-    public Channel getChannelServer() {
-        return cserv;
+        }, timestamp - System.currentTimeMillis());
     }
 
     public EventInstanceManager getInstance(String name) {
@@ -117,84 +96,75 @@ public class EventManager {
     }
 
     public EventInstanceManager newInstance(String name) {
+        if (instances.containsKey(name)) {
+            throw new RuntimeException(String.format("Could not create new event instance with name(%s) already used for event(%s)", name, scriptName));
+        }
         EventInstanceManager ret = new EventInstanceManager(this, name);
         instances.put(name, ret);
         return ret;
     }
 
-    public void disposeInstance(String name) {
+    public void removeInstance(String name) {
         instances.remove(name);
-    }
-
-    public Invocable getIv() {
-        return iv;
-    }
-
-    public void setProperty(String key, String value) {
-        props.setProperty(key, value);
     }
 
     public String getProperty(String key) {
         return props.getProperty(key);
     }
-    
-    public void setProperty(String key, int value) {
-        props.setProperty(key, value + "");
+
+    public void setProperty(String key, Object value) {
+        props.setProperty(key, value.toString());
     }
 
-    public int getIntProperty(String key) {
-        return Integer.parseInt(props.getProperty(key));
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    //Expedition method: starts an expedition
+    /**
+     * Setup an event instance for an expedition
+     *
+     * @param exped the expedition to initialize
+     */
     public void startInstance(MapleExpedition exped) {
         try {
-            EventInstanceManager eim = (EventInstanceManager) (iv.invokeFunction("setup", (Object) null));
+            EventInstanceManager eim = (EventInstanceManager) (getInvocable().invokeFunction("setup", (Object) null));
             eim.registerExpedition(exped);
             exped.start();
-        } catch (ScriptException ex) {
-            Logger.getLogger(EventManager.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (NoSuchMethodException ex) {
+        } catch (ScriptException | NoSuchMethodException ex) {
             Logger.getLogger(EventManager.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
-    //Regular method: player 
-    public void startInstance(MapleCharacter chr) {
+    /**
+     * Setup an event instance for a single player
+     *
+     * @param player the player initializing the event
+     */
+    public void startInstance(MapleCharacter player) {
         try {
-            EventInstanceManager eim = (EventInstanceManager) (iv.invokeFunction("setup", (Object) null));
-            eim.registerPlayer(chr);
-        } catch (ScriptException ex) {
-            Logger.getLogger(EventManager.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (NoSuchMethodException ex) {
+            EventInstanceManager eim = (EventInstanceManager) (getInvocable().invokeFunction("setup", (Object) null));
+            eim.registerPlayer(player);
+        } catch (ScriptException | NoSuchMethodException ex) {
             Logger.getLogger(EventManager.class.getName()).log(Level.SEVERE, null, ex);
         }
-    }    
-    
-    //PQ method: starts a PQ
+    }
+
+    /**
+     * Setup an event instance for a party
+     *
+     * @param party the party starting the party quest
+     * @param map   the map containing all the party members
+     */
     public void startInstance(MapleParty party, MapleMap map) {
         try {
-            EventInstanceManager eim = (EventInstanceManager) (iv.invokeFunction("setup", (Object) null));
+            EventInstanceManager eim = (EventInstanceManager) (getInvocable().invokeFunction("setup", (Object) null));
             eim.registerParty(party, map);
-        } catch (ScriptException ex) {
-            Logger.getLogger(EventManager.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (NoSuchMethodException ex) {
+        } catch (ScriptException | NoSuchMethodException ex) {
             Logger.getLogger(EventManager.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
-    //non-PQ method for starting instance
     public void startInstance(EventInstanceManager eim, String leader) {
         try {
-            iv.invokeFunction("setup", eim);
+            getInvocable().invokeFunction("setup", eim);
             eim.setProperty("leader", leader);
-        } catch (ScriptException ex) {
-            Logger.getLogger(EventManager.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (NoSuchMethodException ex) {
+        } catch (ScriptException | NoSuchMethodException ex) {
             Logger.getLogger(EventManager.class.getName()).log(Level.SEVERE, null, ex);
         }
     }

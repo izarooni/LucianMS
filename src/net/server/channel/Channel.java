@@ -21,23 +21,14 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package net.server.channel;
 
-import java.io.File;
-import java.net.InetSocketAddress;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.concurrent.locks.ReentrantReadWriteLock;
-import java.util.concurrent.locks.ReentrantReadWriteLock.WriteLock;
-
+import client.MapleCharacter;
+import constants.ServerConstants;
 import net.MapleServerHandler;
 import net.mina.MapleCodecFactory;
 import net.server.PlayerStorage;
 import net.server.world.MapleParty;
 import net.server.world.MaplePartyCharacter;
-
+import org.apache.commons.io.FilenameUtils;
 import org.apache.mina.core.buffer.IoBuffer;
 import org.apache.mina.core.buffer.SimpleBufferAllocator;
 import org.apache.mina.core.filterchain.IoFilter;
@@ -46,8 +37,6 @@ import org.apache.mina.core.session.IdleStatus;
 import org.apache.mina.filter.codec.ProtocolCodecFilter;
 import org.apache.mina.transport.socket.SocketSessionConfig;
 import org.apache.mina.transport.socket.nio.NioSocketAcceptor;
-
-import provider.MapleDataProviderFactory;
 import scripting.event.EventScriptManager;
 import server.TimerManager;
 import server.events.gm.MapleEvent;
@@ -57,8 +46,12 @@ import server.maps.HiredMerchant;
 import server.maps.MapleMap;
 import server.maps.MapleMapFactory;
 import tools.MaplePacketCreator;
-import client.MapleCharacter;
-import constants.ServerConstants;
+
+import java.io.File;
+import java.net.InetSocketAddress;
+import java.util.*;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
+import java.util.concurrent.locks.ReentrantReadWriteLock.WriteLock;
 
 public final class Channel {
 
@@ -68,10 +61,10 @@ public final class Channel {
     private IoAcceptor acceptor;
     private String ip, serverMessage;
     private MapleMapFactory mapFactory;
-    private EventScriptManager eventSM;
+    private EventScriptManager eventScriptManager;
     private Map<Integer, HiredMerchant> hiredMerchants = new HashMap<>();
     private final Map<Integer, Integer> storedVars = new HashMap<>();
-	private ReentrantReadWriteLock merchant_lock = new ReentrantReadWriteLock(true);
+    private ReentrantReadWriteLock merchant_lock = new ReentrantReadWriteLock(true);
     private List<MapleExpedition> expeditions = new ArrayList<>();
     private List<MapleExpeditionType> expedType = new ArrayList<>();
     private MapleEvent event;
@@ -82,7 +75,7 @@ public final class Channel {
         this.channel = channel;
         this.mapFactory = new MapleMapFactory(world, channel);
         try {
-            eventSM = new EventScriptManager(this, getEvents());
+            reloadEventScriptManager();
             port = 7575 + this.channel - 1;
             port += (world * 100);
             ip = ServerConstants.HOST + ":" + port;
@@ -95,10 +88,7 @@ public final class Channel {
             acceptor.getFilterChain().addLast("codec", (IoFilter) new ProtocolCodecFilter(new MapleCodecFactory()));
             acceptor.bind(new InetSocketAddress(port));
             ((SocketSessionConfig) acceptor.getSessionConfig()).setTcpNoDelay(true);
-            for (MapleExpeditionType exped : MapleExpeditionType.values()) {
-            	expedType.add(exped);
-            }
-            eventSM.init();
+            Collections.addAll(expedType, MapleExpeditionType.values());
 
             System.out.println("    Channel " + getId() + ": Listening on port " + port);
         } catch (Exception e) {
@@ -106,11 +96,20 @@ public final class Channel {
         }
     }
 
-    public void reloadEventScriptManager(){
-    	eventSM.cancel();
-    	eventSM = null;
-    	eventSM = new EventScriptManager(this, getEvents());
-    	eventSM.init();
+    public void reloadEventScriptManager() {
+        if (eventScriptManager != null) {
+            eventScriptManager.close();
+        }
+        this.eventScriptManager = new EventScriptManager(this);
+        File eventFiles = new File("scripts/event");
+        File[] files = eventFiles.listFiles();
+        if (files != null) {
+            for (File file : files) {
+                String scriptName = FilenameUtils.removeExtension(file.getName());
+                this.eventScriptManager.putManager(scriptName);
+            }
+        }
+        this.eventScriptManager.init();
     }
 
     public final void shutdown() {
@@ -139,7 +138,7 @@ public final class Channel {
                 hmit.remove();
             }
         } catch (Exception e) {
-			e.printStackTrace();
+            e.printStackTrace();
         } finally {
             wlock.unlock();
         }
@@ -192,8 +191,8 @@ public final class Channel {
         this.event = event;
     }
 
-    public EventScriptManager getEventSM() {
-        return eventSM;
+    public EventScriptManager getEventScriptManager() {
+        return eventScriptManager;
     }
 
     public void broadcastGMPacket(final byte[] data) {
@@ -239,7 +238,7 @@ public final class Channel {
         } finally {
             wlock.unlock();
         }
-        }
+    }
 
     public int[] multiBuddyFind(int charIdFrom, int[] characterIds) {
         List<Integer> ret = new ArrayList<>(characterIds.length);
@@ -261,7 +260,7 @@ public final class Channel {
     }
 
     public List<MapleExpedition> getExpeditions() {
-    	return expeditions;
+        return expeditions;
     }
 
     public boolean isConnected(String name) {
@@ -277,17 +276,10 @@ public final class Channel {
         broadcastPacket(MaplePacketCreator.serverMessage(message));
     }
 
-    private static String [] getEvents(){
-    	List<String> events = new ArrayList<String>();
-    	for (File file : new File("scripts/event").listFiles()){
-    		events.add(file.getName().substring(0, file.getName().length() - 3));
-    	}
-    	return events.toArray(new String[0]);
-    }
-
-	public int getStoredVar(int key) {
-		if(storedVars.containsKey(key))
+    public int getStoredVar(int key) {
+        if (storedVars.containsKey(key)) {
             return storedVars.get(key);
+        }
         return 0;
     }
 

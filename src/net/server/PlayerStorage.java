@@ -22,43 +22,47 @@
 package net.server;
 
 import client.MapleCharacter;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
-import java.util.Map;
+
+import java.util.*;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
-public class PlayerStorage {
+public final class PlayerStorage {
+
     private final ReentrantReadWriteLock locks = new ReentrantReadWriteLock();
     private final Lock rlock = locks.readLock();
     private final Lock wlock = locks.writeLock();
     private final Map<Integer, MapleCharacter> storage = new LinkedHashMap<>();
 
-    public void addPlayer(MapleCharacter chr) {
-        wlock.lock();
-        try {
-            storage.put(chr.getId(), chr);
-        } finally {
-	    wlock.unlock();
-	}
+    public void clear() {
+        storage.clear();
     }
 
-    public MapleCharacter removePlayer(int chr) {
+    public void addPlayer(MapleCharacter player) {
         wlock.lock();
         try {
-            return storage.remove(chr);
+            storage.put(player.getId(), player);
+        } finally {
+            wlock.unlock();
+        }
+    }
+
+    public MapleCharacter removePlayer(int playerID) {
+        wlock.lock();
+        try {
+            return storage.remove(playerID);
         } finally {
             wlock.unlock();
         }
     }
 
     public MapleCharacter getCharacterByName(String name) {
-        rlock.lock();    
+        rlock.lock();
         try {
-            for (MapleCharacter chr : storage.values()) {            
-                if (chr.getName().toLowerCase().equals(name.toLowerCase()))
-                    return chr;
+            for (MapleCharacter player : storage.values()) {
+                if (player.getName().toLowerCase().equals(name.toLowerCase())) {
+                    return player;
+                }
             }
             return null;
         } finally {
@@ -66,38 +70,43 @@ public class PlayerStorage {
         }
     }
 
-    public MapleCharacter getCharacterById(int id) { 
-        rlock.lock();    
+    public MapleCharacter getCharacterById(int playerID) {
+        rlock.lock();
         try {
-            return storage.get(id);
+            return storage.get(playerID);
         } finally {
             rlock.unlock();
         }
     }
 
     public Collection<MapleCharacter> getAllCharacters() {
-        rlock.lock();    
+        rlock.lock();
         try {
-            return storage.values();
+            return new ArrayList<>(storage.values());
         } finally {
             rlock.unlock();
         }
     }
 
-    public final void disconnectAll() {
-	wlock.lock();
-	try {	    
-        final Iterator<MapleCharacter> chrit = storage.values().iterator();
-	    while (chrit.hasNext()) {
-	    		chrit.next().getClient().disconnect(true, false);
-                chrit.remove();
+    public void disconnectAll() {
+        wlock.lock();
+        try {
+            final Iterator<MapleCharacter> iter = storage.values().iterator();
+            while (iter.hasNext()) {
+                iter.next().getClient().disconnect(true, false);
+                iter.remove();
             }
-	} finally {
-	    wlock.unlock();
-	}
+        } finally {
+            wlock.unlock();
+        }
     }
-    
-    public int getSize(){
-    	return storage.size();
+
+    public int size() {
+        rlock.lock();
+        try {
+            return storage.size();
+        } finally {
+            rlock.unlock();
+        }
     }
 }

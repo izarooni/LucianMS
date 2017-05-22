@@ -134,7 +134,7 @@ public class AbstractPlayerInteraction {
 	}
 
 	public EventManager getEventManager(String event) {
-		return getClient().getChannelServer().getEventSM().getEventManager(event);
+		return getClient().getChannelServer().getEventScriptManager().getManager(event);
 	}
 
 	public boolean hasItem(int itemid){
@@ -163,8 +163,8 @@ public class AbstractPlayerInteraction {
 
 	public void openNpc(int npcid, String script) {
 		c.removeClickedNPC();
-		NPCScriptManager.getInstance().dispose(c);
-		NPCScriptManager.getInstance().start(c, npcid, script, null);
+		NPCScriptManager.dispose(c);
+		NPCScriptManager.start(c, npcid, script, null);
 	}
 
 	public void updateQuest(int questid, String data) {
