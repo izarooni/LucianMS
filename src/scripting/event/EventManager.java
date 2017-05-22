@@ -61,11 +61,25 @@ public class EventManager extends GenericEvent {
         return schedule(function, null, delay);
     }
 
-    public Task schedule(final String function, final EventInstanceManager eim, long delay) {
+    public Task schedule(String function, EventInstanceManager eim, long delay) {
         return createTask(new Runnable() {
             public void run() {
                 try {
                     getInvocable().invokeFunction(function, eim);
+                } catch (ScriptException | NoSuchMethodException e) {
+                    System.err.println(String.format("Unable to invoke function '%s' in script '%s'", function, getScriptName()));
+                    e.printStackTrace();
+                }
+            }
+        }, delay);
+    }
+
+    public Task schedule(String function, long delay, Object... args) {
+        return createTask(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    getInvocable().invokeFunction(function, args);
                 } catch (ScriptException | NoSuchMethodException e) {
                     System.err.println(String.format("Unable to invoke function '%s' in script '%s'", function, getScriptName()));
                     e.printStackTrace();
