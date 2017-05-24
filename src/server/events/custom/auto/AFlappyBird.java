@@ -29,7 +29,7 @@ public class AFlappyBird extends GAutoEvent {
 
     @Override
     public void start() {
-        broadcastWorldMessage("Flappy Bird will being momentarily");
+        broadcastWorldMessage("Flappy Bird will begin momentarily");
         getMapInstance(EventMap); // pre-load map
     }
 
