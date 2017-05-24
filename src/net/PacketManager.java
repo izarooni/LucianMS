@@ -47,5 +47,7 @@ public final class PacketManager {
         handlers.set(RecvOpcode.MAGIC_ATTACK.getValue(), MagicDamageHandler.class);
         handlers.set(RecvOpcode.TOUCH_MONSTER_ATTACK.getValue(), TouchMonsterDamageHandler.class);
         handlers.set(RecvOpcode.TAKE_DAMAGE.getValue(), TakeDamageHandler.class);
+        handlers.set(RecvOpcode.MOB_DAMAGE_MOB_FRIENDLY.getValue(), MobDamageMobFriendlyHandler.class);
+
     }
 }

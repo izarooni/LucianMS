@@ -12,7 +12,7 @@ import java.util.Collection;
 
 public final class ScriptUtil {
 
-    public static Invocable eval(MapleClient client, String path, Collection<Pair<String, Object>> binds) {
+    public static Invocable eval(MapleClient client, String path, Collection<Pair<String, Object>> binds) throws IOException, ScriptException {
         path = "scripts/" + path;
         File file = new File(path);
         if (!file.exists()) {
@@ -33,10 +33,7 @@ public final class ScriptUtil {
                 client.setEngine(path, engine);
             }
             return (Invocable) engine;
-        } catch (ScriptException | IOException e) {
-            e.printStackTrace();
         }
-        return null;
     }
 
     public static void removeScript(MapleClient client, String path) {

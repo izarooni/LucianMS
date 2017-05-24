@@ -26,7 +26,11 @@ public class EventScriptManager {
     }
 
     public void putManager(String event) {
-        events.put(event, new EventManager(channel, event));
+        EventManager em = new EventManager(channel, event);
+        if (em.getInvocable() == null) {
+            throw new RuntimeException(String.format("Unable to instantiate event manager '%s'", event));
+        }
+        events.put(event, em);
     }
 
     public void removeManager(String event) {

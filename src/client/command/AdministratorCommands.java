@@ -11,6 +11,7 @@ import server.events.custom.auto.GAutoEventManager;
 import server.maps.MapleMapObject;
 import server.maps.MapleReactor;
 
+import javax.script.ScriptException;
 import java.awt.*;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
@@ -113,6 +114,17 @@ public class AdministratorCommands {
                     }
                     manager.dispose();
                     channel.getEventScriptManager().putManager(scriptName);
+                    try {
+                        EventManager em = channel.getEventScriptManager().getManager(scriptName);
+                        try {
+                            em.getInvocable().invokeFunction("init", (Object) null);
+                        } catch (ScriptException | NoSuchMethodException e) {
+                            player.dropMessage("");
+                            e.printStackTrace();
+                        }
+                    } catch (RuntimeException e) {
+                        player.dropMessage("Unable to restart event due to an error");
+                    }
                 }
                 player.dropMessage("Done!");
             }

@@ -11,6 +11,7 @@ import tools.Pair;
 
 import javax.script.Invocable;
 import javax.script.ScriptException;
+import java.io.IOException;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Properties;
@@ -25,7 +26,7 @@ public class EventManager extends GenericEvent {
 
     private final Channel channel;
     private final String scriptName;
-    private final Invocable invocable;
+    private Invocable invocable;
 
     private ConcurrentHashMap<String, EventInstanceManager> instances = new ConcurrentHashMap<>();
     private Properties props = new Properties();
@@ -34,7 +35,12 @@ public class EventManager extends GenericEvent {
         this.channel = channel;
         this.scriptName = scriptName;
 
-        invocable = ScriptUtil.eval(null, "event/" + scriptName + ".js", Collections.singletonList(new Pair<>("em", this)));
+        try {
+            invocable = ScriptUtil.eval(null, "event/" + scriptName + ".js", Collections.singletonList(new Pair<>("em", this)));
+        } catch (IOException | ScriptException e) {
+            System.err.println(String.format("Unable to eval script '%s'", scriptName));
+            e.printStackTrace();
+        }
     }
 
     public Channel getChannel() {

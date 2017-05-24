@@ -205,7 +205,6 @@ public final class PacketProcessor {
             //registerHandler(RecvOpcode.PLAYER_UPDATE, new PlayerUpdateHandler());don't use unused stuff
             registerHandler(RecvOpcode.USE_MAPLELIFE, new UseMapleLifeHandler());
             registerHandler(RecvOpcode.USE_CATCH_ITEM, new UseCatchItemHandler());
-            registerHandler(RecvOpcode.MOB_DAMAGE_MOB_FRIENDLY, new MobDamageMobFriendlyHandler());
             registerHandler(RecvOpcode.PARTY_SEARCH_REGISTER, new PartySearchRegisterHandler());
             registerHandler(RecvOpcode.PARTY_SEARCH_START, new PartySearchStartHandler());
             registerHandler(RecvOpcode.ITEM_SORT2, new ItemIdSortHandler());

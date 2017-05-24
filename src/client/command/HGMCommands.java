@@ -57,6 +57,7 @@ public class HGMCommands {
             commands.add("!reloadshops - Reload shop items");
             commands.add("!reloadskills - Relaod loaded skill data");
             commands.add("!reloadmobs - Reload mob data");
+            commands.add("!resetreactors - Reset all reactors in the map");
             commands.add("!godmeup - Change values of all stats for all equips");
             commands.forEach(player::dropMessage);
             commands.clear();
@@ -273,12 +274,15 @@ public class HGMCommands {
                 worlds.getPlayerStorage().getAllCharacters().forEach(MapleCharacter::saveToDB);
             }
             player.dropMessage(6, "All characters saved!");
-        } else if (command.equals("reloadportals")) {
-            PortalScriptManager.getInstance().reloadPortalScripts();
-            player.dropMessage(6, "Portal scripts reloaded");
+        } else if (command.equals("resetreactors")) {
+            player.getMap().resetReactors();
+            player.dropMessage("Reactors reset");
         } else if (command.equals("reloadreactordrops")) {
             ReactorScriptManager.clearDrops();
             player.dropMessage(6, "Reactor drops reloaded");
+        } else if (command.equals("reloadportals")) {
+            PortalScriptManager.getInstance().reloadPortalScripts();
+            player.dropMessage(6, "Portal scripts reloaded");
         } else if (command.equals("reloadshosps")) {
             MapleShopFactory.getInstance().reloadShops();
             player.dropMessage(6, "Shops reloaded");

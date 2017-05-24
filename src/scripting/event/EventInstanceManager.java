@@ -4,7 +4,6 @@ import client.MapleCharacter;
 import net.server.PlayerStorage;
 import net.server.world.MapleParty;
 import net.server.world.MaplePartyCharacter;
-import server.TimerManager;
 import server.events.custom.GenericEvent;
 import server.expeditions.MapleExpedition;
 import server.life.MapleMonster;
@@ -13,6 +12,7 @@ import server.maps.MapleMapFactory;
 import tools.DatabaseConnection;
 
 import javax.script.ScriptException;
+import java.lang.reflect.Array;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.*;
@@ -31,6 +31,7 @@ public class EventInstanceManager {
     private PlayerStorage playerStorage = new PlayerStorage();
     private HashMap<Integer, MapleMonster> monsters = new HashMap<>(); // <ObjectID, Monster>
     private Map<Integer, Integer> killCount = new HashMap<>(); // <PlayerID, Count>
+    private ArrayList<Integer> tasks = new ArrayList<>(); // <TaskID>
 
     private long timeStarted = 0;
     private long eventTime = 0;
@@ -48,7 +49,9 @@ public class EventInstanceManager {
     }
 
     public GenericEvent.Task schedule(final String function, long delay) {
-        return eventManager.schedule(function, this, delay);
+        GenericEvent.Task task = eventManager.schedule(function, this, delay);
+        tasks.add(task.getId());
+        return task;
     }
 
     public void registerPlayer(MapleCharacter player) {
@@ -149,7 +152,7 @@ public class EventInstanceManager {
     public void monsterKilled(MapleCharacter player, MapleMonster mob) {
         try {
             Integer kc = killCount.getOrDefault(player.getId(), 0);
-            kc += ((Double) eventManager.getInvocable().invokeFunction("monsterValue", this, mob.getId())).intValue();
+            kc += (int) eventManager.getInvocable().invokeFunction("monsterValue", this, mob.getId());
             killCount.put(player.getId(), kc);
             if (expedition != null) {
                 expedition.monsterKilled(player, mob);
@@ -178,6 +181,8 @@ public class EventInstanceManager {
 
         killCount.clear();
         killCount = null;
+
+        tasks.forEach(eventManager::cancelTask);
 
         eventManager.removeInstance(name);
         if (expedition != null) {

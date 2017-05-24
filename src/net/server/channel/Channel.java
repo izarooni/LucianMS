@@ -105,8 +105,10 @@ public final class Channel {
         File[] files = eventFiles.listFiles();
         if (files != null) {
             for (File file : files) {
-                String scriptName = FilenameUtils.removeExtension(file.getName());
-                this.eventScriptManager.putManager(scriptName);
+                if (file.isFile()) {
+                    String scriptName = FilenameUtils.removeExtension(file.getName());
+                    this.eventScriptManager.putManager(scriptName);
+                }
             }
         }
         this.eventScriptManager.init();
@@ -124,7 +126,8 @@ public final class Channel {
             finishedShutdown = true;
             System.out.println("Successfully shut down Channel " + channel + " on World " + world + "\r\n");
         } catch (Exception e) {
-            System.err.println("Error while shutting down Channel " + channel + " on World " + world + "\r\n" + e);
+            System.err.println("Error while shutting down Channel " + channel + " on World " + world + "\r\n");
+            e.printStackTrace();
         }
     }
 

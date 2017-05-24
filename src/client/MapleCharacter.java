@@ -196,42 +196,31 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
     private MapleDragon dragon = null;
 
     private int donorLevel;
-    private boolean muted;
-    private House house;
-    private int fishingPoints;
-
+    private int hidingLevel = 1;
     private int eventPoints;
     private int shadowPoints;
-
+    private int fishingPoints;
     private int breakthroughs;
-
-    Achievements achievements;
-
-    private ScheduledFuture<?> fishingTask = null;
-    public static final int[] FISHING_MAPS = {749050500, 749050501, 749050502};
-
-    public static final int[] FISHING_CHAIRS = {3011000, 3010151, 3010184};
-    public static int FRECEIVAL_ITEM = 2022323;
-
-    private Timestamp daily;
-
-    private RPSGame RPSGame = null;
-
-    // todo (probably for smega use only)
-    private PlayerTitles title;
-
     private int goal, current;
     private int killType;
-
-    private Arcade arcade;
+    private int riceCakes = 0;
+    private boolean muted;
+    private House house;
+    private Achievements achievements;
     private PVP pvp;
-
-    private int hidingLevel = 1;
-
+    private Arcade arcade;
+    private PlayerTitles title;
     private JumpQuestController JQController;
-
-    private Relationship relationship = new Relationship();
     private ChatType chatType = ChatType.NORMAL;
+    private Relationship relationship = new Relationship();
+
+    public static final int[] FISHING_MAPS = {749050500, 749050501, 749050502};
+    public static final int[] FISHING_CHAIRS = {3011000, 3010151, 3010184};
+    public static int FRECEIVAL_ITEM = 2022323;
+    private ScheduledFuture<?> fishingTask = null;
+
+    private Timestamp daily;
+    private RPSGame RPSGame = null;
 
     private MapleCharacter() {
         setStance(0);
@@ -5681,5 +5670,13 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
 
     public void removeGenericEvent(GenericEvent event) {
         genericEvents.remove(event);
+    }
+
+    public int getRiceCakes() {
+        return riceCakes;
+    }
+
+    public void setRiceCakes(int riceCakes) {
+        this.riceCakes = riceCakes;
     }
 }

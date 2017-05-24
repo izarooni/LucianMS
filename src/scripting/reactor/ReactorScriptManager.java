@@ -31,6 +31,7 @@ import tools.Pair;
 
 import javax.script.Invocable;
 import javax.script.ScriptException;
+import java.io.IOException;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.*;
@@ -51,8 +52,8 @@ public class ReactorScriptManager {
                 return;
             }
             iv.invokeFunction("act");
-        } catch (final ScriptException | NoSuchMethodException | NullPointerException e) {
-            FilePrinter.printError(FilePrinter.REACTOR + reactor.getId() + ".txt", e);
+        } catch (ScriptException | NoSuchMethodException | NullPointerException | IOException e) {
+            e.printStackTrace();
         }
     }
 
@@ -101,8 +102,8 @@ public class ReactorScriptManager {
             } else {
                 iv.invokeFunction("untouch");
             }
-        } catch (final ScriptException | NoSuchMethodException | NullPointerException ute) {
-            FilePrinter.printError(FilePrinter.REACTOR + reactor.getId() + ".txt", ute);
+        } catch (IOException | ScriptException | NoSuchMethodException | NullPointerException e) {
+            e.printStackTrace();
         }
     }
 }
