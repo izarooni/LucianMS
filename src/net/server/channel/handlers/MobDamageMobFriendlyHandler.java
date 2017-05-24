@@ -34,7 +34,7 @@ public class MobDamageMobFriendlyHandler extends PacketHandler {
             return;
         }
         int damage = Randomizer.nextInt(((dMonster.getMaxHp() / 13 + dMonster.getPADamage() * 10)) * 2 + 500) / 10; // Beng's forumla.
-        if (aMonster.getId() == 9300061) { // Moon Bunny
+        if (dMonster.getId() == 9300061) { // Moon Bunny
             if (dMonster.getHp() - damage < 1) {
                 dMonster.getMap().broadcastMessage(MaplePacketCreator.serverNotice(6, "The Moon Bunny went home because he was sick."));
                 dMonster.getMap().killFriendlies(dMonster);

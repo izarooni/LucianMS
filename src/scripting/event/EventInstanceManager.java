@@ -174,7 +174,6 @@ public class EventInstanceManager {
             ex.printStackTrace();
         }
         playerStorage.clear();
-        playerStorage = null;
 
         monsters.clear();
         monsters = null;
