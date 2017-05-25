@@ -5508,6 +5508,15 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
             updateSingleStat(MapleStat.AVAILABLESP, 6);
             updateSingleStat(MapleStat.EXP, 0);
             updateSingleStat(MapleStat.JOB, MapleJob.BEGINNER.jobid);
+            
+            for(MapleKeyBinding binding : getKeymap().values()) {
+            	for(Skill skill : skills.keySet()) {
+            		if(binding.getAction() == skill.id) {
+            			getKeymap().remove(binding);
+            		}
+            	}
+            }
+            
             return true;
         }
         return false;
