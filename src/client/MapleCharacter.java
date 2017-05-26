@@ -620,7 +620,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
         }
         this.setPosition(portal.getPosition());
         this.initialSpawnPoint = portal.getId();
-        this.map = c.getChannelServer().getMapFactory().getMap(getMapId());
+        this.map = c.getChannelServer().getMapFactory().getMap(ServerConstants.STARTER_MAP);
     }
 
     public void cancelBuffEffects() {

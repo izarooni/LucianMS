@@ -48,4 +48,6 @@ public class ServerConstants {
     public static final int MAX_LEVELS_ABOVE = 10;
 
     public static final double LEVEL_TO_NX_MULTIPLIER = 1.5;
+    
+    public static final int STARTER_MAP = 90000000;
 }
