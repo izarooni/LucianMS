@@ -5502,24 +5502,40 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
         return achievements;
     }
 
-    public boolean canBreakThrough() {
-        return level >= 200;
-    }
-
     public boolean breakThrough() {
-        if (canBreakThrough()) {
+        if (getLevel() >= 200) {
             updateSingleStat(MapleStat.LEVEL, 10);
             this.level = 10; // won't update for serverside otherwise?
             this.job = MapleJob.BEGINNER;
             updateSingleStat(MapleStat.AVAILABLESP, 6);
             updateSingleStat(MapleStat.EXP, 0);
             updateSingleStat(MapleStat.JOB, MapleJob.BEGINNER.jobid);
-            
+
             //for(int key : getKeymap().keySet()) {
             	//MapleKeyBinding binding = getKeymap().get(key);
             //}
             getKeymap().clear();
-            
+
+            if (breakthroughs >= 1 && breakthroughs <= 10) {
+                announce(MaplePacketCreator.showEffect("pepeKing/pepe/pepeW")); // screen effect
+                announce(MaplePacketCreator.showEffect("pepeKing/frame/W"));
+            }
+            if (breakthroughs >= 10 && breakthroughs <= 100) {
+                announce(MaplePacketCreator.showEffect("ad/piramid")); // screen effect
+                announce(MaplePacketCreator.trembleEffect(0, 0)); // shake screen
+            }
+            if (breakthroughs >= 100) {
+                announce(MaplePacketCreator.showEffect("balog/clear/stone")); // screen effect
+                announce(MaplePacketCreator.trembleEffect(0, 0)); // shake screen
+                // damage all monsters in the screen
+                for (MapleMapObject object : getMap().getMapObjectsInRange(getPosition(), 100000, Collections.singletonList(MapleMapObjectType.MONSTER))) {
+                    MapleMonster monster = (MapleMonster) object;
+                    int damage = monster.getMaxHp();
+                    getMap().broadcastMessage(MaplePacketCreator.damageMonster(monster.getObjectId(), damage));
+                    getMap().damageMonster(this, monster, damage);
+                }
+            }
+
             return true;
         }
         return false;
