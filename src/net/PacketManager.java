@@ -49,5 +49,9 @@ public final class PacketManager {
         handlers.set(RecvOpcode.TAKE_DAMAGE.getValue(), TakeDamageHandler.class);
         handlers.set(RecvOpcode.MOB_DAMAGE_MOB_FRIENDLY.getValue(), MobDamageMobFriendlyHandler.class);
 
+        handlers.set(RecvOpcode.USE_ITEM.getValue(), UseItemHandler.class);
+        handlers.set(RecvOpcode.USE_RETURN_SCROLL.getValue(), UseItemHandler.class);
+
+        handlers.set(RecvOpcode.CHAR_INFO_REQUEST.getValue(), ViewCharacterInfoHandler.class);
     }
 }

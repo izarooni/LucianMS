@@ -20,27 +20,23 @@
  */
 package tools;
 
-import java.awt.Point;
-import java.net.InetAddress;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-
 import client.*;
+import client.MapleCharacter.SkillEntry;
+import client.inventory.*;
+import client.inventory.Equip.ScrollResult;
+import client.status.MonsterStatus;
+import client.status.MonsterStatusEffect;
+import constants.GameConstants;
+import constants.ItemConstants;
+import constants.ServerConstants;
+import constants.skills.Buccaneer;
+import constants.skills.Corsair;
+import constants.skills.ThunderBreaker;
 import net.SendOpcode;
 import net.server.PlayerCoolDownValueHolder;
 import net.server.Server;
 import net.server.channel.Channel;
 import net.server.channel.handlers.PlayerInteractionHandler;
-import net.server.channel.handlers.RingActionHandler;
 import net.server.channel.handlers.SummonDamageHandler.SummonAttackEntry;
 import net.server.guild.MapleAlliance;
 import net.server.guild.MapleGuild;
@@ -52,48 +48,24 @@ import net.server.world.PartyOperation;
 import server.CashShop.CashItem;
 import server.CashShop.CashItemFactory;
 import server.CashShop.SpecialCashItem;
-import server.DueyPackages;
-import server.MTSItemInfo;
-import server.MapleItemInformationProvider;
-import server.MapleMiniGame;
-import server.MaplePlayerShop;
-import server.MaplePlayerShopItem;
-import server.MapleShopItem;
-import server.MapleTrade;
+import server.*;
 import server.events.gm.MapleSnowball;
 import server.life.MapleMonster;
 import server.life.MapleNPC;
 import server.life.MobSkill;
-import server.maps.HiredMerchant;
-import server.maps.MapleDoor;
-import server.maps.MapleDragon;
-import server.maps.MapleMap;
-import server.maps.MapleMapItem;
-import server.maps.MapleMist;
-import server.maps.MapleReactor;
-import server.maps.MapleSummon;
-import server.maps.PlayerNPCs;
+import server.maps.*;
 import server.movement.LifeMovementFragment;
 import server.partyquest.MonsterCarnivalParty;
 import tools.data.output.LittleEndianWriter;
 import tools.data.output.MaplePacketLittleEndianWriter;
-import client.MapleCharacter.SkillEntry;
-import client.inventory.Equip;
-import client.inventory.Equip.ScrollResult;
-import client.inventory.Item;
-import client.inventory.ItemFactory;
-import client.inventory.MapleInventory;
-import client.inventory.MapleInventoryType;
-import client.inventory.MaplePet;
-import client.inventory.ModifyInventory;
-import client.status.MonsterStatus;
-import client.status.MonsterStatusEffect;
-import constants.GameConstants;
-import constants.ItemConstants;
-import constants.ServerConstants;
-import constants.skills.Buccaneer;
-import constants.skills.Corsair;
-import constants.skills.ThunderBreaker;
+
+import java.awt.*;
+import java.net.InetAddress;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.*;
+import java.util.List;
+import java.util.Map.Entry;
 
 /**
  *
@@ -202,7 +174,7 @@ public class MaplePacketCreator {
 
 	private static void addNewYearInfo(final MaplePacketLittleEndianWriter mplew, MapleCharacter chr) {
 		mplew.writeShort(0);
-		/*  
+		/*
 		 *(_DWORD *)this = CInPacket::Decode4(a2);
 		 *((_DWORD *)v2 + 1) = CInPacket::Decode4(a2);
          CInPacket::DecodeStr(&v7);
@@ -835,7 +807,7 @@ public class MaplePacketCreator {
 		List<MapleCharacter> chars = c.loadCharacters(serverId);
 		mplew.write((byte) chars.size());
 		for (MapleCharacter chr : chars) {
-			addCharEntry(mplew, chr, false);      
+			addCharEntry(mplew, chr, false);
 		}
 		if (ServerConstants.ENABLE_PIC) {
 			mplew.write(c.getPic() == null || c.getPic().length() == 0 ? 0 : 1);
@@ -1206,7 +1178,7 @@ public class MaplePacketCreator {
 			mplew.writeBool(megaEar);
 		} else if (type == 6) {
 			mplew.writeInt(0);
-		} else if (type == 7) { // npc 
+		} else if (type == 7) { // npc
 			mplew.writeInt(npc);
 		}
 		return mplew.getPacket();
@@ -1576,7 +1548,7 @@ public class MaplePacketCreator {
 		int mod = ServerConstants.PARTY_EXPERIENCE_MOD != 1 ? ServerConstants.PARTY_EXPERIENCE_MOD * 100 : 0;
 
 		mplew.write(mod); //0 = party bonus, 100 = 1x Bonus EXP, 200 = 2x Bonus EXP
-		mplew.writeInt(party); // party bonus 
+		mplew.writeInt(party); // party bonus
 		mplew.writeInt(equip); //equip bonus
 		mplew.writeInt(0); //Internet Cafe Bonus
 		mplew.writeInt(0); //Rainbow Week Bonus
@@ -1767,7 +1739,7 @@ public class MaplePacketCreator {
 		if (chr.getBuffedValue(MapleBuffStat.ENERGY_CHARGE) != null) {
 			buffmask |= MapleBuffStat.ENERGY_CHARGE.getValue();
 			buffvalue = chr.getBuffedValue(MapleBuffStat.ENERGY_CHARGE);
-		}//AREN'T THESE 
+		}//AREN'T THESE
 		mplew.writeInt((int) ((buffmask >> 32) & 0xffffffffL));
 		if (buffvalue != null) {
 			if (chr.getBuffedValue(MapleBuffStat.MORPH) != null) { //TEST
@@ -2121,7 +2093,7 @@ public class MaplePacketCreator {
 				mplew.writeShort(mod.getQuantity());
 				break;
 			}
-			case 2: {//move                  
+			case 2: {//move
 				mplew.writeShort(mod.getPosition());
 				if (mod.getPosition() < 0 || mod.getOldPosition() < 0) {
 					addMovement = mod.getOldPosition() < 0 ? 1 : 2;
@@ -3554,9 +3526,9 @@ public class MaplePacketCreator {
 			   mplew.write(1);
 			   mplew.writeShort(id);
 		   }
-		   
-		   
-		   
+
+
+
 		   return mplew.getPacket();
 	   }
 
@@ -3936,13 +3908,13 @@ public class MaplePacketCreator {
 				   }
 				   return mplew.getPacket();
 			   }
-			   
+
 			   public static byte[] showPlayerRanks(int npcid, ResultSet rs) throws SQLException {
 				   final MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
 				   mplew.writeShort(SendOpcode.GUILD_OPERATION.getValue());
 				   mplew.write(0x49);
 				   mplew.writeInt(npcid);
-				   if (!rs.last()) { 
+				   if (!rs.last()) {
 					   mplew.writeInt(0);
 					   return mplew.getPacket();
 				   }
@@ -6440,7 +6412,7 @@ public class MaplePacketCreator {
 					   mplew.write(0);
 				   } else {
 					   mplew.writeShort(id);
-					   mplew.writeShort(1000);//delay till you can attack again! 
+					   mplew.writeShort(1000);//delay till you can attack again!
 					   mplew.write(type); // What action to do for the coconut.
 				   }
 				   return mplew.getPacket();

@@ -9,12 +9,21 @@ import client.Relationship;
 import client.Relationship.Status;
 import net.server.channel.Channel;
 import scripting.npc.NPCScriptManager;
+import server.events.custom.GenericEvent;
 import server.events.custom.ManualPlayerEvent;
 import server.events.custom.auto.GAutoEvent;
 import server.events.custom.auto.GAutoEventManager;
 import server.events.pvp.FFA;
+import server.events.pvp.PlayerBattle;
 import server.maps.MapleMap;
 import tools.MaplePacketCreator;
+<<<<<<< HEAD
+=======
+
+import java.util.ArrayList;
+import java.util.Optional;
+import java.util.WeakHashMap;
+>>>>>>> branch 'master' of https://github.com/LucianMS/LucianMS-source.git
 
 /**
  * @author izarooni, lucasdieswagger
@@ -192,6 +201,7 @@ public class PlayerCommands {
             } else {
                 player.dropMessage(5, "You must specify a username and message");
             }
+<<<<<<< HEAD
         } else if (command.equals("joinpvp")) {
             player.setPVP(new FFA(player));
             player.getPVP().join();
@@ -238,6 +248,18 @@ public class PlayerCommands {
         			}
         		}
         	}
+=======
+        } else if (command.equals("pvp")) {
+            Optional<GenericEvent> pvp = player.getGenericEvents().stream().filter(g -> (g instanceof PlayerBattle)).findFirst();
+            if (pvp.isPresent()) {
+                player.removeGenericEvent(pvp.get());
+                player.dropMessage("You are no longer PvPing");
+            } else {
+                PlayerBattle battle = new PlayerBattle(player);
+                player.addGenericEvent(battle);
+                player.dropMessage("You are now PvPing");
+            }
+>>>>>>> branch 'master' of https://github.com/LucianMS/LucianMS-source.git
         }
     }
 }

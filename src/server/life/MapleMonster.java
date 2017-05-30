@@ -489,7 +489,7 @@ public class MapleMonster extends AbstractLoadedMapleLife {
 
     public void switchController(MapleCharacter newController, boolean immediateAggro) {
         MapleCharacter controllers = getController();
-        if (controllers == newController) {
+        if (newController instanceof FakePlayer || controllers == newController) {
             return;
         }
         if (controllers != null) {
@@ -509,7 +509,7 @@ public class MapleMonster extends AbstractLoadedMapleLife {
     }
 
     public boolean isControllerHasAggro() {
-        return fake ? false : controllerHasAggro;
+        return !fake && controllerHasAggro;
     }
 
     public void setControllerHasAggro(boolean controllerHasAggro) {

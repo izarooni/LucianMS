@@ -171,6 +171,7 @@ public class EventInstanceManager {
         try {
             eventManager.getInvocable().invokeFunction("dispose", this);
         } catch (ScriptException | NoSuchMethodException ex) {
+            System.err.println(String.format("Unable to invoke function dispose in script(%s)", eventManager.getScriptName()));
             ex.printStackTrace();
         }
         playerStorage.clear();
