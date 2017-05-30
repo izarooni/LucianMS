@@ -5505,17 +5505,15 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
         if (canBreakThrough()) {
             updateSingleStat(MapleStat.LEVEL, 10);
             this.level = 10; // won't update for serverside otherwise?
+            this.job = MapleJob.BEGINNER;
             updateSingleStat(MapleStat.AVAILABLESP, 6);
             updateSingleStat(MapleStat.EXP, 0);
             updateSingleStat(MapleStat.JOB, MapleJob.BEGINNER.jobid);
             
-            for(MapleKeyBinding binding : getKeymap().values()) {
-            	for(Skill skill : skills.keySet()) {
-            		if(binding.getAction() == skill.id) {
-            			getKeymap().remove(binding);
-            		}
-            	}
-            }
+            //for(int key : getKeymap().keySet()) {
+            	//MapleKeyBinding binding = getKeymap().get(key);
+            //}
+            getKeymap().clear();
             
             return true;
         }
