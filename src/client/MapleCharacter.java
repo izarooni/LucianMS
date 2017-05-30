@@ -621,7 +621,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
         }
         this.setPosition(portal.getPosition());
         this.initialSpawnPoint = portal.getId();
-        this.map = c.getChannelServer().getMapFactory().getMap(getMapId());
+        this.map = c.getChannelServer().getMapFactory().getMap(ServerConstants.STARTER_MAP);
     }
 
     public void cancelBuffEffects() {
@@ -5510,9 +5510,16 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
         if (canBreakThrough()) {
             updateSingleStat(MapleStat.LEVEL, 10);
             this.level = 10; // won't update for serverside otherwise?
+            this.job = MapleJob.BEGINNER;
             updateSingleStat(MapleStat.AVAILABLESP, 6);
             updateSingleStat(MapleStat.EXP, 0);
             updateSingleStat(MapleStat.JOB, MapleJob.BEGINNER.jobid);
+            
+            //for(int key : getKeymap().keySet()) {
+            	//MapleKeyBinding binding = getKeymap().get(key);
+            //}
+            getKeymap().clear();
+            
             return true;
         }
         return false;
