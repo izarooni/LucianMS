@@ -4,14 +4,17 @@ import client.MapleCharacter;
 import client.MapleClient;
 import net.server.channel.Channel;
 import scripting.npc.NPCScriptManager;
+import server.events.custom.GenericEvent;
 import server.events.custom.ManualPlayerEvent;
 import server.events.custom.auto.GAutoEvent;
 import server.events.custom.auto.GAutoEventManager;
 import server.events.pvp.FFA;
+import server.events.pvp.PlayerBattle;
 import server.maps.MapleMap;
 import tools.MaplePacketCreator;
 
 import java.util.ArrayList;
+import java.util.Optional;
 import java.util.WeakHashMap;
 
 /**
@@ -190,10 +193,16 @@ public class PlayerCommands {
             } else {
                 player.dropMessage(5, "You must specify a username and message");
             }
-        } else if (command.equals("joinpvp")) {
-            player.setPVP(new FFA(player));
-            player.getPVP().join();
-            player.dropMessage(6, "Joined PVP");
+        } else if (command.equals("pvp")) {
+            Optional<GenericEvent> pvp = player.getGenericEvents().stream().filter(g -> (g instanceof PlayerBattle)).findFirst();
+            if (pvp.isPresent()) {
+                player.removeGenericEvent(pvp.get());
+                player.dropMessage("You are no longer PvPing");
+            } else {
+                PlayerBattle battle = new PlayerBattle(player);
+                player.addGenericEvent(battle);
+                player.dropMessage("You are now PvPing");
+            }
         }
     }
 }

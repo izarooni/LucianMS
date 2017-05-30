@@ -35,7 +35,7 @@ public class NPCScriptManager {
                 NPCConversationManager cm = new NPCConversationManager(client, npc, fileName);
                 String path = "npc/world" + client.getWorld() + "/" + (fileName == null ? npc : fileName) + ".js";
                 ArrayList<Pair<String, Object>> binds = new ArrayList<>();
-                binds.add(new Pair<>("c", client));
+                binds.add(new Pair<>("client", client));
                 binds.add(new Pair<>("player", client.getPlayer()));
                 binds.add(new Pair<>("ch", client.getChannelServer()));
                 binds.add(new Pair<>("cm", cm));
@@ -98,6 +98,7 @@ public class NPCScriptManager {
         String path = "npc/world" + client.getWorld() + "/" + (cm.getScriptName() == null ? cm.getNpc() : cm.getScriptName()) + ".js";
         storage.remove(client.getAccID());
         ScriptUtil.removeScript(client, path);
+        client.announce(MaplePacketCreator.enableActions());
     }
 
     public static void dispose(MapleClient client) {

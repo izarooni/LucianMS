@@ -4,6 +4,8 @@ import client.MapleCharacter;
 import client.MapleClient;
 import client.MapleStat;
 import net.PacketHandler;
+import server.TimerManager;
+import server.life.FakePlayer;
 import server.movement.LifeMovementFragment;
 import server.movement.MovementPacketHelper;
 import tools.MaplePacketCreator;
@@ -36,6 +38,17 @@ public final class MovePlayerHandler extends PacketHandler {
                 player.getMap().broadcastGMMessage(player, MaplePacketCreator.movePlayer(player.getId(), movements), false);
             } else {
                 player.getMap().broadcastMessage(player, MaplePacketCreator.movePlayer(player.getId(), movements), false);
+            }
+
+            final FakePlayer fPlayer = player.getFakePlayer();
+            if (player.isAlive() && fPlayer != null && fPlayer.isFollowing()) {
+                TimerManager.getInstance().schedule(new Runnable() {
+                    @Override
+                    public void run() {
+                        MovementPacketHelper.updatePosition(movements, fPlayer, 0);
+                        fPlayer.getMap().broadcastMessage(fPlayer, MaplePacketCreator.movePlayer(fPlayer.getId(), movements), false);
+                    }
+                }, 100);
             }
         }
         if (player.getMap().getAutoKillPosition() != null) {

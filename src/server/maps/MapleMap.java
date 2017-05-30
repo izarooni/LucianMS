@@ -279,7 +279,7 @@ public class MapleMap {
             mapobject.setObjectId(curOID);
             this.mapobjects.put(curOID, mapobject);
             for (MapleCharacter chr : characters) {
-                if (condition == null || condition.canSpawn(chr)) {
+                if (!(chr instanceof FakePlayer) && (condition == null || condition.canSpawn(chr))) {
                     if (chr.getPosition().distanceSq(mapobject.getPosition()) <= 722500) {
                         packetbakery.sendPackets(chr.getClient());
                         chr.addVisibleMapObject(mapobject);
@@ -313,7 +313,7 @@ public class MapleMap {
     public void removeMapObject(int num) {
         objectWLock.lock();
         try {
-            this.mapobjects.remove(Integer.valueOf(num));
+            this.mapobjects.remove(num);
         } finally {
             objectWLock.unlock();
         }
@@ -1225,7 +1225,7 @@ public class MapleMap {
         chrRLock.lock();
         try {
             for (MapleCharacter a : characters) {
-                if (chr.contains(a.getClient().getPlayer())) {
+                if (chr.contains(a)) {
                     if (box.contains(a.getPosition())) {
                         character.add(a);
                     }
@@ -1359,6 +1359,26 @@ public class MapleMap {
                 mapEffect = null;
             }
         }, time);
+    }
+
+    public void addFakePlayer(FakePlayer fakePlayer) {
+        chrWLock.lock();
+        try {
+            characters.add(fakePlayer);
+            broadcastMessage(fakePlayer, MaplePacketCreator.spawnPlayerMapobject(fakePlayer), false);
+        } finally {
+            chrWLock.unlock();
+        }
+    }
+
+    public void removeFakePlayer(FakePlayer fakePlayer) {
+        chrWLock.lock();
+        try {
+            characters.remove(fakePlayer);
+            broadcastMessage(fakePlayer, MaplePacketCreator.removePlayerFromMap(fakePlayer.getId()), false);
+        } finally {
+            chrWLock.unlock();
+        }
     }
 
     public void addPlayer(final MapleCharacter chr) {
@@ -1515,7 +1535,7 @@ public class MapleMap {
         }
         objectWLock.lock();
         try {
-            this.mapobjects.put(Integer.valueOf(chr.getObjectId()), chr);
+            this.mapobjects.put(chr.getObjectId(), chr);
         } finally {
             objectWLock.unlock();
         }
@@ -1700,7 +1720,7 @@ public class MapleMap {
         chrRLock.lock();
         try {
             for (MapleCharacter chr : characters) {
-                if (chr != source) {
+                if (chr != source && !(chr instanceof FakePlayer)) {
                     if (rangeSq < Double.POSITIVE_INFINITY) {
                         if (rangedFrom.distanceSq(chr.getPosition()) <= rangeSq) {
                             chr.getClient().announce(packet);
@@ -1881,6 +1901,9 @@ public class MapleMap {
     }
 
     private void updateMapObjectVisibility(MapleCharacter chr, MapleMapObject mo) {
+        if (chr instanceof FakePlayer) {
+            return;
+        }
         if (!chr.isMapObjectVisible(mo)) { // monster entered view range
             if (mo.getType() == MapleMapObjectType.SUMMON || mo.getPosition().distanceSq(chr.getPosition()) <= 722500) {
                 chr.addVisibleMapObject(mo);

@@ -48,6 +48,7 @@ import server.events.custom.*;
 import server.events.gm.MapleFitness;
 import server.events.gm.MapleOla;
 import server.events.pvp.PVP;
+import server.life.FakePlayer;
 import server.life.MapleMonster;
 import server.life.MobSkill;
 import server.maps.*;
@@ -170,7 +171,6 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
     private ScheduledFuture<?> expiretask;
     private ScheduledFuture<?> recoveryTask;
     private List<ScheduledFuture<?>> timers = new ArrayList<>();
-    private NumberFormat nf = new DecimalFormat("#,###,###,###");
     private ArrayList<Integer> excluded = new ArrayList<>();
     private MonsterBook monsterbook;
     private List<MapleRing> crushRings = new ArrayList<>();
@@ -213,6 +213,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
     private JumpQuestController JQController;
     private ChatType chatType = ChatType.NORMAL;
     private Relationship relationship = new Relationship();
+    private FakePlayer fakePlayer = null;
 
     public static final int[] FISHING_MAPS = {749050500, 749050501, 749050502};
     public static final int[] FISHING_CHAIRS = {3011000, 3010151, 3010184};
@@ -222,7 +223,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
     private Timestamp daily;
     private RPSGame RPSGame = null;
 
-    private MapleCharacter() {
+    public MapleCharacter() {
         setStance(0);
         inventory = new MapleInventory[MapleInventoryType.values().length];
         savedLocations = new SavedLocation[SavedLocationType.values().length];
@@ -1408,7 +1409,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
     }
 
     public String emblemCost() {
-        return nf.format(MapleGuild.CHANGE_EMBLEM_COST);
+        return StringUtil.formatNumber(MapleGuild.CHANGE_EMBLEM_COST);
     }
 
     public List<ScheduledFuture<?>> getTimers() {
@@ -1893,6 +1894,10 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
 
     public int getId() {
         return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 
     public static int getIdByName(String name) {
@@ -2417,7 +2422,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
     }
 
     public String guildCost() {
-        return nf.format(MapleGuild.CREATE_GUILD_COST);
+        return StringUtil.formatNumber(MapleGuild.CREATE_GUILD_COST);
     }
 
     private void guildUpdate() {
@@ -5645,6 +5650,14 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
 
     public Relationship getRelationship() {
         return relationship;
+    }
+
+    public FakePlayer getFakePlayer() {
+        return fakePlayer;
+    }
+
+    public void setFakePlayer(FakePlayer fakePlayer) {
+        this.fakePlayer = fakePlayer;
     }
 
     public ChatType getChatType() {

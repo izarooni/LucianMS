@@ -30,6 +30,7 @@ import constants.GameConstants;
 import constants.skills.*;
 import server.MapleStatEffect;
 import server.TimerManager;
+import server.life.FakePlayer;
 import tools.MaplePacketCreator;
 import tools.Pair;
 import tools.data.input.SeekableLittleEndianAccessor;
@@ -77,6 +78,15 @@ public final class CloseRangeDamageHandler extends AbstractDealDamageHandler {
             }
         }
 
+        FakePlayer fakePlayer = player.getFakePlayer();
+        if (fakePlayer != null && fakePlayer.isFollowing()) {
+            TimerManager.getInstance().schedule(new Runnable() {
+                @Override
+                public void run() {
+                    fakePlayer.getMap().broadcastMessage(fakePlayer, MaplePacketCreator.closeRangeAttack(fakePlayer, attackInfo.skill, attackInfo.skilllevel, attackInfo.stance, attackInfo.numAttackedAndDamage, attackInfo.allDamage, attackInfo.speed, attackInfo.direction, attackInfo.display), false);
+                }
+            }, 100);
+        }
         player.getMap().broadcastMessage(player, MaplePacketCreator.closeRangeAttack(player, attackInfo.skill, attackInfo.skilllevel, attackInfo.stance, attackInfo.numAttackedAndDamage, attackInfo.allDamage, attackInfo.speed, attackInfo.direction, attackInfo.display), false, true);
         int numFinisherOrbs = 0;
         Integer comboBuff = player.getBuffedValue(MapleBuffStat.COMBO);
@@ -168,6 +178,9 @@ public final class CloseRangeDamageHandler extends AbstractDealDamageHandler {
             player.cancelBuffStats(MapleBuffStat.DARKSIGHT);
         }
         applyAttack(attackInfo, attackCount);
+        if (fakePlayer != null) {
+            applyAttack(attackInfo, attackCount);
+        }
     }
 
     public AttackInfo getAttackInfo() {

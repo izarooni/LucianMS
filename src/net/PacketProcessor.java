@@ -120,14 +120,11 @@ public final class PacketProcessor {
             registerHandler(RecvOpcode.PLAYER_LOGGEDIN, new PlayerLoggedinHandler());
             registerHandler(RecvOpcode.CHANGE_MAP, new ChangeMapHandler());
             registerHandler(RecvOpcode.USE_CASH_ITEM, new UseCashItemHandler());
-            registerHandler(RecvOpcode.USE_ITEM, new UseItemHandler());
-            registerHandler(RecvOpcode.USE_RETURN_SCROLL, new UseItemHandler());
             registerHandler(RecvOpcode.USE_UPGRADE_SCROLL, new ScrollHandler());
             registerHandler(RecvOpcode.USE_SUMMON_BAG, new UseSummonBag());
             registerHandler(RecvOpcode.FACE_EXPRESSION, new FaceExpressionHandler());
             registerHandler(RecvOpcode.HEAL_OVER_TIME, new HealOvertimeHandler());
             registerHandler(RecvOpcode.ITEM_PICKUP, new ItemPickupHandler());
-            registerHandler(RecvOpcode.CHAR_INFO_REQUEST, new CharInfoRequestHandler());
             registerHandler(RecvOpcode.SPECIAL_MOVE, new SpecialMoveHandler());
             registerHandler(RecvOpcode.USE_INNER_PORTAL, new InnerPortalHandler());
             registerHandler(RecvOpcode.CANCEL_BUFF, new CancelBuffHandler());

@@ -74,26 +74,28 @@ public final class Channel {
         this.world = world;
         this.channel = channel;
         this.mapFactory = new MapleMapFactory(world, channel);
+        TimerManager.getInstance().register(() -> mapFactory.getMaps().values().forEach(MapleMap::respawn), 10000);
+        reloadEventScriptManager();
+        Collections.addAll(expedType, MapleExpeditionType.values());
         try {
-            reloadEventScriptManager();
             port = 7575 + this.channel - 1;
             port += (world * 100);
             ip = ServerConstants.HOST + ":" + port;
+
             IoBuffer.setUseDirectBuffer(false);
             IoBuffer.setAllocator(new SimpleBufferAllocator());
+
             acceptor = new NioSocketAcceptor();
-            TimerManager.getInstance().register(() -> mapFactory.getMaps().values().forEach(MapleMap::respawn), 10000);
             acceptor.setHandler(new MapleServerHandler(world, channel));
             acceptor.getSessionConfig().setIdleTime(IdleStatus.BOTH_IDLE, 30);
             acceptor.getFilterChain().addLast("codec", (IoFilter) new ProtocolCodecFilter(new MapleCodecFactory()));
             acceptor.bind(new InetSocketAddress(port));
-            ((SocketSessionConfig) acceptor.getSessionConfig()).setTcpNoDelay(true);
-            Collections.addAll(expedType, MapleExpeditionType.values());
 
-            System.out.println("    Channel " + getId() + ": Listening on port " + port);
+            ((SocketSessionConfig) acceptor.getSessionConfig()).setTcpNoDelay(true);
         } catch (Exception e) {
             e.printStackTrace();
         }
+        System.out.println("\tChannel " + getId() + ": Listening on port " + port);
     }
 
     public void reloadEventScriptManager() {

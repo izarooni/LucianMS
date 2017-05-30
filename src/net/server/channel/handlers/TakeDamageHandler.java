@@ -224,6 +224,10 @@ public final class TakeDamageHandler extends PacketHandler {
         }
         if (!player.isHidden()) {
             map.broadcastMessage(player, MaplePacketCreator.damagePlayer(damageFrom, monsterIdFrom, player.getId(), damage, fake, direction, is_pgmr, pgmr, is_pg, objectId, pos_x, pos_y), false);
+            FakePlayer fakePlayer = player.getFakePlayer();
+            if (fakePlayer != null && fakePlayer.isFollowing()) {
+                map.broadcastMessage(fakePlayer, MaplePacketCreator.damagePlayer(damageFrom, monsterIdFrom, fakePlayer.getId(), damage, fake, direction, is_pgmr, pgmr, is_pg, objectId, pos_x, pos_y), false);
+            }
             player.checkBerserk();
         }
 

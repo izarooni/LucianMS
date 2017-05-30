@@ -21,28 +21,22 @@
 */
 package client.inventory;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-
-import tools.Pair;
 import client.MapleCharacter;
 import constants.ItemConstants;
+import tools.Pair;
+
+import java.util.*;
 
 /**
- *
  * @author Matze
  */
 public class MapleInventory implements Iterable<Item> {
+
     private Map<Short, Item> inventory = new LinkedHashMap<>();
     private byte slotLimit;
     private MapleInventoryType type;
     private boolean checked = false;
-    
+
     public MapleInventory(MapleInventoryType type, byte slotLimit) {
         this.inventory = new LinkedHashMap<>();
         this.type = type;
@@ -50,19 +44,19 @@ public class MapleInventory implements Iterable<Item> {
     }
 
     public boolean isExtendableInventory() { // not sure about cash, basing this on the previous one.
-        return !(type.equals(MapleInventoryType.UNDEFINED) || type.equals(MapleInventoryType.EQUIPPED) || type.equals(MapleInventoryType.CASH));
+        return !(type == MapleInventoryType.UNDEFINED || type == MapleInventoryType.EQUIPPED || type == MapleInventoryType.CASH);
     }
 
     public boolean isEquipInventory() {
-        return type.equals(MapleInventoryType.EQUIP) || type.equals(MapleInventoryType.EQUIPPED);
+        return type == MapleInventoryType.EQUIP || type == MapleInventoryType.EQUIPPED;
     }
 
     public byte getSlotLimit() {
-	return slotLimit;
+        return slotLimit;
     }
 
     public void setSlotLimit(int newLimit) {
-	slotLimit = (byte) newLimit;
+        slotLimit = (byte) newLimit;
     }
 
     public Item findById(int itemId) {
@@ -112,10 +106,9 @@ public class MapleInventory implements Iterable<Item> {
     }
 
     public void addFromDB(Item item) {
-        if (item.getPosition() < 0 && !type.equals(MapleInventoryType.EQUIPPED)) {
-            return;
+        if (item.getPosition() < 0 && type == MapleInventoryType.EQUIPPED) {
+            inventory.put(item.getPosition(), item);
         }
-        inventory.put(item.getPosition(), item);
     }
 
     public void move(short sSlot, short dSlot, short slotMax) {
@@ -202,47 +195,60 @@ public class MapleInventory implements Iterable<Item> {
     }
 
     public short getNumFreeSlot() {
-	if (isFull()) {
-	    return 0;
-	}
-	short free = 0;
-	for (short i = 1; i <= slotLimit; i++) {
-        if (!inventory.keySet().contains(i)) {
-        	free++;
-	    }
-	}
-	return free;
+        if (isFull()) {
+            return 0;
+        }
+        short free = 0;
+        for (short i = 1; i <= slotLimit; i++) {
+            if (!inventory.keySet().contains(i)) {
+                free++;
+            }
+        }
+        return free;
     }
-    
+
     public static boolean checkSpot(MapleCharacter chr, Item item) {
-    	if (chr.getInventory(MapleInventoryType.getByType(item.getType())).isFull()) return false;
-    	return true;
+        if (chr.getInventory(MapleInventoryType.getByType(item.getType())).isFull()) {
+            return false;
+        }
+        return true;
     }
-    
+
     public static boolean checkSpots(MapleCharacter chr, List<Pair<Item, MapleInventoryType>> items) {
-    	int equipSlot = 0, useSlot = 0, setupSlot = 0, etcSlot = 0, cashSlot = 0;
-    	for (Pair<Item, MapleInventoryType> item : items) {
-    		if (item.getRight().getType() == MapleInventoryType.EQUIP.getType())
-    			equipSlot++;
-			if (item.getRight().getType() == MapleInventoryType.USE.getType())
-    			useSlot++;
-			if (item.getRight().getType() == MapleInventoryType.SETUP.getType())
-    			setupSlot++;
-			if (item.getRight().getType() == MapleInventoryType.ETC.getType())
-    			etcSlot++;
-			if (item.getRight().getType() == MapleInventoryType.CASH.getType())
-    			cashSlot++;
-    	}
-    	
-    	if (chr.getInventory(MapleInventoryType.EQUIP).isFull(equipSlot - 1)) return false;
-    	else if (chr.getInventory(MapleInventoryType.USE).isFull(useSlot - 1)) return false;
-    	else if (chr.getInventory(MapleInventoryType.SETUP).isFull(setupSlot - 1)) return false;
-    	else if (chr.getInventory(MapleInventoryType.ETC).isFull(etcSlot - 1)) return false;
-    	else if (chr.getInventory(MapleInventoryType.CASH).isFull(cashSlot - 1)) return false;
-    	return true;
+        int equipSlot = 0, useSlot = 0, setupSlot = 0, etcSlot = 0, cashSlot = 0;
+        for (Pair<Item, MapleInventoryType> item : items) {
+            if (item.getRight().getType() == MapleInventoryType.EQUIP.getType()) {
+                equipSlot++;
+            }
+            if (item.getRight().getType() == MapleInventoryType.USE.getType()) {
+                useSlot++;
+            }
+            if (item.getRight().getType() == MapleInventoryType.SETUP.getType()) {
+                setupSlot++;
+            }
+            if (item.getRight().getType() == MapleInventoryType.ETC.getType()) {
+                etcSlot++;
+            }
+            if (item.getRight().getType() == MapleInventoryType.CASH.getType()) {
+                cashSlot++;
+            }
+        }
+
+        if (chr.getInventory(MapleInventoryType.EQUIP).isFull(equipSlot - 1)) {
+            return false;
+        } else if (chr.getInventory(MapleInventoryType.USE).isFull(useSlot - 1)) {
+            return false;
+        } else if (chr.getInventory(MapleInventoryType.SETUP).isFull(setupSlot - 1)) {
+            return false;
+        } else if (chr.getInventory(MapleInventoryType.ETC).isFull(etcSlot - 1)) {
+            return false;
+        } else if (chr.getInventory(MapleInventoryType.CASH).isFull(cashSlot - 1)) {
+            return false;
+        }
+        return true;
     }
-    
-    
+
+
     public MapleInventoryType getType() {
         return type;
     }
@@ -253,24 +259,25 @@ public class MapleInventory implements Iterable<Item> {
     }
 
     public Collection<MapleInventory> allInventories() {
-	return Collections.singletonList(this);
+        return Collections.singletonList(this);
     }
 
     public Item findByCashId(int cashId) {
         boolean isRing = false;
         Equip equip = null;
-	for (Item item : inventory.values()) {
+        for (Item item : inventory.values()) {
             if (item.getType() == MapleInventoryType.EQUIP.getType()) {
                 equip = (Equip) item;
                 isRing = equip.getRingId() > -1;
             }
-            if ((item.getPetId() > -1 ? item.getPetId() : isRing ? equip.getRingId() : item.getCashId()) == cashId)
-                 return item;
+            if ((item.getPetId() > -1 ? item.getPetId() : isRing ? equip.getRingId() : item.getCashId()) == cashId) {
+                return item;
             }
+        }
 
-	return null;
+        return null;
     }
-    
+
 
     public boolean checked() {
         return checked;
