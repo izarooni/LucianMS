@@ -8,7 +8,9 @@ import tools.Pair;
 
 import javax.script.Invocable;
 import javax.script.ScriptException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * @author Matze
@@ -53,22 +55,26 @@ public class NPCScriptManager {
                     return;
                 }
                 try {
-                    iv.invokeFunction("start");
-                    client.setClickedNPC();
-                } catch (NoSuchMethodException e1) {
                     try {
-                        iv.invokeFunction("start", chr);
+                        iv.invokeFunction("start");
                         client.setClickedNPC();
-                    } catch (NoSuchMethodException e2) {
+                    } catch (NoSuchMethodException e1) {
                         try {
-                            iv.invokeFunction("action", 1, 0, -1);
+                            iv.invokeFunction("start", chr);
                             client.setClickedNPC();
-                        } catch (NoSuchMethodError e3) {
-                            dispose(client);
-                            System.err.println("Empty script for file " + path);
-                            return;
+                        } catch (NoSuchMethodException e2) {
+                            try {
+                                iv.invokeFunction("action", 1, 0, -1);
+                                client.setClickedNPC();
+                            } catch (NoSuchMethodError e3) {
+                                dispose(client);
+                                return;
+                            }
                         }
                     }
+                } catch (ScriptException e) {
+                    System.err.println("Error invoking function 'action' for NPC script " + (cm.getScriptName() == null ? cm.getNpc() : cm.getScriptName()) + ".js");
+                    e.printStackTrace();
                 }
                 storage.put(client.getAccID(), new Pair<>(iv, cm));
             } else {
@@ -87,6 +93,8 @@ public class NPCScriptManager {
                 pair.left.invokeFunction("action", mode, type, selection);
                 client.setClickedNPC();
             } catch (ScriptException | NoSuchMethodException e) {
+                NPCConversationManager cm = pair.getRight();
+                System.err.println("Error invoking function 'action' for NPC script " + (cm.getScriptName() == null ? cm.getNpc() : cm.getScriptName()) + ".js");
                 e.printStackTrace();
                 dispose(client);
             }

@@ -241,11 +241,11 @@ public class Server implements Runnable {
 				String sMessage = p.getProperty("servermessage" + i);
 
 				World world = new World(i, flag, eMessage,
-						ServerConstants.EXP_RATE, ServerConstants.DROP_RATE,
-						ServerConstants.MESO_RATE, ServerConstants.BOSS_DROP_RATE);
+						Integer.parseInt(p.getProperty("exprate" + i)), Integer.parseInt(p.getProperty("droprate" + i)),
+						Integer.parseInt(p.getProperty("mesorate" + i)), Integer.parseInt(p.getProperty("bossdroprate" + i)));
 
 				worlds.add(world);
-				worldRecommendedList.add(new Pair<>(i, p.getProperty("whyamirecommended" + i)));
+				worldRecommendedList.add(new Pair<>(i, p.getProperty("recommend" + i)));
 
 				channels.add(new LinkedHashMap<>());
 				int qChannels = Integer.parseInt(p.getProperty("channels" + i));

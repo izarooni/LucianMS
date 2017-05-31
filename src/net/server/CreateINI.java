@@ -66,8 +66,6 @@ public class CreateINI {
             System.out.println(nextline);
             sb.append("\r\n");
         }
-
-        sb.append("\r\n").append("gmserver=").append(Boolean.parseBoolean(con.readLine("Do you want a GM Server? (true/false)")));
         FileOutputStream out = null;
         try {
             out = new FileOutputStream("moople.ini", false);
