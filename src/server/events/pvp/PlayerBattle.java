@@ -112,8 +112,33 @@ public class PlayerBattle extends GenericEvent {
         // create a base distance by weapon type hitbox range
         int wt = MapleWeaponType.getWeaponType(weapon.getItemId());
         switch (wt) {
+            case 30: // one-handed sword
+            case 31: // one-handed axe
+            case 32: // one-handed mace
+            case 42: // two-handed mace
+            case 144: // polearm
+                distance = 100;
+                break;
             case 33: // dagger
-                distance = 74;
+            case 47: // claw
+            case 148: // knuckle
+                distance = 80;
+                break;
+            case 37: // wand
+            case 38: // staff
+            case 49: // gun
+                distance = 75;
+                break;
+            case 40: // two-handed sword
+            case 145: // bow
+            case 146: // crossbow
+                distance = 90;
+                break;
+            case 141: // two-handed axe
+                distance = 115;
+                break;
+            case 143: // spear
+                distance = 130;
                 break;
             default:
                 System.out.println("Unhandled weapon type for distance calc'u: " + wt);

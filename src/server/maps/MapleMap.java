@@ -912,7 +912,7 @@ public class MapleMap {
             chrRLock.lock();
             try {
                 for (MapleCharacter chr : characters) {
-                    if (!chr.isHidden() && (chr.getControlledMonsters().size() < mincontrolled || mincontrolled == -1)) {
+                    if (!(chr instanceof FakePlayer) && !chr.isHidden() && (chr.getControlledMonsters().size() < mincontrolled || mincontrolled == -1)) {
                         mincontrolled = chr.getControlledMonsters().size();
                         newController = chr;
                     }

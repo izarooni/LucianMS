@@ -489,7 +489,7 @@ public class MapleMonster extends AbstractLoadedMapleLife {
 
     public void switchController(MapleCharacter newController, boolean immediateAggro) {
         MapleCharacter controllers = getController();
-        if (newController instanceof FakePlayer || controllers == newController) {
+        if (controllers == newController) {
             return;
         }
         if (controllers != null) {
