@@ -5699,4 +5699,21 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
     public void setRiceCakes(int riceCakes) {
         this.riceCakes = riceCakes;
     }
+
+	public static boolean wipe(String playerName) {
+		
+		int playerId = MapleCharacter.getIdByName(playerName);
+		
+		try(Connection con = DatabaseConnection.getConnection(); PreparedStatement statement = con.prepareStatement("DELETE FROM maple_maplelife.inventoryitems WHERE characterid = ?")) {
+			statement.setInt(1, playerId);
+			
+			return statement.execute();
+			
+		} catch(SQLException e) {
+			
+		}
+				
+		return false;
+	}
+	
 }
