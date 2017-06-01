@@ -222,6 +222,8 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
 
     private Timestamp daily;
     private RPSGame RPSGame = null;
+    
+    private Occupations occupation;
 
     public MapleCharacter() {
         setStance(0);
@@ -5714,6 +5716,13 @@ public static boolean wipe(String playerName) {
 
     public void setRiceCakes(int riceCakes) {
         this.riceCakes = riceCakes;
+    }
+    
+    public Occupations getOccupation() {
+    	if(this.occupation == null) {
+    		this.occupation = new Occupations(this);
+    	}
+    	return this.occupation;
     }
 	
 }
