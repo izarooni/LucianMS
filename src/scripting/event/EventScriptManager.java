@@ -43,7 +43,7 @@ public class EventScriptManager {
         for (EventManager manager : events.values()) {
             try {
                 manager.getInvocable().invokeFunction("init", (Object) null);
-            } catch (ScriptException | NoSuchMethodException e) {
+            } catch (Exception e) {
                 System.err.println(String.format("Unable to invoke init function in script '%s'", manager.getScriptName()));
                 e.printStackTrace();
             }

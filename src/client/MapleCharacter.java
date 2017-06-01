@@ -4315,31 +4315,12 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
     public void setRates() {
         Calendar cal = Calendar.getInstance();
         cal.setTimeZone(TimeZone.getTimeZone("GMT-8"));
-        World worldz = Server.getInstance().getWorld(world);
+        World w = Server.getInstance().getWorld(world);
         int hr = cal.get(Calendar.HOUR_OF_DAY);
-        if ((haveItem(5360001) && hr > 6 && hr < 12) || (haveItem(5360002) && hr > 9 && hr < 15) || (haveItem(536000) && hr > 12 && hr < 18) || (haveItem(5360004) && hr > 15 && hr < 21) || (haveItem(536000) && hr > 18) || (haveItem(5360006) && hr < 5) || (haveItem(5360007) && hr > 2 && hr < 6) || (haveItem(5360008) && hr >= 6 && hr < 11)) {
-            this.dropRate = worldz.getDropRate(); // Nerfed
-            this.mesoRate = worldz.getMesoRate(); // Nerfed
-        } else {
-            this.dropRate = worldz.getDropRate();
-            this.mesoRate = worldz.getMesoRate();
-        }
-        if ((haveItem(5211000) && hr > 17 && hr < 21) || (haveItem(5211014) && hr > 6 && hr < 12) || (haveItem(5211015) && hr > 9 && hr < 15) || (haveItem(5211016) && hr > 12 && hr < 18) || (haveItem(5211017) && hr > 15 && hr < 21) || (haveItem(5211018) && hr > 14) || (haveItem(5211039) && hr < 5) || (haveItem(5211042) && hr > 2 && hr < 8) || (haveItem(5211045) && hr > 5 && hr < 11) || haveItem(5211048)) {
-            if (isBeginnerJob()) {
-                this.expRate = 1; // Nerfed
-            } else {
-                this.expRate = 1 * worldz.getExpRate(); // Nerfed
-            }
-        } else {
-            if (isBeginnerJob()) {
-                this.expRate = 1;
-            } else {
-                this.expRate = worldz.getExpRate();
-            }
-        }
-        this.expRate += (client.hasVotedAlready() ? 1 : 0);
-        this.mesoRate += getGuild() != null ? 1 : 0;
-        this.dropRate += level / 100;
+
+        this.expRate = w.getExpRate();
+        this.mesoRate = w.getMesoRate();
+        this.dropRate = w.getDropRate();
     }
 
     public void setEnergyBar(int set) {
@@ -5504,24 +5485,40 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
         return achievements;
     }
 
-    public boolean canBreakThrough() {
-        return level >= 200;
-    }
-
     public boolean breakThrough() {
-        if (canBreakThrough()) {
+        if (getLevel() >= 200) {
             updateSingleStat(MapleStat.LEVEL, 10);
             this.level = 10; // won't update for serverside otherwise?
             this.job = MapleJob.BEGINNER;
             updateSingleStat(MapleStat.AVAILABLESP, 6);
             updateSingleStat(MapleStat.EXP, 0);
             updateSingleStat(MapleStat.JOB, MapleJob.BEGINNER.jobid);
-            
+
             //for(int key : getKeymap().keySet()) {
             	//MapleKeyBinding binding = getKeymap().get(key);
             //}
             getKeymap().clear();
-            
+
+            if (breakthroughs >= 1 && breakthroughs <= 10) {
+                announce(MaplePacketCreator.showEffect("pepeKing/pepe/pepeW")); // screen effect
+                announce(MaplePacketCreator.showEffect("pepeKing/frame/W"));
+            }
+            if (breakthroughs >= 10 && breakthroughs <= 100) {
+                announce(MaplePacketCreator.showEffect("ad/piramid")); // screen effect
+                announce(MaplePacketCreator.trembleEffect(0, 0)); // shake screen
+            }
+            if (breakthroughs >= 100) {
+                announce(MaplePacketCreator.showEffect("balog/clear/stone")); // screen effect
+                announce(MaplePacketCreator.trembleEffect(0, 0)); // shake screen
+                // damage all monsters in the screen
+                for (MapleMapObject object : getMap().getMapObjectsInRange(getPosition(), 100000, Collections.singletonList(MapleMapObjectType.MONSTER))) {
+                    MapleMonster monster = (MapleMonster) object;
+                    int damage = monster.getMaxHp();
+                    getMap().broadcastMessage(MaplePacketCreator.damageMonster(monster.getObjectId(), damage));
+                    getMap().damageMonster(this, monster, damage);
+                }
+            }
+
             return true;
         }
         return false;
