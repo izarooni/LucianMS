@@ -5,6 +5,7 @@ import client.MapleClient;
 import client.Relationship;
 import client.Relationship.Status;
 import net.server.channel.Channel;
+import net.server.channel.handlers.RockPaperScissorsHandler;
 import scripting.npc.NPCScriptManager;
 import server.events.custom.GenericEvent;
 import server.events.custom.ManualPlayerEvent;
@@ -50,6 +51,7 @@ public class PlayerCommands {
             commands.add("@kin - alternative to opening the syle npc");
             commands.add("@callgm <player> <reason> - report a player, insert your own name if it is for another reason.");
             commands.add("@report <bug> - report a bug, give as much detail as possible.");
+            commands.add("@rps - Start a game of rock paper scissors vs a bot");
             commands.forEach(player::dropMessage);
             commands.clear();
         } else if (command.equals("rates")) {
@@ -247,6 +249,9 @@ public class PlayerCommands {
         			}
         		}
         	}
+        } else if(command.equals("rps")) {
+        	RockPaperScissorsHandler.startGame(player);
+        	player.dropMessage(6, "Let's play some rock paper scissors!");
         }
     }
 }
