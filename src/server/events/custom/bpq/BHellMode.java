@@ -16,7 +16,7 @@ public class BHellMode extends BossPQ {
     private static final Point mSpawnPoint = new Point(-28, 181);
 
     public BHellMode(int channel) {
-        super(channel, 910050000, bosses);
+        super(channel, 90000404, bosses);
         setCashWinnings(20 * bosses.length);
         setDamageMultiplier(10);
         setHealthMultiplier(10);

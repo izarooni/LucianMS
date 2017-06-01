@@ -16,7 +16,7 @@ public class BNormalMode extends BossPQ {
     private static final Point mSpawnPoint = new Point(-28, 181);
 
     public BNormalMode(int channel) {
-        super(channel, 910050000, bosses);
+        super(channel, 90000403, bosses);
         setCashWinnings(7 * bosses.length);
         setPoints(25);
         setDamageMultiplier(2);

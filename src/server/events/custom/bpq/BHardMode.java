@@ -16,7 +16,7 @@ public class BHardMode extends BossPQ {
     private static final Point mSpawnPoint = new Point(-28, 181);
 
     public BHardMode(int channel) {
-        super(channel, 910050000, bosses);
+        super(channel, 90000402, bosses);
         setCashWinnings(12 * bosses.length);
         setDamageMultiplier(4);
         setHealthMultiplier(4);
