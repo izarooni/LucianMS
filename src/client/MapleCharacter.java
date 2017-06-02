@@ -2942,7 +2942,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
                 MapleMapFactory mapFactory = client.getChannelServer().getMapFactory();
                 ret.map = mapFactory.getMap(ret.mapid);
                 if (ret.map == null) {
-                    ret.map = mapFactory.getMap(90000000);
+                    ret.map = mapFactory.getMap(ServerConstants.STARTER_MAP);
                 }
                 MaplePortal portal = ret.map.getPortal(ret.initialSpawnPoint);
                 if (portal == null) {
