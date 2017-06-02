@@ -393,7 +393,7 @@ public class EventCommands {
                 if (time < 0) {
                     time = 0;
                 }
-                bomb.getStats().selfDestruction().setRemoveAfter(time * 1000);
+                bomb.getStats().getSelfDestruction().setRemoveAfter(time * 1000);
                 target.getMap().spawnMonsterOnGroudBelow(bomb, target.getPosition());
             }
             return true;

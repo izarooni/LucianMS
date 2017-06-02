@@ -100,7 +100,7 @@ public class MapleLifeFactory {
             }
             special = monsterInfoData.getChildByPath("selfDestruction");
             if (special != null) {
-                stats.setSelfDestruction(new selfDestruction((byte) MapleDataTool.getInt(special.getChildByPath("action")), MapleDataTool.getIntConvert("removeAfter", special, -1), MapleDataTool.getIntConvert("hp", special, -1)));
+                stats.setSelfDestruction(new SelfDestruction((byte) MapleDataTool.getInt(special.getChildByPath("action")), MapleDataTool.getIntConvert("removeAfter", special, -1), MapleDataTool.getIntConvert("hp", special, -1)));
             }
             MapleData firstAttackData = monsterInfoData.getChildByPath("firstAttack");
             int firstAttack = 0;
@@ -213,13 +213,13 @@ public class MapleLifeFactory {
         }
     }
 
-    public static class selfDestruction {
+    public static class SelfDestruction {
 
         private byte action;
         private int removeAfter;
         private int hp;
 
-        private selfDestruction(byte action, int removeAfter, int hp) {
+        private SelfDestruction(byte action, int removeAfter, int hp) {
             this.action = action;
             this.removeAfter = removeAfter;
             this.hp = hp;

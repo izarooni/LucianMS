@@ -6,16 +6,20 @@ import client.inventory.MapleInventoryType;
 import client.inventory.MapleWeaponType;
 import net.server.channel.handlers.AbstractDealDamageHandler;
 import net.server.channel.handlers.CloseRangeDamageHandler;
+import net.server.channel.handlers.MagicDamageHandler;
+import net.server.channel.handlers.RangedAttackHandler;
 import server.events.custom.GenericEvent;
-import server.life.FakePlayer;
+import server.life.MapleLifeFactory;
+import server.life.MapleMonster;
 import server.maps.MapleMap;
 import tools.MaplePacketCreator;
+import tools.Randomizer;
 import tools.annotation.PacketWorker;
 
 import java.awt.*;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
+import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * @author izarooni
@@ -24,13 +28,13 @@ public class PlayerBattle extends GenericEvent {
 
     private final MapleCharacter attacker;
     private HashMap<Integer, Point> locations = new HashMap<>();
+    private ReentrantLock lock = new ReentrantLock(true);
 
     private int damage = 0;
-    private double distance = -1;
+    private double cAttackRange = -1;
+    private double fAttackRange = -1;
 
     /**
-     * cache locations of every player in the field for final distance calculations
-     *
      * @param attacker an attacking player
      */
     public PlayerBattle(MapleCharacter attacker) {
@@ -39,19 +43,58 @@ public class PlayerBattle extends GenericEvent {
     }
 
     @PacketWorker
-    public void onCloseRange(CloseRangeDamageHandler event) {
-        MapleCharacter player = event.getClient().getPlayer();
-        FakePlayer fPlayer = player.getFakePlayer();
-        if (fPlayer == null) {
-            return;
+    public void onCloseRangeAttack(CloseRangeDamageHandler event) {
+        lock.lock();
+        try {
+            // reset previous calculations
+            damage = 0;
+            fAttackRange = 0;
+            cAttackRange = 0;
+            AbstractDealDamageHandler.AttackInfo attackInfo = event.getAttackInfo();
+            collectTargets();
+            calculateAttack(attackInfo);
+            attackNeighbors();
+        } finally {
+            lock.unlock();
         }
-        AbstractDealDamageHandler.AttackInfo attackInfo = event.getAttackInfo();
-        collectTargets();
-        calculateAttack(attackInfo).attackNeighbors();
+    }
+
+    @PacketWorker
+    public void onFarRangeAttack(RangedAttackHandler event) {
+        lock.lock();
+        try {
+            // reset previous calculations
+            damage = 0;
+            fAttackRange = 0;
+            cAttackRange = 0;
+            AbstractDealDamageHandler.AttackInfo attackInfo = event.getAttackInfo();
+            collectTargets();
+            calculateAttack(attackInfo);
+            attackNeighbors();
+        } finally {
+            lock.unlock();
+        }
+    }
+
+    @PacketWorker
+    public void onMagicAttack(MagicDamageHandler event) {
+        lock.lock();
+        try {
+            // reset previous calculations
+            damage = 0;
+            fAttackRange = 0;
+            cAttackRange = 0;
+            AbstractDealDamageHandler.AttackInfo attackInfo = event.getAttackInfo();
+            collectTargets();
+            calculateAttack(attackInfo);
+            attackNeighbors();
+        } finally {
+            lock.unlock();
+        }
     }
 
     /**
-     * Create a copy of all players position in the current field
+     * cache locations of every player in the field for final distance calculations
      */
     private void collectTargets() {
         if (!locations.isEmpty()) {
@@ -68,8 +111,8 @@ public class PlayerBattle extends GenericEvent {
      * Attack nearby players in the appropriate direction
      */
     private void attackNeighbors() {
-        if (distance == -1) {
-            throw new RuntimeException("Unable to attack neighboring targets; Distance not calculated");
+        if (cAttackRange == -1 && fAttackRange == -1) {
+            return;
         }
         final MapleMap map = attacker.getMap();
         final Point attackerLocation = attacker.getPosition().getLocation();
@@ -80,8 +123,8 @@ public class PlayerBattle extends GenericEvent {
         for (Map.Entry<Integer, Point> entry : locations.entrySet()) { // all targets in the field
             Point targetLocation = entry.getValue();
             double lDistance = attackerLocation.distance(targetLocation);
-            System.out.println("A<->T dist: " + lDistance);
-            if (lDistance <= distance) { // target within attacking distance
+            System.out.println("A<->T dist: " + lDistance + " / Required: " + (cAttackRange == -1 ? fAttackRange : cAttackRange));
+            if (lDistance <= (cAttackRange == -1 ? fAttackRange : cAttackRange)) { // target within attacking distance
                 if ((attackerLocation.getX() <= targetLocation.getX() && !facingLeft)) { // (attacker)-> (target)
                     neighbors.put(entry.getKey(), entry.getValue());
                     System.out.println("attacker found (right)");
@@ -100,14 +143,15 @@ public class PlayerBattle extends GenericEvent {
     /**
      * Calculate necessary attack data between the player and nearby targets via weapon, skill and stats
      *
+     * todo convert ranges to JSON data for easier customization
+     *
      * @param attackInfo attack data
-     * @return the PlayerBattle object for a more convenient use
      */
-    private PlayerBattle calculateAttack(AbstractDealDamageHandler.AttackInfo attackInfo) {
+    private void calculateAttack(AbstractDealDamageHandler.AttackInfo attackInfo) {
         Equip weapon = (Equip) attacker.getInventory(MapleInventoryType.EQUIPPED).getItem((short) -11);
         if (weapon == null) {
             // not possible to attack when a weapon is not present
-            return this;
+            return;
         }
         // create a base distance by weapon type hitbox range
         int wt = MapleWeaponType.getWeaponType(weapon.getItemId());
@@ -116,29 +160,53 @@ public class PlayerBattle extends GenericEvent {
             case 31: // one-handed axe
             case 32: // one-handed mace
             case 42: // two-handed mace
-            case 144: // polearm
-                distance = 100;
+            case 44: // polearm
+                if (cAttackRange == 0) {
+                    cAttackRange = 100;
+                } else if (fAttackRange == 0) {
+                    fAttackRange = 1000;
+                }
                 break;
             case 33: // dagger
             case 47: // claw
-            case 148: // knuckle
-                distance = 80;
+            case 48: // knuckle
+                if (cAttackRange == 0) {
+                    cAttackRange = 80;
+                } else if (fAttackRange == 0) {
+                    fAttackRange = 420;
+                }
                 break;
             case 37: // wand
             case 38: // staff
             case 49: // gun
-                distance = 75;
+                if (cAttackRange == 0) {
+                    cAttackRange = 75;
+                } else if (fAttackRange == 0) {
+                    fAttackRange = 1000;
+                }
                 break;
             case 40: // two-handed sword
-            case 145: // bow
-            case 146: // crossbow
-                distance = 90;
+            case 45: // bow
+            case 46: // crossbow
+                if (cAttackRange == 0) {
+                    cAttackRange = 90;
+                } else if (fAttackRange == 0) {
+                    fAttackRange = 420;
+                }
                 break;
-            case 141: // two-handed axe
-                distance = 115;
+            case 41: // two-handed axe
+                if (cAttackRange == 0) {
+                    cAttackRange = 115;
+                } else if (fAttackRange == 0) {
+                    fAttackRange = 1000;
+                }
                 break;
-            case 143: // spear
-                distance = 130;
+            case 43: // spear
+                if (cAttackRange == 0) {
+                    cAttackRange = 130;
+                } else if (fAttackRange == 0) {
+                    fAttackRange = 1000;
+                }
                 break;
             default:
                 System.out.println("Unhandled weapon type for distance calc'u: " + wt);
@@ -147,19 +215,44 @@ public class PlayerBattle extends GenericEvent {
 
         // add distance to base
         switch (attackInfo.skill) {
+            case 0: // no skill
+                // do nothing
+                break;
+            case 9001001: // GM Dragon Roar
+                cAttackRange = 500;
+                fAttackRange = 500;
+                break;
+            case 4121003: // Taunt
+                fAttackRange = 330;
+            case 4121008: { // Ninja Storm
+                // cancel attacks
+                fAttackRange = -1;
+                cAttackRange = -1;
+
+                MapleMonster monster = MapleLifeFactory.getMonster(9300166);
+                if (monster != null) {
+                    MapleLifeFactory.SelfDestruction des = monster.getStats().getSelfDestruction();
+                    if (des != null) {
+                        des.setRemoveAfter(1);
+                        attacker.getMap().spawnMonsterOnGroundBelow(monster, attacker.getPosition());
+                        monster.sendDestroyData(attacker.getClient());
+                    }
+                }
+                break;
+            }
             default:
                 System.out.println("Unhandled skill for distance calc'u: " + attackInfo.skill);
                 break;
         }
-        System.out.println("Distance calc'd: " + distance);
+        System.out.println("Distance calc'd: {c:" + cAttackRange + ",f:" + fAttackRange + "}");
 
-        for (List<Integer> list : attackInfo.allDamage.values()) {
-            damage += list.stream().mapToInt(Integer::intValue).sum();
-        }
+        int nDamage = attacker.calculateMaxBaseDamage(attacker.getTotalWatk()) * attackInfo.allDamage.values().size();
+        nDamage = (int) Math.sqrt(nDamage * 0.75);
+        nDamage = Randomizer.rand((int) (nDamage - (nDamage * 0.85)), (int) (nDamage * 1.5));
+        damage += nDamage;
         if (damage < 0) {
             damage = Integer.MAX_VALUE;
         }
         System.out.println("Damage calc'd: " + damage);
-        return this;
     }
 }

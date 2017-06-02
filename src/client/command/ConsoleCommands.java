@@ -82,6 +82,11 @@ public class ConsoleCommands {
             } else {
                 System.err.println("The server is not online!");
             }
+        } else if (command.equals("gc")) {
+            System.gc();
+            Runtime rt = Runtime.getRuntime();
+            long usage = (rt.totalMemory() - rt.freeMemory()) / 1024 / 1024;
+            System.out.println("Memory Usage: " + usage);
         } else if (command.equals("d_connectedguilds")) {
             Discord.println("Connected servers: ");
             Discord.getBot().getClient().getGuilds().forEach(g -> Discord.println("\t" + g.getName()));
