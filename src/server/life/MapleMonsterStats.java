@@ -29,7 +29,7 @@ import java.util.List;
 import java.util.Map;
 import server.life.MapleLifeFactory.BanishInfo;
 import server.life.MapleLifeFactory.loseItem;
-import server.life.MapleLifeFactory.selfDestruction;
+import server.life.MapleLifeFactory.SelfDestruction;
 import tools.Pair;
 
 /**
@@ -47,7 +47,7 @@ public class MapleMonsterStats {
     private Pair<Integer, Integer> cool = null;
     private BanishInfo banish = null;
     private List<loseItem> loseItem = null;
-    private selfDestruction selfDestruction = null;
+    private SelfDestruction selfDestruction = null;
     private boolean friendly;
 
     public int getExp() {
@@ -261,11 +261,11 @@ public class MapleMonsterStats {
         loseItem.add(li);
     }
 
-    public selfDestruction selfDestruction() {
+    public SelfDestruction getSelfDestruction() {
         return selfDestruction;
     }
 
-    public void setSelfDestruction(selfDestruction sd) {
+    public void setSelfDestruction(SelfDestruction sd) {
         this.selfDestruction = sd;
     }
     

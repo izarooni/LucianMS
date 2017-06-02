@@ -44,7 +44,7 @@ import server.MapleStatEffect;
 import server.TimerManager;
 import server.events.gm.*;
 import server.life.*;
-import server.life.MapleLifeFactory.selfDestruction;
+import server.life.MapleLifeFactory.SelfDestruction;
 import server.partyquest.MonsterCarnival;
 import server.partyquest.MonsterCarnivalParty;
 import server.partyquest.Pyramid;
@@ -622,11 +622,11 @@ public class MapleMap {
             } finally {
                 monster.monsterLock.unlock();
             }
-            if (monster.getStats().selfDestruction() != null && monster.getStats().selfDestruction().getHp() > -1) {// should
+            if (monster.getStats().getSelfDestruction() != null && monster.getStats().getSelfDestruction().getHp() > -1) {// should
                 // work
                 // ;p
-                if (monster.getHp() <= monster.getStats().selfDestruction().getHp()) {
-                    killMonster(monster, chr, true, false, monster.getStats().selfDestruction().getAction());
+                if (monster.getHp() <= monster.getStats().getSelfDestruction().getHp()) {
+                    killMonster(monster, chr, true, false, monster.getStats().getSelfDestruction().getAction());
                     return true;
                 }
             }
@@ -1116,7 +1116,7 @@ public class MapleMap {
             }
         }
         spawnedMonstersOnMap.incrementAndGet();
-        final selfDestruction selfDestruction = monster.getStats().selfDestruction();
+        final SelfDestruction selfDestruction = monster.getStats().getSelfDestruction();
         if (monster.getStats().removeAfter() > 0 || selfDestruction != null && selfDestruction.getHp() < 0) {
             if (selfDestruction == null) {
                 TimerManager.getInstance().schedule(new Runnable() {
