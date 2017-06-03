@@ -123,9 +123,13 @@ public class HGMCommands {
                 player.dropMessage(5, "You must specify a monster ID");
             }
         } else if (command.equals("npc", "pnpc")) {
-            if (args.length() == 1) {
+            if (args.length() > 0) {
                 boolean permanent = command.equals("pnpc");
                 Long a1 = args.parseNumber(0);
+                String script = null;
+                if (args.length() == 2) {
+                    script = args.get(1);
+                }
                 String error = args.getError(0);
                 if (error != null) {
                     player.dropMessage(error);
@@ -138,6 +142,7 @@ public class HGMCommands {
                 npc.setRx0(player.getPosition().x + 50);
                 npc.setRx1(player.getPosition().x - 50);
                 npc.setF(player.isFacingLeft() ? 0 : 1);
+                npc.setScript(script);
                 npc.setFh(player.getMap().getFootholds().findBelow(player.getPosition()).getId());
                 player.getMap().addMapObject(npc);
                 player.getMap().broadcastMessage(MaplePacketCreator.spawnNPC(npc));
@@ -148,7 +153,7 @@ public class HGMCommands {
                             channel.getMapFactory().getMap(player.getMapId()).broadcastMessage(MaplePacketCreator.spawnNPC(npc));
                         }
                     }
-                    try (PreparedStatement ps = DatabaseConnection.getConnection().prepareStatement("INSERT INTO spawns (idd, f, fh, cy, rx0, rx1, type , x, y, mid, mobtime) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)")) {
+                    try (PreparedStatement ps = DatabaseConnection.getConnection().prepareStatement("INSERT INTO spawns (idd, f, fh, cy, rx0, rx1, type , x, y, mid, mobtime, script) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)")) {
                         ps.setInt(1, npcId);
                         ps.setInt(2, npc.getF());
                         ps.setInt(3, npc.getFh());
@@ -160,6 +165,7 @@ public class HGMCommands {
                         ps.setInt(9, (int) npc.getPosition().getY());
                         ps.setInt(10, player.getMapId());
                         ps.setInt(11, 1);
+                        ps.setString(12, script);
                         ps.executeUpdate();
                     } catch (SQLException e) {
                         e.printStackTrace();
@@ -219,9 +225,13 @@ public class HGMCommands {
                 player.dropMessage(5, "You must specify a monster ID");
             }
         } else if (command.equals("playernpc")) {
-            if (args.length() == 2) {
+            if (args.length() > 1) {
                 Long a1 = args.parseNumber(0);
                 String username = args.get(1);
+                String script = null;
+                if (args.length() == 3) {
+                    script = args.get(2);
+                }
                 String error = args.getError(0);
                 if (a1 == null) {
                     player.dropMessage(error);
@@ -231,7 +241,7 @@ public class HGMCommands {
                 MapleCharacter target = player.getClient().getChannelServer().getPlayerStorage().getCharacterByName(username);
                 if (target != null) {
                     if (npcId >= 9901000 && npcId <= 9901909) {
-                        player.playerNPC(target, npcId);
+                        player.createPlayerNPC(target, npcId, script);
                     } else {
                         player.dropMessage(5, "Player NPCs ID must be between 9901000 and 9901909");
                     }
@@ -239,7 +249,7 @@ public class HGMCommands {
                     player.dropMessage(5, String.format("Could not find any player named '%s'", username));
                 }
             } else {
-                player.dropMessage(5, "Syntax: !playernpc <npcId> <username>");
+                player.dropMessage(5, "Syntax: !playernpc <npcId> <username> (script_name)");
             }
         } else if (command.equals("pos")) {
             player.dropMessage(player.getPosition().toString());

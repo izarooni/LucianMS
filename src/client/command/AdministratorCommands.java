@@ -119,7 +119,7 @@ public class AdministratorCommands {
                         try {
                             em.getInvocable().invokeFunction("init", (Object) null);
                         } catch (ScriptException | NoSuchMethodException e) {
-                            player.dropMessage("");
+                            player.dropMessage("An error occurred");
                             e.printStackTrace();
                         }
                     } catch (RuntimeException e) {

@@ -64,14 +64,11 @@ import java.awt.*;
 import java.io.File;
 import java.lang.ref.WeakReference;
 import java.sql.*;
-import java.text.DecimalFormat;
-import java.text.NumberFormat;
 import java.util.*;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.function.Predicate;
 import java.util.regex.Pattern;
 
 public class MapleCharacter extends AbstractAnimatedMapleMapObject {
@@ -3273,7 +3270,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
         maplemount = new MapleMount(this, id, skillid);
     }
 
-    public void playerNPC(MapleCharacter v, int scriptId) {
+    public void createPlayerNPC(MapleCharacter v, int scriptId, String script) {
         int npcId;
         try {
             Connection con = DatabaseConnection.getConnection();
@@ -3282,7 +3279,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
             ResultSet rs = ps.executeQuery();
             if (!rs.next()) {
                 rs.close();
-                ps = con.prepareStatement("INSERT INTO playernpcs (name, hair, face, skin, x, cy, map, ScriptId, Foothold, rx0, rx1) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", Statement.RETURN_GENERATED_KEYS);
+                ps = con.prepareStatement("INSERT INTO playernpcs (name, hair, face, skin, x, cy, map, ScriptId, Foothold, rx0, rx1, script) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", Statement.RETURN_GENERATED_KEYS);
                 ps.setString(1, v.getName());
                 ps.setInt(2, v.getHair());
                 ps.setInt(3, v.getFace());
@@ -3294,6 +3291,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
                 ps.setInt(9, getMap().getFootholds().findBelow(getPosition()).getId());
                 ps.setInt(10, getPosition().x + 50);
                 ps.setInt(11, getPosition().x - 50);
+                ps.setString(12, script);
                 ps.executeUpdate();
                 rs = ps.getGeneratedKeys();
                 rs.next();
@@ -3316,7 +3314,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
                 ps.setInt(1, scriptId);
                 rs = ps.executeQuery();
                 rs.next();
-                PlayerNPCs pn = new PlayerNPCs(rs);
+                PlayerNPC pn = new PlayerNPC(rs);
                 for (Channel channel : Server.getInstance().getChannelsFromWorld(world)) {
                     MapleMap m = channel.getMapFactory().getMap(getMapId());
                     m.broadcastMessage(MaplePacketCreator.spawnPlayerNPC(pn));

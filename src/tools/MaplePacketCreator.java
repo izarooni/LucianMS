@@ -4253,7 +4253,7 @@ public class MaplePacketCreator {
 				   return mplew.getPacket();
 			   }
 
-			   public static byte[] getPlayerNPC(PlayerNPCs npc) {
+			   public static byte[] getPlayerNPC(PlayerNPC npc) {
 				   final MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
 				   mplew.writeShort(SendOpcode.IMITATED_NPC_DATA.getValue());
 				   mplew.write(0x01);
@@ -4947,7 +4947,7 @@ public class MaplePacketCreator {
 				   return mplew.getPacket();
 			   }
 
-			   public static byte[] spawnPlayerNPC(PlayerNPCs npc) {
+			   public static byte[] spawnPlayerNPC(PlayerNPC npc) {
 				   final MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
 				   mplew.writeShort(SendOpcode.SPAWN_NPC_REQUEST_CONTROLLER.getValue());
 				   mplew.write(1);

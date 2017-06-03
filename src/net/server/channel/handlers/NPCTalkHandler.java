@@ -26,7 +26,7 @@ import net.AbstractMaplePacketHandler;
 import scripting.npc.NPCScriptManager;
 import server.life.MapleNPC;
 import server.maps.MapleMapObject;
-import server.maps.PlayerNPCs;
+import server.maps.PlayerNPC;
 import tools.MaplePacketCreator;
 import tools.data.input.SeekableLittleEndianAccessor;
 
@@ -58,11 +58,12 @@ public class NPCTalkHandler extends AbstractMaplePacketHandler {
                     // Custom handling for gachapon scripts to reduce the amount of scripts needed.
                     NPCScriptManager.start(c, npc.getId(), "gachapon", null);
                 } else {
-                    NPCScriptManager.start(c, npc.getId(), null);
+                    NPCScriptManager.start(c, npc.getId(), npc.getScript(), null);
                 }
             }
-        } else if (obj instanceof PlayerNPCs) {
-            NPCScriptManager.start(c, ((PlayerNPCs) obj).getId(), null);
+        } else if (obj instanceof PlayerNPC) {
+            PlayerNPC pNPC = (PlayerNPC) obj;
+            NPCScriptManager.start(c, pNPC.getId(), pNPC.getScript(), null);
         }
     }
 }

@@ -43,6 +43,7 @@ import server.PortalFactory;
 import server.life.AbstractLoadedMapleLife;
 import server.life.MapleLifeFactory;
 import server.life.MapleMonster;
+import server.life.MapleNPC;
 import tools.DatabaseConnection;
 import tools.StringUtil;
 
@@ -176,6 +177,7 @@ public class MapleMapFactory {
                         AbstractLoadedMapleLife myLife = giveLife(id, f, hide, fh, cy, rx0, rx1, x, y, type);
 
                         if (type.equals("n")) {
+                            ((MapleNPC) myLife).setScript(rs.getString("script"));
                             map.addMapObject(myLife);
                         } else if (type.equals("m")) {
                             if (skipMonsters) {
@@ -193,7 +195,7 @@ public class MapleMapFactory {
                         ps.setInt(1, omapid);
                         try (ResultSet rs = ps.executeQuery()) {
                             while (rs.next()) {
-                                map.addMapObject(new PlayerNPCs(rs));
+                                map.addMapObject(new PlayerNPC(rs));
                             }
                         }
                     }

@@ -27,7 +27,9 @@ import server.maps.MapleMapObjectType;
 import tools.MaplePacketCreator;
 
 public class MapleNPC extends AbstractLoadedMapleLife {
+
     private MapleNPCStats stats;
+    private String script = null;
 
     public MapleNPC(int id, MapleNPCStats stats) {
         super(id);
@@ -64,5 +66,13 @@ public class MapleNPC extends AbstractLoadedMapleLife {
 
     public String getName() {
         return stats.getName();
+    }
+
+    public String getScript() {
+        return script;
+    }
+
+    public void setScript(String script) {
+        this.script = script;
     }
 }
