@@ -15,36 +15,25 @@ import java.util.*;
  */
 public class CommandManagerHelper {
 
-    private static HashMap<String, Pair<URLClassLoader, CommandHelper>> managers = new HashMap<>();
+    private static HashMap<String, CommandHelper> managers = new HashMap<>();
 
     public static void unloadAll() {
-        for (Map.Entry<String, Pair<URLClassLoader, CommandHelper>> entry : managers.entrySet()) {
-            entry.getValue().getRight().onUnload();
-            try {
-                entry.getValue().getLeft().close();
-            } catch (IOException e) {
-                System.err.println(String.format("Unable to unload command worker '%s': %s", entry.getKey(), e.getMessage()));
-            }
-
+        for (Map.Entry<String, CommandHelper> entry : managers.entrySet()) {
+            entry.getValue().dispose();
         }
         managers.clear();
     }
 
     public static Collection<CommandHelper> getManagers() {
-        ArrayList<CommandHelper> ret = new ArrayList<>(managers.size());
-        managers.values().forEach(p -> ret.add(p.getRight()));
-        return Collections.unmodifiableList(ret);
+        return Collections.unmodifiableCollection(managers.values());
     }
 
     public static CommandHelper getCommandManager(String name) {
-        if (!managers.containsKey(name)) {
-            return null;
-        }
-        return managers.get(name).getRight();
+        return managers.get(name);
     }
 
-    public static void addCommandManager(String name, URLClassLoader loader, CommandHelper manager) {
-        managers.putIfAbsent(name, new Pair<>(loader, manager));
+    public static void addCommandManager(String name, CommandHelper manager) {
+        managers.putIfAbsent(name, manager);
     }
 
     public static boolean isValidCommand(MessageReceivedEvent event) {
