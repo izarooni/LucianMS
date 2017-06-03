@@ -48,7 +48,7 @@ public class PlayerBattle extends GenericEvent {
         try {
             // reset previous calculations
             damage = 0;
-            fAttackRange = 0;
+            fAttackRange = -1;
             cAttackRange = 0;
             AbstractDealDamageHandler.AttackInfo attackInfo = event.getAttackInfo();
             collectTargets();
@@ -66,7 +66,7 @@ public class PlayerBattle extends GenericEvent {
             // reset previous calculations
             damage = 0;
             fAttackRange = 0;
-            cAttackRange = 0;
+            cAttackRange = -1;
             AbstractDealDamageHandler.AttackInfo attackInfo = event.getAttackInfo();
             collectTargets();
             calculateAttack(attackInfo);
@@ -76,14 +76,22 @@ public class PlayerBattle extends GenericEvent {
         }
     }
 
+    /**
+     * Magic attacks will vary between close range and far range
+     * <p>
+     * Both variables {@code fAttackRange} and {@code cAttackRange} are excluded from calculations as ranges will solely rely on specific skill usage
+     * </p>
+     *
+     * @param event the magic attack packet event
+     */
     @PacketWorker
     public void onMagicAttack(MagicDamageHandler event) {
         lock.lock();
         try {
             // reset previous calculations
             damage = 0;
-            fAttackRange = 0;
-            cAttackRange = 0;
+            fAttackRange = -1;
+            cAttackRange = -1;
             AbstractDealDamageHandler.AttackInfo attackInfo = event.getAttackInfo();
             collectTargets();
             calculateAttack(attackInfo);
@@ -142,7 +150,7 @@ public class PlayerBattle extends GenericEvent {
 
     /**
      * Calculate necessary attack data between the player and nearby targets via weapon, skill and stats
-     *
+     * <p>
      * todo convert ranges to JSON data for easier customization
      *
      * @param attackInfo attack data
@@ -163,7 +171,8 @@ public class PlayerBattle extends GenericEvent {
             case 44: // polearm
                 if (cAttackRange == 0) {
                     cAttackRange = 100;
-                } else if (fAttackRange == 0) {
+                }
+                if (fAttackRange == 0) {
                     fAttackRange = 1000;
                 }
                 break;
@@ -172,7 +181,8 @@ public class PlayerBattle extends GenericEvent {
             case 48: // knuckle
                 if (cAttackRange == 0) {
                     cAttackRange = 80;
-                } else if (fAttackRange == 0) {
+                }
+                if (fAttackRange == 0) {
                     fAttackRange = 420;
                 }
                 break;
@@ -181,7 +191,8 @@ public class PlayerBattle extends GenericEvent {
             case 49: // gun
                 if (cAttackRange == 0) {
                     cAttackRange = 75;
-                } else if (fAttackRange == 0) {
+                }
+                if (fAttackRange == 0) {
                     fAttackRange = 1000;
                 }
                 break;
@@ -190,21 +201,24 @@ public class PlayerBattle extends GenericEvent {
             case 46: // crossbow
                 if (cAttackRange == 0) {
                     cAttackRange = 90;
-                } else if (fAttackRange == 0) {
+                }
+                if (fAttackRange == 0) {
                     fAttackRange = 420;
                 }
                 break;
             case 41: // two-handed axe
                 if (cAttackRange == 0) {
                     cAttackRange = 115;
-                } else if (fAttackRange == 0) {
+                }
+                if (fAttackRange == 0) {
                     fAttackRange = 1000;
                 }
                 break;
             case 43: // spear
                 if (cAttackRange == 0) {
                     cAttackRange = 130;
-                } else if (fAttackRange == 0) {
+                }
+                if (fAttackRange == 0) {
                     fAttackRange = 1000;
                 }
                 break;
@@ -219,9 +233,11 @@ public class PlayerBattle extends GenericEvent {
                 // do nothing
                 break;
             case 9001001: // GM Dragon Roar
+                // skill is universal
                 cAttackRange = 500;
                 fAttackRange = 500;
                 break;
+            //region Job 412
             case 4121003: // Taunt
                 fAttackRange = 330;
             case 4121008: { // Ninja Storm
@@ -240,6 +256,7 @@ public class PlayerBattle extends GenericEvent {
                 }
                 break;
             }
+            //endregion
             default:
                 System.out.println("Unhandled skill for distance calc'u: " + attackInfo.skill);
                 break;
