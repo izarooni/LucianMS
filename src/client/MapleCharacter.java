@@ -219,7 +219,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
 
     private Timestamp daily;
     private RPSGame RPSGame = null;
-    
+
     private Occupations occupation;
 
     public MapleCharacter() {
@@ -3271,59 +3271,58 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
     }
 
     public void createPlayerNPC(MapleCharacter v, int scriptId, String script) {
-        int npcId;
         try {
-            Connection con = DatabaseConnection.getConnection();
-            PreparedStatement ps = con.prepareStatement("SELECT id FROM playernpcs WHERE ScriptId = ?");
-            ps.setInt(1, scriptId);
-            ResultSet rs = ps.executeQuery();
-            if (!rs.next()) {
-                rs.close();
-                ps = con.prepareStatement("INSERT INTO playernpcs (name, hair, face, skin, x, cy, map, ScriptId, Foothold, rx0, rx1, script) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", Statement.RETURN_GENERATED_KEYS);
+            int pNpcID = 0;
+            try (PreparedStatement ps = DatabaseConnection.getConnection().prepareStatement("insert into playernpcs (name, scriptid, script, map, hair, face, skin, gender, foothold, dir, x, cy, rx0, rx1) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", Statement.RETURN_GENERATED_KEYS)) {
                 ps.setString(1, v.getName());
-                ps.setInt(2, v.getHair());
-                ps.setInt(3, v.getFace());
-                ps.setInt(4, v.getSkinColor().getId());
-                ps.setInt(5, getPosition().x);
-                ps.setInt(6, getPosition().y);
-                ps.setInt(7, getMapId());
-                ps.setInt(8, scriptId);
+                ps.setInt(2, scriptId);
+                ps.setString(3, script);
+                ps.setInt(4, getMapId());
+                ps.setInt(5, v.getHair());
+                ps.setInt(6, v.getFace());
+                ps.setInt(7, v.getSkinColor().id);
+                ps.setInt(8, v.getGender());
                 ps.setInt(9, getMap().getFootholds().findBelow(getPosition()).getId());
-                ps.setInt(10, getPosition().x + 50);
-                ps.setInt(11, getPosition().x - 50);
-                ps.setString(12, script);
+                ps.setInt(10, isFacingLeft() ? 0 : 1);
+                ps.setInt(11, getPosition().x);
+                ps.setInt(12, getPosition().y);
+                ps.setInt(13, getPosition().x + 50);
+                ps.setInt(14, getPosition().x - 50);
                 ps.executeUpdate();
-                rs = ps.getGeneratedKeys();
-                rs.next();
-                npcId = rs.getInt(1);
-                ps.close();
-                ps = con.prepareStatement("INSERT INTO playernpcs_equip (NpcId, equipid, equippos) VALUES (?, ?, ?)");
-                ps.setInt(1, npcId);
-                for (Item equip : getInventory(MapleInventoryType.EQUIPPED)) {
-                    int position = Math.abs(equip.getPosition());
-                    if ((position < 12 && position > 0) || (position > 100 && position < 112)) {
-                        ps.setInt(2, equip.getItemId());
-                        ps.setInt(3, equip.getPosition());
-                        ps.addBatch();
+                try (ResultSet rs = ps.getGeneratedKeys()) {
+                    if (rs.next()) {
+                        pNpcID = rs.getInt(1);
                     }
                 }
-                ps.executeBatch();
-                ps.close();
-                rs.close();
-                ps = con.prepareStatement("SELECT * FROM playernpcs WHERE ScriptId = ?");
-                ps.setInt(1, scriptId);
-                rs = ps.executeQuery();
-                rs.next();
-                PlayerNPC pn = new PlayerNPC(rs);
-                for (Channel channel : Server.getInstance().getChannelsFromWorld(world)) {
-                    MapleMap m = channel.getMapFactory().getMap(getMapId());
-                    m.broadcastMessage(MaplePacketCreator.spawnPlayerNPC(pn));
-                    m.broadcastMessage(MaplePacketCreator.getPlayerNPC(pn));
-                    m.addMapObject(pn);
+            }
+            if (pNpcID > 0) {
+                try (PreparedStatement ps = DatabaseConnection.getConnection().prepareStatement("insert into playernpcs_equip (npcid, equipid, type, equippos) values (?, ?, 0, ?)")) {
+                    ps.setInt(1, pNpcID);
+                    for (Item item : v.getInventory(MapleInventoryType.EQUIPPED).list()) {
+                        int slot = Math.abs(item.getPosition());
+                        if ((slot < 12 && slot > 0) || (slot > 100 && slot < 112)) {
+                            ps.setInt(2, item.getItemId());
+                            ps.setInt(3, item.getPosition());
+                            ps.addBatch();
+                        }
+                    }
+                    ps.executeBatch();
+                }
+                try (PreparedStatement ps = DatabaseConnection.getConnection().prepareStatement("select * from playernpcs where scriptid = ?")) {
+                    ps.setInt(1, pNpcID);
+                    try (ResultSet rs = ps.executeQuery()) {
+                        if (rs.next()) {
+                            PlayerNPC playerNPC = new PlayerNPC(rs);
+                            for (Channel channel : Server.getInstance().getChannelsFromWorld(world)) {
+                                MapleMap m = channel.getMapFactory().getMap(getMapId());
+                                m.broadcastMessage(MaplePacketCreator.spawnPlayerNPC(playerNPC));
+                                m.broadcastMessage(MaplePacketCreator.getPlayerNPC(playerNPC));
+                                m.addMapObject(playerNPC);
+                            }
+                        }
+                    }
                 }
             }
-            ps.close();
-            rs.close();
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -4316,9 +4315,15 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
         World w = Server.getInstance().getWorld(world);
         int hr = cal.get(Calendar.HOUR_OF_DAY);
 
-        this.expRate = w.getExpRate();
-        this.mesoRate = w.getMesoRate();
-        this.dropRate = w.getDropRate();
+        if (isGM()) {
+            expRate = w.getExpRate();
+            mesoRate = w.getMesoRate();
+            dropRate = w.getDropRate();
+        } else {
+            expRate = 1;
+            mesoRate = 1;
+            dropRate = 1;
+        }
     }
 
     public void setEnergyBar(int set) {
@@ -5493,7 +5498,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
             updateSingleStat(MapleStat.JOB, MapleJob.BEGINNER.jobid);
 
             //for(int key : getKeymap().keySet()) {
-            	//MapleKeyBinding binding = getKeymap().get(key);
+            //MapleKeyBinding binding = getKeymap().get(key);
             //}
             getKeymap().clear();
 
@@ -5563,22 +5568,22 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
         }
         return false;
     }
-    
-public static boolean wipe(String playerName) {
-		
-		int playerId = MapleCharacter.getIdByName(playerName);
-		
-		try(Connection con = DatabaseConnection.getConnection(); PreparedStatement statement = con.prepareStatement("DELETE FROM maple_maplelife.inventoryitems WHERE characterid = ?")) {
-			statement.setInt(1, playerId);
-			
-			return statement.execute();
-			
-		} catch(SQLException e) {
-			
-		}
-				
-		return false;
-	}
+
+    public static boolean wipe(String playerName) {
+
+        int playerId = MapleCharacter.getIdByName(playerName);
+
+        try (Connection con = DatabaseConnection.getConnection(); PreparedStatement statement = con.prepareStatement("DELETE FROM maple_maplelife.inventoryitems WHERE characterid = ?")) {
+            statement.setInt(1, playerId);
+
+            return statement.execute();
+
+        } catch (SQLException e) {
+
+        }
+
+        return false;
+    }
 
     public boolean canDaily() {
         return (System.currentTimeMillis()) >= daily.getTime() + 86400000;
@@ -5712,12 +5717,12 @@ public static boolean wipe(String playerName) {
     public void setRiceCakes(int riceCakes) {
         this.riceCakes = riceCakes;
     }
-    
+
     public Occupations getOccupation() {
-    	if(this.occupation == null) {
-    		this.occupation = new Occupations(this);
-    	}
-    	return this.occupation;
+        if (this.occupation == null) {
+            this.occupation = new Occupations(this);
+        }
+        return this.occupation;
     }
-	
+
 }

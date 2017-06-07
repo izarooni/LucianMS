@@ -119,7 +119,7 @@ public class PlayerBattle extends GenericEvent {
      * Attack nearby players in the appropriate direction
      */
     private void attackNeighbors() {
-        if (cAttackRange == -1 && fAttackRange == -1) {
+        if ((cAttackRange == -1 && fAttackRange == -1) || locations.isEmpty()) {
             return;
         }
         final MapleMap map = attacker.getMap();
@@ -133,6 +133,11 @@ public class PlayerBattle extends GenericEvent {
             double lDistance = attackerLocation.distance(targetLocation);
             System.out.println("A<->T dist: " + lDistance + " / Required: " + (cAttackRange == -1 ? fAttackRange : cAttackRange));
             if (lDistance <= (cAttackRange == -1 ? fAttackRange : cAttackRange)) { // target within attacking distance
+                if (fAttackRange > 0) {
+                    if (Math.abs(attackerLocation.getY() - targetLocation.getY()) > 85) { // character height
+                        continue;
+                    }
+                }
                 if ((attackerLocation.getX() <= targetLocation.getX() && !facingLeft)) { // (attacker)-> (target)
                     neighbors.put(entry.getKey(), entry.getValue());
                     System.out.println("attacker found (right)");
@@ -263,13 +268,14 @@ public class PlayerBattle extends GenericEvent {
         }
         System.out.println("Distance calc'd: {c:" + cAttackRange + ",f:" + fAttackRange + "}");
 
-        int nDamage = attacker.calculateMaxBaseDamage(attacker.getTotalWatk()) * attackInfo.allDamage.values().size();
-        nDamage = (int) Math.sqrt(nDamage * 0.75);
-        nDamage = Randomizer.rand((int) (nDamage - (nDamage * 0.85)), (int) (nDamage * 1.5));
-        damage += nDamage;
-        if (damage < 0) {
-            damage = Integer.MAX_VALUE;
-        }
+        int damage = attacker.calculateMaxBaseDamage(attacker.getTotalWatk());
+        String dString = Integer.toString(damage);
+        int sub = (int) (Math.ceil(dString.length() / 2) + 1);
+        int tDamage = Integer.parseInt(dString.substring(0, Math.min(dString.length(), sub)));
+        int min = Math.abs(tDamage - 10);
+        int max = (tDamage + 25);
+        int eDamage = Randomizer.rand(min, max);
+        System.out.println("calc: " + eDamage);
         System.out.println("Damage calc'd: " + damage);
     }
 }

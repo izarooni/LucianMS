@@ -21,4 +21,6 @@ public class Config {
     public String getString(String key) {
         return (String) properties.get(key);
     }
+
+    public Long getNumber(String key) { return Long.parseLong(properties.getProperty(key)); }
 }

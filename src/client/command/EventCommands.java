@@ -3,6 +3,7 @@ package client.command;
 import client.MapleCharacter;
 import client.MapleClient;
 import client.MapleDisease;
+import discord.Discord;
 import net.server.channel.Channel;
 import net.server.world.MapleParty;
 import net.server.world.MaplePartyCharacter;
@@ -12,6 +13,7 @@ import server.life.MapleLifeFactory;
 import server.life.MapleMonster;
 import server.life.MobSkill;
 import server.life.MobSkillFactory;
+import sx.blah.discord.util.MessageBuilder;
 import tools.MaplePacketCreator;
 
 import java.awt.*;
@@ -32,30 +34,34 @@ public class EventCommands {
         final World world = client.getWorldServer();
         ManualPlayerEvent playerEvent = client.getWorldServer().getPlayerEvent();
 
-        if (command.equals("startevent")) {
-            if (playerEvent == null) {
-                world.setPlayerEvent((playerEvent = new ManualPlayerEvent(player)));
-                playerEvent.setMap(player.getMap());
-                playerEvent.setChannel(ch);
-                player.dropMessage("Event creation started. To get help configuring use < !event help >");
-                player.dropMessage("If you would rather immediately start the event with default values, use < !event start >");
-            } else {
-                player.dropMessage(5, "An event is already being hosted in this channel!");
-                player.dropMessage(5, "Use < !event info > for more information");
-            }
-            return true;
-        } else if (command.equals("cancelevent")) {
-            if (playerEvent != null) {
-                world.setPlayerEvent(null);
-                playerEvent.garbage();
-                player.dropMessage("You have cancelled the event");
-            } else {
-                player.dropMessage("There is no event on this channel right now");
-            }
-            return true;
-        } else if (command.equals("event")) {
-            if (playerEvent != null) {
-                if (args.length() > 0) {
+        if (command.equals("event")) {
+            if (args.length() > 0) {
+                switch (args.get(0)) {
+                    case "new": {
+                        if (playerEvent == null) {
+                            world.setPlayerEvent((playerEvent = new ManualPlayerEvent(player)));
+                            playerEvent.setMap(player.getMap());
+                            playerEvent.setChannel(ch);
+                            player.dropMessage("Event creation started. To get help configuring use < !event help >");
+                            player.dropMessage("If you would rather immediately start the event with default values, use < !event start >");
+                        } else {
+                            player.dropMessage(5, "An event is already being hosted in this channel!");
+                            player.dropMessage(5, "Use < !event info > for more information");
+                        }
+                        return true;
+                    }
+                    case "cancel": {
+                        if (playerEvent != null) {
+                            world.setPlayerEvent(null);
+                            playerEvent.garbage();
+                            player.dropMessage("You have cancelled the event");
+                        } else {
+                            player.dropMessage("There is no event on this channel right now");
+                        }
+                        return true;
+                    }
+                }
+                if (playerEvent != null) {
                     String action = args.get(0).toLowerCase();
                     switch (action) {
                         case "info": {
@@ -77,9 +83,15 @@ public class EventCommands {
                         }
                         case "start": {
                             playerEvent.openGates(playerEvent.getGateTime(), 90, 75, 60, 30, 15, 5, 3, 2, 1);
-                            String name = (playerEvent.getName() == null) ? "event" : player.getName();
-                            playerEvent.broadcastMessage(String.format("%s is hosting a(n) %s in channel %d, use @joinevent to join!", player.getName(), name, playerEvent.getChannel().getId()));
-                            break;
+                            String eventName = (playerEvent.getName() == null) ? "event" : playerEvent.getName();
+                            playerEvent.broadcastMessage(String.format("%s is hosting a(n) %s in channel %d, use @joinevent to join!", player.getName(), eventName, playerEvent.getChannel().getId()));
+
+                            String message = String.format("%s is hosting a(n) %s in channel %d", player.getName(), eventName, playerEvent.getChannel().getId());
+                            if (playerEvent.getGateTime() > 0) {
+                                message += " and the gate will close in " + playerEvent.getGateTime() + " seconds";
+                            }
+                            new MessageBuilder(Discord.getBot().getClient()).withChannel(Long.parseLong("306540306302763030")).appendContent(message).build();
+                        break;
                         }
                         case "name": {
                             if (args.length() > 1) {
@@ -195,11 +207,9 @@ public class EventCommands {
                             break;
                         }
                     }
-                } else {
-                    player.dropMessage("Incorrect command usage. Use < !event help > for help on configuring your event");
                 }
             } else {
-                player.dropMessage("There is no event on this channel right now");
+                player.dropMessage("Incorrect command usage. Use < !event help > for help on configuring your event");
             }
             return true;
         } else if (command.equals("lock", "lockm")) {

@@ -114,7 +114,6 @@ public final class PacketProcessor {
             registerHandler(RecvOpcode.NPC_TALK_MORE, new NPCMoreTalkHandler());
             registerHandler(RecvOpcode.QUEST_ACTION, new QuestActionHandler());
             registerHandler(RecvOpcode.NPC_SHOP, new NPCShopHandler());
-            registerHandler(RecvOpcode.ITEM_SORT, new ItemSortHandler());
             registerHandler(RecvOpcode.ITEM_MOVE, new ItemMoveHandler());
             registerHandler(RecvOpcode.MESO_DROP, new MesoDropHandler());
             registerHandler(RecvOpcode.PLAYER_LOGGEDIN, new PlayerLoggedinHandler());

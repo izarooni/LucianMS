@@ -49,9 +49,10 @@ public class ConsoleCommands {
                         execute(command, args);
                     }
                 }
+                System.out.println("Console no longer reading commands");
                 scanner.close();
             }
-        }).start();
+        }, "ConsoleReader").start();
     }
 
     public static void stopReading() {

@@ -9,6 +9,7 @@ import discord.lang.DuplicateEntryException;
 import discord.user.DUser;
 import org.json.JSONObject;
 import org.json.JSONTokener;
+import sx.blah.discord.handle.obj.IGuild;
 import sx.blah.discord.handle.obj.IUser;
 import sx.blah.discord.util.DiscordException;
 
@@ -24,14 +25,15 @@ import java.util.jar.JarFile;
 import java.util.zip.ZipEntry;
 
 /**
- * @author Ian
+ * @author izarooni
  */
 public class Discord {
 
     private static final Discord INSTANCE = new Discord();
     private static final Bot bot = new Bot();
     private static Config config;
-    private static ConcurrentHashMap<String, DUser> users = new ConcurrentHashMap<>();
+    private static ConcurrentHashMap<Long, DGuild> guilds = new ConcurrentHashMap<>();
+    private static ConcurrentHashMap<Long, DUser> users = new ConcurrentHashMap<>();
 
     private Discord() {
     }
@@ -80,15 +82,24 @@ public class Discord {
     }
 
     public static DUser getUser(IUser user) {
-        if (!users.containsKey(user.getStringID())) {
+        if (!users.containsKey(user.getLongID())) {
             DUser du = new DUser(user);
-            users.put(user.getStringID(), du);
+            users.put(user.getLongID(), du);
             return du;
         }
-        return users.get(user.getStringID());
+        return users.get(user.getLongID());
     }
 
-    public static void LoadPermissions() {
+    public static DGuild getGuild(IGuild guild) {
+        if (!guilds.containsKey(guild.getLongID())) {
+            DGuild dg = new DGuild(guild);
+            guilds.put(guild.getLongID(), dg);
+            return dg;
+        }
+        return guilds.get(guild.getLongID());
+    }
+
+    private static void LoadPermissions() {
         File cmds = new File("discord/permissions");
         try {
             if (cmds.mkdirs()) {
@@ -96,7 +107,6 @@ public class Discord {
             }
         } catch (SecurityException e) {
             System.err.println("Was unable to create a folder for command managements: " + e.getMessage());
-            return;
         }
     }
 

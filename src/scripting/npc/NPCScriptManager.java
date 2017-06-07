@@ -32,6 +32,11 @@ public class NPCScriptManager {
             if (storage.containsKey(client.getAccID())) {
                 dispose(client);
             }
+            if (npc >= 9901000 && fileName == null) {
+                // can't display a player npc without a player
+                fileName = Integer.toString(npc);
+                npc = 10200;
+            }
             if (client.canClickNPC()) {
 
                 NPCConversationManager cm = new NPCConversationManager(client, npc, fileName);

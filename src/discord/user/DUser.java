@@ -1,9 +1,11 @@
 package discord.user;
 
+import discord.Discord;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import sx.blah.discord.handle.obj.IUser;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.LinkedList;
 
@@ -17,6 +19,13 @@ public class DUser {
 
     public DUser(IUser user) {
         this.user = user;
+        try {
+            permissions.addAll(Permissions.load(this));
+            Discord.println(String.format("Loaded %d permissions for user %d", permissions.size(), user.getLongID()));
+        } catch (IOException e) {
+            e.printStackTrace();
+            Discord.println("Unable to load permissions for user " + user.getName());
+        }
     }
 
     public IUser getUser() {

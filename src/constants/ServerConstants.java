@@ -25,7 +25,7 @@ public class ServerConstants {
     public static final boolean USE_MTS = false;
     public static final boolean USE_FAMILY_SYSTEM = false;
     public static final boolean USE_DUEY = false;
-    public static final boolean USE_ITEM_SORT = false;
+    public static final boolean USE_ITEM_SORT = true;
     public static final boolean USE_PARTY_SEARCH = false;
 
     // Rates
