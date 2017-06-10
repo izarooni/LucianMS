@@ -93,7 +93,7 @@ public class ConsoleCommands {
             Discord.println("Connected servers: ");
             Discord.getBot().getClient().getGuilds().forEach(g -> Discord.println(g.getName() + "\r\n\t" + g.getLongID()));
         } else if (command.equals("d_leaveguild")) {
-            if (args.length() == 0) {
+            if (args.length() == 1) {
                 Long id = args.parseNumber(0);
                 for (IGuild guild : Discord.getBot().getClient().getGuilds()) {
                     if (guild.getLongID() == id) {
