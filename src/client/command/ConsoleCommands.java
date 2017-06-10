@@ -6,6 +6,7 @@ import discord.commands.CommandManagerHelper;
 import net.server.Server;
 import net.server.channel.Channel;
 import net.server.world.World;
+import sx.blah.discord.handle.obj.IGuild;
 
 import java.util.Scanner;
 
@@ -49,7 +50,7 @@ public class ConsoleCommands {
                         execute(command, args);
                     }
                 }
-                System.out.println("Console no longer reading commands");
+                Discord.println("Console no longer reading commands");
                 scanner.close();
             }
         }, "ConsoleReader").start();
@@ -66,9 +67,9 @@ public class ConsoleCommands {
         } else if (command.equals("online")) {
             if (Server.getInstance().isOnline()) {
                 for (World worlds : Server.getInstance().getWorlds()) {
-                    System.out.println("World " + worlds.getId() + ": ");
+                    Discord.println("World " + worlds.getId() + ": ");
                     for (Channel channels : worlds.getChannels()) {
-                        System.out.println("\tChannel " + channels.getId() + ": ");
+                        Discord.println("\tChannel " + channels.getId() + ": ");
                         StringBuilder sb = new StringBuilder();
                         for (MapleCharacter players : channels.getPlayerStorage().getAllCharacters()) {
                             sb.append(players.getName()).append(", ");
@@ -76,8 +77,8 @@ public class ConsoleCommands {
                         if (sb.length() > 2) {
                             sb.setLength(sb.length() - 2);
                         }
-                        System.out.println("\t\t" + sb.toString());
-                        System.out.println();
+                        Discord.println("\t\t" + sb.toString());
+                        Discord.println("");
                     }
                 }
             } else {
@@ -87,16 +88,27 @@ public class ConsoleCommands {
             System.gc();
             Runtime rt = Runtime.getRuntime();
             long usage = (rt.totalMemory() - rt.freeMemory()) / 1024 / 1024;
-            System.out.println("Memory Usage: " + usage);
+            Discord.println("Memory Usage: " + usage);
         } else if (command.equals("d_connectedguilds")) {
             Discord.println("Connected servers: ");
-            Discord.getBot().getClient().getGuilds().forEach(g -> Discord.println("\t" + g.getName()));
+            Discord.getBot().getClient().getGuilds().forEach(g -> Discord.println(g.getName() + "\r\n\t" + g.getLongID()));
+        } else if (command.equals("d_leaveguild")) {
+            if (args.length() == 0) {
+                Long id = args.parseNumber(0);
+                for (IGuild guild : Discord.getBot().getClient().getGuilds()) {
+                    if (guild.getLongID() == id) {
+                        guild.leave();
+                        Discord.println("Left the discord server");
+                        break;
+                    }
+                }
+            }
         } else if (command.equals("d_unloadcommands")) {
             final int total = CommandManagerHelper.getManagers().size();
             CommandManagerHelper.unloadAll();
             final int now = CommandManagerHelper.getManagers().size();
             final int removed = (total - now);
-            System.out.println(String.format("%d/%d Discord command managers unlaoded", removed, total));
+            Discord.println(String.format("%d/%d Discord command managers unlaoded", removed, total));
         } else if (command.equals("d_loadcommands")) {
             Discord.LoadExternalCommands();
         }

@@ -30,6 +30,7 @@ public class PlayerBattle extends GenericEvent {
     private HashMap<Integer, Point> locations = new HashMap<>();
     private ReentrantLock lock = new ReentrantLock(true);
 
+    private boolean global = false;
     private int damage = 0;
     private double cAttackRange = -1;
     private double fAttackRange = -1;
@@ -138,10 +139,10 @@ public class PlayerBattle extends GenericEvent {
                         continue;
                     }
                 }
-                if ((attackerLocation.getX() <= targetLocation.getX() && !facingLeft)) { // (attacker)-> (target)
+                if ((attackerLocation.getX() <= targetLocation.getX() && !facingLeft) || global) { // (attacker)-> (target)
                     neighbors.put(entry.getKey(), entry.getValue());
                     System.out.println("attacker found (right)");
-                } else if ((attackerLocation.getX() >= targetLocation.getX() && facingLeft)) { // (target) <-(attacker)
+                } else if ((attackerLocation.getX() >= targetLocation.getX() && facingLeft) || global) { // (target) <-(attacker)
                     neighbors.put(entry.getKey(), entry.getValue());
                     System.out.println("attacker found (left)");
                 }
@@ -185,7 +186,7 @@ public class PlayerBattle extends GenericEvent {
             case 47: // claw
             case 48: // knuckle
                 if (cAttackRange == 0) {
-                    cAttackRange = 80;
+                    cAttackRange = 90;
                 }
                 if (fAttackRange == 0) {
                     fAttackRange = 420;
@@ -241,10 +242,44 @@ public class PlayerBattle extends GenericEvent {
                 // skill is universal
                 cAttackRange = 500;
                 fAttackRange = 500;
+                global = true;
                 break;
+
+            //region Job 111
+            case 1111008:
+                cAttackRange = 240;
+                break;
+            //endregion
+
+            //region Job 112
+            case 1121008:
+                cAttackRange = 480;
+                break;
+            //endregion
+
+            //region Job 312
+            case 3101003: {
+                // cancel attacks
+                fAttackRange = -1;
+                cAttackRange = -1;
+
+                MapleMonster monster = MapleLifeFactory.getMonster(9300166);
+                if (monster != null) {
+                    MapleLifeFactory.SelfDestruction des = monster.getStats().getSelfDestruction();
+                    if (des != null) {
+                        des.setRemoveAfter(1);
+                        attacker.getMap().spawnMonsterOnGroundBelow(monster, attacker.getPosition());
+                        monster.sendDestroyData(attacker.getClient());
+                    }
+                }
+                break;
+            }
+            //endregion
+
             //region Job 412
             case 4121003: // Taunt
                 fAttackRange = 330;
+               break;
             case 4121008: { // Ninja Storm
                 // cancel attacks
                 fAttackRange = -1;
@@ -262,6 +297,32 @@ public class PlayerBattle extends GenericEvent {
                 break;
             }
             //endregion
+
+            //region Job 420
+            case 4201005:
+                cAttackRange = 500;
+                break;
+            //endregion
+
+            //region Job 422
+            case 4221001:
+                cAttackRange = 100;
+                break;
+            //endregion
+
+            //region Job 500
+            case 5001001:
+                cAttackRange = 140;
+                break;
+            //endregion
+
+            //region Job 512
+            case 5121001:
+                global = true;
+                cAttackRange = 500;
+                break;
+            //endregion
+
             default:
                 System.out.println("Unhandled skill for distance calc'u: " + attackInfo.skill);
                 break;
@@ -275,7 +336,8 @@ public class PlayerBattle extends GenericEvent {
         int min = Math.abs(tDamage - 10);
         int max = (tDamage + 25);
         int eDamage = Randomizer.rand(min, max);
+        this.damage = eDamage;
+        System.out.println("watk damage calc: " + damage);
         System.out.println("calc: " + eDamage);
-        System.out.println("Damage calc'd: " + damage);
     }
 }
