@@ -143,7 +143,7 @@ public class HGMCommands {
                 npc.setRx1(player.getPosition().x - 50);
                 npc.setF(player.isFacingLeft() ? 0 : 1);
                 npc.setScript(script);
-                npc.setFh(player.getMap().getFootholds().findBelow(player.getPosition()).getId());
+                npc.setFh(0);
                 player.getMap().addMapObject(npc);
                 player.getMap().broadcastMessage(MaplePacketCreator.spawnNPC(npc));
                 if (permanent) {

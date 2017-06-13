@@ -1,5 +1,6 @@
 package server.events.custom;
 
+import client.MapleCharacter;
 import net.PacketHandler;
 import server.TimerManager;
 import tools.annotation.PacketWorker;
@@ -16,7 +17,7 @@ import java.util.concurrent.locks.ReentrantLock;
 /**
  * @author izarooni
  */
-public class GenericEvent {
+public abstract class GenericEvent {
 
     public abstract class Task {
 
@@ -50,7 +51,7 @@ public class GenericEvent {
      *
      * @param object a class that contains annotated methods for packet event handlers
      */
-    public final void registerAnnotationPacketEvents(Object object) {
+    protected final void registerAnnotationPacketEvents(Object object) {
         Class<?> clazz = object.getClass();
         for (Method method : clazz.getMethods()) {
             if (method.getAnnotation(PacketWorker.class) != null && method.getParameterCount() == 1) {
@@ -122,7 +123,7 @@ public class GenericEvent {
      * @param d the delay before the task begins execution
      * @return A {@code Task} object which is a wrapper for the {@link ScheduledFuture} object
      */
-    public final Task createTask(Runnable r, long d) {
+    protected final Task createTask(Runnable r, long d) {
         return setupTask(TimerManager.getInstance().schedule(r, d));
     }
 
@@ -134,7 +135,7 @@ public class GenericEvent {
      * @param d the delay before the task begins its first execution
      * @return A {@code Task} object which is a wrapper for the {@link ScheduledFuture} object
      */
-    public final Task createRepeatingTask(Runnable r, long i, long d) {
+    protected final Task createRepeatingTask(Runnable r, long i, long d) {
         return setupTask(TimerManager.getInstance().register(r, i, d));
     }
 
@@ -162,4 +163,8 @@ public class GenericEvent {
             lock.unlock();
         }
     }
+
+    public abstract void registerPlayer(MapleCharacter player);
+
+    public abstract void unregisterPlayer(MapleCharacter player);
 }

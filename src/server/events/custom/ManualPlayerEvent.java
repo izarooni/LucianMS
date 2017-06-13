@@ -45,6 +45,14 @@ public class ManualPlayerEvent extends GenericEvent {
         this.host = host;
     }
 
+    @Override
+    public void registerPlayer(MapleCharacter player) {
+    }
+
+    @Override
+    public void unregisterPlayer(MapleCharacter player) {
+    }
+
     public void broadcastMessage(String message) {
         Server.getInstance().getWorld(getChannel().getWorld()).broadcastPacket(MaplePacketCreator.serverNotice(6, "[Event] " + message));
     }

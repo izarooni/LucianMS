@@ -43,6 +43,16 @@ public class EventManager extends GenericEvent {
         }
     }
 
+    @Override
+    public void registerPlayer(MapleCharacter player) {
+        throw new UnsupportedOperationException("The EventManager is not an event itself for players to be registered in");
+    }
+
+    @Override
+    public void unregisterPlayer(MapleCharacter player) {
+        throw new UnsupportedOperationException("The EventManager is not an event itself for players to be registered in");
+    }
+
     public Channel getChannel() {
         return channel;
     }

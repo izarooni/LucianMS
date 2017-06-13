@@ -43,6 +43,14 @@ public class PlayerBattle extends GenericEvent {
         this.attacker = attacker;
     }
 
+    @Override
+    public void registerPlayer(MapleCharacter player) {
+    }
+
+    @Override
+    public void unregisterPlayer(MapleCharacter player) {
+    }
+
     @PacketWorker
     public void onCloseRangeAttack(CloseRangeDamageHandler event) {
         lock.lock();

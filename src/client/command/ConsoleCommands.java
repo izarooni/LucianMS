@@ -6,7 +6,7 @@ import discord.commands.CommandManagerHelper;
 import net.server.Server;
 import net.server.channel.Channel;
 import net.server.world.World;
-import sx.blah.discord.handle.obj.IGuild;
+import server.events.custom.FlappyBirdController;
 
 import java.util.Scanner;
 
@@ -21,11 +21,11 @@ public class ConsoleCommands {
     }
 
     public static void beginReading() {
-        reading = true;
         new Thread(new Runnable() {
             @Override
             public void run() {
                 Scanner scanner = new Scanner(System.in);
+                reading = true;
                 while (reading) {
                     String line = scanner.nextLine();
                     if (line != null && !line.isEmpty()) {
@@ -50,8 +50,8 @@ public class ConsoleCommands {
                         execute(command, args);
                     }
                 }
-                Discord.println("Console no longer reading commands");
                 scanner.close();
+                System.out.println("Console no longer reading commands");
             }
         }, "ConsoleReader").start();
     }
@@ -63,13 +63,17 @@ public class ConsoleCommands {
     private static void execute(CommandWorker.Command command, CommandWorker.CommandArgs args) {
         if (command.equals("shutdown", "exit")) {
             reading = false;
+            CommandManagerHelper.unloadAll();
+            if (Discord.getBot().getClient() != null) {
+                Discord.getBot().getClient().logout();
+            }
             System.exit(0);
         } else if (command.equals("online")) {
             if (Server.getInstance().isOnline()) {
                 for (World worlds : Server.getInstance().getWorlds()) {
-                    Discord.println("World " + worlds.getId() + ": ");
+                    System.out.println("World " + worlds.getId() + ": ");
                     for (Channel channels : worlds.getChannels()) {
-                        Discord.println("\tChannel " + channels.getId() + ": ");
+                        System.out.println("\tChannel " + channels.getId() + ": ");
                         StringBuilder sb = new StringBuilder();
                         for (MapleCharacter players : channels.getPlayerStorage().getAllCharacters()) {
                             sb.append(players.getName()).append(", ");
@@ -77,31 +81,18 @@ public class ConsoleCommands {
                         if (sb.length() > 2) {
                             sb.setLength(sb.length() - 2);
                         }
-                        Discord.println("\t\t" + sb.toString());
-                        Discord.println("");
+                        System.out.println("\t\t" + sb.toString());
+                        System.out.println("");
                     }
                 }
             } else {
                 System.err.println("The server is not online!");
             }
-        } else if (command.equals("gc")) {
-            System.gc();
-            Runtime rt = Runtime.getRuntime();
-            long usage = (rt.totalMemory() - rt.freeMemory()) / 1024 / 1024;
-            Discord.println("Memory Usage: " + usage);
-        } else if (command.equals("d_connectedguilds")) {
-            Discord.println("Connected servers: ");
-            Discord.getBot().getClient().getGuilds().forEach(g -> Discord.println(g.getName() + "\r\n\t" + g.getLongID()));
-        } else if (command.equals("d_leaveguild")) {
-            if (args.length() == 1) {
-                Long id = args.parseNumber(0);
-                for (IGuild guild : Discord.getBot().getClient().getGuilds()) {
-                    if (guild.getLongID() == id) {
-                        guild.leave();
-                        Discord.println("Left the discord server");
-                        break;
-                    }
-                }
+        } else if (command.equals("d_login")) {
+            try {
+                Discord.getBot().login();
+            } catch (Exception e) {
+                System.err.println("Could not login Discord: " + e.getMessage());
             }
         } else if (command.equals("d_unloadcommands")) {
             final int total = CommandManagerHelper.getManagers().size();

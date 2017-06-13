@@ -18,7 +18,7 @@ public class Bot {
     public void login() throws LoginException, InterruptedException, DiscordException {
         ClientBuilder builder = new ClientBuilder()
                 .withToken(Discord.getConfig().getString("token"))
-                .setMaxReconnectAttempts(7)
+                .setMaxReconnectAttempts(4)
                 .setDaemon(true);
         client = builder.login();
         EventDispatcher dispatcher = client.getDispatcher();

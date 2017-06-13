@@ -36,7 +36,7 @@ public final class PacketManager {
     }
 
     private static void addPacketHandlers() {
-        handlers.set(RecvOpcode.MOVE_PLAYER.getValue(), MovePlayerHandler.class);
+        handlers.set(RecvOpcode.MOVE_PLAYER.getValue(), PlayerMoveEvent.class);
         handlers.set(RecvOpcode.MOVE_LIFE.getValue(), MoveLifeHandler.class);
         handlers.set(RecvOpcode.MOVE_SUMMON.getValue(), MoveSummonHandler.class);
         handlers.set(RecvOpcode.MOVE_PET.getValue(), MovePetHandler.class);

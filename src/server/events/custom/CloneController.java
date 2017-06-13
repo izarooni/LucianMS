@@ -18,6 +18,14 @@ public class CloneController extends GenericEvent {
         registerAnnotationPacketEvents(this);
     }
 
+    @Override
+    public void registerPlayer(MapleCharacter player) {
+    }
+
+    @Override
+    public void unregisterPlayer(MapleCharacter player) {
+    }
+
     @PacketWorker
     public void onItemUse(UseItemHandler event) {
         MapleCharacter player = event.getClient().getPlayer();

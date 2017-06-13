@@ -83,11 +83,13 @@ public abstract class GAutoEvent extends GenericEvent {
         return players.containsKey(player.getId());
     }
 
+    @Override
     public final void registerPlayer(MapleCharacter player) {
         players.putIfAbsent(player.getId(), player);
         playerRegistered(player);
     }
 
+    @Override
     public final void unregisterPlayer(MapleCharacter player) {
         players.remove(player.getId());
         playerUnregistered(player);
