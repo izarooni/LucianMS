@@ -52,6 +52,8 @@ public class PlayerCommands {
             commands.add("@callgm <player> <reason> - report a player, insert your own name if it is for another reason.");
             commands.add("@report <bug> - report a bug, give as much detail as possible.");
             commands.add("@rps - Start a game of rock paper scissors vs a bot");
+            commands.add("@summer - Warp to the summer map");
+            commands.add("@arcade - Warp to the arcade map");
             commands.forEach(player::dropMessage);
             commands.clear();
         } else if (command.equals("rates")) {
@@ -116,7 +118,7 @@ public class PlayerCommands {
         } else if (command.equals("achievements")) {
             player.getClient().announce(MaplePacketCreator.getNPCTalk(9040004, (byte) 0, "These are the currently available achievements, blue means they are unlocked, red is locked. \r\n\r\n" + player.getAchievements().getAll(), "00 00", (byte) 3));
         } else if (command.equals("home")) {
-            player.changeMap(240070101);
+            player.changeMap(900);
         } else if (command.equals("online")) {
             for (Channel channel : client.getWorldServer().getChannels()) {
                 StringBuilder sb = new StringBuilder();
@@ -143,7 +145,6 @@ public class PlayerCommands {
             maps.put("ariant", 260000000);
             maps.put("timetemple", 270000000);
             maps.put("ellin", 300000000);
-            maps.put("arcade", 970000000);
             if (args.length() == 1) {
                 String name = args.get(0);
                 if (maps.containsKey(name)) {
@@ -252,6 +253,10 @@ public class PlayerCommands {
         } else if(command.equals("rps")) {
         	RockPaperScissorsHandler.startGame(player);
         	player.dropMessage(6, "Let's play some rock paper scissors!");
+        } else if (command.equals("summer")) {
+            player.changeMap(83);
+        } else if (command.equals("arcade")) {
+            player.changeMap(970000000);
         }
     }
 }

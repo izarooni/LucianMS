@@ -66,7 +66,6 @@ public final class Channel {
     private final Map<Integer, Integer> storedVars = new HashMap<>();
     private ReentrantReadWriteLock merchant_lock = new ReentrantReadWriteLock(true);
     private List<MapleExpedition> expeditions = new ArrayList<>();
-    private List<MapleExpeditionType> expedType = new ArrayList<>();
     private MapleEvent event;
     private boolean finishedShutdown = false;
 
@@ -76,7 +75,6 @@ public final class Channel {
         this.mapFactory = new MapleMapFactory(world, channel);
         TimerManager.getInstance().register(() -> mapFactory.getMaps().values().forEach(MapleMap::respawn), 10000);
         reloadEventScriptManager();
-        Collections.addAll(expedType, MapleExpeditionType.values());
         try {
             port = 7575 + this.channel - 1;
             port += (world * 100);

@@ -180,56 +180,6 @@ public class Server implements Runnable {
 		CQuestBuilder.loadAllQuests();
 		System.out.println("Custom quests loaded in " + ((System.currentTimeMillis() - timeToTake) / 1000.0) + " seconds\r\n");
 
-		//region pre-load styles
-		try {
-			timeToTake = System.currentTimeMillis();
-			Properties pStyles = new Properties();
-			pStyles.load(new FileInputStream(new File("styles_config.ini")));
-
-			// male hairs
-			ArrayList<Integer> array = new ArrayList<>();
-			for (String h : ((String) pStyles.get("mHairs")).split(", ")) {
-				array.add(Integer.parseInt(h));
-			}
-			GameConstants.Styles.mStyles.hairs.addAll(array);
-
-			// female hairs
-			array = new ArrayList<>();
-			for (String h : ((String) pStyles.get("fHairs")).split(", ")) {
-				array.add(Integer.parseInt(h));
-			}
-			GameConstants.Styles.fStyles.hairs.addAll(array);
-
-            System.out.println(String.format("Loaded %d male hairs & %d female hairs",
-                    GameConstants.Styles.mStyles.hairs.size(),
-                    GameConstants.Styles.fStyles.hairs.size()
-            ));
-
-            // male faces
-			array = new ArrayList<>();
-			for (String h : ((String) pStyles.get("mFaces")).split(", ")) {
-				array.add(Integer.parseInt(h));
-			}
-			GameConstants.Styles.mStyles.faces.addAll(array);
-
-			array = new ArrayList<>();
-			for (String h : ((String) pStyles.get("fFaces")).split(", ")) {
-				array.add(Integer.parseInt(h));
-			}
-			GameConstants.Styles.fStyles.faces.addAll(array);
-
-            System.out.println(String.format("Loaded %d male faces & %d female faces",
-                    GameConstants.Styles.mStyles.faces.size(),
-                    GameConstants.Styles.fStyles.faces.size()
-            ));
-
-			array.clear();
-			System.out.println("Styles loaded in " + ((System.currentTimeMillis() - timeToTake) / 1000.0) + " seconds\r\n");
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		//endregion
-
 		try {
 			timeToTake = System.currentTimeMillis();
 			int qWorlds = Integer.parseInt(p.getProperty("worlds"));

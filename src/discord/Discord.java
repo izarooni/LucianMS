@@ -9,6 +9,7 @@ import discord.lang.DuplicateEntryException;
 import discord.user.DUser;
 import org.json.JSONObject;
 import org.json.JSONTokener;
+import sx.blah.discord.Discord4J;
 import sx.blah.discord.handle.obj.IGuild;
 import sx.blah.discord.handle.obj.IUser;
 import sx.blah.discord.util.DiscordException;
