@@ -1,7 +1,6 @@
 package constants;
 
 /**
- *
  * @author The Spookster
  */
 public enum EquipSlot {
@@ -33,10 +32,10 @@ public enum EquipSlot {
     private String name;
     private int[] allowed;
 
-    private EquipSlot() {
+    EquipSlot() {
     }
 
-    private EquipSlot(String wz, int... in) {
+    EquipSlot(String wz, int... in) {
         name = wz;
         allowed = in;
     }
@@ -70,5 +69,35 @@ public enum EquipSlot {
             }
         }
         return PET_EQUIP;
+    }
+
+    public static EquipSlot getFromItemId(int itemId) {
+        int a = itemId / 10000;
+        if (a >= 130 && a <= 170) {
+            return WEAPON;
+        } else if (a == 100) {
+            return HAT;
+        } else if (a == 103) {
+            return EARRINGS;
+        } else if (a == 104) {
+            return TOP;
+        } else if (a == 105) {
+            return OVERALL;
+        } else if (a == 106) {
+            return PANTS;
+        } else if (a == 107) {
+            return SHOES;
+        } else if (a == 108) {
+            return GLOVES;
+        } else if (a == 109) {
+            return SHIELD;
+        } else if (a == 110) {
+            return CAPE;
+        } else if (a == 111) {
+            return RING;
+        } else if (a == 190) {
+            return TAMED_MOB;
+        }
+        return null;
     }
 }
