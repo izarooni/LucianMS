@@ -19,6 +19,7 @@ import tools.annotation.PacketWorker;
 import java.awt.*;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.locks.ReentrantLock;
 
 /**
@@ -51,12 +52,20 @@ public class PlayerBattle extends GenericEvent {
     public void unregisterPlayer(MapleCharacter player) {
     }
 
+    @Override
+    public void onPlayerDeath(MapleCharacter player) {
+        Optional<GenericEvent> pvp = player.getGenericEvents().stream().filter(g -> (g instanceof PlayerBattle)).findFirst();
+        if (pvp.isPresent()) {
+            player.removeGenericEvent(pvp.get());
+            player.dropMessage("You are no longer PvPing");
+        }
+    }
+
     @PacketWorker
     public void onCloseRangeAttack(CloseRangeDamageHandler event) {
         lock.lock();
         try {
-            // reset previous calculations
-            damage = 0;
+            // set attack type
             fAttackRange = -1;
             cAttackRange = 0;
             AbstractDealDamageHandler.AttackInfo attackInfo = event.getAttackInfo();
@@ -72,8 +81,7 @@ public class PlayerBattle extends GenericEvent {
     public void onFarRangeAttack(RangedAttackHandler event) {
         lock.lock();
         try {
-            // reset previous calculations
-            damage = 0;
+            // set attack type
             fAttackRange = 0;
             cAttackRange = -1;
             AbstractDealDamageHandler.AttackInfo attackInfo = event.getAttackInfo();
@@ -97,8 +105,7 @@ public class PlayerBattle extends GenericEvent {
     public void onMagicAttack(MagicDamageHandler event) {
         lock.lock();
         try {
-            // reset previous calculations
-            damage = 0;
+            // set attack type
             fAttackRange = -1;
             cAttackRange = -1;
             AbstractDealDamageHandler.AttackInfo attackInfo = event.getAttackInfo();
@@ -119,7 +126,8 @@ public class PlayerBattle extends GenericEvent {
             locations = new HashMap<>();
         }
         attacker.getMap().getCharacters().stream() // cache locations of players in the current field
-                .filter(player -> player.getId() != attacker.getId() && player.getGenericEvents().stream().anyMatch(g -> g instanceof PlayerBattle)) // find players register in a pvp event and exclude the attacker
+                .filter(player -> player.getId() != attacker.getId() && player.getGenericEvents().stream().anyMatch(g -> g instanceof PlayerBattle) // find players register in a pvp event and exclude the attacker
+                        && player.isAlive()) // make sure they're alive
                 .forEach(player -> locations.put(player.getId(), player.getPosition().getLocation()));
         System.out.println(locations.size() + " targets initialized");
     }
@@ -158,7 +166,11 @@ public class PlayerBattle extends GenericEvent {
         }
 
         for (Map.Entry<Integer, Point> entry : neighbors.entrySet()) { // iterate nearby targets and display damage dealt
-            map.broadcastMessage(MaplePacketCreator.damagePlayer(0, 100100, entry.getKey(), damage, 0, 0, false, 0, false, 0, 0, 0));
+            MapleCharacter mPlayer = attacker.getMap().getCharacterById(entry.getKey());
+            if (mPlayer != null) {
+                mPlayer.addHP(-damage);
+                map.broadcastMessage(MaplePacketCreator.damagePlayer(0, 100100, entry.getKey(), damage, 0, 0, false, 0, false, 0, 0, 0));
+            }
         }
     }
 
@@ -170,6 +182,11 @@ public class PlayerBattle extends GenericEvent {
      * @param attackInfo attack data
      */
     private void calculateAttack(AbstractDealDamageHandler.AttackInfo attackInfo) {
+
+        // reset previous calculations
+        global = false;
+        damage = 0;
+
         Equip weapon = (Equip) attacker.getInventory(MapleInventoryType.EQUIPPED).getItem((short) -11);
         if (weapon == null) {
             // not possible to attack when a weapon is not present
@@ -248,10 +265,16 @@ public class PlayerBattle extends GenericEvent {
                 break;
             case 9001001: // GM Dragon Roar
                 // skill is universal
-                cAttackRange = 500;
-                fAttackRange = 500;
+                cAttackRange = 800;
+                fAttackRange = 800;
                 global = true;
                 break;
+
+            //region Job 222
+            case 2221003:
+                fAttackRange = 400;
+                break;
+            //endregion
 
             //region Job 111
             case 1111008:
@@ -287,7 +310,7 @@ public class PlayerBattle extends GenericEvent {
             //region Job 412
             case 4121003: // Taunt
                 fAttackRange = 330;
-               break;
+                break;
             case 4121008: { // Ninja Storm
                 // cancel attacks
                 fAttackRange = -1;

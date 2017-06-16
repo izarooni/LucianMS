@@ -25,6 +25,13 @@ public class CommandWorker {
     public static boolean process(MapleClient client, String message, boolean noCheck) {
         MapleCharacter player = client.getPlayer();
 
+        if (!player.isGM()) {
+            if (player.getMapId() >= 90000000 && player.getMapId() <= 90000004) {
+                player.dropMessage("You may not use commands here");
+                return true;
+            }
+        }
+
         char h = message.charAt(0);
         message = message.substring(1);
         int cn = message.indexOf(" "); // command name split index
@@ -43,7 +50,7 @@ public class CommandWorker {
 
         Command command = new Command(name);
         CommandArgs args = new CommandArgs(sp);
-        
+
         if (h == '!' && (player.isGM() || noCheck)) {
             if (!EventCommands.execute(client, command, args)) {
                 if (player.gmLevel() >= 6) {
@@ -58,7 +65,7 @@ public class CommandWorker {
             }
             return true;
         } else if (h == '@') {
-            if(player.getMapId() == 80 || player.getMapId() == 81) {
+            if (player.getMapId() == 80 || player.getMapId() == 81) {
                 player.dropMessage("You may not use commands here");
                 return true;
             }

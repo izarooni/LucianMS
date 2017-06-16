@@ -2,7 +2,6 @@ package server.events.custom.auto;
 
 import client.MapleCharacter;
 import net.server.channel.handlers.*;
-import net.server.handlers.PlayerDisconnectHandler;
 import net.server.world.World;
 import server.life.MapleLifeFactory;
 import server.life.MapleMonster;

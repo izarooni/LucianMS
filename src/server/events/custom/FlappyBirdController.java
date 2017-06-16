@@ -3,7 +3,6 @@ package server.events.custom;
 import client.MapleCharacter;
 import net.SendOpcode;
 import net.server.channel.handlers.UseItemHandler;
-import net.server.handlers.PlayerDisconnectHandler;
 import server.life.MapleLifeFactory;
 import server.life.MapleNPC;
 import tools.annotation.PacketWorker;
@@ -61,8 +60,8 @@ public class FlappyBirdController extends GenericEvent {
         }
     }
 
-    @PacketWorker
-    public void onPlayerDisconnect(PlayerDisconnectHandler event) {
+    @Override
+    public void onPlayerDisconnect(MapleCharacter player) {
         if (task != null) {
             task.cancel();
             task = null;

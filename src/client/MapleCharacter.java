@@ -3334,6 +3334,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
         if (getEventInstance() != null) {
             getEventInstance().playerKilled(this);
         }
+        getGenericEvents().forEach(g -> g.onPlayerDeath(this));
         int[] charmID = {5130000, 4031283, 4140903};
         int possesed = 0;
         int i;
@@ -4315,15 +4316,9 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
         World w = Server.getInstance().getWorld(world);
         int hr = cal.get(Calendar.HOUR_OF_DAY);
 
-        if (isGM()) {
-            expRate = w.getExpRate();
-            mesoRate = w.getMesoRate();
-            dropRate = w.getDropRate();
-        } else {
-            expRate = 1;
-            mesoRate = 1;
-            dropRate = 1;
-        }
+        expRate = w.getExpRate();
+        mesoRate = w.getMesoRate();
+        dropRate = w.getDropRate();
     }
 
     public void setEnergyBar(int set) {

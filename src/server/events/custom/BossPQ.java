@@ -2,7 +2,6 @@ package server.events.custom;
 
 import client.MapleCharacter;
 import net.server.channel.handlers.TakeDamageHandler;
-import net.server.handlers.PlayerDisconnectHandler;
 import net.server.world.MapleParty;
 import net.server.world.MaplePartyCharacter;
 import server.life.MapleLifeFactory;
@@ -156,16 +155,16 @@ public abstract class BossPQ extends GenericEvent {
     }
 
     @PacketWorker
-    public void onPlayerDisconnect(PlayerDisconnectHandler event) {
-        unregisterPlayer(event.getClient().getPlayer());
-    }
-
-    @PacketWorker
     public void onPlayerHurt(TakeDamageHandler event) {
         // it's probably a bad idea to have monsters that 1-hit the player and is unavoidable
         // so if that total damage exceeds the player's health, just set the damage amount to (current_hp - 1)
         int nDamage = Math.min(event.getClient().getPlayer().getHp() - 1, (event.getDamage() * getDamageMultiplier()));
         event.setDamage(nDamage);
+    }
+
+    @Override
+    public void onPlayerDisconnect(MapleCharacter player) {
+        unregisterPlayer(player);
     }
 
     public int getMapId() {

@@ -138,6 +138,8 @@ public class NPCScriptManager {
             pair.right = null;
         }
         ScriptUtil.removeScript(client, path);
+
+        System.out.println((client.getEngine(path) == null ? "null" : "not null") + " engine path");
         client.announce(MaplePacketCreator.enableActions());
     }
 

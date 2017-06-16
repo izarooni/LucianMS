@@ -87,6 +87,14 @@ public abstract class GenericEvent {
         }
     }
 
+    public void onPlayerDeath(MapleCharacter player) {
+        // do nothing
+    }
+
+    public void onPlayerDisconnect(MapleCharacter player) {
+        // do nothing
+    }
+
     public final void dispose() {
         lock.lock();
         try {
