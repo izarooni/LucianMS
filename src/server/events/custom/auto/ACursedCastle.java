@@ -118,8 +118,7 @@ public class ACursedCastle extends GAutoEvent {
     }
 
     @PacketWorker
-    public void onPlayerDisconnect(PlayerDisconnectHandler event) {
-        MapleCharacter player = event.getClient().getPlayer();
+    public void onPlayerDisconnect(MapleCharacter player) {
         unregisterPlayer(player);
         hits.put(player.getId(), System.currentTimeMillis()); // timestamp when the player got hit
         MapleCharacter winner = getWinner(player);
