@@ -620,7 +620,6 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
         }
         this.setPosition(portal.getPosition());
         this.initialSpawnPoint = portal.getId();
-        this.map = c.getChannelServer().getMapFactory().getMap(ServerConstants.STARTER_MAP);
     }
 
     public void cancelBuffEffects() {
@@ -2938,9 +2937,6 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
             if (channelserver) {
                 MapleMapFactory mapFactory = client.getChannelServer().getMapFactory();
                 ret.map = mapFactory.getMap(ret.mapid);
-                if (ret.map == null) {
-                    ret.map = mapFactory.getMap(ServerConstants.STARTER_MAP);
-                }
                 MaplePortal portal = ret.map.getPortal(ret.initialSpawnPoint);
                 if (portal == null) {
                     portal = ret.map.getPortal(0);

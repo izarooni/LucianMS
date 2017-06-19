@@ -50,7 +50,7 @@ public class NPCScriptManager {
                 Invocable iv = null;
                 try {
                     iv = ScriptUtil.eval(client, path, binds);
-                } catch (NullPointerException e) {
+                } catch (Exception e) {
                     String response = "An error occurred in this NPC";
                     if (fileName != null) {
                         response += "\r\nName: " + fileName;
