@@ -24,7 +24,9 @@ package net.server.handlers.login;
 import java.util.Calendar;
 
 import net.MaplePacketHandler;
+import net.server.Server;
 import server.TimerManager;
+import server.Whitelist;
 import tools.MaplePacketCreator;
 import tools.data.input.SeekableLittleEndianAccessor;
 import client.MapleClient;
@@ -45,7 +47,16 @@ public final class LoginPasswordHandler implements MaplePacketHandler {
         c.setAccountName(login);
         
         int loginok = c.login(login, pwd);
-        
+
+        if (Server.getInstance().getConfig().getBoolean("WhitelistEnabled")) {
+            if (!Whitelist.hasAccount(c.getAccID())) {
+                System.out.println(String.format("Attempted non-whitelist account login username: %s , accountID: %d", login, c.getAccID()));
+                c.announce(MaplePacketCreator.getLoginFailed(5));
+                c.announce(MaplePacketCreator.serverNotice(1, "The server is unavailable for regular players at this time\r\nPlease contact an administrator if this is a mistake"));
+                return;
+            }
+        }
+
         if (c.hasBannedIP() || c.hasBannedMac()) {
             c.announce(MaplePacketCreator.getLoginFailed(3));
             return;

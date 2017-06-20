@@ -1,7 +1,7 @@
 {
-  "DiscordBotEnabled": false,
+  "DiscordBotEnabled": "false",
 
-  "WhitelistEnabled": true,
+  "WhitelistEnabled": "true",
 
   "ServerHost": "127.0.0.1",
 
