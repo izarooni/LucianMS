@@ -1,4 +1,4 @@
-package discord.io;
+package io;
 
 import org.json.JSONObject;
 

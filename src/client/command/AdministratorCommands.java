@@ -10,6 +10,7 @@ import server.events.custom.auto.GAutoEvent;
 import server.events.custom.auto.GAutoEventManager;
 import server.maps.MapleMapObject;
 import server.maps.MapleReactor;
+import server.quest.custom.CQuestBuilder;
 
 import javax.script.ScriptException;
 import java.awt.*;
@@ -32,6 +33,7 @@ public class AdministratorCommands {
         if (command.equals("help")) {
             ArrayList<String> commands = new ArrayList<>();
             try {
+                commands.add("!reloadquests - Reload custom quest");
                 commands.add("!fae - Force an auto event execution");
                 commands.add("!list - Debug command");
                 commands.add("!reloadevents - Reload all event scripts");
@@ -42,6 +44,9 @@ public class AdministratorCommands {
             } finally {
                 commands.clear();
             }
+        } else if (command.equals("reloadquests")) {
+            CQuestBuilder.loadAllQuests();
+            player.dropMessage("Quests reloaded");
         } else if (command.equals("fae")) { // force auto event
             GAutoEventManager[] manager = GAutoEventManager.values();
             if (args.length() == 1) {

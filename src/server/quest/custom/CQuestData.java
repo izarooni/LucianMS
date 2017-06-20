@@ -143,7 +143,7 @@ public class CQuestData {
      */
     public boolean complete(MapleCharacter player) {
         if (player == null) {
-            throw new IllegalArgumentException("Can't given rewards to nobody!");
+            throw new IllegalArgumentException("Can't give rewards to nobody!");
         } else if (completed) {
             return false;
         }

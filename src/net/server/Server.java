@@ -129,9 +129,9 @@ public class Server implements Runnable {
 
 		System.out.println("LucianMS v" + ServerConstants.VERSION + " starting up.\r\n");
 
-		if (!Discord.initialize()) {
-			System.exit(0);
-		}
+//		if (!Discord.initialize()) {
+//			System.exit(0);
+//		}
 
 		Runtime.getRuntime().addShutdownHook(new Thread(shutdown()));
 

@@ -1232,7 +1232,7 @@ public class MapleClient {
     }
 
     public boolean canClickNPC() {
-        return lastNpcClick + 500 < System.currentTimeMillis();
+        return System.currentTimeMillis() - lastNpcClick > 200;
     }
 
     public void setClickedNPC() {

@@ -1,15 +1,12 @@
 package discord;
 
 
-import discord.commands.CommandHelper;
-import discord.commands.CommandManagerHelper;
-import discord.io.Config;
-import discord.io.defaults.Defaults;
-import discord.lang.DuplicateEntryException;
-import discord.user.DUser;
+import discord.commands.data.DCommandManager;
+import io.Config;
+import io.defaults.Defaults;
+import discord.user.DiscordUser;
 import org.json.JSONObject;
 import org.json.JSONTokener;
-import sx.blah.discord.Discord4J;
 import sx.blah.discord.handle.obj.IGuild;
 import sx.blah.discord.handle.obj.IUser;
 import sx.blah.discord.util.DiscordException;
@@ -17,13 +14,7 @@ import sx.blah.discord.util.DiscordException;
 import javax.security.auth.login.LoginException;
 import java.io.*;
 import java.net.URISyntaxException;
-import java.net.URL;
-import java.net.URLClassLoader;
-import java.util.Collections;
-import java.util.Properties;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.jar.JarFile;
-import java.util.zip.ZipEntry;
 
 /**
  * @author izarooni
@@ -31,10 +22,12 @@ import java.util.zip.ZipEntry;
 public class Discord {
 
     private static final Discord INSTANCE = new Discord();
-    private static final Bot bot = new Bot();
+    private static final DiscordBot bot = new DiscordBot();
     private static Config config;
-    private static ConcurrentHashMap<Long, DGuild> guilds = new ConcurrentHashMap<>();
-    private static ConcurrentHashMap<Long, DUser> users = new ConcurrentHashMap<>();
+    private static ConcurrentHashMap<Long, DiscordGuild> guilds = new ConcurrentHashMap<>();
+    private static ConcurrentHashMap<Long, DiscordUser> users = new ConcurrentHashMap<>();
+
+    private static DCommandManager commandManager = new DCommandManager();
 
     private Discord() {
     }
@@ -43,7 +36,7 @@ public class Discord {
         return INSTANCE;
     }
 
-    public static Bot getBot() {
+    public static DiscordBot getBot() {
         return bot;
     }
 
@@ -67,7 +60,6 @@ public class Discord {
             return false;
         }
 
-        LoadExternalCommands();
         LoadPermissions();
 
         try {
@@ -82,22 +74,26 @@ public class Discord {
         }
     }
 
-    public static DUser getUser(IUser user) {
+    public static DiscordUser getUser(IUser user) {
         if (!users.containsKey(user.getLongID())) {
-            DUser du = new DUser(user);
+            DiscordUser du = new DiscordUser(user);
             users.put(user.getLongID(), du);
             return du;
         }
         return users.get(user.getLongID());
     }
 
-    public static DGuild getGuild(IGuild guild) {
+    public static DiscordGuild getGuild(IGuild guild) {
         if (!guilds.containsKey(guild.getLongID())) {
-            DGuild dg = new DGuild(guild);
+            DiscordGuild dg = new DiscordGuild(guild);
             guilds.put(guild.getLongID(), dg);
             return dg;
         }
         return guilds.get(guild.getLongID());
+    }
+
+    public static DCommandManager getCommandManager() {
+        return commandManager;
     }
 
     private static void LoadPermissions() {
@@ -108,74 +104,6 @@ public class Discord {
             }
         } catch (SecurityException e) {
             System.err.println("Was unable to create a folder for command managements: " + e.getMessage());
-        }
-    }
-
-    /**
-     * This does not dispose the already existing command managers
-     */
-    public static void LoadExternalCommands() {
-        File cmds = new File("discord/commands");
-        try {
-            if (cmds.mkdirs()) {
-                println("External command management directory created");
-            }
-        } catch (SecurityException e) {
-            System.err.println("Was unable to create a folder for command managements: " + e.getMessage());
-            return;
-        }
-        try {
-            File[] files = cmds.listFiles();
-            if (files != null) {
-                println("Loading command managers");
-                for (File file : files) {
-                    JarFile jar = new JarFile(file);
-                    ZipEntry zip = jar.getEntry("info.ini");
-                    if (zip == null) {
-                        System.err.println("Command manager contains invalid info file: " + file.getName());
-                        continue;
-                    }
-                    try (InputStream in = jar.getInputStream(zip)) {
-                        Properties props = new Properties();
-                        props.load(in); // load info file properties
-
-                        String name = (String) props.get("name");
-                        String main = (String) props.get("main");
-
-                        if (CommandManagerHelper.getCommandManager(name) != null) {
-                            in.close();
-                            jar.close();
-                            throw new DuplicateEntryException(String.format("Command processor with name %s already exists", name));
-                        }
-
-                        URL[] urls = Collections.singletonList(file.toURI().toURL()).toArray(new URL[1]);
-                        URLClassLoader loader = new URLClassLoader(urls);
-                        // info properties must contain the package path to the CommandHelper sub-class
-                        Class toLoad = Class.forName(main, true, loader);
-                        CommandHelper helper = (CommandHelper) toLoad.newInstance();
-                        helper.onLoad();
-                        helper.onDispose(new Runnable() {
-                            @Override
-                            public void run() {
-                                try {
-                                    in.close();
-                                    jar.close();
-                                    loader.close();
-                                } catch (IOException e) {
-                                    e.printStackTrace();
-                                }
-                            }
-                        });
-
-                        CommandManagerHelper.addCommandManager(name, helper);
-                        System.out.print(".");
-                    }
-                }
-                System.out.println();
-                println("Loaded " + CommandManagerHelper.getManagers().size() + " command managers!");
-            }
-        } catch (IOException | ClassNotFoundException | InstantiationException | IllegalAccessException e) {
-            System.err.println("Was unable to load external commands: " + e.getMessage());
         }
     }
 }

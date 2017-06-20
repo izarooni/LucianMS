@@ -2,11 +2,9 @@ package client.command;
 
 import client.MapleCharacter;
 import discord.Discord;
-import discord.commands.CommandManagerHelper;
 import net.server.Server;
 import net.server.channel.Channel;
 import net.server.world.World;
-import server.events.custom.FlappyBirdController;
 
 import java.util.Scanner;
 
@@ -63,7 +61,6 @@ public class ConsoleCommands {
     private static void execute(CommandWorker.Command command, CommandWorker.CommandArgs args) {
         if (command.equals("shutdown", "exit")) {
             reading = false;
-            CommandManagerHelper.unloadAll();
             if (Discord.getBot().getClient() != null) {
                 Discord.getBot().getClient().logout();
             }
@@ -94,14 +91,6 @@ public class ConsoleCommands {
             } catch (Exception e) {
                 System.err.println("Could not login Discord: " + e.getMessage());
             }
-        } else if (command.equals("d_unloadcommands")) {
-            final int total = CommandManagerHelper.getManagers().size();
-            CommandManagerHelper.unloadAll();
-            final int now = CommandManagerHelper.getManagers().size();
-            final int removed = (total - now);
-            Discord.println(String.format("%d/%d Discord command managers unlaoded", removed, total));
-        } else if (command.equals("d_loadcommands")) {
-            Discord.LoadExternalCommands();
         }
     }
 }

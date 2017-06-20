@@ -1,8 +1,7 @@
 package discord.user;
 
-import discord.DGuild;
-import discord.commands.CommandHelper;
-import discord.commands.CommandManagerHelper;
+import discord.DiscordGuild;
+import discord.commands.data.DUserPower;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.json.JSONTokener;
@@ -25,15 +24,10 @@ public final class Permissions {
         if (permission.equals("*")) {
             return false;
         }
-        for (CommandHelper helper : CommandManagerHelper.getManagers()) {
-            if (!helper.isValidPermission(permission)) {
-                return true;
-            }
-        }
-        return false;
+        return DUserPower.isValidPermission(permission);
     }
 
-    public static ArrayList<String> load(DUser user) throws IOException {
+    public static ArrayList<String> load(DiscordUser user) throws IOException {
         ArrayList<String> arrayList = new ArrayList<>();
 
         final String path = "discord/permissions/" + user.getUser().getLongID() + ".json";
@@ -59,7 +53,7 @@ public final class Permissions {
         return arrayList;
     }
 
-    public static void serverPermission(DGuild guild, String role, String permission, boolean add) throws IOException {
+    public static void serverPermission(DiscordGuild guild, String role, String permission, boolean add) throws IOException {
         final String path = "discord/permissions/guilds" + guild.getGuild().getLongID() + ".json";
         File file = new File(path);
         if (!file.exists()) {
@@ -71,8 +65,8 @@ public final class Permissions {
         }
         boolean save;
         if (permission.equals("*")) {
-            for (CommandHelper helper : CommandManagerHelper.getManagers()) {
-                helper.getPermissions().forEach(perms -> guild.givePermission(role, perms));
+            for (DUserPower userPower : DUserPower.values()) {
+                guild.givePermission(role, userPower.toString());
             }
             save = true;
         } else {
@@ -87,7 +81,7 @@ public final class Permissions {
         }
     }
 
-    public static void setPermission(DUser user, String permission) throws IOException {
+    public static void setPermission(DiscordUser user, String permission) throws IOException {
         if (invalidPermission(permission)) {
             return;
         }
@@ -102,9 +96,7 @@ public final class Permissions {
         }
         boolean save;
         if (permission.equals("*")) {
-            for (CommandHelper helper : CommandManagerHelper.getManagers()) {
-                helper.getPermissions().forEach(user::givePermission);
-            }
+            user.givePermission(permission);
             save = true;
         } else {
             save = user.givePermission(permission);
@@ -118,7 +110,7 @@ public final class Permissions {
         }
     }
 
-    public static void removePermission(DUser user, String permission) throws IOException {
+    public static void removePermission(DiscordUser user, String permission) throws IOException {
         if (invalidPermission(permission)) {
             return;
         }
@@ -129,8 +121,8 @@ public final class Permissions {
         }
         boolean save;
         if (permission.equals("*")) {
-            for (CommandHelper helper : CommandManagerHelper.getManagers()) {
-                helper.getPermissions().forEach(user::removePermission);
+            for (DUserPower userPower : DUserPower.values()) {
+                user.givePermission(userPower.toString());
             }
             save = true;
         } else {

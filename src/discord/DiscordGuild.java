@@ -12,12 +12,12 @@ import java.util.Map;
 /**
  * @author izarooni
  */
-public class DGuild {
+public class DiscordGuild {
 
     private final IGuild guild;
     private LinkedHashMap<String, LinkedList<String>> permissions = new LinkedHashMap<>();
 
-    public DGuild(IGuild guild) {
+    public DiscordGuild(IGuild guild) {
         this.guild = guild;
 
         for (IRole role : guild.getRoles()) {

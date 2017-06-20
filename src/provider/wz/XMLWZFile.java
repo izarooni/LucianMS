@@ -59,23 +59,14 @@ public class XMLWZFile implements MapleDataProvider {
         if (!dataFile.exists()) {
             return null;//bitches
         }
-        FileInputStream fis;
-        try {
-            fis = new FileInputStream(dataFile);
+        try (FileInputStream fis = new FileInputStream(dataFile)){
+            return new XMLDomMapleData(fis, imageDataDir.getParentFile());
         } catch (FileNotFoundException e) {
             throw new RuntimeException("Datafile " + path + " does not exist in " + root.getAbsolutePath());
+        } catch (IOException e) {
+            e.printStackTrace();
         }
-        final XMLDomMapleData domMapleData;
-        try {
-            domMapleData = new XMLDomMapleData(fis, imageDataDir.getParentFile());
-        } finally {
-            try {
-                fis.close();
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-        }
-        return domMapleData;
+        return null;
     }
 
     @Override

@@ -11,6 +11,7 @@ import javax.script.ScriptException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * @author Matze
@@ -18,7 +19,7 @@ import java.util.Map;
  */
 public class NPCScriptManager {
 
-    private static Map<Integer, Pair<Invocable, NPCConversationManager>> storage = new HashMap<>();
+    private static ConcurrentHashMap<Integer, Pair<Invocable, NPCConversationManager>> storage = new ConcurrentHashMap<>();
 
     private NPCScriptManager() {
     }
@@ -138,8 +139,6 @@ public class NPCScriptManager {
             pair.right = null;
         }
         ScriptUtil.removeScript(client, path);
-
-        System.out.println((client.getEngine(path) == null ? "null" : "not null") + " engine path");
         client.announce(MaplePacketCreator.enableActions());
     }
 

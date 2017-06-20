@@ -5636,6 +5636,10 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
         return customQuests;
     }
 
+    public CQuestData getCustomQuest(int id) {
+        return customQuests.get(id);
+    }
+
     public void setHidingLevel(int hidingLevel) {
         this.hidingLevel = hidingLevel;
     }

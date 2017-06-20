@@ -11,7 +11,7 @@ import javax.security.auth.login.LoginException;
 /**
  * @author Ian
  */
-public class Bot {
+public class DiscordBot {
 
     private IDiscordClient client;
 

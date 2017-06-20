@@ -12,12 +12,12 @@ import java.util.LinkedList;
 /**
  * @author izarooni
  */
-public class DUser {
+public class DiscordUser {
 
     private final IUser user;
     private LinkedList<String> permissions = new LinkedList<>();
 
-    public DUser(IUser user) {
+    public DiscordUser(IUser user) {
         this.user = user;
         try {
             permissions.addAll(Permissions.load(this));

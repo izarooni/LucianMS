@@ -28,6 +28,9 @@ public class CQuestBuilder {
     }
 
     public static void loadAllQuests() {
+        if (!quests.isEmpty()) {
+            quests.clear();
+        }
         File file = new File("quests");
         File[] files = file.listFiles();
         if (files != null) {
@@ -53,9 +56,23 @@ public class CQuestBuilder {
     public static CQuestData beginQuest(MapleCharacter player, int questId) {
         CQuestData qData = quests.get(questId);
         if (qData != null) {
-            qData = qData.beginNew(player);
+            return qData.beginNew(player);
         }
-        return qData;
+        throw new NullPointerException(String.format("Unable to begin quest; Invalid quest ID specified '%d'", questId));
+    }
+
+    /**
+     * Obtain the prerequisite quest ID that's needed to begin the specified quest
+     *
+     * @param questId ID of the quest to check
+     * @return the quest ID of the prerequisite quest
+     */
+    public static int getPreQuest(int questId) {
+        CQuestData qData = quests.get(questId);
+        if (qData != null) {
+            return qData.getPreQuestId();
+        }
+        throw new NullPointerException(String.format("Unable to obtain pre-quest; Invalid quest ID specified '%d'", questId));
     }
 
     private static CQuestData parseFile(File file) throws IOException {

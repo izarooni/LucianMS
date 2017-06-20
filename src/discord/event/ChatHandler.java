@@ -1,6 +1,6 @@
 package discord.event;
 
-import discord.commands.CommandManagerHelper;
+import discord.Discord;
 import sx.blah.discord.api.events.EventSubscriber;
 import sx.blah.discord.handle.impl.events.MessageReceivedEvent;
 
@@ -11,8 +11,6 @@ public class ChatHandler {
 
     @EventSubscriber
     public void onGuildMessageReceived(MessageReceivedEvent event) {
-        if (CommandManagerHelper.isValidCommand(event)) {
-            CommandManagerHelper.getManagers().forEach(m -> m.onCommand(event));
-        }
+        Discord.getCommandManager().onCommand(event);
     }
 }

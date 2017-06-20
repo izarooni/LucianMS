@@ -1,4 +1,4 @@
-package discord.lang;
+package lang;
 
 /**
  * @author izarooni

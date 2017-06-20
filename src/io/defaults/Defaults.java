@@ -1,4 +1,4 @@
-package discord.io.defaults;
+package io.defaults;
 
 import java.io.File;
 import java.io.FileOutputStream;
