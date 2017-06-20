@@ -26,6 +26,7 @@ import constants.ServerConstants;
 import net.MapleServerHandler;
 import net.mina.MapleCodecFactory;
 import net.server.PlayerStorage;
+import net.server.Server;
 import net.server.world.MapleParty;
 import net.server.world.MaplePartyCharacter;
 import org.apache.commons.io.FilenameUtils;
@@ -78,7 +79,7 @@ public final class Channel {
         try {
             port = 7575 + this.channel - 1;
             port += (world * 100);
-            ip = ServerConstants.HOST + ":" + port;
+            ip = Server.getInstance().getConfig().getString("ServerHost") + ":" + port;
 
             IoBuffer.setUseDirectBuffer(false);
             IoBuffer.setAllocator(new SimpleBufferAllocator());
@@ -86,7 +87,7 @@ public final class Channel {
             acceptor = new NioSocketAcceptor();
             acceptor.setHandler(new MapleServerHandler(world, channel));
             acceptor.getSessionConfig().setIdleTime(IdleStatus.BOTH_IDLE, 30);
-            acceptor.getFilterChain().addLast("codec", (IoFilter) new ProtocolCodecFilter(new MapleCodecFactory()));
+            acceptor.getFilterChain().addLast("codec", new ProtocolCodecFilter(new MapleCodecFactory()));
             acceptor.bind(new InetSocketAddress(port));
 
             ((SocketSessionConfig) acceptor.getSessionConfig()).setTcpNoDelay(true);

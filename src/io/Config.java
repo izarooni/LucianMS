@@ -22,5 +22,11 @@ public class Config {
         return (String) properties.get(key);
     }
 
-    public Long getNumber(String key) { return Long.parseLong(properties.getProperty(key)); }
+    public Long getNumber(String key) {
+        return Long.parseLong(properties.getProperty(key));
+    }
+
+    public Boolean getBoolean(String key) {
+        return Boolean.parseBoolean(properties.getProperty(key));
+    }
 }

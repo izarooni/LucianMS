@@ -52,8 +52,8 @@ public class Discord {
         File fConfig = new File("discord/config.json");
         if (!fConfig.exists()) {
             try {
-                Defaults.createDefault("discord/", "config.json");
-                println("Created config file... Make changes then restart");
+                Defaults.createDefault("discord", "discord-config.json");
+                println("Discord config created. Configure settings and restart");
             } catch (URISyntaxException | IOException e) {
                 e.printStackTrace();
             }
@@ -63,7 +63,7 @@ public class Discord {
         LoadPermissions();
 
         try {
-            config = new Config(new JSONObject(new JSONTokener(new FileInputStream("discord/config.json"))));
+            config = new Config(new JSONObject(new JSONTokener(new FileInputStream("discord/discord-config.json"))));
             println("Config file loaded");
             Discord.getBot().login();
             println("Now online Discord");

@@ -5,6 +5,7 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 
 import constants.ServerConstants;
+import io.Config;
 import net.server.Server;
 
 /**
@@ -40,7 +41,8 @@ public class DatabaseConnection {
                 return null;
             }
             try {
-                return DriverManager.getConnection(ServerConstants.DB_URL, ServerConstants.DB_USER, ServerConstants.DB_PASS);
+                Config config = Server.getInstance().getConfig();
+                return DriverManager.getConnection(config.getString("DatabaseURL"), config.getString("DatabaseUsername"), config.getString("DatabasePassword"));
             } catch (SQLException e) {
                 System.out.println("[SEVERE] Unable to make database connection.");
                 e.printStackTrace();

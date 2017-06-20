@@ -5,7 +5,10 @@ import discord.Discord;
 import net.server.Server;
 import net.server.channel.Channel;
 import net.server.world.World;
+import server.Whitelist;
 
+import java.io.IOException;
+import java.net.URISyntaxException;
 import java.util.Scanner;
 
 /**
@@ -90,6 +93,15 @@ public class ConsoleCommands {
                 Discord.getBot().login();
             } catch (Exception e) {
                 System.err.println("Could not login Discord: " + e.getMessage());
+            }
+        } else if (command.equals("reloadwhitelist")) {
+            try {
+                final int bCount = Whitelist.getAccounts().size();
+                Whitelist.loadAccounts();
+                final int aCount = Whitelist.getAccounts().size();
+                System.out.println(String.format("Whitelist reloaded from %d accounts to %d", bCount, aCount));
+            } catch (IOException | URISyntaxException e) {
+                e.printStackTrace();
             }
         }
     }

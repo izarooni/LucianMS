@@ -22,18 +22,29 @@ public final class Defaults {
      * @throws URISyntaxException
      * @throws IOException
      */
-    public static void createDefault(String path, String fileName) throws URISyntaxException, IOException {
-        File dirs = new File(path); // create any missing directories
-        dirs.mkdirs();
-
-        File output = new File(path + fileName); // desired file output location
+    public static boolean createDefault(String path, String fileName) throws URISyntaxException, IOException {
+        File dirs = new File(path == null ? "" : path); // create any missing directories
+        if (path != null) {
+            dirs.mkdirs();
+        }
+        File output = new File(path, fileName); // desired file output location
         try (InputStream fis = Defaults.class.getResourceAsStream(fileName)) {
             try (FileOutputStream fos = new FileOutputStream(output)) {
                 while (fis.available() > 0) {
                     fos.write(fis.read()); // copy contents
                 }
                 fos.flush();
+                return true;
             }
         }
+    }
+
+    public static boolean createDefaultIfAbsent(String path, String fileName) throws URISyntaxException, IOException {
+        File dirs = new File(path == null ? "" : path); // create any missing directories
+        if (path != null) {
+            dirs.mkdirs();
+        }
+        File output = new File(path, fileName); // desired file output location
+        return !output.exists() && createDefault(path, fileName);
     }
 }

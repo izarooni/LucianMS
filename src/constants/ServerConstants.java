@@ -13,14 +13,6 @@ public class ServerConstants {
     //Event Configuration
     public static final boolean PERFECT_PITCH = false;
 
-    // IP Configuration
-    public static String HOST = "51.15.6.127";
-
-    // Database Configuration
-    public static String DB_URL = "jdbc:mysql://localhost:3306/maple_maplelife?autoReconnect=true";
-    public static String DB_USER = "root";
-    public static String DB_PASS = "";
-
     // Game play Configurations
     public static final boolean USE_MTS = false;
     public static final boolean USE_FAMILY_SYSTEM = false;
