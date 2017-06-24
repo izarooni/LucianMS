@@ -4,6 +4,7 @@ import client.MapleCharacter;
 import discord.Discord;
 import net.server.Server;
 import net.server.channel.Channel;
+import scheduler.TaskExecutor;
 import server.maps.MapleMap;
 import sx.blah.discord.util.MessageBuilder;
 import tools.MaplePacketCreator;
@@ -64,7 +65,7 @@ public class ManualPlayerEvent extends GenericEvent {
      * @param c    numbers to announce
      */
     public int openGates(final int from, int... c) {
-        return (gateTask = createTask(new Runnable() {
+        return (gateTask = TaskExecutor.createTask(new Runnable() {
             @Override
             public void run() {
                 if (from == 0) {
@@ -86,7 +87,7 @@ public class ManualPlayerEvent extends GenericEvent {
     public void garbage() {
         channel = null;
         if (gateTask > 0) {
-            cancelTask(gateTask);
+            TaskExecutor.cancelTask(gateTask);
         }
     }
 
@@ -109,7 +110,7 @@ public class ManualPlayerEvent extends GenericEvent {
     public void setOpen(boolean open) {
         this.open = open;
         if (!this.open) {
-            cancelTask(gateTask);
+            TaskExecutor.cancelTask(gateTask);
         }
     }
 

@@ -1,4 +1,4 @@
-package client.command;
+package command;
 
 import client.MapleCharacter;
 import client.MapleClient;
@@ -8,7 +8,6 @@ import net.server.world.World;
 import scripting.event.EventManager;
 import server.events.custom.auto.GAutoEvent;
 import server.events.custom.auto.GAutoEventManager;
-import server.life.MapleNPC;
 import server.maps.MapleMapObject;
 import server.maps.MapleReactor;
 import server.quest.custom.CQuestBuilder;
@@ -119,7 +118,6 @@ public class AdministratorCommands {
                         player.dropMessage(5, "Could not find any event named '" + scriptName + "'");
                         break;
                     }
-                    manager.dispose();
                     channel.getEventScriptManager().putManager(scriptName);
                     try {
                         EventManager em = channel.getEventScriptManager().getManager(scriptName);

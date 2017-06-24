@@ -3,6 +3,8 @@ package server.events.custom.auto;
 import client.MapleCharacter;
 import net.server.world.World;
 import provider.MapleDataProviderFactory;
+import scheduler.Task;
+import scheduler.TaskExecutor;
 import server.events.custom.GenericEvent;
 import server.maps.MapleMap;
 import server.maps.MapleMapFactory;
@@ -58,7 +60,7 @@ public abstract class GAutoEvent extends GenericEvent {
     }
 
     public final Task registerRespawnTimer() {
-        return respawnTask = createRepeatingTask(() -> mapleMapFactory.getMaps().values().forEach(MapleMap::respawn), 1000, 1000);
+        return respawnTask = TaskExecutor.createRepeatingTask(() -> mapleMapFactory.getMaps().values().forEach(MapleMap::respawn), 1000, 1000);
     }
 
     public final Task getRespawnTask() {

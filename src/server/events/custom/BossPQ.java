@@ -4,6 +4,7 @@ import client.MapleCharacter;
 import net.server.channel.handlers.TakeDamageHandler;
 import net.server.world.MapleParty;
 import net.server.world.MaplePartyCharacter;
+import scheduler.TaskExecutor;
 import server.life.MapleLifeFactory;
 import server.life.MapleMonster;
 import server.life.MapleMonsterStats;
@@ -99,7 +100,7 @@ public abstract class BossPQ extends GenericEvent {
     private void nextRound() {
         if (round >= bosses.length) {
             getMapInstance(mapId).startMapEffect("Congrats on defeating all of the bosses!", 5120009);
-            createTask(new Runnable() {
+            TaskExecutor.createTask(new Runnable() {
                 @Override
                 public void run() {
                     complete();
@@ -107,7 +108,7 @@ public abstract class BossPQ extends GenericEvent {
             }, 4000);
         } else {
             broadcastPacket(MaplePacketCreator.getClock(8));
-            createTask(new Runnable() {
+            TaskExecutor.createTask(new Runnable() {
                 @Override
                 public void run() {
                     int monsterId = bosses[round];

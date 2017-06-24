@@ -1,4 +1,4 @@
-package client.command;
+package command;
 
 import client.MapleCharacter;
 import discord.Discord;

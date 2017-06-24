@@ -1,4 +1,4 @@
-package client.command;
+package command;
 
 import client.MapleCharacter;
 import client.MapleClient;
@@ -11,7 +11,6 @@ import server.events.custom.GenericEvent;
 import server.events.custom.ManualPlayerEvent;
 import server.events.custom.auto.GAutoEvent;
 import server.events.custom.auto.GAutoEventManager;
-import server.events.pvp.FFA;
 import server.events.pvp.PlayerBattle;
 import server.maps.MapleMap;
 import tools.MaplePacketCreator;
@@ -183,7 +182,7 @@ public class PlayerCommands {
                 player.dropMessage(5, "You must specify a message");
             }
         } else if (command.equals("style", "styler", "stylist")) {
-            NPCScriptManager.start(player.getClient(), 9900000, player);
+            NPCScriptManager.start(player.getClient(), 9900001, player);
         } else if (command.equals("report")) {
             if (args.length() > 1) {
                 String username = args.get(0);

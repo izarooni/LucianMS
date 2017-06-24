@@ -18,7 +18,7 @@ import java.util.List;
  * @author izarooni
  * @author lucasdieswagger
  */
-public final class PlayerMoveEvent extends PacketHandler {
+public final class PlayerMoveHandler extends PacketHandler {
 
     private List<LifeMovementFragment> movements = null;
     private Point clientPosition;

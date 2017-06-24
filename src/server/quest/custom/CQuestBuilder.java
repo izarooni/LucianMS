@@ -1,6 +1,7 @@
 package server.quest.custom;
 
 import client.MapleCharacter;
+import lang.DuplicateEntryException;
 import provider.MapleData;
 import provider.MapleDataTool;
 import provider.wz.MapleDataType;
@@ -38,11 +39,10 @@ public class CQuestBuilder {
             for (File qFile : files) {
                 try {
                     CQuestData qData = parseFile(qFile);
-                    if (!quests.containsKey(qData.getId())) {
-                        quests.put(qData.getId(), qData);
-                    } else {
-                        System.err.println("Duplicate quest ID: " + qData.getId());
+                    if (quests.containsKey(qData.getId())) {
+                        throw new DuplicateEntryException(String.format("Custom quest with ID %d already exists", qData.getId()));
                     }
+                    quests.put(qData.getId(), qData);
                 } catch (IOException e) {
                     e.printStackTrace();
                 }

@@ -3,6 +3,8 @@ package scripting.event;
 import client.MapleCharacter;
 import net.server.channel.Channel;
 import net.server.world.MapleParty;
+import scheduler.Task;
+import scheduler.TaskExecutor;
 import scripting.ScriptUtil;
 import server.events.custom.GenericEvent;
 import server.expeditions.MapleExpedition;
@@ -78,7 +80,7 @@ public class EventManager extends GenericEvent {
     }
 
     public Task schedule(String function, EventInstanceManager eim, long delay) {
-        return createTask(new Runnable() {
+        return TaskExecutor.createTask(new Runnable() {
             public void run() {
                 try {
                     getInvocable().invokeFunction(function, eim);
@@ -91,7 +93,7 @@ public class EventManager extends GenericEvent {
     }
 
     public Task schedule(String function, long delay, Object... args) {
-        return createTask(new Runnable() {
+        return TaskExecutor.createTask(new Runnable() {
             @Override
             public void run() {
                 try {
@@ -105,7 +107,7 @@ public class EventManager extends GenericEvent {
     }
 
     public Task scheduleAtTimestamp(final String function, long timestamp) {
-        return createTask(new Runnable() {
+        return TaskExecutor.createTask(new Runnable() {
             public void run() {
                 try {
                     getInvocable().invokeFunction(function, (Object) null);

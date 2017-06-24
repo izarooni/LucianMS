@@ -3347,7 +3347,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
         } else if (mapid > 925020000 && mapid < 925030000) {
             this.dojoStage = 0;
         } else if (mapid > 980000100 && mapid < 980000700) {
-            getMap().broadcastMessage(this, MaplePacketCreator.CPQDied(this));
+            getMap().broadcastMessage(this, MaplePacketCreator.getMonsterCarnivalPlayerDeath(this));
         } else if (getJob() != MapleJob.BEGINNER) { // Hmm...
             int XPdummy = ExpTable.getExpNeededForLevel(getLevel());
             if (getMap().isTown()) {

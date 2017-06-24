@@ -23,7 +23,7 @@ package net.server;
 
 import client.MapleCharacter;
 import client.SkillFactory;
-import client.command.ConsoleCommands;
+import command.ConsoleCommands;
 import constants.ServerConstants;
 import discord.Discord;
 import io.Config;

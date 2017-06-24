@@ -2,6 +2,8 @@ package server.events.custom.auto;
 
 import client.MapleCharacter;
 import net.server.world.World;
+import scheduler.Task;
+import scheduler.TaskExecutor;
 import server.life.MapleLifeFactory;
 import server.life.MapleMonster;
 import server.life.MapleMonsterStats;
@@ -41,7 +43,7 @@ public class AWhispyWoods extends GAutoEvent {
     @Override
     public void start() {
         broadcastWorldMessage("Whispy Woods will begin momentarily");
-        createTask(new Runnable() {
+        TaskExecutor.createTask(new Runnable() {
             @Override
             public void run() {
                 startTimestamp = System.currentTimeMillis();
@@ -52,7 +54,6 @@ public class AWhispyWoods extends GAutoEvent {
 
     @Override
     public void stop() {
-        super.dispose();
         for (MapleCharacter players : getPlayers()) {
             unregisterPlayer(players);
         }
@@ -86,7 +87,7 @@ public class AWhispyWoods extends GAutoEvent {
     private void summonBoss() {
         getMapInstance(EventMap).broadcastMessage(MaplePacketCreator.getClock((int) (TimeGiven / 1000)));
 
-        timeoutTask = createTask(new Runnable() {
+        timeoutTask = TaskExecutor.createTask(new Runnable() {
             @Override
             public void run() {
                 eventFailed();

@@ -23,7 +23,7 @@ package net.server.channel.handlers;
 
 import client.MapleCharacter;
 import client.MapleClient;
-import client.command.CommandWorker;
+import command.CommandWorker;
 import net.AbstractMaplePacketHandler;
 import net.server.Server;
 import net.server.world.World;

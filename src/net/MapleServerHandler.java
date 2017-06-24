@@ -152,7 +152,7 @@ public class MapleServerHandler extends IoHandlerAdapter {
                     try {
                         PacketHandler handler = clazz.newInstance();
                         handler.setClient(client);
-                        if (handler.inValidLoginState()) {
+                        if (handler.inValidState()) {
                             handler.process(slea);
 
                             // avoid possible concurrent modifications

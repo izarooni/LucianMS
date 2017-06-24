@@ -3,6 +3,7 @@ package server.events.custom.auto;
 import client.MapleCharacter;
 import net.server.channel.handlers.*;
 import net.server.world.World;
+import scheduler.TaskExecutor;
 import server.life.MapleLifeFactory;
 import server.life.MapleMonster;
 import server.life.MapleMonsterStats;
@@ -46,7 +47,7 @@ public class ACursedCastle extends GAutoEvent {
     public void start() {
         System.out.println("Be Careful! will begin momentarily");
         startTimestamp = System.currentTimeMillis();
-        createTask(this::summonMonsters, 60000);
+        TaskExecutor.createTask(this::summonMonsters, 60000);
     }
 
     @Override

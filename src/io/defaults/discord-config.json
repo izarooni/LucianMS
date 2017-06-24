@@ -1,4 +1,5 @@
 {
   "commandTrigger": "!x.",
-  "token": "TOKEN"
+  "token": "TOKEN",
+  "ownerId": ""
 }

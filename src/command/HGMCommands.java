@@ -1,4 +1,4 @@
-package client.command;
+package command;
 
 import client.MapleCharacter;
 import client.MapleClient;
@@ -21,7 +21,6 @@ import server.life.MapleNPC;
 import tools.DatabaseConnection;
 import tools.MaplePacketCreator;
 
-import java.io.FilenameFilter;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
@@ -58,7 +57,7 @@ public class HGMCommands {
             commands.add("!reloadshops - Reload shop items");
             commands.add("!reloadskills - Relaod loaded skill data");
             commands.add("!reloadmobs - Reload mob data");
-            commands.add("!resetreactors - Reset all reactors in the map");
+            commands.add("!resetreactors - Reset all reactors in the m);
             commands.add("!godmeup - Change values of all stats for all equips");
             commands.forEach(player::dropMessage);
             commands.clear();

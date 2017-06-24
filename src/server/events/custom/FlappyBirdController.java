@@ -3,6 +3,8 @@ package server.events.custom;
 import client.MapleCharacter;
 import net.SendOpcode;
 import net.server.channel.handlers.UseItemHandler;
+import scheduler.Task;
+import scheduler.TaskExecutor;
 import server.life.MapleLifeFactory;
 import server.life.MapleNPC;
 import tools.annotation.PacketWorker;
@@ -43,7 +45,7 @@ public class FlappyBirdController extends GenericEvent {
 
         npc = new MapleNPC(BirdNpc, null);
 
-        task = createRepeatingTask(new FlappyBirdWorker(player), 1000 / 60, 0);
+        task = TaskExecutor.createRepeatingTask(new FlappyBirdWorker(player), 1000 / 60, 0);
     }
 
     @Override

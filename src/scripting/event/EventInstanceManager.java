@@ -4,6 +4,8 @@ import client.MapleCharacter;
 import net.server.PlayerStorage;
 import net.server.world.MapleParty;
 import net.server.world.MaplePartyCharacter;
+import scheduler.Task;
+import scheduler.TaskExecutor;
 import server.events.custom.GenericEvent;
 import server.expeditions.MapleExpedition;
 import server.life.MapleMonster;
@@ -48,8 +50,8 @@ public class EventInstanceManager {
         return eventManager;
     }
 
-    public GenericEvent.Task schedule(final String function, long delay) {
-        GenericEvent.Task task = eventManager.schedule(function, this, delay);
+    public Task schedule(final String function, long delay) {
+        Task task = eventManager.schedule(function, this, delay);
         tasks.add(task.getId());
         return task;
     }
@@ -182,7 +184,7 @@ public class EventInstanceManager {
         killCount.clear();
         killCount = null;
 
-        tasks.forEach(eventManager::cancelTask);
+        tasks.forEach(TaskExecutor::cancelTask);
 
         eventManager.removeInstance(name);
         if (expedition != null) {

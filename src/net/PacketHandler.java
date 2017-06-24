@@ -32,7 +32,7 @@ public abstract class PacketHandler {
         this.canceled = canceled;
     }
 
-    public boolean inValidLoginState() {
+    public boolean inValidState() {
         return client.isLoggedIn();
     }
 

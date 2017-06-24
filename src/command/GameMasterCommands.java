@@ -1,4 +1,4 @@
-package client.command;
+package command;
 
 import client.*;
 import client.inventory.Equip;
@@ -763,7 +763,7 @@ public class GameMasterCommands {
             }
         } else if (command.equals("ap", "sp")) {
             boolean ap = command.equals("ap");
-            if (args.length() == 0) {
+            if (args.length() > 0) {
                 short amount = args.parseNumber(0).shortValue();
                 if (args.length() > 1) {
                     args.forEachStringFrom(1, new Consumer<String>() {

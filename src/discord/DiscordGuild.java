@@ -41,9 +41,9 @@ public class DiscordGuild {
             }
         }
         */
-        JSONObject j = new JSONObject();
+        JSONObject j = new JSONObject(); // permissions
         for (Map.Entry<String, LinkedList<String>> entry : permissions.entrySet()) {
-            JSONArray jArray = new JSONArray();
+            JSONArray jArray = new JSONArray(); // roles
             for (String s : entry.getValue()) {
                 jArray.put(s);
             }
@@ -59,10 +59,7 @@ public class DiscordGuild {
     }
 
     public boolean hasPermission(String role, String permission) {
-        if (!permissions.containsKey(role)) {
-            return false;
-        }
-        return permissions.get(role).stream().anyMatch(s -> s.equals(permission));
+        return permissions.containsKey(role) && permissions.get(role).stream().anyMatch(s -> s.equals(permission));
     }
 
     public boolean givePermission(String role, String permission) {

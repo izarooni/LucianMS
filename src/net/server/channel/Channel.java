@@ -46,6 +46,7 @@ import server.expeditions.MapleExpeditionType;
 import server.maps.HiredMerchant;
 import server.maps.MapleMap;
 import server.maps.MapleMapFactory;
+import server.partyquest.carnival.MCarnivalLobbyManager;
 import tools.MaplePacketCreator;
 
 import java.io.File;
@@ -67,6 +68,7 @@ public final class Channel {
     private final Map<Integer, Integer> storedVars = new HashMap<>();
     private ReentrantReadWriteLock merchant_lock = new ReentrantReadWriteLock(true);
     private List<MapleExpedition> expeditions = new ArrayList<>();
+    private MCarnivalLobbyManager carnivalLobbyManager = null;
     private MapleEvent event;
     private boolean finishedShutdown = false;
 
@@ -76,6 +78,7 @@ public final class Channel {
         this.mapFactory = new MapleMapFactory(world, channel);
         TimerManager.getInstance().register(() -> mapFactory.getMaps().values().forEach(MapleMap::respawn), 10000);
         reloadEventScriptManager();
+        carnivalLobbyManager = new MCarnivalLobbyManager();
         try {
             port = 7575 + this.channel - 1;
             port += (world * 100);
@@ -95,6 +98,10 @@ public final class Channel {
             e.printStackTrace();
         }
         System.out.println("\tChannel " + getId() + ": Listening on port " + port);
+    }
+
+    public MCarnivalLobbyManager getCarnivalLobbyManager() {
+        return carnivalLobbyManager;
     }
 
     public void reloadEventScriptManager() {

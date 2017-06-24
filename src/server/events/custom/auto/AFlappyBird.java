@@ -1,7 +1,7 @@
 package server.events.custom.auto;
 
 import client.MapleCharacter;
-import net.server.channel.handlers.PlayerMoveEvent;
+import net.server.channel.handlers.PlayerMoveHandler;
 import net.server.world.World;
 import server.movement.AbsoluteLifeMovement;
 import server.movement.LifeMovementFragment;
@@ -35,11 +35,10 @@ public class AFlappyBird extends GAutoEvent {
 
     @Override
     public void stop() {
-        super.dispose();
     }
 
     @PacketWorker
-    public void onPlayerMove(PlayerMoveEvent event) {
+    public void onPlayerMove(PlayerMoveHandler event) {
         // attempting to check player movement action, stance or position
         MapleCharacter player = event.getClient().getPlayer();
         for (LifeMovementFragment frags : event.getMovements()) {

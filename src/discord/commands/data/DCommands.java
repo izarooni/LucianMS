@@ -548,6 +548,9 @@ public class DCommands {
                             event.getChannel().sendMessage("An error occurred");
                             return;
                         }
+                        if (permission.equals("*")) {
+                            break;
+                        }
                     }
                     event.getChannel().sendMessage("Success!");
                 } else if (command.args[0].equalsIgnoreCase("giverole") || command.args[0].equalsIgnoreCase("removerole")) {
@@ -583,7 +586,7 @@ public class DCommands {
     }
 
     private static boolean hasPermission(DiscordGuild guild, DiscordUser user, String permission) {
-        if (user.getUser().getLongID() == Discord.getConfig().getNumber("ownerId").intValue()) {
+        if (user.getUser().getLongID() == Discord.getConfig().getNumber("ownerId")) {
             return true;
         } else if (user.hasPermission(permission)) {
             return true;

@@ -6,6 +6,8 @@ import net.server.channel.handlers.CloseRangeDamageHandler;
 import net.server.channel.handlers.MagicDamageHandler;
 import net.server.channel.handlers.RangedAttackHandler;
 import net.server.world.World;
+import scheduler.Task;
+import scheduler.TaskExecutor;
 import server.life.MapleLifeFactory;
 import server.life.MapleMonster;
 import server.life.MapleMonsterStats;
@@ -48,7 +50,7 @@ public class AHeartlessWall extends GAutoEvent {
         broadcastWorldMessage("Heartless Wall will begin momentarily");
         MapleMap eventMap = getMapInstance(EventMap);
         eventMap.killAllMonsters();
-        createTask(new Runnable() {
+        TaskExecutor.createTask(new Runnable() {
             @Override
             public void run() {
                 summonWall();
@@ -58,7 +60,6 @@ public class AHeartlessWall extends GAutoEvent {
 
     @Override
     public void stop() {
-        super.dispose();
         // all players to return to their original map
         // should the return map not exist, return to a town/home
         for (MapleCharacter players : getPlayers()) {
@@ -129,7 +130,7 @@ public class AHeartlessWall extends GAutoEvent {
     private void summonWall() {
         MapleMap eventMap = getMapInstance(EventMap);
 
-        Task timeoutTask = createTask(new Runnable() {
+        Task timeoutTask = TaskExecutor.createTask(new Runnable() {
             @Override
             public void run() {
                 MapleMapObject object = eventMap.getMapObject(objectId);
