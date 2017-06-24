@@ -162,7 +162,6 @@ public class AbstractPlayerInteraction {
 	}
 
 	public void openNpc(int npcid, String script) {
-		c.removeClickedNPC();
 		NPCScriptManager.dispose(c);
 		NPCScriptManager.start(c, npcid, script, null);
 	}

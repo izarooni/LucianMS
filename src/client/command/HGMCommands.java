@@ -21,6 +21,7 @@ import server.life.MapleNPC;
 import tools.DatabaseConnection;
 import tools.MaplePacketCreator;
 
+import java.io.FilenameFilter;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;

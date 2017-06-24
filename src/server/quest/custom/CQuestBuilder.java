@@ -22,7 +22,7 @@ import java.util.HashMap;
  */
 public class CQuestBuilder {
 
-    private static final HashMap<Integer, CQuestData> quests = new HashMap<>();
+    private static HashMap<Integer, CQuestData> quests = new HashMap<>();
 
     private CQuestBuilder() {
     }
@@ -30,6 +30,7 @@ public class CQuestBuilder {
     public static void loadAllQuests() {
         if (!quests.isEmpty()) {
             quests.clear();
+            quests = new HashMap<>();
         }
         File file = new File("quests");
         File[] files = file.listFiles();
@@ -37,7 +38,11 @@ public class CQuestBuilder {
             for (File qFile : files) {
                 try {
                     CQuestData qData = parseFile(qFile);
-                    quests.putIfAbsent(qData.getId(), qData);
+                    if (!quests.containsKey(qData.getId())) {
+                        quests.put(qData.getId(), qData);
+                    } else {
+                        System.err.println("Duplicate quest ID: " + qData.getId());
+                    }
                 } catch (IOException e) {
                     e.printStackTrace();
                 }

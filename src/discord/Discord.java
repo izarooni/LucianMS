@@ -10,6 +10,7 @@ import org.json.JSONTokener;
 import sx.blah.discord.handle.obj.IGuild;
 import sx.blah.discord.handle.obj.IUser;
 import sx.blah.discord.util.DiscordException;
+import sx.blah.discord.util.MessageList;
 
 import javax.security.auth.login.LoginException;
 import java.io.*;
@@ -49,14 +50,13 @@ public class Discord {
     }
 
     public static boolean initialize() {
-        File fConfig = new File("discord/config.json");
-        if (!fConfig.exists()) {
-            try {
-                Defaults.createDefault("discord", "discord-config.json");
+        try {
+            if (Defaults.createDefaultIfAbsent("discord", "discord-config.json")) {
                 println("Discord config created. Configure settings and restart");
-            } catch (URISyntaxException | IOException e) {
-                e.printStackTrace();
+                return false;
             }
+        } catch (URISyntaxException | IOException e) {
+            e.printStackTrace();
             return false;
         }
 

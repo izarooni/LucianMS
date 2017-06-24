@@ -112,7 +112,6 @@ public class PlayerCommands {
             player.dropMessage(6, "Shadow points: " + player.getShadowPoints());
         } else if (command.equals("dispose")) {
             NPCScriptManager.dispose(client);
-            player.getClient().removeClickedNPC();
             player.announce(MaplePacketCreator.enableActions());
             player.dropMessage(6, "Disposed!");
         } else if (command.equals("achievements")) {

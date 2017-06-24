@@ -7,18 +7,12 @@ import client.inventory.MapleInventory;
 import client.inventory.MapleInventoryType;
 import constants.ItemConstants;
 import net.server.channel.Channel;
-import net.server.world.MapleParty;
-import net.server.world.MaplePartyCharacter;
 import provider.MapleData;
 import provider.MapleDataProvider;
 import provider.MapleDataProviderFactory;
 import provider.MapleDataTool;
 import server.MapleInventoryManipulator;
 import server.MapleItemInformationProvider;
-import server.life.MapleLifeFactory;
-import server.life.MapleMonster;
-import server.life.MobSkill;
-import server.life.MobSkillFactory;
 import server.maps.MapleMap;
 import tools.DatabaseConnection;
 import tools.MaplePacketCreator;
@@ -34,6 +28,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.function.Consumer;
 
 /**
  * @author izarooni, lucasdieswagger
@@ -92,7 +87,8 @@ public class GameMasterCommands {
             commands.add("!search <category> <name> - Search for a map, items, npcs or skills");
             commands.add("!chattype <type> - Change your general chat color");
             commands.add("!buff <OPT=username> - Buff yourself or a specified player");
-            commands.add("!ap <amount> - give yourself an amount of AP");
+            commands.add("!ap <amount> - Give yourself or another player AP");
+            commands.add("!sp <amount> - Give yourself or another player SP");
             commands.forEach(player::dropMessage);
             commands.clear();
         } else if (command.equals("dc")) {
@@ -765,23 +761,37 @@ public class GameMasterCommands {
                 }
                 player.dropMessage(1, sb.toString());
             }
-        } else if(command.equals("ap")) {
-        	if(args.length() >= 1) {
-        		try {
-        		short gainableAP = (short) (32767 - player.getRemainingAp()); // Because going past this will result in a negative number (it's a short)
-        		int requestToGain = Integer.parseInt(args.get(1));
-        		if(!(requestToGain > gainableAP)) {
-        			player.gainAp(requestToGain); // don't even have to update the single stat anymore, how luxurious
-        			player.dropMessage(6, String.format("Added %s AP to your remaining AP, you now have %s AP", gainableAP, player.getRemainingAp()));
-        		} else {
-        			player.dropMessage(5, String.format("You cannot add %s AP to your current AP, the max you can add is %s", requestToGain, gainableAP));
-        		}
-        		} catch(NumberFormatException e) {
-        			player.dropMessage(5, "Please only use numeric characters.");
-        		}
-        	} else {
-        		player.dropMessage(5, "Correct usage: !ap <amount>");
-        	}
+        } else if (command.equals("ap", "sp")) {
+            boolean ap = command.equals("ap");
+            if (args.length() == 0) {
+                short amount = args.parseNumber(0).shortValue();
+                if (args.length() > 1) {
+                    args.forEachStringFrom(1, new Consumer<String>() {
+                        @Override
+                        public void accept(String s) {
+                            MapleCharacter target = ch.getPlayerStorage().getCharacterByName(s);
+                            if (target != null) {
+                                if (ap) {
+                                    target.setRemainingAp(amount);
+                                } else {
+                                    target.setRemainingSp(amount);
+                                }
+                                target.updateSingleStat(ap ? MapleStat.AVAILABLEAP : MapleStat.AVAILABLESP, amount);
+                                target.dropMessage("Your available " + command.getName().toUpperCase() + " has been updated to " + (ap ? target.getRemainingAp() : target.getRemainingSp()));
+                            }
+                        }
+                    });
+                    player.dropMessage("Done!");
+                } else {
+                    if (ap) {
+                        player.setRemainingAp(amount);
+                    } else {
+                        player.setRemainingSp(amount);
+                    }
+                    player.updateSingleStat(ap ? MapleStat.AVAILABLEAP : MapleStat.AVAILABLESP, amount);
+                    player.dropMessage("Done!");
+                }
+            }
         } else if (command.equals("buff")) {
             int[] skills = {1001003, 2001002, 1101006, 1101007, 1301007, 2201001, 2121004, 2111005, 2311003, 1121002, 4211005, 3121002, 1121000, 2311003, 1101004, 1101006, 4101004, 4111001, 2111005, 1111002, 2321005, 3201002, 4101003, 4201002, 5101006, 1321010, 1121002, 1120003};
             MapleCharacter target = player;

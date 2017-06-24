@@ -37,6 +37,7 @@ public final class ScriptUtil {
     }
 
     public static void removeScript(MapleClient client, String path) {
-        client.removeEngine("scripts/ " + path);
+        path = "scripts/ " + path;
+        client.removeEngine(path);
     }
 }

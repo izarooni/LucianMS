@@ -8,6 +8,7 @@ import net.server.world.World;
 import scripting.event.EventManager;
 import server.events.custom.auto.GAutoEvent;
 import server.events.custom.auto.GAutoEventManager;
+import server.life.MapleNPC;
 import server.maps.MapleMapObject;
 import server.maps.MapleReactor;
 import server.quest.custom.CQuestBuilder;
@@ -45,6 +46,7 @@ public class AdministratorCommands {
                 commands.clear();
             }
         } else if (command.equals("reloadquests")) {
+
             CQuestBuilder.loadAllQuests();
             player.dropMessage("Quests reloaded");
         } else if (command.equals("fae")) { // force auto event

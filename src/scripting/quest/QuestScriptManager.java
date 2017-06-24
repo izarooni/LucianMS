@@ -57,17 +57,14 @@ public class QuestScriptManager {
             }
             QuestActionManager qm = new QuestActionManager(client, questId, npc, true);
             Collection<Pair<String, Object>> binds = Collections.singletonList(new Pair<>("qm", qm));
-            if (client.canClickNPC()) {
-                Invocable iv = ScriptUtil.eval(client, "quest/" + questId + ".js", binds);
-                if (iv == null) {
-                    FilePrinter.printError(FilePrinter.QUEST_UNCODED, "Quest " + questId + " is uncoded.\r\n");
-                    qm.dispose();
-                    return;
-                }
-                storage.put(client, new Pair<>(iv, qm));
-                iv.invokeFunction("start", (byte) 1, (byte) 0, 0);
-                client.setClickedNPC();
+            Invocable iv = ScriptUtil.eval(client, "quest/" + questId + ".js", binds);
+            if (iv == null) {
+                FilePrinter.printError(FilePrinter.QUEST_UNCODED, "Quest " + questId + " is uncoded.\r\n");
+                qm.dispose();
+                return;
             }
+            storage.put(client, new Pair<>(iv, qm));
+            iv.invokeFunction("start", (byte) 1, (byte) 0, 0);
         } catch (Exception e) {
             e.printStackTrace();
             dispose(client);
@@ -78,7 +75,6 @@ public class QuestScriptManager {
         if (storage.containsKey(client)) {
             try {
                 storage.get(client).left.invokeFunction("start", mode, type, selection);
-                client.setClickedNPC();
             } catch (Exception e) {
                 e.printStackTrace();
                 dispose(client);
@@ -97,16 +93,13 @@ public class QuestScriptManager {
             if (storage.containsKey(client)) {
                 return;
             }
-            if (client.canClickNPC()) {
-                Invocable iv = ScriptUtil.eval(client, "quest/" + questid + ".js", Collections.singletonList(new Pair<>("qm", qm)));
-                storage.put(client, new Pair<>(iv, qm));
-                if (iv == null) {
-                    qm.dispose();
-                    return;
-                }
-                iv.invokeFunction("end", (byte) 1, (byte) 0, 0);
-                client.setClickedNPC();
+            Invocable iv = ScriptUtil.eval(client, "quest/" + questid + ".js", Collections.singletonList(new Pair<>("qm", qm)));
+            storage.put(client, new Pair<>(iv, qm));
+            if (iv == null) {
+                qm.dispose();
+                return;
             }
+            iv.invokeFunction("end", (byte) 1, (byte) 0, 0);
         } catch (Throwable e) {
             e.printStackTrace();
             dispose(client);
@@ -117,7 +110,6 @@ public class QuestScriptManager {
         if (storage.containsKey(client)) {
             Invocable iv = storage.get(client).left;
             try {
-                client.setClickedNPC();
                 iv.invokeFunction("end", mode, type, selection);
             } catch (Exception e) {
                 e.printStackTrace();

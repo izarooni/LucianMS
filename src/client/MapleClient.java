@@ -1231,18 +1231,6 @@ public class MapleClient {
         this.sessionId = sessionId;
     }
 
-    public boolean canClickNPC() {
-        return System.currentTimeMillis() - lastNpcClick > 200;
-    }
-
-    public void setClickedNPC() {
-        lastNpcClick = System.currentTimeMillis();
-    }
-
-    public void removeClickedNPC() {
-        lastNpcClick = 0;
-    }
-
     public int getDonationPoints() {
     	    int points = 0;
             try {

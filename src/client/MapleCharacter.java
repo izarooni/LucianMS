@@ -3078,7 +3078,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
                     CQuestData cQuest = CQuestBuilder.beginQuest(ret, rs.getInt("questid"));
                     if (cQuest != null) {
                         if (rs.getInt("completed") == 0) {
-                            try (PreparedStatement stmt = con.prepareStatement("select * from cquestdata where ctableid = ?")) {
+                            try (PreparedStatement stmt = con.prepareStatement("select * from cquestdata where qtableid = ?")) {
                                 stmt.setInt(1, rs.getInt("id"));
                                 try (ResultSet res = stmt.executeQuery()) {
                                     while (res.next()) {
@@ -4089,7 +4089,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
                 try (ResultSet rs = stmt.executeQuery()) {
                     if (rs.next() && rs.getInt("total") > 0) {
                         deleteWhereCharacterId(con, "delete from cquest where characterid = ?");
-                        deleteWhereCharacterId(con, "delete from cquestdata where ctableid = (select id from cquest where characterid = ?)");
+                        deleteWhereCharacterId(con, "delete from cquestdata where qtableid = (select id from cquest where characterid = ?)");
 
                     }
                 }

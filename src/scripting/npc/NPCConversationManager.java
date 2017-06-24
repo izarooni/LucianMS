@@ -25,6 +25,7 @@ import java.io.File;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.concurrent.ScheduledFuture;
 
 import net.server.Server;
 import net.server.guild.MapleAlliance;
@@ -36,6 +37,7 @@ import provider.MapleDataProviderFactory;
 import scripting.AbstractPlayerInteraction;
 import server.MapleItemInformationProvider;
 import server.MapleStatEffect;
+import server.TimerManager;
 import server.events.gm.MapleEvent;
 import server.gachapon.MapleGachapon;
 import server.gachapon.MapleGachapon.MapleGachaponItem;
@@ -168,6 +170,10 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
 	 */
 	public void sendDimensionalMirror(String text) {
 		getClient().announce(MaplePacketCreator.getDimensionalMirror(text));
+	}
+
+	public ScheduledFuture<?> delayCall(Runnable runnable, long delay) {
+		return TimerManager.getInstance().schedule(runnable, delay);
 	}
 
 	public void setGetText(String text) {

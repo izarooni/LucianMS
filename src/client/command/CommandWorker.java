@@ -3,6 +3,8 @@ package client.command;
 import client.MapleCharacter;
 import client.MapleClient;
 
+import java.util.function.Consumer;
+
 /**
  * @author izarooni
  */
@@ -217,18 +219,24 @@ public class CommandWorker {
         /**
          * Find an argument in the array of args and return the index of the argument + 1
          *
-         * @param n the argument to search for
+         * @param arg the argument to search for
          * @return the index above the found argument
          */
-        public int findArg(String n) {
+        public int findArg(String arg) {
             for (int i = 0; i < args.length; i++) {
-                if (args[i].equalsIgnoreCase(n)) {
+                if (args[i].equalsIgnoreCase(arg)) {
                     if (i + 1 < args.length) {
                         return i + 1;
                     }
                 }
             }
             return -1;
+        }
+
+        public void forEachStringFrom(int index, Consumer<String> consumer) {
+            for (int j = index; j < args.length; j++) {
+                consumer.accept(args[j]);
+            }
         }
     }
 }
