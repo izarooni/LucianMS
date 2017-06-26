@@ -1,5 +1,6 @@
 package server.partyquest.carnival;
 
+import client.MapleCharacter;
 import net.server.world.MapleParty;
 
 /**
@@ -33,6 +34,12 @@ public class MCarnivalTeam {
 
     public void setAvailableCarnivalPoints(int availableCarnivalPoints) {
         this.availableCarnivalPoints = availableCarnivalPoints;
+    }
+
+    public void addCarnivalPoints(MapleCharacter player, int carnivalPoints) {
+        player.addCP(carnivalPoints);
+        availableCarnivalPoints += carnivalPoints;
+        totalCarnivalPoints += carnivalPoints;
     }
 
     public int getTotalCarnivalPoints() {

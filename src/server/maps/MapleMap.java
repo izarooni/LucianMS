@@ -42,12 +42,14 @@ import server.MapleItemInformationProvider;
 import server.MaplePortal;
 import server.MapleStatEffect;
 import server.TimerManager;
+import server.events.custom.GenericEvent;
 import server.events.gm.*;
 import server.life.*;
 import server.life.MapleLifeFactory.SelfDestruction;
 import server.partyquest.MonsterCarnival;
 import server.partyquest.MonsterCarnivalParty;
 import server.partyquest.Pyramid;
+import server.partyquest.carnival.MCarnivalGame;
 import server.quest.custom.CQuestData;
 import server.quest.custom.requirement.CQuestItemRequirement;
 import server.quest.custom.requirement.CQuestKillRequirement;
@@ -539,7 +541,7 @@ public class MapleMap {
                     monster.damage(chr, damage);
                     if (!monster.isAlive()) { // monster just died
                         // killMonster(monster, chr, true);
-                    	
+
                     	if(monster.getMap().getId() == 85) {
                     		if(chr.getParty() != null) {
                     			for(MaplePartyCharacter player : chr.getParty().getMembers()) {
@@ -551,7 +553,7 @@ public class MapleMap {
                     			chr.dropMessage(5, "Thanks for finally letting me realize my actions were corrupt against the realm.");
                     		}
                     	}
-                    	
+
                         if (ServerConstants.NX_FROM_MONSTERS) {
                             int random = (Randomizer.nextInt(100)) + 1;
                             int levelDifference = chr.getLevel() - monster.getLevel();
@@ -732,10 +734,15 @@ public class MapleMap {
         // if (monster.getStats().selfDestruction() == null) {//FUU BOMBS D:
         removeMapObject(monster);
         // }
-        if (monster.getCP() > 0 && chr.getCarnival() != null) {
-            chr.getCarnivalParty().addCP(chr, monster.getCP());
+        Optional<GenericEvent> op = chr.getGenericEvents().stream().filter(o -> o instanceof MCarnivalGame).findFirst();
+        MCarnivalGame carnivalGame = null;
+        if (op.isPresent()) {
+            carnivalGame = (MCarnivalGame) op.get();
+        }
+        if (monster.getCP() > 0 && carnivalGame != null) {
+            carnivalGame.getTeam(chr.getTeam()).addCarnivalPoints(chr, monster.getCP());
             chr.announce(MaplePacketCreator.getMonsterCarnivalPointsUpdate(chr.getCP(), chr.getObtainedCP()));
-            broadcastMessage(MaplePacketCreator.getMonsterCarnivalPointsUpdateParty(chr.getCarnivalParty()));
+            broadcastMessage(MaplePacketCreator.getMonsterCarnivalPointsUpdateParty(carnivalGame.getTeam(chr.getTeam())));
             // they drop items too ):
         }
         if (monster.getId() >= 8800003 && monster.getId() <= 8800010) {
@@ -1596,11 +1603,14 @@ public class MapleMap {
             chr.announce(MaplePacketCreator.rollSnowBall(true, 0, null, null));
         }
 
-        MonsterCarnival carnival = chr.getCarnival();
-        MonsterCarnivalParty cparty = chr.getCarnivalParty();
-        if (carnival != null && cparty != null && (mapid == 980000101 || mapid == 980000201 || mapid == 980000301 || mapid == 980000401 || mapid == 980000501 || mapid == 980000601)) {
-            chr.getClient().announce(MaplePacketCreator.getClock((int) (carnival.getTimeLeft() / 1000)));
-            chr.getClient().announce(MaplePacketCreator.getMonsterCarnivalStart(chr, carnival.oppositeTeam(cparty)));
+        Optional<GenericEvent> op = chr.getGenericEvents().stream().filter(o -> o instanceof MCarnivalGame).findFirst();
+        MCarnivalGame carnivalGame = null;
+        if (op.isPresent()) {
+            carnivalGame = (MCarnivalGame) op.get();
+        }
+        if (carnivalGame != null && (mapid == 980000101 || mapid == 980000201 || mapid == 980000301 || mapid == 980000401 || mapid == 980000501 || mapid == 980000601)) {
+            chr.getClient().announce(MaplePacketCreator.getClock((int) (carnivalGame.getTimeLeft() / 1000)));
+            chr.getClient().announce(MaplePacketCreator.getMonsterCarnivalStart(chr, carnivalGame.getTeamOpposite(chr.getTeam())));
         }
         if (hasClock()) {
             Calendar cal = Calendar.getInstance();
