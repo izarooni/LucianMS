@@ -88,9 +88,7 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
 	}
 
 	public void dispose() {
-		System.out.println("NPCConversationManager.dispose1");
 		NPCScriptManager.dispose(this);
-		System.out.println("NPCConversationManager.dispose2");
 	}
 
 	public void sendNext(String text) {

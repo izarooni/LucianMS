@@ -71,9 +71,8 @@ public class NPCScriptManager {
                         iv.invokeFunction("start", chr);
                     } catch (NoSuchMethodException e2) {
                         try {
-                            iv.invokeFunction("action", 1, 0, -1);
                             storage.put(client.getAccID(), new Pair<>(iv, cm));
-                            System.out.println("(Start) contains?: " + storage.containsKey(client.getAccID()));
+                            iv.invokeFunction("action", 1, 0, -1);
                         } catch (NoSuchMethodError e3) {
                             e3.printStackTrace();
                             dispose(client);
@@ -122,14 +121,12 @@ public class NPCScriptManager {
     public static void dispose(NPCConversationManager cm) {
         MapleClient client = cm.getClient();
         String path = "npc/world" + client.getWorld() + "/" + (cm.getScriptName() == null ? cm.getNpc() : cm.getScriptName()) + ".js";
-        System.out.println("(Dispose) 1contains?: " + storage.containsKey(client.getAccID()));
         Pair<Invocable, NPCConversationManager> pair = storage.remove(client.getAccID());
         if (pair != null) {
             pair.left = null;
             pair.right = null;
         }
         ScriptUtil.removeScript(client, path);
-        System.out.println("(Dispose) 2contains?: " + storage.containsKey(client.getAccID()));
     }
 
     public static void dispose(MapleClient client) {
@@ -139,7 +136,6 @@ public class NPCScriptManager {
     }
 
     public static NPCConversationManager getConversationManager(MapleClient client) {
-        System.out.println("(CM_Get) contains?: " + storage.containsKey(client.getAccID()));
         Pair<Invocable, NPCConversationManager> pair = storage.get(client.getAccID());
         return pair == null ? null : pair.getRight();
     }

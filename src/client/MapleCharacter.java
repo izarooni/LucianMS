@@ -2047,7 +2047,8 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
     }
 
     public int getMaxLevel() {
-        return isCygnus() ? 120 : 200;
+        //        return isCygnus() ? 120 : 200;
+        return 250;
     }
 
     public int getMaxMp() {
