@@ -539,6 +539,19 @@ public class MapleMap {
                     monster.damage(chr, damage);
                     if (!monster.isAlive()) { // monster just died
                         // killMonster(monster, chr, true);
+                    	
+                    	if(monster.getMap().getId() == 85) {
+                    		if(chr.getParty() != null) {
+                    			for(MaplePartyCharacter player : chr.getParty().getMembers()) {
+                    				player.getPlayer().changeMap(88);
+                    				player.getPlayer().dropMessage(5, "Thanks for finally letting me realize my actions were corrupt against the realm.");
+                    			}
+                    		} else {
+                    			chr.changeMap(88);
+                    			chr.dropMessage(5, "Thanks for finally letting me realize my actions were corrupt against the realm.");
+                    		}
+                    	}
+                    	
                         if (ServerConstants.NX_FROM_MONSTERS) {
                             int random = (Randomizer.nextInt(100)) + 1;
                             int levelDifference = chr.getLevel() - monster.getLevel();

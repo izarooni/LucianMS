@@ -21,11 +21,34 @@
  */
 package net.server;
 
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.net.InetSocketAddress;
+import java.net.URISyntaxException;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Properties;
+import java.util.Set;
+
+import org.apache.mina.core.buffer.IoBuffer;
+import org.apache.mina.core.buffer.SimpleBufferAllocator;
+import org.apache.mina.core.service.IoAcceptor;
+import org.apache.mina.core.session.IdleStatus;
+import org.apache.mina.filter.codec.ProtocolCodecFilter;
+import org.apache.mina.transport.socket.nio.NioSocketAcceptor;
+import org.json.JSONObject;
+import org.json.JSONTokener;
+
 import client.MapleCharacter;
 import client.SkillFactory;
 import command.ConsoleCommands;
 import constants.ServerConstants;
-import discord.Discord;
 import io.Config;
 import io.defaults.Defaults;
 import net.MapleServerHandler;
@@ -35,14 +58,6 @@ import net.server.guild.MapleAlliance;
 import net.server.guild.MapleGuild;
 import net.server.guild.MapleGuildCharacter;
 import net.server.world.World;
-import org.apache.mina.core.buffer.IoBuffer;
-import org.apache.mina.core.buffer.SimpleBufferAllocator;
-import org.apache.mina.core.service.IoAcceptor;
-import org.apache.mina.core.session.IdleStatus;
-import org.apache.mina.filter.codec.ProtocolCodecFilter;
-import org.apache.mina.transport.socket.nio.NioSocketAcceptor;
-import org.json.JSONObject;
-import org.json.JSONTokener;
 import server.CashShop.CashItemFactory;
 import server.MapleItemInformationProvider;
 import server.TimerManager;
@@ -52,13 +67,6 @@ import server.quest.MapleQuest;
 import server.quest.custom.CQuestBuilder;
 import tools.DatabaseConnection;
 import tools.Pair;
-
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.net.InetSocketAddress;
-import java.net.URISyntaxException;
-import java.sql.SQLException;
-import java.util.*;
 
 public class Server implements Runnable {
 
@@ -155,13 +163,6 @@ public class Server implements Runnable {
             }
         } catch (URISyntaxException | IOException e) {
             e.printStackTrace();
-        }
-
-        if (config.getBoolean("DiscordBotEnabled")) {
-            if (!Discord.initialize()) {
-                System.exit(0);
-                return;
-            }
         }
 
         Runtime.getRuntime().addShutdownHook(new Thread(shutdown()));

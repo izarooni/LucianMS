@@ -1,15 +1,14 @@
 package command;
 
+import java.io.IOException;
+import java.net.URISyntaxException;
+import java.util.Scanner;
+
 import client.MapleCharacter;
-import discord.Discord;
 import net.server.Server;
 import net.server.channel.Channel;
 import net.server.world.World;
 import server.Whitelist;
-
-import java.io.IOException;
-import java.net.URISyntaxException;
-import java.util.Scanner;
 
 /**
  * @author izarooni
@@ -64,9 +63,6 @@ public class ConsoleCommands {
     private static void execute(CommandWorker.Command command, CommandWorker.CommandArgs args) {
         if (command.equals("shutdown", "exit")) {
             reading = false;
-            if (Discord.getBot().getClient() != null) {
-                Discord.getBot().getClient().logout();
-            }
             System.exit(0);
         } else if (command.equals("online")) {
             if (Server.getInstance().isOnline()) {
@@ -87,12 +83,6 @@ public class ConsoleCommands {
                 }
             } else {
                 System.err.println("The server is not online!");
-            }
-        } else if (command.equals("d_login")) {
-            try {
-                Discord.getBot().login();
-            } catch (Exception e) {
-                System.err.println("Could not login Discord: " + e.getMessage());
             }
         } else if (command.equals("reloadwhitelist")) {
             try {

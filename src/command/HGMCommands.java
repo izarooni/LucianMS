@@ -57,7 +57,7 @@ public class HGMCommands {
             commands.add("!reloadshops - Reload shop items");
             commands.add("!reloadskills - Relaod loaded skill data");
             commands.add("!reloadmobs - Reload mob data");
-            commands.add("!resetreactors - Reset all reactors in the m);
+            commands.add("!resetreactors - Reset all reactors in the m");
             commands.add("!godmeup - Change values of all stats for all equips");
             commands.forEach(player::dropMessage);
             commands.clear();

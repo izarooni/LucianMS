@@ -1,13 +1,8 @@
 package client.autoban;
 
-import client.MapleClient;
-import discord.Discord;
-import sx.blah.discord.util.DiscordException;
-import sx.blah.discord.util.MessageBuilder;
-import sx.blah.discord.util.MissingPermissionsException;
-import sx.blah.discord.util.RateLimitException;
-
 import java.util.HashMap;
+
+import client.MapleClient;
 
 /**
  * @author izarooni
@@ -33,7 +28,7 @@ public class Cheater {
             if (System.currentTimeMillis() - latestAnnouncement < cooldown) {
                 return;
             }
-            if (!client.getPlayer().isGM()) {
+            /*if (!client.getPlayer().isGM()) {
                 try {
                     String channel = Discord.getConfig().getString("cheaterChannel");
                     if (channel != null) {
@@ -44,7 +39,7 @@ public class Cheater {
                 } catch (RateLimitException | MissingPermissionsException | DiscordException e) {
                     System.err.println(String.format("Unable to send %s's cheater message ('%s') due to error: %s", client.getPlayer().getName(), message, e.getMessage()));
                 }
-            }
+            }*/
             latestAnnouncement = System.currentTimeMillis();
         }
     }

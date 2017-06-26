@@ -1,9 +1,12 @@
 package command;
 
+import java.awt.Point;
+import java.util.ArrayList;
+import java.util.Map;
+
 import client.MapleCharacter;
 import client.MapleClient;
 import client.MapleDisease;
-import discord.Discord;
 import net.server.channel.Channel;
 import net.server.world.MapleParty;
 import net.server.world.MaplePartyCharacter;
@@ -13,12 +16,7 @@ import server.life.MapleLifeFactory;
 import server.life.MapleMonster;
 import server.life.MobSkill;
 import server.life.MobSkillFactory;
-import sx.blah.discord.util.MessageBuilder;
 import tools.MaplePacketCreator;
-
-import java.awt.*;
-import java.util.ArrayList;
-import java.util.Map;
 
 /**
  * This can get messy so I'm separating event related commands from regular GM commands
@@ -90,7 +88,6 @@ public class EventCommands {
                             if (playerEvent.getGateTime() > 0) {
                                 message += " and the gate will close in " + playerEvent.getGateTime() + " seconds";
                             }
-                            new MessageBuilder(Discord.getBot().getClient()).withChannel(Long.parseLong("306540306302763030")).appendContent(message).build();
                         break;
                         }
                         case "name": {
