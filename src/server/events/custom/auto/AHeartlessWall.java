@@ -60,6 +60,7 @@ public class AHeartlessWall extends GAutoEvent {
 
     @Override
     public void stop() {
+        GAutoEventManager.setCurrentEvent(null);
         // all players to return to their original map
         // should the return map not exist, return to a town/home
         for (MapleCharacter players : getPlayers()) {

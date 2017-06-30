@@ -17,7 +17,6 @@ public class MCarnivalGame extends GenericEvent {
     private MCarnivalTeam teamRed = null;
     private MCarnivalTeam teamBlue = null;
 
-
     public MCarnivalGame(MCarnivalLobby lobby) {
         this.lobby = lobby;
     }
@@ -30,7 +29,7 @@ public class MCarnivalGame extends GenericEvent {
         player.addGenericEvent(this);
         player.changeMap(lobby.getBattlefieldMapId());
         player.announce(MaplePacketCreator.showForcedEquip(player.getTeam()));
-        player.announce(MaplePacketCreator.getMonsterCarnivalStart(player, (player.getTeam() == teamRed.getId()) ? teamBlue : teamRed));
+        player.announce(MaplePacketCreator.getMonsterCarnivalStart(player, this));
     }
 
     @Override

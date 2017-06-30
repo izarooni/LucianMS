@@ -1610,7 +1610,7 @@ public class MapleMap {
         }
         if (carnivalGame != null && (mapid == 980000101 || mapid == 980000201 || mapid == 980000301 || mapid == 980000401 || mapid == 980000501 || mapid == 980000601)) {
             chr.getClient().announce(MaplePacketCreator.getClock((int) (carnivalGame.getTimeLeft() / 1000)));
-            chr.getClient().announce(MaplePacketCreator.getMonsterCarnivalStart(chr, carnivalGame.getTeamOpposite(chr.getTeam())));
+            chr.getClient().announce(MaplePacketCreator.getMonsterCarnivalStart(chr, carnivalGame));
         }
         if (hasClock()) {
             Calendar cal = Calendar.getInstance();

@@ -17,6 +17,7 @@ public class MCarnivalLobby {
         InProgress // Game started
     }
 
+    private final int maxPartySize;
     private final int battlefieldMapId;
 
     private State state = State.Available;
@@ -26,8 +27,13 @@ public class MCarnivalLobby {
 
     private Task waitingTask;
 
-    public MCarnivalLobby(int battlefieldMapId) {
+    public MCarnivalLobby(int maxPartySize, int battlefieldMapId) {
+        this.maxPartySize = maxPartySize;
         this.battlefieldMapId = battlefieldMapId;
+    }
+
+    public int getMaxPartySize() {
+        return maxPartySize;
     }
 
     public int getBattlefieldMapId() {
@@ -117,6 +123,23 @@ public class MCarnivalLobby {
         } else if (party2 == party) {
             party2 = null;
         }
+    }
+
+    /**
+     * First entering party must have at least 1 party member but may not exceed maximum party size
+     * <p>
+     * Second entering party must have member count equal to the first entered party
+     * </p>
+     *
+     * @param party the party attempt to enter the lobby
+     * @return true if the party may enter, false otherwise
+     */
+    public boolean canEnter(MapleParty party) {
+        if (party1 == null && party2 == null) {
+            return party.getMembers().size() <= maxPartySize;
+        }
+        MapleParty nn = party1 == null ? party2 : party1;
+        return nn.getMembers().size() == party.getMembers().size();
     }
 
     private MCarnivalGame createGame() {

@@ -15,7 +15,17 @@ public class MCarnivalLobbyManager {
         int bMapId = 980000000;
         for (int i = 1; i < 7; i++) {
             int nMapId = bMapId + (i * 100);
-            lobbies.put(nMapId, new MCarnivalLobby(nMapId + 1));
+            int maxPartySize;
+            if (i == 1 || i == 2) {
+                maxPartySize = 2;
+            } else if (i == 3 || i == 4) {
+                maxPartySize = 3;
+            } else if (i == 5 || i == 6) {
+                maxPartySize = 5;
+            } else {
+                throw new RuntimeException("Invalid carnival map " + (nMapId));
+            }
+            lobbies.put(nMapId, new MCarnivalLobby(maxPartySize,nMapId + 1));
         }
     }
 

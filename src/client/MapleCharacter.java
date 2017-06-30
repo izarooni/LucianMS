@@ -3083,7 +3083,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
                                 stmt.setInt(1, rs.getInt("id"));
                                 try (ResultSet res = stmt.executeQuery()) {
                                     while (res.next()) {
-                                        cQuest.getToKill().incrementRequirement(rs.getInt("monsterid"), rs.getInt("kills"));
+                                        cQuest.getToKill().incrementRequirement(res.getInt("monsterid"), res.getInt("kills"));
                                     }
                                 }
                             }

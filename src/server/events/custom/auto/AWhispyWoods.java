@@ -54,6 +54,7 @@ public class AWhispyWoods extends GAutoEvent {
 
     @Override
     public void stop() {
+        GAutoEventManager.setCurrentEvent(null);
         for (MapleCharacter players : getPlayers()) {
             unregisterPlayer(players);
         }

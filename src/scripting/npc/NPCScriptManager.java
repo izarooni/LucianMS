@@ -43,7 +43,7 @@ public class NPCScriptManager {
             Invocable iv = null;
             try {
                 iv = ScriptUtil.eval(client, path, binds);
-            } catch (FileNotFoundException e) {
+            } catch (NullPointerException e) {
                 cm.sendOk("Hey I don't have a purpose right now but maybe you can suggest one!\r\nThis is my ID: #b" + npc + "");
             } catch (Exception e) {
                 String response = "An error occurred in this NPC";
@@ -63,6 +63,7 @@ public class NPCScriptManager {
                 dispose(client);
                 return;
             }
+            storage.put(client.getAccID(), new Pair<>(iv, cm));
             try {
                 try {
                     iv.invokeFunction("start");
@@ -71,7 +72,6 @@ public class NPCScriptManager {
                         iv.invokeFunction("start", chr);
                     } catch (NoSuchMethodException e2) {
                         try {
-                            storage.put(client.getAccID(), new Pair<>(iv, cm));
                             iv.invokeFunction("action", 1, 0, -1);
                         } catch (NoSuchMethodError e3) {
                             e3.printStackTrace();

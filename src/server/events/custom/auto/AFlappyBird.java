@@ -35,6 +35,7 @@ public class AFlappyBird extends GAutoEvent {
 
     @Override
     public void stop() {
+        GAutoEventManager.setCurrentEvent(null);
     }
 
     @PacketWorker

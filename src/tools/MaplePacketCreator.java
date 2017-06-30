@@ -56,6 +56,7 @@ import server.life.MobSkill;
 import server.maps.*;
 import server.movement.LifeMovementFragment;
 import server.partyquest.MonsterCarnivalParty;
+import server.partyquest.carnival.MCarnivalGame;
 import server.partyquest.carnival.MCarnivalTeam;
 import tools.data.output.LittleEndianWriter;
 import tools.data.output.MaplePacketLittleEndianWriter;
@@ -6715,16 +6716,18 @@ public class MaplePacketCreator {
         return mplew.getPacket();
     }
 
-    public static byte[] getMonsterCarnivalStart(MapleCharacter player, MCarnivalTeam enemyTeam) {
+    public static byte[] getMonsterCarnivalStart(MapleCharacter player, MCarnivalGame carnivalGame) {
         final MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter(25);
         mplew.writeShort(SendOpcode.MONSTER_CARNIVAL_START.getValue());
         mplew.write(player.getTeam()); //team
         mplew.writeShort(player.getCP()); //Obtained CP - Used CP
         mplew.writeShort(player.getObtainedCP()); //Total Obtained CP
-        mplew.writeShort(player.getCarnivalParty().getAvailableCP()); //Obtained CP - Used CP of the team
-        mplew.writeShort(player.getCarnivalParty().getTotalCP()); //Total Obtained CP of the team
-        mplew.writeShort(enemyTeam.getAvailableCarnivalPoints()); //Obtained CP - Used CP of the team
-        mplew.writeShort(enemyTeam.getTotalCarnivalPoints()); //Total Obtained CP of the team
+        MCarnivalTeam friendly = carnivalGame.getTeam(player.getTeam());
+        MCarnivalTeam enemy = carnivalGame.getTeamOpposite(player.getTeam());
+        mplew.writeShort(friendly.getAvailableCarnivalPoints()); //Obtained CP - Used CP of the team
+        mplew.writeShort(friendly.getTotalCarnivalPoints()); //Total Obtained CP of the team
+        mplew.writeShort(enemy.getAvailableCarnivalPoints()); //Obtained CP - Used CP of the team
+        mplew.writeShort(enemy.getTotalCarnivalPoints()); //Total Obtained CP of the team
         mplew.writeShort(0); //Probably useless nexon shit
         mplew.writeLong(0); //Probably useless nexon shit
         return mplew.getPacket();
