@@ -124,9 +124,9 @@ public class GameMasterCommands {
                             target.getClient().changeChannel(client.getChannel());
                         }
                         if (args.length() == 1 && command.equals("warp", "wh", "whx")) { // !warp <username>
-                            MapleCharacter warpie = (command.equals("warp") ? player : target); // LUL
-                            MapleCharacter warper = (command.equals("warp") ? target : player);
-                            if (exact) {
+                            MapleCharacter warpie = (command.equals("warp") ? player : target); // person to warp
+                            MapleCharacter warper = (command.equals("warp") ? target : player); // destination
+                            if (exact || command.equals("warp")) {
                                 warpie.changeMap(warper.getMap(), warper.getPosition());
                             } else {
                                 warpie.changeMap(warper.getMap());
