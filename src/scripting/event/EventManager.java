@@ -168,12 +168,14 @@ public class EventManager extends GenericEvent {
      *
      * @param player the player initializing the event
      */
-    public void startInstance(MapleCharacter player) {
+    public EventInstanceManager startInstance(MapleCharacter player) {
         try {
             EventInstanceManager eim = (EventInstanceManager) (getInvocable().invokeFunction("setup", (Object) null));
             eim.registerPlayer(player);
+            return eim;
         } catch (ScriptException | NoSuchMethodException ex) {
             Logger.getLogger(EventManager.class.getName()).log(Level.SEVERE, null, ex);
+            return null;
         }
     }
 
@@ -183,12 +185,14 @@ public class EventManager extends GenericEvent {
      * @param party the party starting the party quest
      * @param map   the map containing all the party members
      */
-    public void startInstance(MapleParty party, MapleMap map) {
+    public EventInstanceManager startInstance(MapleParty party, MapleMap map) {
         try {
             EventInstanceManager eim = (EventInstanceManager) (getInvocable().invokeFunction("setup", (Object) null));
             eim.registerParty(party, map);
+            return eim;
         } catch (ScriptException | NoSuchMethodException ex) {
             Logger.getLogger(EventManager.class.getName()).log(Level.SEVERE, null, ex);
+            return null;
         }
     }
 

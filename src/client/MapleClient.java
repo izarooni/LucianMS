@@ -993,7 +993,7 @@ public class MapleClient {
                 } catch (NullPointerException e) {
                 }
             }
-        }, 15000);
+        }, 30000);
     }
 
     public String getHWID() {
