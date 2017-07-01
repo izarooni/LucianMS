@@ -109,6 +109,8 @@ public class MapleStatEffect {
 
             if (sourceid == Marauder.TRANSFORMATION // pink bean
                     || sourceid == Buccaneer.SUPER_TRANSFORMATION // super pink bean \o/
+                    || sourceid == 5121003 // don't feel like checking which exact job they belong to
+                    || sourceid == 5111005
                     || (!ret.isMist() && !ret.isMorph() && !ret.isPoison() && !ret.isMagicDoor() && !ret.isDs())) {
                 // is it better to condition which skills not to include than a list of allowed skills?
                 ret.duration = Integer.MAX_VALUE;
