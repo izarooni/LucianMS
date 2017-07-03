@@ -131,6 +131,12 @@ public class PlayerCommands {
             WeakHashMap<String, Integer> maps = new WeakHashMap<>();
             maps.put("fm", 910000000);
             maps.put("henesys", 100000000);
+            maps.put("perion", 102000000);
+            maps.put("kerning", 103000000);
+            maps.put("ellinia", 103000000);
+            maps.put("lith", 104000000);
+            maps.put("harbor", 104000000);
+            maps.put("ellinia", 180000000);
             maps.put("florina", 110000000);
             maps.put("nautilus", 120000000);
             maps.put("ereve", 130000000);
