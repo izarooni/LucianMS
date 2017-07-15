@@ -14,6 +14,7 @@ import server.maps.MapleMap;
 import tools.MaplePacketCreator;
 
 public abstract class PVP {
+	
 
 	protected HashMap<String, Integer> PVPers;
 	protected int levelRequirement, mapId;
