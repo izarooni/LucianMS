@@ -1085,6 +1085,11 @@ public class MapleClient {
         votePoints += points;
         saveVotePoints();
     }
+    
+    public void addDonorPoints(int points) {
+    	donationPoints += points;
+    	setDonationPoints(donationPoints);
+    }
 
     public void useVotePoints(int points) {
         if (points > votePoints) {
