@@ -201,7 +201,9 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
     private int goal, current;
     private int killType;
     private int riceCakes = 0;
+    private int rebirthPoints = 0;
     private boolean muted;
+    private boolean autorebirthing = false;
     private House house;
     private Achievements achievements;
     private PVP pvp;
@@ -2665,6 +2667,9 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
         if (level >= getMaxLevel()) {
             exp.set(0);
             level = getMaxLevel(); // To prevent levels past 200
+            if (autorebirthing) {
+                doBreakthrough();
+            }
         }
         if (level % 50 == 0) { // For the drop + meso rate
             setRates();
@@ -5480,43 +5485,42 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
         return achievements;
     }
 
-    public boolean breakThrough() {
-        if (getLevel() >= 200) {
-            updateSingleStat(MapleStat.LEVEL, 10);
-            this.level = 10; // won't update for serverside otherwise?
-            this.job = MapleJob.BEGINNER;
-            updateSingleStat(MapleStat.AVAILABLESP, 6);
-            updateSingleStat(MapleStat.EXP, 0);
-            updateSingleStat(MapleStat.JOB, MapleJob.BEGINNER.jobid);
+    public void doBreakthrough() {
+        breakthroughs += 1;
 
-            //for(int key : getKeymap().keySet()) {
-            //MapleKeyBinding binding = getKeymap().get(key);
-            //}
-            getKeymap().clear();
+        job = MapleJob.BEGINNER;
+        updateSingleStat(MapleStat.JOB, job.getId());
 
-            if (breakthroughs >= 1 && breakthroughs <= 10) {
-                announce(MaplePacketCreator.showEffect("pepeKing/pepe/pepeW")); // screen effect
-                announce(MaplePacketCreator.showEffect("pepeKing/frame/W"));
-            }
-            if (breakthroughs >= 10 && breakthroughs <= 100) {
-                announce(MaplePacketCreator.showEffect("ad/piramid")); // screen effect
-                announce(MaplePacketCreator.trembleEffect(0, 0)); // shake screen
-            }
-            if (breakthroughs >= 100) {
-                announce(MaplePacketCreator.showEffect("balog/clear/stone")); // screen effect
-                announce(MaplePacketCreator.trembleEffect(0, 0)); // shake screen
-                // damage all monsters in the screen
-                for (MapleMapObject object : getMap().getMapObjectsInRange(getPosition(), 100000, Collections.singletonList(MapleMapObjectType.MONSTER))) {
-                    MapleMonster monster = (MapleMonster) object;
-                    int damage = monster.getMaxHp();
-                    getMap().broadcastMessage(MaplePacketCreator.damageMonster(monster.getObjectId(), damage));
-                    getMap().damageMonster(this, monster, damage);
-                }
-            }
+        level = 10;
+        updateSingleStat(MapleStat.LEVEL, 10);
 
-            return true;
+        exp.set(0);
+        updateSingleStat(MapleStat.EXP, 0);
+
+//        getKeymap().clear();
+
+        setRebirthPoints(getRebirthPoints() + 50);
+        dropMessage("You have received 50 rebirth points");
+
+        if (breakthroughs >= 1 && breakthroughs <= 10) {
+            announce(MaplePacketCreator.showEffect("pepeKing/pepe/pepeW")); // screen effect
+            announce(MaplePacketCreator.showEffect("pepeKing/frame/W"));
         }
-        return false;
+        if (breakthroughs >= 10 && breakthroughs <= 100) {
+            announce(MaplePacketCreator.showEffect("ad/piramid")); // screen effect
+            announce(MaplePacketCreator.trembleEffect(0, 0)); // shake screen
+        }
+        if (breakthroughs >= 100) {
+            announce(MaplePacketCreator.showEffect("balog/clear/stone")); // screen effect
+            announce(MaplePacketCreator.trembleEffect(0, 0)); // shake screen
+            // damage all monsters in the screen
+            for (MapleMapObject object : getMap().getMapObjectsInRange(getPosition(), 100000, Collections.singletonList(MapleMapObjectType.MONSTER))) {
+                MapleMonster monster = (MapleMonster) object;
+                int damage = monster.getMaxHp();
+                getMap().broadcastMessage(MaplePacketCreator.damageMonster(monster.getObjectId(), damage));
+                getMap().damageMonster(this, monster, damage);
+            }
+        }
     }
 
     public boolean addPoints(String pointType, int amount) throws NumberFormatException {
@@ -5712,6 +5716,22 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
 
     public void setRiceCakes(int riceCakes) {
         this.riceCakes = riceCakes;
+    }
+
+    public int getRebirthPoints() {
+        return rebirthPoints;
+    }
+
+    public void setRebirthPoints(int rebirthPoints) {
+        this.rebirthPoints = rebirthPoints;
+    }
+
+    public boolean isAutorebirthing() {
+        return autorebirthing;
+    }
+
+    public void setAutorebirthing(boolean autorebirthing) {
+        this.autorebirthing = autorebirthing;
     }
 
     public Occupations getOccupation() {

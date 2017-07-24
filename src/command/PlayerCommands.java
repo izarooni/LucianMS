@@ -4,6 +4,7 @@ import client.MapleCharacter;
 import client.MapleClient;
 import client.Relationship;
 import client.Relationship.Status;
+import client.inventory.MapleInventoryType;
 import net.server.channel.Channel;
 import net.server.channel.handlers.RockPaperScissorsHandler;
 import scripting.npc.NPCScriptManager;
@@ -53,6 +54,8 @@ public class PlayerCommands {
             commands.add("@rps - Start a game of rock paper scissors vs a bot");
             commands.add("@summer - Warp to the summer map");
             commands.add("@arcade - Warp to the arcade map");
+            commands.add("@rebirth - Reset job and level once max level is achieved");
+            commands.add("@autorb - Auto rebirth once max level is achieved");
             commands.forEach(player::dropMessage);
             commands.clear();
         } else if (command.equals("rates")) {
@@ -212,55 +215,74 @@ public class PlayerCommands {
                 player.addGenericEvent(battle);
                 player.dropMessage("You are now PvPing");
             }
-        } else if(command.equals("marry")) {
-        	if(args.length() >= 1) {
-        		Relationship playerRelation = player.getRelationship();
-        		if(!(args.get(0).equals("deny"))) {
-        			MapleCharacter target = ch.getPlayerStorage().getCharacterByName(args.get(0));
-        			if(target != null) {
-        				Relationship targetRelation = target.getRelationship();
-        				if(!(target.getRelationship().getStatus() == Status.Engaged || target.getRelationship().getStatus() == Status.Married)) {
-        					targetRelation.setBrideId(target.getId());
-	        				targetRelation.setGroomId(target.getId());
-	        				targetRelation.setStatus(Status.Engaged);
-	        				
-	        				playerRelation.setBrideId(target.getId());
-	        				playerRelation.setGroomId(target.getId());
-	        				playerRelation.setStatus(Status.Engaged);
-	        				player.dropMessage(6, String.format("You requested to marry %s", target.getName()));
-	        				target.dropMessage(6, String.format("%s has requested to marry you, type @marry %s to accept it or @marry deny to deny it.", player.getName(), player.getName()));
-        				} else {
-        					if(targetRelation.getGroomId() == player.getId() && targetRelation.getStatus() != Status.Married) {
-        						targetRelation.setStatus(Status.Married);
-        						playerRelation.setStatus(Status.Married);
-        						player.dropMessage(6, String.format("Congratulations! You have married %s", target.getName()));
-        						target.dropMessage(6, String.format("Congratulations! You have married %s", player.getName()));
-        					} else {
-        						player.dropMessage(6, String.format("%s is already married!", target.getName()));
-        					}
-        				}
-        			} else {
-        				player.dropMessage(6, "This person does not exist, or is not online");
-        			}
-        		} else {
-        			if(player.getRelationship().getStatus() == Status.Engaged) {
-        				player.getRelationship().setStatus(Status.Single);
-        				MapleCharacter target = ch.getPlayerStorage().getCharacterById(player.getRelationship().getBrideId());
-        				if(target != null) {
-        					target.getRelationship().setStatus(Status.Single);
-        					target.dropMessage(5, String.format("%s has denied your marriage request", player.getName()));
-        				}
-        				player.dropMessage(6, "You have denied the marriage request.");
-        			}
-        		}
-        	}
-        } else if(command.equals("rps")) {
-        	RockPaperScissorsHandler.startGame(player);
-        	player.dropMessage(6, "Let's play some rock paper scissors!");
+        } else if (command.equals("marry")) {
+            if (args.length() >= 1) {
+                Relationship playerRelation = player.getRelationship();
+                if (!(args.get(0).equals("deny"))) {
+                    MapleCharacter target = ch.getPlayerStorage().getCharacterByName(args.get(0));
+                    if (target != null) {
+                        Relationship targetRelation = target.getRelationship();
+                        if (!(target.getRelationship().getStatus() == Status.Engaged || target.getRelationship().getStatus() == Status.Married)) {
+                            targetRelation.setBrideId(target.getId());
+                            targetRelation.setGroomId(target.getId());
+                            targetRelation.setStatus(Status.Engaged);
+
+                            playerRelation.setBrideId(target.getId());
+                            playerRelation.setGroomId(target.getId());
+                            playerRelation.setStatus(Status.Engaged);
+                            player.dropMessage(6, String.format("You requested to marry %s", target.getName()));
+                            target.dropMessage(6, String.format("%s has requested to marry you, type @marry %s to accept it or @marry deny to deny it.", player.getName(), player.getName()));
+                        } else {
+                            if (targetRelation.getGroomId() == player.getId() && targetRelation.getStatus() != Status.Married) {
+                                targetRelation.setStatus(Status.Married);
+                                playerRelation.setStatus(Status.Married);
+                                player.dropMessage(6, String.format("Congratulations! You have married %s", target.getName()));
+                                target.dropMessage(6, String.format("Congratulations! You have married %s", player.getName()));
+                            } else {
+                                player.dropMessage(6, String.format("%s is already married!", target.getName()));
+                            }
+                        }
+                    } else {
+                        player.dropMessage(6, "This person does not exist, or is not online");
+                    }
+                } else {
+                    if (player.getRelationship().getStatus() == Status.Engaged) {
+                        player.getRelationship().setStatus(Status.Single);
+                        MapleCharacter target = ch.getPlayerStorage().getCharacterById(player.getRelationship().getBrideId());
+                        if (target != null) {
+                            target.getRelationship().setStatus(Status.Single);
+                            target.dropMessage(5, String.format("%s has denied your marriage request", player.getName()));
+                        }
+                        player.dropMessage(6, "You have denied the marriage request.");
+                    }
+                }
+            }
+        } else if (command.equals("rps")) {
+            RockPaperScissorsHandler.startGame(player);
+            player.dropMessage(6, "Let's play some rock paper scissors!");
         } else if (command.equals("summer")) {
             player.changeMap(83);
         } else if (command.equals("arcade")) {
             player.changeMap(970000000);
+        } else if (command.equals("rebirth")) {
+            if (player.getLevel() >= player.getMaxLevel()) {
+                player.doBreakthrough();
+                player.dropMessage("You now have " + player.getBreakthroughs() + " rebirths");
+            } else {
+                player.dropMessage("You do not meet the level requirement for rebirthing");
+            }
+            player.doBreakthrough();
+        } else if (command.equals("autorb")) {
+            if (player.getInventory(MapleInventoryType.ETC).findById(1302000) != null) {
+                player.setAutorebirthing(!player.isAutorebirthing());
+                player.dropMessage("Auto-rebirthing is " + (player.isAutorebirthing() ? "now" : "no longer") + " enabled");
+                if (player.getLevel() >= player.getMaxLevel()) {
+                    player.doBreakthrough();
+                    player.dropMessage("You now have " + player.getBreakthroughs() + " rebirths");
+                }
+            } else {
+                player.dropMessage("You do not meet the requirements to toggle auto-rebirthing");
+            }
         }
     }
 }
