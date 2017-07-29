@@ -4,6 +4,7 @@ import client.MapleCharacter;
 import client.MapleClient;
 
 import java.util.function.Consumer;
+import java.util.regex.Pattern;
 
 /**
  * @author izarooni
@@ -118,6 +119,10 @@ public class CommandWorker {
                 }
             }
             return false;
+        }
+
+        public boolean matches(String regex) {
+            return name.matches(Pattern.compile(regex).pattern());
         }
     }
 

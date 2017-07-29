@@ -197,7 +197,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
     private int eventPoints;
     private int shadowPoints;
     private int fishingPoints;
-    private int breakthroughs;
+    private int rebirths;
     private int goal, current;
     private int killType;
     private int riceCakes = 0;
@@ -2668,7 +2668,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
             exp.set(0);
             level = getMaxLevel(); // To prevent levels past 200
             if (autorebirthing) {
-                doBreakthrough();
+                doRebirth();
             }
         }
         if (level % 50 == 0) { // For the drop + meso rate
@@ -2897,7 +2897,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
             ret.dataString = rs.getString("dataString");
             ret.fishingPoints = rs.getInt("fishingpoints");
             ret.daily = rs.getTimestamp("daily");
-            ret.breakthroughs = rs.getInt("reborns");
+            ret.rebirths = rs.getInt("reborns");
             ret.eventPoints = rs.getInt("eventpoints");
             ret.shadowPoints = rs.getInt("shadowpoints");
             if (ret.guildid > 0) {
@@ -3975,7 +3975,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
             ps.setString(48, dataString);
             ps.setInt(49, fishingPoints);
             ps.setTimestamp(50, daily);
-            ps.setInt(51, breakthroughs);
+            ps.setInt(51, rebirths);
             ps.setInt(52, eventPoints);
             ps.setInt(53, shadowPoints);
             ps.setInt(54, id);
@@ -5485,8 +5485,8 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
         return achievements;
     }
 
-    public void doBreakthrough() {
-        breakthroughs += 1;
+    public void doRebirth() {
+        rebirths += 1;
 
         job = MapleJob.BEGINNER;
         updateSingleStat(MapleStat.JOB, job.getId());
@@ -5497,20 +5497,18 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
         exp.set(0);
         updateSingleStat(MapleStat.EXP, 0);
 
-//        getKeymap().clear();
-
         setRebirthPoints(getRebirthPoints() + 50);
         dropMessage("You have received 50 rebirth points");
 
-        if (breakthroughs >= 1 && breakthroughs <= 10) {
+        if (rebirths >= 1 && rebirths <= 10) {
             announce(MaplePacketCreator.showEffect("pepeKing/pepe/pepeW")); // screen effect
             announce(MaplePacketCreator.showEffect("pepeKing/frame/W"));
         }
-        if (breakthroughs >= 10 && breakthroughs <= 100) {
+        if (rebirths >= 10 && rebirths <= 100) {
             announce(MaplePacketCreator.showEffect("ad/piramid")); // screen effect
             announce(MaplePacketCreator.trembleEffect(0, 0)); // shake screen
         }
-        if (breakthroughs >= 100) {
+        if (rebirths >= 100) {
             announce(MaplePacketCreator.showEffect("balog/clear/stone")); // screen effect
             announce(MaplePacketCreator.trembleEffect(0, 0)); // shake screen
             // damage all monsters in the screen
@@ -5589,12 +5587,12 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
         this.daily = new Timestamp(System.currentTimeMillis());
     }
 
-    public int getBreakthroughs() {
-        return breakthroughs;
+    public int getRebirths() {
+        return rebirths;
     }
 
-    public void setBreakthroughs(int breakthroughs) {
-        this.breakthroughs = breakthroughs;
+    public void setRebirths(int rebirths) {
+        this.rebirths = rebirths;
     }
 
     public int getGoal() {

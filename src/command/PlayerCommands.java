@@ -2,6 +2,7 @@ package command;
 
 import client.MapleCharacter;
 import client.MapleClient;
+import client.MapleStat;
 import client.Relationship;
 import client.Relationship.Status;
 import client.inventory.MapleInventoryType;
@@ -15,8 +16,10 @@ import server.events.custom.auto.GAutoEventManager;
 import server.events.pvp.PlayerBattle;
 import server.maps.MapleMap;
 import tools.MaplePacketCreator;
+import tools.Pair;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import java.util.WeakHashMap;
 
@@ -56,8 +59,114 @@ public class PlayerCommands {
             commands.add("@arcade - Warp to the arcade map");
             commands.add("@rebirth - Reset job and level once max level is achieved");
             commands.add("@autorb - Auto rebirth once max level is achieved");
+            commands.add("@reset<str/dex/int/luk/stats> - Reset assigned AP");
+            commands.add("@<str/dex/int/luk> - Assign any available AP to a specified stat");
+            commands.add("@checkme - Check your player's stats");
             commands.forEach(player::dropMessage);
             commands.clear();
+        } else if (command.equals("checkme")) {
+            player.dropMessage("Vote points: " + client.getVotePoints());
+            player.dropMessage("Rebirths: " + player.getRebirths());
+        } else if (command.matches("^reset(stats|str|dex|int|luk)$")) {
+            String statName = command.getName().substring(5);
+
+            List<Pair<MapleStat, Integer>> statChange = new ArrayList<>(4);
+            int nStat = 0;
+            switch (statName) {
+                case "stats":
+                    nStat += player.getStr();
+                    nStat += player.getDex();
+                    nStat += player.getInt();
+                    nStat += player.getLuk();
+
+                    player.setStr(4);
+                    player.setDex(4);
+                    player.setInt(4);
+                    player.setLuk(4);
+                    statChange.add(new Pair<>(MapleStat.STR, 4));
+                    statChange.add(new Pair<>(MapleStat.DEX, 4));
+                    statChange.add(new Pair<>(MapleStat.INT, 4));
+                    statChange.add(new Pair<>(MapleStat.LUK, 4));
+                    break;
+                case "str":
+                    nStat = player.getStr();
+                    player.setStr(4);
+                    statChange.add(new Pair<>(MapleStat.STR, 4));
+                    break;
+                case "dex":
+                    nStat = player.getDex();
+                    player.setDex(4);
+                    statChange.add(new Pair<>(MapleStat.DEX, 4));
+                    break;
+                case "int":
+                    nStat = player.getInt();
+                    player.setInt(4);
+                    statChange.add(new Pair<>(MapleStat.INT, 4));
+                    break;
+                case "luk":
+                    nStat = player.getLuk();
+                    player.setLuk(4);
+                    statChange.add(new Pair<>(MapleStat.LUK, 4));
+                    break;
+            }
+            player.setRemainingAp(player.getRemainingAp() + nStat);
+            player.updateSingleStat(MapleStat.AVAILABLEAP, player.getRemainingAp());
+            player.announce(MaplePacketCreator.updatePlayerStats(statChange, player));
+            player.dropMessage(6, "Done!");
+        } else if (command.matches("^(str|dex|int|luk)$")) {
+            if (args.length() == 1) {
+                Long var_nStat = args.parseNumber(0);
+                if (var_nStat == null) {
+                    player.dropMessage(String.format("%s is not a number", args.get(0)));
+                    return;
+                }
+                int nStat = var_nStat.intValue();
+                if (nStat > player.getRemainingAp()) {
+                    player.dropMessage("Make sure you have enough AP to distribute");
+                    return;
+                }
+                switch (command.getName()) {
+                    case "str":
+                        if (player.getStr() + nStat > Short.MAX_VALUE) {
+                            player.dropMessage("You can't assign that much AP to the STR stat");
+                        } else {
+                            player.setStr(player.getStr() + nStat);
+                            player.setRemainingAp(player.getRemainingAp() - nStat);
+                            player.updateSingleStat(MapleStat.STR, player.getStr());
+                        }
+                        break;
+                    case "dex":
+                        if (player.getDex() + nStat > Short.MAX_VALUE) {
+                            player.dropMessage("You can't assign that much AP to the DEX stat");
+                        } else {
+                            player.setDex(player.getDex() + nStat);
+                            player.setRemainingAp(player.getRemainingAp() - nStat);
+                            player.updateSingleStat(MapleStat.DEX, player.getDex());
+                        }
+                        break;
+                    case "int":
+                        if (player.getInt() + nStat > Short.MAX_VALUE) {
+                            player.dropMessage("You can't assign that much AP to the INT stat");
+                        } else {
+                            player.setInt(player.getInt() + nStat);
+                            player.setRemainingAp(player.getRemainingAp() - nStat);
+                            player.updateSingleStat(MapleStat.INT, player.getInt());
+                        }
+                        break;
+                    case "luk":
+                        if (player.getLuk() + nStat > Short.MAX_VALUE) {
+                            player.dropMessage("You can't assign that much AP to the LUK stat");
+                        } else {
+                            player.setLuk(player.getLuk() + nStat);
+                            player.setRemainingAp(player.getRemainingAp() - nStat);
+                            player.updateSingleStat(MapleStat.LUK, player.getLuk());
+                        }
+                        break;
+                }
+                player.updateSingleStat(MapleStat.AVAILABLEAP, player.getRemainingAp());
+            } else {
+                player.dropMessage(5, String.format("Syntax: @%s <amount>", command.getName()));
+            }
         } else if (command.equals("rates")) {
             player.dropMessage(6, "EXP rate: " + player.getExpRate());
             player.dropMessage(6, "Drop rate: " + player.getDropRate());
@@ -266,19 +375,19 @@ public class PlayerCommands {
             player.changeMap(970000000);
         } else if (command.equals("rebirth")) {
             if (player.getLevel() >= player.getMaxLevel()) {
-                player.doBreakthrough();
-                player.dropMessage("You now have " + player.getBreakthroughs() + " rebirths");
+                player.doRebirth();
+                player.dropMessage("You now have " + player.getRebirths() + " rebirths");
             } else {
                 player.dropMessage("You do not meet the level requirement for rebirthing");
             }
-            player.doBreakthrough();
+            player.doRebirth();
         } else if (command.equals("autorb")) {
             if (player.getInventory(MapleInventoryType.ETC).findById(1302000) != null) {
                 player.setAutorebirthing(!player.isAutorebirthing());
                 player.dropMessage("Auto-rebirthing is " + (player.isAutorebirthing() ? "now" : "no longer") + " enabled");
                 if (player.getLevel() >= player.getMaxLevel()) {
-                    player.doBreakthrough();
-                    player.dropMessage("You now have " + player.getBreakthroughs() + " rebirths");
+                    player.doRebirth();
+                    player.dropMessage("You now have " + player.getRebirths() + " rebirths");
                 }
             } else {
                 player.dropMessage("You do not meet the requirements to toggle auto-rebirthing");
