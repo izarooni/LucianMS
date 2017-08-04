@@ -2260,13 +2260,13 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
     }
 
     public int getSavedLocation(String type) {
-        SavedLocation sl = savedLocations[SavedLocationType.fromString(type).ordinal()];
+        SavedLocation sl = savedLocations[SavedLocationType.valueOf(type).ordinal()];
         if (sl == null) {
             return -1;
         }
         int m = sl.getMapId();
-        if (!SavedLocationType.fromString(type).equals(SavedLocationType.WORLDTOUR)) {
-            clearSavedLocation(SavedLocationType.fromString(type));
+        if (!SavedLocationType.valueOf(type).equals(SavedLocationType.WORLDTOUR)) {
+            clearSavedLocation(SavedLocationType.valueOf(type));
         }
         return m;
     }
@@ -3764,7 +3764,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
 
     public void saveLocation(String type) {
         MaplePortal closest = map.findClosestPortal(getPosition());
-        savedLocations[SavedLocationType.fromString(type).ordinal()] = new SavedLocation(getMapId(), closest != null ? closest.getId() : 0);
+        savedLocations[SavedLocationType.valueOf(type).ordinal()] = new SavedLocation(getMapId(), closest != null ? closest.getId() : 0);
     }
 
     public final boolean insertNewChar() {

@@ -172,10 +172,6 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
 		getClient().announce(MaplePacketCreator.getDimensionalMirror(text));
 	}
 
-	public ScheduledFuture<?> delayCall(Runnable runnable, long delay) {
-		return TimerManager.getInstance().schedule(runnable, delay);
-	}
-
 	public void setGetText(String text) {
 		this.getText = text;
 	}

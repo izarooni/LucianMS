@@ -37,6 +37,7 @@ import scripting.event.EventManager;
 import scripting.npc.NPCScriptManager;
 import server.MapleInventoryManipulator;
 import server.MapleItemInformationProvider;
+import server.TimerManager;
 import server.expeditions.MapleExpedition;
 import server.expeditions.MapleExpeditionType;
 import server.life.MapleLifeFactory;
@@ -56,6 +57,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.concurrent.ScheduledFuture;
 
 public class AbstractPlayerInteraction {
 
@@ -83,6 +85,10 @@ public class AbstractPlayerInteraction {
 
     public void warp(int map, String portal) {
         getPlayer().changeMap(getWarpMap(map), getWarpMap(map).getPortal(portal));
+    }
+
+    public ScheduledFuture<?> delayCall(Runnable runnable, long delay) {
+        return TimerManager.getInstance().schedule(runnable, delay);
     }
 
     public void warpMap(int map) {
