@@ -18,9 +18,11 @@ import server.MapleShopFactory;
 import server.life.MapleLifeFactory;
 import server.life.MapleMonster;
 import server.life.MapleNPC;
+import server.maps.MapleFoothold;
 import tools.DatabaseConnection;
 import tools.MaplePacketCreator;
 
+import java.awt.*;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
@@ -347,6 +349,25 @@ public class HGMCommands {
                 client.announce(MaplePacketCreator.modifyInventory(true, mods));
                 player.equipChanged();
                 mods.clear();
+            }
+        } else if (command.equals("footholds")) {
+            final int base = 3990000;
+            List<MapleFoothold> footholds  = player.getMap().getFootholds().getFootholds();
+            for (MapleFoothold foothold : footholds) {
+                String ID = Integer.toString(foothold.getId());
+                for (int i = 0; i < ID.length(); i++) {
+                    int itemId;
+                    int x = foothold.getX1();
+                    int n = Integer.parseInt(ID.substring(i, i + 1));
+                    if (n == 9) {
+                        itemId = base + 9;
+                    } else {
+                        itemId = base + (n - 1);
+                    }
+                    Item item = new Item(itemId, (short) 0, (short) 1);
+                    Point position = new Point(x, foothold.getY1());
+                    player.getMap().spawnItemDrop(player, player, item, position, true, true);
+                }
             }
         }
     }

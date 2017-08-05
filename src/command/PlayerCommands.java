@@ -9,6 +9,7 @@ import client.inventory.MapleInventoryType;
 import net.server.channel.Channel;
 import net.server.channel.handlers.RockPaperScissorsHandler;
 import scripting.npc.NPCScriptManager;
+import server.MapleInventoryManipulator;
 import server.events.custom.GenericEvent;
 import server.events.custom.ManualPlayerEvent;
 import server.events.custom.auto.GAutoEvent;
@@ -391,6 +392,18 @@ public class PlayerCommands {
                 }
             } else {
                 player.dropMessage("You do not meet the requirements to toggle auto-rebirthing");
+            }
+        } else if (command.equals("crystal")) {
+            if (player.getMeso() >= 500000000) {
+                if (MapleInventoryManipulator.checkSpace(client, 4000000, 1, "")) {
+                    MapleInventoryManipulator.addById(client, 4000000, (short) 1);
+                    player.gainMeso(-500000000, true);
+                    player.dropMessage("You now have " + player.getItemQuantity(4000000, false) + " crystals");
+                } else {
+                    player.dropMessage("You don't have enough inventory space for this exchange");
+                }
+            } else {
+                player.dropMessage("You need 500M mesos to exchange for a crystal1");
             }
         }
     }

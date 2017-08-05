@@ -21,13 +21,13 @@
 */
 package server.maps;
 
-import java.awt.Point;
+import java.awt.*;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
 /**
- *
  * @author Matze
  */
 public class MapleFootholdTree {
@@ -74,7 +74,7 @@ public class MapleFootholdTree {
         }
         if (depth == maxDepth ||
                 (f.getX1() >= p1.x && f.getX2() <= p2.x &&
-                f.getY1() >= p1.y && f.getY2() <= p2.y)) {
+                        f.getY1() >= p1.y && f.getY2() <= p2.y)) {
             footholds.add(f);
         } else {
             if (nw == null) {
@@ -216,5 +216,15 @@ public class MapleFootholdTree {
 
     public int getMinDropX() {
         return minDropX;
+    }
+
+    public List<MapleFoothold> getFootholds() {
+        ArrayList<MapleFoothold> ret = new ArrayList<>();
+        ret.addAll(footholds);
+        ret.addAll(nw.footholds);
+        ret.addAll(ne.footholds);
+        ret.addAll(sw.footholds);
+        ret.addAll(ne.footholds);
+        return ret;
     }
 }
