@@ -221,10 +221,18 @@ public class MapleFootholdTree {
     public List<MapleFoothold> getFootholds() {
         ArrayList<MapleFoothold> ret = new ArrayList<>();
         ret.addAll(footholds);
-        ret.addAll(nw.footholds);
-        ret.addAll(ne.footholds);
-        ret.addAll(sw.footholds);
-        ret.addAll(ne.footholds);
+        if (nw != null) {
+            ret.addAll(nw.footholds);
+        }
+        if (ne != null) {
+            ret.addAll(ne.footholds);
+        }
+        if (sw != null) {
+            ret.addAll(sw.footholds);
+        }
+        if (ne != null) {
+            ret.addAll(ne.footholds);
+        }
         return ret;
     }
 }

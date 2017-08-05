@@ -23,6 +23,7 @@ package net.server.channel.handlers;
 
 import client.MapleCharacter;
 import client.MapleClient;
+import client.inventory.Item;
 import net.AbstractMaplePacketHandler;
 import net.server.world.MaplePartyCharacter;
 import scripting.item.ItemScriptManager;
@@ -34,7 +35,6 @@ import server.maps.MapleMapObject;
 import server.quest.custom.CQuestData;
 import server.quest.custom.requirement.CQuestItemRequirement;
 import tools.MaplePacketCreator;
-import tools.Pair;
 import tools.data.input.SeekableLittleEndianAccessor;
 
 /**
@@ -58,6 +58,17 @@ public final class ItemPickupHandler extends AbstractMaplePacketHandler {
         if (ob instanceof MapleMapItem) {
             MapleMapItem mapitem = (MapleMapItem) ob;
             if (System.currentTimeMillis() - mapitem.getDropTime() < 900) {
+                c.announce(MaplePacketCreator.enableActions());
+                return;
+            }
+            // un-obtainable item
+            if (!mapitem.getItem().isObtainable()) {
+                Item item = mapitem.getItem();
+                if (item.getItemId() == 3990022) {
+                    chr.dropMessage("Foothold ID: " + item.getOwner().split(":")[1]);
+                }
+                chr.getMap().broadcastMessage(MaplePacketCreator.removeItemFromMap(mapitem.getObjectId(), 2, chr.getId()), mapitem.getPosition());
+                chr.getMap().removeMapObject(ob);
                 c.announce(MaplePacketCreator.enableActions());
                 return;
             }

@@ -808,6 +808,30 @@ public class GameMasterCommands {
                     s.getEffect(s.getMaxLevel()).applyTo(target);
                 }
             }
+        } else if (command.equals("mesos")) {
+            if (args.length() > 0) {
+                Long var_mesos = args.parseNumber(0);
+                if (var_mesos == null) {
+                    player.dropMessage(String.format("%s is not a number", args.get(0)));
+                    return;
+                }
+                int mesos = var_mesos.intValue();
+                if (args.length() > 1) {
+                    for (int i = 1; i < args.length(); i++) {
+                        String username = args.get(i);
+                        MapleCharacter chr = ch.getPlayerStorage().getCharacterByName(username);
+                        if (chr != null) {
+                            chr.gainMeso(mesos, true);
+                        } else {
+                            player.dropMessage(String.format("Could not find any player named '%s'", username));
+                        }
+                    }
+                } else {
+                    player.gainMeso(mesos, true);
+                }
+            } else {
+                player.gainMeso(Integer.MAX_VALUE - player.getMeso(), true);
+            }
         }
     }
 }

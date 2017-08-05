@@ -39,6 +39,8 @@ public class Item implements Comparable<Item> {
     private long expiration = -1;
     private String giftFrom = "";
 
+    private boolean obtainable = true;
+
     public Item(int id, short position, short quantity) {
         this.id = id;
         this.position = position;
@@ -115,16 +117,16 @@ public class Item implements Comparable<Item> {
     public void setPetId(int id) {
         this.petid = id;
     }
- 
+
     public int compareTo(Item other) {
         if (this.id < other.getItemId()) {
             return -1;
         } else if (this.id > other.getItemId()) {
             return 1;
         }
-         return 0;
+        return 0;
     }
-    
+
     @Override
     public String toString() {
         return "Item: " + id + " quantity: " + quantity;
@@ -168,5 +170,13 @@ public class Item implements Comparable<Item> {
 
     public MaplePet getPet() {
         return pet;
-    }     
+    }
+
+    public boolean isObtainable() {
+        return obtainable;
+    }
+
+    public void setObtainable(boolean obtainable) {
+        this.obtainable = obtainable;
+    }
 }

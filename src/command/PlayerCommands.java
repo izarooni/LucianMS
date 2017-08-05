@@ -395,15 +395,15 @@ public class PlayerCommands {
             }
         } else if (command.equals("crystal")) {
             if (player.getMeso() >= 500000000) {
-                if (MapleInventoryManipulator.checkSpace(client, 4000000, 1, "")) {
-                    MapleInventoryManipulator.addById(client, 4000000, (short) 1);
+                if (MapleInventoryManipulator.checkSpace(client, 4260002, 1, "")) {
+                    MapleInventoryManipulator.addById(client, 4260002, (short) 1);
                     player.gainMeso(-500000000, true);
-                    player.dropMessage("You now have " + player.getItemQuantity(4000000, false) + " crystals");
+                    player.dropMessage("You now have " + player.getItemQuantity(4260002, false) + " crystals");
                 } else {
                     player.dropMessage("You don't have enough inventory space for this exchange");
                 }
             } else {
-                player.dropMessage("You need 500M mesos to exchange for a crystal1");
+                player.dropMessage("You need 500M mesos to exchange for a crystal");
             }
         }
     }

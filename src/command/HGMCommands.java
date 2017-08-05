@@ -351,24 +351,16 @@ public class HGMCommands {
                 mods.clear();
             }
         } else if (command.equals("footholds")) {
-            final int base = 3990000;
-            List<MapleFoothold> footholds  = player.getMap().getFootholds().getFootholds();
+            final int itemId = 3990022;
+            List<MapleFoothold> footholds = player.getMap().getFootholds().getFootholds();
             for (MapleFoothold foothold : footholds) {
-                String ID = Integer.toString(foothold.getId());
-                for (int i = 0; i < ID.length(); i++) {
-                    int itemId;
-                    int x = foothold.getX1();
-                    int n = Integer.parseInt(ID.substring(i, i + 1));
-                    if (n == 9) {
-                        itemId = base + 9;
-                    } else {
-                        itemId = base + (n - 1);
-                    }
-                    Item item = new Item(itemId, (short) 0, (short) 1);
-                    Point position = new Point(x, foothold.getY1());
-                    player.getMap().spawnItemDrop(player, player, item, position, true, true);
-                }
+                Item item = new Item(itemId, (short) 0, (short) 1);
+                item.setObtainable(false);
+                item.setOwner("fh_id:" + foothold.getId());
+                Point position = new Point(foothold.getX1(), foothold.getY1());
+                player.getMap().spawnItemDrop(player, player, item, position, true, true);
             }
+            player.dropMessage("Don't forget to !cleardrops when you're done");
         }
     }
 }
