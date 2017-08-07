@@ -124,7 +124,7 @@ public class HGMCommands {
             } else {
                 player.dropMessage(5, "You must specify a monster ID");
             }
-        } else if (command.equals("npc", "pnpc")) {
+        } else if (command.equals("npc", "pnpc")) { // !pnpc <npc_id> [script_name]
             if (args.length() > 0) {
                 boolean permanent = command.equals("pnpc");
                 Long a1 = args.parseNumber(0);
@@ -251,7 +251,7 @@ public class HGMCommands {
                     player.dropMessage(5, String.format("Could not find any player named '%s'", username));
                 }
             } else {
-                player.dropMessage(5, "Syntax: !playernpc <npcId> <username> (script_name)");
+                player.dropMessage(5, "Syntax: !playernpc <npc_id> <username> [script_name]");
             }
         } else if (command.equals("pos")) {
             player.dropMessage(player.getPosition().toString());

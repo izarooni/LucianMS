@@ -19,6 +19,7 @@ public class ServerConstants {
     public static final boolean USE_DUEY = false;
     public static final boolean USE_ITEM_SORT = true;
     public static final boolean USE_PARTY_SEARCH = false;
+    public static final int CURRENCY = 4260002;
 
     // Rates
     public static final int PARTY_EXPERIENCE_MOD = 1; // change for event stuff

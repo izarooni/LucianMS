@@ -6,6 +6,7 @@ import client.MapleStat;
 import client.Relationship;
 import client.Relationship.Status;
 import client.inventory.MapleInventoryType;
+import constants.ServerConstants;
 import net.server.channel.Channel;
 import net.server.channel.handlers.RockPaperScissorsHandler;
 import scripting.npc.NPCScriptManager;
@@ -68,6 +69,9 @@ public class PlayerCommands {
         } else if (command.equals("checkme")) {
             player.dropMessage("Vote points: " + client.getVotePoints());
             player.dropMessage("Rebirths: " + player.getRebirths());
+            player.dropMessage("Rebirth Points: " + player.getRebirthPoints());
+            player.dropMessage("Donor Points: " + client.getDonationPoints());
+            player.dropMessage("Crystals: " + player.getItemQuantity(ServerConstants.CURRENCY, false));
         } else if (command.matches("^reset(stats|str|dex|int|luk)$")) {
             String statName = command.getName().substring(5);
 
@@ -395,10 +399,10 @@ public class PlayerCommands {
             }
         } else if (command.equals("crystal")) {
             if (player.getMeso() >= 500000000) {
-                if (MapleInventoryManipulator.checkSpace(client, 4260002, 1, "")) {
-                    MapleInventoryManipulator.addById(client, 4260002, (short) 1);
+                if (MapleInventoryManipulator.checkSpace(client, ServerConstants.CURRENCY, 1, "")) {
+                    MapleInventoryManipulator.addById(client, ServerConstants.CURRENCY, (short) 1);
                     player.gainMeso(-500000000, true);
-                    player.dropMessage("You now have " + player.getItemQuantity(4260002, false) + " crystals");
+                    player.dropMessage("You now have " + player.getItemQuantity(ServerConstants.CURRENCY, false) + " crystals");
                 } else {
                     player.dropMessage("You don't have enough inventory space for this exchange");
                 }
