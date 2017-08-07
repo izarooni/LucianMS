@@ -18,6 +18,8 @@ import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
+ * Represents the root class of a mini-game type auto event that is picked randomly upon several other possible like-wise events
+ *
  * @author izarooni
  */
 public abstract class GAutoEvent extends GenericEvent {

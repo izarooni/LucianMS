@@ -21,12 +21,11 @@
  */
 package net.server.channel.handlers;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.List;
-
+import client.*;
+import client.inventory.MapleInventoryType;
+import client.inventory.MaplePet;
+import client.inventory.PetDataFactory;
+import constants.GameConstants;
 import net.AbstractMaplePacketHandler;
 import net.server.PlayerBuffValueHolder;
 import net.server.Server;
@@ -40,16 +39,12 @@ import net.server.world.World;
 import tools.DatabaseConnection;
 import tools.MaplePacketCreator;
 import tools.data.input.SeekableLittleEndianAccessor;
-import client.BuddylistEntry;
-import client.CharacterNameAndId;
-import client.MapleCharacter;
-import client.MapleClient;
-import client.MapleFamily;
-import client.SkillFactory;
-import client.inventory.MapleInventoryType;
-import client.inventory.MaplePet;
-import client.inventory.PetDataFactory;
-import constants.GameConstants;
+
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.List;
 
 public final class PlayerLoggedinHandler extends AbstractMaplePacketHandler {
 
@@ -75,8 +70,8 @@ public final class PlayerLoggedinHandler extends AbstractMaplePacketHandler {
             player.newClient(c);
         }
         if (player == null) { //If you are still getting null here then please just uninstall the game >.>, we dont need you fucking with the logs
-        	c.disconnect(true, false);
-        	return;
+            c.disconnect(true, false);
+            return;
         }
         c.setPlayer(player);
         c.setAccID(player.getAccountID());
@@ -131,10 +126,12 @@ public final class PlayerLoggedinHandler extends AbstractMaplePacketHandler {
         player.sendKeymap();
         player.sendMacros();
 
-        if(player.getKeymap().get(91) != null)
+        if (player.getKeymap().get(91) != null) {
             player.announce(MaplePacketCreator.sendAutoHpPot(player.getKeymap().get(91).getAction()));
-        if(player.getKeymap().get(92) != null)
+        }
+        if (player.getKeymap().get(92) != null) {
             player.announce(MaplePacketCreator.sendAutoMpPot(player.getKeymap().get(92).getAction()));
+        }
 
         player.getMap().addPlayer(player);
         World world = server.getWorld(c.getWorld());
@@ -206,10 +203,11 @@ public final class PlayerLoggedinHandler extends AbstractMaplePacketHandler {
             c.announce(MaplePacketCreator.requestBuddylistAdd(pendingBuddyRequest.getId(), c.getPlayer().getId(), pendingBuddyRequest.getName()));
         }
 
-        if(newcomer) {
-            for(MaplePet pet : player.getPets()) {
-                if(pet != null)
+        if (newcomer) {
+            for (MaplePet pet : player.getPets()) {
+                if (pet != null) {
                     player.startFullnessSchedule(PetDataFactory.getHunger(pet.getItemId()), pet, player.getPetIndex(pet));
+                }
             }
         }
 
@@ -220,15 +218,15 @@ public final class PlayerLoggedinHandler extends AbstractMaplePacketHandler {
         player.checkBerserk();
         player.expirationTask();
         player.setRates();
-		if (GameConstants.hasSPTable(player.getJob()) && player.getJob().getId() != 2001) {
-			player.createDragon();
+        if (GameConstants.hasSPTable(player.getJob()) && player.getJob().getId() != 2001) {
+            player.createDragon();
         }
-        if (newcomer){
-            if (!c.hasVotedAlready()){
-            	player.announce(MaplePacketCreator.earnTitleMessage("You can vote now! Vote and earn a vote point!"));
+        if (newcomer) {
+            if (!c.hasVotedAlready()) {
+                player.announce(MaplePacketCreator.earnTitleMessage("You can vote now! Vote and earn a vote point!"));
             }
-            if (player.isGM()){
-            	Server.getInstance().broadcastGMMessage(MaplePacketCreator.earnTitleMessage("GM " + player.getName() + " has logged in"));
+            if (player.isGM()) {
+                Server.getInstance().broadcastGMMessage(MaplePacketCreator.earnTitleMessage("GM " + player.getName() + " has logged in"));
             }
         }
     }

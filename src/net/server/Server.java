@@ -63,6 +63,7 @@ import server.MapleItemInformationProvider;
 import server.TimerManager;
 import server.Whitelist;
 import server.events.custom.auto.GAutoEventManager;
+import server.events.custom.auto.OuterSpace;
 import server.quest.MapleQuest;
 import server.quest.custom.CQuestBuilder;
 import tools.DatabaseConnection;
@@ -238,6 +239,7 @@ public class Server implements Runnable {
                 world.setServerMessage(sMessage);
                 //final long repeat = (1000 * 60 * 60) * 4;
                 //TimerManager.getInstance().register(() -> GAutoEventManager.startRandomEvent(world), repeat, repeat);
+                world.addScheduledEvent(new OuterSpace(world));
                 System.out.println("Finished loading world " + i + "\r\n");
             }
             System.out.println("Worlds loaded in " + ((System.currentTimeMillis() - timeToTake) / 1000.0) + " seconds\r\n");

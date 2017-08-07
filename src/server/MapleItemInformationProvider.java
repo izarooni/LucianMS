@@ -21,52 +21,32 @@
  */
 package server;
 
-import java.io.File;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-
-import client.autoban.Cheater;
-import client.autoban.Cheats;
-import net.server.Server;
-import provider.MapleData;
-import provider.MapleDataDirectoryEntry;
-import provider.MapleDataFileEntry;
-import provider.MapleDataProvider;
-import provider.MapleDataProviderFactory;
-import provider.MapleDataTool;
-import tools.DatabaseConnection;
-import tools.FilePrinter;
-import tools.MaplePacketCreator;
-import tools.Pair;
-import tools.Randomizer;
 import client.MapleCharacter;
 import client.MapleClient;
 import client.MapleJob;
 import client.SkillFactory;
-import client.inventory.Equip;
-import client.inventory.Item;
-import client.inventory.MapleInventory;
-import client.inventory.MapleInventoryType;
-import client.inventory.MapleWeaponType;
+import client.autoban.Cheater;
+import client.autoban.Cheats;
+import client.inventory.*;
 import constants.EquipSlot;
 import constants.ItemConstants;
 import constants.skills.Assassin;
 import constants.skills.Gunslinger;
 import constants.skills.NightWalker;
+import provider.*;
+import tools.DatabaseConnection;
+import tools.Pair;
+import tools.Randomizer;
+
+import java.io.File;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.*;
+import java.util.Map.Entry;
 
 /**
- *
  * @author Matze
- *
  */
 public class MapleItemInformationProvider {
 
@@ -132,38 +112,38 @@ public class MapleItemInformationProvider {
             return MapleInventoryType.UNDEFINED;
         }
         return MapleInventoryType.getByType(type);
-//        if (inventoryTypeCache.containsKey(itemId)) {
-//            return inventoryTypeCache.get(itemId);
-//        }
-//        MapleInventoryType ret;
-//        String idStr = "0" + String.valueOf(itemId);
-//        MapleDataDirectoryEntry root = itemData.getRoot();
-//        for (MapleDataDirectoryEntry topDir : root.getSubdirectories()) {
-//            for (MapleDataFileEntry iFile : topDir.getFiles()) {
-//                if (iFile.getName().equals(idStr.substring(0, 4) + ".img")) {
-//                    ret = MapleInventoryType.getByWZName(topDir.getName());
-//                    inventoryTypeCache.put(itemId, ret);
-//                    return ret;
-//                } else if (iFile.getName().equals(idStr.substring(1) + ".img")) {
-//                    ret = MapleInventoryType.getByWZName(topDir.getName());
-//                    inventoryTypeCache.put(itemId, ret);
-//                    return ret;
-//                }
-//            }
-//        }
-//        root = equipData.getRoot();
-//        for (MapleDataDirectoryEntry topDir : root.getSubdirectories()) {
-//            for (MapleDataFileEntry iFile : topDir.getFiles()) {
-//                if (iFile.getName().equals(idStr + ".img")) {
-//                    ret = MapleInventoryType.EQUIP;
-//                    inventoryTypeCache.put(itemId, ret);
-//                    return ret;
-//                }
-//            }
-//        }
-//        ret = MapleInventoryType.UNDEFINED;
-//        inventoryTypeCache.put(itemId, ret);
-//        return ret;
+        //        if (inventoryTypeCache.containsKey(itemId)) {
+        //            return inventoryTypeCache.get(itemId);
+        //        }
+        //        MapleInventoryType ret;
+        //        String idStr = "0" + String.valueOf(itemId);
+        //        MapleDataDirectoryEntry root = itemData.getRoot();
+        //        for (MapleDataDirectoryEntry topDir : root.getSubdirectories()) {
+        //            for (MapleDataFileEntry iFile : topDir.getFiles()) {
+        //                if (iFile.getName().equals(idStr.substring(0, 4) + ".img")) {
+        //                    ret = MapleInventoryType.getByWZName(topDir.getName());
+        //                    inventoryTypeCache.put(itemId, ret);
+        //                    return ret;
+        //                } else if (iFile.getName().equals(idStr.substring(1) + ".img")) {
+        //                    ret = MapleInventoryType.getByWZName(topDir.getName());
+        //                    inventoryTypeCache.put(itemId, ret);
+        //                    return ret;
+        //                }
+        //            }
+        //        }
+        //        root = equipData.getRoot();
+        //        for (MapleDataDirectoryEntry topDir : root.getSubdirectories()) {
+        //            for (MapleDataFileEntry iFile : topDir.getFiles()) {
+        //                if (iFile.getName().equals(idStr + ".img")) {
+        //                    ret = MapleInventoryType.EQUIP;
+        //                    inventoryTypeCache.put(itemId, ret);
+        //                    return ret;
+        //                }
+        //            }
+        //        }
+        //        ret = MapleInventoryType.UNDEFINED;
+        //        inventoryTypeCache.put(itemId, ret);
+        //        return ret;
     }
 
     public List<Pair<Integer, String>> getAllItems() {
@@ -205,17 +185,17 @@ public class MapleItemInformationProvider {
         if (!itemNameCache.isEmpty()) {
             return itemNameCache;
         }
-        
+
         List<Pair<Integer, String>> itemPairs = new ArrayList<>();
         MapleData itemsData;
-        
+
         itemsData = stringData.getData("Etc.img").getChildByPath("Etc");
         for (MapleData itemFolder : itemsData.getChildren()) {
             itemPairs.add(new Pair<>(Integer.parseInt(itemFolder.getName()), MapleDataTool.getString("name", itemFolder, "NO-NAME")));
         }
         return itemPairs;
     }
-    
+
     private MapleData getStringData(int itemId) {
         String cat = "null";
         MapleData theData;
@@ -338,7 +318,7 @@ public class MapleItemInformationProvider {
             } else {
                 ret = (short) MapleDataTool.getInt(smEntry);
                 if (ItemConstants.isThrowingStar(itemId)) {
-                    if(c.getPlayer().getJob().isA(MapleJob.NIGHTWALKER1)) {
+                    if (c.getPlayer().getJob().isA(MapleJob.NIGHTWALKER1)) {
                         ret += c.getPlayer().getSkillLevel(SkillFactory.getSkill(NightWalker.CLAW_MASTERY)) * 10;
                     } else {
                         ret += c.getPlayer().getSkillLevel(SkillFactory.getSkill(Assassin.CLAW_MASTERY)) * 10;
@@ -416,30 +396,30 @@ public class MapleItemInformationProvider {
         priceCache.put(itemId, pEntry);
         return pEntry;
     }
-    
+
     private String getEquipmentSlot(int itemId) {
         if (equipmentSlotCache.containsKey(itemId)) {
             return equipmentSlotCache.get(itemId);
         }
-        
+
         String ret = "";
-        
+
         MapleData item = getItemData(itemId);
-        
+
         if (item == null) {
             return null;
         }
-        
+
         MapleData info = item.getChildByPath("info");
-        
+
         if (info == null) {
             return null;
         }
 
         ret = MapleDataTool.getString("islot", info, "");
-        
+
         equipmentSlotCache.put(itemId, ret);
-        
+
         return ret;
     }
 
@@ -799,7 +779,7 @@ public class MapleItemInformationProvider {
         MapleData data = getItemData(itemId);
         boolean bRestricted = MapleDataTool.getIntConvert("info/tradeBlock", data, 0) == 1;
         if (!bRestricted) {
-        	bRestricted = MapleDataTool.getIntConvert("info/accountSharable", data, 0) == 1;
+            bRestricted = MapleDataTool.getIntConvert("info/accountSharable", data, 0) == 1;
         }
         if (!bRestricted) {
             bRestricted = MapleDataTool.getIntConvert("info/quest", data, 0) == 1;
@@ -930,9 +910,7 @@ public class MapleItemInformationProvider {
         if ((itemId / 10000) != 243) {
             return null;
         }
-        scriptedItem script = new scriptedItem(MapleDataTool.getInt("spec/npc", getItemData(itemId), 0),
-                MapleDataTool.getString("spec/script", getItemData(itemId), ""),
-                MapleDataTool.getInt("spec/runOnPickup", getItemData(itemId), 0) == 1);
+        scriptedItem script = new scriptedItem(MapleDataTool.getInt("spec/npc", getItemData(itemId), 0), MapleDataTool.getString("spec/script", getItemData(itemId), ""), MapleDataTool.getInt("spec/runOnPickup", getItemData(itemId), 0) == 1);
         scriptedItemCache.put(itemId, script);
         return scriptedItemCache.get(itemId);
     }
@@ -1028,7 +1006,12 @@ public class MapleItemInformationProvider {
     }
 
     public boolean isCash(int itemId) {
-        return itemId / 1000000 == 5 || getEquipStats(itemId).get("cash") == 1;
+        try {
+            return itemId / 1000000 == 5 || getEquipStats(itemId).get("cash") == 1;
+        } catch (NullPointerException e) {
+            System.err.println("Could not find item property 'cash' for item " + itemId);
+            throw e;
+        }
     }
 
     public Collection<Item> canWearEquipment(MapleCharacter chr, Collection<Item> items) {
@@ -1106,11 +1089,11 @@ public class MapleItemInformationProvider {
         return itemz;
     }
 
-    public boolean canWearEquipment(MapleCharacter chr, Equip equip, int dst) {      
+    public boolean canWearEquipment(MapleCharacter chr, Equip equip, int dst) {
         int id = equip.getItemId();
-        
+
         String islot = getEquipmentSlot(id);
-        
+
         if (!EquipSlot.getFromTextSlot(islot).isAllowed(dst, isCash(id))) {
             equip.wear(false);
             Cheater.CheatEntry entry = chr.getCheater().getCheatEntry(Cheats.ForcedEquip);
@@ -1118,13 +1101,13 @@ public class MapleItemInformationProvider {
             entry.announce(chr.getClient(), String.format("[%s] %s attempted to force equip item %d", getClass().getSimpleName(), chr.getName(), id), 3000);
             return false;
         }
-        
+
         if (chr.getJob() == MapleJob.SUPERGM || chr.getJob() == MapleJob.GM) {
             equip.wear(true);
             return true;
         }
-                
-                
+
+
         boolean highfivestamp = false;
         /* Removed check above for message ><
          try {
@@ -1137,7 +1120,7 @@ public class MapleItemInformationProvider {
          }
          } catch (SQLException ex) {
          }*/
-       
+
         int reqLevel = getEquipStats(equip.getItemId()).get("reqLevel");
         if (highfivestamp) {
             reqLevel -= 5;
@@ -1169,16 +1152,15 @@ public class MapleItemInformationProvider {
         equip.wear(true);
         return true;
     }
-    
-    public ArrayList<Pair<Integer, String>> getItemDataByName(String name)
-    {
+
+    public ArrayList<Pair<Integer, String>> getItemDataByName(String name) {
         ArrayList<Pair<Integer, String>> ret = new ArrayList<Pair<Integer, String>>();
-         for (Pair<Integer, String> itemPair : MapleItemInformationProvider.getInstance().getAllItems()) {
-                    if (itemPair.getRight().toLowerCase().contains(name.toLowerCase())) {
-                            ret.add(itemPair);
-                        }
-                    }
-         return ret;
+        for (Pair<Integer, String> itemPair : MapleItemInformationProvider.getInstance().getAllItems()) {
+            if (itemPair.getRight().toLowerCase().contains(name.toLowerCase())) {
+                ret.add(itemPair);
+            }
+        }
+        return ret;
     }
 
     public List<Pair<String, Integer>> getItemLevelupStats(int itemId, int level, boolean timeless) {

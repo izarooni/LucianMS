@@ -27,16 +27,7 @@ import client.BuddyList.BuddyOperation;
 import client.BuddylistEntry;
 import client.MapleCharacter;
 import client.MapleFamily;
-
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.atomic.AtomicInteger;
-
+import lang.DuplicateEntryException;
 import net.server.PlayerStorage;
 import net.server.Server;
 import net.server.channel.Channel;
@@ -44,13 +35,18 @@ import net.server.channel.CharacterIdChannelPair;
 import net.server.guild.MapleGuild;
 import net.server.guild.MapleGuildCharacter;
 import net.server.guild.MapleGuildSummary;
+import scheduler.TaskExecutor;
 import server.events.custom.ManualPlayerEvent;
-import tools.LogHelper;
+import server.events.custom.auto.SAutoEvent;
 import tools.DatabaseConnection;
 import tools.MaplePacketCreator;
 
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
+
 /**
- *
  * @author kevintjuh93
  */
 public class World {
@@ -62,6 +58,7 @@ public class World {
     private Map<Integer, MapleMessenger> messengers = new HashMap<>();
     private Map<Integer, MapleGuildSummary> gsStore = new HashMap<>();
     private Map<Integer, MapleFamily> families = new LinkedHashMap<>();
+    private Map<String, SAutoEvent> scheduledEvents = new HashMap<>();
     private AtomicInteger runningPartyId = new AtomicInteger(1);
     private AtomicInteger runningMessengerId = new AtomicInteger(1);
     private PlayerStorage players = new PlayerStorage();
@@ -75,6 +72,22 @@ public class World {
         this.droprate = droprate;
         this.mesorate = mesorate;
         this.bossdroprate = bossdroprate;
+    }
+
+    public SAutoEvent getScheduledEvent(String name) {
+        return scheduledEvents.get(name);
+    }
+
+    public void addScheduledEvent(SAutoEvent event) {
+        if (scheduledEvents.containsKey(event.getName())) {
+            throw new DuplicateEntryException(String.format("World generic event (%s) already exists with name '%s'", event.getClass().getSimpleName(), event.getName()));
+        }
+        scheduledEvents.put(event.getName(), event);
+        TaskExecutor.createRepeatingTask(event::run, event.getInterval(), event.getInterval());
+    }
+
+    public HashMap<String, SAutoEvent> getScheduledEvents() {
+        return new HashMap<>(scheduledEvents);
     }
 
     public List<Channel> getChannels() {
@@ -104,17 +117,17 @@ public class World {
     public String getEventMessage() {
         return eventmsg;
     }
-    
+
     public int getExpRate() {
         return exprate;
     }
 
     public void setExpRate(int exp) {
-    	//System.out.println("Setting server EXP Rate to " + exp + "x.");
+        //System.out.println("Setting server EXP Rate to " + exp + "x.");
         this.exprate = exp;
-		for(MapleCharacter chr : getPlayerStorage().getAllCharacters()) {
-			chr.setRates();
-		}
+        for (MapleCharacter chr : getPlayerStorage().getAllCharacters()) {
+            chr.setRates();
+        }
     }
 
     public int getDropRate() {
@@ -258,7 +271,7 @@ public class World {
     public void changeEmblem(int gid, List<Integer> affectedPlayers, MapleGuildSummary mgs) {
         updateGuildSummary(gid, mgs);
         sendPacket(affectedPlayers, MaplePacketCreator.guildEmblemChange(gid, mgs.getLogoBG(), mgs.getLogoBGColor(), mgs.getLogo(), mgs.getLogoColor()), -1);
-        setGuildAndRank(affectedPlayers, -1, -1, -1);	//respawn player
+        setGuildAndRank(affectedPlayers, -1, -1, -1);    //respawn player
     }
 
     public void sendPacket(List<Integer> targetIds, final byte[] packet, int exception) {
@@ -312,8 +325,8 @@ public class World {
                     chr.setParty(null);
                     chr.setMPC(null);
                 }
-		default:
-			break;
+            default:
+                break;
         }
     }
 
@@ -426,19 +439,19 @@ public class World {
     }
 
     public void addMessengerPlayer(MapleMessenger messenger, String namefrom, int fromchannel, int position) {
-    	for (MapleMessengerCharacter messengerchar : messenger.getMembers()) {
-    		MapleCharacter chr = getPlayerStorage().getCharacterByName(messengerchar.getName());
-    		if(chr == null){
-    			continue;
-    		}
-    		if (!messengerchar.getName().equals(namefrom)) {
-    			MapleCharacter from = getChannel(fromchannel).getPlayerStorage().getCharacterByName(namefrom);
-    			chr.getClient().announce(MaplePacketCreator.addMessengerPlayer(namefrom, from, position, (byte) (fromchannel - 1)));
-    			from.getClient().announce(MaplePacketCreator.addMessengerPlayer(chr.getName(), chr, messengerchar.getPosition(), (byte) (messengerchar.getChannel() - 1)));           
-    		} else {
-    			chr.getClient().announce(MaplePacketCreator.joinMessenger(messengerchar.getPosition()));
-    		}
-    	}
+        for (MapleMessengerCharacter messengerchar : messenger.getMembers()) {
+            MapleCharacter chr = getPlayerStorage().getCharacterByName(messengerchar.getName());
+            if (chr == null) {
+                continue;
+            }
+            if (!messengerchar.getName().equals(namefrom)) {
+                MapleCharacter from = getChannel(fromchannel).getPlayerStorage().getCharacterByName(namefrom);
+                chr.getClient().announce(MaplePacketCreator.addMessengerPlayer(namefrom, from, position, (byte) (fromchannel - 1)));
+                from.getClient().announce(MaplePacketCreator.addMessengerPlayer(chr.getName(), chr, messengerchar.getPosition(), (byte) (messengerchar.getChannel() - 1)));
+            } else {
+                chr.getClient().announce(MaplePacketCreator.joinMessenger(messengerchar.getPosition()));
+            }
+        }
     }
 
     public void removeMessengerPlayer(MapleMessenger messenger, int position) {
@@ -451,22 +464,22 @@ public class World {
     }
 
     public void messengerChat(MapleMessenger messenger, String chattext, String namefrom) {
-    	String from = "";
-    	String to1 = "";
-    	String to2 = "";
+        String from = "";
+        String to1 = "";
+        String to2 = "";
         for (MapleMessengerCharacter messengerchar : messenger.getMembers()) {
             if (!(messengerchar.getName().equals(namefrom))) {
                 MapleCharacter chr = getPlayerStorage().getCharacterByName(messengerchar.getName());
                 if (chr != null) {
                     chr.getClient().announce(MaplePacketCreator.messengerChat(chattext));
-                    if (to1.equals("")){
-                    	to1 = messengerchar.getName();
-                    } else if (to2.equals("")){
-                    	to2 = messengerchar.getName();
-                    } 
+                    if (to1.equals("")) {
+                        to1 = messengerchar.getName();
+                    } else if (to2.equals("")) {
+                        to2 = messengerchar.getName();
+                    }
                 }
             } else {
-            	from = messengerchar.getName();
+                from = messengerchar.getName();
             }
         }
     }
