@@ -48,7 +48,8 @@ public class GeneralChatHandler extends net.AbstractMaplePacketHandler {
                 player.getChatType().sendChat(player, message, show);
 //                player.getMap().broadcastMessage(MaplePacketCreator.getChatText(player.getId(), message, player.getWhiteChat(), show));
             } else {
-                player.getMap().broadcastGMMessage(MaplePacketCreator.getChatText(player.getId(), message, player.getWhiteChat(), show));
+            	player.getChatType().sendChat(player, message, show);
+                //player.getMap().broadcastGMMessage(MaplePacketCreator.getChatText(player.getId(), message, player.getWhiteChat(), show));
             }
         } else {
             player.dropMessage(5, "You have been muted, meaning you cannot speak.");
