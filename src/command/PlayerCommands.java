@@ -81,6 +81,8 @@ public class PlayerCommands {
         	         player.dropMessage("Donor Points: " + target.getClient().getDonationPoints());
         	         player.dropMessage("Crystals: " + target.getItemQuantity(ServerConstants.CURRENCY, false));
         		}
+        	} else {
+        		player.dropMessage(5, "Not enough arguments where given! (@spy <player>)");
         	}
         	
         } else if (command.matches("^reset(stats|str|dex|int|luk)$")) {
