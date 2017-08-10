@@ -5550,6 +5550,9 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
             case "shp":
                 setShadowPoints(getShadowPoints() + amount);
                 return true;
+            case "rp":
+            	setRebirthPoints(getRebirthPoints() + amount);
+            	return true;
         }
         return false;
     }
