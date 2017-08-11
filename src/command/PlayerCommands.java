@@ -30,9 +30,7 @@ import java.util.WeakHashMap;
  */
 public class PlayerCommands {
 
-    // TODO correct command argumentation, at every type of commands
-    // TODO correct coloring depending on if it is an error message or not.
-
+    // TODO: Not all command will be seen due to it overflowing the entire text screen!
     public static void execute(MapleClient client, CommandWorker.Command command, CommandWorker.CommandArgs args) {
         MapleCharacter player = client.getPlayer();
         Channel ch = client.getChannelServer();
@@ -64,6 +62,7 @@ public class PlayerCommands {
             commands.add("@reset<str/dex/int/luk/stats> - Reset assigned AP");
             commands.add("@<str/dex/int/luk> - Assign any available AP to a specified stat");
             commands.add("@checkme - Check your player's stats");
+            commands.add("@spy <player> - See the stats of a player");
             commands.forEach(player::dropMessage);
             commands.clear();
         } else if (command.equals("checkme")) {
@@ -72,6 +71,20 @@ public class PlayerCommands {
             player.dropMessage("Rebirth Points: " + player.getRebirthPoints());
             player.dropMessage("Donor Points: " + client.getDonationPoints());
             player.dropMessage("Crystals: " + player.getItemQuantity(ServerConstants.CURRENCY, false));
+        } else if(command.equals("spy")) {
+        	if(args.length() >= 0) {
+        		MapleCharacter target = ch.getPlayerStorage().getCharacterByName(args.get(0));
+        		if(target != null) {
+        			 player.dropMessage("Vote points: " + target.getClient().getVotePoints());
+        	         player.dropMessage("Rebirths: " + target.getRebirths());
+        	         player.dropMessage("Rebirth Points: " + target.getRebirthPoints());
+        	         player.dropMessage("Donor Points: " + target.getClient().getDonationPoints());
+        	         player.dropMessage("Crystals: " + target.getItemQuantity(ServerConstants.CURRENCY, false));
+        		}
+        	} else {
+        		player.dropMessage(5, "Not enough arguments where given! (@spy <player>)");
+        	}
+        	
         } else if (command.matches("^reset(stats|str|dex|int|luk)$")) {
             String statName = command.getName().substring(5);
 
