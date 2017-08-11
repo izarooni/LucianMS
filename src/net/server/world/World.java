@@ -37,7 +37,7 @@ import net.server.guild.MapleGuildCharacter;
 import net.server.guild.MapleGuildSummary;
 import scheduler.TaskExecutor;
 import server.events.custom.ManualPlayerEvent;
-import server.events.custom.auto.SAutoEvent;
+import server.events.custom.scheduled.SAutoEvent;
 import tools.DatabaseConnection;
 import tools.MaplePacketCreator;
 

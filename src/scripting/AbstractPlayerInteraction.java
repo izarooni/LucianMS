@@ -517,9 +517,7 @@ public class AbstractPlayerInteraction {
     }
 
     public void spawnMonster(int id, int x, int y) {
-        MapleMonster monster = MapleLifeFactory.getMonster(id);
-        monster.setPosition(new Point(x, y));
-        getPlayer().getMap().spawnMonster(monster);
+        getPlayer().getMap().spawnMonsterOnGroudBelow(MapleLifeFactory.getMonster(id), new Point(x, y));
     }
 
     public MapleMonster getMonsterLifeFactory(int mid) {

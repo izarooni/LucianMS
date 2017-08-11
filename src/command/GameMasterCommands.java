@@ -44,7 +44,7 @@ public class GameMasterCommands {
         MapleCharacter player = client.getPlayer();
         Channel ch = client.getChannelServer();
 
-        if (command.equals("help", "commands")) {
+        if (command.equals("gmcommands")) {
             ArrayList<String> commands = new ArrayList<>();
             commands.add("!help - to see what commands there are");
             commands.add("!commands - another way to see the commands");

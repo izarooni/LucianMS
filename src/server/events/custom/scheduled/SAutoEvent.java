@@ -1,4 +1,4 @@
-package server.events.custom.auto;
+package server.events.custom.scheduled;
 
 import server.events.custom.GenericEvent;
 

@@ -30,7 +30,7 @@ public class AdministratorCommands {
         MapleCharacter player = client.getPlayer();
         World world = client.getWorldServer();
 
-        if (command.equals("help")) {
+        if (command.equals("admincommands")) {
             ArrayList<String> commands = new ArrayList<>();
             try {
                 commands.add("!reloadquests - Reload custom quest");

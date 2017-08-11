@@ -1,4 +1,4 @@
-package server.events.custom.auto;
+package server.events.custom.scheduled;
 
 import client.MapleCharacter;
 import net.server.channel.Channel;
@@ -14,7 +14,7 @@ import java.awt.*;
 /**
  * @author izarooni
  */
-public class OuterSpace extends SAutoEvent {
+public class SOuterSpace extends SAutoEvent {
 
     private static final int MapId = 98;
     private static final int MonsterId = 9895259;
@@ -25,7 +25,7 @@ public class OuterSpace extends SAutoEvent {
     private final World world;
     private final int instanceId;
 
-    public OuterSpace(World world) {
+    public SOuterSpace(World world) {
         this.world = world;
         instanceId = RunningInstance++;
     }

@@ -38,7 +38,7 @@ public class HGMCommands {
 
         MapleCharacter player = client.getPlayer();
 
-        if (command.equals("help", "commands")) {
+        if (command.equals("hgmcommands")) {
             ArrayList<String> commands = new ArrayList<>();
             commands.add("!item <id> <OPT=amount> - spawn an item, and optionally choose an amount");
             commands.add("!drop <id> <OPT=amount> - drop an item on the ground, and optionally choose an amount");

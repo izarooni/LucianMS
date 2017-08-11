@@ -1560,6 +1560,10 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
                     updateSingleStat(MapleStat.EXP, need);
                 }
             }
+        } else {
+            if (autorebirthing) {
+                doRebirth();
+            }
         }
     }
 
@@ -2611,10 +2615,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
                 dex += 1;
             }
         } else {
-            remainingAp += 5;
-            if (isCygnus() && level < 70) {
-                remainingAp++;
-            }
+            remainingAp += 1;
         }
         if (job == MapleJob.BEGINNER || job == MapleJob.NOBLESSE || job == MapleJob.LEGEND) {
             maxhp += Randomizer.rand(12, 16);
@@ -2667,9 +2668,6 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
         if (level >= getMaxLevel()) {
             exp.set(0);
             level = getMaxLevel(); // To prevent levels past 200
-            if (autorebirthing) {
-                doRebirth();
-            }
         }
         if (level % 50 == 0) { // For the drop + meso rate
             setRates();
@@ -2710,15 +2708,16 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
                 MapleInventoryManipulator.addById(client, 4310000, (short) 1);
             }
         }
-        if (level == 200 && !isGM()) {
-            final String names = (getMedalText() + name);
-            client.getWorldServer().broadcastPacket(MaplePacketCreator.serverNotice(6, String.format(LEVEL_200, names, names)));
-        }
-        levelUpMessages();
+//        if (level == 200 && !isGM()) {
+//            final String names = (getMedalText() + name);
+//            client.getWorldServer().broadcastPacket(MaplePacketCreator.serverNotice(6, String.format(LEVEL_200, names, names)));
+//        }
+//        levelUpMessages();
         guildUpdate();
-        // TODO make gachapon tickets work (5220000)
-        if (MapleInventoryManipulator.checkSpace(client, 5220000, (short) 1, "")) {
-            MapleInventoryManipulator.addById(client, 5220000, (short) 1);
+        if (level % 50 == 0) {
+            if (MapleInventoryManipulator.checkSpace(client, 5220000, (short) 1, "")) {
+                MapleInventoryManipulator.addById(client, 5220000, (short) 1);
+            }
         }
     }
 
@@ -2898,6 +2897,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
             ret.fishingPoints = rs.getInt("fishingpoints");
             ret.daily = rs.getTimestamp("daily");
             ret.rebirths = rs.getInt("reborns");
+            ret.rebirthPoints = rs.getInt("rebirthpoints");
             ret.eventPoints = rs.getInt("eventpoints");
             ret.shadowPoints = rs.getInt("shadowpoints");
             if (ret.guildid > 0) {
@@ -3880,7 +3880,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
             con.setTransactionIsolation(Connection.TRANSACTION_READ_UNCOMMITTED);
             con.setAutoCommit(false);
             PreparedStatement ps;
-            ps = con.prepareStatement("UPDATE characters SET level = ?, fame = ?, str = ?, dex = ?, luk = ?, `int` = ?, exp = ?, gachaexp = ?, hp = ?, mp = ?, maxhp = ?, maxmp = ?, sp = ?, ap = ?, gm = ?, skincolor = ?, gender = ?, job = ?, hair = ?, face = ?, map = ?, meso = ?, hpMpUsed = ?, spawnpoint = ?, party = ?, buddyCapacity = ?, messengerid = ?, messengerposition = ?, mountlevel = ?, mountexp = ?, mounttiredness= ?, equipslots = ?, useslots = ?, setupslots = ?, etcslots = ?,  monsterbookcover = ?, vanquisherStage = ?, dojoPoints = ?, lastDojoStage = ?, finishedDojoTutorial = ?, vanquisherKills = ?, matchcardwins = ?, matchcardlosses = ?, matchcardties = ?, omokwins = ?, omoklosses = ?, omokties = ?, dataString = ?, fishingpoints = ?, daily = ?, reborns = ?, eventpoints = ?, shadowpoints = ? WHERE id = ?", Statement.RETURN_GENERATED_KEYS);
+            ps = con.prepareStatement("UPDATE characters SET level = ?, fame = ?, str = ?, dex = ?, luk = ?, `int` = ?, exp = ?, gachaexp = ?, hp = ?, mp = ?, maxhp = ?, maxmp = ?, sp = ?, ap = ?, gm = ?, skincolor = ?, gender = ?, job = ?, hair = ?, face = ?, map = ?, meso = ?, hpMpUsed = ?, spawnpoint = ?, party = ?, buddyCapacity = ?, messengerid = ?, messengerposition = ?, mountlevel = ?, mountexp = ?, mounttiredness= ?, equipslots = ?, useslots = ?, setupslots = ?, etcslots = ?,  monsterbookcover = ?, vanquisherStage = ?, dojoPoints = ?, lastDojoStage = ?, finishedDojoTutorial = ?, vanquisherKills = ?, matchcardwins = ?, matchcardlosses = ?, matchcardties = ?, omokwins = ?, omoklosses = ?, omokties = ?, dataString = ?, fishingpoints = ?, daily = ?, reborns = ?, eventpoints = ?, shadowpoints = ?, rebirthpoints = ? WHERE id = ?", Statement.RETURN_GENERATED_KEYS);
             if (gmLevel < 1 && level > 199) {
                 ps.setInt(1, isCygnus() ? 120 : 200);
             } else {
@@ -3978,7 +3978,8 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
             ps.setInt(51, rebirths);
             ps.setInt(52, eventPoints);
             ps.setInt(53, shadowPoints);
-            ps.setInt(54, id);
+            ps.setInt(54, rebirthPoints);
+            ps.setInt(55, id);
 
             int updateRows = ps.executeUpdate();
             if (updateRows < 1) {
@@ -5523,30 +5524,33 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
 
     public boolean addPoints(String pointType, int amount) throws NumberFormatException {
         switch (pointType) {
-            case "fp":
+            case "fp": // fishing points
                 setFishingPoints(getFishingPoints() + amount);
                 return true;
-            case "ep":
+            case "ep": // event points
                 setEventPoints(getEventPoints() + amount);
                 return true;
-            case "dp":
+            case "dp": // donor points
                 getClient().addDonorPoints(amount);
                 return true;
-            case "vp":
+            case "vp": // vote points
                 getClient().addVotePoints(amount);
                 return true;
-            case "nx":
+            case "nx": // nx cash
                 getCashShop().gainCash(1, amount);
                 return true;
-            case "ap":
+            case "ap": // ability points
                 setRemainingAp(amount);
                 updateSingleStat(MapleStat.AVAILABLEAP, getRemainingAp());
-            case "sp":
+            case "sp": // skill points
                 setRemainingSp(amount);
                 updateSingleStat(MapleStat.AVAILABLESP, getRemainingSp());
                 return true;
-            case "shp":
+            case "shp": // shadow points
                 setShadowPoints(getShadowPoints() + amount);
+                return true;
+            case "rbp": // rebirth points
+                setRebirthPoints(getRebirthPoints() + amount);
                 return true;
         }
         return false;

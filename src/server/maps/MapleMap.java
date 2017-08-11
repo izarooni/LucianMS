@@ -37,6 +37,7 @@ import constants.ServerConstants;
 import net.server.Server;
 import net.server.channel.Channel;
 import net.server.world.MaplePartyCharacter;
+import scheduler.TaskExecutor;
 import scripting.map.MapScriptManager;
 import server.MapleItemInformationProvider;
 import server.MaplePortal;
@@ -46,8 +47,6 @@ import server.events.custom.GenericEvent;
 import server.events.gm.*;
 import server.life.*;
 import server.life.MapleLifeFactory.SelfDestruction;
-import server.partyquest.MonsterCarnival;
-import server.partyquest.MonsterCarnivalParty;
 import server.partyquest.Pyramid;
 import server.partyquest.carnival.MCarnivalGame;
 import server.quest.custom.CQuestData;
@@ -542,17 +541,17 @@ public class MapleMap {
                     if (!monster.isAlive()) { // monster just died
                         // killMonster(monster, chr, true);
 
-                    	if(monster.getMap().getId() == 85) {
-                    		if(chr.getParty() != null) {
-                    			for(MaplePartyCharacter player : chr.getParty().getMembers()) {
-                    				player.getPlayer().changeMap(88);
-                    				player.getPlayer().dropMessage(5, "Thanks for finally letting me realize my actions were corrupt against the realm.");
-                    			}
-                    		} else {
-                    			chr.changeMap(88);
-                    			chr.dropMessage(5, "Thanks for finally letting me realize my actions were corrupt against the realm.");
-                    		}
-                    	}
+                        if (monster.getMap().getId() == 85) {
+                            if (chr.getParty() != null) {
+                                for (MaplePartyCharacter player : chr.getParty().getMembers()) {
+                                    player.getPlayer().changeMap(88);
+                                    player.getPlayer().dropMessage(5, "Thanks for finally letting me realize my actions were corrupt against the realm.");
+                                }
+                            } else {
+                                chr.changeMap(88);
+                                chr.dropMessage(5, "Thanks for finally letting me realize my actions were corrupt against the realm.");
+                            }
+                        }
 
                         if (ServerConstants.NX_FROM_MONSTERS) {
                             int random = (Randomizer.nextInt(100)) + 1;
@@ -702,7 +701,7 @@ public class MapleMap {
             entry.incrementCheatCount();
             entry.announce(chr.getClient(), String.format("[%d] %s (level %d) attacked a monster (%d) too high of level (level %d)", entry.cheatCount, chr.getName(), chr.getLevel(), monster.getId(), monster.getStats().getLevel()), 2500);
         }
-		/*
+        /*
 		 * if (chr.getQuest(MapleQuest.getInstance(29400)).getStatus().equals(
 		 * MapleQuestStatus.Status.STARTED)) { if (chr.getLevel() >= 120 &&
 		 * monster.getStats().getLevel() >= 120) { //FIX MEDAL SHET } else if
@@ -727,6 +726,15 @@ public class MapleMap {
                     player.dropMessage("To the crew that have finally conquered Horned Tail after numerous attempts, I salute thee! You are the true heroes of Leafre!!");
                 }
             }
+        }
+        if (monster.getId() == 9895253 && getId() == 97) {
+            List<MapleCharacter> warp = new ArrayList<>(getCharacters());
+            TaskExecutor.createTask(new Runnable() {
+                @Override
+                public void run() {
+                    warp.forEach(c -> c.changePage(333));
+                }
+            }, 2500);
         }
         spawnedMonstersOnMap.decrementAndGet();
         monster.setHp(0);

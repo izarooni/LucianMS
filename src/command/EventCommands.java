@@ -1,9 +1,5 @@
 package command;
 
-import java.awt.Point;
-import java.util.ArrayList;
-import java.util.Map;
-
 import client.MapleCharacter;
 import client.MapleClient;
 import client.MapleDisease;
@@ -17,6 +13,10 @@ import server.life.MapleMonster;
 import server.life.MobSkill;
 import server.life.MobSkillFactory;
 import tools.MaplePacketCreator;
+
+import java.awt.*;
+import java.util.ArrayList;
+import java.util.Map;
 
 /**
  * This can get messy so I'm separating event related commands from regular GM commands
@@ -32,7 +32,16 @@ public class EventCommands {
         final World world = client.getWorldServer();
         ManualPlayerEvent playerEvent = client.getWorldServer().getPlayerEvent();
 
-        if (command.equals("event")) {
+        if (command.equals("eventcommands")) {
+            player.dropMessage("!event - setup/start/close an event");
+            player.dropMessage("!lock<m> - Disable skills for specified players or everybody (map)");
+            player.dropMessage("!reverse<m> - Give specified players or everybody the reverse debuff");
+            player.dropMessage("!seduce<m> - Give specified players or everybody the seduce debuff");
+            player.dropMessage("!partycheck - Check all players party information");
+            player.dropMessage("!ak - Set the auto kill position");
+            player.dropMessage("!bomb<m> - Spawn a timed bomb at your position or around everybody in the map");
+//            player.dropMessage("");
+        } else if (command.equals("event")) {
             if (args.length() > 0) {
                 switch (args.get(0)) {
                     case "new": {
@@ -88,7 +97,7 @@ public class EventCommands {
                             if (playerEvent.getGateTime() > 0) {
                                 message += " and the gate will close in " + playerEvent.getGateTime() + " seconds";
                             }
-                        break;
+                            break;
                         }
                         case "name": {
                             if (args.length() > 1) {
