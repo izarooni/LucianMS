@@ -692,6 +692,7 @@ public class MapleMap {
                     if (data.checkRequirements() && !checked) { // update checked; if requirement is finished and previously was not...
                         chr.announce(MaplePacketCreator.getShowQuestCompletion(1));
                         chr.announce(MaplePacketCreator.earnTitleMessage(String.format("Quest '%s' completed!", data.getName())));
+                        chr.announce(MaplePacketCreator.serverNotice(5, String.format("Quest '%s' completed!", data.getName())));
                     }
                 }
             }

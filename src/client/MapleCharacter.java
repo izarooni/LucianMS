@@ -25,6 +25,7 @@ import client.arcade.Arcade;
 import client.arcade.RPSGame;
 import client.autoban.Cheater;
 import client.inventory.*;
+import com.sun.javafx.scene.control.behavior.TwoLevelFocusPopupBehavior;
 import constants.ExpTable;
 import constants.GameConstants;
 import constants.ItemConstants;
@@ -1554,6 +1555,9 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
             }
             if (exp.get() >= ExpTable.getExpNeededForLevel(level)) {
                 levelUp(true);
+                while (exp.get() >= ExpTable.getExpNeededForLevel(level)) {
+                    levelUp(true);
+                }
                 int need = ExpTable.getExpNeededForLevel(level);
                 if (exp.get() >= need) {
                     setExp(need - 1);
@@ -5501,24 +5505,20 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
         setRebirthPoints(getRebirthPoints() + 50);
         dropMessage("You have received 50 rebirth points");
 
-        if (rebirths >= 1 && rebirths <= 10) {
-            announce(MaplePacketCreator.showEffect("pepeKing/pepe/pepeW")); // screen effect
-            announce(MaplePacketCreator.showEffect("pepeKing/frame/W"));
-        }
-        if (rebirths >= 10 && rebirths <= 100) {
-            announce(MaplePacketCreator.showEffect("ad/piramid")); // screen effect
-            announce(MaplePacketCreator.trembleEffect(0, 0)); // shake screen
-        }
-        if (rebirths >= 100) {
-            announce(MaplePacketCreator.showEffect("balog/clear/stone")); // screen effect
-            announce(MaplePacketCreator.trembleEffect(0, 0)); // shake screen
-            // damage all monsters in the screen
-            for (MapleMapObject object : getMap().getMapObjectsInRange(getPosition(), 100000, Collections.singletonList(MapleMapObjectType.MONSTER))) {
-                MapleMonster monster = (MapleMonster) object;
-                int damage = monster.getMaxHp();
-                getMap().broadcastMessage(MaplePacketCreator.damageMonster(monster.getObjectId(), damage));
-                getMap().damageMonster(this, monster, damage);
-            }
+        announce(MaplePacketCreator.showEffect("breakthrough/One")); // effect
+        announce(MaplePacketCreator.showEffect("breakthrough/Two")); // effect
+        announce(MaplePacketCreator.showEffect("breakthrough/Three")); // effect
+        announce(MaplePacketCreator.showEffect("breakthrough/Four")); // effect
+        announce(MaplePacketCreator.showEffect("breakthrough/Five")); // effect
+        announce(MaplePacketCreator.showEffect("breakthrough/Ten")); // effect
+        announce(MaplePacketCreator.trembleEffect(0, 0)); // shake screen
+
+        // damage all monsters in the screen
+        for (MapleMapObject object : getMap().getMapObjectsInRange(getPosition(), 100000, Collections.singletonList(MapleMapObjectType.MONSTER))) {
+            MapleMonster monster = (MapleMonster) object;
+            int damage = monster.getMaxHp();
+            getMap().broadcastMessage(MaplePacketCreator.damageMonster(monster.getObjectId(), damage));
+            getMap().damageMonster(this, monster, damage);
         }
     }
 

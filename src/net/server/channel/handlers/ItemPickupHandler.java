@@ -62,7 +62,7 @@ public final class ItemPickupHandler extends AbstractMaplePacketHandler {
                 return;
             }
             // un-obtainable item
-            if (!mapitem.getItem().isObtainable()) {
+            if (mapitem.getItem() != null && !mapitem.getItem().isObtainable()) {
                 Item item = mapitem.getItem();
                 if (item.getItemId() == 3990022) {
                     chr.dropMessage("Foothold ID: " + item.getOwner().split(":")[1]);
@@ -183,6 +183,7 @@ public final class ItemPickupHandler extends AbstractMaplePacketHandler {
                                      */
                                     c.announce(MaplePacketCreator.getShowQuestCompletion(1));
                                     c.announce(MaplePacketCreator.earnTitleMessage(String.format("Quest '%s' completed!", data.getName())));
+                                    c.announce(MaplePacketCreator.serverNotice(5, String.format("Quest '%s' completed!", data.getName())));
                                 }
                                 CQuestItemRequirement.CQuestItem p = toLoot.get(mapitem.getItemId());
                                 if (p != null) {

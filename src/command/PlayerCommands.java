@@ -5,7 +5,6 @@ import client.MapleClient;
 import client.MapleStat;
 import client.Relationship;
 import client.Relationship.Status;
-import client.inventory.MapleInventoryType;
 import constants.ServerConstants;
 import net.server.channel.Channel;
 import net.server.channel.handlers.RockPaperScissorsHandler;
@@ -71,20 +70,20 @@ public class PlayerCommands {
             player.dropMessage("Rebirth Points: " + player.getRebirthPoints());
             player.dropMessage("Donor Points: " + client.getDonationPoints());
             player.dropMessage("Crystals: " + player.getItemQuantity(ServerConstants.CURRENCY, false));
-        } else if(command.equals("spy")) {
-        	if(args.length() >= 0) {
-        		MapleCharacter target = ch.getPlayerStorage().getCharacterByName(args.get(0));
-        		if(target != null) {
-        			 player.dropMessage("Vote points: " + target.getClient().getVotePoints());
-        	         player.dropMessage("Rebirths: " + target.getRebirths());
-        	         player.dropMessage("Rebirth Points: " + target.getRebirthPoints());
-        	         player.dropMessage("Donor Points: " + target.getClient().getDonationPoints());
-        	         player.dropMessage("Crystals: " + target.getItemQuantity(ServerConstants.CURRENCY, false));
-        		}
-        	} else {
-        		player.dropMessage(5, "Not enough arguments where given! (@spy <player>)");
-        	}
-        	
+        } else if (command.equals("spy")) {
+            if (args.length() >= 0) {
+                MapleCharacter target = ch.getPlayerStorage().getCharacterByName(args.get(0));
+                if (target != null) {
+                    player.dropMessage("Vote points: " + target.getClient().getVotePoints());
+                    player.dropMessage("Rebirths: " + target.getRebirths());
+                    player.dropMessage("Rebirth Points: " + target.getRebirthPoints());
+                    player.dropMessage("Donor Points: " + target.getClient().getDonationPoints());
+                    player.dropMessage("Crystals: " + target.getItemQuantity(ServerConstants.CURRENCY, false));
+                }
+            } else {
+                player.dropMessage(5, "Not enough arguments where given! (@spy <player>)");
+            }
+
         } else if (command.matches("^reset(stats|str|dex|int|luk)$")) {
             String statName = command.getName().substring(5);
 
@@ -189,6 +188,8 @@ public class PlayerCommands {
             player.dropMessage(6, "EXP rate: " + player.getExpRate());
             player.dropMessage(6, "Drop rate: " + player.getDropRate());
             player.dropMessage(6, "Meso rate: " + player.getMesoRate());
+        } else if (command.equals("job")) {
+            NPCScriptManager.start(client, 9201067, null);
         } else if (command.equals("joinevent", "leaveevent")) {
             boolean join = command.equals("joinevent");
             ManualPlayerEvent playerEvent = client.getWorldServer().getPlayerEvent();
@@ -398,17 +399,12 @@ public class PlayerCommands {
             } else {
                 player.dropMessage("You do not meet the level requirement for rebirthing");
             }
-            player.doRebirth();
         } else if (command.equals("autorb")) {
-            if (player.getInventory(MapleInventoryType.ETC).findById(1302000) != null) {
-                player.setAutorebirthing(!player.isAutorebirthing());
-                player.dropMessage("Auto-rebirthing is " + (player.isAutorebirthing() ? "now" : "no longer") + " enabled");
-                if (player.getLevel() >= player.getMaxLevel()) {
-                    player.doRebirth();
-                    player.dropMessage("You now have " + player.getRebirths() + " rebirths");
-                }
-            } else {
-                player.dropMessage("You do not meet the requirements to toggle auto-rebirthing");
+            player.setAutorebirthing(!player.isAutorebirthing());
+            player.dropMessage("Auto-rebirthing is " + (player.isAutorebirthing() ? "now" : "no longer") + " enabled");
+            if (player.getLevel() >= player.getMaxLevel()) {
+                player.doRebirth();
+                player.dropMessage("You now have " + player.getRebirths() + " rebirths");
             }
         } else if (command.equals("crystal")) {
             if (player.getMeso() >= 500000000) {

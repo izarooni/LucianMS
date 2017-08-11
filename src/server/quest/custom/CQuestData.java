@@ -66,6 +66,7 @@ public class CQuestData {
             if (checkRequirements()) { // requirements are met
                 player.announce(MaplePacketCreator.getShowQuestCompletion(1));
                 player.announce(MaplePacketCreator.earnTitleMessage(String.format("Quest '%s' completed!", getName())));
+                player.announce(MaplePacketCreator.serverNotice(5, String.format("Quest '%s' completed!", getName())));
             }
         }
 

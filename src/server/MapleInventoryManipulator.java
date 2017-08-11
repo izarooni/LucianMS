@@ -504,6 +504,7 @@ public class MapleInventoryManipulator {
                  */
                     c.announce(MaplePacketCreator.getShowQuestCompletion(1));
                     c.announce(MaplePacketCreator.earnTitleMessage(String.format("Quest '%s' completed!", data.getName())));
+                    c.announce(MaplePacketCreator.serverNotice(5, String.format("Quest '%s' completed!", data.getName())));
                 }
                 CQuestItemRequirement.CQuestItem qItem = toLoot.get(itemId);
                 if (qItem != null) {
