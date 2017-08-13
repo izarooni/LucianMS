@@ -733,7 +733,7 @@ public class MapleMap {
             TaskExecutor.createTask(new Runnable() {
                 @Override
                 public void run() {
-                    warp.forEach(c -> c.changePage(333));
+                    warp.forEach(c -> c.changeMap(333));
                 }
             }, 2500);
         }

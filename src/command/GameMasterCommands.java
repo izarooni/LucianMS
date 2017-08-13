@@ -648,10 +648,10 @@ public class GameMasterCommands {
         } else if (command.equals("search")) {
             if (args.length() > 1) {
                 String type = args.get(0);
-                String search = args.concatFrom(1);
+                String search = args.concatFrom(1).toLowerCase().trim();
                 MapleData data;
                 MapleDataProvider dataProvider = MapleDataProviderFactory.getDataProvider(new File(System.getProperty("wzpath") + "/" + "String.wz"));
-                player.message("<<Type: " + type + " | Search: " + search + ">>");
+                player.message("<<Type: " + type + " | Search: " + search + " >>");
                 if (type.equalsIgnoreCase("NPC") || type.equalsIgnoreCase("NPCS")) {
                     List<String> retNpcs = new ArrayList<>();
                     data = dataProvider.getData("Npc.img");
@@ -662,7 +662,7 @@ public class GameMasterCommands {
                         npcPairList.add(new Pair<>(npcIdFromData, npcNameFromData));
                     }
                     for (Pair<Integer, String> npcPair : npcPairList) {
-                        if (npcPair.getRight().toLowerCase().contains(search.toLowerCase())) {
+                        if (npcPair.getRight().toLowerCase().contains(search)) {
                             retNpcs.add(npcPair.getLeft() + " - " + npcPair.getRight());
                         }
                     }
@@ -687,7 +687,7 @@ public class GameMasterCommands {
                         }
                     }
                     for (Pair<Integer, String> mapPair : mapPairList) {
-                        if (mapPair.getRight().toLowerCase().contains(search.toLowerCase())) {
+                        if (mapPair.getRight().toLowerCase().contains(search)) {
                             retMaps.add(mapPair.getLeft() + " - " + mapPair.getRight());
                         }
                     }
@@ -710,7 +710,7 @@ public class GameMasterCommands {
                         mobPairList.add(new Pair<>(mobIdFromData, mobNameFromData));
                     }
                     for (Pair<Integer, String> mobPair : mobPairList) {
-                        if (mobPair.getRight().toLowerCase().contains(search.toLowerCase())) {
+                        if (mobPair.getRight().toLowerCase().contains(search)) {
                             retMobs.add(mobPair.getLeft() + " - " + mobPair.getRight());
                         }
                     }
@@ -726,7 +726,7 @@ public class GameMasterCommands {
                 } else if (type.equalsIgnoreCase("ITEM") || type.equalsIgnoreCase("ITEMS")) {
                     List<String> retItems = new ArrayList<>();
                     for (Pair<Integer, String> itemPair : MapleItemInformationProvider.getInstance().getAllItems()) {
-                        if (itemPair.getRight().toLowerCase().contains(search.toLowerCase())) {
+                        if (itemPair.getRight().toLowerCase().contains(search)) {
                             retItems.add(itemPair.getLeft() + " - " + itemPair.getRight());
                         }
                     }

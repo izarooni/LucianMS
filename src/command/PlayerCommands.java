@@ -189,7 +189,7 @@ public class PlayerCommands {
             player.dropMessage(6, "Drop rate: " + player.getDropRate());
             player.dropMessage(6, "Meso rate: " + player.getMesoRate());
         } else if (command.equals("job")) {
-            NPCScriptManager.start(client, 9201067, null);
+            NPCScriptManager.start(client, 9201095, null);
         } else if (command.equals("joinevent", "leaveevent")) {
             boolean join = command.equals("joinevent");
             ManualPlayerEvent playerEvent = client.getWorldServer().getPlayerEvent();
@@ -397,7 +397,7 @@ public class PlayerCommands {
                 player.doRebirth();
                 player.dropMessage("You now have " + player.getRebirths() + " rebirths");
             } else {
-                player.dropMessage("You do not meet the level requirement for rebirthing");
+                player.dropMessage("YOu must be at least level " + player.getMaxLevel() + " to rebirth");
             }
         } else if (command.equals("autorb")) {
             player.setAutorebirthing(!player.isAutorebirthing());
