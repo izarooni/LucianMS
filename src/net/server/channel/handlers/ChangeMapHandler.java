@@ -26,11 +26,13 @@ public class ChangeMapHandler extends PacketHandler {
     @Override
     public void process(SeekableLittleEndianAccessor slea) {
         eCashShop = slea.available() == 0;
-        slea.skip(1);
-        targetMapId = slea.readInt();
-        startwp = slea.readMapleAsciiString();
-        slea.skip(1);
-        wheelOfDestiny = slea.readShort() > 0;
+        if (!eCashShop) {
+            slea.skip(1);
+            targetMapId = slea.readInt();
+            startwp = slea.readMapleAsciiString();
+            slea.skip(1);
+            wheelOfDestiny = slea.readShort() > 0;
+        }
     }
 
     @Override

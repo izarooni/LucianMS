@@ -21,21 +21,20 @@
  */
 package net.server;
 
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.net.InetSocketAddress;
-import java.net.URISyntaxException;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
-import java.util.Set;
-
+import client.MapleCharacter;
+import client.SkillFactory;
+import command.ConsoleCommands;
+import constants.ServerConstants;
+import io.Config;
+import io.defaults.Defaults;
+import net.MapleServerHandler;
+import net.discord.DiscordListener;
+import net.mina.MapleCodecFactory;
+import net.server.channel.Channel;
+import net.server.guild.MapleAlliance;
+import net.server.guild.MapleGuild;
+import net.server.guild.MapleGuildCharacter;
+import net.server.world.World;
 import org.apache.mina.core.buffer.IoBuffer;
 import org.apache.mina.core.buffer.SimpleBufferAllocator;
 import org.apache.mina.core.service.IoAcceptor;
@@ -44,20 +43,6 @@ import org.apache.mina.filter.codec.ProtocolCodecFilter;
 import org.apache.mina.transport.socket.nio.NioSocketAcceptor;
 import org.json.JSONObject;
 import org.json.JSONTokener;
-
-import client.MapleCharacter;
-import client.SkillFactory;
-import command.ConsoleCommands;
-import constants.ServerConstants;
-import io.Config;
-import io.defaults.Defaults;
-import net.MapleServerHandler;
-import net.mina.MapleCodecFactory;
-import net.server.channel.Channel;
-import net.server.guild.MapleAlliance;
-import net.server.guild.MapleGuild;
-import net.server.guild.MapleGuildCharacter;
-import net.server.world.World;
 import server.CashShop.CashItemFactory;
 import server.MapleItemInformationProvider;
 import server.TimerManager;
@@ -68,8 +53,16 @@ import server.quest.custom.CQuestBuilder;
 import tools.DatabaseConnection;
 import tools.Pair;
 
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.net.InetSocketAddress;
+import java.net.URISyntaxException;
+import java.sql.SQLException;
+import java.util.*;
+
 public class Server implements Runnable {
 
+    public static long uptime = System.currentTimeMillis();
     private static Server instance = null;
     private IoAcceptor acceptor;
     private List<Map<Integer, String>> channels = new LinkedList<>();
@@ -78,9 +71,6 @@ public class Server implements Runnable {
     private Map<Integer, MapleGuild> guilds = new LinkedHashMap<>();
     private Map<Integer, MapleAlliance> alliances = new LinkedHashMap<>();
     private PlayerBuffStorage buffStorage = new PlayerBuffStorage();
-
-    public static long uptime = System.currentTimeMillis();
-
     private boolean online = false;
 
     private Properties subnetInfo = new Properties();
@@ -91,6 +81,10 @@ public class Server implements Runnable {
             instance = new Server();
         }
         return instance;
+    }
+
+    public static void main(String args[]) {
+        Server.getInstance().run();
     }
 
     public boolean isOnline() {
@@ -143,6 +137,8 @@ public class Server implements Runnable {
         }
 
         System.out.println("LucianMS v" + ServerConstants.VERSION + " starting up.\r\n");
+
+        DiscordListener.listen();
 
         try {
             if (Defaults.createDefaultIfAbsent(null, "server-config.json")) {
@@ -253,10 +249,6 @@ public class Server implements Runnable {
         System.out.println("LucianMS is now online.");
         online = true;
 
-    }
-
-    public static void main(String args[]) {
-        Server.getInstance().run();
     }
 
     public Properties getSubnetInfo() {
@@ -567,40 +559,27 @@ public class Server implements Runnable {
         return worlds;
     }
 
-    public final Runnable shutdown() {// only once :D
+    private Runnable shutdown() {// only once :D
         return new Runnable() {
             @Override
             public void run() {
-                System.out.println("Shutting down the server!\r\n");
-                for (World w : getWorlds()) {
-                    w.shutdown();
-                }
+                System.out.println("Running shutdown hook");
+
+                acceptor.unbind();
+                acceptor.dispose();
+                acceptor = null;
+                System.out.println("Login server closed");
+
+                getWorlds().forEach(World::shutdown);
 
                 TimerManager.getInstance().purge();
                 TimerManager.getInstance().stop();
 
-                for (Channel ch : getAllChannels()) {
-                    while (!ch.finishedShutdown()) {
-                        try {
-                            Thread.sleep(1000);
-                        } catch (InterruptedException ie) {
-                            System.err.println("FUCK MY LIFE");
-                        }
-                    }
-                }
+                System.out.println("Worlds & channels are now offline");
+
                 ConsoleCommands.stopReading();
-                worlds.clear();
-                channels.clear();
-                channels = null;
-                worldRecommendedList.clear();
-                worldRecommendedList = null;
 
-                System.out.println("Worlds + Channels are offline.");
-                acceptor.unbind();
-                acceptor.dispose();
-                System.exit(0);
-
-                System.out.println("Shutdown complete");
+                DiscordListener.ignore();
             }
         };
     }

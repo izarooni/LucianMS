@@ -67,7 +67,6 @@ public final class Channel {
     private List<MapleExpedition> expeditions = new ArrayList<>();
     private MCarnivalLobbyManager carnivalLobbyManager = null;
     private MapleEvent event;
-    private boolean finishedShutdown = false;
 
     public Channel(final int world, final int channel) {
         this.world = world;
@@ -121,17 +120,17 @@ public final class Channel {
 
     public final void shutdown() {
         try {
-            System.out.println("Shutting down Channel " + channel + " on World " + world);
-
+            System.out.println(String.format("Attempting to close World(%d) Channel(%d)", world, channel));
             closeAllMerchants();
             players.disconnectAll();
+
             acceptor.unbind();
             acceptor.dispose();
+            acceptor = null;
 
-            finishedShutdown = true;
-            System.out.println("Successfully shut down Channel " + channel + " on World " + world + "\r\n");
+            System.out.println(String.format("World(%d) Channel(%d) closed", world, channel));
         } catch (Exception e) {
-            System.err.println("Error while shutting down Channel " + channel + " on World " + world + "\r\n");
+            System.err.println(String.format("Error while shutting down World(%d) Channel(%d)", world, channel));
             e.printStackTrace();
         }
     }
@@ -262,7 +261,7 @@ public final class Channel {
         int[] retArr = new int[ret.size()];
         int pos = 0;
         for (Integer i : ret) {
-            retArr[pos++] = i.intValue();
+            retArr[pos++] = i;
         }
         return retArr;
     }
@@ -273,10 +272,6 @@ public final class Channel {
 
     public boolean isConnected(String name) {
         return getPlayerStorage().getCharacterByName(name) != null;
-    }
-
-    public boolean finishedShutdown() {
-        return finishedShutdown;
     }
 
     public void setServerMessage(String message) {

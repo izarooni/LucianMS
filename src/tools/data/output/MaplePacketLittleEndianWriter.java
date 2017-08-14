@@ -21,17 +21,19 @@
 */
 package tools.data.output;
 
-import java.io.ByteArrayOutputStream;
 import tools.HexTool;
+
+import java.io.ByteArrayOutputStream;
 
 /**
  * Writes a maplestory-packet little-endian stream of bytes.
- * 
+ *
  * @author Frz
  * @version 1.0
  * @since Revision 352
  */
 public class MaplePacketLittleEndianWriter extends GenericLittleEndianWriter {
+
     private ByteArrayOutputStream baos;
 
     /**

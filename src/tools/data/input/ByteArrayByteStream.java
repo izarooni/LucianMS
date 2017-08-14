@@ -21,10 +21,12 @@
 */
 package tools.data.input;
 
-import java.io.IOException;
 import tools.HexTool;
 
+import java.io.IOException;
+
 public class ByteArrayByteStream implements SeekableInputStreamBytestream {
+
     private int pos = 0;
     private long bytesRead = 0;
     private byte[] arr;
@@ -58,7 +60,7 @@ public class ByteArrayByteStream implements SeekableInputStreamBytestream {
     public String toString() {
         return HexTool.toString(arr);
     }
-  
+
     @Override
     public long available() {
         return arr.length - pos;

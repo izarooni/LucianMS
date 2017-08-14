@@ -23,12 +23,13 @@ package tools.data.output;
 
 /**
  * Provides an interface to an output stream of bytes.
- * 
+ *
  * @author Frz
- * @since Revision 323
  * @version 1.0
+ * @since Revision 323
  */
 interface ByteOutputStream {
+
     /**
      * Writes a byte to the stream.
      *

@@ -25,12 +25,13 @@ import java.io.ByteArrayOutputStream;
 
 /**
  * Uses a byte array to output a stream of bytes.
- * 
+ *
  * @author Frz
  * @version 1.0
  * @since Revision 352
  */
 class BAOSByteOutputStream implements ByteOutputStream {
+
     private ByteArrayOutputStream baos;
 
     /**

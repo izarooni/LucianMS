@@ -75,26 +75,15 @@ public class MapScriptManager {
         if (!scriptExists(scriptName, firstUser)) {
             return;
         }
-        FileReader fr = null;
         ScriptEngine portal = sef.getScriptEngine();
-        try {
-            fr = new FileReader(scriptFile);
+        try (FileReader fr = new FileReader(scriptFile)) {
             CompiledScript compiled = ((Compilable) portal).compile(fr);
             compiled.eval();
             final Invocable script = ((Invocable) portal);
             scripts.put(scriptName, script);
             script.invokeFunction("start", new MapScriptMethods(c));
-        } catch (final UndeclaredThrowableException | ScriptException ute) {
-            FilePrinter.printError(FilePrinter.MAP_SCRIPT + type + scriptName + ".txt", ute);
         } catch (final Exception e) {
             FilePrinter.printError(FilePrinter.MAP_SCRIPT + type + scriptName + ".txt", e);
-        } finally {
-            if (fr != null) {
-                try {
-                    fr.close();
-                } catch (IOException e) {
-                }
-            }
         }
     }
 }

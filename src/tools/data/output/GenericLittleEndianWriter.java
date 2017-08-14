@@ -21,17 +21,18 @@
 */
 package tools.data.output;
 
-import java.awt.Point;
+import java.awt.*;
 import java.nio.charset.Charset;
 
 /**
  * Provides a generic writer of a little-endian sequence of bytes.
- * 
+ *
  * @author Frz
  * @version 1.0
  * @since Revision 323
  */
 public class GenericLittleEndianWriter implements LittleEndianWriter {
+
     private static Charset ASCII = Charset.forName("US-ASCII");
     private ByteOutputStream bos;
 
@@ -146,6 +147,7 @@ public class GenericLittleEndianWriter implements LittleEndianWriter {
 
     /**
      * Write a long integer to the stream.
+     *
      * @param l The long integer to write.
      */
     @Override
