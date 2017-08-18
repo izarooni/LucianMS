@@ -114,7 +114,6 @@ public final class PacketProcessor {
             registerHandler(RecvOpcode.NPC_TALK_MORE, new NPCMoreTalkHandler());
             registerHandler(RecvOpcode.QUEST_ACTION, new QuestActionHandler());
             registerHandler(RecvOpcode.NPC_SHOP, new NPCShopHandler());
-            registerHandler(RecvOpcode.ITEM_MOVE, new ItemMoveHandler());
             registerHandler(RecvOpcode.MESO_DROP, new MesoDropHandler());
             registerHandler(RecvOpcode.PLAYER_LOGGEDIN, new PlayerLoggedinHandler());
             registerHandler(RecvOpcode.USE_CASH_ITEM, new UseCashItemHandler());
@@ -122,7 +121,6 @@ public final class PacketProcessor {
             registerHandler(RecvOpcode.USE_SUMMON_BAG, new UseSummonBag());
             registerHandler(RecvOpcode.FACE_EXPRESSION, new FaceExpressionHandler());
             registerHandler(RecvOpcode.HEAL_OVER_TIME, new HealOvertimeHandler());
-            registerHandler(RecvOpcode.ITEM_PICKUP, new ItemPickupHandler());
             registerHandler(RecvOpcode.SPECIAL_MOVE, new SpecialMoveHandler());
             registerHandler(RecvOpcode.USE_INNER_PORTAL, new InnerPortalHandler());
             registerHandler(RecvOpcode.CANCEL_BUFF, new CancelBuffHandler());

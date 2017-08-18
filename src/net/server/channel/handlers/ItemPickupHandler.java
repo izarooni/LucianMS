@@ -24,7 +24,7 @@ package net.server.channel.handlers;
 import client.MapleCharacter;
 import client.MapleClient;
 import client.inventory.Item;
-import net.AbstractMaplePacketHandler;
+import net.PacketHandler;
 import net.server.world.MaplePartyCharacter;
 import scripting.item.ItemScriptManager;
 import server.MapleInventoryManipulator;
@@ -40,16 +40,22 @@ import tools.data.input.SeekableLittleEndianAccessor;
 /**
  * @author Matze
  */
-public final class ItemPickupHandler extends AbstractMaplePacketHandler {
+public final class ItemPickupHandler extends PacketHandler {
+
+    private int objectId;
 
     @Override
-    public final void handlePacket(final SeekableLittleEndianAccessor slea, final MapleClient c) {
-        slea.readInt(); //Timestamp
-        slea.readByte();
-        slea.readPos(); //cpos
-        int oid = slea.readInt();
-        MapleCharacter chr = c.getPlayer();
-        MapleMapObject ob = chr.getMap().getMapObject(oid);
+    public void process(SeekableLittleEndianAccessor slea) {
+        slea.skip(4);
+        slea.skip(1);
+        slea.skip(4);
+        objectId = slea.readInt();
+    }
+
+    @Override
+    public void onPacket() {
+        MapleCharacter chr = getClient().getPlayer();
+        MapleMapObject ob = chr.getMap().getMapObject(objectId);
         if (ob == null) {
             return;
         }
@@ -58,7 +64,7 @@ public final class ItemPickupHandler extends AbstractMaplePacketHandler {
         if (ob instanceof MapleMapItem) {
             MapleMapItem mapitem = (MapleMapItem) ob;
             if (System.currentTimeMillis() - mapitem.getDropTime() < 900) {
-                c.announce(MaplePacketCreator.enableActions());
+                getClient().announce(MaplePacketCreator.enableActions());
                 return;
             }
             // un-obtainable item
@@ -69,18 +75,18 @@ public final class ItemPickupHandler extends AbstractMaplePacketHandler {
                 }
                 chr.getMap().broadcastMessage(MaplePacketCreator.removeItemFromMap(mapitem.getObjectId(), 2, chr.getId()), mapitem.getPosition());
                 chr.getMap().removeMapObject(ob);
-                c.announce(MaplePacketCreator.enableActions());
+                getClient().announce(MaplePacketCreator.enableActions());
                 return;
             }
-            if (mapitem.getItemId() == 4031865 || mapitem.getItemId() == 4031866 || mapitem.getMeso() > 0 || ii.isConsumeOnPickup(mapitem.getItemId()) || MapleInventoryManipulator.checkSpace(c, mapitem.getItemId(), mapitem.getItem().getQuantity(), mapitem.getItem().getOwner())) {
+            if (mapitem.getItemId() == 4031865 || mapitem.getItemId() == 4031866 || mapitem.getMeso() > 0 || ii.isConsumeOnPickup(mapitem.getItemId()) || MapleInventoryManipulator.checkSpace(getClient(), mapitem.getItemId(), mapitem.getItem().getQuantity(), mapitem.getItem().getOwner())) {
                 if ((chr.getMapId() > 209000000 && chr.getMapId() < 209000016) || (chr.getMapId() >= 990000500 && chr.getMapId() <= 990000502)) {//happyville trees and guild PQ
-                    if (!mapitem.isPlayerDrop() || mapitem.getDropper().getObjectId() == c.getPlayer().getObjectId()) {
+                    if (!mapitem.isPlayerDrop() || mapitem.getDropper().getObjectId() == chr.getObjectId()) {
                         if (mapitem.getMeso() > 0) {
                             chr.gainMeso(mapitem.getMeso(), true, true, false);
                             chr.getMap().broadcastMessage(MaplePacketCreator.removeItemFromMap(mapitem.getObjectId(), 2, chr.getId()), mapitem.getPosition());
                             chr.getMap().removeMapObject(ob);
                             mapitem.setPickedUp(true);
-                        } else if (MapleInventoryManipulator.addFromDrop(c, mapitem.getItem(), false)) {
+                        } else if (MapleInventoryManipulator.addFromDrop(getClient(), mapitem.getItem(), false)) {
                             chr.getMap().broadcastMessage(MaplePacketCreator.removeItemFromMap(mapitem.getObjectId(), 2, chr.getId()), mapitem.getPosition());
                             chr.getMap().removeMapObject(ob);
                             mapitem.setPickedUp(true);
@@ -90,27 +96,27 @@ public final class ItemPickupHandler extends AbstractMaplePacketHandler {
                                 }
                             }
                         } else {
-                            c.announce(MaplePacketCreator.enableActions());
+                            getClient().announce(MaplePacketCreator.enableActions());
                             return;
                         }
                     } else {
-                        c.announce(MaplePacketCreator.getInventoryFull());
-                        c.announce(MaplePacketCreator.getShowInventoryFull());
+                        getClient().announce(MaplePacketCreator.getInventoryFull());
+                        getClient().announce(MaplePacketCreator.getShowInventoryFull());
                         return;
                     }
-                    c.announce(MaplePacketCreator.enableActions());
+                    getClient().announce(MaplePacketCreator.enableActions());
                     return;
                 }
 
                 synchronized (mapitem) {
                     if (mapitem.getQuest() > 0 && !chr.needQuestItem(mapitem.getQuest(), mapitem.getItemId())) {
-                        c.announce(MaplePacketCreator.showItemUnavailable());
-                        c.announce(MaplePacketCreator.enableActions());
+                        getClient().announce(MaplePacketCreator.showItemUnavailable());
+                        getClient().announce(MaplePacketCreator.enableActions());
                         return;
                     }
                     if (mapitem.isPickedUp()) {
-                        c.announce(MaplePacketCreator.getInventoryFull());
-                        c.announce(MaplePacketCreator.getShowInventoryFull());
+                        getClient().announce(MaplePacketCreator.getInventoryFull());
+                        getClient().announce(MaplePacketCreator.getShowInventoryFull());
                         return;
                     }
                     if (mapitem.getMeso() > 0) {
@@ -121,13 +127,13 @@ public final class ItemPickupHandler extends AbstractMaplePacketHandler {
                             }
                             int partynum = 0;
                             for (MaplePartyCharacter partymem : chr.getParty().getMembers()) {
-                                if (partymem.isOnline() && partymem.getMapId() == chr.getMap().getId() && partymem.getChannel() == c.getChannel()) {
+                                if (partymem.isOnline() && partymem.getMapId() == chr.getMap().getId() && partymem.getChannel() == getClient().getChannel()) {
                                     partynum++;
                                 }
                             }
                             for (MaplePartyCharacter partymem : chr.getParty().getMembers()) {
                                 if (partymem.isOnline() && partymem.getMapId() == chr.getMap().getId()) {
-                                    MapleCharacter somecharacter = c.getChannelServer().getPlayerStorage().getCharacterById(partymem.getId());
+                                    MapleCharacter somecharacter = getClient().getChannelServer().getPlayerStorage().getCharacterById(partymem.getId());
                                     if (somecharacter != null) {
                                         somecharacter.gainMeso(mesosamm / partynum, true, true, false);
                                     }
@@ -142,12 +148,12 @@ public final class ItemPickupHandler extends AbstractMaplePacketHandler {
                             ItemScriptManager ism = ItemScriptManager.getInstance();
                             String scriptName = info.getScript();
                             if (ism.scriptExists(scriptName)) {
-                                ism.getItemScript(c, scriptName);
+                                ism.getItemScript(getClient(), scriptName);
                             }
 
                         } else {
-                            if (!MapleInventoryManipulator.addFromDrop(c, mapitem.getItem(), true)) {
-                                c.announce(MaplePacketCreator.enableActions());
+                            if (!MapleInventoryManipulator.addFromDrop(getClient(), mapitem.getItem(), true)) {
+                                getClient().announce(MaplePacketCreator.enableActions());
                                 return;
                             } else {
                                 if (chr.getArcade() != null) {
@@ -160,11 +166,11 @@ public final class ItemPickupHandler extends AbstractMaplePacketHandler {
                     } else if (mapitem.getItemId() == 4031865 || mapitem.getItemId() == 4031866) {
                         // Add NX to account, show effect and make item disapear
                         chr.getCashShop().gainCash(1, mapitem.getItemId() == 4031865 ? 100 : 250);
-                    } else if (useItem(c, mapitem.getItem().getItemId())) {
+                    } else if (useItem(getClient(), mapitem.getItem().getItemId())) {
                         if (mapitem.getItem().getItemId() / 10000 == 238) {
-                            chr.getMonsterBook().addCard(c, mapitem.getItem().getItemId());
+                            chr.getMonsterBook().addCard(getClient(), mapitem.getItem().getItemId());
                         }
-                    } else if (MapleInventoryManipulator.addFromDrop(c, mapitem.getItem(), true)) {
+                    } else if (MapleInventoryManipulator.addFromDrop(getClient(), mapitem.getItem(), true)) {
                         if (chr.getArcade() != null) {
                             if (!chr.getArcade().fail()) {
                                 chr.getArcade().add();
@@ -181,9 +187,9 @@ public final class ItemPickupHandler extends AbstractMaplePacketHandler {
                                     this is check means the quest is finished. The quest completion notification should only
                                     happen once unless a progress variable drops below the requirement
                                      */
-                                    c.announce(MaplePacketCreator.getShowQuestCompletion(1));
-                                    c.announce(MaplePacketCreator.earnTitleMessage(String.format("Quest '%s' completed!", data.getName())));
-                                    c.announce(MaplePacketCreator.serverNotice(5, String.format("Quest '%s' completed!", data.getName())));
+                                    getClient().announce(MaplePacketCreator.getShowQuestCompletion(1));
+                                    getClient().announce(MaplePacketCreator.earnTitleMessage(String.format("Quest '%s' completed!", data.getName())));
+                                    getClient().announce(MaplePacketCreator.serverNotice(5, String.format("Quest '%s' completed!", data.getName())));
                                 }
                                 CQuestItemRequirement.CQuestItem p = toLoot.get(mapitem.getItemId());
                                 if (p != null) {
@@ -196,7 +202,7 @@ public final class ItemPickupHandler extends AbstractMaplePacketHandler {
                     } else if (mapitem.getItem().getItemId() == 4031868) {
                         chr.getMap().broadcastMessage(MaplePacketCreator.updateAriantPQRanking(chr.getName(), chr.getItemQuantity(4031868, false), false));
                     } else {
-                        c.announce(MaplePacketCreator.enableActions());
+                        getClient().announce(MaplePacketCreator.enableActions());
                         return;
                     }
                     mapitem.setPickedUp(true);
@@ -205,7 +211,11 @@ public final class ItemPickupHandler extends AbstractMaplePacketHandler {
                 }
             }
         }
-        c.announce(MaplePacketCreator.enableActions());
+        getClient().announce(MaplePacketCreator.enableActions());
+    }
+
+    public int getObjectId() {
+        return objectId;
     }
 
     static boolean useItem(final MapleClient c, final int id) {

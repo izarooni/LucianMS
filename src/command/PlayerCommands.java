@@ -1,10 +1,8 @@
 package command;
 
-import client.MapleCharacter;
-import client.MapleClient;
-import client.MapleStat;
-import client.Relationship;
+import client.*;
 import client.Relationship.Status;
+import com.sun.deploy.util.ArrayUtil;
 import constants.ServerConstants;
 import net.server.channel.Channel;
 import net.server.channel.handlers.RockPaperScissorsHandler;
@@ -19,10 +17,7 @@ import server.maps.MapleMap;
 import tools.MaplePacketCreator;
 import tools.Pair;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.WeakHashMap;
+import java.util.*;
 
 /**
  * @author izarooni, lucasdieswagger
@@ -62,6 +57,9 @@ public class PlayerCommands {
             commands.add("@<str/dex/int/luk> - Assign any available AP to a specified stat");
             commands.add("@checkme - Check your player's stats");
             commands.add("@spy <player> - See the stats of a player");
+            commands.add("@fixexp - Reset EXP");
+            commands.add("@maxskills - Max your skills for all jobs");
+            Collections.sort(commands);
             commands.forEach(player::dropMessage);
             commands.clear();
         } else if (command.equals("checkme")) {
@@ -298,7 +296,7 @@ public class PlayerCommands {
                 sb.append(s).append(", ");
             }
             sb.setLength(sb.length() - 2);
-            player.dropMessage(5, String.format("'%s' is an invalid map. Try one of the following:", args.get(0)));
+            player.dropMessage(5, "These are the current maps available for you to warp to");
             player.dropMessage(5, sb.toString());
             maps.clear();
         } else if (command.equals("cleardrops")) {
@@ -418,6 +416,21 @@ public class PlayerCommands {
             } else {
                 player.dropMessage("You need 500M mesos to exchange for a crystal");
             }
+        } else if (command.equals("maxskills")) {
+            int[] disabled = new int[]{1010, 1011, 1013, 1014, 1015, 1017, 1018, 1019, 1020, 1031, 1009, 1003, 1006, 1007, 9000, 9001, 9002, 10001003, 10001006, 10001007, 10001009, 10001010, 10001011, 10001013, 10001014, 10001015, 10001016, 10001019, 10001020, 10001022, 10001023, 10001031, 10009000, 10009001, 10009002, 20000014, 20000015, 20000016, 20000017, 20000018, 20001003, 20001006, 20001007, 20001009, 20001010, 20001011, 20001013, 20001019, 20001020, 20001022, 20001023, 20001031, 20009000, 20009001, 20009002, 21110002, 21110007, 21110008, 21120009, 21120010, 9001000, 9001001, 9001002, 9101000, 9101001, 9101002, 9101003, 9101004, 9101005, 9101006, 9101007, 9101008};
+            int[] alwaysDisable = new int[]{5001005, 10001015, 15001003};
+            for (Map.Entry<Integer, Skill> skills : SkillFactory.getSkills().entrySet()) {
+                if (Arrays.binarySearch(disabled, skills.getKey()) < 0 && Arrays.binarySearch(alwaysDisable, skills.getKey()) < 0) {
+                    player.changeSkillLevel(skills.getValue(), (byte) skills.getValue().getMaxLevel(), skills.getValue().getMaxLevel(), -1);
+                } else {
+                    player.changeSkillLevel(skills.getValue(), (byte) 0, 0, -1);
+                }
+            }
+        } else if (command.equals("fixexp", "expfix")) {
+            player.setExp(0);
+            player.updateSingleStat(MapleStat.EXP, 0);
+        } else {
+            player.dropMessage("Use @help for a list of our available commands");
         }
     }
 }

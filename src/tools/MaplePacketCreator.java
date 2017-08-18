@@ -4269,9 +4269,7 @@ public class MaplePacketCreator {
                 pos -= 100;
                 myEquip.put(pos, equip.get(position));
             } else {
-                if (myEquip.get(pos) == null) {
-                    myEquip.put(pos, equip.get(position));
-                }
+                myEquip.computeIfAbsent(pos, k -> equip.get(position));
             }
         }
         for (Entry<Short, Integer> entry : myEquip.entrySet()) {

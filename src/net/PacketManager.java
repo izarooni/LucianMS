@@ -57,5 +57,7 @@ public final class PacketManager {
         handlers.set(RecvOpcode.CHAR_INFO_REQUEST.getValue(), ViewCharacterInfoHandler.class);
 
         handlers.set(RecvOpcode.ITEM_SORT.getValue(), ItemSortHandler.class);
+        handlers.set(RecvOpcode.ITEM_MOVE.getValue(), ItemMoveHandler.class);
+        handlers.set(RecvOpcode.ITEM_PICKUP.getValue(), ItemPickupHandler.class);
     }
 }

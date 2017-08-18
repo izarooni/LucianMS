@@ -22,11 +22,10 @@
 package net.server.channel.handlers;
 
 import client.MapleCharacter;
-import client.MapleClient;
 import client.autoban.Cheater;
 import client.autoban.Cheats;
 import client.inventory.MapleInventoryType;
-import net.AbstractMaplePacketHandler;
+import net.PacketHandler;
 import server.MapleInventoryManipulator;
 import tools.MaplePacketCreator;
 import tools.data.input.SeekableLittleEndianAccessor;
@@ -34,34 +33,59 @@ import tools.data.input.SeekableLittleEndianAccessor;
 /**
  * @author Matze
  */
-public class ItemMoveHandler extends AbstractMaplePacketHandler {
+public class ItemMoveHandler extends PacketHandler {
+
+    private MapleInventoryType inventoryType;
+    private byte source;
+    private byte action;
+    private short quantity;
+
 
     @Override
-    public void handlePacket(SeekableLittleEndianAccessor slea, MapleClient c) {
-        MapleCharacter player = c.getPlayer();
-        Cheater.CheatEntry entry = player.getCheater().getCheatEntry(Cheats.FastInventorySort);
-
+    public void process(SeekableLittleEndianAccessor slea) {
         slea.skip(4);
-        MapleInventoryType type = MapleInventoryType.getByType(slea.readByte());
-        byte src = (byte) slea.readShort();
-        byte action = (byte) slea.readShort();
-        short quantity = slea.readShort();
+        inventoryType = MapleInventoryType.getByType(slea.readByte());
+        source = (byte) slea.readShort();
+        action = (byte) slea.readShort();
+        quantity = slea.readShort();
+    }
+
+    @Override
+    public void onPacket() {
+        MapleCharacter player = getClient().getPlayer();
+        Cheater.CheatEntry entry = player.getCheater().getCheatEntry(Cheats.FastInventorySort);
 
         if (System.currentTimeMillis() - entry.latestOperationTimestamp < 300) {
             entry.spamCount++;
-            c.announce(MaplePacketCreator.enableActions());
+            getClient().announce(MaplePacketCreator.enableActions());
             return;
         } else {
             entry.spamCount = 0;
         }
-        if (src < 0 && action > 0) {
-            MapleInventoryManipulator.unequip(c, src, action);
+        if (source < 0 && action > 0) {
+            MapleInventoryManipulator.unequip(getClient(), source, action);
         } else if (action < 0) {
-            MapleInventoryManipulator.equip(c, src, action);
+            MapleInventoryManipulator.equip(getClient(), source, action);
         } else if (action == 0) {
-            MapleInventoryManipulator.drop(c, type, src, quantity);
+            MapleInventoryManipulator.drop(getClient(), inventoryType, source, quantity);
         } else {
-            MapleInventoryManipulator.move(c, type, src, action);
+            MapleInventoryManipulator.move(getClient(), inventoryType, source, action);
         }
+    }
+
+    public MapleInventoryType getInventoryType() {
+        return inventoryType;
+    }
+
+    public byte getSource() {
+        return source;
+    }
+
+    public byte getAction() {
+        return action;
+    }
+
+    public short getQuantity() {
+        return quantity;
     }
 }

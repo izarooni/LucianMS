@@ -27,6 +27,7 @@ import server.MapleStatEffect;
 import server.life.Element;
 
 import java.io.File;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -37,9 +38,13 @@ public class SkillFactory {
 
     public static Skill getSkill(int id) {
         if (!skills.isEmpty()) {
-            return skills.get(Integer.valueOf(id));
+            return skills.get(id);
         }
         return null;
+    }
+
+    public static Map<Integer, Skill> getSkills() {
+        return Collections.unmodifiableMap(skills);
     }
 
     public static void loadAllSkills() {

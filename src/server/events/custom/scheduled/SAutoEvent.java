@@ -14,4 +14,6 @@ public abstract class SAutoEvent extends GenericEvent {
     public abstract long getInterval();
 
     public abstract void run();
+
+    public abstract void end();
 }

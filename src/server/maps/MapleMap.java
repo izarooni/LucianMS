@@ -965,7 +965,7 @@ public class MapleMap {
     }
 
     public Collection<MapleMapObject> getMapObjects() {
-        return Collections.unmodifiableCollection(mapobjects.values());
+        return new ArrayList<>(mapobjects.values());
     }
 
     public boolean containsNPC(int npcid) {

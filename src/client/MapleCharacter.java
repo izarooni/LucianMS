@@ -283,10 +283,10 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
     }
 
     public void addCooldown(int skillId, long startTime, long length, ScheduledFuture<?> timer) {
-        if (this.coolDowns.containsKey(Integer.valueOf(skillId))) {
+        if (this.coolDowns.containsKey(skillId)) {
             this.coolDowns.remove(skillId);
         }
-        this.coolDowns.put(Integer.valueOf(skillId), new MapleCoolDownValueHolder(skillId, startTime, length, timer));
+        this.coolDowns.put(skillId, new MapleCoolDownValueHolder(skillId, startTime, length, timer));
     }
 
     public void addCrushRing(MapleRing r) {
@@ -581,7 +581,12 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
         for (MapleData skill_ : MapleDataProviderFactory.getDataProvider(new File(System.getProperty("wzpath") + "/" + "String.wz")).getData("Skill.img").getChildren()) {
             try {
                 Skill skill = SkillFactory.getSkill(Integer.parseInt(skill_.getName()));
-                if (skill != null && skill != SkillFactory.getSkill(Aran.HIDDEN_FULL_DOUBLE) && skill != SkillFactory.getSkill(Aran.HIDDEN_FULL_TRIPLE) && skill != SkillFactory.getSkill(Aran.HIDDEN_OVER_DOUBLE) && skill != SkillFactory.getSkill(Aran.HIDDEN_OVER_TRIPLE) && (skill.getId() / 100) != 9) {
+                if (skill != null
+                        && skill != SkillFactory.getSkill(Aran.HIDDEN_FULL_DOUBLE)
+                        && skill != SkillFactory.getSkill(Aran.HIDDEN_FULL_TRIPLE)
+                        && skill != SkillFactory.getSkill(Aran.HIDDEN_OVER_DOUBLE)
+                        && skill != SkillFactory.getSkill(Aran.HIDDEN_OVER_TRIPLE)
+                        && (skill.getId() / 100) != 9) {
                     changeSkillLevel(skill, (byte) skill.getMaxLevel(), skill.getMaxLevel(), -1);
                 }
             } catch (NumberFormatException | NullPointerException e) {
@@ -813,7 +818,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
             return FameStatus.OK;
         } else if (lastfametime >= System.currentTimeMillis() - 3600000 * 24) {
             return FameStatus.NOT_TODAY;
-        } else if (lastmonthfameids.contains(Integer.valueOf(from.getId()))) {
+        } else if (lastmonthfameids.contains(from.getId())) {
             return FameStatus.NOT_THIS_MONTH;
         } else {
             return FameStatus.OK;
@@ -943,11 +948,11 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
             }
         }
         List<Pair<MapleStat, Integer>> statup = new ArrayList<>(5);
-        statup.add(new Pair<>(MapleStat.MAXHP, Integer.valueOf(maxhp)));
-        statup.add(new Pair<>(MapleStat.MAXMP, Integer.valueOf(maxmp)));
+        statup.add(new Pair<>(MapleStat.MAXHP, maxhp));
+        statup.add(new Pair<>(MapleStat.MAXMP, maxmp));
         statup.add(new Pair<>(MapleStat.AVAILABLEAP, remainingAp));
         statup.add(new Pair<>(MapleStat.AVAILABLESP, remainingSp[GameConstants.getSkillBook(job.getId())]));
-        statup.add(new Pair<>(MapleStat.JOB, Integer.valueOf(job.getId())));
+        statup.add(new Pair<>(MapleStat.JOB, job.getId()));
         if (dragon != null) {
             getMap().broadcastMessage(MaplePacketCreator.removeDragon(dragon.getObjectId()));
             dragon = null;
@@ -971,9 +976,9 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
 
     public void changeKeybinding(int key, MapleKeyBinding keybinding) {
         if (keybinding.getType() != 0) {
-            keymap.put(Integer.valueOf(key), keybinding);
+            keymap.put(key, keybinding);
         } else {
-            keymap.remove(Integer.valueOf(key));
+            keymap.remove(key);
         }
     }
 
@@ -1316,7 +1321,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
     }
 
     public void giveDebuff(final MapleDisease disease, MobSkill skill) {
-        final List<Pair<MapleDisease, Integer>> debuff = Collections.singletonList(new Pair<>(disease, Integer.valueOf(skill.getX())));
+        final List<Pair<MapleDisease, Integer>> debuff = Collections.singletonList(new Pair<>(disease, skill.getX()));
 
         if (!hasDisease(disease) && diseases.size() < 2) {
             if (!(disease == MapleDisease.SEDUCE || disease == MapleDisease.STUN)) {
@@ -1421,11 +1426,11 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
         List<Pair<MapleStat, Integer>> stats = new ArrayList<>(2);
         if (getMp() > getCurrentMaxMp()) {
             setMp(getMp());
-            stats.add(new Pair<>(MapleStat.MP, Integer.valueOf(getMp())));
+            stats.add(new Pair<>(MapleStat.MP, getMp()));
         }
         if (getHp() > getCurrentMaxHp()) {
             setHp(getHp());
-            stats.add(new Pair<>(MapleStat.HP, Integer.valueOf(getHp())));
+            stats.add(new Pair<>(MapleStat.HP, getHp()));
         }
         if (stats.size() > 0) {
             client.announce(MaplePacketCreator.updatePlayerStats(stats, this));
@@ -1686,7 +1691,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
         if (mbsvh == null) {
             return null;
         }
-        return Long.valueOf(mbsvh.startTime);
+        return mbsvh.startTime;
     }
 
     public Integer getBuffedValue(MapleBuffStat effect) {
@@ -1694,7 +1699,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
         if (mbsvh == null) {
             return null;
         }
-        return Integer.valueOf(mbsvh.value);
+        return mbsvh.value;
     }
 
     public int getBuffSource(MapleBuffStat stat) {
@@ -2514,7 +2519,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
 
     public void hasGivenFame(MapleCharacter to) {
         lastfametime = System.currentTimeMillis();
-        lastmonthfameids.add(Integer.valueOf(to.getId()));
+        lastmonthfameids.add(to.getId());
         try {
             try (PreparedStatement ps = DatabaseConnection.getConnection().prepareStatement("INSERT INTO famelog (characterid, characterid_to) VALUES (?, ?)")) {
                 ps.setInt(1, getId());
@@ -3144,7 +3149,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
                     int key = rs.getInt("key");
                     int type = rs.getInt("type");
                     int action = rs.getInt("action");
-                    ret.keymap.put(Integer.valueOf(key), new MapleKeyBinding(type, action));
+                    ret.keymap.put(key, new MapleKeyBinding(type, action));
                 }
                 rs.close();
                 ps.close();
@@ -3163,7 +3168,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
                 ret.lastmonthfameids = new ArrayList<>(31);
                 while (rs.next()) {
                     ret.lastfametime = Math.max(ret.lastfametime, rs.getTimestamp("when").getTime());
-                    ret.lastmonthfameids.add(Integer.valueOf(rs.getInt("characterid_to")));
+                    ret.lastmonthfameids.add(rs.getInt("characterid_to"));
                 }
                 rs.close();
                 ps.close();
@@ -4782,7 +4787,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
     }
 
     public boolean skillisCooling(int skillId) {
-        return coolDowns.containsKey(Integer.valueOf(skillId));
+        return coolDowns.containsKey(skillId);
     }
 
     public void startFullnessSchedule(final int decrease, final MaplePet pet, int petSlot) {
@@ -4926,7 +4931,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
     }
 
     private void updateSingleStat(MapleStat stat, int newval, boolean itemReaction) {
-        announce(MaplePacketCreator.updatePlayerStats(Collections.singletonList(new Pair<>(stat, Integer.valueOf(newval))), itemReaction, this));
+        announce(MaplePacketCreator.updatePlayerStats(Collections.singletonList(new Pair<>(stat, newval)), itemReaction, this));
     }
 
     public void announce(final byte[] packet) {
@@ -5007,7 +5012,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
     }
 
     public boolean containsAreaInfo(int area, String info) {
-        Short area_ = Short.valueOf((short) area);
+        Short area_ = (short) area;
         if (area_info.containsKey(area_)) {
             return area_info.get(area_).contains(info);
         }
@@ -5015,12 +5020,12 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
     }
 
     public void updateAreaInfo(int area, String info) {
-        area_info.put(Short.valueOf((short) area), info);
+        area_info.put((short) area, info);
         announce(MaplePacketCreator.updateAreaInfo(area, info));
     }
 
     public String getAreaInfo(int area) {
-        return area_info.get(Short.valueOf((short) area));
+        return area_info.get((short) area);
     }
 
     public Map<Short, String> getAreaInfos() {
