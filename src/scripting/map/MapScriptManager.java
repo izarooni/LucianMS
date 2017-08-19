@@ -22,20 +22,13 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 package scripting.map;
 
 import client.MapleClient;
+import tools.FilePrinter;
+
+import javax.script.*;
 import java.io.File;
 import java.io.FileReader;
-import java.io.IOException;
-import java.lang.reflect.UndeclaredThrowableException;
 import java.util.HashMap;
 import java.util.Map;
-import javax.script.Compilable;
-import javax.script.CompiledScript;
-import javax.script.Invocable;
-import javax.script.ScriptEngine;
-import javax.script.ScriptEngineFactory;
-import javax.script.ScriptEngineManager;
-import javax.script.ScriptException;
-import tools.FilePrinter;
 
 public class MapScriptManager {
 
@@ -66,6 +59,7 @@ public class MapScriptManager {
             try {
                 scripts.get(scriptName).invokeFunction("start", new MapScriptMethods(c));
             } catch (final ScriptException | NoSuchMethodException e) {
+                e.printStackTrace();
             }
             return;
         }
@@ -73,6 +67,7 @@ public class MapScriptManager {
 
         File scriptFile = new File("scripts/map/" + type + scriptName + ".js");
         if (!scriptExists(scriptName, firstUser)) {
+            System.err.println(String.format("Script file '%s' does not exist", (type + scriptName)));
             return;
         }
         ScriptEngine portal = sef.getScriptEngine();

@@ -29,6 +29,10 @@ public class DBZSummoner extends GenericEvent {
     private static final int base_item = 4000000; // 4011009;
     private Map<Integer, Point> balls = new HashMap<>();
 
+    public DBZSummoner() {
+        registerAnnotationPacketEvents(this);
+    }
+
     @Override
     public void registerPlayer(MapleCharacter player) {
         player.addGenericEvent(this);
@@ -48,12 +52,14 @@ public class DBZSummoner extends GenericEvent {
             if (item.getItemId() == (base_item + balls.size())) { // dropped item is a ball
                 if (position.x >= min_x && position.x <= max_x && position.y == pos_y) {
                     if (balls.size() == 6) { // all balls have been dropped
-                        MapleNPC npc = MapleLifeFactory.getNPC(2000);
+                        MapleNPC npc = MapleLifeFactory.getNPC(2001);
+                        npc.setPosition(new Point(-52, 0));
                         player.getMap().addMapObject(npc);
 
                         MapleMonster monster = MapleLifeFactory.getMonster(9500364);
                         if (monster != null) {
-                            npc.setPosition(monster.getPosition().getLocation());
+                            monster.setObjectId(Integer.MAX_VALUE);
+                            monster.setPosition(new Point(0, 50));
                             player.announce(MaplePacketCreator.spawnMonster(monster, false, 30));
                         }
 
@@ -61,16 +67,16 @@ public class DBZSummoner extends GenericEvent {
                             @Override
                             public void run() {
                                 npc.sendSpawnData(event.getClient());
+                                player.announce(MaplePacketCreator.killMonster(Integer.MAX_VALUE, false));
+                                player.getMap().clearDrops();
+                                unregisterPlayer(player);
                             }
-                        }, 1680);
+                        }, 1720);
                     } else if (item.getItemId() > base_item) { // not the first ball
                         Point previous = balls.get(item.getItemId() - 1);
-                        if (Math.abs(previous.x - position.x) > 50) {
+                        if (position.x - previous.x > 50) { // drop from left to right
                             return; // dropped ball is too far from the previous ball location
                         }
-                    }
-                    if (player.isGM()) {
-                        player.dropMessage("[DEBUG] " + balls.size() + " / 7 balls have been dropped");
                     }
                     balls.put(item.getItemId(), position);
                 }
@@ -85,9 +91,11 @@ public class DBZSummoner extends GenericEvent {
         if (object instanceof MapleMapItem) {
             MapleMapItem mapItem = (MapleMapItem) object;
             if (mapItem.getItemId() >= base_item && mapItem.getItemId() <= base_item + 6) {
-                player.dropMessage("The order has been broken! Please collect all balls and drop them in the correct order");
-                balls.clear();
-                balls = new HashMap<>();
+                if (!balls.isEmpty()) {
+                    player.dropMessage("The order has been broken! Please collect all balls and drop them in the correct order");
+                    balls.clear();
+                    balls = new HashMap<>();
+                }
             }
         }
     }

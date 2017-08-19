@@ -1424,7 +1424,7 @@ public class MapleMap {
                 MapScriptManager.getInstance().getMapScript(chr.getClient(), onFirstUserEnter, true);
             }
         }
-        if (onUserEnter.length() != 0) {
+        if (onUserEnter != null && !onUserEnter.isEmpty()) {
             if (onUserEnter.equals("cygnusTest") && (mapid < 913040000 || mapid > 913040006)) {
                 chr.saveLocation("INTRO");
             }

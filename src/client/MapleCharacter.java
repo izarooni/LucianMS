@@ -5701,7 +5701,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
 
     public List<GenericEvent> getGenericEvents() {
         List<GenericEvent> events = new ArrayList<>();
-        genericEvents.forEach(events::add);
+        events.addAll(genericEvents);
         return Collections.unmodifiableList(events);
     }
 

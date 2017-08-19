@@ -5511,8 +5511,7 @@ public class MaplePacketCreator {
 
     public static byte[] removeNPC(int oid) { //Make npc's invisible
         final MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(SendOpcode.SPAWN_NPC_REQUEST_CONTROLLER.getValue());
-        mplew.write(0);
+        mplew.writeShort(SendOpcode.REMOVE_NPC.getValue());
         mplew.writeInt(oid);
         return mplew.getPacket();
     }
