@@ -26,7 +26,7 @@ public class DBZSummoner extends GenericEvent {
     private static final int min_x = -57;
     private static final int max_x = 118;
     private static final int pos_y = 114;
-    private static final int base_item = 4000000; // 4011009;
+    private static final int base_item = 4011009;
     private Map<Integer, Point> balls = new HashMap<>();
 
     public DBZSummoner() {
