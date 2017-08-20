@@ -45,7 +45,7 @@ public class MapScriptManager {
         return instance;
     }
 
-    public void reloadScripts() {
+    public void clearScripts() {
         scripts.clear();
     }
 

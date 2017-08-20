@@ -92,7 +92,7 @@ public class DBZSummoner extends GenericEvent {
                                 npc.sendSpawnData(event.getClient());
                                 unregisterPlayer(player);
                             }
-                        }, 3150);
+                        }, 3100);
                     } else if (item.getItemId() > base_item) { // not the first ball
                         Point previous = balls.get(item.getItemId() - 1);
                         if (position.x - previous.x > 50) { // drop from left to right
@@ -115,11 +115,12 @@ public class DBZSummoner extends GenericEvent {
                 if (summoning) {
                     // kinda like smuggling, don't allow looting of dragon balls while summoning Shenron
                     event.setCanceled(true);
-                }
-                if (!balls.isEmpty()) {
-                    player.dropMessage("The order has been broken! Please collect all balls and drop them in the correct order");
-                    balls.clear();
-                    balls = new HashMap<>();
+                } else {
+                    if (!balls.isEmpty()) {
+                        player.dropMessage("The order has been broken! Please collect all balls and drop them in the correct order");
+                        balls.clear();
+                        balls = new HashMap<>();
+                    }
                 }
             }
         }

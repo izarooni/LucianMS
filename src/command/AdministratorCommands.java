@@ -6,6 +6,7 @@ import net.server.Server;
 import net.server.channel.Channel;
 import net.server.world.World;
 import scripting.event.EventManager;
+import scripting.map.MapScriptManager;
 import server.events.custom.auto.GAutoEvent;
 import server.events.custom.auto.GAutoEventManager;
 import server.maps.MapleMapObject;
@@ -33,6 +34,7 @@ public class AdministratorCommands {
         if (command.equals("admincommands")) {
             ArrayList<String> commands = new ArrayList<>();
             try {
+                commands.add("!reloadmapscripts - Clears stored map scripts");
                 commands.add("!reloadquests - Reload custom quest");
                 commands.add("!fae - Force an auto event execution");
                 commands.add("!list - Debug command");
@@ -44,8 +46,10 @@ public class AdministratorCommands {
             } finally {
                 commands.clear();
             }
+        } else if (command.equals("reloadmapscripts")) {
+            MapScriptManager.getInstance().clearScripts();
+            player.dropMessage("Map scripts cleared");
         } else if (command.equals("reloadquests")) {
-
             CQuestBuilder.loadAllQuests();
             player.dropMessage("Quests reloaded");
         } else if (command.equals("fae")) { // force auto event

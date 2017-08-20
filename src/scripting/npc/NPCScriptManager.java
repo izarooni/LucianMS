@@ -43,7 +43,7 @@ public class NPCScriptManager {
             try {
                 iv = ScriptUtil.eval(client, path, binds);
             } catch (NullPointerException e) {
-                cm.sendOk("Hey I don't have a purpose right now but maybe you can suggest one!\r\nThis is my ID: #b" + npc + "");
+                cm.sendOk("Hey! I don't have a purpose right now\r\nThis is my ID: #b" + npc + "");
             } catch (Exception e) {
                 String response = "An error occurred in this NPC";
                 if (fileName != null) {
@@ -56,9 +56,6 @@ public class NPCScriptManager {
                 e.printStackTrace();
             }
             if (iv == null) {
-                if (client.getPlayer().gmLevel() >= 6) {
-                    client.getPlayer().dropMessage(6, String.format("Unable to eval script {script:%s, id:%d}", fileName, npc));
-                }
                 dispose(client);
                 return;
             }
