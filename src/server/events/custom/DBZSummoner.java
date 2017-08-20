@@ -14,6 +14,7 @@ import tools.MaplePacketCreator;
 import tools.annotation.PacketWorker;
 
 import java.awt.*;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -23,10 +24,19 @@ import java.util.Map;
 public class DBZSummoner extends GenericEvent {
 
     // platform range
-    private static final int min_x = -57;
-    private static final int max_x = 118;
-    private static final int pos_y = 114;
+    private static final int min_x = -324;
+    private static final int max_x = 196;
+    private static final int pos_y = 27;
+
     private static final int base_item = 4011009;
+
+    private static final int npcId = 9270070;
+    private static final Point npcPosition = new Point(0, 50);
+
+    private static final int monsterId = 9500364;
+    private static final Point monsterPosition = new Point(0, 36);
+
+    private boolean summoning = false;
     private Map<Integer, Point> balls = new HashMap<>();
 
     public DBZSummoner() {
@@ -52,26 +62,37 @@ public class DBZSummoner extends GenericEvent {
             if (item.getItemId() == (base_item + balls.size())) { // dropped item is a ball
                 if (position.x >= min_x && position.x <= max_x && position.y == pos_y) {
                     if (balls.size() == 6) { // all balls have been dropped
-                        MapleNPC npc = MapleLifeFactory.getNPC(2001);
-                        npc.setPosition(new Point(-52, 0));
+
+                        // create and position NPC
+                        MapleNPC npc = MapleLifeFactory.getNPC(npcId);
+                        npc.setPosition(npcPosition.getLocation());
+                        npc.setCy(npcPosition.y);
+                        npc.setRx0(npcPosition.x - 50);
+                        npc.setRx1(npcPosition.x + 50);
                         player.getMap().addMapObject(npc);
 
-                        MapleMonster monster = MapleLifeFactory.getMonster(9500364);
+                        // create and position effect (monster)
+                        MapleMonster monster = MapleLifeFactory.getMonster(monsterId);
                         if (monster != null) {
                             monster.setObjectId(Integer.MAX_VALUE);
-                            monster.setPosition(new Point(0, 50));
+                            monster.setPosition(monsterPosition.getLocation());
+                            monster.setRx0(monsterPosition.x);
+                            monster.setRx1(monsterPosition.y);
+                            // use an invisible monster for a summon effect and immediately remove it after animation
                             player.announce(MaplePacketCreator.spawnMonster(monster, false, 30));
+                            System.out.println("Shenron was summoned by " + player.getName() + " at " + Calendar.getInstance().getTime());
+                            summoning = true;
                         }
 
                         TaskExecutor.createTask(new Runnable() {
                             @Override
                             public void run() {
-                                npc.sendSpawnData(event.getClient());
-                                player.announce(MaplePacketCreator.killMonster(Integer.MAX_VALUE, false));
                                 player.getMap().clearDrops();
+                                player.announce(MaplePacketCreator.killMonster(Integer.MAX_VALUE, false));
+                                npc.sendSpawnData(event.getClient());
                                 unregisterPlayer(player);
                             }
-                        }, 1720);
+                        }, 3150);
                     } else if (item.getItemId() > base_item) { // not the first ball
                         Point previous = balls.get(item.getItemId() - 1);
                         if (position.x - previous.x > 50) { // drop from left to right
@@ -91,6 +112,10 @@ public class DBZSummoner extends GenericEvent {
         if (object instanceof MapleMapItem) {
             MapleMapItem mapItem = (MapleMapItem) object;
             if (mapItem.getItemId() >= base_item && mapItem.getItemId() <= base_item + 6) {
+                if (summoning) {
+                    // kinda like smuggling, don't allow looting of dragon balls while summoning Shenron
+                    event.setCanceled(true);
+                }
                 if (!balls.isEmpty()) {
                     player.dropMessage("The order has been broken! Please collect all balls and drop them in the correct order");
                     balls.clear();
@@ -98,9 +123,5 @@ public class DBZSummoner extends GenericEvent {
                 }
             }
         }
-    }
-
-    public Map<Integer, Point> getBalls() {
-        return balls;
     }
 }

@@ -13,6 +13,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.net.InetAddress;
 import java.net.InetSocketAddress;
 
 /**
@@ -50,7 +51,7 @@ public class DiscordListener {
                 }
             }));
             acceptor.setHandler(new DiscordHandler());
-            acceptor.bind(new InetSocketAddress("localhost", 8483));
+            acceptor.bind(new InetSocketAddress(InetAddress.getLoopbackAddress(), 8483));
             LOGGER.info("Discord now listening on port 8483");
         } catch (IOException e) {
             LOGGER.warn("Unable to create Discord listener on port 8483", e);

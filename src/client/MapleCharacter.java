@@ -5526,7 +5526,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
         }
     }
 
-    public boolean addPoints(String pointType, int amount) throws NumberFormatException {
+    public boolean addPoints(String pointType, int amount) {
         switch (pointType) {
             case "fp": // fishing points
                 setFishingPoints(getFishingPoints() + amount);
