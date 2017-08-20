@@ -203,6 +203,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
     private int killType;
     private int riceCakes = 0;
     private int rebirthPoints = 0;
+    private long immortalTimestamp = 0;
     private boolean muted;
     private boolean autorebirthing = false;
     private House house;
@@ -5730,6 +5731,18 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
 
     public void setRebirthPoints(int rebirthPoints) {
         this.rebirthPoints = rebirthPoints;
+    }
+
+    public boolean isImmortal() {
+        return System.currentTimeMillis() + 60000 <= immortalTimestamp && immortalTimestamp > 0;
+    }
+
+    public long getImmortalTimestamp() {
+        return immortalTimestamp;
+    }
+
+    public void setImmortalTimestamp(long immortalTimestamp) {
+        this.immortalTimestamp = immortalTimestamp;
     }
 
     public boolean isAutorebirthing() {

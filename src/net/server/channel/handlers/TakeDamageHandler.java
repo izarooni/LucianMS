@@ -73,6 +73,13 @@ public final class TakeDamageHandler extends PacketHandler {
     @Override
     public void onPacket() {
         MapleCharacter player = getClient().getPlayer();
+
+        if (player.isImmortal()) {
+            if (player.getHp() - damage < 1) {
+                damage = (player.getHp() - 1);
+            }
+        }
+
         int pgmr = 0;
         int pos_x = 0, pos_y = 0, fake = 0;
         boolean is_pgmr = false, is_pg = true;
