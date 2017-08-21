@@ -136,7 +136,9 @@ public class PlayerCommands {
                     return;
                 }
                 int nStat = var_nStat.intValue();
-                if (nStat > player.getRemainingAp()) {
+                if (nStat == 0) {
+                    player.dropMessage("You need to enter a number less than, or larger than 0");
+                } else if (nStat > 0 && nStat > player.getRemainingAp()) {
                     player.dropMessage("Make sure you have enough AP to distribute");
                     return;
                 }
@@ -144,6 +146,8 @@ public class PlayerCommands {
                     case "str":
                         if (player.getStr() + nStat > Short.MAX_VALUE) {
                             player.dropMessage("You can't assign that much AP to the STR stat");
+                        } else if (nStat < 0 && player.getStr() < nStat) {
+                            player.dropMessage("You can't take away what you don't have!");
                         } else {
                             player.setStr(player.getStr() + nStat);
                             player.setRemainingAp(player.getRemainingAp() - nStat);
@@ -153,6 +157,8 @@ public class PlayerCommands {
                     case "dex":
                         if (player.getDex() + nStat > Short.MAX_VALUE) {
                             player.dropMessage("You can't assign that much AP to the DEX stat");
+                        } else if (nStat < 0 && player.getDex() < nStat) {
+                            player.dropMessage("You can't take away what you don't have!");
                         } else {
                             player.setDex(player.getDex() + nStat);
                             player.setRemainingAp(player.getRemainingAp() - nStat);
@@ -162,6 +168,8 @@ public class PlayerCommands {
                     case "int":
                         if (player.getInt() + nStat > Short.MAX_VALUE) {
                             player.dropMessage("You can't assign that much AP to the INT stat");
+                        } else if (nStat < 0 && player.getInt() < nStat) {
+                            player.dropMessage("You can't take away what you don't have!");
                         } else {
                             player.setInt(player.getInt() + nStat);
                             player.setRemainingAp(player.getRemainingAp() - nStat);
@@ -171,6 +179,8 @@ public class PlayerCommands {
                     case "luk":
                         if (player.getLuk() + nStat > Short.MAX_VALUE) {
                             player.dropMessage("You can't assign that much AP to the LUK stat");
+                        } else if (nStat < 0 && player.getLuk() < nStat) {
+                            player.dropMessage("You can't take away what you don't have!");
                         } else {
                             player.setLuk(player.getLuk() + nStat);
                             player.setRemainingAp(player.getRemainingAp() - nStat);
