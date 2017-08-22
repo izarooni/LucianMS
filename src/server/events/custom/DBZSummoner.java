@@ -63,6 +63,8 @@ public class DBZSummoner extends GenericEvent {
                 if (position.x >= min_x && position.x <= max_x && position.y == pos_y) {
                     if (balls.size() == 6) { // all balls have been dropped
 
+                        player.announce(MaplePacketCreator.getClock(180));
+
                         // create and position NPC
                         MapleNPC npc = MapleLifeFactory.getNPC(npcId);
                         npc.setPosition(npcPosition.getLocation());
@@ -92,7 +94,15 @@ public class DBZSummoner extends GenericEvent {
                                 npc.sendSpawnData(event.getClient());
                                 unregisterPlayer(player);
                             }
-                        }, 3100);
+                        }, 1000 * 60 * 3);
+
+                        TaskExecutor.createTask(new Runnable() {
+                            @Override
+                            public void run() {
+                                player.announce(MaplePacketCreator.removeNPC(npc.getObjectId()));
+                                player.getMap().removeMapObject(npc);
+                            }
+                        }, 1000 * 60 * 3);
                     } else if (item.getItemId() > base_item) { // not the first ball
                         Point previous = balls.get(item.getItemId() - 1);
                         if (position.x - previous.x > 50) { // drop from left to right
