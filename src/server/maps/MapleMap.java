@@ -2105,6 +2105,18 @@ public class MapleMap {
         return null;
     }
 
+    public MapleNPC findNpc(int npcId) {
+        for (MapleMapObject object : mapobjects.values()) {
+            if (object instanceof MapleNPC) {
+                MapleNPC npc = (MapleNPC) object;
+                if (npc.getId() == npcId) {
+                    return npc;
+                }
+            }
+        }
+        return null;
+    }
+
     private class ExpireMapItemJob implements Runnable {
 
         private MapleMapItem mapitem;

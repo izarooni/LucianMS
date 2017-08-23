@@ -41,8 +41,10 @@ import server.TimerManager;
 import server.events.gm.MapleEvent;
 import server.gachapon.MapleGachapon;
 import server.gachapon.MapleGachapon.MapleGachaponItem;
+import server.life.MapleNPC;
 import server.maps.MapleMap;
 import server.maps.MapleMapFactory;
+import server.maps.MapleMapObject;
 import server.partyquest.Pyramid;
 import server.partyquest.Pyramid.PyramidMode;
 import server.quest.MapleQuest;
@@ -89,6 +91,14 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
 
 	public void dispose() {
 		NPCScriptManager.dispose(this);
+	}
+
+	public void despawn() {
+		MapleNPC npc = getPlayer().getMap().findNpc(getNpc());
+		if (npc != null) {
+			getPlayer().getMap().removeMapObject(npc);
+			getPlayer().announce(MaplePacketCreator.removeNPC(npc.getObjectId()));
+		}
 	}
 
 	public void sendNext(String text) {
