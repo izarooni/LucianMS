@@ -93,14 +93,6 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
 		NPCScriptManager.dispose(this);
 	}
 
-	public void despawn() {
-		MapleNPC npc = getPlayer().getMap().findNpc(getNpc());
-		if (npc != null) {
-			getPlayer().getMap().removeMapObject(npc);
-			getPlayer().announce(MaplePacketCreator.removeNPC(npc.getObjectId()));
-		}
-	}
-
 	public void sendNext(String text) {
 		getClient().announce(MaplePacketCreator.getNPCTalk(npc, (byte) 0, text, "00 01", (byte) 0));
 	}

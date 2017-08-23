@@ -34,14 +34,14 @@ public class DBZSummoner extends GenericEvent {
 
     // Shenron NPC ID
     private static final int npcId = 9270070;
-    private static final Point npcPosition = new Point(0, 50);
 
     // Invisible monster for summon effect
     private static final int monsterId = 9500364;
-    private static final Point monsterPosition = new Point(0, 36);
 
     private boolean summoning = false;
     private Map<Integer, Point> balls = new HashMap<>();
+
+    private MapleNPC npc = null;
 
     public DBZSummoner() {
         registerAnnotationPacketEvents(this);
@@ -59,10 +59,18 @@ public class DBZSummoner extends GenericEvent {
     @Override
     public void unregisterPlayer(MapleCharacter player) {
         player.removeGenericEvent(this);
+        if (npc != null) {
+            player.getMap().removeMapObject(npc);
+            player.announce(MaplePacketCreator.removeNPC(npc.getObjectId()));
+        }
+        player.announce(MaplePacketCreator.removeClock());
     }
 
     @PacketWorker
     public void onItemMove(ItemMoveHandler event) {
+        if (summoning) {
+            return;
+        }
         MapleCharacter player = event.getClient().getPlayer();
 
         final MapleMap map = player.getMap();
@@ -72,39 +80,29 @@ public class DBZSummoner extends GenericEvent {
             if (item.getItemId() == (base_item + balls.size())) { // dropped item is a ball
                 if (position.x >= min_x && position.x <= max_x && position.y == pos_y) { // ball is dropped within set boundaries
                     if (balls.size() == 6) { // all balls have been dropped
+                        event.getClient().getWorldServer().broadcastPacket(MaplePacketCreator.serverNotice(6, player.getName() + " summoned the eternal Shenron! Let's hope they choose wisely"));
+                        System.out.println(String.format("%s summoned Shenron on %s", player.getName(), Calendar.getInstance().getTime().toString()));
+                        summoning = true;
 
-                        player.announce(MaplePacketCreator.getClock(180));
-
-                        // create and position NPC
-                        MapleNPC npc = MapleLifeFactory.getNPC(npcId);
-                        npc.setPosition(npcPosition.getLocation());
-                        npc.setCy(npcPosition.y);
-                        npc.setRx0(npcPosition.x - 50);
-                        npc.setRx1(npcPosition.x + 50);
+                        // create & position the npc & monster
+                        MapleMonster monster = createMonster();
+                        npc = createNpc();
                         map.addMapObject(npc);
 
-                        // create and position effect (monster)
-                        MapleMonster monster = MapleLifeFactory.getMonster(monsterId);
-                        if (monster != null) {
-                            monster.setObjectId(Integer.MAX_VALUE);
-                            monster.setPosition(monsterPosition.getLocation());
-                            monster.setRx0(monsterPosition.x);
-                            monster.setRx1(monsterPosition.y);
-                            // use an invisible monster for a summon effect and immediately remove it after animation
-                            player.announce(MaplePacketCreator.spawnMonster(monster, false, 30));
-                            System.out.println("Shenron was summoned by " + player.getName() + " at " + Calendar.getInstance().getTime());
-                            summoning = true;
-                        }
+                        // use an invisible monster for a summon effect and immediately remove it after animation
+                        player.announce(MaplePacketCreator.spawnMonster(monster, false, 30));
 
                         // currently dropping an item; we have to wait a second for the item to be added to the map's array of map-objects
-                        TaskExecutor.createTask(map::clearDrops, 5000);
+                        TaskExecutor.createTask(map::clearDrops, 1500);
 
                         TaskExecutor.createTask(new Runnable() {
                             @Override
                             public void run() {
-                                player.announce(MaplePacketCreator.killMonster(Integer.MAX_VALUE, false)); // summon effect finished; no longer need monster
+                                if (monster != null) {
+                                    player.announce(MaplePacketCreator.killMonster(Integer.MAX_VALUE, false)); // summon effect finished; no longer need monster
+                                }
+                                player.announce(MaplePacketCreator.getClock(180));
                                 player.announce(MaplePacketCreator.spawnNPC(npc)); // don't use NPC controller, otherwise NPC will not be able to de-spawn
-                                unregisterPlayer(player); // no longer need to handle packet events
                             }
                         }, 3100); // animation length
 
@@ -112,6 +110,7 @@ public class DBZSummoner extends GenericEvent {
                         TaskExecutor.createTask(new Runnable() {
                             @Override
                             public void run() {
+                                System.out.println(String.format("%s timed-out Shenron on %s", player.getName(), Calendar.getInstance().getTime().toString()));
                                 map.removeMapObject(npc); // remove from map to disable speaking via packet editing
                                 player.announce(MaplePacketCreator.removeNPC(npc.getObjectId())); // remove NPC
                             }
@@ -147,5 +146,25 @@ public class DBZSummoner extends GenericEvent {
                 }
             }
         }
+    }
+
+    private MapleNPC createNpc() {
+        MapleNPC npc = MapleLifeFactory.getNPC(npcId);
+        npc.setPosition(new Point(0, 50));
+        npc.setCy(npc.getPosition().y);
+        npc.setRx0(npc.getPosition().x - 50);
+        npc.setRx1(npc.getPosition().x + 50);
+        return npc;
+    }
+
+    private MapleMonster createMonster() {
+        MapleMonster monster = MapleLifeFactory.getMonster(monsterId);
+        if (monster != null) {
+            monster.setObjectId(Integer.MAX_VALUE);
+            monster.setPosition(new Point(0, 36));
+            monster.setRx0(createNpc().getPosition().x);
+            monster.setRx1(createNpc().getPosition().y);
+        }
+        return monster;
     }
 }
