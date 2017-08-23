@@ -21,14 +21,18 @@
  */
 package net.server.channel.handlers;
 
-import client.*;
+import client.MapleBuffStat;
+import client.MapleCharacter;
 import client.MapleCharacter.CancelCooldownAction;
+import client.Skill;
+import client.SkillFactory;
 import constants.skills.Bishop;
 import constants.skills.Evan;
 import constants.skills.FPArchMage;
 import constants.skills.ILArchMage;
 import server.MapleStatEffect;
 import server.TimerManager;
+import server.life.FakePlayer;
 import tools.MaplePacketCreator;
 import tools.data.input.SeekableLittleEndianAccessor;
 
@@ -56,6 +60,17 @@ public class MagicDamageHandler extends AbstractDealDamageHandler {
         if (attackInfo.skill == Evan.FIRE_BREATH || attackInfo.skill == Evan.ICE_BREATH || attackInfo.skill == FPArchMage.BIG_BANG || attackInfo.skill == ILArchMage.BIG_BANG || attackInfo.skill == Bishop.BIG_BANG) {
             packet = MaplePacketCreator.magicAttack(player, attackInfo.skill, attackInfo.skilllevel, attackInfo.stance, attackInfo.numAttackedAndDamage, attackInfo.allDamage, attackInfo.charge, attackInfo.speed, attackInfo.direction, attackInfo.display);
         }
+
+        FakePlayer fakePlayer = player.getFakePlayer();
+        if (fakePlayer != null && fakePlayer.isFollowing()) {
+            TimerManager.getInstance().schedule(new Runnable() {
+                @Override
+                public void run() {
+                    fakePlayer.getMap().broadcastMessage(fakePlayer, MaplePacketCreator.magicAttack(fakePlayer, attackInfo.skill, attackInfo.skilllevel, attackInfo.stance, attackInfo.numAttackedAndDamage, attackInfo.allDamage, attackInfo.charge, attackInfo.speed, attackInfo.direction, attackInfo.display), false, true);
+                }
+            }, 100);
+        }
+
         player.getMap().broadcastMessage(player, packet, false, true);
         MapleStatEffect effect = attackInfo.getAttackEffect(player, null);
         Skill skill = SkillFactory.getSkill(attackInfo.skill);

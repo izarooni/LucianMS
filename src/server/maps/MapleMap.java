@@ -1392,21 +1392,27 @@ public class MapleMap {
 
     public void addFakePlayer(FakePlayer fakePlayer) {
         chrWLock.lock();
+        objectWLock.lock();
         try {
+            mapobjects.put(fakePlayer.getObjectId(), fakePlayer);
             characters.add(fakePlayer);
             broadcastMessage(fakePlayer, MaplePacketCreator.spawnPlayerMapobject(fakePlayer), false);
         } finally {
             chrWLock.unlock();
+            objectWLock.unlock();
         }
     }
 
     public void removeFakePlayer(FakePlayer fakePlayer) {
         chrWLock.lock();
+        objectWLock.lock();
         try {
+            mapobjects.remove(fakePlayer.getObjectId());
             characters.remove(fakePlayer);
             broadcastMessage(fakePlayer, MaplePacketCreator.removePlayerFromMap(fakePlayer.getId()), false);
         } finally {
             chrWLock.unlock();
+            objectWLock.unlock();
         }
     }
 
@@ -1903,6 +1909,10 @@ public class MapleMap {
      */
     public void addMonsterSpawn(MapleMonster monster, int mobTime, int team) {
         Point newpos = calcPointBelow(monster.getPosition());
+        if (newpos == null) {
+            System.err.println(String.format("Unable to spawn monster %d in map %s at position %s due to being unable to find a foothold", monster.getId(), getId(), monster.getPosition().toString()));
+            return;
+        }
         newpos.y -= 1;
         SpawnPoint sp = new SpawnPoint(monster, newpos, !monster.isMobile(), mobTime, mobInterval, team);
         monsterSpawn.add(sp);

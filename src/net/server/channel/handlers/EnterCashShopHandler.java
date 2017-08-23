@@ -25,36 +25,44 @@ import client.MapleCharacter;
 import client.MapleClient;
 import net.AbstractMaplePacketHandler;
 import net.server.Server;
+import server.life.FakePlayer;
 import tools.MaplePacketCreator;
 import tools.data.input.SeekableLittleEndianAccessor;
 
 /**
- *
  * @author Flav
  */
 public class EnterCashShopHandler extends AbstractMaplePacketHandler {
-    @Override
-	public void handlePacket(SeekableLittleEndianAccessor slea, MapleClient c) {
-        try {
-        	MapleCharacter mc = c.getPlayer();
 
-        	if (mc.getCashShop().isOpened()) return;
-        	
-			Server.getInstance().getPlayerBuffStorage().addBuffsToStorage(mc.getId(), mc.getAllBuffs());
-	        mc.cancelBuffEffects();
-	        mc.cancelExpirationTask();
-			c.announce(MaplePacketCreator.openCashShop(c, false));
-			mc.saveToDB();
-			mc.getCashShop().open(true);
-			mc.getMap().removePlayer(mc);
-			c.getChannelServer().removePlayer(mc);
-			
-			c.announce(MaplePacketCreator.showCashInventory(c));                
-			c.announce(MaplePacketCreator.showGifts(mc.getCashShop().loadGifts()));
-			c.announce(MaplePacketCreator.showWishList(mc, false));
-			c.announce(MaplePacketCreator.showCash(mc));
-        } catch (Exception e) {
-            e.printStackTrace();
+    @Override
+    public void handlePacket(SeekableLittleEndianAccessor slea, MapleClient c) {
+        MapleCharacter player = c.getPlayer();
+
+        if (player.getCashShop().isOpened()) {
+            return;
         }
-	}
+
+        Server.getInstance().getPlayerBuffStorage().addBuffsToStorage(player.getId(), player.getAllBuffs());
+
+        player.cancelBuffEffects();
+        player.cancelExpirationTask();
+
+        c.announce(MaplePacketCreator.openCashShop(c, false));
+
+        player.saveToDB();
+        player.getCashShop().open(true);
+
+        if (player.getFakePlayer() != null) {
+            player.getFakePlayer().setFollowing(false);
+            player.getMap().removeFakePlayer(player.getFakePlayer());
+        }
+
+        player.getMap().removePlayer(player);
+        c.getChannelServer().removePlayer(player);
+
+        c.announce(MaplePacketCreator.showCashInventory(c));
+        c.announce(MaplePacketCreator.showGifts(player.getCashShop().loadGifts()));
+        c.announce(MaplePacketCreator.showWishList(player, false));
+        c.announce(MaplePacketCreator.showCash(player));
+    }
 }

@@ -234,7 +234,7 @@ public class MapleMonster extends AbstractLoadedMapleLife {
             from.getMap().broadcastMessage(makeBossHPBarPacket(), getPosition());
         } else if (!isBoss()) {
             int remainingHP = (int) Math.max(1, hp * 100f / getMaxHp());
-            byte[] packet = MaplePacketCreator.showMonsterHP(getObjectId(), remainingHP);
+            byte[] packet = MaplePacketCreator.showMonsterHP(getObjectId(), Math.min(getMaxHp(), remainingHP));
             if (from.getParty() != null) {
                 for (MaplePartyCharacter mpc : from.getParty().getMembers()) {
                     MapleCharacter member = from.getMap().getCharacterById(mpc.getId()); // god bless

@@ -55,7 +55,6 @@ import server.life.MapleNPC;
 import server.life.MobSkill;
 import server.maps.*;
 import server.movement.LifeMovementFragment;
-import server.partyquest.MonsterCarnivalParty;
 import server.partyquest.carnival.MCarnivalGame;
 import server.partyquest.carnival.MCarnivalTeam;
 import tools.data.output.LittleEndianWriter;
@@ -176,7 +175,7 @@ public class MaplePacketCreator {
     private static void addNewYearInfo(final MaplePacketLittleEndianWriter mplew, MapleCharacter chr) {
         mplew.writeShort(0);
         /*
-		 *(_DWORD *)this = CInPacket::Decode4(a2);
+         *(_DWORD *)this = CInPacket::Decode4(a2);
 		 *((_DWORD *)v2 + 1) = CInPacket::Decode4(a2);
          CInPacket::DecodeStr(&v7);
          v9 = 0;
@@ -6637,7 +6636,7 @@ public class MaplePacketCreator {
         return mplew.getPacket();
     }
 
-    public static byte[] openCashShop(MapleClient c, boolean mts) throws Exception {
+    public static byte[] openCashShop(MapleClient c, boolean mts) {
         final MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
         mplew.writeShort(mts ? SendOpcode.SET_ITC.getValue() : SendOpcode.SET_CASH_SHOP.getValue());
 

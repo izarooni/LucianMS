@@ -25,7 +25,7 @@ public class ChangeMapHandler extends PacketHandler {
 
     @Override
     public void process(SeekableLittleEndianAccessor slea) {
-        eCashShop = slea.available() == 0;
+        eCashShop = slea.available() == 0; // exit Cash shop
         if (!eCashShop) {
             slea.skip(1);
             targetMapId = slea.readInt();
@@ -51,6 +51,10 @@ public class ChangeMapHandler extends PacketHandler {
             String[] socket = getClient().getChannelServer().getIP().split(":");
             player.getCashShop().open(false);
             getClient().updateLoginState(MapleClient.LOGIN_SERVER_TRANSITION);
+            if (player.getFakePlayer() != null) {
+                player.getFakePlayer().setFollowing(true);
+                player.getMap().addFakePlayer(player.getFakePlayer());
+            }
             try {
                 getClient().announce(MaplePacketCreator.getChannelChange(InetAddress.getByName(socket[0]), Integer.parseInt(socket[1])));
             } catch (UnknownHostException e) {

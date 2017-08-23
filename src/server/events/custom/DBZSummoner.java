@@ -45,6 +45,10 @@ public class DBZSummoner extends GenericEvent {
 
     @Override
     public void registerPlayer(MapleCharacter player) {
+        if (player.getGenericEvents().stream().anyMatch(g -> (g instanceof DBZSummoner))) {
+            System.out.println(String.format("Player %s is already registered in a %s generic event", player.getName(), getClass().getSimpleName()));
+            return;
+        }
         player.addGenericEvent(this);
     }
 
@@ -86,12 +90,13 @@ public class DBZSummoner extends GenericEvent {
                             summoning = true;
                         }
 
+                        // currently dropping an item; we have to wait a second for the item to be added to the map's array of map-objects
+                        TaskExecutor.createTask(player.getMap()::clearDrops, 5000);
                         TaskExecutor.createTask(new Runnable() {
                             @Override
                             public void run() {
-                                player.getMap().clearDrops();
                                 player.announce(MaplePacketCreator.killMonster(Integer.MAX_VALUE, false));
-                                npc.sendSpawnData(event.getClient());
+                                npc.sendDestroyData(event.getClient());
                                 unregisterPlayer(player);
                             }
                         }, 1000 * 60 * 3);

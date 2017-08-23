@@ -757,7 +757,9 @@ public class MapleClient {
             if (player.getMap() != null) {
                 player.getMap().removePlayer(player);
             }
-
+            if (player.getFakePlayer() != null) {
+                player.getMap().removeFakePlayer(player.getFakePlayer());
+            }
         } catch (final Throwable t) {
             FilePrinter.printError(FilePrinter.ACCOUNT_STUCK, t);
         }
