@@ -59,6 +59,7 @@ public class PlayerCommands {
             commands.add("@spy <player> - See the stats of a player");
             commands.add("@fixexp - Reset EXP");
             commands.add("@maxskills - Max your skills for all jobs");
+            commands.add("@shenron - Warp to the Shenron summoning map");
             Collections.sort(commands);
             commands.forEach(player::dropMessage);
             commands.clear();
@@ -400,6 +401,8 @@ public class PlayerCommands {
             player.changeMap(83);
         } else if (command.equals("arcade")) {
             player.changeMap(970000000);
+        } else if (command.equals("shenron")) {
+            player.changeMap(908);
         } else if (command.equals("rebirth")) {
             if (player.getLevel() >= player.getMaxLevel()) {
                 player.doRebirth();
