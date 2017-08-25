@@ -205,8 +205,9 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
     private int riceCakes = 0;
     private int rebirthPoints = 0;
     private long immortalTimestamp = 0;
-    private boolean muted;
+    private boolean muted = false;
     private boolean autorebirthing = false;
+    private boolean eyeScannersEquiped = false;
     private House house;
     private Achievements achievements;
     private PVP pvp;
@@ -1952,6 +1953,17 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
         enforceMaxHpMp();
         if (getMessenger() != null) {
             Server.getInstance().getWorld(world).updateMessenger(getMessenger(), getName(), getWorld(), client.getChannel());
+        }
+        MapleInventory inventory = fakePlayer.getInventory(MapleInventoryType.EQUIPPED);
+        // DBZ Drop rate boost
+        if (inventory.findById(1022994) != null // Blue Eye Scanner
+                && inventory.findById(1022995) != null // Green Eye Scanner
+                && inventory.findById(1022996) != null // Pink EYe Scanner
+                && inventory.findById(1022999) != null // Red Eye Scanner
+                ) {
+            eyeScannersEquiped = true;
+        } else {
+            eyeScannersEquiped = false;
         }
     }
 
@@ -4912,7 +4924,9 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
     @Override
     public MapleMapObjectType getType() {
         return MapleMapObjectType.PLAYER;
-    }    @Override
+    }
+
+    @Override
     public String toString() {
         return name;
     }
@@ -5687,6 +5701,14 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
         this.autorebirthing = autorebirthing;
     }
 
+    public boolean isEyeScannersEquiped() {
+        return eyeScannersEquiped;
+    }
+
+    public void setEyeScannersEquiped(boolean eyeScannersEquiped) {
+        this.eyeScannersEquiped = eyeScannersEquiped;
+    }
+
     public Occupations getOccupation() {
         if (this.occupation == null) {
             this.occupation = new Occupations(this);
@@ -5767,7 +5789,6 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
             return skillevel + ":" + masterlevel;
         }
     }
-
 
 
 }

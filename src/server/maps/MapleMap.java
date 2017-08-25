@@ -386,9 +386,9 @@ public class MapleMap {
         for (final MonsterDropEntry de : dropEntry) {
             if (Randomizer.nextInt(999999) < de.chance * chServerrate) {
                 if (droptype == 3) {
-                    pos.x = (int) (mobpos + (d % 2 == 0 ? (40 * (d + 1) / 2) : -(40 * (d / 2))));
+                    pos.x = mobpos + (d % 2 == 0 ? (40 * (d + 1) / 2) : -(40 * (d / 2)));
                 } else {
-                    pos.x = (int) (mobpos + ((d % 2 == 0) ? (25 * (d + 1) / 2) : -(25 * (d / 2))));
+                    pos.x = mobpos + ((d % 2 == 0) ? (25 * (d + 1) / 2) : -(25 * (d / 2)));
                 }
                 if (de.itemId == 0) { // meso
                     int mesos = Randomizer.nextInt(de.Maximum - de.Minimum) + de.Minimum;
@@ -410,26 +410,27 @@ public class MapleMap {
                 d++;
             }
         }
-        final List<MonsterGlobalDropEntry> globalEntry = mi.getGlobalDrop();
+
         // Global Drops
+        final List<MonsterGlobalDropEntry> globalEntry = mi.getGlobalDrop();
         for (final MonsterGlobalDropEntry de : globalEntry) {
-            if (Randomizer.nextInt(999999) < de.chance) {
+            int chance = de.chance;
+            if (de.itemId >= 4011009 && de.itemId <= 4011009 + 6 && chr.isEyeScannersEquiped()) {
+                chance *= 0.10;
+            }
+            if (Randomizer.nextInt(999999) < chance) {
                 if (droptype == 3) {
-                    pos.x = (int) (mobpos + (d % 2 == 0 ? (40 * (d + 1) / 2) : -(40 * (d / 2))));
+                    pos.x = mobpos + (d % 2 == 0 ? (40 * (d + 1) / 2) : -(40 * (d / 2)));
                 } else {
-                    pos.x = (int) (mobpos + ((d % 2 == 0) ? (25 * (d + 1) / 2) : -(25 * (d / 2))));
+                    pos.x = mobpos + ((d % 2 == 0) ? (25 * (d + 1) / 2) : -(25 * (d / 2)));
                 }
-                if (de.itemId == 0) {
-                    // chr.getCashShop().gainCash(1, 80);
+                if (ItemConstants.getInventoryType(de.itemId) == MapleInventoryType.EQUIP) {
+                    idrop = ii.randomizeStats((Equip) ii.getEquipById(de.itemId));
                 } else {
-                    if (ItemConstants.getInventoryType(de.itemId) == MapleInventoryType.EQUIP) {
-                        idrop = ii.randomizeStats((Equip) ii.getEquipById(de.itemId));
-                    } else {
-                        idrop = new Item(de.itemId, (short) 0, (short) (de.Maximum != 1 ? Randomizer.nextInt(de.Maximum - de.Minimum) + de.Minimum : 1));
-                    }
-                    spawnDrop(idrop, calcDropPos(pos, mob.getPosition()), mob, chr, droptype, de.questid);
-                    d++;
+                    idrop = new Item(de.itemId, (short) 0, (short) (de.Maximum != 1 ? Randomizer.nextInt(de.Maximum - de.Minimum) + de.Minimum : 1));
                 }
+                spawnDrop(idrop, calcDropPos(pos, mob.getPosition()), mob, chr, droptype, de.questid);
+                d++;
             }
         }
     }
@@ -703,7 +704,7 @@ public class MapleMap {
             entry.announce(chr.getClient(), String.format("[%d] %s (level %d) attacked a monster (%d) too high of level (level %d)", entry.cheatCount, chr.getName(), chr.getLevel(), monster.getId(), monster.getStats().getLevel()), 2500);
         }
         /*
-		 * if (chr.getQuest(MapleQuest.getInstance(29400)).getStatus().equals(
+         * if (chr.getQuest(MapleQuest.getInstance(29400)).getStatus().equals(
 		 * MapleQuestStatus.Status.STARTED)) { if (chr.getLevel() >= 120 &&
 		 * monster.getStats().getLevel() >= 120) { //FIX MEDAL SHET } else if
 		 * (monster.getStats().getLevel() >= chr.getLevel()) { } }
@@ -887,13 +888,13 @@ public class MapleMap {
         try {
             for (MapleMapObject o : mapobjects.values()) {
                 if (o.getType() == MapleMapObjectType.REACTOR) {
-                    points.add(((MapleReactor) o).getPosition());
+                    points.add(o.getPosition());
                 }
             }
             Collections.shuffle(points);
             for (MapleMapObject o : mapobjects.values()) {
                 if (o.getType() == MapleMapObjectType.REACTOR) {
-                    ((MapleReactor) o).setPosition(points.remove(points.size() - 1));
+                    o.setPosition(points.remove(points.size() - 1));
                 }
             }
         } finally {
@@ -1305,7 +1306,7 @@ public class MapleMap {
                         if (mist.makeChanceResult()) {
                             MapleCharacter chr = (MapleCharacter) mo;
                             if (mist.getOwner().getId() == chr.getId() || mist.getOwner().getParty() != null && mist.getOwner().getParty().containsMembers(chr.getMPC())) {
-                                chr.addMP((int) mist.getSourceSkill().getEffect(chr.getSkillLevel(mist.getSourceSkill().getId())).getX() * chr.getMp() / 100);
+                                chr.addMP(mist.getSourceSkill().getEffect(chr.getSkillLevel(mist.getSourceSkill().getId())).getX() * chr.getMp() / 100);
                             }
                         }
                     }

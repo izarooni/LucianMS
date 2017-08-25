@@ -16,7 +16,7 @@ public class BEasyMode extends BossPQ {
     private static final Point mSpawnPoint = new Point(-323, 210);
 
     public BEasyMode(int channel) {
-        super(channel, 90000405, bosses);
+        super(channel, 800, bosses);
         setCashWinnings(5 * bosses.length);
         setPoints(15);
     }
