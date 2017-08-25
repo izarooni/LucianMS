@@ -141,6 +141,7 @@ public abstract class BossPQ extends GenericEvent {
 
                                     int gain = (getCashWinnings() * getCashMultiplier());
                                     for (MapleCharacter players : map.getCharacters()) {
+                                        players.addPoints("nx", gain);
                                         players.dropMessage(6, "You gained " + StringUtil.formatNumber(gain) + " NX for completing this round");
                                     }
                                     round++;
