@@ -76,6 +76,7 @@ public class GameMasterCommands {
             commands.add("!seduce <usernames> - force players to move in a direction");
             commands.add("!seducemap - force all players in the map to move in a direction");
             commands.add("!online - list all visible GMs and players online");
+            commands.add("!gift - Give a player a certain type and specified amount of points");
             commands.add("!! <message> - sends a message to all GMs online");
             commands.add("!partycheck - lists leader and members of all parties in the map");
             commands.add("!characters <username> - lists other characters that belong to a player");

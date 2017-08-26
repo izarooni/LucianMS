@@ -1954,17 +1954,16 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
         if (getMessenger() != null) {
             Server.getInstance().getWorld(world).updateMessenger(getMessenger(), getName(), getWorld(), client.getChannel());
         }
-        MapleInventory inventory = fakePlayer.getInventory(MapleInventoryType.EQUIPPED);
+        MapleInventory inventory = getInventory(MapleInventoryType.EQUIPPED);
         // DBZ Drop rate boost
-        if (inventory.findById(1022994) != null // Blue Eye Scanner
+        // Blue Eye Scanner
+        // Green Eye Scanner
+        // Pink EYe Scanner
+        // Red Eye Scanner
+        eyeScannersEquiped = inventory.findById(1022994) != null // Blue Eye Scanner
                 && inventory.findById(1022995) != null // Green Eye Scanner
-                && inventory.findById(1022996) != null // Pink EYe Scanner
-                && inventory.findById(1022999) != null // Red Eye Scanner
-                ) {
-            eyeScannersEquiped = true;
-        } else {
-            eyeScannersEquiped = false;
-        }
+                && inventory.findById(1022996) != null // Pink Eye Scanner
+                && inventory.findById(1022999) != null; // Red Eye Scanner
     }
 
     public void cancelExpirationTask() {
