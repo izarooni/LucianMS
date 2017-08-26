@@ -44,7 +44,7 @@ public abstract class BossPQ extends GenericEvent {
     }
 
     public abstract int getMinimumLevel();
-    public abstract Point getPlayerSpawnPoint();
+
     public abstract Point getMonsterSpawnPoint();
 
     private MapleMap getMapInstance(int mapId) {
@@ -60,7 +60,7 @@ public abstract class BossPQ extends GenericEvent {
     }
 
     public final void registerPlayer(MapleCharacter player) {
-        player.changeMap(getMapInstance(mapId), getPlayerSpawnPoint());
+        player.changeMap(getMapInstance(mapId));
         player.addGenericEvent(this);
     }
 
@@ -75,7 +75,7 @@ public abstract class BossPQ extends GenericEvent {
         if (map != null) {
             for (MaplePartyCharacter members : party.getMembers()) {
                 if (members.getMapId() == leader.getMapId() && members.isOnline()) {
-                    members.getPlayer().changeMap(map, getPlayerSpawnPoint());
+                    members.getPlayer().changeMap(map);
                     members.getPlayer().addGenericEvent(this);
                 }
             }
@@ -92,6 +92,8 @@ public abstract class BossPQ extends GenericEvent {
         MapleMap map = getMapInstance(mapId);
         if (map != null) {
             for (MapleCharacter players : map.getCharacters()) {
+                players.addPoints("ep", 1);
+                players.dropMessage("You gained 1 event point and now have a total of " + players.getEventPoints());
                 unregisterPlayer(players);
             }
         }
@@ -118,12 +120,17 @@ public abstract class BossPQ extends GenericEvent {
                         if (map != null) {
                             MapleMonsterStats stats = new MapleMonsterStats();
                             int newHp = monster.getHp() * getHealthMultiplier();
+                            int newMp = monster.getMp() * getHealthMultiplier();
                             if (newHp < 1) {
                                 // number overflow
                                 newHp = Integer.MAX_VALUE;
                             }
+                            if (mapId == 803 && monsterId == 9895253) { // hell mode and last boss (black mage)
+                                newHp -= (newHp * 0.25);
+                                newMp -= (newMp * 0.25);
+                            }
                             stats.setHp(newHp);
-                            stats.setMp(monster.getMp() * getHealthMultiplier());
+                            stats.setMp(newMp);
                             monster.setBoss(true);
                             final long spawnTimestamp = System.currentTimeMillis();
                             monster.addListener(new MonsterListener() {
@@ -139,11 +146,6 @@ public abstract class BossPQ extends GenericEvent {
                                     }
                                     broadcastMessage(String.format("Round %d completed! It took you %s to kill that boss", (round + 1), time));
 
-                                    int gain = (getCashWinnings() * getCashMultiplier());
-                                    for (MapleCharacter players : map.getCharacters()) {
-                                        players.addPoints("nx", gain);
-                                        players.dropMessage(6, "You gained " + StringUtil.formatNumber(gain) + " NX for completing this round");
-                                    }
                                     round++;
                                     nextRound();
                                 }
@@ -161,6 +163,10 @@ public abstract class BossPQ extends GenericEvent {
         // it's probably a bad idea to have monsters that 1-hit the player and is unavoidable
         // so if that total damage exceeds the player's health, just set the damage amount to (current_hp - 1)
         int nDamage = Math.min(event.getClient().getPlayer().getHp() - 1, (event.getDamage() * getDamageMultiplier()));
+
+        if (mapId == 803 && bosses[round] == 9895253) { // hell mode and last boss (black mage)
+            nDamage -= (nDamage * 0.25);
+        }
         event.setDamage(nDamage);
     }
 
