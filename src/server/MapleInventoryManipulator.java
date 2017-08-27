@@ -159,7 +159,7 @@ public class MapleInventoryManipulator {
             }
         }
         short quantity = item.getQuantity();
-        if (!type.equals(MapleInventoryType.EQUIP)) {
+        if (type != MapleInventoryType.EQUIP) {
             short slotMax = ii.getSlotMax(c, item.getItemId());
             List<Item> existing = player.getInventory(type).listById(item.getItemId());
 

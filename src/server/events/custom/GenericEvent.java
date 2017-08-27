@@ -2,18 +2,12 @@ package server.events.custom;
 
 import client.MapleCharacter;
 import net.PacketHandler;
-import scheduler.Task;
-import server.TimerManager;
 import tools.annotation.PacketWorker;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.concurrent.ScheduledFuture;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * @author izarooni
@@ -55,7 +49,7 @@ public abstract class GenericEvent {
         if (methods.get(event.getClass()) != null) {
             methods.get(event.getClass()).forEach(method -> {
                 try {
-                    System.out.println(String.format("[DEBUG] PacketEvent method '%s(%s)' invoked", method.getName(), event.getClass().getSimpleName()));
+                    //                    System.out.println(String.format("[DEBUG] PacketEvent method '%s(%s)' invoked", method.getName(), event.getClass().getSimpleName()));
                     method.invoke(this, event);
                 } catch (IllegalAccessException | InvocationTargetException e) {
                     e.printStackTrace();
