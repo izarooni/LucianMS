@@ -67,7 +67,6 @@ public class MapScriptManager {
 
         File scriptFile = new File("scripts/map/" + type + scriptName + ".js");
         if (!scriptExists(scriptName, firstUser)) {
-            System.err.println(String.format("Script file '%s'.js does not exist (but that's okay)", (type + scriptName)));
             return;
         }
         ScriptEngine portal = sef.getScriptEngine();

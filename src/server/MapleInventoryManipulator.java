@@ -29,7 +29,6 @@ import constants.ItemConstants;
 import server.quest.custom.CQuestData;
 import server.quest.custom.requirement.CQuestItemRequirement;
 import tools.MaplePacketCreator;
-import tools.Pair;
 
 import java.awt.*;
 import java.util.ArrayList;
@@ -163,6 +162,15 @@ public class MapleInventoryManipulator {
         if (!type.equals(MapleInventoryType.EQUIP)) {
             short slotMax = ii.getSlotMax(c, item.getItemId());
             List<Item> existing = player.getInventory(type).listById(item.getItemId());
+
+            if (!existing.isEmpty()) {
+                if (item.getItemId() >= 4011009 && item.getItemId() <= 4011009 + 6) {
+                    c.announce(MaplePacketCreator.getInventoryFull());
+                    c.announce(MaplePacketCreator.showItemUnavailable());
+                    return false;
+                }
+            }
+
             if (!ItemConstants.isRechargable(item.getItemId())) {
                 if (existing.size() > 0) { // first update all existing slots to slotMax
                     Iterator<Item> i = existing.iterator();

@@ -2,6 +2,8 @@ package command;
 
 import client.MapleCharacter;
 import client.MapleClient;
+import client.inventory.Item;
+import constants.ItemConstants;
 import net.server.Server;
 import net.server.channel.Channel;
 import net.server.world.World;
@@ -137,17 +139,16 @@ public class AdministratorCommands {
                 }
                 player.dropMessage("Done!");
             }
-        } else if(command.equals("wipe")) {
-        	if(args.length() >= 1) {
-        		boolean wiped = MapleCharacter.wipe(args.get(0));
-        		
-        		if(wiped) {
-        			player.dropMessage(6, "Wipe of the player was successful");
-        		} else {
-        			player.dropMessage(5, "Wipe of player was unsuccessful");
-        		}
-        		
-        	}
+        } else if (command.equals("wipe")) {
+            if (args.length() >= 1) {
+                boolean wiped = MapleCharacter.wipe(args.get(0));
+                if (wiped) {
+                    player.dropMessage(6, "Wipe of the player was successful");
+                } else {
+                    player.dropMessage(5, "Wipe of player was unsuccessful");
+                }
+
+            }
         }
     }
 }
