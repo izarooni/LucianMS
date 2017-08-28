@@ -48,10 +48,10 @@ public final class CreateCharHandler extends AbstractMaplePacketHandler {
 	};
 
 	private static boolean isLegal(int toCompare) {
-		for (int i = 0; i < IDs.length; i++) {
-			if (IDs[i] == toCompare) {
+		for (int ID : IDs) {
+			if (ID == toCompare) {
 				return true;
-			}      
+			}
 		}
 		return false;
 	}         	
@@ -92,7 +92,7 @@ public final class CreateCharHandler extends AbstractMaplePacketHandler {
 
 		if (job == 0) { // Knights of Cygnus
 			newchar.setJob(MapleJob.NOBLESSE);
-			newchar.setMapId(130030000);
+			newchar.setMapId(90000000);
 			newchar.getInventory(MapleInventoryType.ETC).addItem(new Item(4161047, (short) 0, (short) 1));
 		} else if (job == 1) { // Adventurer   
 			newchar.setJob(MapleJob.BEGINNER);

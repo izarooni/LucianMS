@@ -26,9 +26,10 @@ public class CharSelectedWithPicHandler extends AbstractMaplePacketHandler {
             client.getSession().close(true);
             return;
         }
-        if (ServerConstants.ENABLE_PIC && !client.checkPic(pic)) {
-            client.announce(MaplePacketCreator.wrongPic());
-        }
+//        if (ServerConstants.ENABLE_PIC && !client.checkPic(pic)) {
+//            client.announce(MaplePacketCreator.wrongPic());
+//            return;
+//        }
         if (client.getIdleTask() != null) {
             client.getIdleTask().cancel(true);
         }

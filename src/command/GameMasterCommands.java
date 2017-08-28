@@ -229,21 +229,30 @@ public class GameMasterCommands {
                 player.dropMessage(5, "you must specify a username");
             }
         } else if (command.equals("job")) {
-            if (args.length() == 1) {
-                Long a1 = args.parseNumber(0);
-                if (a1 == null) {
-                    player.dropMessage(5, args.getError(0));
+            if (args.length() > 0) {
+                Long var_jobId = args.parseNumber(0);
+                if (var_jobId == null) {
+                    player.dropMessage(String.format("'%s' is not a valid number", args.get(0)));
                     return;
                 }
-                MapleJob job = MapleJob.getById(a1.intValue());
-                if (job != null) {
-                    player.setJob(job);
-                    player.updateSingleStat(MapleStat.JOB, job.getId());
+                int jobId = var_jobId.intValue();
+                if (args.length() > 1) {
+                    for (int i = 2; i < args.length(); i++) {
+                        String username = args.get(i);
+                        MapleCharacter target = ch.getPlayerStorage().getCharacterByName(username);
+                        if (target != null) {
+                            target.setJob(MapleJob.getById(jobId));
+                            target.updateSingleStat(MapleStat.JOB, jobId);
+                        } else {
+                            player.dropMessage(String.format("Unable to find any player named '%s'", username));
+                        }
+                    }
                 } else {
-                    player.dropMessage(5, String.format("'%s' is an invalid job", args.get(0)));
+                    player.setJob(MapleJob.getById(jobId));
+                    player.updateSingleStat(MapleStat.JOB, jobId);
                 }
             } else {
-                player.dropMessage(5, "You must specify a job ID");
+                player.dropMessage(5, "Syntax: !job <job_id> [username]");
             }
         } else if (command.equals("hp", "mp", "str", "dex", "int", "luk")) {
             Long a1 = args.parseNumber(0);
