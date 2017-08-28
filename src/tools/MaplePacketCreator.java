@@ -1509,16 +1509,16 @@ public class MaplePacketCreator {
      *
      * @param cidfrom The character ID who sent the chat.
      * @param text    The text of the chat.
-     * @param show    shout the message to the chatbox
+     * @param hide    hide the message from the chat box
      * @return The general chat packet.
      */
-    public static byte[] getChatText(int cidfrom, String text, boolean gm, int show) {
+    public static byte[] getChatText(int cidfrom, String text, boolean gm, int hide) {
         final MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
         mplew.writeShort(SendOpcode.CHATTEXT.getValue());
         mplew.writeInt(cidfrom);
         mplew.writeBool(gm);
         mplew.writeMapleAsciiString(text);
-        mplew.write(show);
+        mplew.write(hide);
         return mplew.getPacket();
     }
 

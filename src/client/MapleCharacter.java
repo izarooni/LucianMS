@@ -3923,7 +3923,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
                 }, healInterval, healInterval);
             }
             Skill bBuff = SkillFactory.getSkill(DarkKnight.HEX_OF_BEHOLDER);
-            if (getSkillLevel(bBuff) > 0) {
+            if (getSkillLevel(bBuff) > 0 && summons.containsKey(DarkKnight.BEHOLDER)) {
                 final MapleStatEffect buffEffect = bBuff.getEffect(getSkillLevel(bBuff));
                 int buffInterval = buffEffect.getX() * 1000;
                 beholderBuffSchedule = TimerManager.getInstance().register(new Runnable() {

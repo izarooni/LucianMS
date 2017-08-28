@@ -73,7 +73,7 @@ public enum ChatType {
 
     YELLOW {
         public void sendChat(MapleCharacter player, String message, int show) {
-            player.getMap().broadcastMessage(MaplePacketCreator.sendYellowTip(player.getName() + " : "  + message));
+            player.getMap().broadcastMessage(MaplePacketCreator.sendYellowTip(player.getName() + " : " + message));
             player.getMap().broadcastMessage(MaplePacketCreator.getChatText(player.getId(), message, false, 1));
         }
     }; // YELLOW TIPS
