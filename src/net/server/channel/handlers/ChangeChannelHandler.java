@@ -22,15 +22,15 @@
 package net.server.channel.handlers;
 
 import client.MapleCharacter;
+import client.MapleClient;
 import client.autoban.Cheater;
 import client.autoban.Cheats;
 import net.AbstractMaplePacketHandler;
+import server.events.custom.scheduled.SOuterSpace;
 import tools.MaplePacketCreator;
 import tools.data.input.SeekableLittleEndianAccessor;
-import client.MapleClient;
 
 /**
- *
  * @author Matze
  */
 public class ChangeChannelHandler extends AbstractMaplePacketHandler {
@@ -39,14 +39,17 @@ public class ChangeChannelHandler extends AbstractMaplePacketHandler {
     public void handlePacket(SeekableLittleEndianAccessor slea, MapleClient c) {
         MapleCharacter player = c.getPlayer();
         int channel = slea.readByte() + 1;
-        if(c.getChannel() == channel) {
+        if (c.getChannel() == channel) {
             return;
         }
         if (c.getPlayer().getCashShop().isOpened() || c.getPlayer().getMiniGame() != null || c.getPlayer().getPlayerShop() != null) {
-    		return;
-    	}
+            return;
+        }
         Cheater.CheatEntry entry = player.getCheater().getCheatEntry(Cheats.FastChannelChange);
         if (System.currentTimeMillis() - entry.latestOperationTimestamp < 1000) {
+            c.announce(MaplePacketCreator.enableActions());
+            return;
+        } else if (player.getGenericEvents().stream().anyMatch(g -> (g instanceof SOuterSpace))) {
             c.announce(MaplePacketCreator.enableActions());
             return;
         }

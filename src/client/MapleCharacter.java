@@ -5517,8 +5517,8 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
         exp.set(0);
         updateSingleStat(MapleStat.EXP, 0);
 
-        setRebirthPoints(getRebirthPoints() + 1);
-        dropMessage("You have received 1 rebirth points");
+        setRebirthPoints(getRebirthPoints() + 50);
+        dropMessage("You have received 50 rebirth points");
 
         announce(MaplePacketCreator.showEffect("breakthrough/One")); // effect
         announce(MaplePacketCreator.showEffect("breakthrough/Two")); // effect
