@@ -3363,17 +3363,8 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
         int improvingMaxHPLevel = 0;
         int improvingMaxMPLevel = 0;
 
-        if (isBeginnerJob()) {
-            remainingAp = 0;
-            if (getLevel() < 6) {
-                str += 5;
-            } else {
-                str += 4;
-                dex += 1;
-            }
-        } else {
-            remainingAp += 1;
-        }
+        remainingAp += 1;
+
         if (job == MapleJob.BEGINNER || job == MapleJob.NOBLESSE || job == MapleJob.LEGEND) {
             maxhp += Randomizer.rand(12, 16);
             maxmp += Randomizer.rand(10, 12);
