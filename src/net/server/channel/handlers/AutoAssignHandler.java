@@ -29,7 +29,6 @@ import tools.MaplePacketCreator;
 import tools.data.input.SeekableLittleEndianAccessor;
 
 /**
- *
  * @author Generic
  */
 public class AutoAssignHandler extends AbstractMaplePacketHandler {
@@ -43,7 +42,7 @@ public class AutoAssignHandler extends AbstractMaplePacketHandler {
         }
         int total = 0;
         int extras = 0;
-        if(slea.available() < 16) {
+        if (slea.available() < 16) {
             return;
         }
         for (int i = 0; i < 2; i++) {
@@ -65,36 +64,16 @@ public class AutoAssignHandler extends AbstractMaplePacketHandler {
         int newVal = 0;
         if (type.equals(MapleStat.STR)) {
             newVal = chr.getStr() + gain;
-            if (newVal > 999) {
-                chr.setStr(999);
-            } else {
-                chr.setStr(newVal);
-            }
+            chr.setStr(newVal);
         } else if (type.equals(MapleStat.INT)) {
             newVal = chr.getInt() + gain;
-            if (newVal > 999) {
-                chr.setInt(999);
-            } else {
-                chr.setInt(newVal);
-            }
+            chr.setInt(newVal);
         } else if (type.equals(MapleStat.LUK)) {
             newVal = chr.getLuk() + gain;
-            if (newVal > 999) {
-                chr.setLuk(999);
-            } else {
-                chr.setLuk(newVal);
-            }
+            chr.setLuk(newVal);
         } else if (type.equals(MapleStat.DEX)) {
             newVal = chr.getDex() + gain;
-            if (newVal > 999) {
-                chr.setDex(999);
-            } else {
-                chr.setDex(newVal);
-            }
-        }
-        if (newVal > 999) {
-            chr.updateSingleStat(type, 999);
-            return newVal - 999;
+            chr.setDex(newVal);
         }
         chr.updateSingleStat(type, newVal);
         return 0;

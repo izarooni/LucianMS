@@ -95,7 +95,7 @@ public class SOuterSpace extends SAutoEvent {
     public void registerPlayer(MapleCharacter player) {
         player.saveLocation("OTHER");
         player.changeMap(98);
-        player.announce(MaplePacketCreator.showEffect("event/boss/space"));
+        player.announce(MaplePacketCreator.showEffect("event/space/boss"));
     }
 
     @Override
@@ -103,6 +103,7 @@ public class SOuterSpace extends SAutoEvent {
         int returnMap = player.getSavedLocation("OTHER");
         if (returnMap == -1) {
             returnMap = 100000000;
+            player.dropMessage("Your return map was obstructed");
         }
         player.changeMap(returnMap);
         player.clearSavedLocation(SavedLocationType.OTHER);
