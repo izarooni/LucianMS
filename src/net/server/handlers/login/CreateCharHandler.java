@@ -90,17 +90,15 @@ public final class CreateCharHandler extends AbstractMaplePacketHandler {
 			}
 		}
 
+		newchar.setMapId(90000000);
 		if (job == 0) { // Knights of Cygnus
 			newchar.setJob(MapleJob.NOBLESSE);
-			newchar.setMapId(90000000);
 			newchar.getInventory(MapleInventoryType.ETC).addItem(new Item(4161047, (short) 0, (short) 1));
 		} else if (job == 1) { // Adventurer   
 			newchar.setJob(MapleJob.BEGINNER);
-			newchar.setMapId(90000000);
 			newchar.getInventory(MapleInventoryType.ETC).addItem(new Item(4161001, (short) 0, (short) 1));
 		} else if (job == 2) { // Aran
 			newchar.setJob(MapleJob.LEGEND);
-			newchar.setMapId(914000000);
 			newchar.getInventory(MapleInventoryType.ETC).addItem(new Item(4161048, (short) 0, (short) 1));
 		} else {
 			c.announce(MaplePacketCreator.deleteCharResponse(0, 9));
