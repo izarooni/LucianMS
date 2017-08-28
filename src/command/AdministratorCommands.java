@@ -2,8 +2,6 @@ package command;
 
 import client.MapleCharacter;
 import client.MapleClient;
-import client.inventory.Item;
-import constants.ItemConstants;
 import net.server.Server;
 import net.server.channel.Channel;
 import net.server.world.World;

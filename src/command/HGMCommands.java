@@ -14,6 +14,7 @@ import scripting.portal.PortalScriptManager;
 import scripting.reactor.ReactorScriptManager;
 import server.MapleInventoryManipulator;
 import server.MapleItemInformationProvider;
+import server.MapleShop;
 import server.MapleShopFactory;
 import server.life.MapleLifeFactory;
 import server.life.MapleMonster;
@@ -53,6 +54,7 @@ public class HGMCommands {
             commands.add("!shout <message> - show a message on everyones screen with text you typed");
             commands.add("!whereami - Show information about the map you're currently in");
             commands.add("!onpc <npcId> - Remotely open any NPC");
+            commands.add("!oshop <shopId> - Remotely open any shop");
             commands.add("!saveall - Save everything on the server");
             commands.add("!reloadportals - Reload portal scripts");
             commands.add("!reloadreactordrops - Reload reactor drops");
@@ -269,6 +271,21 @@ public class HGMCommands {
             player.dropMessage(6, "Map id - " + player.getMapId());
             player.dropMessage(6, "Map name - " + player.getMap().getMapName());
             player.dropMessage(6, "Map street name - " + player.getMap().getStreetName());
+        } else if (command.equals("oshop")) {
+            if (args.length() == 1) {
+                Long var_shopId = args.parseNumber(0);
+                if (var_shopId == null) {
+                    player.dropMessage(5, String.format("%s is not a valid number", args.get(0)));
+                    return;
+                }
+                int shopId = var_shopId.intValue();
+                MapleShop shop = MapleShopFactory.getInstance().getShop(shopId);
+                if (shop != null) {
+                    shop.sendShop(client);
+                } else {
+                    player.dropMessage(5, "This shop doesn't exist");
+                }
+            }
         } else if (command.equals("onpc")) {
             if (args.length() == 1) {
                 Long a1 = args.parseNumber(0);
