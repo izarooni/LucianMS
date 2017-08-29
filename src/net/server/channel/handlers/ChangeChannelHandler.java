@@ -42,7 +42,7 @@ public class ChangeChannelHandler extends AbstractMaplePacketHandler {
         if (c.getChannel() == channel) {
             return;
         }
-        if (c.getPlayer().getCashShop().isOpened() || c.getPlayer().getMiniGame() != null || c.getPlayer().getPlayerShop() != null) {
+        if (c.getPlayer().getCashShop().isOpened() || c.getPlayer().getMiniGame() != null || c.getPlayer().getMapId() == 333 || c.getPlayer().getPlayerShop() != null) {
             return;
         }
         Cheater.CheatEntry entry = player.getCheater().getCheatEntry(Cheats.FastChannelChange);
