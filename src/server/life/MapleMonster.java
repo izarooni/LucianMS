@@ -901,9 +901,13 @@ public class MapleMonster extends AbstractLoadedMapleLife {
         @Override
         public void run() {
             int damage = dealDamage;
+            if(chr.getFakePlayer() != null) {
+            	damage = damage * 2;
+            }
             if (damage >= hp) {
                 damage = hp - 1;
                 if (type == 1 || type == 2) {
+                	// double damage if you have a clone, probably works like this.
                     map.broadcastMessage(MaplePacketCreator.damageMonster(getObjectId(), damage), getPosition());
                     cancelTask.run();
                     status.getCancelTask().cancel(false);
