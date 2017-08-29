@@ -500,8 +500,8 @@ public class MapleInventoryManipulator {
             return;
         }
         for (CQuestData data : player.getCustomQuests().values()) {
-            CQuestItemRequirement toLoot = data.getToCollect();
             if (!data.isCompleted()) {
+                CQuestItemRequirement toLoot = data.getToCollect();
                 toLoot.incrementRequirement(itemId, -quantity);
                 boolean checked = toLoot.isFinished(); // local bool before updating requirement checks; if false, quest is not finished
                 if (data.checkRequirements() && !checked) { // update requirement checks - it is important that checkRequirements is executed first

@@ -90,6 +90,7 @@ public class GameMasterCommands {
             commands.add("!buff <OPT=username> - Buff yourself or a specified player");
             commands.add("!ap <amount> - Give yourself or another player AP");
             commands.add("!sp <amount> - Give yourself or another player SP");
+            commands.add("!setall <number> [username] - Set all stats for yourself or a player");
             commands.forEach(player::dropMessage);
             commands.clear();
         } else if (command.equals("dc")) {
@@ -841,6 +842,40 @@ public class GameMasterCommands {
                 }
             } else {
                 player.gainMeso(Integer.MAX_VALUE - player.getMeso(), true);
+            }
+        } else if (command.equals("setall")) {
+            if (args.length() > 0) {
+                Long var_stat = args.parseNumber(0);
+                if (var_stat == null) {
+                    player.dropMessage(String.format("%s is not a valid number", args.get(0)));
+                    return;
+                }
+                MapleCharacter target = player;
+                if (args.length() == 2) {
+                    target = ch.getPlayerStorage().getCharacterByName(args.get(1));
+                    if (target == null) {
+                        player.dropMessage(String.format("Unable to find any player named '%s'", args.get(1)));
+                        return;
+                    }
+                }
+                int stat = var_stat.intValue();
+                if (stat >= 0 && stat <= Short.MAX_VALUE) {
+                    target.setStr(stat);
+                    target.setDex(stat);
+                    target.setInt(stat);
+                    target.setLuk(stat);
+                    target.updateSingleStat(MapleStat.STR, stat);
+                    target.updateSingleStat(MapleStat.DEX, stat);
+                    target.updateSingleStat(MapleStat.INT, stat);
+                    target.updateSingleStat(MapleStat.LUK, stat);
+                    if (target.getId() != player.getId()) {
+                        player.dropMessage(String.format("Changed '%s' stats to %d", target.getName(), stat));
+                    }
+                } else {
+                    player.dropMessage("You can't set your stats to that number");
+                }
+            } else {
+                player.dropMessage(5, "Syntax: !setall <number> [username]");
             }
         }
     }
