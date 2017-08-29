@@ -637,10 +637,10 @@ public class GameMasterCommands {
                                 sb.append(args.get(i)).append(" ");
                             }
                         }
-                        player.dropMessage(6, String.format("You have been jailed by %s %s", player.getName(), (sb.toString().isEmpty() ? "for " + sb.toString() : "")));
+                        target.dropMessage(6, String.format("You have been jailed by %s %s", player.getName(), (sb.toString().isEmpty() ? "for " + sb.toString() : "")));
                         int random = Randomizer.nextInt() * 100;
-                        jailReasons.put(target.getId(), sb.toString() == "" ? "" : sb.toString());
-                        player.changeMap((random <= 50 ? 80 : 81)); // idk, both are jail maps.
+                        jailReasons.put(target.getId(), sb.toString());
+                        target.changeMap((random <= 50 ? 80 : 81)); // idk, both are jail maps.
                     } else {
                         player.dropMessage(5, "This player is not online, or does not exist.");
                     }

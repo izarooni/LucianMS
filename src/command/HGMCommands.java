@@ -258,8 +258,12 @@ public class HGMCommands {
             player.dropMessage(player.getPosition().toString());
         } else if (command.equals("shout", "say")) {
             if (args.length() > 0) {
-                String message = String.format("%s : %s", player.getName(), args.concatFrom(1));
-                client.getWorldServer().broadcastPacket(MaplePacketCreator.serverNotice(6, message));
+                if (command.equals("say")) {
+                    String message = String.format("%s : %s", player.getName(), args.concatFrom(1));
+                    client.getWorldServer().broadcastPacket(MaplePacketCreator.serverNotice(6, message));
+                } else {
+                    client.getWorldServer().broadcastPacket(MaplePacketCreator.earnTitleMessage(args.concatFrom(1)));
+                }
             } else {
                 player.dropMessage("You must enter a message");
             }
