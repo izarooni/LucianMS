@@ -545,8 +545,10 @@ public class MapleMap {
                         if (monster.getMap().getId() == 85) {
                             if (chr.getParty() != null) {
                                 for (MaplePartyCharacter player : chr.getParty().getMembers()) {
-                                    player.getPlayer().changeMap(88);
-                                    player.getPlayer().dropMessage(5, "Thanks for finally letting me realize my actions were corrupt against the realm.");
+                                    if (player.getMapId() == chr.getMapId()) {
+                                        player.getPlayer().changeMap(88);
+                                        player.getPlayer().dropMessage(5, "Thanks for finally letting me realize my actions were corrupt against the realm.");
+                                    }
                                 }
                             } else {
                                 chr.changeMap(88);

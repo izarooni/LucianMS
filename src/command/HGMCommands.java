@@ -50,7 +50,6 @@ public class HGMCommands {
             commands.add("!pmob <id> <amount> - Spawn a permanent monster");
             commands.add("!playernpc <player> <scriptId> - Create a player npc");
             commands.add("!pos - Show the position you're currently at");
-            commands.add("!servermessage <message> change the server message");
             commands.add("!shout <message> - show a message on everyones screen with text you typed");
             commands.add("!whereami - Show information about the map you're currently in");
             commands.add("!onpc <npcId> - Remotely open any NPC");
@@ -257,15 +256,12 @@ public class HGMCommands {
             }
         } else if (command.equals("pos")) {
             player.dropMessage(player.getPosition().toString());
-        } else if (command.equals("servermessage", "shout")) {
-            boolean shout = command.equals("shout");
-            String message = args.length() == 0 ? "" : args.concatFrom(0);
-            for (Channel channel : client.getWorldServer().getChannels()) {
-                if (shout) {
-                    channel.broadcastPacket(MaplePacketCreator.earnTitleMessage(message));
-                } else {
-                    channel.broadcastPacket(MaplePacketCreator.serverMessage(message));
-                }
+        } else if (command.equals("shout", "say")) {
+            if (args.length() > 0) {
+                String message = String.format("%s : %s", player.getName(), args.concatFrom(1));
+                client.getWorldServer().broadcastPacket(MaplePacketCreator.serverNotice(6, message));
+            } else {
+                player.dropMessage("You must enter a message");
             }
         } else if (command.equals("whereami")) {
             player.dropMessage(6, "Map id - " + player.getMapId());
