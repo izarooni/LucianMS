@@ -3447,15 +3447,15 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
         recalcLocalStats();
         setMPC(new MaplePartyCharacter(this));
         silentPartyUpdate();
-        if (this.guildid > 0) {
-            getGuild().broadcast(MaplePacketCreator.levelUpMessage(2, level, name), this.getId());
-        }
         if (ServerConstants.PERFECT_PITCH && level >= 30) {
             // milestones?
             if (MapleInventoryManipulator.checkSpace(client, 4310000, (short) 1, "")) {
                 MapleInventoryManipulator.addById(client, 4310000, (short) 1);
             }
         }
+        //        if (this.guildid > 0) {
+        //            getGuild().broadcast(MaplePacketCreator.levelUpMessage(2, level, name), this.getId());
+        //        }
         //        if (level == 200 && !isGM()) {
         //            final String names = (getMedalText() + name);
         //            client.getWorldServer().broadcastPacket(MaplePacketCreator.serverNotice(6, String.format(LEVEL_200, names, names)));
