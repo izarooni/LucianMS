@@ -656,7 +656,7 @@ public class MapleMap {
     }
 
     public List<MapleMonster> getMonsters() {
-        List<MapleMonster> mobs = new ArrayList<MapleMonster>();
+        List<MapleMonster> mobs = new ArrayList<>();
         for (MapleMapObject object : this.getMapObjects()) {
             mobs.add(this.getMonsterByOid(object.getObjectId()));
         }
@@ -1557,7 +1557,7 @@ public class MapleMap {
             broadcastGMMessage(chr, MaplePacketCreator.spawnPlayerMapobject(chr), false);
             chr.announce(MaplePacketCreator.getGMEffect(0x10, (byte) 1));
 
-            List<Pair<MapleBuffStat, Integer>> dsstat = Collections.singletonList(new Pair<MapleBuffStat, Integer>(MapleBuffStat.DARKSIGHT, 0));
+            List<Pair<MapleBuffStat, Integer>> dsstat = Collections.singletonList(new Pair<>(MapleBuffStat.DARKSIGHT, 0));
             broadcastGMMessage(chr, MaplePacketCreator.giveForeignBuff(chr.getId(), dsstat), false);
         } else {
             broadcastMessage(chr, MaplePacketCreator.spawnPlayerMapobject(chr), false);
@@ -1931,12 +1931,7 @@ public class MapleMap {
     }
 
     public Collection<MapleCharacter> getCharacters() {
-        chrRLock.lock();
-        try {
-            return Collections.unmodifiableCollection(this.characters);
-        } finally {
-            chrRLock.unlock();
-        }
+        return Collections.unmodifiableCollection(this.characters);
     }
 
     public MapleCharacter getCharacterById(int id) {
@@ -2553,7 +2548,7 @@ public class MapleMap {
     }
 
     public Collection<MapleCharacter> getNearestPvpChar(Point attacker, double maxRange, double maxHeight, Collection<MapleCharacter> chr) {
-        Collection<MapleCharacter> character = new LinkedList<MapleCharacter>();
+        Collection<MapleCharacter> character = new LinkedList<>();
         for (MapleCharacter a : characters) {
             if (chr.contains(a.getClient().getPlayer())) {
                 Point attackedPlayer = a.getPosition();

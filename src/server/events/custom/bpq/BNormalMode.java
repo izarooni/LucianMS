@@ -1,5 +1,6 @@
 package server.events.custom.bpq;
 
+import client.MapleCharacter;
 import server.events.custom.BossPQ;
 
 import java.awt.*;
@@ -27,9 +28,14 @@ public class BNormalMode extends BossPQ {
         return 80;
     }
 
-
     @Override
     public Point getMonsterSpawnPoint() {
         return mSpawnPoint;
+    }
+
+    @Override
+    public void giveRewards(MapleCharacter player) {
+        player.addPoints("ep", 2);
+        player.dropMessage("You gained 2 event point and now have a total of " + player.getEventPoints());
     }
 }

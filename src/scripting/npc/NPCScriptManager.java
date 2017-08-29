@@ -70,7 +70,7 @@ public class NPCScriptManager {
                         try {
                             iv.invokeFunction("action", 1, 0, -1);
                         } catch (NoSuchMethodError e3) {
-                            e3.printStackTrace();
+                            System.out.println(String.format("No start function for script '%s' from npc %d", fileName, npc));
                             dispose(client);
                         }
                     }

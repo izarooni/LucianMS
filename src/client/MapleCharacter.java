@@ -3785,7 +3785,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
         localmaxmp = Math.min(30000, localmaxmp);
         Integer watkbuff = getBuffedValue(MapleBuffStat.WATK);
         if (watkbuff != null) {
-            watk += watkbuff.intValue();
+            watk += watkbuff;
         }
         MapleStatEffect combo = getBuffEffect(MapleBuffStat.ARAN_COMBO);
         if (combo != null) {
@@ -3821,15 +3821,15 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
         }
         Integer matkbuff = getBuffedValue(MapleBuffStat.MATK);
         if (matkbuff != null) {
-            magic += matkbuff.intValue();
+            magic += matkbuff;
         }
         Integer speedbuff = getBuffedValue(MapleBuffStat.SPEED);
         if (speedbuff != null) {
-            speed += speedbuff.intValue();
+            speed += speedbuff;
         }
         Integer jumpbuff = getBuffedValue(MapleBuffStat.JUMP);
         if (jumpbuff != null) {
-            jump += jumpbuff.intValue();
+            jump += jumpbuff;
         }
 
         Integer blessing = getSkillLevel(10000000 * getJobType() + 12);
@@ -3939,7 +3939,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
             }, 5000, 5000);
         }
         for (Pair<MapleBuffStat, Integer> statup : effect.getStatups()) {
-            effects.put(statup.getLeft(), new MapleBuffStatValueHolder(effect, starttime, schedule, statup.getRight().intValue()));
+            effects.put(statup.getLeft(), new MapleBuffStatValueHolder(effect, starttime, schedule, statup.getRight()));
         }
         recalcLocalStats();
     }
@@ -4191,7 +4191,6 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
     // synchronize this call instead of trying to give access all at once (?)
     public synchronized void saveToDB() {
         Calendar c = Calendar.getInstance();
-        FilePrinter.print(FilePrinter.SAVING_CHARACTER, "Attempting to save " + name + " at " + c.getTime().toString());
         Connection con = DatabaseConnection.getConnection();
         try {
             con.setTransactionIsolation(Connection.TRANSACTION_READ_UNCOMMITTED);
@@ -4311,7 +4310,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
             ps = con.prepareStatement("INSERT INTO keymap (characterid, `key`, `type`, `action`) VALUES (?, ?, ?, ?)");
             ps.setInt(1, id);
             for (Entry<Integer, MapleKeyBinding> keybinding : keymap.entrySet()) {
-                ps.setInt(2, keybinding.getKey().intValue());
+                ps.setInt(2, keybinding.getKey());
                 ps.setInt(3, keybinding.getValue().getType());
                 ps.setInt(4, keybinding.getValue().getAction());
                 ps.addBatch();

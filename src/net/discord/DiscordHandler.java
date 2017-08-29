@@ -1,7 +1,7 @@
 package net.discord;
 
 import net.discord.handlers.DiscordRequest;
-import net.discord.handlers.DiscordRequests;
+import net.discord.handlers.DiscordRequestManager;
 import org.apache.mina.core.service.IoHandlerAdapter;
 import org.apache.mina.core.session.IdleStatus;
 import org.apache.mina.core.session.IoSession;
@@ -60,7 +60,7 @@ public class DiscordHandler extends IoHandlerAdapter {
             byte[] bytes = (byte[]) message;
             GenericLittleEndianAccessor lea = new GenericLittleEndianAccessor(new ByteArrayByteStream(bytes));
             byte header = lea.readByte();
-            DiscordRequest request = DiscordRequests.getRequest(header);
+            DiscordRequest request = DiscordRequestManager.getRequest(header);
             request.handle(lea);
         } else {
             LOGGER.info("Unhandled message type {}\r\n{}", message.getClass(), message);

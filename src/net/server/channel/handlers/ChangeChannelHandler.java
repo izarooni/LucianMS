@@ -49,7 +49,7 @@ public class ChangeChannelHandler extends AbstractMaplePacketHandler {
         if (System.currentTimeMillis() - entry.latestOperationTimestamp < 1000) {
             c.announce(MaplePacketCreator.enableActions());
             return;
-        } else if (player.getGenericEvents().stream().anyMatch(g -> (g instanceof SOuterSpace))) {
+        } else if (player.getMapId() == 98) { // outer space map
             c.announce(MaplePacketCreator.enableActions());
             return;
         }

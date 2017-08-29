@@ -24,9 +24,7 @@ import java.io.File;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.LinkedList;
+import java.util.*;
 import java.util.List;
 import java.util.function.Consumer;
 
@@ -84,7 +82,6 @@ public class GameMasterCommands {
             commands.add("!bomb <OPT=username> - spawns a bomb at the specified player location, or your location if no name provided");
             commands.add("!bombmap - spawns bombs everywhere");
             commands.add("!jail <player> <OPT=reason> - jail a person, and optionally specify a reason");
-            commands.add("!jail list - list all the jailed people, and the reason if it is specified.");
             commands.add("!search <category> <name> - Search for a map, items, npcs or skills");
             commands.add("!chattype <type> - Change your general chat color");
             commands.add("!buff <OPT=username> - Buff yourself or a specified player");
@@ -629,7 +626,7 @@ public class GameMasterCommands {
             }
         } else if (command.equals("jail")) {
             if (args.length() >= 1) {
-                if (args.get(0) != "list") {
+                if (!args.get(0).equalsIgnoreCase("list")) {
                     MapleCharacter target = ch.getPlayerStorage().getCharacterByName(args.get(0));
 
                     if (target != null) {

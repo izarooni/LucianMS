@@ -47,6 +47,8 @@ public abstract class BossPQ extends GenericEvent {
 
     public abstract Point getMonsterSpawnPoint();
 
+    public abstract void giveRewards(MapleCharacter player);
+
     private MapleMap getMapInstance(int mapId) {
         return mapFactory.skipMonsters(true).getMap(mapId);
     }
@@ -92,8 +94,7 @@ public abstract class BossPQ extends GenericEvent {
         MapleMap map = getMapInstance(mapId);
         if (map != null) {
             for (MapleCharacter players : map.getCharacters()) {
-                players.addPoints("ep", 1);
-                players.dropMessage("You gained 1 event point and now have a total of " + players.getEventPoints());
+                giveRewards(players);
                 unregisterPlayer(players);
             }
         }

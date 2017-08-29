@@ -1,11 +1,11 @@
 package net.discord.handlers;
 
 /**
- * A shitty attempt on having two external JVM's communicate locally
+ * A shitty attempt on having two JVM's communicate locally
  *
  * @author izarooni
  */
-public class DiscordRequests {
+public class DiscordRequestManager {
 
     private static DiscordRequest[] requests;
 
@@ -16,7 +16,7 @@ public class DiscordRequests {
         requests[2] = new HairChangeRequest();
     }
 
-    private DiscordRequests() {
+    private DiscordRequestManager() {
     }
 
     public static DiscordRequest getRequest(int i) {
