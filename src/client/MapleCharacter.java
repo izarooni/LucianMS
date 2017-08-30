@@ -3448,7 +3448,6 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
         setMPC(new MaplePartyCharacter(this));
         silentPartyUpdate();
         if (ServerConstants.PERFECT_PITCH && level >= 30) {
-            // milestones?
             if (MapleInventoryManipulator.checkSpace(client, 4310000, (short) 1, "")) {
                 MapleInventoryManipulator.addById(client, 4310000, (short) 1);
             }

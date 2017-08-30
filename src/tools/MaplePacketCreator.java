@@ -961,7 +961,7 @@ public class MaplePacketCreator {
                         mplew.writeShort(statupdate.getRight().shortValue());
                     }
                 } else if (statupdate.getLeft().getValue() < 0xFFFF) {
-                    mplew.writeShort(statupdate.getRight().shortValue());
+                    mplew.writeShort(Math.min(statupdate.getRight().shortValue(), Short.MAX_VALUE));
                 } else {
                     mplew.writeInt(statupdate.getRight());
                 }

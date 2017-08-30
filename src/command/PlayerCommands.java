@@ -64,6 +64,8 @@ public class PlayerCommands {
             commands.forEach(player::dropMessage);
             commands.clear();
         } else if (command.equals("checkme")) {
+            player.dropMessage("Ability Power: " + player.getRemainingAp());
+            player.dropMessage("Mesos: " + player.getMeso());
             player.dropMessage("Vote points: " + client.getVotePoints());
             player.dropMessage("Rebirths: " + player.getRebirths());
             player.dropMessage("Rebirth Points: " + player.getRebirthPoints());
