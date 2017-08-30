@@ -86,8 +86,7 @@ public abstract class AbstractDealDamageHandler extends PacketHandler {
         }
     }
 
-    synchronized void applyAttack(AttackInfo attack, int attackCount) {
-        MapleCharacter player = getClient().getPlayer();
+    synchronized void applyAttack(MapleCharacter player, AttackInfo attack, int attackCount) {
         Skill theSkill = null;
         MapleStatEffect attackEffect = null;
         final int job = player.getJob().getId();

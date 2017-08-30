@@ -53,6 +53,7 @@ public final class RangedAttackHandler extends AbstractDealDamageHandler {
     @Override
     public void onPacket() {
         MapleCharacter player = getClient().getPlayer();
+        FakePlayer fakePlayer = player.getFakePlayer();
 
         if (player.getBuffEffect(MapleBuffStat.MORPH) != null) {
             if (player.getBuffEffect(MapleBuffStat.MORPH).isMorphWithoutAttack()) {
@@ -64,18 +65,27 @@ public final class RangedAttackHandler extends AbstractDealDamageHandler {
 
         if (attackInfo.skill == Buccaneer.ENERGY_ORB || attackInfo.skill == ThunderBreaker.SPARK || attackInfo.skill == Shadower.TAUNT || attackInfo.skill == NightLord.TAUNT) {
             player.getMap().broadcastMessage(player, MaplePacketCreator.rangedAttack(player, attackInfo.skill, attackInfo.skilllevel, attackInfo.stance, attackInfo.numAttackedAndDamage, 0, attackInfo.allDamage, attackInfo.speed, attackInfo.direction, attackInfo.display), false);
-            applyAttack(attackInfo, 1);
+            applyAttack(player, attackInfo, 1);
         } else if (attackInfo.skill == Aran.COMBO_SMASH || attackInfo.skill == Aran.COMBO_PENRIL || attackInfo.skill == Aran.COMBO_TEMPEST) {
             player.getMap().broadcastMessage(player, MaplePacketCreator.rangedAttack(player, attackInfo.skill, attackInfo.skilllevel, attackInfo.stance, attackInfo.numAttackedAndDamage, 0, attackInfo.allDamage, attackInfo.speed, attackInfo.direction, attackInfo.display), false);
             if (attackInfo.skill == Aran.COMBO_SMASH && player.getCombo() >= 30) {
                 player.setCombo((short) 0);
-                applyAttack(attackInfo, 1);
+                applyAttack(player, attackInfo, 1);
+                if (fakePlayer != null) {
+                    applyAttack(fakePlayer, attackInfo, 1);
+                }
             } else if (attackInfo.skill == Aran.COMBO_PENRIL && player.getCombo() >= 100) {
                 player.setCombo((short) 0);
-                applyAttack(attackInfo, 2);
+                applyAttack(player, attackInfo, 2);
+                if (fakePlayer != null) {
+                    applyAttack(fakePlayer, attackInfo, 2);
+                }
             } else if (attackInfo.skill == Aran.COMBO_TEMPEST && player.getCombo() >= 200) {
                 player.setCombo((short) 0);
-                applyAttack(attackInfo, 4);
+                applyAttack(player, attackInfo, 4);
+                if (fakePlayer != null) {
+                    applyAttack(fakePlayer, attackInfo, 4);
+                }
             }
         } else {
             Item weapon = player.getInventory(MapleInventoryType.EQUIPPED).getItem((short) -11);
@@ -170,7 +180,6 @@ public final class RangedAttackHandler extends AbstractDealDamageHandler {
                         break;
                 }
 
-                FakePlayer fakePlayer = player.getFakePlayer();
                 if (fakePlayer != null && fakePlayer.isFollowing()) {
                     int finalVisProjectile = visProjectile;
                     TimerManager.getInstance().schedule(new Runnable() {
@@ -209,7 +218,10 @@ public final class RangedAttackHandler extends AbstractDealDamageHandler {
                     player.cancelEffectFromBuffStat(MapleBuffStat.DARKSIGHT);
                     player.cancelBuffStats(MapleBuffStat.DARKSIGHT);
                 }
-                applyAttack(attackInfo, bulletCount);
+                applyAttack(player, attackInfo, bulletCount);
+                if (fakePlayer != null) {
+                    applyAttack(fakePlayer, attackInfo, bulletCount);
+                }
             }
         }
     }

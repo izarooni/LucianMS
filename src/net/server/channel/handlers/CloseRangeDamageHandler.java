@@ -177,9 +177,9 @@ public final class CloseRangeDamageHandler extends AbstractDealDamageHandler {
             player.cancelEffectFromBuffStat(MapleBuffStat.DARKSIGHT);
             player.cancelBuffStats(MapleBuffStat.DARKSIGHT);
         }
-        applyAttack(attackInfo, attackCount);
+        applyAttack(player, attackInfo, attackCount);
         if (fakePlayer != null) {
-            applyAttack(attackInfo, attackCount);
+            applyAttack(fakePlayer, attackInfo, attackCount);
         }
     }
 
