@@ -24,7 +24,9 @@ import java.io.File;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.function.Consumer;
 
@@ -323,17 +325,31 @@ public class GameMasterCommands {
                     break;
             }
         } else if (command.equals("level")) {
-            if (args.length() == 1) {
-                Long a1 = args.parseNumber(0);
-                if (a1 == null) {
-                    player.dropMessage(5, args.getError(0));
+            if (args.length() > 0) {
+                Long var_level = args.parseNumber(0);
+                if (var_level == null) {
+                    player.dropMessage(String.format("'%s' is not a valid number", args.get(0)));
                     return;
                 }
-                int level = a1.intValue();
-                player.setLevel(level);
-                player.updateSingleStat(MapleStat.LEVEL, level);
+                int level = var_level.intValue();
+                if (args.length() > 1) {
+                    for (int i = 1; i < args.length(); i++) {
+                        String username = args.get(i);
+                        MapleCharacter target = ch.getPlayerStorage().getCharacterByName(username);
+                        if (target != null) {
+                            target.setLevel(level);
+                            target.updateSingleStat(MapleStat.LEVEL, level);
+                            target.dropMessage("Your level has been updated to " + target.getLevel());
+                        } else {
+                            player.dropMessage(String.format("Unable to find any player named '%s'", username));
+                        }
+                    }
+                } else {
+                    player.setLevel(level);
+                    player.updateSingleStat(MapleStat.LEVEL, level);
+                }
             } else {
-                player.dropMessage(5, "You must specify a level");
+                player.dropMessage(5, "Syntax: !level <number> [usernames...]");
             }
         } else if (command.equals("ban")) {
             if (args.length() > 1) {
