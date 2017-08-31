@@ -36,6 +36,8 @@ import org.apache.mina.core.session.IdleStatus;
 import org.apache.mina.filter.codec.ProtocolCodecFilter;
 import org.apache.mina.transport.socket.SocketSessionConfig;
 import org.apache.mina.transport.socket.nio.NioSocketAcceptor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import scripting.event.EventScriptManager;
 import server.TimerManager;
 import server.events.gm.MapleEvent;
@@ -53,6 +55,8 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock.WriteLock;
 
 public final class Channel {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(Channel.class);
 
     private int port = 7575;
     private PlayerStorage players = new PlayerStorage();
@@ -93,7 +97,7 @@ public final class Channel {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        System.out.println("\tChannel " + getId() + ": Listening on port " + port);
+        LOGGER.info("Channel {} bind to port {]", getId(), port);
     }
 
     public MCarnivalLobbyManager getCarnivalLobbyManager() {

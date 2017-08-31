@@ -28,6 +28,8 @@ import net.server.guild.MapleGuild;
 import net.server.guild.MapleGuildCharacter;
 import net.server.world.*;
 import org.apache.mina.core.session.IoSession;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import scripting.npc.NPCConversationManager;
 import scripting.npc.NPCScriptManager;
 import scripting.quest.QuestActionManager;
@@ -59,10 +61,13 @@ import java.util.concurrent.locks.ReentrantLock;
 
 public class MapleClient {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(MapleClient.class);
+
     public static final int LOGIN_NOTLOGGEDIN = 0;
     public static final int LOGIN_SERVER_TRANSITION = 1;
     public static final int LOGIN_LOGGEDIN = 2;
     public static final String CLIENT_KEY = "CLIENT";
+
     private final Lock mutex = new ReentrantLock(true);
     private MapleAESOFB send;
     private MapleAESOFB receive;
@@ -798,7 +803,7 @@ public class MapleClient {
                             worlda.leaveMessenger(messengerid, chrm);
                         }
                         /*    if (fid > 0) {
-	                	   final MapleFamily family = worlda.getFamily(fid);
+                           final MapleFamily family = worlda.getFamily(fid);
 	                	   family.
 	                   }*/
                         for (MapleQuestStatus status : player.getStartedQuests()) { //This is for those quests that you have to stay logged in for a certain amount of time
@@ -1087,10 +1092,10 @@ public class MapleClient {
         votePoints += points;
         saveVotePoints();
     }
-    
+
     public void addDonorPoints(int points) {
-    	donationPoints += points;
-    	setDonationPoints(donationPoints);
+        donationPoints += points;
+        setDonationPoints(donationPoints);
     }
 
     public void useVotePoints(int points) {
@@ -1227,6 +1232,7 @@ public class MapleClient {
         try {
             announce(MaplePacketCreator.getChannelChange(InetAddress.getByName(socket[0]), Integer.parseInt(socket[1])));
         } catch (IOException e) {
+            LOGGER.error("Unable to change to channel {} from {} for user {} player {}", channel, this.channel, getAccountName(), player.getName());
         }
     }
 
@@ -1239,28 +1245,28 @@ public class MapleClient {
     }
 
     public int getDonationPoints() {
-    	    int points = 0;
-            try {
-                PreparedStatement ps = DatabaseConnection.getConnection().prepareStatement("SELECT `donationpoints` FROM accounts WHERE id = ?");
-                ps.setInt(1, accId);
-                ResultSet rs = ps.executeQuery();
+        int points = 0;
+        try {
+            PreparedStatement ps = DatabaseConnection.getConnection().prepareStatement("SELECT `donationpoints` FROM accounts WHERE id = ?");
+            ps.setInt(1, accId);
+            ResultSet rs = ps.executeQuery();
 
-                if (rs.next()) {
-                    points = rs.getInt("donationpoints");
-                }
-                ps.close();
-                rs.close();
-
-            } catch (SQLException e) {
+            if (rs.next()) {
+                points = rs.getInt("donationpoints");
             }
-            donationPoints = points;
-            return donationPoints;
-        
-	}
+            ps.close();
+            rs.close();
 
-	public void setDonationPoints(int donationPoints) {
-		this.donationPoints = donationPoints;
-		try {
+        } catch (SQLException e) {
+        }
+        donationPoints = points;
+        return donationPoints;
+
+    }
+
+    public void setDonationPoints(int donationPoints) {
+        this.donationPoints = donationPoints;
+        try {
             Connection con = DatabaseConnection.getConnection();
             try (PreparedStatement ps = con.prepareStatement("UPDATE accounts SET donationpoints = ? WHERE id = ?")) {
                 ps.setInt(1, donationPoints);
@@ -1270,9 +1276,9 @@ public class MapleClient {
         } catch (SQLException e) {
             e.printStackTrace();
         }
-	}
+    }
 
-	private static class CharNameAndId {
+    private static class CharNameAndId {
 
         public String name;
         public int id;

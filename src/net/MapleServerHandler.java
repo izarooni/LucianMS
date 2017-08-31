@@ -28,6 +28,8 @@ import net.server.Server;
 import org.apache.mina.core.service.IoHandlerAdapter;
 import org.apache.mina.core.session.IdleStatus;
 import org.apache.mina.core.session.IoSession;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import server.events.custom.GenericEvent;
 import tools.FilePrinter;
 import tools.MapleAESOFB;
@@ -40,15 +42,16 @@ import tools.data.input.SeekableLittleEndianAccessor;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.List;
 import java.util.Random;
 
 public class MapleServerHandler extends IoHandlerAdapter {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(MapleServerHandler.class);
+    private static final SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy HH:mm");
+
     private PacketProcessor processor;
     private int world = -1, channel = -1;
-    private static final SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy HH:mm");
 
     public MapleServerHandler() {
         this.processor = PacketProcessor.getProcessor(-1, -1);
@@ -83,7 +86,7 @@ public class MapleServerHandler extends IoHandlerAdapter {
                 return;
             }
         } else {
-            FilePrinter.print(FilePrinter.SESSION, "IoSession with " + session.getRemoteAddress() + " opened on " + sdf.format(Calendar.getInstance().getTime()), false);
+            LOGGER.info("Session #{} {} created on world {} channel {}", session.getId(), session.getRemoteAddress().toString().substring(1), world, channel);
         }
 
         byte key[] = {0x13, 0x00, 0x00, 0x00, 0x08, 0x00, 0x00, 0x00, 0x06, 0x00, 0x00, 0x00, (byte) 0xB4, 0x00, 0x00, 0x00, 0x1B, 0x00, 0x00, 0x00, 0x0F, 0x00, 0x00, 0x00, 0x33, 0x00, 0x00, 0x00, 0x52, 0x00, 0x00, 0x00};
@@ -91,13 +94,17 @@ public class MapleServerHandler extends IoHandlerAdapter {
         byte ivSend[] = {82, 48, 120, 115};
         ivRecv[3] = (byte) (Math.random() * 255);
         ivSend[3] = (byte) (Math.random() * 255);
+
         MapleAESOFB sendCypher = new MapleAESOFB(key, ivSend, (short) (0xFFFF - ServerConstants.VERSION));
-        MapleAESOFB recvCypher = new MapleAESOFB(key, ivRecv, (short) ServerConstants.VERSION);
+        MapleAESOFB recvCypher = new MapleAESOFB(key, ivRecv, ServerConstants.VERSION);
+
         MapleClient client = new MapleClient(sendCypher, recvCypher, session);
         client.setWorld(world);
         client.setChannel(channel);
+
         Random r = new Random();
-        client.setSessionId(r.nextLong()); // Generates a random session id.  
+        client.setSessionId(r.nextLong());
+
         session.write(MaplePacketCreator.getHello(ServerConstants.VERSION, ivSend, ivRecv));
         session.setAttribute(MapleClient.CLIENT_KEY, client);
     }
@@ -138,7 +145,8 @@ public class MapleServerHandler extends IoHandlerAdapter {
                             MapleLogger.logRecv(client, packetId, message);
                             handler.handlePacket(slea, client);
                         } catch (final Throwable t) {
-                            FilePrinter.printError(FilePrinter.PACKET_HANDLER + handler.getClass().getName() + ".txt", t, "Error for " + (client.getPlayer() == null ? "" : "player ; " + client.getPlayer() + " on map ; " + client.getPlayer().getMapId() + " - ") + "account ; " + client.getAccountName() + "\r\n" + slea.toString());
+                            LOGGER.info(slea.toString());
+                            LOGGER.error("Unable to handle packet handler({}), user {} player {}", handler.getClass().getName(), client.getAccountName(), (client.getPlayer() != null ? client.getPlayer().getName() : "M/A"));
                         }
                     }
                     return;

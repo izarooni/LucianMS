@@ -26,6 +26,7 @@ import client.MapleCharacter;
 import client.MapleClient;
 import client.inventory.*;
 import constants.ItemConstants;
+import net.server.channel.handlers.ItemIdSortHandler;
 import server.quest.custom.CQuestData;
 import server.quest.custom.requirement.CQuestItemRequirement;
 import tools.MaplePacketCreator;
@@ -144,6 +145,10 @@ public class MapleInventoryManipulator {
         MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
         MapleInventoryType type = ii.getInventoryType(item.getItemId());
         if (ii.isPickupRestricted(item.getItemId()) && player.getItemQuantity(item.getItemId(), true) > 0) {
+            c.announce(MaplePacketCreator.getInventoryFull());
+            c.announce(MaplePacketCreator.showItemUnavailable());
+            return false;
+        } else if (!checkSpace(c, item.getItemId(), item.getQuantity(), item.getOwner())) {
             c.announce(MaplePacketCreator.getInventoryFull());
             c.announce(MaplePacketCreator.showItemUnavailable());
             return false;

@@ -43,6 +43,8 @@ import org.apache.mina.filter.codec.ProtocolCodecFilter;
 import org.apache.mina.transport.socket.nio.NioSocketAcceptor;
 import org.json.JSONObject;
 import org.json.JSONTokener;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import server.CashShop.CashItemFactory;
 import server.MapleItemInformationProvider;
 import server.TimerManager;
@@ -62,7 +64,9 @@ import java.util.*;
 
 public class Server implements Runnable {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(Server.class);
     public static long uptime = System.currentTimeMillis();
+
     private static Server instance = null;
     private IoAcceptor acceptor;
     private List<Map<Integer, String>> channels = new LinkedList<>();
@@ -132,30 +136,30 @@ public class Server implements Runnable {
         try {
             p.load(new FileInputStream("world.ini"));
         } catch (Exception e) {
-            System.out.println("Please start create_server.bat");
+            LOGGER.info("Please start create_server.bat");
             System.exit(0);
         }
 
-        System.out.println("LucianMS v" + ServerConstants.VERSION + " starting up.\r\n");
+        LOGGER.info("LucianMS v{} starting up!", ServerConstants.VERSION);
 
         DiscordListener.listen();
 
         try {
             if (Defaults.createDefaultIfAbsent(null, "server-config.json")) {
-                System.out.println("Server config created. Configure settings and restart the server");
+                LOGGER.info("Server config created. Configure settings and restart the server");
                 System.exit(0);
                 return;
             } else {
                 config = new Config(new JSONObject(new JSONTokener(new FileInputStream("server-config.json"))));
-                System.out.println("Server config loaded");
+                LOGGER.info("Server config loaded");
             }
 
             if (config.getBoolean("WhitelistEnabled")) {
                 if (Defaults.createDefaultIfAbsent(null, "whitelist.json")) {
-                    System.out.println("Whitelist file created");
+                    LOGGER.info("Whitelist file created");
                 }
                 Whitelist.loadAccounts();
-                System.out.println(Whitelist.getAccounts().size() + " whitelisted accounts loaded");
+                LOGGER.info(Whitelist.getAccounts().size() + " whitelisted accounts loaded");
             }
         } catch (URISyntaxException | IOException e) {
             e.printStackTrace();
@@ -164,7 +168,7 @@ public class Server implements Runnable {
         Runtime.getRuntime().addShutdownHook(new Thread(shutdown()));
 
         DatabaseConnection.getConnection();
-        System.out.println("Database connection established");
+        LOGGER.info("Database connection established");
         try {
             DatabaseConnection.getConnection().createStatement().execute("update accounts set loggedin = 0");
             DatabaseConnection.getConnection().createStatement().execute("update characters set hasmerchant = 0");
@@ -180,7 +184,7 @@ public class Server implements Runnable {
             acceptor.getSessionConfig().setIdleTime(IdleStatus.BOTH_IDLE, 30);
             acceptor.setHandler(new MapleServerHandler());
             acceptor.bind(new InetSocketAddress(8484));
-            System.out.println("Listening on port 8484");
+            LOGGER.info("Listening on port 8484");
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -192,28 +196,26 @@ public class Server implements Runnable {
 
         long timeToTake = System.currentTimeMillis();
         SkillFactory.loadAllSkills();
-        System.out.println("Skills loaded in " + ((System.currentTimeMillis() - timeToTake) / 1000.0) + " seconds");
+        LOGGER.info("Skill data loaded in {}s", ((System.currentTimeMillis() - timeToTake) - 1000d));
 
         timeToTake = System.currentTimeMillis();
         MapleItemInformationProvider.getInstance().getAllItems();
 
         CashItemFactory.getSpecialCashItems();
-        System.out.println("Items loaded in " + ((System.currentTimeMillis() - timeToTake) / 1000.0) + " seconds\r\n");
+        LOGGER.info("Item data loaded in {}s", ((System.currentTimeMillis() - timeToTake) / 1000d));
 
         timeToTake = System.currentTimeMillis();
         MapleQuest.loadAllQuest();
-        System.out.println("Quest loaded in " + ((System.currentTimeMillis() - timeToTake) / 1000.0) + " seconds\r\n");
+        LOGGER.info("Quest data loaded in {}s", ((System.currentTimeMillis() - timeToTake) / 1000d));
 
         timeToTake = System.currentTimeMillis();
         CQuestBuilder.loadAllQuests();
-        System.out.println("Custom quests loaded in " + ((System.currentTimeMillis() - timeToTake) / 1000.0) + " seconds\r\n");
+        LOGGER.info("Custom quest data loaded in {}s", ((System.currentTimeMillis() - timeToTake) / 1000d));
 
         try {
             timeToTake = System.currentTimeMillis();
             int qWorlds = Integer.parseInt(p.getProperty("worlds"));
             for (int i = 0; i < qWorlds; i++) {
-                System.out.println("Starting world " + i);
-
                 int flag = Integer.parseInt(p.getProperty("flag" + i));
                 String eMessage = p.getProperty("eventmessage" + i);
                 String sMessage = p.getProperty("servermessage" + i);
@@ -235,18 +237,17 @@ public class Server implements Runnable {
                 //final long repeat = (1000 * 60 * 60) * 4;
                 //TimerManager.getInstance().register(() -> GAutoEventManager.startRandomEvent(world), repeat, repeat);
                 world.addScheduledEvent(new SOuterSpace(world));
-                System.out.println("Finished loading world " + i + "\r\n");
+                LOGGER.info("World {} created", world.getId());
             }
-            System.out.println("Worlds loaded in " + ((System.currentTimeMillis() - timeToTake) / 1000.0) + " seconds\r\n");
         } catch (Exception e) {
             e.printStackTrace();// For those who get errors
             System.exit(0);
         }
 
         ConsoleCommands.beginReading();
-        System.out.println("Console now listening for commands");
+        LOGGER.info("Console now listening for commands");
 
-        System.out.println("LucianMS is now online.");
+        LOGGER.info("LucianMS is now online.");
         online = true;
 
     }

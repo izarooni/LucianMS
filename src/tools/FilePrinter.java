@@ -69,7 +69,6 @@ public class FilePrinter {
     }
 
     public static void print(final String name, final String s, boolean line) {
-        System.out.println(String.format("[%s] %s", name, s));
         String file = FILE_PATH + name;
         File outputFile = new File(file);
         if (outputFile.getParentFile() != null) {

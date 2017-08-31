@@ -1,20 +1,23 @@
 package command;
 
-import java.io.IOException;
-import java.net.URISyntaxException;
-import java.util.Scanner;
-
 import client.MapleCharacter;
 import net.server.Server;
 import net.server.channel.Channel;
 import net.server.world.World;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import server.Whitelist;
+
+import java.io.IOException;
+import java.net.URISyntaxException;
+import java.util.Scanner;
 
 /**
  * @author izarooni
  */
 public class ConsoleCommands {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(ConsoleCommands.class);
     private static volatile boolean reading = false;
 
     private ConsoleCommands() {
@@ -51,7 +54,7 @@ public class ConsoleCommands {
                     }
                 }
                 scanner.close();
-                System.out.println("Console no longer reading commands");
+                LOGGER.info("Console no longer reading commands");
             }
         }, "ConsoleReader").start();
     }
@@ -67,9 +70,9 @@ public class ConsoleCommands {
         } else if (command.equals("online")) {
             if (Server.getInstance().isOnline()) {
                 for (World worlds : Server.getInstance().getWorlds()) {
-                    System.out.println("World " + worlds.getId() + ": ");
+                    LOGGER.info("World {}:", worlds.getId());
                     for (Channel channels : worlds.getChannels()) {
-                        System.out.println("\tChannel " + channels.getId() + ": ");
+                        LOGGER.info("\tChannel {}:", channels.getId());
                         StringBuilder sb = new StringBuilder();
                         for (MapleCharacter players : channels.getPlayerStorage().getAllCharacters()) {
                             sb.append(players.getName()).append(", ");
@@ -77,22 +80,25 @@ public class ConsoleCommands {
                         if (sb.length() > 2) {
                             sb.setLength(sb.length() - 2);
                         }
-                        System.out.println("\t\t" + sb.toString());
-                        System.out.println("");
+                        LOGGER.info("\t\t{}", sb.toString());
+                        LOGGER.info("");
                     }
                 }
             } else {
-                System.err.println("The server is not online!");
+                LOGGER.error("The server is not online!");
             }
         } else if (command.equals("reloadwhitelist")) {
             try {
                 final int bCount = Whitelist.getAccounts().size();
                 Whitelist.loadAccounts();
                 final int aCount = Whitelist.getAccounts().size();
-                System.out.println(String.format("Whitelist reloaded from %d accounts to %d", bCount, aCount));
+                LOGGER.info("Whitelist reloaded. Previously had {} accounts, now has {}", bCount, aCount);
             } catch (IOException | URISyntaxException e) {
                 e.printStackTrace();
             }
+        } else if (command.equals("gc")) {
+            System.gc();
+            LOGGER.info("GC requested");
         }
     }
 }
