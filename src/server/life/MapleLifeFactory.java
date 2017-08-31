@@ -59,7 +59,7 @@ public class MapleLifeFactory {
     }
 
     public static MapleMonster getMonster(int mid) {
-        MapleMonsterStats stats = monsterStats.get(Integer.valueOf(mid));
+        MapleMonsterStats stats = monsterStats.get(mid);
         if (stats == null) {
             MapleData monsterData = data.getData(StringUtil.getLeftPaddedStr(Integer.toString(mid) + ".img", '0', 11));
             if (monsterData == null) {
@@ -140,7 +140,7 @@ public class MapleLifeFactory {
                 int i = 0;
                 List<Pair<Integer, Integer>> skills = new ArrayList<>();
                 while (monsterSkillData.getChildByPath(Integer.toString(i)) != null) {
-                    skills.add(new Pair<>(Integer.valueOf(MapleDataTool.getInt(i + "/skill", monsterSkillData, 0)), Integer.valueOf(MapleDataTool.getInt(i + "/level", monsterSkillData, 0))));
+                    skills.add(new Pair<>(MapleDataTool.getInt(i + "/skill", monsterSkillData, 0), MapleDataTool.getInt(i + "/level", monsterSkillData, 0)));
                     i++;
                 }
                 stats.setSkills(skills);
@@ -149,7 +149,7 @@ public class MapleLifeFactory {
             if (banishData != null) {
                 stats.setBanishInfo(new BanishInfo(MapleDataTool.getString("banMsg", banishData), MapleDataTool.getInt("banMap/0/field", banishData, -1), MapleDataTool.getString("banMap/0/portal", banishData, "sp")));
             }
-            monsterStats.put(Integer.valueOf(mid), stats);
+            monsterStats.put(mid, stats);
         }
         MapleMonster ret = new MapleMonster(mid, stats);
         return ret;

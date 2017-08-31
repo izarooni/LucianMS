@@ -1574,6 +1574,12 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
     }
 
     public void changeMapBanish(int mapid, String portal, String msg) {
+        List<GenericEvent> gEvents = getGenericEvents();
+        for (GenericEvent generic : gEvents) {
+            if (!generic.banishPlayer(this, mapid)) {
+                return;
+            }
+        }
         dropMessage(5, msg);
         MapleMap map_ = client.getChannelServer().getMapFactory().getMap(mapid);
         changeMap(map_, map_.getPortal(portal));
@@ -4763,7 +4769,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
             rightmap = false;
         }
         final boolean rightMap = rightmap; // lol
-        TimerManager.getInstance().schedule(new Runnable() {
+        TaskExecutor.createTask(new Runnable() {
             @Override
             public void run() {
                 if (rightMap) {

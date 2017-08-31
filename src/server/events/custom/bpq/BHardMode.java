@@ -11,7 +11,7 @@ import java.awt.*;
  */
 public class BHardMode extends BossPQ {
 
-    public static final int[] bosses = new int[]{7220003, 8220011, 8220010, 8800000, 8810000, 8810001, 8810003, 9001010, 9001009, 9300158};
+    public static final int[] bosses = new int[]{7220005, 8220011, 8220010, 8800002, 8810000, 8810001, 9400518, 9001010, 9001009, 9300158};
 
     private static final Point mSpawnPoint = new Point(-391, -386);
 

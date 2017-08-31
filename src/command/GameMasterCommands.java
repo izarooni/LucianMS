@@ -78,7 +78,6 @@ public class GameMasterCommands {
             commands.add("!online - list all visible GMs and players online");
             commands.add("!gift - Give a player a certain type and specified amount of points");
             commands.add("!! <message> - sends a message to all GMs online");
-            commands.add("!partycheck - lists leader and members of all parties in the map");
             commands.add("!characters <username> - lists other characters that belong to a player");
             commands.add("!ak <OPT=reset> - set the autokill position of the map to your y-position");
             commands.add("!bomb <OPT=username> - spawns a bomb at the specified player location, or your location if no name provided");

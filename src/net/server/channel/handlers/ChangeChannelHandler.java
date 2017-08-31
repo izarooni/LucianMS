@@ -50,6 +50,7 @@ public class ChangeChannelHandler extends AbstractMaplePacketHandler {
             c.announce(MaplePacketCreator.enableActions());
             return;
         } else if (player.getMapId() == 98) { // outer space map
+            player.dropMessage(1, "You can't do it here in this map.");
             c.announce(MaplePacketCreator.enableActions());
             return;
         }

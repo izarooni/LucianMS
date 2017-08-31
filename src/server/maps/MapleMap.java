@@ -451,7 +451,7 @@ public class MapleMap {
             }
         }, null);
 
-        TimerManager.getInstance().schedule(new ExpireMapItemJob(mdrop), 180000);
+        TaskExecutor.createTask(new ExpireMapItemJob(mdrop), 180000);
         activateItemReactors(mdrop, chr.getClient());
     }
 
@@ -467,7 +467,7 @@ public class MapleMap {
             }
         }, null);
 
-        TimerManager.getInstance().schedule(new ExpireMapItemJob(mdrop), 180000);
+        TaskExecutor.createTask(new ExpireMapItemJob(mdrop), 180000);
     }
 
     public final void disappearingItemDrop(final MapleMapObject dropper, final MapleCharacter owner, final Item item, final Point pos) {
@@ -673,7 +673,7 @@ public class MapleMap {
 
     public void killMonster(final MapleMonster monster, final MapleCharacter chr, final boolean withDrops, final boolean secondTime, int animation) {
         if (monster.getId() == 8810018 && !secondTime) {
-            TimerManager.getInstance().schedule(new Runnable() {
+            TaskExecutor.createTask(new Runnable() {
                 @Override
                 public void run() {
                     killMonster(monster, chr, withDrops, true, 1);
@@ -860,13 +860,12 @@ public class MapleMap {
 
     public void destroyReactor(int oid) {
         final MapleReactor reactor = getReactorByOid(oid);
-        TimerManager tMan = TimerManager.getInstance();
         broadcastMessage(MaplePacketCreator.destroyReactor(reactor));
         reactor.setAlive(false);
         removeMapObject(reactor);
         reactor.setTimerActive(false);
         if (reactor.getDelay() > 0) {
-            tMan.schedule(new Runnable() {
+            TaskExecutor.createTask(new Runnable() {
                 @Override
                 public void run() {
                     respawnReactor(reactor);
@@ -1158,14 +1157,14 @@ public class MapleMap {
         final SelfDestruction selfDestruction = monster.getStats().getSelfDestruction();
         if (monster.getStats().removeAfter() > 0 || selfDestruction != null && selfDestruction.getHp() < 0) {
             if (selfDestruction == null) {
-                TimerManager.getInstance().schedule(new Runnable() {
+                TaskExecutor.createTask(new Runnable() {
                     @Override
                     public void run() {
                         killMonster(monster, null, false);
                     }
                 }, monster.getStats().removeAfter() * 1000);
             } else {
-                TimerManager.getInstance().schedule(new Runnable() {
+                TaskExecutor.createTask(new Runnable() {
                     @Override
                     public void run() {
                         killMonster(monster, null, false, false, selfDestruction.getAction());
@@ -1351,7 +1350,7 @@ public class MapleMap {
         broadcastMessage(MaplePacketCreator.dropItemFromMapObject(drop, dropper.getPosition(), droppos, (byte) 0));
 
         if (!everlast) {
-            TimerManager.getInstance().schedule(new ExpireMapItemJob(drop), 180000);
+            TaskExecutor.createTask(new ExpireMapItemJob(drop), 180000);
             activateItemReactors(drop, owner.getClient());
         }
     }
@@ -1367,7 +1366,7 @@ public class MapleMap {
 
                     if (react.getArea().contains(drop.getPosition())) {
                         if (!react.isTimerActive()) {
-                            TimerManager.getInstance().schedule(new ActivateItemReactor(drop, react, c), 5000);
+                            TaskExecutor.createTask(new ActivateItemReactor(drop, react, c), 5000);
                             react.setTimerActive(true);
                             break;
                         }
@@ -1391,7 +1390,7 @@ public class MapleMap {
         }
         mapEffect = new MapleMapEffect(msg, itemId);
         broadcastMessage(mapEffect.makeStartData());
-        TimerManager.getInstance().schedule(new Runnable() {
+        TaskExecutor.createTask(new Runnable() {
             @Override
             public void run() {
                 broadcastMessage(mapEffect.makeDestroyData());
@@ -1456,7 +1455,7 @@ public class MapleMap {
             spawnMonsterOnGroundBelow(MapleLifeFactory.getMonster(9300102), new Point(77, 426));
         } else if (mapid == 910010200) { // Henesys Party Quest Bonus
             chr.announce(MaplePacketCreator.getClock(60 * 5));
-            TimerManager.getInstance().schedule(new Runnable() {
+            TaskExecutor.createTask(new Runnable() {
 
                 @Override
                 public void run() {
@@ -1467,7 +1466,7 @@ public class MapleMap {
             }, 5 * 60 * 1000);
         } else if (mapid == 200090060) { // To Rien
             chr.announce(MaplePacketCreator.getClock(60));
-            TimerManager.getInstance().schedule(new Runnable() {
+            TaskExecutor.createTask(new Runnable() {
 
                 @Override
                 public void run() {
@@ -1478,7 +1477,7 @@ public class MapleMap {
             }, 60 * 1000);
         } else if (mapid == 200090070) { // To Lith Harbor
             chr.announce(MaplePacketCreator.getClock(60));
-            TimerManager.getInstance().schedule(new Runnable() {
+            TaskExecutor.createTask(new Runnable() {
 
                 @Override
                 public void run() {
@@ -1489,7 +1488,7 @@ public class MapleMap {
             }, 60 * 1000);
         } else if (mapid == 200090030) { // To Ereve (SkyFerry)
             chr.getClient().announce(MaplePacketCreator.getClock(60));
-            TimerManager.getInstance().schedule(new Runnable() {
+            TaskExecutor.createTask(new Runnable() {
 
                 @Override
                 public void run() {
@@ -1500,7 +1499,7 @@ public class MapleMap {
             }, 60 * 1000);
         } else if (mapid == 200090031) { // To Victoria Island (SkyFerry)
             chr.getClient().announce(MaplePacketCreator.getClock(60));
-            TimerManager.getInstance().schedule(new Runnable() {
+            TaskExecutor.createTask(new Runnable() {
 
                 @Override
                 public void run() {
@@ -1511,7 +1510,7 @@ public class MapleMap {
             }, 60 * 1000);
         } else if (mapid == 200090021) { // To Orbis (SkyFerry)
             chr.getClient().announce(MaplePacketCreator.getClock(60));
-            TimerManager.getInstance().schedule(new Runnable() {
+            TaskExecutor.createTask(new Runnable() {
 
                 @Override
                 public void run() {
@@ -1522,7 +1521,7 @@ public class MapleMap {
             }, 60 * 1000);
         } else if (mapid == 200090020) { // To Ereve From Orbis (SkyFerry)
             chr.getClient().announce(MaplePacketCreator.getClock(60));
-            TimerManager.getInstance().schedule(new Runnable() {
+            TaskExecutor.createTask(new Runnable() {
 
                 @Override
                 public void run() {
@@ -1538,7 +1537,7 @@ public class MapleMap {
         } else if (MapleMiniDungeon.isDungeonMap(mapid)) {
             final MapleMiniDungeon dungeon = MapleMiniDungeon.getDungeon(mapid);
             chr.getClient().announce(MaplePacketCreator.getClock(30 * 60));
-            TimerManager.getInstance().schedule(new Runnable() {
+            TaskExecutor.createTask(new Runnable() {
 
                 @Override
                 public void run() {
@@ -1946,10 +1945,10 @@ public class MapleMap {
                     return c;
                 }
             }
+            return null;
         } finally {
             chrRLock.unlock();
         }
-        return null;
     }
 
     private void updateMapObjectVisibility(MapleCharacter chr, MapleMapObject mo) {
@@ -2105,14 +2104,14 @@ public class MapleMap {
         chrRLock.lock();
         try {
             for (MapleCharacter c : this.characters) {
-                if (c.getName().toLowerCase().equals(name.toLowerCase())) {
+                if (c.getName().equalsIgnoreCase(name)) {
                     return c;
                 }
             }
+            return null;
         } finally {
             chrRLock.unlock();
         }
-        return null;
     }
 
     private class ExpireMapItemJob implements Runnable {
@@ -2158,7 +2157,6 @@ public class MapleMap {
             if (mapitem != null && mapitem == getMapObject(mapitem.getObjectId())) {
                 mapitem.itemLock.lock();
                 try {
-                    TimerManager tMan = TimerManager.getInstance();
                     if (mapitem.isPickedUp()) {
                         return;
                     }
@@ -2167,7 +2165,7 @@ public class MapleMap {
                     reactor.hitReactor(c);
                     reactor.setTimerActive(false);
                     if (reactor.getDelay() > 0) {
-                        tMan.schedule(new Runnable() {
+                        TaskExecutor.createTask(new Runnable() {
                             @Override
                             public void run() {
                                 reactor.setState((byte) 0);

@@ -58,12 +58,33 @@ public abstract class GenericEvent {
         }
     }
 
+    /**
+     * When the player dies
+     *
+     * @param player the player dying
+     */
     public void onPlayerDeath(MapleCharacter player) {
         // do nothing
     }
 
+    /**
+     * When the client is disconnecting
+     *
+     * @param player the player of the disconnecting client
+     */
     public void onPlayerDisconnect(MapleCharacter player) {
         // do nothing
+    }
+
+    /**
+     * When the player is being 'banished' (warped away) due to a monster skill
+     *
+     * @param mapId the map the player will be banished to
+     *              @return true if the player should be banished
+     */
+    public boolean banishPlayer(MapleCharacter player, int mapId) {
+        // do nothing
+        return true;
     }
 
     public abstract void registerPlayer(MapleCharacter player);

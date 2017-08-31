@@ -21,37 +21,14 @@
  */
 package server.life;
 
-import client.MapleBuffStat;
-import client.MapleCharacter;
-import client.MapleClient;
-import client.MapleJob;
-import client.Skill;
-import client.SkillFactory;
+import client.*;
 import client.status.MonsterStatus;
 import client.status.MonsterStatusEffect;
 import constants.ServerConstants;
-import constants.skills.FPMage;
-import constants.skills.Hermit;
-import constants.skills.ILMage;
-import constants.skills.NightLord;
-import constants.skills.NightWalker;
-import constants.skills.Shadower;
-import constants.skills.SuperGM;
-import java.awt.Point;
-import java.lang.ref.WeakReference;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.EnumMap;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.locks.ReentrantLock;
+import constants.skills.*;
 import net.server.world.MapleParty;
 import net.server.world.MaplePartyCharacter;
+import scheduler.TaskExecutor;
 import scripting.event.EventInstanceManager;
 import server.TimerManager;
 import server.life.MapleLifeFactory.BanishInfo;
@@ -61,6 +38,14 @@ import server.maps.MapleMapObjectType;
 import tools.MaplePacketCreator;
 import tools.Pair;
 import tools.Randomizer;
+
+import java.awt.*;
+import java.lang.ref.WeakReference;
+import java.util.*;
+import java.util.List;
+import java.util.Map.Entry;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.locks.ReentrantLock;
 
 public class MapleMonster extends AbstractLoadedMapleLife {
 
@@ -129,7 +114,7 @@ public class MapleMonster extends AbstractLoadedMapleLife {
     }
 
     public int getMaxHp() {
-        if (overrideStats != null  && overrideStats.getHp() > 0) {
+        if (overrideStats != null && overrideStats.getHp() > 0) {
             return stats.getHp();
         }
         return stats.getHp();
@@ -165,7 +150,7 @@ public class MapleMonster extends AbstractLoadedMapleLife {
     }
 
     public void setLevel(int level) {
-    	stats.setLevel(level);
+        stats.setLevel(level);
     }
 
     public int getCP() {
@@ -213,8 +198,7 @@ public class MapleMonster extends AbstractLoadedMapleLife {
     }
 
     /**
-     *
-     * @param from the player that dealt the damage
+     * @param from   the player that dealt the damage
      * @param damage
      */
     public synchronized void damage(MapleCharacter from, int damage) { // may be pointless synchronization
@@ -262,6 +246,10 @@ public class MapleMonster extends AbstractLoadedMapleLife {
         getMap().broadcastMessage(MaplePacketCreator.healMonster(getObjectId(), hp));
     }
 
+    public Collection<Integer> test() {
+        return takenDamage.keySet();
+    }
+
     public boolean isAttackedBy(MapleCharacter chr) {
         return takenDamage.containsKey(chr.getId());
     }
@@ -305,8 +293,7 @@ public class MapleMonster extends AbstractLoadedMapleLife {
         for (MapleCharacter mc : members) {
             int id = mc.getId();
             int level = mc.getLevel();
-            if (expDist.containsKey(id)
-                    || level >= leechMinLevel) {
+            if (expDist.containsKey(id) || level >= leechMinLevel) {
                 boolean isKiller = killer == id;
                 boolean mostDamage = mostDamageCid == id;
                 int xp = (int) (exp * 0.80f * level / partyLevel);
@@ -319,7 +306,7 @@ public class MapleMonster extends AbstractLoadedMapleLife {
     }
 
     public void distributeExperience(int killerId) {
-        if (isAlive()) {
+        if (isAlive() || killerId == 0) {
             return;
         }
         int exp = getExp();
@@ -405,44 +392,46 @@ public class MapleMonster extends AbstractLoadedMapleLife {
             getController().stopControllingMonster(this);
         }
 
-        final List<Integer> toSpawn = this.getRevives(); // this doesn't work (?)
+        final List<Integer> toSpawn = getRevives(); // this doesn't work (?)
         if (toSpawn != null) {
-            final MapleMap reviveMap = killer.getMap();
-            if (toSpawn.contains(9300216) && reviveMap.getId() > 925000000 && reviveMap.getId() < 926000000) {
-                reviveMap.broadcastMessage(MaplePacketCreator.playSound("Dojang/clear"));
-                reviveMap.broadcastMessage(MaplePacketCreator.showEffect("dojang/end/clear"));
+            if (toSpawn.contains(9300216) && getMap().getId() > 925000000 && getMap().getId() < 926000000) {
+                getMap().broadcastMessage(MaplePacketCreator.playSound("Dojang/clear"));
+                getMap().broadcastMessage(MaplePacketCreator.showEffect("dojang/end/clear"));
             }
-            Pair<Integer, String> timeMob = reviveMap.getTimeMob();
+
+            Pair<Integer, String> timeMob = getMap().getTimeMob();
             if (timeMob != null) {
                 if (toSpawn.contains(timeMob.getLeft())) {
-                    reviveMap.broadcastMessage(MaplePacketCreator.serverNotice(6, timeMob.getRight()));
+                    getMap().broadcastMessage(MaplePacketCreator.serverNotice(6, timeMob.getRight()));
                 }
 
-                if (timeMob.getLeft() == 9300338 && (reviveMap.getId() >= 922240100 && reviveMap.getId() <= 922240119)) {
-                    if (!reviveMap.containsNPC(9001108)) {
+                if (timeMob.getLeft() == 9300338 && (getMap().getId() >= 922240100 && getMap().getId() <= 922240119)) {
+                    if (!getMap().containsNPC(9001108)) {
                         MapleNPC npc = MapleLifeFactory.getNPC(9001108);
                         npc.setPosition(new Point(172, 9));
                         npc.setCy(9);
                         npc.setRx0(172 + 50);
                         npc.setRx1(172 - 50);
                         npc.setFh(27);
-                        reviveMap.addMapObject(npc);
-                        reviveMap.broadcastMessage(MaplePacketCreator.spawnNPC(npc));
+                        getMap().addMapObject(npc);
+                        getMap().broadcastMessage(MaplePacketCreator.spawnNPC(npc));
                     } else {
-                        reviveMap.toggleHiddenNPC(9001108);
+                        getMap().toggleHiddenNPC(9001108);
                     }
                 }
             }
-            TimerManager.getInstance().schedule(new Runnable() {
+            TaskExecutor.createTask(new Runnable() {
                 @Override
                 public void run() {
                     for (Integer mid : toSpawn) {
                         final MapleMonster mob = MapleLifeFactory.getMonster(mid);
-                        mob.setPosition(getPosition());
-                        if (dropsDisabled()) {
-                            mob.disableDrops();
+                        if (mob != null) {
+                            mob.setPosition(getPosition());
+                            if (dropsDisabled()) {
+                                mob.disableDrops();
+                            }
+                            getMap().spawnMonsterOnGroudBelow(mob, getPosition());
                         }
-                        reviveMap.spawnMonster(mob);
                     }
                 }
             }, getAnimationTime("die1"));
@@ -452,11 +441,9 @@ public class MapleMonster extends AbstractLoadedMapleLife {
                 eventInstance.monsterKilled(this);
             }
         }
-        // idk V just a troll
         for (MonsterListener listener : listeners.toArray(new MonsterListener[listeners.size()])) {
             listener.monsterKilled(getAnimationTime("die1"));
         }
-
         MapleCharacter looter = map.getCharacterById(getHighestDamagerId());
 
         return looter != null ? looter : killer;
@@ -635,9 +622,7 @@ public class MapleMonster extends AbstractLoadedMapleLife {
 
         final Map<MonsterStatus, Integer> statis = status.getStati();
         if (stats.isBoss()) {
-            if (!(statis.containsKey(MonsterStatus.SPEED)
-                    && statis.containsKey(MonsterStatus.NINJA_AMBUSH)
-                    && statis.containsKey(MonsterStatus.WATK))) {
+            if (!(statis.containsKey(MonsterStatus.SPEED) && statis.containsKey(MonsterStatus.NINJA_AMBUSH) && statis.containsKey(MonsterStatus.WATK))) {
                 return false;
             }
         }
@@ -845,14 +830,13 @@ public class MapleMonster extends AbstractLoadedMapleLife {
         }
         final MapleMonster mons = this;
         TimerManager tMan = TimerManager.getInstance();
-        tMan.schedule(
-                new Runnable() {
+        tMan.schedule(new Runnable() {
 
-                    @Override
-                    public void run() {
-                        mons.clearSkill(skillId, level);
-                    }
-                }, cooltime);
+            @Override
+            public void run() {
+                mons.clearSkill(skillId, level);
+            }
+        }, cooltime);
     }
 
     public void clearSkill(int skillId, int level) {
@@ -901,13 +885,13 @@ public class MapleMonster extends AbstractLoadedMapleLife {
         @Override
         public void run() {
             int damage = dealDamage;
-            if(chr.getFakePlayer() != null) {
-            	damage = damage * 2;
+            if (chr.getFakePlayer() != null) {
+                damage = damage * 2;
             }
             if (damage >= hp) {
                 damage = hp - 1;
                 if (type == 1 || type == 2) {
-                	// double damage if you have a clone, probably works like this.
+                    // double damage if you have a clone, probably works like this.
                     map.broadcastMessage(MaplePacketCreator.damageMonster(getObjectId(), damage), getPosition());
                     cancelTask.run();
                     status.getCancelTask().cancel(false);
@@ -939,7 +923,7 @@ public class MapleMonster extends AbstractLoadedMapleLife {
         final ElementalEffectiveness fEE = stats.getEffectiveness(e);
         if (!stats.getEffectiveness(e).equals(ElementalEffectiveness.WEAK)) {
             stats.setEffectiveness(e, ee);
-            TimerManager.getInstance().schedule(new Runnable() {
+            TaskExecutor.createTask(new Runnable() {
 
                 @Override
                 public void run() {

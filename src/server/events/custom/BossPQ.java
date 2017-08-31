@@ -144,6 +144,11 @@ public abstract class BossPQ extends GenericEvent {
         }
     }
 
+    @Override
+    public boolean banishPlayer(MapleCharacter player, int mapId) {
+        return false;
+    }
+
     @PacketWorker
     public void onPlayerHurt(TakeDamageHandler event) {
         // it's probably a bad idea to have monsters that 1-hit the player and is unavoidable
