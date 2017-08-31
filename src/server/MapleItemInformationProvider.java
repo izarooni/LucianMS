@@ -1075,48 +1075,26 @@ public class MapleItemInformationProvider {
             return true;
         }
 
-
-        boolean highfivestamp = false;
-        /* Removed check above for message ><
-         try {
-         for (Pair<Item, MapleInventoryType> ii : ItemFactory.INVENTORY.loadItems(chr.getId(), false)) {
-         if (ii.getRight() == MapleInventoryType.CASH) {
-         if (ii.getLeft().getItemId() == 5590000) {
-         highfivestamp = true;
-         }
-         }
-         }
-         } catch (SQLException ex) {
-         }*/
-
         int reqLevel = getEquipStats(equip.getItemId()).get("reqLevel");
-        if (highfivestamp) {
-            reqLevel -= 5;
-        }
-        int i = 0; //lol xD
         //Removed job check. Shouldn't really be needed.
         if (reqLevel > chr.getLevel()) {
-            i++;
+            return false;
         } else if (getEquipStats(equip.getItemId()).get("reqDEX") > chr.getTotalDex()) {
-            i++;
-        } else if (getEquipStats(equip.getItemId()).get("reqSTR") > chr.getTotalStr()) {
-            i++;
+            return false;
         } else if (getEquipStats(equip.getItemId()).get("reqLUK") > chr.getTotalLuk()) {
-            i++;
+            return false;
+        } else if (getEquipStats(equip.getItemId()).get("reqSTR") > chr.getTotalStr()) {
+            return false;
         } else if (getEquipStats(equip.getItemId()).get("reqINT") > chr.getTotalInt()) {
-            i++;
+            return false;
         }
         int reqPOP = getEquipStats(equip.getItemId()).get("reqPOP");
         if (reqPOP > 0) {
             if (getEquipStats(equip.getItemId()).get("reqPOP") > chr.getFame()) {
-                i++;
+                return false;
             }
         }
 
-        if (i > 0) {
-            equip.wear(false);
-            return false;
-        }
         equip.wear(true);
         return true;
     }
@@ -1135,16 +1113,6 @@ public class MapleItemInformationProvider {
         List<Pair<String, Integer>> list = new LinkedList<>();
         MapleData data = getItemData(itemId);
         MapleData data1 = data.getChildByPath("info").getChildByPath("level");
-        /*if ((timeless && level == 5) || (!timeless && level == 3)) {
-         MapleData skilldata = data1.getChildByPath("case").getChildByPath("1").getChildByPath(timeless ? "6" : "4");
-         if (skilldata != null) {
-         List<MapleData> skills = skilldata.getChildByPath("Skill").getChildren();
-         for (int i = 0; i < skilldata.getChildByPath("Skill").getChildren().size(); i++) {
-         System.out.println(MapleDataTool.getInt(skills.get(i).getChildByPath("id")));
-         if (Math.random() < 0.1) list.add(new Pair<String, Integer>("Skill" + 0, MapleDataTool.getInt(skills.get(i).getChildByPath("id"))));
-         }
-         }
-         }*/
         if (data1 != null) {
             MapleData data2 = data1.getChildByPath("info").getChildByPath(Integer.toString(level));
             if (data2 != null) {

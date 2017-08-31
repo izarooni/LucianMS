@@ -2,6 +2,8 @@ package server.quest.custom;
 
 import client.MapleCharacter;
 import lang.DuplicateEntryException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import provider.MapleData;
 import provider.MapleDataTool;
 import provider.wz.MapleDataType;
@@ -22,6 +24,8 @@ import java.util.HashMap;
  * @author izarooni
  */
 public class CQuestBuilder {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(CQuestBuilder.class);
 
     private static HashMap<Integer, CQuestData> quests = new HashMap<>();
 
@@ -48,7 +52,7 @@ public class CQuestBuilder {
                 }
             }
         }
-        System.out.println(quests.size() + " custom quests found and loaded");
+        LOGGER.info("{} custom quests loaded", quests.size());
     }
 
     /**
@@ -94,7 +98,7 @@ public class CQuestBuilder {
                     int monsterId = MapleDataTool.getInt(toKill.getChildByPath("monsterId"));
                     int amount = MapleDataTool.getInt(toKill.getChildByPath("amount"), -1);
                     if (monsterId == 0 || amount == -1) {
-                        System.out.println(String.format("Invalid monster kill requirement for quest '%s'", qData.getName()));
+                        LOGGER.warn("Invalid monster kill requirement for quest {}", qData.getName());
                         continue;
                     }
                     qData.getToKill().add(monsterId, amount);
@@ -113,7 +117,7 @@ public class CQuestBuilder {
                     int minQuantity = MapleDataTool.getInt(toCollect.getChildByPath("minDrop"));
                     int maxQuantity = MapleDataTool.getInt(toCollect.getChildByPath("maxDrop"));
                     if (itemId == 0 || quantity == 0) {
-                        System.out.println(String.format("Invalid item requirement for quest '%s'", qData.getName()));
+                        LOGGER.warn("Invalid item requirement for quest {}", qData.getName());
                         continue;
                     }
                     CQuestItemRequirement.CQuestItem qItem = new CQuestItemRequirement.CQuestItem(itemId, quantity, false);
@@ -141,7 +145,8 @@ public class CQuestBuilder {
                     int itemId = MapleDataTool.getInt(items.getChildByPath("itemId"));
                     short quantity = (short) MapleDataTool.getInt(items.getChildByPath("quantity"));
                     if (itemId == 0 || quantity == 0) {
-                        System.out.println(String.format("Invalid reward item for quest '%s'", qData.getName()));
+                        LOGGER.warn("Invalid reward item for quest {}", qData.getName());
+                        continue;
                     }
                     qData.rewards.add(new CQuestItemReward(itemId, quantity));
                 }

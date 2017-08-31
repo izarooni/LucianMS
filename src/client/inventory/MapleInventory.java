@@ -106,7 +106,7 @@ public class MapleInventory implements Iterable<Item> {
     }
 
     public void addFromDB(Item item) {
-        if (item.getPosition() < 0 && type!= MapleInventoryType.EQUIPPED) {
+        if (item.getPosition() < 0 && type != MapleInventoryType.EQUIPPED) {
             return;
         }
         inventory.put(item.getPosition(), item);

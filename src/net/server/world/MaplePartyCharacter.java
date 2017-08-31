@@ -21,28 +21,28 @@
 */
 package net.server.world;
 
-import java.util.ArrayList;
-import java.util.Collection;
-
-import server.maps.MapleDoor;
 import client.MapleCharacter;
 import client.MapleJob;
+import server.maps.MapleDoor;
+
+import java.util.ArrayList;
 
 public class MaplePartyCharacter {
+
     private String name;
     private int id;
     private int level;
     private int channel, world;
     private int jobid;
     private int mapid;
-	private ArrayList<MapleDoor> door = new ArrayList<>();
+    private ArrayList<MapleDoor> door = new ArrayList<>();
     private boolean online;
     private MapleJob job;
     private MapleCharacter character;
-    
+
     public MaplePartyCharacter(MapleCharacter player) {
         this.character = player;
-    	this.name = player.getName();
+        this.name = player.getName();
         this.level = player.getLevel();
         this.channel = player.getClient().getChannel();
         this.world = player.getWorld();
@@ -57,9 +57,9 @@ public class MaplePartyCharacter {
     public MaplePartyCharacter() {
         this.name = "";
     }
-    
+
     public MapleCharacter getPlayer() {
-    	return character;
+        return character;
     }
 
     public MapleJob getJob() {
@@ -107,13 +107,13 @@ public class MaplePartyCharacter {
     }
 
     public void updateDoor(MapleDoor door) {
-    	this.door.add(door);
+        this.door.add(door);
     }
-    
+
     public ArrayList<MapleDoor> getDoors() {
-    	return door;
+        return door;
     }
-    
+
     @Override
     public int hashCode() {
         final int prime = 31;

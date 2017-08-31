@@ -97,7 +97,7 @@ public final class Channel {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        LOGGER.info("Channel {} bind to port {]", getId(), port);
+        LOGGER.info("Channel {} bind to port {}", getId(), port);
     }
 
     public MCarnivalLobbyManager getCarnivalLobbyManager() {

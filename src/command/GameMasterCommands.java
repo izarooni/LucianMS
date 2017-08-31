@@ -235,21 +235,25 @@ public class GameMasterCommands {
                     player.dropMessage(String.format("'%s' is not a valid number", args.get(0)));
                     return;
                 }
-                int jobId = var_jobId.intValue();
+                MapleJob job = MapleJob.getById(var_jobId.intValue());
+                if (job == null) {
+                    player.dropMessage(String.format("'%s' is not a valid job", args.get(0)));
+                    return;
+                }
                 if (args.length() > 1) {
                     for (int i = 2; i < args.length(); i++) {
                         String username = args.get(i);
                         MapleCharacter target = ch.getPlayerStorage().getCharacterByName(username);
                         if (target != null) {
-                            target.setJob(MapleJob.getById(jobId));
-                            target.updateSingleStat(MapleStat.JOB, jobId);
+                            target.setJob(job);
+                            target.updateSingleStat(MapleStat.JOB, job.getId());
                         } else {
                             player.dropMessage(String.format("Unable to find any player named '%s'", username));
                         }
                     }
                 } else {
-                    player.setJob(MapleJob.getById(jobId));
-                    player.updateSingleStat(MapleStat.JOB, jobId);
+                    player.setJob(job);
+                    player.updateSingleStat(MapleStat.JOB, job.getId());
                 }
             } else {
                 player.dropMessage(5, "Syntax: !job <job_id> [username]");

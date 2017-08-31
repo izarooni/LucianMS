@@ -26,7 +26,8 @@ import client.MapleCharacter;
 import client.MapleClient;
 import client.inventory.*;
 import constants.ItemConstants;
-import net.server.channel.handlers.ItemIdSortHandler;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import server.quest.custom.CQuestData;
 import server.quest.custom.requirement.CQuestItemRequirement;
 import tools.MaplePacketCreator;
@@ -41,6 +42,8 @@ import java.util.List;
  * @author Matze
  */
 public class MapleInventoryManipulator {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(MapleInventoryManipulator.class);
 
     public static boolean addById(MapleClient c, int itemId, short quantity) {
         return addById(c, itemId, quantity, null, -1, -1);
@@ -428,6 +431,9 @@ public class MapleInventoryManipulator {
         }
 
         source.setPosition(dst);
+        if (c.getPlayer().isGM()) {
+            LOGGER.info("Equipping item({}} dst({})", source.getItemId(), dst);
+        }
         c.getPlayer().getInventory(MapleInventoryType.EQUIPPED).addFromDB(source);
         if (target != null) {
             target.setPosition(src);

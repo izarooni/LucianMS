@@ -80,14 +80,11 @@ public class MapleServerHandler extends IoHandlerAdapter {
             session.close(true);
             return;
         }
-        if (channel > -1 && world > -1) {
-            if (Server.getInstance().getChannel(world, channel) == null) {
-                session.close(true);
-                return;
-            }
-        } else {
-            LOGGER.info("Session #{} {} created on world {} channel {}", session.getId(), session.getRemoteAddress().toString().substring(1), world, channel);
+        if (world > -1 && channel > -1 && Server.getInstance().getChannel(world, channel) == null) {
+            session.close(true);
+            return;
         }
+        LOGGER.info("Session #{} {} created on world {} channel {}", session.getId(), session.getRemoteAddress().toString().substring(1), world, channel);
 
         byte key[] = {0x13, 0x00, 0x00, 0x00, 0x08, 0x00, 0x00, 0x00, 0x06, 0x00, 0x00, 0x00, (byte) 0xB4, 0x00, 0x00, 0x00, 0x1B, 0x00, 0x00, 0x00, 0x0F, 0x00, 0x00, 0x00, 0x33, 0x00, 0x00, 0x00, 0x52, 0x00, 0x00, 0x00};
         byte ivRecv[] = {70, 114, 122, 82};

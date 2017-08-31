@@ -2,7 +2,6 @@ package server.events.custom;
 
 import client.MapleCharacter;
 import net.server.channel.handlers.TakeDamageHandler;
-import net.server.world.MapleParty;
 import net.server.world.MaplePartyCharacter;
 import scheduler.TaskExecutor;
 import server.life.MapleLifeFactory;
@@ -16,6 +15,7 @@ import tools.StringUtil;
 import tools.annotation.PacketWorker;
 
 import java.awt.*;
+import java.util.Collection;
 
 /**
  * @author izarooni
@@ -71,18 +71,15 @@ public abstract class BossPQ extends GenericEvent {
         player.changeMap(ReturnMap);
     }
 
-    public final void registerParty(MapleParty party) {
-        MapleCharacter leader = party.getLeader().getPlayer();
+    public final void registerParty(MapleCharacter leader) {
         MapleMap map = getMapInstance(mapId);
-        if (map != null) {
-            for (MaplePartyCharacter members : party.getMembers()) {
-                if (members.getMapId() == leader.getMapId() && members.isOnline()) {
-                    members.getPlayer().changeMap(map);
-                    members.getPlayer().addGenericEvent(this);
-                }
+        Collection<MaplePartyCharacter> members = leader.getParty().getMembers();
+        for (MaplePartyCharacter member : members) {
+            MapleCharacter target = leader.getMap().getCharacterByName(member.getName());
+            if (target != null) {
+                target.changeMap(map);
+                target.addGenericEvent(this);
             }
-        } else {
-            leader.dropMessage(5, "An error occurred while trying to warp your party");
         }
     }
 
