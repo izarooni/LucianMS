@@ -237,7 +237,7 @@ public class Server implements Runnable {
                 //final long repeat = (1000 * 60 * 60) * 4;
                 //TimerManager.getInstance().register(() -> GAutoEventManager.startRandomEvent(world), repeat, repeat);
                 world.addScheduledEvent(new SOuterSpace(world));
-                LOGGER.info("World {} created", world.getId());
+                LOGGER.info("World {} created in {}s", world.getId(), ((System.currentTimeMillis() - timeToTake) / 1000d));
             }
         } catch (Exception e) {
             e.printStackTrace();// For those who get errors

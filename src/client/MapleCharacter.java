@@ -40,6 +40,7 @@ import net.server.guild.MapleGuildCharacter;
 import net.server.world.*;
 import provider.MapleData;
 import provider.MapleDataProviderFactory;
+import scheduler.TaskExecutor;
 import scripting.event.EventInstanceManager;
 import server.*;
 import server.events.MapleEvents;
@@ -1181,8 +1182,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
 
     public void newClient(MapleClient c) {
         this.loggedIn = true;
-        c.setAccountName(this.client.getAccountName());// No null's for
-        // accountName
+        c.setAccountName(this.client.getAccountName()); // No null's for accountName
         this.client = c;
         MaplePortal portal = map.findClosestSpawnpoint(getPosition());
         if (portal == null) {
@@ -1190,7 +1190,8 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
         }
         this.setPosition(portal.getPosition());
         this.initialSpawnPoint = portal.getId();
-    }
+        this.map = c.getChannelServer().getMapFactory().getMap(getMapId());
+}
 
     public void cancelBuffEffects() {
         for (MapleBuffStatValueHolder mbsvh : effects.values()) {
@@ -1878,7 +1879,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
                     return;
                 }
             }
-            TimerManager.getInstance().schedule(new Runnable() {
+            TaskExecutor.createTask(new Runnable() {
                 @Override
                 public void run() {
                     dispelDebuff(disease);
@@ -3209,7 +3210,6 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
         Skill energycharge = isCygnus() ? SkillFactory.getSkill(ThunderBreaker.ENERGY_CHARGE) : SkillFactory.getSkill(Marauder.ENERGY_CHARGE);
         MapleStatEffect ceffect;
         ceffect = energycharge.getEffect(getSkillLevel(energycharge));
-        TimerManager tMan = TimerManager.getInstance();
         if (energybar < 10000) {
             energybar += 102;
             if (energybar > 10000) {
@@ -3225,7 +3225,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
         if (energybar >= 10000 && energybar < 11000) {
             energybar = 15000;
             final MapleCharacter chr = this;
-            tMan.schedule(new Runnable() {
+            TaskExecutor.createTask(new Runnable() {
                 @Override
                 public void run() {
                     energybar = 0;
@@ -4508,7 +4508,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
     public void sendPolice(int greason, String reason, int duration) {
         announce(MaplePacketCreator.sendPolice(String.format("You have been blocked by the#b %s Police for %s.#k", "LucianMS", reason)));
         this.isbanned = true;
-        TimerManager.getInstance().schedule(new Runnable() {
+        TaskExecutor.createTask(new Runnable() {
             @Override
             public void run() {
                 client.disconnect(false, false);
@@ -4810,25 +4810,25 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
     }
 
     public void startFullnessSchedule(final int decrease, final MaplePet pet, int petSlot) {
-//        ScheduledFuture<?> schedule = TimerManager.getInstance().register(new Runnable() {
-//            @Override
-//            public void run() {
-//                int newFullness = pet.getFullness() - decrease;
-//                if (newFullness <= 5) {
-//                    pet.setFullness(15);
-//                    pet.saveToDb();
-//                    unequipPet(pet, true);
-//                } else {
-//                    pet.setFullness(newFullness);
-//                    pet.saveToDb();
-//                    Item petz = getInventory(MapleInventoryType.CASH).getItem(pet.getPosition());
-//                    if (petz != null) {
-//                        forceUpdateItem(petz);
-//                    }
-//                }
-//            }
-//        }, 180000, 18000);
-//        fullnessSchedule[petSlot] = schedule;
+        //        ScheduledFuture<?> schedule = TimerManager.getInstance().register(new Runnable() {
+        //            @Override
+        //            public void run() {
+        //                int newFullness = pet.getFullness() - decrease;
+        //                if (newFullness <= 5) {
+        //                    pet.setFullness(15);
+        //                    pet.saveToDb();
+        //                    unequipPet(pet, true);
+        //                } else {
+        //                    pet.setFullness(newFullness);
+        //                    pet.saveToDb();
+        //                    Item petz = getInventory(MapleInventoryType.CASH).getItem(pet.getPosition());
+        //                    if (petz != null) {
+        //                        forceUpdateItem(petz);
+        //                    }
+        //                }
+        //            }
+        //        }, 180000, 18000);
+        //        fullnessSchedule[petSlot] = schedule;
     }
 
     public void startMapEffect(String msg, int itemId) {
@@ -5052,7 +5052,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
     public void autoban(String reason) {
         this.ban(reason);
         announce(MaplePacketCreator.sendPolice(String.format("You have been blocked by the#b %s Police for HACK reason.#k", "LucianMS")));
-        TimerManager.getInstance().schedule(new Runnable() {
+        TaskExecutor.createTask(new Runnable() {
             @Override
             public void run() {
                 client.disconnect(false, false);

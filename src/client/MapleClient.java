@@ -30,6 +30,7 @@ import net.server.world.*;
 import org.apache.mina.core.session.IoSession;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import scheduler.TaskExecutor;
 import scripting.npc.NPCConversationManager;
 import scripting.npc.NPCScriptManager;
 import scripting.quest.QuestActionManager;
@@ -37,7 +38,6 @@ import scripting.quest.QuestScriptManager;
 import server.MapleMiniGame;
 import server.MaplePlayerShop;
 import server.MapleTrade;
-import server.TimerManager;
 import server.maps.FieldLimit;
 import server.maps.HiredMerchant;
 import server.maps.MapleMap;
@@ -438,7 +438,7 @@ public class MapleClient {
     public boolean checkPin(String other) {
         pinattempt++;
         if (pinattempt > 5) {
-            getSession().close(true);
+            getSession().closeNow();
         }
         if (pin.equals(other)) {
             pinattempt = 0;
@@ -466,7 +466,7 @@ public class MapleClient {
     public boolean checkPic(String other) {
         picattempt++;
         if (picattempt > 5) {
-            getSession().close(true);
+            getSession().closeNow();
         }
         if (pic.equals(other)) {
             picattempt = 0;
@@ -478,7 +478,7 @@ public class MapleClient {
     public int login(String login, String pwd) {
         loginattempt++;
         if (loginattempt > 4) {
-            getSession().close(true);
+            getSession().closeNow();
         }
         int loginok = 5;
         Connection con = DatabaseConnection.getConnection();
@@ -877,7 +877,7 @@ public class MapleClient {
         if (!serverTransition && isLoggedIn()) {
             updateLoginState(MapleClient.LOGIN_NOTLOGGEDIN);
             session.removeAttribute(MapleClient.CLIENT_KEY); // prevents double dcing during login
-            session.close(true); // instead of using a deprecated method
+            session.closeNow(); // instead of using a deprecated method
         }
         engines.clear();
     }
@@ -987,14 +987,14 @@ public class MapleClient {
     public void sendPing() {
         final long then = System.currentTimeMillis();
         announce(MaplePacketCreator.getPing());
-        TimerManager.getInstance().schedule(new Runnable() {
+        TaskExecutor.createTask(new Runnable() {
 
             @Override
             public void run() {
                 try {
                     if (lastPong < then) {
                         if (getSession() != null && getSession().isConnected()) {
-                            getSession().close(true);
+                            getSession().closeNow();
                         }
                     }
                 } catch (NullPointerException e) {
@@ -1218,6 +1218,7 @@ public class MapleClient {
         server.getPlayerBuffStorage().addBuffsToStorage(player.getId(), player.getAllBuffs());
         player.cancelBuffEffects();
         player.cancelMagicDoor();
+        player.saveCooldowns();
         //Canceling mounts? Noty
         if (player.getBuffedValue(MapleBuffStat.PUPPET) != null) {
             player.cancelEffectFromBuffStat(MapleBuffStat.PUPPET);
@@ -1228,6 +1229,7 @@ public class MapleClient {
         player.getInventory(MapleInventoryType.EQUIPPED).checked(false); //test
         player.getMap().removePlayer(player);
         player.getClient().getChannelServer().removePlayer(player);
+        player.saveToDB();
         player.getClient().updateLoginState(MapleClient.LOGIN_SERVER_TRANSITION);
         try {
             announce(MaplePacketCreator.getChannelChange(InetAddress.getByName(socket[0]), Integer.parseInt(socket[1])));

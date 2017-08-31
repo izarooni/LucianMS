@@ -49,7 +49,7 @@ public abstract class BossPQ extends GenericEvent {
 
     public abstract void giveRewards(MapleCharacter player);
 
-    private MapleMap getMapInstance(int mapId) {
+    public MapleMap getMapInstance(int mapId) {
         return mapFactory.skipMonsters(true).getMap(mapId);
     }
 
@@ -69,18 +69,6 @@ public abstract class BossPQ extends GenericEvent {
     public final void unregisterPlayer(MapleCharacter player) {
         player.removeGenericEvent(this);
         player.changeMap(ReturnMap);
-    }
-
-    public final void registerParty(MapleCharacter leader) {
-        MapleMap map = getMapInstance(mapId);
-        Collection<MaplePartyCharacter> members = leader.getParty().getMembers();
-        for (MaplePartyCharacter member : members) {
-            MapleCharacter target = leader.getMap().getCharacterByName(member.getName());
-            if (target != null) {
-                target.changeMap(map);
-                target.addGenericEvent(this);
-            }
-        }
     }
 
     public final void begin() {

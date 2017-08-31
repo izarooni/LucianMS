@@ -37,6 +37,8 @@ import constants.ServerConstants;
 import net.server.Server;
 import net.server.channel.Channel;
 import net.server.world.MaplePartyCharacter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import scheduler.TaskExecutor;
 import scripting.map.MapScriptManager;
 import server.MapleItemInformationProvider;
@@ -69,7 +71,9 @@ import java.util.concurrent.locks.ReentrantReadWriteLock.WriteLock;
 
 public class MapleMap {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(MapleMap.class);
     private static final List<MapleMapObjectType> rangedMapobjectTypes = Arrays.asList(MapleMapObjectType.SHOP, MapleMapObjectType.ITEM, MapleMapObjectType.NPC, MapleMapObjectType.MONSTER, MapleMapObjectType.DOOR, MapleMapObjectType.SUMMON, MapleMapObjectType.REACTOR);
+
     private Map<Integer, MapleMapObject> mapobjects = new LinkedHashMap<>();
     private Collection<SpawnPoint> monsterSpawn = Collections.synchronizedList(new LinkedList<SpawnPoint>());
     private AtomicInteger spawnedMonstersOnMap = new AtomicInteger(0);
@@ -1916,7 +1920,7 @@ public class MapleMap {
     public void addMonsterSpawn(MapleMonster monster, int mobTime, int team) {
         Point newpos = calcPointBelow(monster.getPosition());
         if (newpos == null) {
-            System.err.println(String.format("Unable to spawn monster %d in map %s at position %s due to being unable to find a foothold", monster.getId(), getId(), monster.getPosition().toString()));
+            LOGGER.warn("Can't add spawn point for monster {} at {} in map {}: No foothold found below", monster.getId(), monster.getPosition().toString(), getId());
             return;
         }
         newpos.y -= 1;

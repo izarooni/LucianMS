@@ -77,14 +77,14 @@ public class MapleServerHandler extends IoHandlerAdapter {
     @Override
     public void sessionOpened(IoSession session) {
         if (!Server.getInstance().isOnline()) {
-            session.close(true);
+            session.closeNow();
             return;
         }
         if (world > -1 && channel > -1 && Server.getInstance().getChannel(world, channel) == null) {
-            session.close(true);
+            session.closeNow();
             return;
         }
-        LOGGER.info("Session #{} {} created on world {} channel {}", session.getId(), session.getRemoteAddress().toString().substring(1), world, channel);
+        LOGGER.info("Session #{} {} opened world {} ch {}", session.getId(), session.getRemoteAddress().toString().substring(1).split(":")[0], world, channel);
 
         byte key[] = {0x13, 0x00, 0x00, 0x00, 0x08, 0x00, 0x00, 0x00, 0x06, 0x00, 0x00, 0x00, (byte) 0xB4, 0x00, 0x00, 0x00, 0x1B, 0x00, 0x00, 0x00, 0x0F, 0x00, 0x00, 0x00, 0x33, 0x00, 0x00, 0x00, 0x52, 0x00, 0x00, 0x00};
         byte ivRecv[] = {70, 114, 122, 82};
@@ -119,7 +119,7 @@ public class MapleServerHandler extends IoHandlerAdapter {
             } catch (Throwable t) {
                 FilePrinter.printError(FilePrinter.ACCOUNT_STUCK, t);
             } finally {
-                session.close();
+                session.closeNow();
                 session.removeAttribute(MapleClient.CLIENT_KEY);
                 //client.empty();
             }
@@ -143,7 +143,8 @@ public class MapleServerHandler extends IoHandlerAdapter {
                             handler.handlePacket(slea, client);
                         } catch (final Throwable t) {
                             LOGGER.info(slea.toString());
-                            LOGGER.error("Unable to handle packet handler({}), user {} player {}", handler.getClass().getName(), client.getAccountName(), (client.getPlayer() != null ? client.getPlayer().getName() : "M/A"));
+                            LOGGER.error("Unable to process handler {}, user {} player {}", handler.getClass().getSimpleName(), client.getAccountName(), (client.getPlayer() != null ? client.getPlayer().getName() : "M/A"));
+                            t.printStackTrace();
                         }
                     }
                     return;

@@ -122,7 +122,7 @@ public class GameMasterCommands {
                     boolean exact = command.getName().endsWith("x");
                     if (target != null && command.equals("warp", "wh", "whx")) { // !<warp_cmd> <username>
                         if (target.getClient().getChannel() != client.getChannel()) {
-                            target.getClient().changeChannel(client.getChannel());
+                            client.changeChannel(target.getClient().getChannel());
                         }
                         if (args.length() == 1 && command.equals("warp", "wh", "whx")) { // !warp <username>
                             MapleCharacter warpie = (command.equals("warp") ? player : target); // person to warp
