@@ -99,6 +99,19 @@ public class ConsoleCommands {
         } else if (command.equals("gc")) {
             System.gc();
             LOGGER.info("GC requested");
+        } else if (command.equals("crash")) {
+            if (args.length() == 1) {
+                String username = args.get(0);
+                for (World world : Server.getInstance().getWorlds()) {
+                    MapleCharacter player = world.getPlayerStorage().getCharacterByName(username);
+                    if (player != null) {
+                        player.getClient().disconnect(false, player.getCashShop().isOpened());
+                        LOGGER.info("{} disconnected", player.getName());
+                        return;
+                    }
+                }
+                LOGGER.info("Unable to find any player named {}", username);
+            }
         }
     }
 }
