@@ -25,7 +25,7 @@ public class FaceChangeRequest extends DiscordRequest {
         long channelId = lea.readLong();
         String username = lea.readMapleAsciiString();
         int faceId = lea.readInt();
-        LOGGER.info("Updating {}'s face to provided ID {}", username, faceId);
+        LOGGER.info("Updating {}'s face to {}", username, faceId);
 
         MaplePacketLittleEndianWriter writer = new MaplePacketLittleEndianWriter();
         writer.write(0);

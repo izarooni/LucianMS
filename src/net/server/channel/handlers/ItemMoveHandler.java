@@ -26,6 +26,8 @@ import client.autoban.Cheater;
 import client.autoban.Cheats;
 import client.inventory.MapleInventoryType;
 import net.PacketHandler;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import server.MapleInventoryManipulator;
 import tools.MaplePacketCreator;
 import tools.data.input.SeekableLittleEndianAccessor;
@@ -34,6 +36,8 @@ import tools.data.input.SeekableLittleEndianAccessor;
  * @author Matze
  */
 public class ItemMoveHandler extends PacketHandler {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(ItemMoveHandler.class);
 
     private MapleInventoryType inventoryType;
     private byte source;
@@ -62,9 +66,18 @@ public class ItemMoveHandler extends PacketHandler {
         } else {
             entry.spamCount = 0;
         }
+        /*
+        [47 00] > header
+        [BD 30 33 06] > unk
+        [01] > inventory type
+        [0D 00] > source (13)
+        [7E FF] > action (-130)
+        [FF FF] > quantity (-1)
+         */
         if (source < 0 && action > 0) {
             MapleInventoryManipulator.unequip(getClient(), source, action);
         } else if (action < 0) {
+            LOGGER.info("Item equip action {} {} {} {}", inventoryType, source, action, quantity);
             MapleInventoryManipulator.equip(getClient(), source, action);
         } else if (action == 0) {
             MapleInventoryManipulator.drop(getClient(), inventoryType, source, quantity);

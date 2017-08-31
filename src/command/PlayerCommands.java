@@ -291,6 +291,7 @@ public class PlayerCommands {
             maps.put("ariant", 260000000);
             maps.put("timetemple", 270000000);
             maps.put("ellin", 300000000);
+            maps.put("maya", 100000001);
             if (args.length() == 1) {
                 String name = args.get(0);
                 if (maps.containsKey(name)) {

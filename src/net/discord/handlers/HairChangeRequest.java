@@ -25,7 +25,7 @@ public class HairChangeRequest extends DiscordRequest {
         long channelId = lea.readLong();
         String username = lea.readMapleAsciiString();
         int hairId = lea.readInt();
-        LOGGER.info("Updating {}'s hair to provided ID {}", username, hairId);
+        LOGGER.info("Updating {}'s hair to {}", username, hairId);
 
         MaplePacketLittleEndianWriter writer = new MaplePacketLittleEndianWriter();
         writer.write(1);

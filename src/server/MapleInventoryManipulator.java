@@ -153,7 +153,7 @@ public class MapleInventoryManipulator {
             return false;
         } else if (!checkSpace(c, item.getItemId(), item.getQuantity(), item.getOwner())) {
             c.announce(MaplePacketCreator.getInventoryFull());
-            c.announce(MaplePacketCreator.showItemUnavailable());
+            c.announce(MaplePacketCreator.getShowInventoryFull());
             return false;
         }
         for (CQuestData qData : player.getCustomQuests().values()) {
@@ -431,9 +431,6 @@ public class MapleInventoryManipulator {
         }
 
         source.setPosition(dst);
-        if (c.getPlayer().isGM()) {
-            LOGGER.info("Equipping item({}} dst({})", source.getItemId(), dst);
-        }
         c.getPlayer().getInventory(MapleInventoryType.EQUIPPED).addFromDB(source);
         if (target != null) {
             target.setPosition(src);

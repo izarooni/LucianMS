@@ -42,6 +42,7 @@ import tools.data.input.SeekableLittleEndianAccessor;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 import java.util.Random;
 
@@ -84,7 +85,10 @@ public class MapleServerHandler extends IoHandlerAdapter {
             session.closeNow();
             return;
         }
-        LOGGER.info("Session #{} {} opened world {} ch {}", session.getId(), session.getRemoteAddress().toString().substring(1).split(":")[0], world, channel);
+        String address = session.getRemoteAddress().toString().substring(1).split(":")[0];
+        if (!address.equals("0")) { // web access
+            LOGGER.info("Session #{} {} opened at {}", session.getId(), address, Calendar.getInstance().getTime().toString());
+        }
 
         byte key[] = {0x13, 0x00, 0x00, 0x00, 0x08, 0x00, 0x00, 0x00, 0x06, 0x00, 0x00, 0x00, (byte) 0xB4, 0x00, 0x00, 0x00, 0x1B, 0x00, 0x00, 0x00, 0x0F, 0x00, 0x00, 0x00, 0x33, 0x00, 0x00, 0x00, 0x52, 0x00, 0x00, 0x00};
         byte ivRecv[] = {70, 114, 122, 82};

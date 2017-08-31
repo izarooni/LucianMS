@@ -21,33 +21,33 @@
 */
 package client.inventory;
 
-import client.inventory.Item;
 import com.mysql.jdbc.Statement;
-import java.awt.Point;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.List;
-import tools.DatabaseConnection;
 import server.MapleItemInformationProvider;
 import server.movement.AbsoluteLifeMovement;
 import server.movement.LifeMovement;
 import server.movement.LifeMovementFragment;
+import tools.DatabaseConnection;
+
+import java.awt.*;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.List;
 
 /**
- *
  * @author Matze
  */
 public class MaplePet extends Item {
+
     private String name;
     private int uniqueid;
     private int closeness = 0;
     private byte level = 1;
     private int fullness = 100;
-    private int Fh;
-    private Point pos;
+    private int Fh = 0;
+    private Point pos = new Point();
     private int stance;
-    private boolean summoned;
+    private boolean summoned = false;
 
     private MaplePet(int id, short position, int uniqueid) {
         super(id, position, (short) 1);
