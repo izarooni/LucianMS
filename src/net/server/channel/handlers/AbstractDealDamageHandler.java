@@ -121,11 +121,11 @@ public abstract class AbstractDealDamageHandler extends PacketHandler {
                     }
                 }
                 int mobCount = attackEffect.getMobCount();
-                if (attack.skill == DawnWarrior.FINAL_ATTACK || attack.skill == Page.FINAL_ATTACK_BW || attack.skill == Page.FINAL_ATTACK_SWORD || attack.skill == Fighter.FINAL_ATTACK_SWORD || attack.skill == Fighter.FINAL_ATTACK_AXE || attack.skill == Spearman.FINAL_ATTACK_SPEAR || attack.skill == Spearman.FINAL_ATTACK_POLEARM || attack.skill == WindArcher.FINAL_ATTACK || attack.skill == DawnWarrior.FINAL_ATTACK || attack.skill == Hunter.FINAL_ATTACK || attack.skill == Crossbowman.FINAL_ATTACK) {
+                if (attack.skill == DawnWarrior.FINAL_ATTACK || attack.skill == Page.FINAL_ATTACK_BW || attack.skill == Page.FINAL_ATTACK_SWORD || attack.skill == Fighter.FINAL_ATTACK_SWORD || attack.skill == Fighter.FINAL_ATTACK_AXE || attack.skill == Spearman.FINAL_ATTACK_SPEAR || attack.skill == Spearman.FINAL_ATTACK_POLE_ARM || attack.skill == WindArcher.FINAL_ATTACK || attack.skill == DawnWarrior.FINAL_ATTACK || attack.skill == Hunter.FINAL_ATTACK_BOW || attack.skill == Crossbowman.FINAL_ATTACK) {
                     mobCount = 15;//:(
                 }
 
-                if (attack.skill == Aran.HIDDEN_FULL_DOUBLE || attack.skill == Aran.HIDDEN_FULL_TRIPLE || attack.skill == Aran.HIDDEN_OVER_DOUBLE || attack.skill == Aran.HIDDEN_OVER_TRIPLE) {
+                if (attack.skill == Aran.HIDDEN_FULL_SWING_DOUBLE || attack.skill == Aran.HIDDEN_FULL_SWING_TRIPLE || attack.skill == Aran.HIDDEN_OVER_SWING_DOUBLE || attack.skill == Aran.HIDDEN_OVER_SWING_TRIPLE) {
                     mobCount = 12;
                 }
 
@@ -306,11 +306,11 @@ public abstract class AbstractDealDamageHandler extends PacketHandler {
                             Skill chargeSkill = SkillFactory.getSkill(charge);
                             if (player.isBuffFrom(MapleBuffStat.WK_CHARGE, chargeSkill)) {
                                 if (totDamageToOneMonster > 0) {
-                                    if (charge == WhiteKnight.BW_ICE_CHARGE || charge == WhiteKnight.SWORD_ICE_CHARGE) {
+                                    if (charge == WhiteKnight.BLIZZARD_CHARGE_BW || charge == WhiteKnight.ICE_CHARGE_SWORD) {
                                         monster.setTempEffectiveness(Element.ICE, ElementalEffectiveness.WEAK, chargeSkill.getEffect(player.getSkillLevel(chargeSkill)).getY() * 1000);
                                         break;
                                     }
-                                    if (charge == WhiteKnight.BW_FIRE_CHARGE || charge == WhiteKnight.SWORD_FIRE_CHARGE) {
+                                    if (charge == WhiteKnight.FLAME_CHARGE_BW || charge == WhiteKnight.FIRE_CHARGE_SWORD) {
                                         monster.setTempEffectiveness(Element.FIRE, ElementalEffectiveness.WEAK, chargeSkill.getEffect(player.getSkillLevel(chargeSkill)).getY() * 1000);
                                         break;
                                     }
@@ -351,7 +351,7 @@ public abstract class AbstractDealDamageHandler extends PacketHandler {
                         }
                     } else if (job == 521 || job == 522) { // from what I can gather this is how it should work
                         if (!monster.isBoss()) {
-                            Skill type = SkillFactory.getSkill(Outlaw.FLAME_THROWER);
+                            Skill type = SkillFactory.getSkill(Outlaw.FLAMETHROWER);
                             if (player.getSkillLevel(type) > 0) {
                                 MapleStatEffect DoT = type.getEffect(player.getSkillLevel(type));
                                 MonsterStatusEffect monsterStatusEffect = new MonsterStatusEffect(Collections.singletonMap(MonsterStatus.POISON, 1), type, null, false);
@@ -560,8 +560,8 @@ public abstract class AbstractDealDamageHandler extends PacketHandler {
 
         Integer comboBuff = player.getBuffedValue(MapleBuffStat.COMBO);
         if (comboBuff != null && comboBuff > 0) {
-            int oid = player.isCygnus() ? DawnWarrior.COMBO : Crusader.COMBO;
-            int advcomboid = player.isCygnus() ? DawnWarrior.ADVANCED_COMBO : Hero.ADVANCED_COMBO;
+            int oid = player.isCygnus() ? DawnWarrior.COMBO_ATTACK : Crusader.COMBO_ATTACK;
+            int advcomboid = player.isCygnus() ? DawnWarrior.ADVANCED_COMBO : Hero.ADVANCED_COMBO_ATTACK;
 
             if (comboBuff > 6) {
                 // Advanced Combo
@@ -632,19 +632,19 @@ public abstract class AbstractDealDamageHandler extends PacketHandler {
                 int sourceID = player.getBuffSource(MapleBuffStat.WK_CHARGE);
                 int level = player.getBuffedValue(MapleBuffStat.WK_CHARGE);
                 if (monster != null) {
-                    if (sourceID == WhiteKnight.BW_FIRE_CHARGE || sourceID == WhiteKnight.SWORD_FIRE_CHARGE) {
+                    if (sourceID == WhiteKnight.FLAME_CHARGE_BW || sourceID == WhiteKnight.FIRE_CHARGE_SWORD) {
                         if (monster.getStats().getEffectiveness(Element.FIRE) == ElementalEffectiveness.WEAK) {
                             calcDmgMax *= 1.05 + level * 0.015;
                         }
-                    } else if (sourceID == WhiteKnight.BW_ICE_CHARGE || sourceID == WhiteKnight.SWORD_ICE_CHARGE) {
+                    } else if (sourceID == WhiteKnight.BLIZZARD_CHARGE_BW || sourceID == WhiteKnight.ICE_CHARGE_SWORD) {
                         if (monster.getStats().getEffectiveness(Element.ICE) == ElementalEffectiveness.WEAK) {
                             calcDmgMax *= 1.05 + level * 0.015;
                         }
-                    } else if (sourceID == WhiteKnight.BW_LIT_CHARGE || sourceID == WhiteKnight.SWORD_LIT_CHARGE) {
+                    } else if (sourceID == WhiteKnight.LIGHTNING_CHARGE_BW || sourceID == WhiteKnight.THUNDER_CHARGE_SWORD) {
                         if (monster.getStats().getEffectiveness(Element.LIGHTING) == ElementalEffectiveness.WEAK) {
                             calcDmgMax *= 1.05 + level * 0.015;
                         }
-                    } else if (sourceID == Paladin.BW_HOLY_CHARGE || sourceID == Paladin.SWORD_HOLY_CHARGE) {
+                    } else if (sourceID == Paladin.DIVINE_CHARGE_BW || sourceID == Paladin.HOLY_CHARGE_SWORD) {
                         if (monster.getStats().getEffectiveness(Element.HOLY) == ElementalEffectiveness.WEAK) {
                             calcDmgMax *= 1.2 + level * 0.015;
                         }
@@ -729,7 +729,7 @@ public abstract class AbstractDealDamageHandler extends PacketHandler {
 
                 allDamageNumbers.add(damage);
             }
-            if (ret.skill != Corsair.RAPID_FIRE || ret.skill != Aran.HIDDEN_FULL_DOUBLE || ret.skill != Aran.HIDDEN_FULL_TRIPLE || ret.skill != Aran.HIDDEN_OVER_DOUBLE || ret.skill != Aran.HIDDEN_OVER_TRIPLE) {
+            if (ret.skill != Corsair.RAPID_FIRE || ret.skill != Aran.HIDDEN_FULL_SWING_DOUBLE || ret.skill != Aran.HIDDEN_FULL_SWING_TRIPLE || ret.skill != Aran.HIDDEN_OVER_SWING_DOUBLE || ret.skill != Aran.HIDDEN_OVER_SWING_TRIPLE) {
                 lea.skip(4);
             }
             ret.allDamage.put(oid, allDamageNumbers);

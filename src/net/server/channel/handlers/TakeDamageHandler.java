@@ -222,7 +222,7 @@ public final class TakeDamageHandler extends PacketHandler {
                 player.addMPHP(-damage, -mpattack);
             } else {
                 if (player.getBuffedValue(MapleBuffStat.MONSTER_RIDING) != null) {
-                    if (player.getBuffedValue(MapleBuffStat.MONSTER_RIDING) == Corsair.BATTLE_SHIP) {
+                    if (player.getBuffedValue(MapleBuffStat.MONSTER_RIDING) == Corsair.BATTLESHIP) {
                         player.decreaseBattleshipHp(damage);
                     }
                 }

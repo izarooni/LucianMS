@@ -47,9 +47,9 @@ public final class BeholderHandler extends AbstractMaplePacketHandler {//Summon 
         }
         if (summon != null) {
             int skillId = slea.readInt();
-            if (skillId == DarkKnight.AURA_OF_BEHOLDER) {
+            if (skillId == DarkKnight.AURA_OF_THE_BEHOLDER) {
                 slea.readShort(); //Not sure.
-            } else if (skillId == DarkKnight.HEX_OF_BEHOLDER) {
+            } else if (skillId == DarkKnight.HEX_OF_THE_BEHOLDER) {
                 slea.readByte(); //Not sure.
             }            //show to others here
         } else {

@@ -148,39 +148,39 @@ public class SkillFactory {
                 case Fighter.RAGE:
                 case Fighter.SWORD_BOOSTER:
                 case Crusader.ARMOR_CRASH:
-                case Crusader.COMBO:
+                case Crusader.COMBO_ATTACK:
                 case Hero.ENRAGE:
                 case Hero.HEROS_WILL:
                 case Hero.MAPLE_WARRIOR:
-                case Hero.STANCE:
+                case Hero.POWER_STANCE:
                 case Page.BW_BOOSTER:
                 case Page.POWER_GUARD:
                 case Page.SWORD_BOOSTER:
                 case Page.THREATEN:
-                case WhiteKnight.BW_FIRE_CHARGE:
-                case WhiteKnight.BW_ICE_CHARGE:
-                case WhiteKnight.BW_LIT_CHARGE:
+                case WhiteKnight.FLAME_CHARGE_BW:
+                case WhiteKnight.BLIZZARD_CHARGE_BW:
+                case WhiteKnight.LIGHTNING_CHARGE_BW:
                 case WhiteKnight.MAGIC_CRASH:
-                case WhiteKnight.SWORD_FIRE_CHARGE:
-                case WhiteKnight.SWORD_ICE_CHARGE:
-                case WhiteKnight.SWORD_LIT_CHARGE:
-                case Paladin.BW_HOLY_CHARGE:
+                case WhiteKnight.FIRE_CHARGE_SWORD:
+                case WhiteKnight.ICE_CHARGE_SWORD:
+                case WhiteKnight.THUNDER_CHARGE_SWORD:
+                case Paladin.DIVINE_CHARGE_BW:
                 case Paladin.HEROS_WILL:
                 case Paladin.MAPLE_WARRIOR:
-                case Paladin.STANCE:
-                case Paladin.SWORD_HOLY_CHARGE:
+                case Paladin.POWER_STANCE:
+                case Paladin.HOLY_CHARGE_SWORD:
                 case Spearman.HYPER_BODY:
                 case Spearman.IRON_WILL:
-                case Spearman.POLEARM_BOOSTER:
+                case Spearman.POLE_ARM_BOOSTER:
                 case Spearman.SPEAR_BOOSTER:
                 case DragonKnight.DRAGON_BLOOD:
                 case DragonKnight.POWER_CRASH:
-                case DarkKnight.AURA_OF_BEHOLDER:
+                case DarkKnight.AURA_OF_THE_BEHOLDER:
                 case DarkKnight.BEHOLDER:
                 case DarkKnight.HEROS_WILL:
-                case DarkKnight.HEX_OF_BEHOLDER:
+                case DarkKnight.HEX_OF_THE_BEHOLDER:
                 case DarkKnight.MAPLE_WARRIOR:
-                case DarkKnight.STANCE:
+                case DarkKnight.POWER_STANCE:
                 case Magician.MAGIC_GUARD:
                 case Magician.MAGIC_ARMOR:
                 case FPWizard.MEDITATION:
@@ -212,7 +212,7 @@ public class SkillFactory {
                 case Bishop.MAPLE_WARRIOR:
                 case Archer.FOCUS:
                 case Hunter.BOW_BOOSTER:
-                case Hunter.SOUL_ARROW:
+                case Hunter.SOUL_ARROW_BOW:
                 case Ranger.PUPPET:
                 case Bowmaster.CONCENTRATE:
                 case Bowmaster.HEROS_WILL:
@@ -244,9 +244,8 @@ public class SkillFactory {
                 case Pirate.DASH:
                 case Marauder.TRANSFORMATION:
                 case Buccaneer.SUPER_TRANSFORMATION:
-                case Corsair.BATTLE_SHIP:
-                case GM.HIDE:
-                case SuperGM.HASTE:
+                case Corsair.BATTLESHIP:
+                case SuperGM.HASTE_SUPER:
                 case SuperGM.HOLY_SYMBOL:
                 case SuperGM.BLESS:
                 case SuperGM.HIDE:
@@ -256,7 +255,7 @@ public class SkillFactory {
                 case Noblesse.MONSTER_RIDER:
                 case Noblesse.NIMBLE_FEET:
                 case Noblesse.RECOVERY:
-                case DawnWarrior.COMBO:
+                case DawnWarrior.COMBO_ATTACK:
                 case DawnWarrior.FINAL_ATTACK:
                 case DawnWarrior.IRON_BODY:
                 case DawnWarrior.RAGE:
@@ -288,7 +287,7 @@ public class SkillFactory {
                 case ThunderBreaker.DASH:
                 case ThunderBreaker.ENERGY_CHARGE:
                 case ThunderBreaker.ENERGY_DRAIN:
-                case ThunderBreaker.KNUCKLER_BOOSTER:
+                case ThunderBreaker.KNUCKLE_BOOSTER:
                 case ThunderBreaker.LIGHTNING:
                 case ThunderBreaker.SPARK:
                 case ThunderBreaker.LIGHTNING_CHARGE:

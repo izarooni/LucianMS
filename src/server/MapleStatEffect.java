@@ -40,8 +40,10 @@ import tools.Pair;
 
 import java.awt.*;
 import java.lang.ref.WeakReference;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ScheduledFuture;
 
 /**
@@ -109,10 +111,8 @@ public class MapleStatEffect {
 
             if (sourceid == Marauder.TRANSFORMATION // pink bean
                     || sourceid == Buccaneer.SUPER_TRANSFORMATION // super pink bean \o/
-                    || sourceid == 5121003 // don't feel like checking which exact job they belong to
-                    || sourceid == 5111005
+                    || sourceid == Sniper.PUPPET || sourceid == Ranger.PUPPET // target dummies
                     || (!ret.isMist() && !ret.isMorph() && !ret.isPoison() && !ret.isMagicDoor() && !ret.isDs())) {
-                // is it better to condition which skills not to include than a list of allowed skills?
                 ret.duration = Integer.MAX_VALUE;
             }
             ret.overTime = overTime;
@@ -129,16 +129,16 @@ public class MapleStatEffect {
         ret.berserk = MapleDataTool.getInt("berserk", source, 0);
         ret.booster = MapleDataTool.getInt("booster", source, 0);
         if (ret.overTime && ret.getSummonMovementType() == null) {
-            addBuffStatPairToListIfNotZero(statups, MapleBuffStat.WATK, Integer.valueOf(ret.watk));
-            addBuffStatPairToListIfNotZero(statups, MapleBuffStat.WDEF, Integer.valueOf(ret.wdef));
-            addBuffStatPairToListIfNotZero(statups, MapleBuffStat.MATK, Integer.valueOf(ret.matk));
-            addBuffStatPairToListIfNotZero(statups, MapleBuffStat.MDEF, Integer.valueOf(ret.mdef));
-            addBuffStatPairToListIfNotZero(statups, MapleBuffStat.ACC, Integer.valueOf(ret.acc));
-            addBuffStatPairToListIfNotZero(statups, MapleBuffStat.AVOID, Integer.valueOf(ret.avoid));
-            addBuffStatPairToListIfNotZero(statups, MapleBuffStat.SPEED, Integer.valueOf(ret.speed));
-            addBuffStatPairToListIfNotZero(statups, MapleBuffStat.JUMP, Integer.valueOf(ret.jump));
-            addBuffStatPairToListIfNotZero(statups, MapleBuffStat.PYRAMID_PQ, Integer.valueOf(ret.berserk));
-            addBuffStatPairToListIfNotZero(statups, MapleBuffStat.BOOSTER, Integer.valueOf(ret.booster));
+            addBuffStatPairToListIfNotZero(statups, MapleBuffStat.WATK, (int) ret.watk);
+            addBuffStatPairToListIfNotZero(statups, MapleBuffStat.WDEF, (int) ret.wdef);
+            addBuffStatPairToListIfNotZero(statups, MapleBuffStat.MATK, (int) ret.matk);
+            addBuffStatPairToListIfNotZero(statups, MapleBuffStat.MDEF, (int) ret.mdef);
+            addBuffStatPairToListIfNotZero(statups, MapleBuffStat.ACC, (int) ret.acc);
+            addBuffStatPairToListIfNotZero(statups, MapleBuffStat.AVOID, (int) ret.avoid);
+            addBuffStatPairToListIfNotZero(statups, MapleBuffStat.SPEED, (int) ret.speed);
+            addBuffStatPairToListIfNotZero(statups, MapleBuffStat.JUMP, (int) ret.jump);
+            addBuffStatPairToListIfNotZero(statups, MapleBuffStat.PYRAMID_PQ, ret.berserk);
+            addBuffStatPairToListIfNotZero(statups, MapleBuffStat.BOOSTER, ret.booster);
         }
         MapleData ltd = source.getChildByPath("lt");
         if (ltd != null) {
@@ -165,195 +165,194 @@ public class MapleStatEffect {
                 case Noblesse.RECOVERY:
                 case Legend.RECOVERY:
                 case Evan.RECOVERY:
-                    statups.add(new Pair<>(MapleBuffStat.RECOVERY, Integer.valueOf(x)));
+                    statups.add(new Pair<>(MapleBuffStat.RECOVERY, x));
                     break;
                 case Beginner.ECHO_OF_HERO:
                 case Noblesse.ECHO_OF_HERO:
                 case Legend.ECHO_OF_HERO:
                 case Evan.ECHO_OF_HERO:
-                    statups.add(new Pair<>(MapleBuffStat.ECHO_OF_HERO, Integer.valueOf(ret.x)));
+                    statups.add(new Pair<>(MapleBuffStat.ECHO_OF_HERO, ret.x));
                     break;
                 case Beginner.MONSTER_RIDER:
                 case Noblesse.MONSTER_RIDER:
                 case Legend.MONSTER_RIDER:
-                case Corsair.BATTLE_SHIP:
+                case Corsair.BATTLESHIP:
                 case Beginner.SPACESHIP:
                 case Noblesse.SPACESHIP:
-                case Beginner.YETI_MOUNT1:
-                case Beginner.YETI_MOUNT2:
-                case Noblesse.YETI_MOUNT1:
-                case Noblesse.YETI_MOUNT2:
-                case Legend.YETI_MOUNT1:
-                case Legend.YETI_MOUNT2:
+                case Beginner.YETI_RIDER:
+                case Beginner.YETI_MOUNT:
+                case Noblesse.YETI_RIDER:
+                case Noblesse.YETI_MOUNT:
+                case Legend.YETI_RIDER:
+                case Legend.YETI_MOUNT:
                 case Beginner.WITCH_BROOMSTICK:
                 case Noblesse.WITCH_BROOMSTICK:
                 case Legend.WITCH_BROOMSTICK:
-                case Beginner.BALROG_MOUNT:
-                case Noblesse.BALROG_MOUNT:
-                case Legend.BALROG_MOUNT:
-                    statups.add(new Pair<>(MapleBuffStat.MONSTER_RIDING, Integer.valueOf(sourceid)));
+                case Beginner.BARLOG_MOUNT:
+                case Noblesse.BARLOG_MOUNT:
+                case Legend.BARLOG_MOUNT:
+                    statups.add(new Pair<>(MapleBuffStat.MONSTER_RIDING, sourceid));
                     break;
-                case Beginner.BERSERK_FURY:
-                case Noblesse.BERSERK_FURY:
+                case Beginner.POWER_EXPLOSION:
+                case Noblesse.METEO_SHOWER:
                 case Evan.BERSERK_FURY:
-                    statups.add(new Pair<>(MapleBuffStat.BERSERK_FURY, Integer.valueOf(1)));
+                    statups.add(new Pair<>(MapleBuffStat.BERSERK_FURY, 1));
                     break;
-                case Beginner.INVINCIBLE_BARRIER:
+                case Beginner.INVINCIBILITY:
                 case Noblesse.INVINCIBLE_BARRIER:
-                case Legend.INVICIBLE_BARRIER:
+                case Legend.INVINCIBLE_BARRIER:
                 case Evan.INVINCIBLE_BARRIER:
-                    statups.add(new Pair<>(MapleBuffStat.DIVINE_BODY, Integer.valueOf(1)));
+                    statups.add(new Pair<>(MapleBuffStat.DIVINE_BODY, 1));
                     break;
                 case Fighter.POWER_GUARD:
                 case Page.POWER_GUARD:
-                    statups.add(new Pair<>(MapleBuffStat.POWERGUARD, Integer.valueOf(x)));
+                    statups.add(new Pair<>(MapleBuffStat.POWERGUARD, x));
                     break;
                 case Spearman.HYPER_BODY:
-                case GM.HYPER_BODY:
                 case SuperGM.HYPER_BODY:
-                    statups.add(new Pair<>(MapleBuffStat.HYPERBODYHP, Integer.valueOf(x)));
-                    statups.add(new Pair<>(MapleBuffStat.HYPERBODYMP, Integer.valueOf(ret.y)));
+                    statups.add(new Pair<>(MapleBuffStat.HYPERBODYHP, x));
+                    statups.add(new Pair<>(MapleBuffStat.HYPERBODYMP, ret.y));
                     break;
-                case Crusader.COMBO:
-                case DawnWarrior.COMBO:
-                    statups.add(new Pair<>(MapleBuffStat.COMBO, Integer.valueOf(1)));
+                case Crusader.COMBO_ATTACK:
+                case DawnWarrior.COMBO_ATTACK:
+                    statups.add(new Pair<>(MapleBuffStat.COMBO, 1));
                     break;
-                case WhiteKnight.BW_FIRE_CHARGE:
-                case WhiteKnight.BW_ICE_CHARGE:
-                case WhiteKnight.BW_LIT_CHARGE:
-                case WhiteKnight.SWORD_FIRE_CHARGE:
-                case WhiteKnight.SWORD_ICE_CHARGE:
-                case WhiteKnight.SWORD_LIT_CHARGE:
-                case Paladin.BW_HOLY_CHARGE:
-                case Paladin.SWORD_HOLY_CHARGE:
+                case WhiteKnight.FLAME_CHARGE_BW:
+                case WhiteKnight.BLIZZARD_CHARGE_BW:
+                case WhiteKnight.LIGHTNING_CHARGE_BW:
+                case WhiteKnight.FIRE_CHARGE_SWORD:
+                case WhiteKnight.ICE_CHARGE_SWORD:
+                case WhiteKnight.THUNDER_CHARGE_SWORD:
+                case Paladin.DIVINE_CHARGE_BW:
+                case Paladin.HOLY_CHARGE_SWORD:
                 case DawnWarrior.SOUL_CHARGE:
                 case ThunderBreaker.LIGHTNING_CHARGE:
-                    statups.add(new Pair<>(MapleBuffStat.WK_CHARGE, Integer.valueOf(x)));
+                    statups.add(new Pair<>(MapleBuffStat.WK_CHARGE, x));
                     break;
                 case DragonKnight.DRAGON_BLOOD:
-                    statups.add(new Pair<>(MapleBuffStat.DRAGONBLOOD, Integer.valueOf(ret.x)));
+                    statups.add(new Pair<>(MapleBuffStat.DRAGONBLOOD, ret.x));
                     break;
                 case DragonKnight.DRAGON_ROAR:
                     ret.hpR = -x / 100.0;
                     break;
-                case Hero.STANCE:
-                case Paladin.STANCE:
-                case DarkKnight.STANCE:
+                case Hero.POWER_STANCE:
+                case Paladin.POWER_STANCE:
+                case DarkKnight.POWER_STANCE:
                 case Aran.FREEZE_STANDING:
-                    statups.add(new Pair<>(MapleBuffStat.STANCE, Integer.valueOf(iprop)));
+                    statups.add(new Pair<>(MapleBuffStat.STANCE, iprop));
                     break;
                 case DawnWarrior.FINAL_ATTACK:
                 case WindArcher.FINAL_ATTACK:
-                    statups.add(new Pair<>(MapleBuffStat.FINALATTACK, Integer.valueOf(x)));
+                    statups.add(new Pair<>(MapleBuffStat.FINALATTACK, x));
                     break;
                 // MAGICIAN
                 case Magician.MAGIC_GUARD:
                 case BlazeWizard.MAGIC_GUARD:
                 case Evan.MAGIC_GUARD:
-                    statups.add(new Pair<>(MapleBuffStat.MAGIC_GUARD, Integer.valueOf(x)));
+                    statups.add(new Pair<>(MapleBuffStat.MAGIC_GUARD, x));
                     break;
                 case Cleric.INVINCIBLE:
-                    statups.add(new Pair<>(MapleBuffStat.INVINCIBLE, Integer.valueOf(x)));
+                    statups.add(new Pair<>(MapleBuffStat.INVINCIBLE, x));
                     break;
                 case Priest.HOLY_SYMBOL:
                 case SuperGM.HOLY_SYMBOL:
-                    statups.add(new Pair<>(MapleBuffStat.HOLY_SYMBOL, Integer.valueOf(x)));
+                    statups.add(new Pair<>(MapleBuffStat.HOLY_SYMBOL, x));
                     break;
                 case FPArchMage.INFINITY:
                 case ILArchMage.INFINITY:
                 case Bishop.INFINITY:
-                    statups.add(new Pair<>(MapleBuffStat.INFINITY, Integer.valueOf(x)));
+                    statups.add(new Pair<>(MapleBuffStat.INFINITY, x));
                     break;
                 case FPArchMage.MANA_REFLECTION:
                 case ILArchMage.MANA_REFLECTION:
                 case Bishop.MANA_REFLECTION:
-                    statups.add(new Pair<>(MapleBuffStat.MANA_REFLECTION, Integer.valueOf(1)));
+                    statups.add(new Pair<>(MapleBuffStat.MANA_REFLECTION, 1));
                     break;
                 case Bishop.HOLY_SHIELD:
-                    statups.add(new Pair<>(MapleBuffStat.HOLY_SHIELD, Integer.valueOf(x)));
+                    statups.add(new Pair<>(MapleBuffStat.HOLY_SHIELD, x));
                     break;
                 case BlazeWizard.ELEMENTAL_RESET:
                 case Evan.ELEMENTAL_RESET:
-                    statups.add(new Pair<>(MapleBuffStat.MAGIC_SHIELD, Integer.valueOf(x)));
+                    statups.add(new Pair<>(MapleBuffStat.MAGIC_SHIELD, x));
                     break;
                 case Evan.MAGIC_SHIELD:
-                    statups.add(new Pair<>(MapleBuffStat.MAGIC_SHIELD, Integer.valueOf(x)));
+                    statups.add(new Pair<>(MapleBuffStat.MAGIC_SHIELD, x));
                     break;
                 case Evan.MAGIC_RESISTANCE:
-                    statups.add(new Pair<>(MapleBuffStat.MAGIC_RESISTANCE, Integer.valueOf(x)));
+                    statups.add(new Pair<>(MapleBuffStat.MAGIC_RESISTANCE, x));
                     break;
                 case Evan.SLOW:
-                    statups.add(new Pair<>(MapleBuffStat.SLOW, Integer.valueOf(x)));
+                    statups.add(new Pair<>(MapleBuffStat.SLOW, x));
                     // BOWMAN
                 case Priest.MYSTIC_DOOR:
-                case Hunter.SOUL_ARROW:
+                case Hunter.SOUL_ARROW_BOW:
                 case Crossbowman.SOUL_ARROW:
                 case WindArcher.SOUL_ARROW:
-                    statups.add(new Pair<>(MapleBuffStat.SOULARROW, Integer.valueOf(x)));
+                    statups.add(new Pair<>(MapleBuffStat.SOULARROW, x));
                     break;
                 case Ranger.PUPPET:
                 case Sniper.PUPPET:
                 case WindArcher.PUPPET:
                 case Outlaw.OCTOPUS:
                 case Corsair.WRATH_OF_THE_OCTOPI:
-                    statups.add(new Pair<>(MapleBuffStat.PUPPET, Integer.valueOf(1)));
+                    statups.add(new Pair<>(MapleBuffStat.PUPPET, 1));
                     break;
                 case Bowmaster.CONCENTRATE:
                     statups.add(new Pair<>(MapleBuffStat.CONCENTRATE, x));
                     break;
                 case Bowmaster.HAMSTRING:
-                    statups.add(new Pair<>(MapleBuffStat.HAMSTRING, Integer.valueOf(x)));
+                    statups.add(new Pair<>(MapleBuffStat.HAMSTRING, x));
                     monsterStatus.put(MonsterStatus.SPEED, x);
                     break;
                 case Marksman.BLIND:
-                    statups.add(new Pair<>(MapleBuffStat.BLIND, Integer.valueOf(x)));
+                    statups.add(new Pair<>(MapleBuffStat.BLIND, x));
                     monsterStatus.put(MonsterStatus.ACC, x);
                     break;
                 case Bowmaster.SHARP_EYES:
                 case Marksman.SHARP_EYES:
-                    statups.add(new Pair<>(MapleBuffStat.SHARP_EYES, Integer.valueOf(ret.x << 8 | ret.y)));
+                    statups.add(new Pair<>(MapleBuffStat.SHARP_EYES, ret.x << 8 | ret.y));
                     break;
                 // THIEF
                 case Rogue.DARK_SIGHT:
                 case WindArcher.WIND_WALK:
                 case NightWalker.DARK_SIGHT:
-                    statups.add(new Pair<>(MapleBuffStat.DARKSIGHT, Integer.valueOf(x)));
+                    statups.add(new Pair<>(MapleBuffStat.DARKSIGHT, x));
                     break;
                 case Hermit.MESO_UP:
-                    statups.add(new Pair<>(MapleBuffStat.MESOUP, Integer.valueOf(x)));
+                    statups.add(new Pair<>(MapleBuffStat.MESOUP, x));
                     break;
                 case Hermit.SHADOW_PARTNER:
                 case NightWalker.SHADOW_PARTNER:
-                    statups.add(new Pair<>(MapleBuffStat.SHADOWPARTNER, Integer.valueOf(x)));
+                    statups.add(new Pair<>(MapleBuffStat.SHADOWPARTNER, x));
                     break;
                 case ChiefBandit.MESO_GUARD:
-                    statups.add(new Pair<>(MapleBuffStat.MESOGUARD, Integer.valueOf(x)));
+                    statups.add(new Pair<>(MapleBuffStat.MESOGUARD, x));
                     break;
                 case ChiefBandit.PICKPOCKET:
-                    statups.add(new Pair<>(MapleBuffStat.PICKPOCKET, Integer.valueOf(x)));
+                    statups.add(new Pair<>(MapleBuffStat.PICKPOCKET, x));
                     break;
                 case NightLord.SHADOW_STARS:
-                    statups.add(new Pair<>(MapleBuffStat.SHADOW_CLAW, Integer.valueOf(0)));
+                    statups.add(new Pair<>(MapleBuffStat.SHADOW_CLAW, 0));
                     break;
                 // PIRATE
                 case Pirate.DASH:
                 case ThunderBreaker.DASH:
                 case Beginner.SPACE_DASH:
                 case Noblesse.SPACE_DASH:
-                    statups.add(new Pair<>(MapleBuffStat.DASH2, Integer.valueOf(ret.x)));
-                    statups.add(new Pair<>(MapleBuffStat.DASH, Integer.valueOf(ret.y)));
+                    statups.add(new Pair<>(MapleBuffStat.DASH2, ret.x));
+                    statups.add(new Pair<>(MapleBuffStat.DASH, ret.y));
                     break;
                 case Corsair.SPEED_INFUSION:
                 case Buccaneer.SPEED_INFUSION:
                 case ThunderBreaker.SPEED_INFUSION:
-                    statups.add(new Pair<>(MapleBuffStat.SPEED_INFUSION, Integer.valueOf(x)));
+                    statups.add(new Pair<>(MapleBuffStat.SPEED_INFUSION, x));
                     break;
                 case Outlaw.HOMING_BEACON:
                 case Corsair.BULLSEYE:
-                    statups.add(new Pair<>(MapleBuffStat.HOMING_BEACON, Integer.valueOf(x)));
+                    statups.add(new Pair<>(MapleBuffStat.HOMING_BEACON, x));
                     break;
                 case ThunderBreaker.SPARK:
-                    statups.add(new Pair<>(MapleBuffStat.SPARK, Integer.valueOf(x)));
+                    statups.add(new Pair<>(MapleBuffStat.SPARK, x));
                     break;
                 // MULTIPLE
                 case Aran.POLEARM_BOOSTER:
@@ -361,7 +360,7 @@ public class MapleStatEffect {
                 case Fighter.SWORD_BOOSTER:
                 case Page.BW_BOOSTER:
                 case Page.SWORD_BOOSTER:
-                case Spearman.POLEARM_BOOSTER:
+                case Spearman.POLE_ARM_BOOSTER:
                 case Spearman.SPEAR_BOOSTER:
                 case Hunter.BOW_BOOSTER:
                 case Crossbowman.CROSSBOW_BOOSTER:
@@ -375,9 +374,9 @@ public class MapleStatEffect {
                 case BlazeWizard.SPELL_BOOSTER:
                 case WindArcher.BOW_BOOSTER:
                 case NightWalker.CLAW_BOOSTER:
-                case ThunderBreaker.KNUCKLER_BOOSTER:
+                case ThunderBreaker.KNUCKLE_BOOSTER:
                 case Evan.MAGIC_BOOSTER:
-                    statups.add(new Pair<>(MapleBuffStat.BOOSTER, Integer.valueOf(x)));
+                    statups.add(new Pair<>(MapleBuffStat.BOOSTER, x));
                     break;
                 case Hero.MAPLE_WARRIOR:
                 case Paladin.MAPLE_WARRIOR:
@@ -393,18 +392,18 @@ public class MapleStatEffect {
                 case Buccaneer.MAPLE_WARRIOR:
                 case Aran.MAPLE_WARRIOR:
                 case Evan.MAPLE_WARRIOR:
-                    statups.add(new Pair<>(MapleBuffStat.MAPLE_WARRIOR, Integer.valueOf(ret.x)));
+                    statups.add(new Pair<>(MapleBuffStat.MAPLE_WARRIOR, ret.x));
                     break;
                 // SUMMON
                 case Ranger.SILVER_HAWK:
                 case Sniper.GOLDEN_EAGLE:
-                    statups.add(new Pair<>(MapleBuffStat.SUMMON, Integer.valueOf(1)));
-                    monsterStatus.put(MonsterStatus.STUN, Integer.valueOf(1));
+                    statups.add(new Pair<>(MapleBuffStat.SUMMON, 1));
+                    monsterStatus.put(MonsterStatus.STUN, 1);
                     break;
                 case FPArchMage.ELQUINES:
-                case Marksman.FROST_PREY:
-                    statups.add(new Pair<>(MapleBuffStat.SUMMON, Integer.valueOf(1)));
-                    monsterStatus.put(MonsterStatus.FREEZE, Integer.valueOf(1));
+                case Marksman.FROSTPREY:
+                    statups.add(new Pair<>(MapleBuffStat.SUMMON, 1));
+                    monsterStatus.put(MonsterStatus.FREEZE, 1);
                     break;
                 case Priest.SUMMON_DRAGON:
                 case Bowmaster.PHOENIX:
@@ -418,37 +417,37 @@ public class MapleStatEffect {
                 case NightWalker.DARKNESS:
                 case ThunderBreaker.LIGHTNING:
                 case BlazeWizard.IFRIT:
-                    statups.add(new Pair<>(MapleBuffStat.SUMMON, Integer.valueOf(1)));
+                    statups.add(new Pair<>(MapleBuffStat.SUMMON, 1));
                     break;
                 // ----------------------------- MONSTER STATUS ---------------------------------- //
                 case Crusader.ARMOR_CRASH:
                 case DragonKnight.POWER_CRASH:
                 case WhiteKnight.MAGIC_CRASH:
-                    monsterStatus.put(MonsterStatus.SEAL_SKILL, Integer.valueOf(1));
+                    monsterStatus.put(MonsterStatus.SEAL_SKILL, 1);
                     break;
                 case Rogue.DISORDER:
-                    monsterStatus.put(MonsterStatus.WATK, Integer.valueOf(ret.x));
-                    monsterStatus.put(MonsterStatus.WDEF, Integer.valueOf(ret.y));
+                    monsterStatus.put(MonsterStatus.WATK, ret.x);
+                    monsterStatus.put(MonsterStatus.WDEF, ret.y);
                     break;
                 case Corsair.HYPNOTIZE:
                     monsterStatus.put(MonsterStatus.INERTMOB, 1);
                     break;
                 case NightLord.NINJA_AMBUSH:
                 case Shadower.NINJA_AMBUSH:
-                    monsterStatus.put(MonsterStatus.NINJA_AMBUSH, Integer.valueOf(ret.damage));
+                    monsterStatus.put(MonsterStatus.NINJA_AMBUSH, ret.damage);
                     break;
                 case Page.THREATEN:
-                    monsterStatus.put(MonsterStatus.WATK, Integer.valueOf(ret.x));
-                    monsterStatus.put(MonsterStatus.WDEF, Integer.valueOf(ret.y));
+                    monsterStatus.put(MonsterStatus.WATK, ret.x);
+                    monsterStatus.put(MonsterStatus.WDEF, ret.y);
                     break;
-                case Crusader.AXE_COMA:
-                case Crusader.SWORD_COMA:
+                case Crusader.COMA_AXE:
+                case Crusader.COMA_SWORD:
                 case Crusader.SHOUT:
-                case WhiteKnight.CHARGE_BLOW:
-                case Hunter.ARROW_BOMB:
+                case WhiteKnight.CHARGED_BLOW:
+                case Hunter.ARROW_BOMB_BOW:
                 case ChiefBandit.ASSAULTER:
                 case Shadower.BOOMERANG_STEP:
-                case Brawler.BACK_SPIN_BLOW:
+                case Brawler.BACKSPIN_BLOW:
                 case Brawler.DOUBLE_UPPERCUT:
                 case Buccaneer.DEMOLITION:
                 case Buccaneer.SNATCH:
@@ -458,7 +457,7 @@ public class MapleStatEffect {
                 case Aran.ROLLING_SPIN:
                 case Evan.FIRE_BREATH:
                 case Evan.BLAZE:
-                    monsterStatus.put(MonsterStatus.STUN, Integer.valueOf(1));
+                    monsterStatus.put(MonsterStatus.STUN, 1);
                     break;
                 case NightLord.TAUNT:
                 case Shadower.TAUNT:
@@ -475,64 +474,64 @@ public class MapleStatEffect {
                 case FPArchMage.PARALYZE:
                 case Aran.COMBO_TEMPEST:
                 case Evan.ICE_BREATH:
-                    monsterStatus.put(MonsterStatus.FREEZE, Integer.valueOf(1));
+                    monsterStatus.put(MonsterStatus.FREEZE, 1);
                     ret.duration *= 2; // freezing skills are a little strange
                     break;
                 case FPWizard.SLOW:
                 case ILWizard.SLOW:
                 case BlazeWizard.SLOW:
-                    monsterStatus.put(MonsterStatus.SPEED, Integer.valueOf(ret.x));
+                    monsterStatus.put(MonsterStatus.SPEED, ret.x);
                     break;
                 case FPWizard.POISON_BREATH:
                 case FPMage.ELEMENT_COMPOSITION:
-                    monsterStatus.put(MonsterStatus.POISON, Integer.valueOf(1));
+                    monsterStatus.put(MonsterStatus.POISON, 1);
                     break;
                 case Priest.DOOM:
-                    monsterStatus.put(MonsterStatus.DOOM, Integer.valueOf(1));
+                    monsterStatus.put(MonsterStatus.DOOM, 1);
                     break;
                 case ILMage.SEAL:
                 case FPMage.SEAL:
-                    monsterStatus.put(MonsterStatus.SEAL, Integer.valueOf(1));
+                    monsterStatus.put(MonsterStatus.SEAL, 1);
                     break;
                 case Hermit.SHADOW_WEB: // shadow web
                 case NightWalker.SHADOW_WEB:
-                    monsterStatus.put(MonsterStatus.SHADOW_WEB, Integer.valueOf(1));
+                    monsterStatus.put(MonsterStatus.SHADOW_WEB, 1);
                     break;
                 case FPArchMage.FIRE_DEMON:
                 case ILArchMage.ICE_DEMON:
-                    monsterStatus.put(MonsterStatus.POISON, Integer.valueOf(1));
-                    monsterStatus.put(MonsterStatus.FREEZE, Integer.valueOf(1));
+                    monsterStatus.put(MonsterStatus.POISON, 1);
+                    monsterStatus.put(MonsterStatus.FREEZE, 1);
                     break;
                 case Evan.PHANTOM_IMPRINT:
-                    monsterStatus.put(MonsterStatus.PHANTOM_IMPRINT, Integer.valueOf(x));
+                    monsterStatus.put(MonsterStatus.PHANTOM_IMPRINT, x);
                     //ARAN
                 case Aran.COMBO_ABILITY:
-                    statups.add(new Pair<>(MapleBuffStat.ARAN_COMBO, Integer.valueOf(100)));
+                    statups.add(new Pair<>(MapleBuffStat.ARAN_COMBO, 100));
                     break;
                 case Aran.COMBO_BARRIER:
-                    statups.add(new Pair<>(MapleBuffStat.COMBO_BARRIER, Integer.valueOf(ret.x)));
+                    statups.add(new Pair<>(MapleBuffStat.COMBO_BARRIER, ret.x));
                     break;
                 case Aran.COMBO_DRAIN:
-                    statups.add(new Pair<>(MapleBuffStat.COMBO_DRAIN, Integer.valueOf(ret.x)));
+                    statups.add(new Pair<>(MapleBuffStat.COMBO_DRAIN, ret.x));
                     break;
                 case Aran.SMART_KNOCKBACK:
-                    statups.add(new Pair<>(MapleBuffStat.SMART_KNOCKBACK, Integer.valueOf(ret.x)));
+                    statups.add(new Pair<>(MapleBuffStat.SMART_KNOCKBACK, ret.x));
                     break;
                 case Aran.BODY_PRESSURE:
-                    statups.add(new Pair<>(MapleBuffStat.BODY_PRESSURE, Integer.valueOf(ret.x)));
+                    statups.add(new Pair<>(MapleBuffStat.BODY_PRESSURE, ret.x));
                     break;
                 case Aran.SNOW_CHARGE:
-                    statups.add(new Pair<>(MapleBuffStat.WK_CHARGE, Integer.valueOf(ret.duration)));
+                    statups.add(new Pair<>(MapleBuffStat.WK_CHARGE, ret.duration));
                     break;
                 default:
                     break;
             }
         }
         if (ret.isMorph()) {
-            statups.add(new Pair<>(MapleBuffStat.MORPH, Integer.valueOf(ret.getMorph())));
+            statups.add(new Pair<>(MapleBuffStat.MORPH, ret.getMorph()));
         }
         if (ret.ghost > 0 && !skill) {
-            statups.add(new Pair<>(MapleBuffStat.GHOST_MORPH, Integer.valueOf(ret.ghost)));
+            statups.add(new Pair<>(MapleBuffStat.GHOST_MORPH, ret.ghost));
         }
         ret.monsterStatus = monsterStatus;
         statups.trimToSize();
@@ -578,7 +577,7 @@ public class MapleStatEffect {
     }
 
     private boolean applyTo(MapleCharacter applyfrom, MapleCharacter applyto, boolean primary, Point pos) {
-        if (skill && (sourceid == GM.HIDE || sourceid == SuperGM.HIDE)) {
+        if (skill && sourceid == SuperGM.HIDE) {
             applyto.toggleHide(false);
             return true;
         }
@@ -617,7 +616,7 @@ public class MapleStatEffect {
                 newHp = 1;
             }
             applyto.setHp(newHp);
-            hpmpupdate.add(new Pair<>(MapleStat.HP, Integer.valueOf(applyto.getHp())));
+            hpmpupdate.add(new Pair<>(MapleStat.HP, applyto.getHp()));
         }
         int newMp = applyto.getMp() + mpchange;
         if (mpchange != 0) {
@@ -626,7 +625,7 @@ public class MapleStatEffect {
             }
 
             applyto.setMp(newMp);
-            hpmpupdate.add(new Pair<>(MapleStat.MP, Integer.valueOf(applyto.getMp())));
+            hpmpupdate.add(new Pair<>(MapleStat.MP, applyto.getMp()));
         }
         applyto.getClient().announce(MaplePacketCreator.updatePlayerStats(hpmpupdate, true, applyto));
         if (moveTo != -1) {
@@ -734,7 +733,7 @@ public class MapleStatEffect {
     private void applyBuff(MapleCharacter applyfrom) {
         if (isPartyBuff() && (applyfrom.getParty() != null || isGmBuff())) {
             Rectangle bounds = calculateBoundingBox(applyfrom.getPosition(), applyfrom.isFacingLeft());
-            List<MapleMapObject> affecteds = applyfrom.getMap().getMapObjectsInRect(bounds, Arrays.asList(MapleMapObjectType.PLAYER));
+            List<MapleMapObject> affecteds = applyfrom.getMap().getMapObjectsInRect(bounds, Collections.singletonList(MapleMapObjectType.PLAYER));
             List<MapleCharacter> affectedp = new ArrayList<>(affecteds.size());
             for (MapleMapObject affectedmo : affecteds) {
                 MapleCharacter affected = (MapleCharacter) affectedmo;
@@ -754,7 +753,7 @@ public class MapleStatEffect {
 
     private void applyMonsterBuff(MapleCharacter applyfrom) {
         Rectangle bounds = calculateBoundingBox(applyfrom.getPosition(), applyfrom.isFacingLeft());
-        List<MapleMapObject> affected = applyfrom.getMap().getMapObjectsInRect(bounds, Arrays.asList(MapleMapObjectType.MONSTER));
+        List<MapleMapObject> affected = applyfrom.getMap().getMapObjectsInRect(bounds, Collections.singletonList(MapleMapObjectType.MONSTER));
         Skill skill_ = SkillFactory.getSkill(sourceid);
         int i = 0;
         for (MapleMapObject mo : affected) {
@@ -804,7 +803,7 @@ public class MapleStatEffect {
                 tosummon.addHP(x);
             }
         }
-        if (sourceid == Corsair.BATTLE_SHIP) {
+        if (sourceid == Corsair.BATTLESHIP) {
             chr.announce(MaplePacketCreator.skillCooldown(5221999, chr.getBattleshipHp()));
         }
     }
@@ -835,17 +834,17 @@ public class MapleStatEffect {
             if (mount != null) {
                 ridingLevel = mount.getItemId();
             }
-            if (sourceid == Corsair.BATTLE_SHIP) {
+            if (sourceid == Corsair.BATTLESHIP) {
                 ridingLevel = 1932000;
             } else if (sourceid == Beginner.SPACESHIP || sourceid == Noblesse.SPACESHIP) {
                 ridingLevel = 1932000 + applyto.getSkillLevel(sourceid);
-            } else if (sourceid == Beginner.YETI_MOUNT1 || sourceid == Noblesse.YETI_MOUNT1 || sourceid == Legend.YETI_MOUNT1) {
+            } else if (sourceid == Beginner.YETI_RIDER || sourceid == Noblesse.YETI_RIDER || sourceid == Legend.YETI_RIDER) {
                 ridingLevel = 1932003;
-            } else if (sourceid == Beginner.YETI_MOUNT2 || sourceid == Noblesse.YETI_MOUNT2 || sourceid == Legend.YETI_MOUNT2) {
+            } else if (sourceid == Beginner.YETI_MOUNT || sourceid == Noblesse.YETI_MOUNT || sourceid == Legend.YETI_MOUNT) {
                 ridingLevel = 1932004;
             } else if (sourceid == Beginner.WITCH_BROOMSTICK || sourceid == Noblesse.WITCH_BROOMSTICK || sourceid == Legend.WITCH_BROOMSTICK) {
                 ridingLevel = 1932005;
-            } else if (sourceid == Beginner.BALROG_MOUNT || sourceid == Noblesse.BALROG_MOUNT || sourceid == Legend.BALROG_MOUNT) {
+            } else if (sourceid == Beginner.BARLOG_MOUNT || sourceid == Noblesse.BARLOG_MOUNT || sourceid == Legend.BARLOG_MOUNT) {
                 ridingLevel = 1932010;
             } else {
                 if (applyto.getMount() == null) {
@@ -853,17 +852,17 @@ public class MapleStatEffect {
                 }
                 applyto.getMount().startSchedule();
             }
-            if (sourceid == Corsair.BATTLE_SHIP) {
+            if (sourceid == Corsair.BATTLESHIP) {
                 givemount = new MapleMount(applyto, 1932000, sourceid);
             } else if (sourceid == Beginner.SPACESHIP || sourceid == Noblesse.SPACESHIP) {
                 givemount = new MapleMount(applyto, 1932000 + applyto.getSkillLevel(sourceid), sourceid);
-            } else if (sourceid == Beginner.YETI_MOUNT1 || sourceid == Noblesse.YETI_MOUNT1 || sourceid == Legend.YETI_MOUNT1) {
+            } else if (sourceid == Beginner.YETI_RIDER || sourceid == Noblesse.YETI_RIDER || sourceid == Legend.YETI_RIDER) {
                 givemount = new MapleMount(applyto, 1932003, sourceid);
-            } else if (sourceid == Beginner.YETI_MOUNT2 || sourceid == Noblesse.YETI_MOUNT2 || sourceid == Legend.YETI_MOUNT2) {
+            } else if (sourceid == Beginner.YETI_MOUNT || sourceid == Noblesse.YETI_MOUNT || sourceid == Legend.YETI_MOUNT) {
                 givemount = new MapleMount(applyto, 1932004, sourceid);
             } else if (sourceid == Beginner.WITCH_BROOMSTICK || sourceid == Noblesse.WITCH_BROOMSTICK || sourceid == Legend.WITCH_BROOMSTICK) {
                 givemount = new MapleMount(applyto, 1932005, sourceid);
-            } else if (sourceid == Beginner.BALROG_MOUNT || sourceid == Noblesse.BALROG_MOUNT || sourceid == Legend.BALROG_MOUNT) {
+            } else if (sourceid == Beginner.BARLOG_MOUNT || sourceid == Noblesse.BARLOG_MOUNT || sourceid == Legend.BARLOG_MOUNT) {
                 givemount = new MapleMount(applyto, 1932010, sourceid);
             } else {
                 givemount = applyto.getMount();
@@ -899,7 +898,7 @@ public class MapleStatEffect {
                 buff = MaplePacketCreator.giveBuff(localsourceid, localDuration, localstatups);
                 mbuff = MaplePacketCreator.showMonsterRiding(applyto.getId(), givemount);
                 localDuration = duration;
-                if (sourceid == Corsair.BATTLE_SHIP) {//hp
+                if (sourceid == Corsair.BATTLESHIP) {//hp
                     if (applyto.getBattleshipHp() == 0) {
                         applyto.resetBattleshipHp();
                     }
@@ -913,7 +912,7 @@ public class MapleStatEffect {
             } else if (isEnrage()) {
                 applyto.handleOrbconsume();
             } else if (isMorph()) {
-                List<Pair<MapleBuffStat, Integer>> stat = Collections.singletonList(new Pair<>(MapleBuffStat.MORPH, Integer.valueOf(getMorph(applyto))));
+                List<Pair<MapleBuffStat, Integer>> stat = Collections.singletonList(new Pair<>(MapleBuffStat.MORPH, getMorph(applyto)));
                 mbuff = MaplePacketCreator.giveForeignBuff(applyto.getId(), stat);
             }
             long starttime = System.currentTimeMillis();
@@ -929,7 +928,7 @@ public class MapleStatEffect {
             if (mbuff != null) {
                 applyto.getMap().broadcastMessage(applyto, mbuff, false);
             }
-            if (sourceid == Corsair.BATTLE_SHIP) {
+            if (sourceid == Corsair.BATTLESHIP) {
                 applyto.announce(MaplePacketCreator.skillCooldown(5221999, applyto.getBattleshipHp() / 10));
             }
         }
@@ -1036,7 +1035,7 @@ public class MapleStatEffect {
             case Legend.ECHO_OF_HERO:
             case Evan.ECHO_OF_HERO:
             case SuperGM.HEAL_PLUS_DISPEL:
-            case SuperGM.HASTE:
+            case SuperGM.HASTE_SUPER:
             case SuperGM.HOLY_SYMBOL:
             case SuperGM.BLESS:
             case SuperGM.RESURRECTION:
@@ -1078,10 +1077,7 @@ public class MapleStatEffect {
         if (lt == null || rb == null) {
             return false;
         }
-        if ((sourceid >= 1211003 && sourceid <= 1211008) || sourceid == Paladin.SWORD_HOLY_CHARGE || sourceid == Paladin.BW_HOLY_CHARGE || sourceid == DawnWarrior.SOUL_CHARGE) {// wk charges have lt and rb set but are neither player nor monster buffs
-            return false;
-        }
-        return true;
+        return !((sourceid >= 1211003 && sourceid <= 1211008) || sourceid == Paladin.HOLY_CHARGE_SWORD || sourceid == Paladin.DIVINE_CHARGE_BW || sourceid == DawnWarrior.SOUL_CHARGE);
     }
 
     private boolean isHeal() {
@@ -1089,7 +1085,7 @@ public class MapleStatEffect {
     }
 
     private boolean isResurrection() {
-        return sourceid == Bishop.RESURRECTION || sourceid == GM.RESURRECTION || sourceid == SuperGM.RESURRECTION;
+        return sourceid == Bishop.RESURRECTION || sourceid == SuperGM.RESURRECTION;
     }
 
     private boolean isTimeLeap() {
@@ -1113,7 +1109,7 @@ public class MapleStatEffect {
     }
 
     private boolean isCombo() {
-        return skill && (sourceid == Crusader.COMBO || sourceid == DawnWarrior.COMBO);
+        return skill && (sourceid == Crusader.COMBO_ATTACK || sourceid == DawnWarrior.COMBO_ATTACK);
     }
 
     private boolean isEnrage() {
@@ -1133,7 +1129,7 @@ public class MapleStatEffect {
     }
 
     public boolean isMonsterRiding() {
-        return skill && (sourceid % 10000000 == 1004 || sourceid == Corsair.BATTLE_SHIP || sourceid == Beginner.SPACESHIP || sourceid == Noblesse.SPACESHIP || sourceid == Beginner.YETI_MOUNT1 || sourceid == Beginner.YETI_MOUNT2 || sourceid == Beginner.WITCH_BROOMSTICK || sourceid == Beginner.BALROG_MOUNT || sourceid == Noblesse.YETI_MOUNT1 || sourceid == Noblesse.YETI_MOUNT2 || sourceid == Noblesse.WITCH_BROOMSTICK || sourceid == Noblesse.BALROG_MOUNT || sourceid == Legend.YETI_MOUNT1 || sourceid == Legend.YETI_MOUNT2 || sourceid == Legend.WITCH_BROOMSTICK || sourceid == Legend.BALROG_MOUNT);
+        return skill && (sourceid % 10000000 == 1004 || sourceid == Corsair.BATTLESHIP || sourceid == Beginner.SPACESHIP || sourceid == Noblesse.SPACESHIP || sourceid == Beginner.YETI_RIDER || sourceid == Beginner.YETI_MOUNT || sourceid == Beginner.WITCH_BROOMSTICK || sourceid == Beginner.BARLOG_MOUNT || sourceid == Noblesse.YETI_RIDER || sourceid == Noblesse.YETI_MOUNT || sourceid == Noblesse.WITCH_BROOMSTICK || sourceid == Noblesse.BARLOG_MOUNT || sourceid == Legend.YETI_RIDER || sourceid == Legend.YETI_MOUNT || sourceid == Legend.WITCH_BROOMSTICK || sourceid == Legend.BARLOG_MOUNT);
     }
 
     public boolean isMagicDoor() {
@@ -1157,7 +1153,7 @@ public class MapleStatEffect {
     }
 
     private boolean isSoulArrow() {
-        return skill && (sourceid == Hunter.SOUL_ARROW || sourceid == Crossbowman.SOUL_ARROW || sourceid == WindArcher.SOUL_ARROW);
+        return skill && (sourceid == Hunter.SOUL_ARROW_BOW || sourceid == Crossbowman.SOUL_ARROW || sourceid == WindArcher.SOUL_ARROW);
     }
 
     private boolean isShadowClaw() {
@@ -1244,7 +1240,7 @@ public class MapleStatEffect {
             case Ranger.SILVER_HAWK:
             case Sniper.GOLDEN_EAGLE:
             case Priest.SUMMON_DRAGON:
-            case Marksman.FROST_PREY:
+            case Marksman.FROSTPREY:
             case Bowmaster.PHOENIX:
             case Outlaw.GAVIOTA:
                 return SummonMovementType.CIRCLE_FOLLOW;

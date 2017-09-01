@@ -66,14 +66,14 @@ public class SpecialMoveHandler extends AbstractMaplePacketHandler {
         }
 
         MapleStatEffect effect = skill.getEffect(rSkillLevel);
-        if ((effect.isMorph() && player.getBuffEffect(MapleBuffStat.COMBO) != null) || ((skill.getId() == Crusader.COMBO || skill.getId() == DawnWarrior.COMBO) && player.getBuffedValue(MapleBuffStat.MORPH) != null)) {
+        if ((effect.isMorph() && player.getBuffEffect(MapleBuffStat.COMBO) != null) || ((skill.getId() == Crusader.COMBO_ATTACK || skill.getId() == DawnWarrior.COMBO_ATTACK) && player.getBuffedValue(MapleBuffStat.MORPH) != null)) {
             System.err.println(String.format("[%s] Attempted map crash by %s", getClass().getSimpleName(), player.getName()));
             return;
         }
         if (effect.getCooldown() > 0) {
             if (player.skillisCooling(skillId)) {
                 return;
-            } else if (skillId != Corsair.BATTLE_SHIP) {
+            } else if (skillId != Corsair.BATTLESHIP) {
                 c.announce(MaplePacketCreator.skillCooldown(skillId, effect.getCooldown()));
                 ScheduledFuture<?> timer = TimerManager.getInstance().schedule(new CancelCooldownAction(c.getPlayer(), skillId), effect.getCooldown() * 1000);
                 player.addCooldown(skillId, System.currentTimeMillis(), effect.getCooldown() * 1000, timer);

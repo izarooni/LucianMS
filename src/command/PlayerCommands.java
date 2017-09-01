@@ -2,7 +2,6 @@ package command;
 
 import client.*;
 import client.Relationship.Status;
-import com.sun.deploy.util.ArrayUtil;
 import constants.ServerConstants;
 import net.server.channel.Channel;
 import net.server.channel.handlers.RockPaperScissorsHandler;
@@ -39,7 +38,6 @@ public class PlayerCommands {
             commands.add("@jautoevent - join the auto event");
             commands.add("@lautoevent - leave the auto event");
             commands.add("@dispose - Dispose yourself (if you can't interact with npcs, etc) ");
-            commands.add("@points = Everything about your points");
             commands.add("@achievements - Shows your current achievements");
             commands.add("@home - go to the home grounds");
             commands.add("@online - Show whoever is online");
@@ -64,21 +62,29 @@ public class PlayerCommands {
             commands.forEach(player::dropMessage);
             commands.clear();
         } else if (command.equals("checkme")) {
-            player.dropMessage("Ability Power: " + player.getRemainingAp());
+            player.dropMessage("================ " + player.getName() + "'s Stats ================");
             player.dropMessage("Mesos: " + player.getMeso());
+            player.dropMessage("Ability Power: " + player.getRemainingAp());
             player.dropMessage("Vote points: " + client.getVotePoints());
-            player.dropMessage("Rebirths: " + player.getRebirths());
+            player.dropMessage("Event Points" + player.getEventPoints());
+            player.dropMessage("Fishing Points: " + player.getFishingPoints());
             player.dropMessage("Rebirth Points: " + player.getRebirthPoints());
             player.dropMessage("Donor Points: " + client.getDonationPoints());
+            player.dropMessage("Rebirths: " + player.getRebirths());
             player.dropMessage("Crystals: " + player.getItemQuantity(ServerConstants.CURRENCY, false));
+            player.dropMessage("Hair / Face: " + player.getHair() + " / " + player.getFace());
         } else if (command.equals("spy")) {
             if (args.length() >= 0) {
                 MapleCharacter target = ch.getPlayerStorage().getCharacterByName(args.get(0));
                 if (target != null) {
+                    player.dropMessage("================ " + target.getName() + "'s Stats ================");
+                    player.dropMessage("Mesos: " + target.getMeso());
                     player.dropMessage("Vote points: " + target.getClient().getVotePoints());
-                    player.dropMessage("Rebirths: " + target.getRebirths());
+                    player.dropMessage("Event Points" + target.getEventPoints());
+                    player.dropMessage("Fishing Points: " + target.getFishingPoints());
                     player.dropMessage("Rebirth Points: " + target.getRebirthPoints());
                     player.dropMessage("Donor Points: " + target.getClient().getDonationPoints());
+                    player.dropMessage("Rebirths: " + target.getRebirths());
                     player.dropMessage("Crystals: " + target.getItemQuantity(ServerConstants.CURRENCY, false));
                 }
             } else {
@@ -245,12 +251,6 @@ public class PlayerCommands {
             } else {
                 player.dropMessage("There is not auto event going on right now");
             }
-        } else if (command.equals("points")) {
-            player.dropMessage(6, "Fishing Points: " + player.getFishingPoints());
-            player.dropMessage(6, "Vote Points: " + player.getClient().getVotePoints());
-            player.dropMessage("Event points: " + player.getEventPoints());
-            player.dropMessage(6, "Donation points: " + player.getClient().getDonationPoints());
-            player.dropMessage(6, "Shadow points: " + player.getShadowPoints());
         } else if (command.equals("dispose")) {
             NPCScriptManager.dispose(client);
             player.announce(MaplePacketCreator.enableActions());
@@ -433,7 +433,12 @@ public class PlayerCommands {
                 player.dropMessage("You need 500M mesos to exchange for a crystal");
             }
         } else if (command.equals("maxskills")) {
-            int[] disabled = new int[]{1010, 1011, 1013, 1014, 1015, 1017, 1018, 1019, 1020, 1031, 1009, 1003, 1006, 1007, 9000, 9001, 9002, 10001003, 10001006, 10001007, 10001009, 10001010, 10001011, 10001013, 10001014, 10001015, 10001016, 10001019, 10001020, 10001022, 10001023, 10001031, 10009000, 10009001, 10009002, 20000014, 20000015, 20000016, 20000017, 20000018, 20001003, 20001006, 20001007, 20001009, 20001010, 20001011, 20001013, 20001019, 20001020, 20001022, 20001023, 20001031, 20009000, 20009001, 20009002, 21110002, 21110007, 21110008, 21120009, 21120010, 9001000, 9001001, 9001002, 9101000, 9101001, 9101002, 9101003, 9101004, 9101005, 9101006, 9101007, 9101008};
+            int[] disabled = new int[]{1010, 1011, 1013, 1014, 1015, 1017, 1018, 1019, 1020, 1031, 1009, 1003, 1006, 1007, 9000, 9001, 9002, // beginner (adventurer)
+                    5001005, // pirate dash
+                    10001003, 10001006, 10001007, 10001009, 10001010, 10001011, 10001013, 10001014, 10001015, 10001016, 10001019, 10001020, 10001022, 10001023, 10001031, 10009000, 10009001, 10009002, // beginner (noblesse)
+                    20000014, 20000015, 20000016, 20000017, 20000018, 20001003, 20001006, 20001007, 20001009, 20001010, 20001011, 20001013, 20001019, 20001020, 20001022, 20001023, 20001031, 20009000, 20009001, 20009002, 21110002, 21110007, 21110008, 21120009, 21120010, // beginner (aran)
+                    9001000, 9001001, 9001002, 9101000, 9101001, 9101002, 9101003, 9101004, 9101005, 9101006, 9101007, 9101008 // GM
+            };
             int[] alwaysDisable = new int[]{5001005, 10001015, 15001003};
             for (Map.Entry<Integer, Skill> skills : SkillFactory.getSkills().entrySet()) {
                 if (Arrays.binarySearch(disabled, skills.getKey()) < 0 && Arrays.binarySearch(alwaysDisable, skills.getKey()) < 0) {

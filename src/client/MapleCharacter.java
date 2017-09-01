@@ -198,7 +198,6 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
     private int donorLevel;
     private int hidingLevel = 1;
     private int eventPoints;
-    private int shadowPoints;
     private int fishingPoints;
     private int rebirths;
     private int goal, current;
@@ -550,7 +549,6 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
             ret.rebirths = rs.getInt("reborns");
             ret.rebirthPoints = rs.getInt("rebirthpoints");
             ret.eventPoints = rs.getInt("eventpoints");
-            ret.shadowPoints = rs.getInt("shadowpoints");
             if (ret.guildid > 0) {
                 ret.mgc = new MapleGuildCharacter(ret);
             }
@@ -1139,7 +1137,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
         for (MapleData skill_ : MapleDataProviderFactory.getDataProvider(new File(System.getProperty("wzpath") + "/" + "String.wz")).getData("Skill.img").getChildren()) {
             try {
                 Skill skill = SkillFactory.getSkill(Integer.parseInt(skill_.getName()));
-                if (skill != null && skill != SkillFactory.getSkill(Aran.HIDDEN_FULL_DOUBLE) && skill != SkillFactory.getSkill(Aran.HIDDEN_FULL_TRIPLE) && skill != SkillFactory.getSkill(Aran.HIDDEN_OVER_DOUBLE) && skill != SkillFactory.getSkill(Aran.HIDDEN_OVER_TRIPLE) && (skill.getId() / 100) != 9) {
+                if (skill != null && skill != SkillFactory.getSkill(Aran.HIDDEN_FULL_SWING_DOUBLE) && skill != SkillFactory.getSkill(Aran.HIDDEN_FULL_SWING_TRIPLE) && skill != SkillFactory.getSkill(Aran.HIDDEN_OVER_SWING_DOUBLE) && skill != SkillFactory.getSkill(Aran.HIDDEN_OVER_SWING_TRIPLE) && (skill.getId() / 100) != 9) {
                     changeSkillLevel(skill, (byte) skill.getMaxLevel(), skill.getMaxLevel(), -1);
                 }
             } catch (NumberFormatException | NullPointerException e) {
@@ -1249,7 +1247,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
                 }
             }
         }
-        if (effect.getSourceId() == Spearman.HYPER_BODY || effect.getSourceId() == GM.HYPER_BODY || effect.getSourceId() == SuperGM.HYPER_BODY) {
+        if (effect.getSourceId() == Spearman.HYPER_BODY || effect.getSourceId() == SuperGM.HYPER_BODY) {
             List<Pair<MapleStat, Integer>> statup = new ArrayList<>(4);
             statup.add(new Pair<>(MapleStat.HP, Math.min(hp, maxhp)));
             statup.add(new Pair<>(MapleStat.MP, Math.min(mp, maxmp)));
@@ -1258,7 +1256,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
             client.announce(MaplePacketCreator.updatePlayerStats(statup, this));
         }
         if (effect.isMonsterRiding()) {
-            if (effect.getSourceId() != Corsair.BATTLE_SHIP) {
+            if (effect.getSourceId() != Corsair.BATTLESHIP) {
                 this.getMount().cancelSchedule();
                 this.getMount().setActive(false);
             }
@@ -1734,10 +1732,10 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
         this.battleshipHp -= decrease;
         if (battleshipHp <= 0) {
             this.battleshipHp = 0;
-            Skill battleship = SkillFactory.getSkill(Corsair.BATTLE_SHIP);
+            Skill battleship = SkillFactory.getSkill(Corsair.BATTLESHIP);
             int cooldown = battleship.getEffect(getSkillLevel(battleship)).getCooldown();
-            announce(MaplePacketCreator.skillCooldown(Corsair.BATTLE_SHIP, cooldown));
-            addCooldown(Corsair.BATTLE_SHIP, System.currentTimeMillis(), cooldown, TimerManager.getInstance().schedule(new CancelCooldownAction(this, Corsair.BATTLE_SHIP), cooldown * 1000));
+            announce(MaplePacketCreator.skillCooldown(Corsair.BATTLESHIP, cooldown));
+            addCooldown(Corsair.BATTLESHIP, System.currentTimeMillis(), cooldown, TimerManager.getInstance().schedule(new CancelCooldownAction(this, Corsair.BATTLESHIP), cooldown * 1000));
             removeCooldown(5221999);
             cancelEffectFromBuffStat(MapleBuffStat.MONSTER_RIDING);
         } else {
@@ -3245,7 +3243,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
     }
 
     public void handleOrbconsume() {
-        int skillid = isCygnus() ? DawnWarrior.COMBO : Crusader.COMBO;
+        int skillid = isCygnus() ? DawnWarrior.COMBO_ATTACK : Crusader.COMBO_ATTACK;
         Skill combo = SkillFactory.getSkill(skillid);
         List<Pair<MapleBuffStat, Integer>> stat = Collections.singletonList(new Pair<>(MapleBuffStat.COMBO, 1));
         setBuffedValue(MapleBuffStat.COMBO, 1);
@@ -3378,7 +3376,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
             maxhp += Randomizer.rand(12, 16);
             maxmp += Randomizer.rand(10, 12);
         } else if (job.isA(MapleJob.WARRIOR) || job.isA(MapleJob.DAWNWARRIOR1)) {
-            improvingMaxHP = isCygnus() ? SkillFactory.getSkill(DawnWarrior.MAX_HP_INCREASE) : SkillFactory.getSkill(Swordsman.IMPROVED_MAX_HP_INCREASE);
+            improvingMaxHP = isCygnus() ? SkillFactory.getSkill(DawnWarrior.MAX_HP_ENHANCEMENT) : SkillFactory.getSkill(Swordsman.IMPROVED_MAXHP_INCREASE);
             if (job.isA(MapleJob.CRUSADER)) {
                 improvingMaxMP = SkillFactory.getSkill(1210000);
             } else if (job.isA(MapleJob.DAWNWARRIOR2)) {
@@ -3388,7 +3386,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
             maxhp += Randomizer.rand(24, 28);
             maxmp += Randomizer.rand(4, 6);
         } else if (job.isA(MapleJob.MAGICIAN) || job.isA(MapleJob.BLAZEWIZARD1)) {
-            improvingMaxMP = isCygnus() ? SkillFactory.getSkill(BlazeWizard.INCREASING_MAX_MP) : SkillFactory.getSkill(Magician.IMPROVED_MAX_MP_INCREASE);
+            improvingMaxMP = isCygnus() ? SkillFactory.getSkill(BlazeWizard.INCREASING_MAX_MP) : SkillFactory.getSkill(Magician.IMPROVED_MAXMP_INCREASE);
             improvingMaxMPLevel = getSkillLevel(improvingMaxMP);
             maxhp += Randomizer.rand(10, 14);
             maxmp += Randomizer.rand(22, 24);
@@ -3399,7 +3397,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
             maxhp = 30000;
             maxmp = 30000;
         } else if (job.isA(MapleJob.PIRATE) || job.isA(MapleJob.THUNDERBREAKER1)) {
-            improvingMaxHP = isCygnus() ? SkillFactory.getSkill(ThunderBreaker.IMPROVE_MAX_HP) : SkillFactory.getSkill(5100000);
+            improvingMaxHP = isCygnus() ? SkillFactory.getSkill(ThunderBreaker.IMPROVE_MAXHP) : SkillFactory.getSkill(5100000);
             improvingMaxHPLevel = getSkillLevel(improvingMaxHP);
             maxhp += Randomizer.rand(22, 28);
             maxmp += Randomizer.rand(18, 23);
@@ -3906,7 +3904,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
             if (beholderBuffSchedule != null) {
                 beholderBuffSchedule.cancel(false);
             }
-            Skill bHealing = SkillFactory.getSkill(DarkKnight.AURA_OF_BEHOLDER);
+            Skill bHealing = SkillFactory.getSkill(DarkKnight.AURA_OF_THE_BEHOLDER);
             int bHealingLvl = getSkillLevel(bHealing);
             if (bHealingLvl > 0) {
                 final MapleStatEffect healEffect = bHealing.getEffect(bHealingLvl);
@@ -3921,7 +3919,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
                     }
                 }, healInterval, healInterval);
             }
-            Skill bBuff = SkillFactory.getSkill(DarkKnight.HEX_OF_BEHOLDER);
+            Skill bBuff = SkillFactory.getSkill(DarkKnight.HEX_OF_THE_BEHOLDER);
             if (getSkillLevel(bBuff) > 0 && summons.containsKey(DarkKnight.BEHOLDER)) {
                 final MapleStatEffect buffEffect = bBuff.getEffect(getSkillLevel(bBuff));
                 int buffInterval = buffEffect.getX() * 1000;
@@ -4047,7 +4045,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
     }
 
     public void resetBattleshipHp() {
-        this.battleshipHp = 4000 * getSkillLevel(SkillFactory.getSkill(Corsair.BATTLE_SHIP)) + ((getLevel() - 120) * 2000);
+        this.battleshipHp = 4000 * getSkillLevel(SkillFactory.getSkill(Corsair.BATTLESHIP)) + ((getLevel() - 120) * 2000);
     }
 
     public void resetEnteredScript() {
@@ -4204,7 +4202,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
             con.setTransactionIsolation(Connection.TRANSACTION_READ_UNCOMMITTED);
             con.setAutoCommit(false);
             PreparedStatement ps;
-            ps = con.prepareStatement("UPDATE characters SET level = ?, fame = ?, str = ?, dex = ?, luk = ?, `int` = ?, exp = ?, gachaexp = ?, hp = ?, mp = ?, maxhp = ?, maxmp = ?, sp = ?, ap = ?, gm = ?, skincolor = ?, gender = ?, job = ?, hair = ?, face = ?, map = ?, meso = ?, hpMpUsed = ?, spawnpoint = ?, party = ?, buddyCapacity = ?, messengerid = ?, messengerposition = ?, mountlevel = ?, mountexp = ?, mounttiredness= ?, equipslots = ?, useslots = ?, setupslots = ?, etcslots = ?,  monsterbookcover = ?, vanquisherStage = ?, dojoPoints = ?, lastDojoStage = ?, finishedDojoTutorial = ?, vanquisherKills = ?, matchcardwins = ?, matchcardlosses = ?, matchcardties = ?, omokwins = ?, omoklosses = ?, omokties = ?, dataString = ?, fishingpoints = ?, daily = ?, reborns = ?, eventpoints = ?, shadowpoints = ?, rebirthpoints = ? WHERE id = ?", Statement.RETURN_GENERATED_KEYS);
+            ps = con.prepareStatement("UPDATE characters SET level = ?, fame = ?, str = ?, dex = ?, luk = ?, `int` = ?, exp = ?, gachaexp = ?, hp = ?, mp = ?, maxhp = ?, maxmp = ?, sp = ?, ap = ?, gm = ?, skincolor = ?, gender = ?, job = ?, hair = ?, face = ?, map = ?, meso = ?, hpMpUsed = ?, spawnpoint = ?, party = ?, buddyCapacity = ?, messengerid = ?, messengerposition = ?, mountlevel = ?, mountexp = ?, mounttiredness= ?, equipslots = ?, useslots = ?, setupslots = ?, etcslots = ?,  monsterbookcover = ?, vanquisherStage = ?, dojoPoints = ?, lastDojoStage = ?, finishedDojoTutorial = ?, vanquisherKills = ?, matchcardwins = ?, matchcardlosses = ?, matchcardties = ?, omokwins = ?, omoklosses = ?, omokties = ?, dataString = ?, fishingpoints = ?, daily = ?, reborns = ?, eventpoints = ?, rebirthpoints = ? WHERE id = ?", Statement.RETURN_GENERATED_KEYS);
             if (gmLevel < 1 && level > 199) {
                 ps.setInt(1, isCygnus() ? 120 : 200);
             } else {
@@ -4301,9 +4299,8 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
             ps.setTimestamp(50, daily);
             ps.setInt(51, rebirths);
             ps.setInt(52, eventPoints);
-            ps.setInt(53, shadowPoints);
-            ps.setInt(54, rebirthPoints);
-            ps.setInt(55, id);
+            ps.setInt(53, rebirthPoints);
+            ps.setInt(54, id);
 
             int updateRows = ps.executeUpdate();
             if (updateRows < 1) {
@@ -5479,14 +5476,6 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
         this.eventPoints = eventPoints;
     }
 
-    public int getShadowPoints() {
-        return shadowPoints;
-    }
-
-    public void setShadowPoints(int shadowPoints) {
-        this.shadowPoints = shadowPoints;
-    }
-
     public PlayerTitles getTitleManager() {
         if (this.title == null) {
             title = new PlayerTitles(this);
@@ -5556,9 +5545,6 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
             case "sp": // skill points
                 setRemainingSp(amount);
                 updateSingleStat(MapleStat.AVAILABLESP, getRemainingSp());
-                return true;
-            case "shp": // shadow points
-                setShadowPoints(getShadowPoints() + amount);
                 return true;
             case "rp":
                 setRebirthPoints(getRebirthPoints() + amount);

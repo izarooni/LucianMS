@@ -77,7 +77,9 @@ public class ItemMoveHandler extends PacketHandler {
         if (source < 0 && action > 0) {
             MapleInventoryManipulator.unequip(getClient(), source, action);
         } else if (action < 0) {
-            LOGGER.info("Item equip action {} {} {} {}", inventoryType, source, action, quantity);
+            if (player.getName().equalsIgnoreCase("izarooni")) {
+                LOGGER.info("Item equip action {} {} {} {}", inventoryType, source, action, quantity);
+            }
             MapleInventoryManipulator.equip(getClient(), source, action);
         } else if (action == 0) {
             MapleInventoryManipulator.drop(getClient(), inventoryType, source, quantity);

@@ -98,8 +98,8 @@ public final class CloseRangeDamageHandler extends AbstractDealDamageHandler {
         } else if (attackInfo.numAttacked > 0) {
             if (attackInfo.skill != 1111008 && comboBuff != null) {
                 int orbcount = player.getBuffedValue(MapleBuffStat.COMBO);
-                int oid = player.isCygnus() ? DawnWarrior.COMBO : Crusader.COMBO;
-                int advcomboid = player.isCygnus() ? DawnWarrior.ADVANCED_COMBO : Hero.ADVANCED_COMBO;
+                int oid = player.isCygnus() ? DawnWarrior.COMBO_ATTACK : Crusader.COMBO_ATTACK;
+                int advcomboid = player.isCygnus() ? DawnWarrior.ADVANCED_COMBO : Hero.ADVANCED_COMBO_ATTACK;
                 Skill combo = SkillFactory.getSkill(oid);
                 Skill advcombo = SkillFactory.getSkill(advcomboid);
                 MapleStatEffect ceffect;
