@@ -74,12 +74,12 @@ public class ItemMoveHandler extends PacketHandler {
         [7E FF] > action (-130)
         [FF FF] > quantity (-1)
          */
+        if (player.getName().equalsIgnoreCase("izarooni")) {
+            LOGGER.info("Item equip action {} {} {} {}", inventoryType, source, action, quantity);
+        }
         if (source < 0 && action > 0) {
             MapleInventoryManipulator.unequip(getClient(), source, action);
         } else if (action < 0) {
-            if (player.getName().equalsIgnoreCase("izarooni")) {
-                LOGGER.info("Item equip action {} {} {} {}", inventoryType, source, action, quantity);
-            }
             MapleInventoryManipulator.equip(getClient(), source, action);
         } else if (action == 0) {
             MapleInventoryManipulator.drop(getClient(), inventoryType, source, quantity);

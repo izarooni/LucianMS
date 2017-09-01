@@ -74,7 +74,7 @@ public class MapleMist extends AbstractMapleMapObject {
         	case Evan.RECOVERY_AURA:
         		isRecoveryMist = true;
         		break;
-            case Shadower.SMOKE_SCREEN: // Smoke Screen
+            case Shadower.SMOKESCREEN: // Smoke Screen
                 isPoisonMist = false;
                 break;
             case FPMage.POISON_MIST: // FP mist

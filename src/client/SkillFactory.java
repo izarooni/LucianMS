@@ -121,7 +121,7 @@ public class SkillFactory {
                 case Assassin.DRAIN:
                 case Hermit.SHADOW_WEB:
                 case Bandit.STEAL:
-                case Shadower.SMOKE_SCREEN:
+                case Shadower.SMOKESCREEN:
                 case SuperGM.HEAL_PLUS_DISPEL:
                 case Hero.MONSTER_MAGNET:
                 case Paladin.MONSTER_MAGNET:
