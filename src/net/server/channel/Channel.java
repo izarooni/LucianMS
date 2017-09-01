@@ -124,17 +124,15 @@ public final class Channel {
 
     public final void shutdown() {
         try {
-            System.out.println(String.format("Attempting to close World(%d) Channel(%d)", world, channel));
             closeAllMerchants();
             players.disconnectAll();
 
             acceptor.unbind();
             acceptor.dispose();
             acceptor = null;
-
-            System.out.println(String.format("World(%d) Channel(%d) closed", world, channel));
+            LOGGER.info("Shut down world {} channel {}", world, channel);
         } catch (Exception e) {
-            System.err.println(String.format("Error while shutting down World(%d) Channel(%d)", world, channel));
+            LOGGER.error("Exception while shutting down world {} channel {}", world, channel);
             e.printStackTrace();
         }
     }

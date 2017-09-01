@@ -38,6 +38,8 @@ import net.server.channel.Channel;
 import net.server.guild.MapleGuild;
 import net.server.guild.MapleGuildCharacter;
 import net.server.world.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import provider.MapleData;
 import provider.MapleDataProviderFactory;
 import scheduler.TaskExecutor;
@@ -76,14 +78,17 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
 
     public static final int[] FISHING_MAPS = {749050500, 749050501, 749050502};
     public static final int[] FISHING_CHAIRS = {3011000, 3010151, 3010184};
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(MapleCharacter.class);
     private static final String LEVEL_200 = "[Congrats] %s has reached Level 200! Congratulate %s on such an amazing achievement!";
     private static final int[] DEFAULT_KEY = {18, 65, 2, 23, 3, 4, 5, 6, 16, 17, 19, 25, 26, 27, 31, 34, 35, 37, 38, 40, 43, 44, 45, 46, 50, 56, 59, 60, 61, 62, 63, 64, 57, 48, 29, 7, 24, 33, 41, 39};
     private static final int[] DEFAULT_TYPE = {4, 6, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 5, 5, 4, 4, 5, 6, 6, 6, 6, 6, 6, 5, 4, 5, 4, 4, 4, 4, 4};
     private static final int[] DEFAULT_ACTION = {0, 106, 10, 1, 12, 13, 18, 24, 8, 5, 4, 19, 14, 15, 2, 17, 11, 3, 20, 16, 9, 50, 51, 6, 7, 53, 100, 101, 102, 103, 104, 105, 54, 22, 52, 21, 25, 26, 23, 27};
     private static final String[] BLOCKED_NAMES = {"admin", "owner", "moderator", "intern", "donor", "administrator", "help", "helper", "alert", "notice", "maplestory", "LucianMS", "fuck", "wizet", "fucking", "negro", "fuk", "fuc", "penis", "pussy", "asshole", "gay", "nigger", "homo", "suck", "cum", "shit", "shitty", "condom", "security", "official", "rape", "nigga", "sex", "tit", "boner", "orgy", "clit", "asshole", "fatass", "bitch", "support", "gamemaster", "cock", "gaay", "gm", "operate", "master", "sysop", "party", "GameMaster", "community", "message", "event", "test", "meso", "Scania", "renewal", "yata", "AsiaSoft", "henesys"};
-    public static int FRECEIVAL_ITEM = 2022323;
     private static String[] ariantroomleader = new String[3];
     private static int[] ariantroomslot = new int[3];
+    private static int FRECEIVAL_ITEM = 2022323;
+
     private int world;
     private int accountid, id;
     private int rank, rankMove, jobRank, jobRankMove;
@@ -135,7 +140,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
     private BuddyList buddylist;
     private EventInstanceManager eventInstance = null;
     private HiredMerchant hiredMerchant = null;
-    private MapleClient client;
+    private MapleClient client = null;
     private MapleGuildCharacter mgc = null;
     private MaplePartyCharacter mpc = null;
     private MapleInventory[] inventory;
@@ -752,7 +757,14 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
                 ps.setInt(1, charid);
                 rs = ps.executeQuery();
                 while (rs.next()) {
-                    ret.skills.put(SkillFactory.getSkill(rs.getInt("skillid")), new SkillEntry(rs.getByte("skilllevel"), rs.getInt("masterlevel"), rs.getLong("expiration")));
+                    int sid = rs.getInt("skillid");
+                    Skill s = SkillFactory.getSkill(sid);
+                    if (s == null) {
+                        LOGGER.warn("Invalid skill {} for player {}", sid, ret.name);
+                        continue;
+                    }
+                    SkillEntry sentry = new SkillEntry(rs.getByte("skilllevel"), rs.getInt("masterlevel"), rs.getLong("expiration"));
+                    ret.skills.put(s, sentry);
                 }
                 rs.close();
                 ps.close();
@@ -1189,7 +1201,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
         this.setPosition(portal.getPosition());
         this.initialSpawnPoint = portal.getId();
         this.map = c.getChannelServer().getMapFactory().getMap(getMapId());
-}
+    }
 
     public void cancelBuffEffects() {
         for (MapleBuffStatValueHolder mbsvh : effects.values()) {

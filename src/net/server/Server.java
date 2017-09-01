@@ -564,19 +564,19 @@ public class Server implements Runnable {
         return new Runnable() {
             @Override
             public void run() {
-                System.out.println("Running shutdown hook");
+                LOGGER.info("Shutdown hook invoked");
 
                 acceptor.unbind();
                 acceptor.dispose();
                 acceptor = null;
-                System.out.println("Login server closed");
+                LOGGER.info("Login server closed");
 
                 getWorlds().forEach(World::shutdown);
 
                 TimerManager.getInstance().purge();
                 TimerManager.getInstance().stop();
 
-                System.out.println("Worlds & channels are now offline");
+                LOGGER.info("Worlds & channels are now offline");
 
                 ConsoleCommands.stopReading();
 

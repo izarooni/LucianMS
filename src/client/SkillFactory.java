@@ -37,10 +37,7 @@ public class SkillFactory {
     private static MapleDataProvider datasource = MapleDataProviderFactory.getDataProvider(MapleDataProviderFactory.fileInWZPath("Skill.wz"));
 
     public static Skill getSkill(int id) {
-        if (!skills.isEmpty()) {
-            return skills.get(id);
-        }
-        return null;
+        return skills.get(id);
     }
 
     public static Map<Integer, Skill> getSkills() {
@@ -48,10 +45,7 @@ public class SkillFactory {
     }
 
     public static void loadAllSkills() {
-        if (!skills.isEmpty()) {
-            skills.clear();
-            skills = new HashMap<>();
-        }
+        Map<Integer, Skill> ret = new HashMap<>();
         final MapleDataDirectoryEntry root = datasource.getRoot();
         int skillid;
         for (MapleDataFileEntry topDir : root.getFiles()) { // Loop thru jobs
@@ -61,13 +55,14 @@ public class SkillFactory {
                         for (MapleData data2 : data) { // Loop thru each jobs
                             if (data2 != null) {
                                 skillid = Integer.parseInt(data2.getName());
-                                skills.put(skillid, loadFromData(skillid, data2));
+                                ret.put(skillid, loadFromData(skillid, data2));
                             }
                         }
                     }
                 }
             }
         }
+        skills = ret;
     }
 
     private static Skill loadFromData(int id, MapleData data) {

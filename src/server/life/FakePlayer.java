@@ -1,5 +1,6 @@
 package server.life;
 
+import client.FakeClient;
 import client.MapleCharacter;
 import client.MapleClient;
 import client.inventory.Item;
@@ -13,6 +14,7 @@ import java.util.ArrayList;
  */
 public class FakePlayer extends MapleCharacter {
 
+    private final FakeClient client = new FakeClient();
     private boolean following = false;
 
     public FakePlayer(String username) {
@@ -28,6 +30,11 @@ public class FakePlayer extends MapleCharacter {
     @Override
     public void sendSpawnData(MapleClient client) {
         client.announce(MaplePacketCreator.spawnPlayerMapobject(this));
+    }
+
+    @Override
+    public FakeClient getClient() {
+        return client;
     }
 
     public void clonePlayer(MapleCharacter player) {
