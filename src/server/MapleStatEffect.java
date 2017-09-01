@@ -1149,7 +1149,7 @@ public class MapleStatEffect {
     }
 
     private boolean isMist() {
-        return skill && (sourceid == FPMage.POISON_MIST || sourceid == Shadower.SMOKE_SCREEN || sourceid == BlazeWizard.FLAME_GEAR || sourceid == NightWalker.POISON_BOMB || sourceid == Evan.RECOVERY_AURA);
+        return skill && (sourceid == FPMage.POISON_MIST || sourceid == Shadower.SMOKESCREEN || sourceid == BlazeWizard.FLAME_GEAR || sourceid == NightWalker.POISON_BOMB || sourceid == Evan.RECOVERY_AURA);
     }
 
     private boolean isSoulArrow() {

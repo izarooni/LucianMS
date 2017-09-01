@@ -147,57 +147,64 @@ public class PlayerCommands {
                 int nStat = var_nStat.intValue();
                 if (nStat == 0) {
                     player.dropMessage("You need to enter a number less than, or larger than 0");
+                    return;
                 } else if (nStat > 0 && nStat > player.getRemainingAp()) {
                     player.dropMessage("Make sure you have enough AP to distribute");
                     return;
                 }
                 switch (command.getName()) {
                     case "str":
-                        if (player.getStr() + nStat > Short.MAX_VALUE) {
+                        if (nStat > 0 && player.getStr() + nStat > Short.MAX_VALUE) {
                             player.dropMessage("You can't assign that much AP to the STR stat");
-                        } else if (nStat < 0 && player.getStr() < nStat) {
+                        } else if (nStat < 0 && player.getStr() + nStat < 0) {
                             player.dropMessage("You can't take away what you don't have!");
                         } else {
                             player.setStr(player.getStr() + nStat);
                             player.setRemainingAp(player.getRemainingAp() - nStat);
                             player.updateSingleStat(MapleStat.STR, player.getStr());
+                            player.updateSingleStat(MapleStat.AVAILABLEAP, player.getRemainingAp());
+
                         }
                         break;
                     case "dex":
-                        if (player.getDex() + nStat > Short.MAX_VALUE) {
+                        if (nStat > 0 && player.getDex() + nStat > Short.MAX_VALUE) {
                             player.dropMessage("You can't assign that much AP to the DEX stat");
-                        } else if (nStat < 0 && player.getDex() < nStat) {
+                        } else if (nStat < 0 && player.getDex() + nStat < 0) {
                             player.dropMessage("You can't take away what you don't have!");
                         } else {
                             player.setDex(player.getDex() + nStat);
                             player.setRemainingAp(player.getRemainingAp() - nStat);
                             player.updateSingleStat(MapleStat.DEX, player.getDex());
+                            player.updateSingleStat(MapleStat.AVAILABLEAP, player.getRemainingAp());
+
                         }
                         break;
                     case "int":
-                        if (player.getInt() + nStat > Short.MAX_VALUE) {
+                        if (nStat > 0 && player.getInt() + nStat > Short.MAX_VALUE) {
                             player.dropMessage("You can't assign that much AP to the INT stat");
-                        } else if (nStat < 0 && player.getInt() < nStat) {
+                        } else if (nStat < 0 && player.getInt() + nStat < 0) {
                             player.dropMessage("You can't take away what you don't have!");
                         } else {
                             player.setInt(player.getInt() + nStat);
                             player.setRemainingAp(player.getRemainingAp() - nStat);
                             player.updateSingleStat(MapleStat.INT, player.getInt());
+                            player.updateSingleStat(MapleStat.AVAILABLEAP, player.getRemainingAp());
+
                         }
                         break;
                     case "luk":
-                        if (player.getLuk() + nStat > Short.MAX_VALUE) {
+                        if (nStat > 0 && player.getLuk() + nStat > Short.MAX_VALUE) {
                             player.dropMessage("You can't assign that much AP to the LUK stat");
-                        } else if (nStat < 0 && player.getLuk() < nStat) {
+                        } else if (nStat < 0 && player.getLuk() + nStat < 0) {
                             player.dropMessage("You can't take away what you don't have!");
                         } else {
                             player.setLuk(player.getLuk() + nStat);
                             player.setRemainingAp(player.getRemainingAp() - nStat);
                             player.updateSingleStat(MapleStat.LUK, player.getLuk());
+                            player.updateSingleStat(MapleStat.AVAILABLEAP, player.getRemainingAp());
                         }
                         break;
                 }
-                player.updateSingleStat(MapleStat.AVAILABLEAP, player.getRemainingAp());
             } else {
                 player.dropMessage(5, String.format("Syntax: @%s <amount>", command.getName()));
             }
