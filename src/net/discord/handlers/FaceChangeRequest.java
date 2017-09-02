@@ -2,7 +2,9 @@ package net.discord.handlers;
 
 import client.MapleCharacter;
 import client.MapleStat;
+import com.sun.xml.internal.ws.server.sei.MessageFiller;
 import net.discord.DiscordListener;
+import net.discord.Headers;
 import net.server.Server;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,7 +30,7 @@ public class FaceChangeRequest extends DiscordRequest {
         LOGGER.info("Updating {}'s face to {}", username, faceId);
 
         MaplePacketLittleEndianWriter writer = new MaplePacketLittleEndianWriter();
-        writer.write(0);
+        writer.write(Headers.SetFace.value);
         writer.writeLong(channelId);
         writer.writeMapleAsciiString(username);
 

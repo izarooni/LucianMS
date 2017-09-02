@@ -68,6 +68,14 @@ public class DiscordListener {
         }
     }
 
+    public static void sendPacket(byte[] packet) {
+        if (session == null) {
+            LOGGER.error("Currently not connected to the server");
+            return;
+        }
+        session.write(packet);
+    }
+
     public static IoSession getSession() {
         return session;
     }

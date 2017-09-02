@@ -3,6 +3,7 @@ package net.discord.handlers;
 import client.MapleCharacter;
 import client.MapleStat;
 import net.discord.DiscordListener;
+import net.discord.Headers;
 import net.server.Server;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,7 +29,7 @@ public class HairChangeRequest extends DiscordRequest {
         LOGGER.info("Updating {}'s hair to {}", username, hairId);
 
         MaplePacketLittleEndianWriter writer = new MaplePacketLittleEndianWriter();
-        writer.write(1);
+        writer.write(Headers.SetHair.value);
         writer.writeLong(channelId);
         writer.writeMapleAsciiString(username);
 

@@ -61,7 +61,12 @@ public class DiscordHandler extends IoHandlerAdapter {
             GenericLittleEndianAccessor lea = new GenericLittleEndianAccessor(new ByteArrayByteStream(bytes));
             byte header = lea.readByte();
             DiscordRequest request = DiscordRequestManager.getRequest(header);
-            request.handle(lea);
+            if (request != null) {
+                LOGGER.info("{} handler requested", request.getClass().getSimpleName());
+                request.handle(lea);
+            } else {
+                LOGGER.info("Packet header not handler 0x{}", Integer.toHexString(header));
+            }
         } else {
             LOGGER.info("Unhandled message type {}\r\n{}", message.getClass(), message);
         }
