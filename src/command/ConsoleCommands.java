@@ -71,7 +71,7 @@ public class ConsoleCommands {
             LOGGER.info("Managed Sessions: " + Server.getInstance().getAcceptor().getManagedSessionCount());
             if (Server.getInstance().isOnline()) {
                 for (World worlds : Server.getInstance().getWorlds()) {
-                    LOGGER.info("World {}:", worlds.getId());
+                    LOGGER.info("World {}:", (worlds.getId() + 1));
                     for (Channel channels : worlds.getChannels()) {
                         LOGGER.info("\tChannel {}:", channels.getId());
                         StringBuilder sb = new StringBuilder();

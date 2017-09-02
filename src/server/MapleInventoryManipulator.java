@@ -557,13 +557,13 @@ public class MapleInventoryManipulator {
                 player.equipChanged();
             }
             if (player.getMap().getEverlast()) {
-                if (ii.isDropRestricted(itemId) || ii.isCash(itemId)) {
-                    player.getMap().disappearingItemDrop(player, player, source, dropPos);
-                } else {
+//                if (ii.isDropRestricted(itemId) || ii.isCash(itemId)) {
+//                    player.getMap().disappearingItemDrop(player, player, source, dropPos);
+//                } else {
                     player.getMap().spawnItemDrop(player, player, source, dropPos, true, false);
-                }
-            } else if (ii.isDropRestricted(itemId) || ii.isCash(itemId)) {
-                player.getMap().disappearingItemDrop(player, player, source, dropPos);
+//                }
+//            } else if (ii.isDropRestricted(itemId) || ii.isCash(itemId)) {
+//                player.getMap().disappearingItemDrop(player, player, source, dropPos);
             } else {
                 player.getMap().spawnItemDrop(player, player, source, dropPos, true, true);
             }
