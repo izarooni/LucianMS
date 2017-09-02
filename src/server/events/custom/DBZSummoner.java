@@ -49,10 +49,8 @@ public class DBZSummoner extends GenericEvent {
 
     @Override
     public void registerPlayer(MapleCharacter player) {
-        if (player.getGenericEvents().stream().anyMatch(g -> (g instanceof DBZSummoner))) {
-            System.out.println(String.format("Player %s is already registered in a %s generic event", player.getName(), getClass().getSimpleName()));
-            return;
-        }
+        player.getGenericEvents().stream().filter(g -> g instanceof DBZSummoner).findFirst().ifPresent(player::removeGenericEvent);
+
         player.addGenericEvent(this);
     }
 
@@ -146,6 +144,10 @@ public class DBZSummoner extends GenericEvent {
                 }
             }
         }
+    }
+
+    public boolean isSummoning() {
+        return summoning;
     }
 
     private MapleNPC createNpc() {

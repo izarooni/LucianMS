@@ -1,6 +1,6 @@
 package net.discord.handlers;
 
-import net.discord.DiscordListener;
+import net.discord.DiscordSession;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import tools.data.input.GenericLittleEndianAccessor;
@@ -15,7 +15,7 @@ public class ShutdownRequest extends DiscordRequest {
     @Override
     public void handle(GenericLittleEndianAccessor lea) {
         LOGGER.info("Server shutdown requested");
-        DiscordListener.getSession().closeNow();
+        DiscordSession.getSession().closeNow();
         System.exit(0);
     }
 }

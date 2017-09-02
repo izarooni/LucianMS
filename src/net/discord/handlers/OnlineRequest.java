@@ -1,7 +1,7 @@
 package net.discord.handlers;
 
 import client.MapleCharacter;
-import net.discord.DiscordListener;
+import net.discord.DiscordSession;
 import net.discord.Headers;
 import net.server.Server;
 import net.server.channel.Channel;
@@ -40,6 +40,6 @@ public class OnlineRequest extends DiscordRequest {
             }
         }
 
-        DiscordListener.sendPacket(writer.getPacket());
+        DiscordSession.sendPacket(writer.getPacket());
     }
 }

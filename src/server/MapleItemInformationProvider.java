@@ -33,6 +33,8 @@ import constants.ItemConstants;
 import constants.skills.Assassin;
 import constants.skills.Gunslinger;
 import constants.skills.NightWalker;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import provider.*;
 import tools.DatabaseConnection;
 import tools.Pair;
@@ -50,6 +52,7 @@ import java.util.Map.Entry;
  */
 public class MapleItemInformationProvider {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(MapleItemInformationProvider.class);
     private static MapleItemInformationProvider instance = null;
     private MapleDataProvider itemData;
     private MapleDataProvider equipData;
@@ -241,18 +244,17 @@ public class MapleItemInformationProvider {
     }
 
     private MapleData getItemData(int itemId) {
-        MapleData ret = null;
         String idStr = "0" + String.valueOf(itemId);
         MapleDataDirectoryEntry root = itemData.getRoot();
         for (MapleDataDirectoryEntry topDir : root.getSubdirectories()) {
             for (MapleDataFileEntry iFile : topDir.getFiles()) {
                 if (iFile.getName().equals(idStr.substring(0, 4) + ".img")) {
-                    ret = itemData.getData(topDir.getName() + "/" + iFile.getName());
+                    MapleData ret = itemData.getData(topDir.getName() + "/" + iFile.getName());
                     if (ret == null) {
+                        LOGGER.warn("Unable to find data location for item {}", itemId);
                         return null;
                     }
-                    ret = ret.getChildByPath(idStr);
-                    return ret;
+                    return ret.getChildByPath(idStr);
                 } else if (iFile.getName().equals(idStr.substring(1) + ".img")) {
                     return itemData.getData(topDir.getName() + "/" + iFile.getName());
                 }
@@ -266,7 +268,8 @@ public class MapleItemInformationProvider {
                 }
             }
         }
-        return ret;
+        LOGGER.warn("Unable to find data file for item {}", itemId);
+        return null;
     }
 
     public short getSlotMax(MapleClient c, int itemId) {

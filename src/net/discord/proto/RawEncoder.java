@@ -13,7 +13,7 @@ import org.apache.mina.filter.codec.ProtocolEncoderOutput;
  *
  * @author izarooni
  */
-public class DiscordEncoder implements ProtocolEncoder {
+public class RawEncoder implements ProtocolEncoder {
 
     @Override
     public void encode(IoSession ioSession, Object object, ProtocolEncoderOutput out) throws Exception {

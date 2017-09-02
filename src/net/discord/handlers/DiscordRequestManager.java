@@ -9,14 +9,13 @@ import net.discord.Headers;
  */
 public class DiscordRequestManager {
 
-    private static DiscordRequest[] requests;
+    private static DiscordRequest[] requests = new DiscordRequest[Headers.values().length];
 
     static {
-        requests = new DiscordRequest[Headers.values().length];
-        requests[0x0] = new ShutdownRequest();
-        requests[0x1] = new FaceChangeRequest();
-        requests[0x2] = new HairChangeRequest();
-        requests[0x3] = new OnlineRequest();
+        requests[Headers.Shutdown.value] = new ShutdownRequest();
+        requests[Headers.SetFace.value] = new FaceChangeRequest();
+        requests[Headers.SetHair.value] = new HairChangeRequest();
+        requests[Headers.Online.value] = new OnlineRequest();
     }
 
     private DiscordRequestManager() {

@@ -15,6 +15,7 @@ import server.events.pvp.PlayerBattle;
 import server.maps.MapleMap;
 import tools.MaplePacketCreator;
 import tools.Pair;
+import tools.StringUtil;
 
 import java.util.*;
 
@@ -63,14 +64,14 @@ public class PlayerCommands {
             commands.clear();
         } else if (command.equals("checkme")) {
             player.dropMessage("================ " + player.getName() + "'s Stats ================");
-            player.dropMessage("Mesos: " + player.getMeso());
-            player.dropMessage("Ability Power: " + player.getRemainingAp());
-            player.dropMessage("Vote points: " + client.getVotePoints());
-            player.dropMessage("Event Points" + player.getEventPoints());
-            player.dropMessage("Fishing Points: " + player.getFishingPoints());
-            player.dropMessage("Rebirth Points: " + player.getRebirthPoints());
-            player.dropMessage("Donor Points: " + client.getDonationPoints());
-            player.dropMessage("Rebirths: " + player.getRebirths());
+            player.dropMessage("Mesos: " + StringUtil.formatNumber(player.getMeso()));
+            player.dropMessage("Ability Power: " + StringUtil.formatNumber(player.getRemainingAp()));
+            player.dropMessage("Vote points: " + StringUtil.formatNumber(client.getVotePoints()));
+            player.dropMessage("Event Points" + StringUtil.formatNumber(player.getEventPoints()));
+            player.dropMessage("Fishing Points: " + StringUtil.formatNumber(player.getFishingPoints()));
+            player.dropMessage("Rebirth Points: " + StringUtil.formatNumber(player.getRebirthPoints()));
+            player.dropMessage("Donor Points: " + StringUtil.formatNumber(client.getDonationPoints()));
+            player.dropMessage("Rebirths: " + StringUtil.formatNumber(player.getRebirths()));
             player.dropMessage("Crystals: " + player.getItemQuantity(ServerConstants.CURRENCY, false));
             player.dropMessage("Hair / Face: " + player.getHair() + " / " + player.getFace());
         } else if (command.equals("spy")) {
@@ -78,13 +79,13 @@ public class PlayerCommands {
                 MapleCharacter target = ch.getPlayerStorage().getCharacterByName(args.get(0));
                 if (target != null) {
                     player.dropMessage("================ " + target.getName() + "'s Stats ================");
-                    player.dropMessage("Mesos: " + target.getMeso());
-                    player.dropMessage("Vote points: " + target.getClient().getVotePoints());
-                    player.dropMessage("Event Points" + target.getEventPoints());
-                    player.dropMessage("Fishing Points: " + target.getFishingPoints());
-                    player.dropMessage("Rebirth Points: " + target.getRebirthPoints());
-                    player.dropMessage("Donor Points: " + target.getClient().getDonationPoints());
-                    player.dropMessage("Rebirths: " + target.getRebirths());
+                    player.dropMessage("Mesos: " + StringUtil.formatNumber(target.getMeso()));
+                    player.dropMessage("Vote points: " + StringUtil.formatNumber(target.getClient().getVotePoints()));
+                    player.dropMessage("Event Points" + StringUtil.formatNumber(target.getEventPoints()));
+                    player.dropMessage("Fishing Points: " + StringUtil.formatNumber(target.getFishingPoints()));
+                    player.dropMessage("Rebirth Points: " + StringUtil.formatNumber(target.getRebirthPoints()));
+                    player.dropMessage("Donor Points: " + StringUtil.formatNumber(target.getClient().getDonationPoints()));
+                    player.dropMessage("Rebirths: " + StringUtil.formatNumber(target.getRebirths()));
                     player.dropMessage("Crystals: " + target.getItemQuantity(ServerConstants.CURRENCY, false));
                 }
             } else {

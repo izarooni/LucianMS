@@ -68,6 +68,7 @@ public class ConsoleCommands {
             reading = false;
             System.exit(0);
         } else if (command.equals("online")) {
+            LOGGER.info("Managed Sessions: " + Server.getInstance().getAcceptor().getManagedSessionCount());
             if (Server.getInstance().isOnline()) {
                 for (World worlds : Server.getInstance().getWorlds()) {
                     LOGGER.info("World {}:", worlds.getId());

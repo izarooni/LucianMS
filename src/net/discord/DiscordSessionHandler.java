@@ -18,12 +18,12 @@ import tools.data.input.GenericLittleEndianAccessor;
  *
  * @author izarooni
  */
-public class DiscordHandler extends IoHandlerAdapter {
+public class DiscordSessionHandler extends IoHandlerAdapter {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(DiscordHandler.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(DiscordSessionHandler.class);
 
 
-    public DiscordHandler() {
+    public DiscordSessionHandler() {
     }
 
     @Override
@@ -35,7 +35,7 @@ public class DiscordHandler extends IoHandlerAdapter {
     public void sessionOpened(IoSession session) throws Exception {
         LOGGER.info("Session #{} opened", session.getId());
 
-        DiscordListener.setSession(session);
+        DiscordSession.setSession(session);
     }
 
     @Override
@@ -62,8 +62,13 @@ public class DiscordHandler extends IoHandlerAdapter {
             byte header = lea.readByte();
             DiscordRequest request = DiscordRequestManager.getRequest(header);
             if (request != null) {
-                LOGGER.info("{} handler requested", request.getClass().getSimpleName());
-                request.handle(lea);
+                try {
+                    LOGGER.info("{} handler requested", request.getClass().getSimpleName());
+                    request.handle(lea);
+                } catch (Throwable t) {
+                    LOGGER.error("Failed to handle packet 0x{}", Integer.toHexString(header));
+                    t.printStackTrace();
+                }
             } else {
                 LOGGER.info("Packet header not handler 0x{}", Integer.toHexString(header));
             }

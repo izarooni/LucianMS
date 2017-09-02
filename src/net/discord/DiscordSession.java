@@ -1,7 +1,7 @@
 package net.discord;
 
-import net.discord.proto.DiscordDecoder;
-import net.discord.proto.DiscordEncoder;
+import net.discord.proto.RawDecoder;
+import net.discord.proto.RawEncoder;
 import org.apache.mina.core.service.IoAcceptor;
 import org.apache.mina.core.session.IoSession;
 import org.apache.mina.filter.codec.ProtocolCodecFactory;
@@ -21,9 +21,9 @@ import java.net.InetSocketAddress;
  *
  * @author izarooni
  */
-public class DiscordListener {
+public class DiscordSession {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(DiscordListener.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(DiscordSession.class);
 
     private static IoAcceptor acceptor = null;
 
@@ -37,8 +37,8 @@ public class DiscordListener {
         try {
             acceptor = new NioSocketAcceptor();
             acceptor.getFilterChain().addLast("codec", new ProtocolCodecFilter(new ProtocolCodecFactory() {
-                private DiscordDecoder decoder = new DiscordDecoder();
-                private DiscordEncoder encoder = new DiscordEncoder();
+                private RawDecoder decoder = new RawDecoder();
+                private RawEncoder encoder = new RawEncoder();
 
                 @Override
                 public ProtocolEncoder getEncoder(IoSession ioSession) throws Exception {
@@ -50,7 +50,7 @@ public class DiscordListener {
                     return decoder;
                 }
             }));
-            acceptor.setHandler(new DiscordHandler());
+            acceptor.setHandler(new DiscordSessionHandler());
             acceptor.bind(new InetSocketAddress(InetAddress.getLoopbackAddress(), 8483));
             LOGGER.info("Discord now listening on port 8483");
         } catch (IOException e) {
@@ -81,6 +81,6 @@ public class DiscordListener {
     }
 
     public static void setSession(IoSession session) {
-        DiscordListener.session = session;
+        DiscordSession.session = session;
     }
 }

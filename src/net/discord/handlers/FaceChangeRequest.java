@@ -2,8 +2,7 @@ package net.discord.handlers;
 
 import client.MapleCharacter;
 import client.MapleStat;
-import com.sun.xml.internal.ws.server.sei.MessageFiller;
-import net.discord.DiscordListener;
+import net.discord.DiscordSession;
 import net.discord.Headers;
 import net.server.Server;
 import org.slf4j.Logger;
@@ -59,6 +58,6 @@ public class FaceChangeRequest extends DiscordRequest {
                 LOGGER.info("The player {} could not be found", username);
             }
         }
-        DiscordListener.getSession().write(writer.getPacket());
+        DiscordSession.getSession().write(writer.getPacket());
     }
 }

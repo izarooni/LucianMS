@@ -1101,11 +1101,13 @@ public class MapleMap {
     }
 
     public Point getGroundBelow(Point pos) {
-        Point spos = new Point(pos.x, pos.y - 3); // Using -3 fixes issues with
-        // spawning pets causing a
-        // lot of issues.
+        Point spos = new Point(pos.x, pos.y - 3); // Using -3 fixes issues with spawning pets causing a lot of issues.
         spos = calcPointBelow(spos);
-        spos.y--;// shouldn't be null!
+        if (spos == null) {
+            LOGGER.info("Unable to find position below {} in map {}", pos.toString(), getId());
+            return null;
+        }
+        spos.y--;
         return spos;
     }
 

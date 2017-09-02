@@ -13,7 +13,7 @@ import org.apache.mina.filter.codec.ProtocolDecoderOutput;
  *
  * @author izarooni
  */
-public class DiscordDecoder extends CumulativeProtocolDecoder {
+public class RawDecoder extends CumulativeProtocolDecoder {
 
     @Override
     protected boolean doDecode(IoSession session, IoBuffer buffer, ProtocolDecoderOutput out) throws Exception {

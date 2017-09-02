@@ -28,7 +28,7 @@ import constants.ServerConstants;
 import io.Config;
 import io.defaults.Defaults;
 import net.MapleServerHandler;
-import net.discord.DiscordListener;
+import net.discord.DiscordSession;
 import net.mina.MapleCodecFactory;
 import net.server.channel.Channel;
 import net.server.guild.MapleAlliance;
@@ -91,6 +91,10 @@ public class Server implements Runnable {
         Server.getInstance().run();
     }
 
+    public IoAcceptor getAcceptor() {
+        return acceptor;
+    }
+
     public boolean isOnline() {
         return online;
     }
@@ -142,7 +146,7 @@ public class Server implements Runnable {
 
         LOGGER.info("LucianMS v{} starting up!", ServerConstants.VERSION);
 
-        DiscordListener.listen();
+        DiscordSession.listen();
 
         try {
             if (Defaults.createDefaultIfAbsent(null, "server-config.json")) {
@@ -580,7 +584,7 @@ public class Server implements Runnable {
 
                 ConsoleCommands.stopReading();
 
-                DiscordListener.ignore();
+                DiscordSession.ignore();
             }
         };
     }
