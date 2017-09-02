@@ -545,7 +545,12 @@ public class MapleMap {
                     monster.damage(chr, damage);
                     if (!monster.isAlive()) { // monster just died
                         // killMonster(monster, chr, true);
-
+                    	if(getMapObjectsInRange(new Point(0, 0), Double.POSITIVE_INFINITY, Arrays.asList(MapleMapObjectType.ITEM)).size() >= 400) {
+                    		monster.getMap().clearDrops();
+                    		for(MapleCharacter player : getCharacters() ) {
+                    			player.dropMessage("All drops have been cleared from the floor automatically.");
+                    		}
+                    	}
                         if (monster.getMap().getId() == 85) {
                             if (chr.getParty() != null) {
                                 for (MaplePartyCharacter player : chr.getParty().getMembers()) {
