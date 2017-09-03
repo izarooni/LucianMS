@@ -270,29 +270,20 @@ public class MapleClient {
             return false;
         }
 
-        boolean ret = false;
-        PreparedStatement ps = null;
-        try {
-            ps = DatabaseConnection.getConnection().prepareStatement("SELECT COUNT(*) FROM hwidbans WHERE hwid LIKE ?");
+        try (PreparedStatement ps = DatabaseConnection.getConnection().prepareStatement("SELECT COUNT(*) FROM hwidbans WHERE hwid LIKE ?")) {
             ps.setString(1, hwid);
-            ResultSet rs = ps.executeQuery();
-            if (rs != null && rs.next()) {
-                if (rs.getInt(1) > 0) {
-                    ret = true;
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    if (rs.getInt(1) > 0) {
+                        return true;
+                    }
                 }
             }
         } catch (SQLException e) {
             e.printStackTrace();
-        } finally {
-            try {
-                if (ps != null && !ps.isClosed()) {
-                    ps.close();
-                }
-            } catch (SQLException e) {
-            }
         }
 
-        return ret;
+        return false;
     }
 
     public boolean hasBannedMac() {
@@ -324,6 +315,7 @@ public class MapleClient {
                 }
             }
         } catch (Exception e) {
+            e.printStackTrace();
         }
         return ret;
     }
@@ -341,7 +333,6 @@ public class MapleClient {
         }
     }
 
-    // TODO: Recode to close statements...
     private void loadMacsIfNescessary() throws SQLException {
         if (macs.isEmpty()) {
             try (PreparedStatement ps = DatabaseConnection.getConnection().prepareStatement("SELECT macs FROM accounts WHERE id = ?")) {
@@ -360,22 +351,12 @@ public class MapleClient {
     }
 
     public void banHWID() {
-        Connection con = DatabaseConnection.getConnection();
-        PreparedStatement ps = null;
-        try {
+        try (PreparedStatement ps = DatabaseConnection.getConnection().prepareStatement("INSERT INTO hwidbans (hwid) VALUES (?)")) {
             loadHWIDIfNescessary();
-            ps = con.prepareStatement("INSERT INTO hwidbans (hwid) VALUES (?)");
             ps.setString(1, hwid);
             ps.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
-        } finally {
-            try {
-                if (ps != null && !ps.isClosed()) {
-                    ps.close();
-                }
-            } catch (SQLException e) {
-            }
         }
     }
 
@@ -405,6 +386,7 @@ public class MapleClient {
                 }
             }
         } catch (SQLException e) {
+            e.printStackTrace();
         }
     }
 

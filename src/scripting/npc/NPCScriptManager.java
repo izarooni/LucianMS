@@ -123,6 +123,7 @@ public class NPCScriptManager {
             pair.right = null;
         }
         ScriptUtil.removeScript(client, path);
+        System.gc();
     }
 
     public static void dispose(MapleClient client) {
