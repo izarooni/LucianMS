@@ -722,6 +722,10 @@ public class GameMasterCommands {
                 } else if (type.equalsIgnoreCase("MAP") || type.equalsIgnoreCase("MAPS")) {
                     List<String> retMaps = new ArrayList<>();
                     data = dataProvider.getData("Map.img");
+                    if (data == null) {
+                        player.dropMessage("An error occurred while looking for map names");
+                        return;
+                    }
                     List<Pair<Integer, String>> mapPairList = new LinkedList<>();
                     for (MapleData mapAreaData : data.getChildren()) {
                         for (MapleData mapIdData : mapAreaData.getChildren()) {

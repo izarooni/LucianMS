@@ -18,7 +18,7 @@ import java.util.concurrent.ScheduledFuture;
 
 public abstract class Arcade {
 
-    int mapId, arcadeId, highscore;
+    int mapId, arcadeId;
     Task respawnTask = null;
     double rewardPerKill;
     int itemReward;
@@ -58,7 +58,7 @@ public abstract class Arcade {
 
     }
 
-    boolean saveData(int score) {
+    public boolean saveData(int score) {
         if (score > Arcade.getHighscore(arcadeId, player)) {
             try (Connection con = DatabaseConnection.getConnection(); PreparedStatement stmnt = con.prepareStatement("INSERT INTO arcade (id, charid, highscore) VALUES (?, ?, ?) ON DUPLICATE KEY UPDATE highscore = ?")) {
                 stmnt.setInt(1, arcadeId);
@@ -78,7 +78,7 @@ public abstract class Arcade {
         return false;
     }
 
-    static int getHighscore(int arcadeId, MapleCharacter player) {
+    public static int getHighscore(int arcadeId, MapleCharacter player) {
         int highscore = 0;
         try (Connection con = DatabaseConnection.getConnection(); PreparedStatement stmnt = con.prepareStatement("SELECT highscore FROM arcade WHERE charid = ? AND id = ?")) {
             stmnt.setInt(1, player.getId());
