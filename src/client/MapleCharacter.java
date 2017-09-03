@@ -4100,6 +4100,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
                     ps.executeBatch();
                 }
             } catch (SQLException se) {
+                se.printStackTrace();
             }
         }
     }
@@ -4114,6 +4115,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
                 ps.execute();
             }
         } catch (SQLException se) {
+            se.printStackTrace();
         }
     }
 
@@ -4232,8 +4234,8 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
             ps.setInt(11, maxhp);
             ps.setInt(12, maxmp);
             StringBuilder sps = new StringBuilder();
-            for (int i = 0; i < remainingSp.length; i++) {
-                sps.append(remainingSp[i]);
+            for (int aRemainingSp : remainingSp) {
+                sps.append(aRemainingSp);
                 sps.append(",");
             }
             String sp = sps.toString();
@@ -4531,36 +4533,12 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
         }, duration);
     }
 
-    public void sendPolice(String text) {
-        String message = getName() + " received this - " + text;
-        if (Server.getInstance().isGmOnline()) { // Alert and log if a GM is
-            // online
-            Server.getInstance().broadcastGMMessage(MaplePacketCreator.sendYellowTip(message));
-            FilePrinter.printError("autobanwarning.txt", message + "\r\n");
-        } else { // Auto DC and log if no GM is online
-            client.disconnect(false, false);
-            FilePrinter.printError("autobandced.txt", message + "\r\n");
-        }
-        // Server.getInstance().broadcastGMMessage(0,
-        // MaplePacketCreator.serverNotice(1, getName() + " received this - " +
-        // text));
-        // announce(MaplePacketCreator.sendPolice(text));
-        // this.isbanned = true;
-        // TimerManager.getInstance().schedule(new Runnable() {
-        // @Override
-        // public void run() {
-        // client.disconnect(false, false);
-        // }
-        // }, 6000);
-    }
-
     public void sendKeymap() {
         client.announce(MaplePacketCreator.getKeymap(keymap));
     }
 
     public void sendMacros() {
-        // Always send the macro packet to fix a client side bug when switching
-        // characters.
+        // Always send the macro packet to fix a client side bug when switching characters.
         client.announce(MaplePacketCreator.getMacros(skillMacros));
     }
 
@@ -4825,25 +4803,25 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
     }
 
     public void startFullnessSchedule(final int decrease, final MaplePet pet, int petSlot) {
-        //        ScheduledFuture<?> schedule = TimerManager.getInstance().register(new Runnable() {
-        //            @Override
-        //            public void run() {
-        //                int newFullness = pet.getFullness() - decrease;
-        //                if (newFullness <= 5) {
-        //                    pet.setFullness(15);
-        //                    pet.saveToDb();
-        //                    unequipPet(pet, true);
-        //                } else {
-        //                    pet.setFullness(newFullness);
-        //                    pet.saveToDb();
-        //                    Item petz = getInventory(MapleInventoryType.CASH).getItem(pet.getPosition());
-        //                    if (petz != null) {
-        //                        forceUpdateItem(petz);
-        //                    }
-        //                }
-        //            }
-        //        }, 180000, 18000);
-        //        fullnessSchedule[petSlot] = schedule;
+                ScheduledFuture<?> schedule = TimerManager.getInstance().register(new Runnable() {
+                    @Override
+                    public void run() {
+                        int newFullness = pet.getFullness() - decrease;
+                        if (newFullness <= 5) {
+                            pet.setFullness(15);
+                            pet.saveToDb();
+                            unequipPet(pet, true);
+                        } else {
+                            pet.setFullness(newFullness);
+                            pet.saveToDb();
+                            Item petz = getInventory(MapleInventoryType.CASH).getItem(pet.getPosition());
+                            if (petz != null) {
+                                forceUpdateItem(petz);
+                            }
+                        }
+                    }
+                }, 180000, 18000);
+                fullnessSchedule[petSlot] = schedule;
     }
 
     public void startMapEffect(String msg, int itemId) {

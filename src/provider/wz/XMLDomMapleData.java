@@ -56,6 +56,7 @@ public class XMLDomMapleData implements MapleData {
             DocumentBuilder documentBuilder = documentBuilderFactory.newDocumentBuilder();
             Document document = documentBuilder.parse(fis);
             this.node = document.getFirstChild();
+            fis.close();
         } catch (ParserConfigurationException | SAXException | IOException e) {
             try {
                 Field field = FileInputStream.class.getDeclaredField("path");

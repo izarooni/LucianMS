@@ -71,7 +71,6 @@ public class MapleItemInformationProvider {
     private Map<Integer, Integer> wholePriceCache = new HashMap<>();
     private Map<Integer, Integer> projectileWatkCache = new HashMap<>();
     private Map<Integer, String> nameCache = new HashMap<>();
-    protected Map<Integer, String> descCache = new HashMap<>();
     private Map<Integer, String> msgCache = new HashMap<>();
     private Map<Integer, Boolean> dropRestrictionCache = new HashMap<>();
     private Map<Integer, Boolean> pickupRestrictionCache = new HashMap<>();
@@ -90,7 +89,7 @@ public class MapleItemInformationProvider {
     private Map<Integer, String> equipmentSlotCache = new HashMap<>();
 
     private MapleItemInformationProvider() {
-        loadCardIdData();
+//        loadCardIdData();
         itemData = MapleDataProviderFactory.getDataProvider(new File(System.getProperty("wzpath") + "/Item.wz"));
         equipData = MapleDataProviderFactory.getDataProvider(new File(System.getProperty("wzpath") + "/Character.wz"));
         stringData = MapleDataProviderFactory.getDataProvider(new File(System.getProperty("wzpath") + "/String.wz"));
@@ -237,10 +236,7 @@ public class MapleItemInformationProvider {
 
     public boolean noCancelMouse(int itemId) {
         MapleData item = getItemData(itemId);
-        if (item == null) {
-            return false;
-        }
-        return MapleDataTool.getIntConvert("info/noCancelMouse", item, 0) == 1;
+        return item != null && MapleDataTool.getIntConvert("info/noCancelMouse", item, 0) == 1;
     }
 
     private MapleData getItemData(int itemId) {
@@ -373,7 +369,6 @@ public class MapleItemInformationProvider {
             return equipmentSlotCache.get(itemId);
         }
 
-        String ret = "";
 
         MapleData item = getItemData(itemId);
 
@@ -387,7 +382,7 @@ public class MapleItemInformationProvider {
             return null;
         }
 
-        ret = MapleDataTool.getString("islot", info, "");
+        String ret = MapleDataTool.getString("islot", info, "");
 
         equipmentSlotCache.put(itemId, ret);
 
@@ -411,8 +406,6 @@ public class MapleItemInformationProvider {
             if (data.getName().startsWith("inc")) {
                 ret.put(data.getName().substring(3), MapleDataTool.getIntConvert(data));
             }
-            /*else if (data.getName().startsWith("req"))
-             ret.put(data.getName(), MapleDataTool.getInt(data.getName(), info, 0));*/
         }
         ret.put("reqJob", MapleDataTool.getInt("reqJob", info, 0));
         ret.put("reqLevel", MapleDataTool.getInt("reqLevel", info, 0));
@@ -433,10 +426,10 @@ public class MapleItemInformationProvider {
     public List<Integer> getScrollReqs(int itemId) {
         List<Integer> ret = new ArrayList<>();
         MapleData data = getItemData(itemId);
-        data = data.getChildByPath("req");
         if (data == null) {
             return ret;
         }
+        data = data.getChildByPath("req");
         for (MapleData req : data.getChildren()) {
             ret.add(MapleDataTool.getInt(req));
         }
@@ -534,46 +527,46 @@ public class MapleItemInformationProvider {
                         for (Entry<String, Integer> stat : stats.entrySet()) {
                             switch (stat.getKey()) {
                                 case "STR":
-                                    nEquip.setStr((short) (nEquip.getStr() + stat.getValue().intValue()));
+                                    nEquip.setStr((short) (nEquip.getStr() + stat.getValue()));
                                     break;
                                 case "DEX":
-                                    nEquip.setDex((short) (nEquip.getDex() + stat.getValue().intValue()));
+                                    nEquip.setDex((short) (nEquip.getDex() + stat.getValue()));
                                     break;
                                 case "INT":
-                                    nEquip.setInt((short) (nEquip.getInt() + stat.getValue().intValue()));
+                                    nEquip.setInt((short) (nEquip.getInt() + stat.getValue()));
                                     break;
                                 case "LUK":
-                                    nEquip.setLuk((short) (nEquip.getLuk() + stat.getValue().intValue()));
+                                    nEquip.setLuk((short) (nEquip.getLuk() + stat.getValue()));
                                     break;
                                 case "PAD":
-                                    nEquip.setWatk((short) (nEquip.getWatk() + stat.getValue().intValue()));
+                                    nEquip.setWatk((short) (nEquip.getWatk() + stat.getValue()));
                                     break;
                                 case "PDD":
-                                    nEquip.setWdef((short) (nEquip.getWdef() + stat.getValue().intValue()));
+                                    nEquip.setWdef((short) (nEquip.getWdef() + stat.getValue()));
                                     break;
                                 case "MAD":
-                                    nEquip.setMatk((short) (nEquip.getMatk() + stat.getValue().intValue()));
+                                    nEquip.setMatk((short) (nEquip.getMatk() + stat.getValue()));
                                     break;
                                 case "MDD":
-                                    nEquip.setMdef((short) (nEquip.getMdef() + stat.getValue().intValue()));
+                                    nEquip.setMdef((short) (nEquip.getMdef() + stat.getValue()));
                                     break;
                                 case "ACC":
-                                    nEquip.setAcc((short) (nEquip.getAcc() + stat.getValue().intValue()));
+                                    nEquip.setAcc((short) (nEquip.getAcc() + stat.getValue()));
                                     break;
                                 case "EVA":
-                                    nEquip.setAvoid((short) (nEquip.getAvoid() + stat.getValue().intValue()));
+                                    nEquip.setAvoid((short) (nEquip.getAvoid() + stat.getValue()));
                                     break;
                                 case "Speed":
-                                    nEquip.setSpeed((short) (nEquip.getSpeed() + stat.getValue().intValue()));
+                                    nEquip.setSpeed((short) (nEquip.getSpeed() + stat.getValue()));
                                     break;
                                 case "Jump":
-                                    nEquip.setJump((short) (nEquip.getJump() + stat.getValue().intValue()));
+                                    nEquip.setJump((short) (nEquip.getJump() + stat.getValue()));
                                     break;
                                 case "MHP":
-                                    nEquip.setHp((short) (nEquip.getHp() + stat.getValue().intValue()));
+                                    nEquip.setHp((short) (nEquip.getHp() + stat.getValue()));
                                     break;
                                 case "MMP":
-                                    nEquip.setMp((short) (nEquip.getMp() + stat.getValue().intValue()));
+                                    nEquip.setMp((short) (nEquip.getMp() + stat.getValue()));
                                     break;
                                 case "afterImage":
                                     break;
@@ -604,53 +597,56 @@ public class MapleItemInformationProvider {
     }
 
     private Item getEquipById(int equipId, int ringId) {
-        Equip nEquip;
-        nEquip = new Equip(equipId, (byte) 0, ringId);
-        nEquip.setQuantity((short) 1);
+        if (equipCache.containsKey(equipId)) {
+            return equipCache.get(equipId).copy();
+        }
         Map<String, Integer> stats = this.getEquipStats(equipId);
-        if (stats != null) {
-            for (Entry<String, Integer> stat : stats.entrySet()) {
-                if (stat.getKey().equals("STR")) {
-                    nEquip.setStr((short) stat.getValue().intValue());
-                } else if (stat.getKey().equals("DEX")) {
-                    nEquip.setDex((short) stat.getValue().intValue());
-                } else if (stat.getKey().equals("INT")) {
-                    nEquip.setInt((short) stat.getValue().intValue());
-                } else if (stat.getKey().equals("LUK")) {
-                    nEquip.setLuk((short) stat.getValue().intValue());
-                } else if (stat.getKey().equals("PAD")) {
-                    nEquip.setWatk((short) stat.getValue().intValue());
-                } else if (stat.getKey().equals("PDD")) {
-                    nEquip.setWdef((short) stat.getValue().intValue());
-                } else if (stat.getKey().equals("MAD")) {
-                    nEquip.setMatk((short) stat.getValue().intValue());
-                } else if (stat.getKey().equals("MDD")) {
-                    nEquip.setMdef((short) stat.getValue().intValue());
-                } else if (stat.getKey().equals("ACC")) {
-                    nEquip.setAcc((short) stat.getValue().intValue());
-                } else if (stat.getKey().equals("EVA")) {
-                    nEquip.setAvoid((short) stat.getValue().intValue());
-                } else if (stat.getKey().equals("Speed")) {
-                    nEquip.setSpeed((short) stat.getValue().intValue());
-                } else if (stat.getKey().equals("Jump")) {
-                    nEquip.setJump((short) stat.getValue().intValue());
-                } else if (stat.getKey().equals("MHP")) {
-                    nEquip.setHp((short) stat.getValue().intValue());
-                } else if (stat.getKey().equals("MMP")) {
-                    nEquip.setMp((short) stat.getValue().intValue());
-                } else if (stat.getKey().equals("tuc")) {
-                    nEquip.setUpgradeSlots((byte) stat.getValue().intValue());
-                } else if (isDropRestricted(equipId)) {
-                    byte flag = nEquip.getFlag();
-                    flag |= ItemConstants.UNTRADEABLE;
-                    nEquip.setFlag(flag);
-                } else if (stats.get("fs") > 0) {
-                    byte flag = nEquip.getFlag();
-                    flag |= ItemConstants.SPIKES;
-                    nEquip.setFlag(flag);
-                    equipCache.put(equipId, nEquip);
-                }
+        if (ItemConstants.getInventoryType(equipId) != MapleInventoryType.EQUIP || stats == null) {
+            return null;
+        }
+        Equip nEquip = new Equip(equipId, (byte) 0, ringId);
+        nEquip.setQuantity((short) 1);
+        for (Entry<String, Integer> stat : stats.entrySet()) {
+            if (stat.getKey().equals("STR")) {
+                nEquip.setStr((short) stat.getValue().intValue());
+            } else if (stat.getKey().equals("DEX")) {
+                nEquip.setDex((short) stat.getValue().intValue());
+            } else if (stat.getKey().equals("INT")) {
+                nEquip.setInt((short) stat.getValue().intValue());
+            } else if (stat.getKey().equals("LUK")) {
+                nEquip.setLuk((short) stat.getValue().intValue());
+            } else if (stat.getKey().equals("PAD")) {
+                nEquip.setWatk((short) stat.getValue().intValue());
+            } else if (stat.getKey().equals("PDD")) {
+                nEquip.setWdef((short) stat.getValue().intValue());
+            } else if (stat.getKey().equals("MAD")) {
+                nEquip.setMatk((short) stat.getValue().intValue());
+            } else if (stat.getKey().equals("MDD")) {
+                nEquip.setMdef((short) stat.getValue().intValue());
+            } else if (stat.getKey().equals("ACC")) {
+                nEquip.setAcc((short) stat.getValue().intValue());
+            } else if (stat.getKey().equals("EVA")) {
+                nEquip.setAvoid((short) stat.getValue().intValue());
+            } else if (stat.getKey().equals("Speed")) {
+                nEquip.setSpeed((short) stat.getValue().intValue());
+            } else if (stat.getKey().equals("Jump")) {
+                nEquip.setJump((short) stat.getValue().intValue());
+            } else if (stat.getKey().equals("MHP")) {
+                nEquip.setHp((short) stat.getValue().intValue());
+            } else if (stat.getKey().equals("MMP")) {
+                nEquip.setMp((short) stat.getValue().intValue());
+            } else if (stat.getKey().equals("tuc")) {
+                nEquip.setUpgradeSlots((byte) stat.getValue().intValue());
+            } else if (isDropRestricted(equipId)) {
+                byte flag = nEquip.getFlag();
+                flag |= ItemConstants.UNTRADEABLE;
+                nEquip.setFlag(flag);
+            } else if (stats.get("fs") > 0) {
+                byte flag = nEquip.getFlag();
+                flag |= ItemConstants.SPIKES;
+                nEquip.setFlag(flag);
             }
+            equipCache.put(equipId, nEquip);
         }
         return nEquip.copy();
     }
@@ -682,7 +678,7 @@ public class MapleItemInformationProvider {
     }
 
     public MapleStatEffect getItemEffect(int itemId) {
-        MapleStatEffect ret = itemEffects.get(Integer.valueOf(itemId));
+        MapleStatEffect ret = itemEffects.get(itemId);
         if (ret == null) {
             MapleData item = getItemData(itemId);
             if (item == null) {
@@ -690,7 +686,7 @@ public class MapleItemInformationProvider {
             }
             MapleData spec = item.getChildByPath("spec");
             ret = MapleStatEffect.loadItemEffectFromData(spec, itemId);
-            itemEffects.put(Integer.valueOf(itemId), ret);
+            itemEffects.put(itemId, ret);
         }
         return ret;
     }
@@ -709,12 +705,12 @@ public class MapleItemInformationProvider {
     public int getWatkForProjectile(int itemId) {
         Integer atk = projectileWatkCache.get(itemId);
         if (atk != null) {
-            return atk.intValue();
+            return atk;
         }
         MapleData data = getItemData(itemId);
-        atk = Integer.valueOf(MapleDataTool.getInt("info/incPAD", data, 0));
+        atk = MapleDataTool.getInt("info/incPAD", data, 0);
         projectileWatkCache.put(itemId, atk);
-        return atk.intValue();
+        return atk;
     }
 
     public String getName(int itemId) {
@@ -799,9 +795,7 @@ public class MapleItemInformationProvider {
                 break;
             }
         }
-        if (ret.get("skillid") == null) {
-            ret.put("skillid", 0);
-        }
+        ret.putIfAbsent("skillid", 0);
         return ret;
     }
 
@@ -814,7 +808,7 @@ public class MapleItemInformationProvider {
             if (curPetId == 0) {
                 break;
             }
-            ret.add(Integer.valueOf(curPetId));
+            ret.add(curPetId);
         }
         return ret;
     }
@@ -832,32 +826,17 @@ public class MapleItemInformationProvider {
 
     public int getQuestIdFromItem(int itemId) {
         MapleData data = getItemData(itemId);
-        int questItem = MapleDataTool.getIntConvert("info/quest", data, 0);
-        return questItem;
+        return MapleDataTool.getIntConvert("info/quest", data, 0);
     }
 
     private void loadCardIdData() {
-        PreparedStatement ps = null;
-        ResultSet rs = null;
-        try {
-            ps = DatabaseConnection.getConnection().prepareStatement("SELECT cardid, mobid FROM monstercarddata");
-            rs = ps.executeQuery();
-            while (rs.next()) {
-                monsterBookID.put(rs.getInt(1), rs.getInt(2));
-            }
-            rs.close();
-            ps.close();
-        } catch (SQLException e) {
-        } finally {
-            try {
-                if (rs != null) {
-                    rs.close();
+        try (PreparedStatement ps = DatabaseConnection.getConnection().prepareStatement("SELECT cardid, mobid FROM monstercarddata")) {
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    monsterBookID.put(rs.getInt(1), rs.getInt(2));
                 }
-                if (ps != null) {
-                    ps.close();
-                }
-            } catch (SQLException e) {
             }
+        } catch (SQLException ignored) {
         }
     }
 
@@ -930,7 +909,7 @@ public class MapleItemInformationProvider {
             return rewardCache.get(itemId);
         }
         int totalprob = 0;
-        List<RewardItem> rewards = new ArrayList<RewardItem>();
+        List<RewardItem> rewards = new ArrayList<>();
         for (MapleData child : getItemData(itemId).getChildByPath("reward").getChildren()) {
             RewardItem reward = new RewardItem();
             reward.itemid = MapleDataTool.getInt("item", child, 0);
@@ -944,7 +923,7 @@ public class MapleItemInformationProvider {
 
             rewards.add(reward);
         }
-        Pair<Integer, List<RewardItem>> hmm = new Pair<Integer, List<RewardItem>>(totalprob, rewards);
+        Pair<Integer, List<RewardItem>> hmm = new Pair<>(totalprob, rewards);
         rewardCache.put(itemId, hmm);
         return hmm;
     }
@@ -999,18 +978,6 @@ public class MapleItemInformationProvider {
             }
             return itemz;
         }
-        boolean highfivestamp = false;
-        /* Removed because players shouldn't even get this, and gm's should just be gm job.
-         try {
-         for (Pair<Item, MapleInventoryType> ii : ItemFactory.INVENTORY.loadItems(chr.getId(), false)) {
-         if (ii.getRight() == MapleInventoryType.CASH) {
-         if (ii.getLeft().getItemId() == 5590000) {
-         highfivestamp = true;
-         }
-         }
-         }
-         } catch (SQLException ex) {
-         }*/
         int tdex = chr.getDex(), tstr = chr.getStr(), tint = chr.getInt(), tluk = chr.getLuk(), fame = chr.getFame();
         if (chr.getJob() != MapleJob.SUPERGM || chr.getJob() != MapleJob.GM) {
             for (Item item : inv.list()) {
@@ -1024,18 +991,6 @@ public class MapleItemInformationProvider {
         for (Item item : items) {
             Equip equip = (Equip) item;
             int reqLevel = getEquipStats(equip.getItemId()).get("reqLevel");
-            if (highfivestamp) {
-                reqLevel -= 5;
-                if (reqLevel < 0) {
-                    reqLevel = 0;
-                }
-            }
-            /*
-             int reqJob = getEquipStats(equip.getItemId()).get("reqJob");
-             if (reqJob != 0) {
-             Really hard check, and not really needed in this one
-             Gm's should just be GM job, and players cannot change jobs.
-             }*/
             if (reqLevel > chr.getLevel()) {
                 continue;
             } else if (getEquipStats(equip.getItemId()).get("reqDEX") > tdex) {
@@ -1103,7 +1058,7 @@ public class MapleItemInformationProvider {
     }
 
     public ArrayList<Pair<Integer, String>> getItemDataByName(String name) {
-        ArrayList<Pair<Integer, String>> ret = new ArrayList<Pair<Integer, String>>();
+        ArrayList<Pair<Integer, String>> ret = new ArrayList<>();
         for (Pair<Integer, String> itemPair : MapleItemInformationProvider.getInstance().getAllItems()) {
             if (itemPair.getRight().toLowerCase().contains(name.toLowerCase())) {
                 ret.add(itemPair);

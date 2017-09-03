@@ -10,6 +10,8 @@ import org.slf4j.LoggerFactory;
 import tools.data.input.ByteArrayByteStream;
 import tools.data.input.GenericLittleEndianAccessor;
 
+import java.io.IOException;
+
 /**
  * Not much needs to be done here.
  * <p>
@@ -50,6 +52,9 @@ public class DiscordSessionHandler extends IoHandlerAdapter {
 
     @Override
     public void exceptionCaught(IoSession session, Throwable cause) throws Exception {
+        if (cause instanceof IOException) {
+            return;
+        }
         LOGGER.info("Session #{} exception", session.getId(), cause);
     }
 

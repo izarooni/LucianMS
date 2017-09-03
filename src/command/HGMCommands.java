@@ -188,7 +188,7 @@ public class HGMCommands {
                     return;
                 }
                 int mobId = a1.intValue();
-                int amount = a2.intValue();
+                int amount = (a2 == null) ? 1: a2.intValue();
                 int xpos = player.getPosition().x;
                 int ypos = player.getPosition().y;
                 int fh = player.getMap().getFootholds().findBelow(player.getPosition()).getId();

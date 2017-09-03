@@ -879,7 +879,7 @@ public class MapleClient {
             session.removeAttribute(MapleClient.CLIENT_KEY); // prevents double dcing during login
             session.closeNow(); // instead of using a deprecated method
         }
-        engines.clear();
+        clear();
     }
 
     private void clear() {
@@ -887,7 +887,7 @@ public class MapleClient {
         this.macs = null;
         this.hwid = null;
         this.birthday = null;
-        //this.engines = null;
+        this.engines = null;
         if (this.idleTask != null) {
             this.idleTask.cancel(true);
             this.idleTask = null;
@@ -895,7 +895,7 @@ public class MapleClient {
         this.player = null;
         this.receive = null;
         this.send = null;
-        //this.session = null;
+        this.session = null;
     }
 
     public int getChannel() {

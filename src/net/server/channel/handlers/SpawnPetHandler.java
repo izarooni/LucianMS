@@ -98,7 +98,7 @@ public final class SpawnPetHandler extends AbstractMaplePacketHandler {
             chr.getMap().broadcastMessage(c.getPlayer(), MaplePacketCreator.showPet(c.getPlayer(), pet, false, false), true);
             c.announce(MaplePacketCreator.petStatUpdate(c.getPlayer()));
             c.announce(MaplePacketCreator.enableActions());
-            chr.startFullnessSchedule(PetDataFactory.getHunger(pet.getItemId()), pet, chr.getPetIndex(pet));
+//            chr.startFullnessSchedule(PetDataFactory.getHunger(pet.getItemId()), pet, chr.getPetIndex(pet));
         }
     }
 }

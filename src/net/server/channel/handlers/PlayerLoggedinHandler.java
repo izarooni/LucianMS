@@ -203,13 +203,13 @@ public final class PlayerLoggedinHandler extends AbstractMaplePacketHandler {
             c.announce(MaplePacketCreator.requestBuddylistAdd(pendingBuddyRequest.getId(), c.getPlayer().getId(), pendingBuddyRequest.getName()));
         }
 
-        if (newcomer) {
-            for (MaplePet pet : player.getPets()) {
-                if (pet != null) {
-                    player.startFullnessSchedule(PetDataFactory.getHunger(pet.getItemId()), pet, player.getPetIndex(pet));
-                }
-            }
-        }
+//        if (newcomer) {
+//            for (MaplePet pet : player.getPets()) {
+//                if (pet != null) {
+//                    player.startFullnessSchedule(PetDataFactory.getHunger(pet.getItemId()), pet, player.getPetIndex(pet));
+//                }
+//            }
+//        }
 
         c.announce(MaplePacketCreator.updateGender(player));
         player.checkMessenger();

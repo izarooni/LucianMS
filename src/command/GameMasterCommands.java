@@ -485,7 +485,24 @@ public class GameMasterCommands {
                 }
             }
         } else if (command.equals("reloadmap")) {
-            player.getClient().getChannelServer().getMapFactory().reloadField(player.getMapId());
+            if (args.length() == 0) {
+                for (Channel channel : client.getWorldServer().getChannels()) {
+                    channel.getMapFactory().reloadField(player.getMapId());
+                }
+            } else if (args.length() == 1) {
+                Long var_mapId = args.parseNumber(0);
+                if (var_mapId == null) {
+                    player.dropMessage(String.format("'%s' is not a valid number", args.get(0)));
+                    return;
+                }
+                int mapId = var_mapId.intValue();
+                for (Channel channel : client.getWorldServer().getChannels()) {
+                    channel.getMapFactory().reloadField(mapId);
+                }
+                player.dropMessage("Map " + mapId + " reloaded!");
+            } else {
+                player.dropMessage(5, "Syntax: !reloadmap [map_ID]");
+            }
         } else if (command.equals("killall")) {
             player.getMap().killAllMonsters();
             player.dropMessage("All monsters killed!");

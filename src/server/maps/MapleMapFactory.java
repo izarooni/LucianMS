@@ -21,19 +21,6 @@
  */
 package server.maps;
 
-import java.awt.Point;
-import java.awt.Rectangle;
-import java.io.File;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-
 import client.MapleCharacter;
 import provider.MapleData;
 import provider.MapleDataProvider;
@@ -46,6 +33,18 @@ import server.life.MapleMonster;
 import server.life.MapleNPC;
 import tools.DatabaseConnection;
 import tools.StringUtil;
+
+import java.awt.*;
+import java.io.File;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class MapleMapFactory {
 
@@ -69,15 +68,9 @@ public class MapleMapFactory {
         return this;
     }
 
-    public MapleMap getMap(int mapid) {
+    public MapleMap getMap(final int mapid) {
         try {
-            Integer omapid = mapid;
-            MapleMap map = maps.get(omapid);
-            if (map == null) {
-                map = maps.get(omapid);
-                if (map != null) {
-                    return map;
-                }
+            if (!maps.containsKey(mapid)) {
                 String mapName = getMapName(mapid);
                 MapleData mapData = source.getData(mapName);
                 if (mapData == null) {
@@ -93,7 +86,7 @@ public class MapleMapFactory {
                 if (mobRate != null) {
                     monsterRate = (Float) mobRate.getData();
                 }
-                map = new MapleMap(mapid, world, channel, MapleDataTool.getInt("info/returnMap", mapData), monsterRate);
+                MapleMap map = new MapleMap(mapid, world, channel, MapleDataTool.getInt("info/returnMap", mapData), monsterRate);
 
                 String onFirstEnter = MapleDataTool.getString(mapData.getChildByPath("info/onFirstUserEnter"), String.valueOf(mapid));
                 map.setOnFirstUserEnter(onFirstEnter.equals("") ? String.valueOf(mapid) : onFirstEnter);
@@ -159,7 +152,7 @@ public class MapleMapFactory {
                 try {
                     Connection con = DatabaseConnection.getConnection();
                     PreparedStatement ps = con.prepareStatement("SELECT * FROM spawns WHERE mid = ?");
-                    ps.setInt(1, omapid);
+                    ps.setInt(1, mapid);
                     ResultSet rs = ps.executeQuery();
                     while (rs.next()) {
                         int id = rs.getInt("idd");
@@ -192,7 +185,7 @@ public class MapleMapFactory {
 
                 try {
                     try (PreparedStatement ps = DatabaseConnection.getConnection().prepareStatement("SELECT * FROM playernpcs WHERE map = ?")) {
-                        ps.setInt(1, omapid);
+                        ps.setInt(1, mapid);
                         try (ResultSet rs = ps.executeQuery()) {
                             while (rs.next()) {
                                 map.addMapObject(new PlayerNPC(rs));
@@ -235,8 +228,8 @@ public class MapleMapFactory {
                     }
                 }
                 try {
-                    map.setMapName(MapleDataTool.getString("mapName", nameData.getChildByPath(getMapStringName(omapid)), ""));
-                    map.setStreetName(MapleDataTool.getString("streetName", nameData.getChildByPath(getMapStringName(omapid)), ""));
+                    map.setMapName(MapleDataTool.getString("mapName", nameData.getChildByPath(getMapStringName(mapid)), ""));
+                    map.setStreetName(MapleDataTool.getString("streetName", nameData.getChildByPath(getMapStringName(mapid)), ""));
                 } catch (Exception e) {
                     map.setMapName("");
                     map.setStreetName("");
@@ -266,9 +259,10 @@ public class MapleMapFactory {
                 }
                 map.setBackgroundTypes(backTypes);
 
-                maps.put(omapid, map);
+                maps.put(mapid, map);
+                return map;
             }
-            return map;
+            return maps.get(mapid);
         } finally {
             // these must be reset as they're only used once per invoke
             // to prevent fucking things up with maps that should be loaded normally
@@ -343,7 +337,6 @@ public class MapleMapFactory {
     }
 
 
-
     public void setChannel(int channel) {
         this.channel = channel;
     }
@@ -352,27 +345,27 @@ public class MapleMapFactory {
         this.channel = world;
     }
 
-    public Map<Integer, MapleMap> getMaps() {
-        return maps;
+    public ArrayList<MapleMap> getMaps() {
+        return new ArrayList<>(maps.values());
     }
 
-	public void reloadField(int fieldId) {
-    MapleMap fOld, fNew;
-    if ((fOld = maps.get(fieldId)) != null) {
-        maps.remove(fieldId);
-        fNew = getMap(fieldId);
-        for (MapleMapObject object : fOld.getMapObjects()) {
-        	if(object instanceof MapleCharacter) {
-                MapleCharacter player = (MapleCharacter) object;
-                fOld.removeMapObject(player);
-                player.changeMap(fNew);
-        	}
+    public void reloadField(int fieldId) {
+        MapleMap fOld, fNew;
+        if ((fOld = maps.get(fieldId)) != null) {
+            maps.remove(fieldId);
+            fNew = getMap(fieldId);
+            for (MapleMapObject object : fOld.getMapObjects()) {
+                if (object instanceof MapleCharacter) {
+                    MapleCharacter player = (MapleCharacter) object;
+                    fOld.removeMapObject(player);
+                    player.changeMap(fNew);
+                }
+            }
+            maps.put(fieldId, fNew);
         }
-        maps.put(fieldId, fNew);
     }
-}
 
-	private AbstractLoadedMapleLife giveLife(int id, int f, boolean hide, int fh, int cy, int rx0, int rx1, int x, int y, String type) {
+    private AbstractLoadedMapleLife giveLife(int id, int f, boolean hide, int fh, int cy, int rx0, int rx1, int x, int y, String type) {
         AbstractLoadedMapleLife myLife = MapleLifeFactory.getLife(id, type);
         myLife.setCy(cy);
         myLife.setF(f);

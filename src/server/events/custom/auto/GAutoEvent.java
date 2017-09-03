@@ -62,7 +62,7 @@ public abstract class GAutoEvent extends GenericEvent {
     }
 
     public final Task registerRespawnTimer() {
-        return respawnTask = TaskExecutor.createRepeatingTask(() -> mapleMapFactory.getMaps().values().forEach(MapleMap::respawn), 1000, 1000);
+        return respawnTask = TaskExecutor.createRepeatingTask(() -> mapleMapFactory.getMaps().forEach(MapleMap::respawn), 1000, 1000);
     }
 
     public final Task getRespawnTask() {

@@ -151,8 +151,7 @@ public class MapleLifeFactory {
             }
             monsterStats.put(mid, stats);
         }
-        MapleMonster ret = new MapleMonster(mid, stats);
-        return ret;
+        return new MapleMonster(mid, stats);
     }
 
     private static void decodeElementalString(MapleMonsterStats stats, String elemAttr) {

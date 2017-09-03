@@ -21,11 +21,15 @@
  */
 package server.life;
 
-import client.MapleCharacter;
-import java.awt.Point;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.awt.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class SpawnPoint {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(SpawnPoint.class);
 
     private int monster, mobTime, team, fh, f;
     private Point pos;
@@ -47,23 +51,26 @@ public class SpawnPoint {
     }
 
     public boolean shouldSpawn() {
-    	if (mobTime < 0 || ((mobTime != 0 || immobile) && spawnedMonsters.get() > 0) || spawnedMonsters.get() > 2) {//lol
+        if (mobTime < 0 || ((mobTime != 0 || immobile) && spawnedMonsters.get() > 0) || spawnedMonsters.get() > 2) {//lol
             return false;
         }
-       
+
         return nextPossibleSpawn <= System.currentTimeMillis();
     }
 
     public boolean shouldForceSpawn() {
-    	if (mobTime < 0 || ((mobTime != 0 || immobile) && spawnedMonsters.get() > 0) || spawnedMonsters.get() > 2) {//lol
+        if (mobTime < 0 || ((mobTime != 0 || immobile) && spawnedMonsters.get() > 0) || spawnedMonsters.get() > 2) {//lol
             return false;
         }
-       
+
         return true;
     }
-    
+
     public MapleMonster getMonster() {
-        MapleMonster mob = new MapleMonster(MapleLifeFactory.getMonster(monster));
+        MapleMonster mob = MapleLifeFactory.getMonster(monster);
+        if (mob == null) {
+            return null;
+        }
         mob.setPosition(new Point(pos));
         mob.setTeam(team);
         mob.setFh(fh);

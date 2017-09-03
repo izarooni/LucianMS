@@ -38,8 +38,8 @@ import org.apache.mina.transport.socket.SocketSessionConfig;
 import org.apache.mina.transport.socket.nio.NioSocketAcceptor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import scheduler.TaskExecutor;
 import scripting.event.EventScriptManager;
-import server.TimerManager;
 import server.events.gm.MapleEvent;
 import server.expeditions.MapleExpedition;
 import server.maps.HiredMerchant;
@@ -76,7 +76,7 @@ public final class Channel {
         this.world = world;
         this.channel = channel;
         this.mapFactory = new MapleMapFactory(world, channel);
-        TimerManager.getInstance().register(() -> mapFactory.getMaps().values().forEach(MapleMap::respawn), 10000);
+        TaskExecutor.createRepeatingTask(() -> mapFactory.getMaps().forEach(MapleMap::respawn), 10000, 10000);
         reloadEventScriptManager();
         carnivalLobbyManager = new MCarnivalLobbyManager();
         try {
