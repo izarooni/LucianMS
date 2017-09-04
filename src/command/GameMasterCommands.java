@@ -636,7 +636,7 @@ public class GameMasterCommands {
                 String username = args.get(0);
                 ArrayList<String> usernames = new ArrayList<>();
                 // will this statement work? who knows
-                try (PreparedStatement ps = DatabaseConnection.getConnection().prepareStatement("select name from characters where account id = (select accountid from characters where name = ?)")) {
+                try (PreparedStatement ps = DatabaseConnection.getConnection().prepareStatement("select name from characters where accountid = (select accountid from characters where name = ?)")) {
                     ps.setString(1, username);
                     try (ResultSet rs = ps.executeQuery()) {
                         if (rs.isBeforeFirst()) {

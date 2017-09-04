@@ -73,6 +73,10 @@ public final class ItemConstants {
         return itemId / 1000 == 5000;
     }
 
+    public static boolean isPetEquip(int itemId) {
+        return itemId >= 1802000 && itemId < 1810000;
+    }
+
     public static MapleInventoryType getInventoryType(final int itemId) {
         final byte type = (byte) (itemId / 1000000);
         if (type < 1 || type > 5) {

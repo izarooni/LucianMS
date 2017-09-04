@@ -200,7 +200,7 @@ public class MapleItemInformationProvider {
         } else if (itemId >= 1060000 && itemId < 1070000) {
             theData = eqpStringData;
             cat = "Eqp/Pants";
-        } else if (itemId >= 1802000 && itemId < 1810000) {
+        } else if (ItemConstants.isPetEquip(itemId)) {
             theData = eqpStringData;
             cat = "Eqp/PetEquip";
         } else if (itemId >= 1112000 && itemId < 1120000) {

@@ -24,7 +24,9 @@ package net.server.channel.handlers;
 import client.MapleCharacter;
 import client.autoban.Cheater;
 import client.autoban.Cheats;
+import client.inventory.Item;
 import client.inventory.MapleInventoryType;
+import constants.ItemConstants;
 import net.PacketHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -40,8 +42,8 @@ public class ItemMoveHandler extends PacketHandler {
     private static final Logger LOGGER = LoggerFactory.getLogger(ItemMoveHandler.class);
 
     private MapleInventoryType inventoryType;
-    private byte source;
-    private byte action;
+    private short source;
+    private short action;
     private short quantity;
 
 
@@ -49,8 +51,8 @@ public class ItemMoveHandler extends PacketHandler {
     public void process(SeekableLittleEndianAccessor slea) {
         slea.skip(4);
         inventoryType = MapleInventoryType.getByType(slea.readByte());
-        source = (byte) slea.readShort();
-        action = (byte) slea.readShort();
+        source = slea.readShort();
+        action = slea.readShort();
         quantity = slea.readShort();
     }
 
@@ -66,17 +68,7 @@ public class ItemMoveHandler extends PacketHandler {
         } else {
             entry.spamCount = 0;
         }
-        /*
-        [47 00] > header
-        [BD 30 33 06] > unk
-        [01] > inventory type
-        [0D 00] > source (13)
-        [7E FF] > action (-130)
-        [FF FF] > quantity (-1)
-         */
-        if (player.getName().equalsIgnoreCase("izarooni")) {
-            LOGGER.info("Item equip action {} {} {} {}", inventoryType, source, action, quantity);
-        }
+
         if (source < 0 && action > 0) {
             MapleInventoryManipulator.unequip(getClient(), source, action);
         } else if (action < 0) {
@@ -92,11 +84,11 @@ public class ItemMoveHandler extends PacketHandler {
         return inventoryType;
     }
 
-    public byte getSource() {
+    public short getSource() {
         return source;
     }
 
-    public byte getAction() {
+    public short getAction() {
         return action;
     }
 

@@ -24,6 +24,8 @@ import java.util.Map;
  */
 public class DBZSummoner extends GenericEvent {
 
+    private static final int MapID = 908;
+
     // platform range
     private static final int min_x = -867;
     private static final int max_x = 866;
@@ -108,8 +110,10 @@ public class DBZSummoner extends GenericEvent {
                         TaskExecutor.createTask(new Runnable() {
                             @Override
                             public void run() {
-                                System.out.println(String.format("%s timed-out Shenron on %s", player.getName(), Calendar.getInstance().getTime().toString()));
-                                map.removeMapObject(npc); // remove from map to disable speaking via packet editing
+                                if (player.getMapId() == MapID) {
+                                    System.out.println(String.format("%s timed-out Shenron on %s", player.getName(), Calendar.getInstance().getTime().toString()));
+                                    map.removeMapObject(npc); // remove from map to disable speaking via packet editing
+                                }
                                 player.announce(MaplePacketCreator.removeNPC(npc.getObjectId())); // remove NPC
                             }
                         }, 1000 * 60 * 3);
