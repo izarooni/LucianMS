@@ -74,7 +74,7 @@ public class MapleClient {
     private IoSession session;
     private MapleCharacter player;
     private int channel = 1;
-    private int accId = 1;
+    private int accId = 0;
     private boolean loggedIn = false;
     private boolean serverTransition = false;
     private Calendar birthday = null;
@@ -97,7 +97,6 @@ public class MapleClient {
     private int votePoints;
     private int donationPoints;
     private int voteTime = -1;
-    private long lastNpcClick;
     private long sessionId;
 
     public MapleClient(MapleAESOFB send, MapleAESOFB receive, IoSession session) {
@@ -175,41 +174,44 @@ public class MapleClient {
     }
 
     public List<MapleCharacter> loadCharacters(int serverId) {
-        List<MapleCharacter> chars = new ArrayList<>(15);
         try {
-            for (CharNameAndId cni : loadCharactersInternal(serverId)) {
-                chars.add(MapleCharacter.loadCharFromDB(cni.id, this, false));
+            List<MapleCharacter> ret = new ArrayList<>();
+            for (Pair<Integer, String> pair : loadCharactersInternal(serverId)) {
+                MapleCharacter load = MapleCharacter.loadCharFromDB(pair.getLeft(), this, false);
+                if (load != null) {
+                    ret.add(load);
+                } else {
+                    LOGGER.error("Unable to load character {} for account {} - method loadCharacters(int serverId)", pair.getLeft() + "/" + pair.getRight(), getAccountName() + "/" + getAccID());
+                }
             }
-        } catch (Exception e) {
+            return ret;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return Collections.emptyList();
         }
-        return chars;
     }
 
     public List<String> loadCharacterNames(int serverId) {
-        List<String> chars = new ArrayList<>(15);
-        for (CharNameAndId cni : loadCharactersInternal(serverId)) {
-            chars.add(cni.name);
-        }
-        return chars;
+        List<String> ret = new ArrayList<>();
+        loadCharactersInternal(serverId).forEach(p -> ret.add(p.getRight()));
+        return ret;
     }
 
-    private List<CharNameAndId> loadCharactersInternal(int serverId) {
-        PreparedStatement ps;
-        List<CharNameAndId> chars = new ArrayList<>(15);
-        try {
-            ps = DatabaseConnection.getConnection().prepareStatement("SELECT id, name FROM characters WHERE accountid = ? AND world = ?");
-            ps.setInt(1, this.getAccID());
+    private List<Pair<Integer, String>> loadCharactersInternal(int serverId) {
+        List<Pair<Integer, String>> ret = new ArrayList<>();
+        try (PreparedStatement ps = DatabaseConnection.getConnection().prepareStatement("select id, name from characters where accountid = ? and world = ?")) {
+            ps.setInt(1, getAccID());
             ps.setInt(2, serverId);
             try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
-                    chars.add(new CharNameAndId(rs.getString("name"), rs.getInt("id")));
+                    ret.add(new Pair<>(rs.getInt("id"), rs.getString("name")));
                 }
             }
-            ps.close();
+            return ret;
         } catch (SQLException e) {
             e.printStackTrace();
+            return Collections.emptyList();
         }
-        return chars;
     }
 
     public boolean isLoggedIn() {
@@ -1259,18 +1261,6 @@ public class MapleClient {
             }
         } catch (SQLException e) {
             e.printStackTrace();
-        }
-    }
-
-    private static class CharNameAndId {
-
-        public String name;
-        public int id;
-
-        public CharNameAndId(String name, int id) {
-            super();
-            this.name = name;
-            this.id = id;
         }
     }
 }

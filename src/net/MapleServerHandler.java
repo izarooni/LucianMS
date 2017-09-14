@@ -147,7 +147,7 @@ public class MapleServerHandler extends IoHandlerAdapter {
                             handler.handlePacket(slea, client);
                         } catch (final Throwable t) {
                             LOGGER.info(slea.toString());
-                            LOGGER.error("Unable to process handler {}, user {} player {}", handler.getClass().getSimpleName(), client.getAccountName(), (client.getPlayer() != null ? client.getPlayer().getName() : "M/A"));
+                            LOGGER.error("Unable to process handler {}, user {} player {}", handler.getClass().getSimpleName(), client.getAccountName(), (client.getPlayer() != null ? client.getPlayer().getName() : "N/A"));
                             t.printStackTrace();
                         }
                     }

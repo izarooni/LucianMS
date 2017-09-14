@@ -200,7 +200,7 @@ public class Server implements Runnable {
 
         long timeToTake = System.currentTimeMillis();
         SkillFactory.loadAllSkills();
-        LOGGER.info("Skill data loaded in {}s", ((System.currentTimeMillis() - timeToTake) - 1000d));
+        LOGGER.info("Skill data loaded in {}s", ((System.currentTimeMillis() - timeToTake) / 1000d));
 
         timeToTake = System.currentTimeMillis();
         MapleItemInformationProvider.getInstance().getAllItems();

@@ -1,12 +1,7 @@
 package scripting.event;
 
 import net.server.channel.Channel;
-import scripting.ScriptUtil;
-import tools.Pair;
 
-import javax.script.Invocable;
-import javax.script.ScriptException;
-import java.util.Collections;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -50,8 +45,7 @@ public class EventScriptManager {
         }
     }
 
-    public void close()
-    {
+    public void close() {
         events.values().forEach(EventManager::cancel);
     }
 }

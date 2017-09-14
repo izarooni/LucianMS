@@ -2267,7 +2267,7 @@ public class MaplePacketCreator {
         for (Iterator<Pair<Integer, String>> it = worlds.iterator(); it.hasNext(); ) {
             Pair<Integer, String> world = it.next();
             mplew.writeInt(world.getLeft());
-            mplew.writeMapleAsciiString(world.getRight());
+            mplew.writeMapleAsciiString(world.getRight() == null ? "" : world.getRight());
         }
         return mplew.getPacket();
     }
