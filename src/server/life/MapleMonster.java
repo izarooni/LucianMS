@@ -30,7 +30,6 @@ import net.server.world.MapleParty;
 import net.server.world.MaplePartyCharacter;
 import scheduler.TaskExecutor;
 import scripting.event.EventInstanceManager;
-import server.TimerManager;
 import server.life.MapleLifeFactory.BanishInfo;
 import server.maps.MapleMap;
 import server.maps.MapleMapObject;
@@ -632,14 +631,13 @@ public class MapleMonster extends AbstractLoadedMapleLife {
             if (oldEffect != null) {
                 oldEffect.removeActiveStatus(stat);
                 if (oldEffect.getStati().isEmpty()) {
-                    oldEffect.cancelTask();
-                    oldEffect.cancelDamageSchedule();
+                    oldEffect.getCancelTask().cancel();
+                    oldEffect.getDamageTask().cancel();
                 }
             }
         }
 
-        TimerManager timerManager = TimerManager.getInstance();
-        final Runnable cancelTask = new Runnable() {
+        final Runnable run = new Runnable() {
 
             @Override
             public void run() {
@@ -654,14 +652,14 @@ public class MapleMonster extends AbstractLoadedMapleLife {
                     stati.remove(stat);
                 }
                 setVenomMulti(0);
-                status.cancelDamageSchedule();
+                status.getDamageTask().cancel();
             }
         };
         if (poison) {
             int poisonLevel = from.getSkillLevel(status.getSkill());
             int poisonDamage = Math.min(Short.MAX_VALUE, (int) (getMaxHp() / (70.0 - poisonLevel) + 0.999));
-            status.setValue(MonsterStatus.POISON, Integer.valueOf(poisonDamage));
-            status.setDamageSchedule(timerManager.register(new DamageTask(poisonDamage, from, status, cancelTask, 0), 1000, 1000));
+            status.setValue(MonsterStatus.POISON, poisonDamage);
+            status.setDamageTask(TaskExecutor.createRepeatingTask(new DamageTask(poisonDamage, from, status, run, 0), 1000));
         } else if (venom) {
             if (from.getJob() == MapleJob.NIGHTLORD || from.getJob() == MapleJob.SHADOWER || from.getJob().isA(MapleJob.NIGHTWALKER3)) {
                 int poisonLevel, matk, id = from.getJob().getId();
@@ -683,24 +681,20 @@ public class MapleMonster extends AbstractLoadedMapleLife {
                     poisonDamage += (Randomizer.nextInt(gap) + minDmg);
                 }
                 poisonDamage = Math.min(Short.MAX_VALUE, poisonDamage);
-                status.setValue(MonsterStatus.VENOMOUS_WEAPON, Integer.valueOf(poisonDamage));
-                status.setDamageSchedule(timerManager.register(new DamageTask(poisonDamage, from, status, cancelTask, 0), 1000, 1000));
+                status.setValue(MonsterStatus.VENOMOUS_WEAPON, poisonDamage);
+                status.setDamageTask(TaskExecutor.createRepeatingTask(new DamageTask(poisonDamage, from, status, run, 0), 1000));
             } else {
                 return false;
             }
 
         } else if (status.getSkill().getId() == Hermit.SHADOW_WEB || status.getSkill().getId() == NightWalker.SHADOW_WEB) { //Shadow Web
-            status.setDamageSchedule(timerManager.schedule(new DamageTask((int) (getMaxHp() / 50.0 + 0.999), from, status, cancelTask, 1), 3500));
+            status.setDamageTask(TaskExecutor.createRepeatingTask(new DamageTask(((int) (getMaxHp() / 50d + 0.999)), from, status, run, 1), 3500));
         } else if (status.getSkill().getId() == 4121004 || status.getSkill().getId() == 4221004) { // Ninja Ambush
             final Skill skill = SkillFactory.getSkill(status.getSkill().getId());
             final byte level = from.getSkillLevel(skill);
             final int damage = (int) ((from.getStr() + from.getLuk()) * (1.5 + (level * 0.05)) * skill.getEffect(level).getDamage());
-            /*if (getHp() - damage <= 1)  { make hp 1 betch
-             damage = getHp() - (getHp() - 1);
-             }*/
-
-            status.setValue(MonsterStatus.NINJA_AMBUSH, Integer.valueOf(damage));
-            status.setDamageSchedule(timerManager.register(new DamageTask(damage, from, status, cancelTask, 2), 1000, 1000));
+            status.setValue(MonsterStatus.NINJA_AMBUSH, damage);
+            status.setDamageTask(TaskExecutor.createRepeatingTask(new DamageTask(damage, from, status, run, 2), 1000));
         }
         for (MonsterStatus stat : status.getStati().keySet()) {
             stati.put(stat, status);
@@ -712,13 +706,12 @@ public class MapleMonster extends AbstractLoadedMapleLife {
         if (getController() != null && !getController().isMapObjectVisible(this)) {
             getController().getClient().announce(packet);
         }
-        status.setCancelTask(timerManager.schedule(cancelTask, duration + animationTime));
+        status.setCancelTask(TaskExecutor.createTask(run, duration + animationTime));
         return true;
     }
 
     public void applyMonsterBuff(final Map<MonsterStatus, Integer> stats, final int x, int skillId, long duration, MobSkill skill, final List<Integer> reflection) {
-        TimerManager timerManager = TimerManager.getInstance();
-        final Runnable cancelTask = new Runnable() {
+        final Runnable run = new Runnable() {
 
             @Override
             public void run() {
@@ -744,21 +737,21 @@ public class MapleMonster extends AbstractLoadedMapleLife {
         if (getController() != null && !getController().isMapObjectVisible(this)) {
             getController().getClient().announce(packet);
         }
-        effect.setCancelTask(timerManager.schedule(cancelTask, duration));
+        effect.setCancelTask(TaskExecutor.createTask(run, duration));
     }
 
     public void debuffMob(int skillid) {
         //skillid is not going to be used for now until I get warrior debuff working
         MonsterStatus[] stats = {MonsterStatus.WEAPON_ATTACK_UP, MonsterStatus.WEAPON_DEFENSE_UP, MonsterStatus.MAGIC_ATTACK_UP, MonsterStatus.MAGIC_DEFENSE_UP};
-        for (int i = 0; i < stats.length; i++) {
-            if (isBuffed(stats[i])) {
-                final MonsterStatusEffect oldEffect = stati.get(stats[i]);
+        for (MonsterStatus stat : stats) {
+            if (isBuffed(stat) && stati.containsKey(stat)) {
+                final MonsterStatusEffect oldEffect = stati.get(stat);
                 byte[] packet = MaplePacketCreator.cancelMonsterStatus(getObjectId(), oldEffect.getStati());
                 map.broadcastMessage(packet, getPosition());
                 if (getController() != null && !getController().isMapObjectVisible(MapleMonster.this)) {
                     getController().getClient().announce(packet);
                 }
-                stati.remove(stats);
+                stati.remove(stat);
             }
         }
     }
@@ -829,14 +822,7 @@ public class MapleMonster extends AbstractLoadedMapleLife {
             this.skillsUsed.put(new Pair<>(skillId, level), 1);
         }
         final MapleMonster mons = this;
-        TimerManager tMan = TimerManager.getInstance();
-        tMan.schedule(new Runnable() {
-
-            @Override
-            public void run() {
-                mons.clearSkill(skillId, level);
-            }
-        }, cooltime);
+        TaskExecutor.createTask(() -> mons.clearSkill(skillId, level), cooltime);
     }
 
     public void clearSkill(int skillId, int level) {
@@ -894,7 +880,7 @@ public class MapleMonster extends AbstractLoadedMapleLife {
                     // double damage if you have a clone, probably works like this.
                     map.broadcastMessage(MaplePacketCreator.damageMonster(getObjectId(), damage), getPosition());
                     cancelTask.run();
-                    status.getCancelTask().cancel(false);
+                    status.getCancelTask().cancel();
                 }
             }
             if (hp > 1 && damage > 0) {

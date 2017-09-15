@@ -23,7 +23,8 @@
 package server.partyquest;
 
 import client.MapleCharacter;
-import server.TimerManager;
+import scheduler.Task;
+import scheduler.TaskExecutor;
 import server.maps.MapleMap;
 import tools.DatabaseConnection;
 import tools.MaplePacketCreator;
@@ -31,7 +32,6 @@ import tools.MaplePacketCreator;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
-import java.util.concurrent.ScheduledFuture;
 
 /**
  * @author kevintjuh93 - LOST MOTIVATION >=(
@@ -43,7 +43,7 @@ public class MonsterCarnival {
     private int room;
     private long time = 0;
     private long timeStarted = 0;
-    private ScheduledFuture<?> schedule = null;
+    private Task task = null;
 
     public MonsterCarnival(int room, byte channel, MonsterCarnivalParty red1, MonsterCarnivalParty blue1) {
         //this.map = Channel.getInstance(channel).getMapFactory().getMap(980000001 + (room * 100));
@@ -61,7 +61,7 @@ public class MonsterCarnival {
             chr.setCarnival(this);
         }
 
-        this.schedule = TimerManager.getInstance().schedule(new Runnable() {
+        task = TaskExecutor.createTask(new Runnable() {
             @Override
             public void run() {
                 if (red.getTotalCP() > blue.getTotalCP()) {
@@ -85,31 +85,6 @@ public class MonsterCarnival {
             }
 
         }, time);
-           /* if (room == 0) {
-                MapleData data = MapleDataProviderFactory.getDataProvider(new File(System.getProperty("wzpath") + "/Map.wz")).getData("Map/Map9" + (980000001 + (room * 100)) + ".img").getChildByPath("monsterCarnival");
-                if (data != null) {
-                    for (MapleData p : data.getChildByPath("mobGenPos").getChildren()) {
-                        MapleData team = p.getChildByPath("team");
-                       if (team != null) {
-                           if (team.getData().equals(0))
-                               redmonsterpoints.add(new Point(MapleDataTool.getInt(p.getChildByPath("x")), MapleDataTool.getInt(p.getChildByPath("y"))));
-                           else
-                                bluemonsterpoints.add(new Point(MapleDataTool.getInt(p.getChildByPath("x")), MapleDataTool.getInt(p.getChildByPath("y"))));
-                        } else
-                        monsterpoints.add(new Point(MapleDataTool.getInt(p.getChildByPath("x")), MapleDataTool.getInt(p.getChildByPath("y"))));
-                    }
-                    for (MapleData p : data.getChildByPath("guardianGenPos").getChildren()) {
-                        MapleData team = p.getChildByPath("team");
-                       if (team != null) {
-                           if (team.getData().equals(0))
-                               redreactorpoints.add(new Point(MapleDataTool.getInt(p.getChildByPath("x")), MapleDataTool.getInt(p.getChildByPath("y"))));
-                           else
-                                bluereactorpoints.add(new Point(MapleDataTool.getInt(p.getChildByPath("x")), MapleDataTool.getInt(p.getChildByPath("y"))));
-                        } else
-                        reactorpoints.add(new Point(MapleDataTool.getInt(p.getChildByPath("x")), MapleDataTool.getInt(p.getChildByPath("y"))));
-                    }
-                }
-            } */
     }
 
     public long getTimeLeft() {
@@ -137,7 +112,7 @@ public class MonsterCarnival {
     }
 
     private void warpOut() {
-        this.schedule = TimerManager.getInstance().schedule(new Runnable() {
+        task = TaskExecutor.createTask(new Runnable() {
             @Override
             public void run() {
                 red.warpOut();

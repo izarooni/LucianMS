@@ -31,7 +31,8 @@ public class CharSelectedWithPicHandler extends AbstractMaplePacketHandler {
 //            return;
 //        }
         if (client.getIdleTask() != null) {
-            client.getIdleTask().cancel(true);
+            client.getIdleTask().cancel();
+            client.setIdleTask(null);
         }
         client.updateLoginState(MapleClient.LOGIN_SERVER_TRANSITION);
 

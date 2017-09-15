@@ -22,10 +22,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 package client.status;
 
 import client.Skill;
-import java.util.Map;
-import java.util.concurrent.ScheduledFuture;
+import scheduler.Task;
 import server.life.MobSkill;
 import tools.ArrayMap;
+
+import java.util.Map;
 
 public class MonsterStatusEffect {
 
@@ -33,8 +34,8 @@ public class MonsterStatusEffect {
     private Skill skill;
     private MobSkill mobskill;
     private boolean monsterSkill;
-    private ScheduledFuture<?> cancelTask;
-    private ScheduledFuture<?> damageSchedule;
+    private Task cancelTask = null;
+    private Task damageTask = null;
 
     public MonsterStatusEffect(Map<MonsterStatus, Integer> stati, Skill skillId, MobSkill mobskill, boolean monsterSkill) {
         this.stati = new ArrayMap<>(stati);
@@ -47,8 +48,8 @@ public class MonsterStatusEffect {
         return stati;
     }
 
-    public Integer setValue(MonsterStatus status, Integer newVal) {
-        return stati.put(status, newVal);
+    public void setValue(MonsterStatus status, Integer newVal) {
+        stati.put(status, newVal);
     }
 
     public Skill getSkill() {
@@ -59,18 +60,11 @@ public class MonsterStatusEffect {
         return monsterSkill;
     }
 
-    public final void cancelTask() {
-	if (cancelTask != null) {
-	    cancelTask.cancel(false);
-	}
-		cancelTask = null;
-    }
-
-    public ScheduledFuture<?> getCancelTask() {
+    public Task getCancelTask() {
         return cancelTask;
     }
 
-    public void setCancelTask(ScheduledFuture<?> cancelTask) {
+    public void setCancelTask(Task cancelTask) {
         this.cancelTask = cancelTask;
     }
 
@@ -78,14 +72,12 @@ public class MonsterStatusEffect {
         stati.remove(stat);
     }
 
-    public void setDamageSchedule(ScheduledFuture<?> damageSchedule) {
-        this.damageSchedule = damageSchedule;
+    public Task getDamageTask() {
+        return damageTask;
     }
 
-    public void cancelDamageSchedule() {
-        if (damageSchedule != null) {
-            damageSchedule.cancel(false);
-        }
+    public void setDamageTask(Task damageTask) {
+        this.damageTask = damageTask;
     }
 
     public MobSkill getMobSkill() {

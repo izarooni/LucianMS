@@ -30,7 +30,8 @@ public final class RegisterPicHandler extends AbstractMaplePacketHandler {
         if (client.getPic() == null || client.getPic().equals("")) {
             client.setPic(pic);
             if (client.getIdleTask() != null) {
-                client.getIdleTask().cancel(true);
+                client.getIdleTask().cancel();
+                client.setIdleTask(null);
             }
             try {
                 client.updateLoginState(MapleClient.LOGIN_SERVER_TRANSITION);

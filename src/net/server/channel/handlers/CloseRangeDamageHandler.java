@@ -28,8 +28,8 @@ import client.inventory.MapleInventoryType;
 import client.inventory.MapleWeaponType;
 import constants.GameConstants;
 import constants.skills.*;
+import scheduler.TaskExecutor;
 import server.MapleStatEffect;
-import server.TimerManager;
 import server.life.FakePlayer;
 import tools.MaplePacketCreator;
 import tools.Pair;
@@ -80,7 +80,7 @@ public final class CloseRangeDamageHandler extends AbstractDealDamageHandler {
 
         FakePlayer fakePlayer = player.getFakePlayer();
         if (fakePlayer != null && fakePlayer.isFollowing()) {
-            TimerManager.getInstance().schedule(new Runnable() {
+            TaskExecutor.createTask(new Runnable() {
                 @Override
                 public void run() {
                     fakePlayer.getMap().broadcastMessage(fakePlayer, MaplePacketCreator.closeRangeAttack(fakePlayer, attackInfo.skill, attackInfo.skilllevel, attackInfo.stance, attackInfo.numAttackedAndDamage, attackInfo.allDamage, attackInfo.speed, attackInfo.direction, attackInfo.display), false);
@@ -169,7 +169,7 @@ public final class CloseRangeDamageHandler extends AbstractDealDamageHandler {
                     return;
                 } else {
                     getClient().announce(MaplePacketCreator.skillCooldown(attackInfo.skill, effect_.getCooldown()));
-                    player.addCooldown(attackInfo.skill, System.currentTimeMillis(), effect_.getCooldown() * 1000, TimerManager.getInstance().schedule(new CancelCooldownAction(player, attackInfo.skill), effect_.getCooldown() * 1000));
+                    player.addCooldown(attackInfo.skill, System.currentTimeMillis(), effect_.getCooldown() * 1000, TaskExecutor.createTask(new CancelCooldownAction(player, attackInfo.skill), effect_.getCooldown() * 1000));
                 }
             }
         }

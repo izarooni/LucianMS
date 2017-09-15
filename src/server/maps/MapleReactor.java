@@ -21,25 +21,23 @@
 */
 package server.maps;
 
-import java.awt.Rectangle;
-import java.util.List;
-
 import client.MapleCharacter;
 import client.MapleClient;
+import scheduler.TaskExecutor;
 import scripting.reactor.ReactorScriptManager;
-import server.TimerManager;
 import server.life.MapleLifeFactory;
 import server.life.MapleMonster;
-import server.quest.custom.CQuestData;
-import server.quest.custom.requirement.CQuestItemRequirement;
 import tools.MaplePacketCreator;
 import tools.Pair;
 
+import java.awt.*;
+import java.util.List;
+
 /**
- *
  * @author Lerk
  */
 public class MapleReactor extends AbstractMapleMapObject {
+
     private int rid;
     private MapleReactorStats stats;
     private byte state;
@@ -130,19 +128,14 @@ public class MapleReactor extends AbstractMapleMapObject {
         return MaplePacketCreator.spawnReactor(this);
     }
 
-	public void forceHitReactor(final byte newState) {
-		setState((byte) newState);
-		setTimerActive(false);
-		map.broadcastMessage(MaplePacketCreator.triggerReactor(this, (short) 0));
-	}
-    
+    public void forceHitReactor(final byte newState) {
+        setState(newState);
+        setTimerActive(false);
+        map.broadcastMessage(MaplePacketCreator.triggerReactor(this, (short) 0));
+    }
+
     public void delayedHitReactor(final MapleClient c, long delay) {
-        TimerManager.getInstance().schedule(new Runnable() {
-            @Override
-            public void run() {
-                hitReactor(c);
-            }
-        }, delay);
+        TaskExecutor.createTask(() -> hitReactor(c), delay);
     }
 
     public void hitReactor(MapleClient c) {
@@ -151,69 +144,69 @@ public class MapleReactor extends AbstractMapleMapObject {
 
     public synchronized void hitReactor(int charPos, short stance, int skillid, MapleClient c) {
         try {
-			if(!isAlive()) {
-				return;
-			}
+            if (!isAlive()) {
+                return;
+            }
             MapleCharacter player = c.getPlayer();
-			if (stats.getType(state) < 999 && stats.getType(state) != -1) {//type 2 = only hit from right (kerning swamp plants), 00 is air left 02 is ground left
-				if (!(stats.getType(state) == 2 && (charPos == 0 || charPos == 2))) { //get next state
-					for (byte b = 0; b < stats.getStateSize(state); b++) {//YAY?
-						List<Integer> activeSkills = stats.getActiveSkills(state, b);
-						if (activeSkills != null) {
-							if (!activeSkills.contains(skillid)) continue;
-						}
-						state = stats.getNextState(state, b);
-						if (stats.getNextState(state, b) == -1) {//end of reactor
-							if (stats.getType(state) < 100) {//reactor broken
+            if (stats.getType(state) < 999 && stats.getType(state) != -1) {//type 2 = only hit from right (kerning swamp plants), 00 is air left 02 is ground left
+                if (!(stats.getType(state) == 2 && (charPos == 0 || charPos == 2))) { //get next state
+                    for (byte b = 0; b < stats.getStateSize(state); b++) {//YAY?
+                        List<Integer> activeSkills = stats.getActiveSkills(state, b);
+                        if (activeSkills != null) {
+                            if (!activeSkills.contains(skillid)) {
+                                continue;
+                            }
+                        }
+                        state = stats.getNextState(state, b);
+                        if (stats.getNextState(state, b) == -1) {//end of reactor
+                            if (stats.getType(state) < 100) {//reactor broken
                                 if (delay > 0) {
-									map.destroyReactor(getObjectId());
-						        		if(player.getArcade() != null) {
-						        			if(player.getArcade().onBreak(getId())) {
-						        				MapleMonster monster = MapleLifeFactory.getMonster(2230103);
-						        				monster.setHp(Integer.MAX_VALUE);
-						        				map.spawnMonsterOnGroudBelow(monster, this.getPosition());
-						        			}
-						        		}
-								} else {//trigger as normal
-									map.broadcastMessage(MaplePacketCreator.triggerReactor(this, stance));
-									if(player.getArcade() != null) {
-					        			if(player.getArcade().onBreak(getId())) {
-					        				MapleMonster monster = MapleLifeFactory.getMonster(2230103);
-					        				monster.setHp(Integer.MAX_VALUE);
-					        				map.spawnMonsterOnGroudBelow(monster, this.getPosition());
-					        			}
-					        		}
-								}
-							} else {//item-triggered on final step
-								map.broadcastMessage(MaplePacketCreator.triggerReactor(this, stance));
-								if(player.getArcade() != null) {
-									if(player.getArcade().onBreak(getId())) {
-				        				MapleMonster monster = MapleLifeFactory.getMonster(2230103);
-				        				monster.setHp(Integer.MAX_VALUE);
-				        				map.spawnMonsterOnGroudBelow(monster, this.getPosition());
-				        			}
-				        		}
-							}
-							if(this != null) { // what? 
-								ReactorScriptManager.act(c, this);
-							}
-						} else { //reactor not broken yet
-							map.broadcastMessage(MaplePacketCreator.triggerReactor(this, stance));
-							if (state == stats.getNextState(state, b)) {//current state = next state, looping reactor
-								ReactorScriptManager.act(c, this);
-							}
-						}
-						break;
-					}
-				}
-			} else {
-				state++;
-				map.broadcastMessage(MaplePacketCreator.triggerReactor(this, stance));
-				ReactorScriptManager.act(c, this);
-			}
-		} catch(Exception e) {
-			e.printStackTrace();
-		}
+                                    map.destroyReactor(getObjectId());
+                                    if (player.getArcade() != null) {
+                                        if (player.getArcade().onBreak(getId())) {
+                                            MapleMonster monster = MapleLifeFactory.getMonster(2230103);
+                                            monster.setHp(Integer.MAX_VALUE);
+                                            map.spawnMonsterOnGroudBelow(monster, this.getPosition());
+                                        }
+                                    }
+                                } else {//trigger as normal
+                                    map.broadcastMessage(MaplePacketCreator.triggerReactor(this, stance));
+                                    if (player.getArcade() != null) {
+                                        if (player.getArcade().onBreak(getId())) {
+                                            MapleMonster monster = MapleLifeFactory.getMonster(2230103);
+                                            monster.setHp(Integer.MAX_VALUE);
+                                            map.spawnMonsterOnGroudBelow(monster, this.getPosition());
+                                        }
+                                    }
+                                }
+                            } else {//item-triggered on final step
+                                map.broadcastMessage(MaplePacketCreator.triggerReactor(this, stance));
+                                if (player.getArcade() != null) {
+                                    if (player.getArcade().onBreak(getId())) {
+                                        MapleMonster monster = MapleLifeFactory.getMonster(2230103);
+                                        monster.setHp(Integer.MAX_VALUE);
+                                        map.spawnMonsterOnGroudBelow(monster, this.getPosition());
+                                    }
+                                }
+                            }
+                            ReactorScriptManager.act(c, this);
+                        } else { //reactor not broken yet
+                            map.broadcastMessage(MaplePacketCreator.triggerReactor(this, stance));
+                            if (state == stats.getNextState(state, b)) {//current state = next state, looping reactor
+                                ReactorScriptManager.act(c, this);
+                            }
+                        }
+                        break;
+                    }
+                }
+            } else {
+                state++;
+                map.broadcastMessage(MaplePacketCreator.triggerReactor(this, stance));
+                ReactorScriptManager.act(c, this);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     public Rectangle getArea() {

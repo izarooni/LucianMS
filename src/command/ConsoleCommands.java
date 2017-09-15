@@ -54,6 +54,7 @@ public class ConsoleCommands {
                     }
                 }
                 scanner.close();
+                scanner = null;
                 LOGGER.info("Console no longer reading commands");
             }
         }, "ConsoleReader").start();

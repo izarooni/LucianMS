@@ -30,22 +30,22 @@ import tools.data.input.SeekableLittleEndianAccessor;
 public final class CancelChairHandler extends AbstractMaplePacketHandler {
 
     @Override
-    public final void handlePacket(SeekableLittleEndianAccessor slea, MapleClient c) {
+    public final void handlePacket(SeekableLittleEndianAccessor slea, MapleClient client) {
+        final MapleCharacter player = client.getPlayer();
+
         int id = slea.readShort();
         if (id == -1) { // Cancel Chair
-            c.getPlayer().setChair(0);
-            c.announce(MaplePacketCreator.cancelChair(-1));
-            c.getPlayer().getMap().broadcastMessage(c.getPlayer(), MaplePacketCreator.showChair(c.getPlayer().getId(), 0), false);
+            player.setChair(0);
+            client.announce(MaplePacketCreator.cancelChair(-1));
+            player.getMap().broadcastMessage(player, MaplePacketCreator.showChair(player.getId(), 0), false);
         } else { // Use In-Map Chair
-            c.getPlayer().setChair(id);
-            c.announce(MaplePacketCreator.cancelChair(id));
+            player.setChair(id);
+            client.announce(MaplePacketCreator.cancelChair(id));
         }
-        if(c.getPlayer().getFishingTask() != null && !c.getPlayer().getFishingTask().isCancelled() && !c.getPlayer().getFishingTask().isDone()) {
-        	if(c.getPlayer().getFishingTask() != null) {
-                    c.getPlayer().getFishingTask().cancel(true);
-                }
-        	c.getPlayer().dropMessage(5, "You stopped fishing");
-        	c.getPlayer().announce(MaplePacketCreator.earnTitleMessage("You stopped fishing"));
+        if (player.getFishingTask() != null && !player.getFishingTask().isCanceled()) {
+            player.getFishingTask().cancel();
+            player.dropMessage(5, "You stopped fishing");
+            player.announce(MaplePacketCreator.earnTitleMessage("You stopped fishing"));
         }
     }
 }

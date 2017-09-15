@@ -21,37 +21,31 @@
  */
 package net.server.channel.handlers;
 
-import client.MapleCharacter;
-import client.MapleClient;
-import client.MapleJob;
-import client.MapleStat;
-import client.Skill;
-import client.SkillFactory;
+import client.*;
 import client.inventory.Equip;
 import client.inventory.Item;
 import client.inventory.MapleInventoryType;
 import client.inventory.MaplePet;
 import constants.ExpTable;
 import constants.ItemConstants;
-
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
-
 import net.AbstractMaplePacketHandler;
 import net.server.Server;
+import scheduler.TaskExecutor;
 import scripting.npc.NPCScriptManager;
 import server.MapleInventoryManipulator;
 import server.MapleItemInformationProvider;
 import server.MapleShop;
 import server.MapleShopFactory;
-import server.TimerManager;
 import server.maps.MapleMap;
 import server.maps.MapleTVEffect;
 import tools.MaplePacketCreator;
 import tools.Pair;
 import tools.data.input.SeekableLittleEndianAccessor;
+
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
 
 public final class UseCashItemHandler extends AbstractMaplePacketHandler {
 
@@ -118,10 +112,10 @@ public final class UseCashItemHandler extends AbstractMaplePacketHandler {
                         player.addStat(4, -1);
                         break;
                     case 2048: // HP
-                    	if (APTo != 8192) {
-                    		c.announce(MaplePacketCreator.enableActions());
-                    		return;
-                    	}
+                        if (APTo != 8192) {
+                            c.announce(MaplePacketCreator.enableActions());
+                            return;
+                        }
                         int hplose = 0;
                         final int jobid = player.getJob().getId();
                         if (jobid == 0 || jobid == 1000 || jobid == 2000 || jobid >= 1200 && jobid <= 1211) { // Beginner
@@ -162,10 +156,10 @@ public final class UseCashItemHandler extends AbstractMaplePacketHandler {
                         statupdate.add(new Pair<>(MapleStat.MAXHP, player.getMaxHp()));
                         break;
                     case 8192: // MP
-                    	if (APTo != 2048) {
-                    		c.announce(MaplePacketCreator.enableActions());
-                    		return;
-                    	}
+                        if (APTo != 2048) {
+                            c.announce(MaplePacketCreator.enableActions());
+                            return;
+                        }
                         int mp = player.getMp();
                         int level = player.getLevel();
                         MapleJob job = player.getJob();
@@ -191,7 +185,7 @@ public final class UseCashItemHandler extends AbstractMaplePacketHandler {
                                 minmp += 16;
                             } else {
                                 minmp += 8;
-                            }                       
+                            }
                             player.setMp(player.getMp() - minmp);
                             player.setMaxMp(player.getMaxMp() - minmp);
                             statupdate.add(new Pair<>(MapleStat.MP, player.getMp()));
@@ -391,7 +385,7 @@ public final class UseCashItemHandler extends AbstractMaplePacketHandler {
             if (!vip) {
                 int mapId = slea.readInt();
                 if (c.getChannelServer().getMapFactory().getMap(mapId).getForcedReturnId() == 999999999) {
-                	player.changeMap(c.getChannelServer().getMapFactory().getMap(mapId));
+                    player.changeMap(c.getChannelServer().getMapFactory().getMap(mapId));
                 } else {
                     MapleInventoryManipulator.addById(c, itemId, (short) 1);
                     c.getPlayer().dropMessage(1, error1);
@@ -473,12 +467,7 @@ public final class UseCashItemHandler extends AbstractMaplePacketHandler {
                 lines.add(slea.readMapleAsciiString());
             }
             Server.getInstance().broadcastMessage(MaplePacketCreator.getAvatarMega(c.getPlayer(), medal, c.getChannel(), itemId, lines, (slea.readByte() != 0)));
-            TimerManager.getInstance().schedule(new Runnable() {
-            	@Override
-            	public void run() {
-            		Server.getInstance().broadcastMessage(MaplePacketCreator.byeAvatarMega());
-            	}
-            }, 1000 * 10);
+            TaskExecutor.createTask(() -> Server.getInstance().broadcastMessage(MaplePacketCreator.byeAvatarMega()), 1000 * 10);
             remove(c, itemId);
         } else if (itemType == 545) { // MiuMiu's travel store
             if (player.getShop() == null) {

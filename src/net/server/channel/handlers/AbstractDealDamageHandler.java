@@ -33,9 +33,9 @@ import constants.GameConstants;
 import constants.ItemConstants;
 import constants.skills.*;
 import net.PacketHandler;
+import scheduler.TaskExecutor;
 import server.MapleItemInformationProvider;
 import server.MapleStatEffect;
-import server.TimerManager;
 import server.life.*;
 import server.maps.MapleMap;
 import server.maps.MapleMapItem;
@@ -155,7 +155,7 @@ public abstract class AbstractDealDamageHandler extends PacketHandler {
                             if (mapitem.isPickedUp()) {
                                 return;
                             }
-                            TimerManager.getInstance().schedule(new Runnable() {
+                            TaskExecutor.createTask(new Runnable() {
                                 @Override
                                 public void run() {
                                     map.removeMapObject(mapitem);
@@ -233,7 +233,7 @@ public abstract class AbstractDealDamageHandler extends PacketHandler {
                                     eachdf = eachd;
                                 }
 
-                                TimerManager.getInstance().schedule(new Runnable() {
+                                TaskExecutor.createTask(new Runnable() {
                                     @Override
                                     public void run() {
                                         player.getMap().spawnMesoDrop(Math.min((int) Math.max(((double) eachdf / (double) 20000) * (double) maxmeso, (double) 1), maxmeso), new Point((int) (monster.getPosition().getX() + Randomizer.nextInt(100) - 50), (int) (monster.getPosition().getY())), monster, player, true, (byte) 2);

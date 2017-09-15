@@ -26,8 +26,9 @@ import client.MapleCharacter.CancelCooldownAction;
 import constants.GameConstants;
 import constants.skills.*;
 import net.AbstractMaplePacketHandler;
+import scheduler.Task;
+import scheduler.TaskExecutor;
 import server.MapleStatEffect;
-import server.TimerManager;
 import server.life.MapleMonster;
 import tools.MaplePacketCreator;
 import tools.data.input.SeekableLittleEndianAccessor;
@@ -75,8 +76,8 @@ public class SpecialMoveHandler extends AbstractMaplePacketHandler {
                 return;
             } else if (skillId != Corsair.BATTLESHIP) {
                 c.announce(MaplePacketCreator.skillCooldown(skillId, effect.getCooldown()));
-                ScheduledFuture<?> timer = TimerManager.getInstance().schedule(new CancelCooldownAction(c.getPlayer(), skillId), effect.getCooldown() * 1000);
-                player.addCooldown(skillId, System.currentTimeMillis(), effect.getCooldown() * 1000, timer);
+                Task task = TaskExecutor.createTask(new CancelCooldownAction(player, skillId), effect.getCooldown() * 1000);
+                player.addCooldown(skillId, System.currentTimeMillis(), effect.getCooldown() * 1000, task);
             }
         }
         if (skillId == Hero.MONSTER_MAGNET || skillId == Paladin.MONSTER_MAGNET || skillId == DarkKnight.MONSTER_MAGNET) { // Monster Magnet

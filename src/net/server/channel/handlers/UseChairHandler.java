@@ -25,28 +25,29 @@ import client.MapleCharacter;
 import client.MapleClient;
 import client.inventory.MapleInventoryType;
 import net.AbstractMaplePacketHandler;
+import tools.ArrayUtil;
 import tools.MaplePacketCreator;
 import tools.data.input.SeekableLittleEndianAccessor;
 
 public final class UseChairHandler extends AbstractMaplePacketHandler {
+
     @Override
-    public final void handlePacket(SeekableLittleEndianAccessor slea, MapleClient c) {
+    public final void handlePacket(SeekableLittleEndianAccessor slea, MapleClient client) {
+        final MapleCharacter player = client.getPlayer();
         int itemId = slea.readInt();
-        if (c.getPlayer().getInventory(MapleInventoryType.SETUP).findById(itemId) == null) {
+        if (player.getInventory(MapleInventoryType.SETUP).findById(itemId) == null) {
             return;
         }
-        c.getPlayer().setChair(itemId);
-        c.getPlayer().getMap().broadcastMessage(c.getPlayer(), MaplePacketCreator.showChair(c.getPlayer().getId(), itemId), false);
-        c.getPlayer();
-		c.getPlayer();
-		if(c.getPlayer().in_array(MapleCharacter.FISHING_MAPS, c.getPlayer().getMapId()) && c.getPlayer().in_array(MapleCharacter.FISHING_CHAIRS, c.getPlayer().getChair())) {
-        	if(c.getPlayer().getFishingTask() == null || c.getPlayer().getFishingTask().isCancelled() || c.getPlayer().getFishingTask().isDone()) {
-        		c.getPlayer().runFishingTask();
-        		c.getPlayer().dropMessage(5, "You started fishing");
-        		c.getPlayer().dropMessage(5, "<Warning>If you do not have a slot in the ETC inventory, you will not be able to get the item. ");
-        		c.getPlayer().announce(MaplePacketCreator.earnTitleMessage("You started fishing"));
-        	}
+        player.setChair(itemId);
+        player.getMap().broadcastMessage(player, MaplePacketCreator.showChair(player.getId(), itemId), false);
+        if (ArrayUtil.contains(player.getMapId(), MapleCharacter.FISHING_MAPS) && ArrayUtil.contains(player.getChair(), MapleCharacter.FISHING_CHAIRS)) {
+            if (player.getFishingTask() == null || player.getFishingTask().isCanceled()) {
+                player.runFishingTask();
+                player.dropMessage(5, "You started fishing");
+                player.dropMessage(5, "<Warning>If you do not have a slot in the ETC inventory, you will not be able to get the item. ");
+                player.announce(MaplePacketCreator.earnTitleMessage("You started fishing"));
+            }
         }
-        c.announce(MaplePacketCreator.enableActions());
+        client.announce(MaplePacketCreator.enableActions());
     }
 }

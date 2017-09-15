@@ -32,6 +32,8 @@ import constants.skills.*;
 import net.server.world.MaplePartyCharacter;
 import provider.MapleData;
 import provider.MapleDataTool;
+import scheduler.Task;
+import scheduler.TaskExecutor;
 import server.life.MapleMonster;
 import server.maps.*;
 import tools.ArrayMap;
@@ -797,8 +799,8 @@ public class MapleStatEffect {
         int localDuration = duration;
         localDuration = alchemistModifyVal(chr, localDuration, false);
         CancelEffectAction cancelAction = new CancelEffectAction(chr, this, starttime);
-        ScheduledFuture<?> schedule = TimerManager.getInstance().schedule(cancelAction, ((starttime + localDuration) - System.currentTimeMillis()));
-        chr.registerEffect(this, starttime, schedule);
+        Task task = TaskExecutor.createTask(cancelAction, ((starttime + localDuration) - System.currentTimeMillis()));
+        chr.registerEffect(this, starttime, task);
         SummonMovementType summonMovementType = getSummonMovementType();
         if (summonMovementType != null) {
             final MapleSummon tosummon = new MapleSummon(chr, sourceid, chr.getPosition(), summonMovementType);
@@ -921,8 +923,8 @@ public class MapleStatEffect {
             }
             long starttime = System.currentTimeMillis();
             CancelEffectAction cancelAction = new CancelEffectAction(applyto, this, starttime);
-            ScheduledFuture<?> schedule = TimerManager.getInstance().schedule(cancelAction, localDuration);
-            applyto.registerEffect(this, starttime, schedule);
+            Task task = TaskExecutor.createTask(cancelAction, localDuration);
+            applyto.registerEffect(this, starttime, task);
 
             if (buff != null) {
                 if (!hasNoIcon()) { //Thanks flav for such a simple release! :)

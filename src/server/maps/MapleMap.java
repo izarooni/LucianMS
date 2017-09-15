@@ -39,12 +39,12 @@ import net.server.channel.Channel;
 import net.server.world.MaplePartyCharacter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import scheduler.Task;
 import scheduler.TaskExecutor;
 import scripting.map.MapScriptManager;
 import server.MapleItemInformationProvider;
 import server.MaplePortal;
 import server.MapleStatEffect;
-import server.TimerManager;
 import server.events.custom.GenericEvent;
 import server.events.gm.*;
 import server.life.*;
@@ -63,7 +63,6 @@ import java.awt.*;
 import java.util.*;
 import java.util.List;
 import java.util.Map.Entry;
-import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock.ReadLock;
@@ -107,7 +106,7 @@ public class MapleMap {
     private int fieldType;
     private int fieldLimit = 0;
     private int mobCapacity = -1;
-    private ScheduledFuture<?> mapMonitor = null;
+    private Task mapMonitor = null;
     private Pair<Integer, String> timeMob = null;
     private short mobInterval = 5000;
     private boolean allowSummons = true; // All maps should have this true at the beginning
@@ -545,12 +544,12 @@ public class MapleMap {
                     monster.damage(chr, damage);
                     if (!monster.isAlive()) { // monster just died
                         // killMonster(monster, chr, true);
-                    	if(getMapObjectsInRange(new Point(0, 0), Double.POSITIVE_INFINITY, Arrays.asList(MapleMapObjectType.ITEM)).size() >= 400) {
-                    		monster.getMap().clearDrops();
-                    		for(MapleCharacter player : getCharacters() ) {
-                    			player.dropMessage("All drops have been cleared from the floor automatically.");
-                    		}
-                    	}
+                        if (getMapObjectsInRange(new Point(0, 0), Double.POSITIVE_INFINITY, Arrays.asList(MapleMapObjectType.ITEM)).size() >= 400) {
+                            monster.getMap().clearDrops();
+                            for (MapleCharacter player : getCharacters()) {
+                                player.dropMessage("All drops have been cleared from the floor automatically.");
+                            }
+                        }
                         if (monster.getMap().getId() == 85) {
                             if (chr.getParty() != null) {
                                 for (MaplePartyCharacter player : chr.getParty().getMembers()) {
@@ -1082,7 +1081,7 @@ public class MapleMap {
     }
 
     private void monsterItemDrop(final MapleMonster m, final Item item, long delay) {
-        final ScheduledFuture<?> monsterItemDrop = TimerManager.getInstance().register(new Runnable() {
+        final Task task = TaskExecutor.createRepeatingTask(new Runnable() {
             @Override
             public void run() {
                 if (MapleMap.this.getMonsterById(m.getId()) != null && !MapleMap.this.getAllPlayer().isEmpty()) {
@@ -1095,7 +1094,7 @@ public class MapleMap {
             }
         }, delay, delay);
         if (getMonsterById(m.getId()) == null) {
-            monsterItemDrop.cancel(true);
+            task.cancel();
         }
     }
 
@@ -1267,10 +1266,9 @@ public class MapleMap {
     public void spawnMist(final MapleMist mist, final int duration, boolean poison, boolean fake, boolean recovery) {
         addMapObject(mist);
         broadcastMessage(fake ? mist.makeFakeSpawnData(30) : mist.makeSpawnData());
-        TimerManager tMan = TimerManager.getInstance();
-        final ScheduledFuture<?> poisonSchedule;
+        final Task poisonTask;
         if (poison) {
-            Runnable poisonTask = new Runnable() {
+            Runnable run = new Runnable() {
                 @Override
                 public void run() {
                     List<MapleMapObject> affectedMonsters = getMapObjectsInBox(mist.getBox(), Collections.singletonList(MapleMapObjectType.MONSTER));
@@ -1282,9 +1280,9 @@ public class MapleMap {
                     }
                 }
             };
-            poisonSchedule = tMan.register(poisonTask, 2000, 2500);
+            poisonTask = TaskExecutor.createRepeatingTask(run, 2000, 2500);
         } else if (recovery) {
-            Runnable poisonTask = new Runnable() {
+            Runnable run = new Runnable() {
                 @Override
                 public void run() {
                     List<MapleMapObject> players = getMapObjectsInBox(mist.getBox(), Collections.singletonList(MapleMapObjectType.PLAYER));
@@ -1298,18 +1296,18 @@ public class MapleMap {
                     }
                 }
             };
-            poisonSchedule = tMan.register(poisonTask, 2000, 2500);
+            poisonTask = TaskExecutor.createRepeatingTask(run, 2000, 2500);
         } else {
-            poisonSchedule = null;
+            poisonTask = null;
         }
-        tMan.schedule(new Runnable() {
+        TaskExecutor.createTask(new Runnable() {
             @Override
             public void run() {
                 removeMapObject(mist);
-                if (poisonSchedule != null) {
-                    poisonSchedule.cancel(false);
+                broadcastGMMessage(mist.makeDestroyData());
+                if (poisonTask != null) {
+                    poisonTask.cancel();
                 }
-                broadcastMessage(mist.makeDestroyData());
             }
         }, duration);
     }
@@ -1671,7 +1669,6 @@ public class MapleMap {
             updateMonsterController(monster);
         }
         chr.leaveMap();
-        chr.cancelMapTimeLimitTask();
         for (MapleSummon summon : chr.getSummons().values()) {
             if (summon.isStationary()) {
                 chr.cancelBuffStats(MapleBuffStat.PUPPET);
@@ -2296,7 +2293,7 @@ public class MapleMap {
     public void addMapTimer(int time) {
         timeLimit = System.currentTimeMillis() + (time * 1000);
         broadcastMessage(MaplePacketCreator.getClock(time));
-        mapMonitor = TimerManager.getInstance().register(new Runnable() {
+        mapMonitor = TaskExecutor.createRepeatingTask(new Runnable() {
             @Override
             public void run() {
                 if (timeLimit != 0 && timeLimit < System.currentTimeMillis()) {
@@ -2310,7 +2307,7 @@ public class MapleMap {
                     if (mapid >= 922240100 && mapid <= 922240119) {
                         toggleHiddenNPC(9001108);
                     }
-                    mapMonitor.cancel(true);
+                    mapMonitor.cancel();
                     mapMonitor = null;
                 }
             }

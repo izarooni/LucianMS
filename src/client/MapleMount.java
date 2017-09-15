@@ -21,20 +21,21 @@
 */
 package client;
 
-import java.util.concurrent.ScheduledFuture;
-import server.TimerManager;
+import scheduler.Task;
+import scheduler.TaskExecutor;
 import tools.MaplePacketCreator;
 
 /**
  * @author PurpleMadness Patrick :O
  */
 public class MapleMount {
+
     private int itemid;
     private int skillid;
     private int tiredness;
     private int exp;
     private int level;
-    private ScheduledFuture<?> tirednessSchedule;
+    private Task tirednessTask;
     private MapleCharacter owner;
     private boolean active;
 
@@ -68,6 +69,7 @@ public class MapleMount {
      * 1902010 - Frog
      * 1902011 - Turtle
      * 1902012 - Yeti
+     *
      * @return the id
      */
     public int getId() {
@@ -97,18 +99,16 @@ public class MapleMount {
     }
 
     private void increaseTiredness() {
-		if(owner != null) {
-			this.tiredness++;
-			owner.getMap().broadcastMessage(MaplePacketCreator.updateMount(owner.getId(), this, false));
-			if (tiredness > 99) {
-				this.tiredness = 95;
-				owner.dispelSkill(owner.getJobType() * 10000000 + 1004);
-			}
-		} else {
-			if(this.tirednessSchedule != null) {
-				this.tirednessSchedule.cancel(false);
-			}
-		}
+        if (owner != null) {
+            this.tiredness++;
+            owner.getMap().broadcastMessage(MaplePacketCreator.updateMount(owner.getId(), this, false));
+            if (tiredness > 99) {
+                this.tiredness = 95;
+                owner.dispelSkill(owner.getJobType() * 10000000 + 1004);
+            }
+        } else {
+            cancelSchedule();
+        }
     }
 
     public void setExp(int newexp) {
@@ -124,17 +124,13 @@ public class MapleMount {
     }
 
     public void startSchedule() {
-        this.tirednessSchedule = TimerManager.getInstance().register(new Runnable() {
-            @Override
-            public void run() {
-                increaseTiredness();
-            }
-        }, 60000, 60000);
+        this.tirednessTask = TaskExecutor.createRepeatingTask(this::increaseTiredness, 60000, 60000);
     }
 
     public void cancelSchedule() {
-        if (this.tirednessSchedule != null) {
-            this.tirednessSchedule.cancel(false);
+        if (tirednessTask != null) {
+            tirednessTask.cancel();
+            tirednessTask = null;
         }
     }
 
@@ -145,10 +141,9 @@ public class MapleMount {
     public boolean isActive() {
         return active;
     }
-    
+
     public void empty() {
         cancelSchedule();
-        this.tirednessSchedule = null;
         this.owner = null;
-    }    
+    }
 }

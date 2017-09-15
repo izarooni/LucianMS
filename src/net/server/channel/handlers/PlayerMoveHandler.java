@@ -1,10 +1,9 @@
 package net.server.channel.handlers;
 
 import client.MapleCharacter;
-import client.MapleClient;
 import client.MapleStat;
 import net.PacketHandler;
-import server.TimerManager;
+import scheduler.TaskExecutor;
 import server.life.FakePlayer;
 import server.movement.LifeMovementFragment;
 import server.movement.MovementPacketHelper;
@@ -46,7 +45,7 @@ public final class PlayerMoveHandler extends PacketHandler {
 
             final FakePlayer fPlayer = player.getFakePlayer();
             if (player.isAlive() && fPlayer != null && fPlayer.isFollowing()) {
-                TimerManager.getInstance().schedule(new Runnable() {
+                TaskExecutor.createTask(new Runnable() {
                     @Override
                     public void run() {
                         MovementPacketHelper.updatePosition(movements, fPlayer, 0);

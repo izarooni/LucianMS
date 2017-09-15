@@ -50,7 +50,8 @@ public final class PickCharHandler extends AbstractMaplePacketHandler {
             client.setChannel(1);
         }
         if (client.getIdleTask() != null) {
-            client.getIdleTask().cancel(true);
+            client.getIdleTask().cancel();
+            client.setIdleTask(null);
         }
         try {
             client.updateLoginState(MapleClient.LOGIN_SERVER_TRANSITION);

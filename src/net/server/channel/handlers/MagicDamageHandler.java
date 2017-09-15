@@ -30,8 +30,8 @@ import constants.skills.Bishop;
 import constants.skills.Evan;
 import constants.skills.FPArchMage;
 import constants.skills.ILArchMage;
+import scheduler.TaskExecutor;
 import server.MapleStatEffect;
-import server.TimerManager;
 import server.life.FakePlayer;
 import tools.MaplePacketCreator;
 import tools.data.input.SeekableLittleEndianAccessor;
@@ -63,7 +63,7 @@ public class MagicDamageHandler extends AbstractDealDamageHandler {
 
         FakePlayer fakePlayer = player.getFakePlayer();
         if (fakePlayer != null && fakePlayer.isFollowing()) {
-            TimerManager.getInstance().schedule(new Runnable() {
+            TaskExecutor.createTask(new Runnable() {
                 @Override
                 public void run() {
                     fakePlayer.getMap().broadcastMessage(fakePlayer, MaplePacketCreator.magicAttack(fakePlayer, attackInfo.skill, attackInfo.skilllevel, attackInfo.stance, attackInfo.numAttackedAndDamage, attackInfo.allDamage, attackInfo.charge, attackInfo.speed, attackInfo.direction, attackInfo.display), false, true);
@@ -80,7 +80,7 @@ public class MagicDamageHandler extends AbstractDealDamageHandler {
                 return;
             } else {
                 getClient().announce(MaplePacketCreator.skillCooldown(attackInfo.skill, effect_.getCooldown()));
-                player.addCooldown(attackInfo.skill, System.currentTimeMillis(), effect_.getCooldown() * 1000, TimerManager.getInstance().schedule(new CancelCooldownAction(player, attackInfo.skill), effect_.getCooldown() * 1000));
+                player.addCooldown(attackInfo.skill, System.currentTimeMillis(), effect_.getCooldown() * 1000, TaskExecutor.createTask(new CancelCooldownAction(player, attackInfo.skill), effect_.getCooldown() * 1000));
             }
         }
         applyAttack(player, attackInfo, effect.getAttackCount());

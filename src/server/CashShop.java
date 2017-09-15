@@ -21,6 +21,15 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package server;
 
+import client.inventory.*;
+import constants.ItemConstants;
+import provider.MapleData;
+import provider.MapleDataProvider;
+import provider.MapleDataProviderFactory;
+import provider.MapleDataTool;
+import tools.DatabaseConnection;
+import tools.Pair;
+
 import java.io.File;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -31,23 +40,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import provider.MapleData;
-import provider.MapleDataProvider;
-import provider.MapleDataProviderFactory;
-import provider.MapleDataTool;
-import tools.DatabaseConnection;
-import tools.Pair;
-import client.inventory.Equip;
-import client.inventory.Item;
-import client.inventory.ItemFactory;
-import client.inventory.MapleInventoryType;
-import client.inventory.MaplePet;
-import constants.ItemConstants;
-
 /*
  * @author Flav
  */
 public class CashShop {
+
     public static class CashItem {
 
         private int sn, itemId, price;
@@ -90,8 +87,9 @@ public class CashShop {
 
             int petid = -1;
 
-            if (ItemConstants.isPet(itemId))
+            if (ItemConstants.isPet(itemId)) {
                 petid = MaplePet.createPet(itemId);
+            }
 
             if (ii.getInventoryType(itemId).equals(MapleInventoryType.EQUIP)) {
                 item = ii.getEquipById(itemId);
@@ -99,17 +97,20 @@ public class CashShop {
                 item = new Item(itemId, (byte) 0, count, petid);
             }
 
-            if (ItemConstants.EXPIRING_ITEMS)
-				if(itemId == 5211048 || itemId == 5360042) { // 4 Hour 2X coupons, the period is 1, but we don't want them to last a day.
-					item.setExpiration(System.currentTimeMillis() + (1000 * 60 * 60 * 4));
-				} else {
-					item.setExpiration(System.currentTimeMillis() + (1000 * 60 * 60 * 24 * period));
-				}
+            if (ItemConstants.EXPIRING_ITEMS) {
+                if (itemId == 5211048 || itemId == 5360042) { // 4 Hour 2X coupons, the period is 1, but we don't want them to last a day.
+                    item.setExpiration(System.currentTimeMillis() + (1000 * 60 * 60 * 4));
+                } else {
+                    item.setExpiration(System.currentTimeMillis() + (1000 * 60 * 60 * 24 * period));
+                }
+            }
             item.setSN(sn);
             return item;
         }
     }
+
     public static class SpecialCashItem {
+
         private int sn, modifier;
         private byte info; //?
 
@@ -160,22 +161,14 @@ public class CashShop {
 
                 packages.put(Integer.parseInt(cashPackage.getName()), cPackage);
             }
-            PreparedStatement ps = null;
-            ResultSet rs = null;
-            try {
-                ps = DatabaseConnection.getConnection().prepareStatement("SELECT * FROM specialcashitems");
-                rs = ps.executeQuery();
-                while (rs.next()) {
-                    specialcashitems.add(new SpecialCashItem(rs.getInt("sn"), rs.getInt("modifier"), rs.getByte("info")));
+            try (PreparedStatement ps = DatabaseConnection.getConnection().prepareStatement("SELECT * FROM specialcashitems")) {
+                try (ResultSet rs = ps.executeQuery()) {
+                    while (rs.next()) {
+                        specialcashitems.add(new SpecialCashItem(rs.getInt("sn"), rs.getInt("modifier"), rs.getByte("info")));
+                    }
                 }
             } catch (SQLException ex) {
                 ex.printStackTrace();
-            } finally {
-                try {
-                    if (rs != null) rs.close();
-                    if (ps != null) ps.close();
-                } catch (SQLException ex) {
-                }
             }
         }
 
@@ -200,28 +193,21 @@ public class CashShop {
         public static List<SpecialCashItem> getSpecialCashItems() {
             return specialcashitems;
         }
-        
+
         public static void reloadSpecialCashItems() {//Yay?
             specialcashitems.clear();
-            PreparedStatement ps = null;
-            ResultSet rs = null;
-            try {
-                ps = DatabaseConnection.getConnection().prepareStatement("SELECT * FROM specialcashitems");
-                rs = ps.executeQuery();
-                while (rs.next()) {
-                    specialcashitems.add(new SpecialCashItem(rs.getInt("sn"), rs.getInt("modifier"), rs.getByte("info")));
+            try (PreparedStatement ps = DatabaseConnection.getConnection().prepareStatement("SELECT * FROM specialcashitems")) {
+                try (ResultSet rs = ps.executeQuery()) {
+                    while (rs.next()) {
+                        specialcashitems.add(new SpecialCashItem(rs.getInt("sn"), rs.getInt("modifier"), rs.getByte("info")));
+                    }
                 }
             } catch (SQLException ex) {
                 ex.printStackTrace();
-            } finally {
-                try {
-                    if (rs != null) rs.close();
-                    if (ps != null) ps.close();
-                } catch (SQLException ex) {
-                }
-            }            
+            }
         }
     }
+
     private int accountId, characterId, nxCredit, maplePoint, nxPrepaid;
     private boolean opened;
     private ItemFactory factory;
@@ -273,8 +259,12 @@ public class CashShop {
             rs.close();
             ps.close();
         } finally {
-            if (ps != null) ps.close();
-            if (rs != null) rs.close();
+            if (ps != null) {
+                ps.close();
+            }
+            if (rs != null) {
+                rs.close();
+            }
         }
     }
 
@@ -371,7 +361,9 @@ public class CashShop {
             sqle.printStackTrace();
         } finally {
             try {
-                if (ps != null) ps.close();
+                if (ps != null) {
+                    ps.close();
+                }
             } catch (SQLException ex) {
             }
         }
@@ -397,8 +389,9 @@ public class CashShop {
                     equip = (Equip) item;
                     equip.setRingId(rs.getInt("ringid"));
                     gifts.add(new Pair<Item, String>(equip, rs.getString("message")));
-                } else
+                } else {
                     gifts.add(new Pair<>(item, rs.getString("message")));
+                }
 
                 if (CashItemFactory.isPackage(cItem.getItemId())) { //Packages never contains a ring
                     for (Item packageItem : CashItemFactory.getPackage(cItem.getItemId())) {
@@ -449,7 +442,7 @@ public class CashShop {
         ps = con.prepareStatement("DELETE FROM `wishlists` WHERE `charid` = ?");
         ps.setInt(1, characterId);
         ps.executeUpdate();
-		ps.close();
+        ps.close();
         ps = con.prepareStatement("INSERT INTO `wishlists` VALUES (DEFAULT, ?, ?)");
         ps.setInt(1, characterId);
 

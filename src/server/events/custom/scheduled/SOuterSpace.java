@@ -5,6 +5,7 @@ import net.server.channel.Channel;
 import net.server.world.World;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import scheduler.TaskExecutor;
 import server.life.MapleLifeFactory;
 import server.life.MapleMonster;
 import server.life.MonsterListener;
@@ -54,6 +55,10 @@ public class SOuterSpace extends SAutoEvent {
         return true;
     }
 
+    public boolean isFinished(int i) {
+        return finished[i];
+    }
+
     @Override
     public String getName() {
         return getClass().getSimpleName();
@@ -81,11 +86,21 @@ public class SOuterSpace extends SAutoEvent {
                     public void monsterKilled(int aniTime) {
                         finished[channel.getId()] = true;
                         channel.broadcastPacket(MaplePacketCreator.serverNotice(0, "The Space Slime has been defeated!"));
+                        eventMap.broadcastMessage(MaplePacketCreator.serverNotice(6, "You will be warped momentarily"));
+
+                        TaskExecutor.createTask(new Runnable() {
+                            @Override
+                            public void run() {
+                                for (MapleCharacter players : monster.getMap().getCharacters()) {
+                                    unregisterPlayer(players);
+                                }
+                            }
+                        }, 3000);
                     }
                 });
                 eventMap.spawnMonsterOnGroudBelow(monster, pos);
                 channel.broadcastPacket(MaplePacketCreator.serverNotice(0, "The Space Slime has spawned in the Outer Space, Planet Lucian"));
-                LOGGER.info("The Space slime was successfully spawned at position {}");
+                LOGGER.info("The Space slime was successfully spawned at position {}", pos.toString());
             } else {
                 System.err.println("Scheduled event 'Outer Space' was unable to spawn the monster " + MonsterId);
             }

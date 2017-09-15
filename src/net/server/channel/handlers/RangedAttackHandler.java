@@ -32,10 +32,10 @@ import client.inventory.MapleInventoryType;
 import client.inventory.MapleWeaponType;
 import constants.ItemConstants;
 import constants.skills.*;
+import scheduler.TaskExecutor;
 import server.MapleInventoryManipulator;
 import server.MapleItemInformationProvider;
 import server.MapleStatEffect;
-import server.TimerManager;
 import server.life.FakePlayer;
 import tools.MaplePacketCreator;
 import tools.Randomizer;
@@ -182,7 +182,7 @@ public final class RangedAttackHandler extends AbstractDealDamageHandler {
 
                 if (fakePlayer != null && fakePlayer.isFollowing()) {
                     int finalVisProjectile = visProjectile;
-                    TimerManager.getInstance().schedule(new Runnable() {
+                    TaskExecutor.createTask(new Runnable() {
                         @Override
                         public void run() {
                             fakePlayer.getMap().broadcastMessage(fakePlayer, MaplePacketCreator.rangedAttack(fakePlayer, attackInfo.skill, attackInfo.skilllevel, attackInfo.stance, attackInfo.numAttackedAndDamage, finalVisProjectile, attackInfo.allDamage, attackInfo.speed, attackInfo.direction, attackInfo.display), false, true);
@@ -210,7 +210,7 @@ public final class RangedAttackHandler extends AbstractDealDamageHandler {
                             return;
                         } else {
                             getClient().announce(MaplePacketCreator.skillCooldown(attackInfo.skill, effect_.getCooldown()));
-                            player.addCooldown(attackInfo.skill, System.currentTimeMillis(), effect_.getCooldown() * 1000, TimerManager.getInstance().schedule(new CancelCooldownAction(player, attackInfo.skill), effect_.getCooldown() * 1000));
+                            player.addCooldown(attackInfo.skill, System.currentTimeMillis(), effect_.getCooldown() * 1000, TaskExecutor.createTask(new CancelCooldownAction(player, attackInfo.skill), effect_.getCooldown() * 1000));
                         }
                     }
                 }

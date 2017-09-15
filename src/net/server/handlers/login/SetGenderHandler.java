@@ -24,15 +24,15 @@ package net.server.handlers.login;
 
 import client.MapleClient;
 import net.AbstractMaplePacketHandler;
-import server.TimerManager;
+import scheduler.TaskExecutor;
 import tools.MaplePacketCreator;
 import tools.data.input.SeekableLittleEndianAccessor;
 
 /**
- *
  * @author kevintjuh93
  */
 public class SetGenderHandler extends AbstractMaplePacketHandler {
+
     @Override
     public void handlePacket(SeekableLittleEndianAccessor slea, MapleClient c) {
         byte type = slea.readByte(); //?
@@ -40,12 +40,7 @@ public class SetGenderHandler extends AbstractMaplePacketHandler {
             c.setGender(slea.readByte());
             c.announce(MaplePacketCreator.getAuthSuccess(c));
             final MapleClient client = c;
-            c.setIdleTask(TimerManager.getInstance().schedule(new Runnable() {
-                @Override
-                public void run() {
-                    client.getSession().close(true);
-                }
-            }, 600000));
+            c.setIdleTask(TaskExecutor.createTask(() -> client.getSession().close(true), 600000));
         }
     }
 

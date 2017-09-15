@@ -45,9 +45,9 @@ import org.json.JSONObject;
 import org.json.JSONTokener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import scheduler.TaskExecutor;
 import server.CashShop.CashItemFactory;
 import server.MapleItemInformationProvider;
-import server.TimerManager;
 import server.Whitelist;
 import server.events.custom.scheduled.SOuterSpace;
 import server.quest.MapleQuest;
@@ -72,8 +72,8 @@ public class Server implements Runnable {
     private List<Map<Integer, String>> channels = new LinkedList<>();
     private List<World> worlds = new ArrayList<>();
     private List<Pair<Integer, String>> worldRecommendedList = new LinkedList<>();
-    private Map<Integer, MapleGuild> guilds = new LinkedHashMap<>();
-    private Map<Integer, MapleAlliance> alliances = new LinkedHashMap<>();
+    private final Map<Integer, MapleGuild> guilds = new LinkedHashMap<>();
+    private final Map<Integer, MapleAlliance> alliances = new LinkedHashMap<>();
     private PlayerBuffStorage buffStorage = new PlayerBuffStorage();
     private boolean online = false;
 
@@ -123,9 +123,7 @@ public class Server implements Runnable {
     public List<Channel> getAllChannels() {
         List<Channel> channelz = new ArrayList<>();
         for (World world : worlds) {
-            for (Channel ch : world.getChannels()) {
-                channelz.add(ch);
-            }
+            channelz.addAll(world.getChannels());
         }
         return channelz;
     }
@@ -193,24 +191,20 @@ public class Server implements Runnable {
             e.printStackTrace();
         }
 
-        TimerManager tMan = TimerManager.getInstance();
-        tMan.start();
-        tMan.register(tMan.purge(), 300000);// Purging ftw...
-        tMan.register(new RankingWorker(), ServerConstants.RANKING_INTERVAL);
+        TaskExecutor.createRepeatingTask(RankingWorker::new, ServerConstants.RANKING_INTERVAL);
 
         long timeToTake = System.currentTimeMillis();
+        MapleQuest.loadAllQuest();
+        LOGGER.info("Quest data loaded in {}s", ((System.currentTimeMillis() - timeToTake) / 1000d));
+
+        timeToTake = System.currentTimeMillis();
         SkillFactory.loadAllSkills();
         LOGGER.info("Skill data loaded in {}s", ((System.currentTimeMillis() - timeToTake) / 1000d));
 
         timeToTake = System.currentTimeMillis();
         MapleItemInformationProvider.getInstance().getAllItems();
-
         CashItemFactory.getSpecialCashItems();
         LOGGER.info("Item data loaded in {}s", ((System.currentTimeMillis() - timeToTake) / 1000d));
-
-        timeToTake = System.currentTimeMillis();
-        MapleQuest.loadAllQuest();
-        LOGGER.info("Quest data loaded in {}s", ((System.currentTimeMillis() - timeToTake) / 1000d));
 
         timeToTake = System.currentTimeMillis();
         CQuestBuilder.loadAllQuests();
@@ -238,8 +232,9 @@ public class Server implements Runnable {
                     channels.get(i).put(channelId, channel.getIP());
                 }
                 world.setServerMessage(sMessage);
-                //final long repeat = (1000 * 60 * 60) * 4;
-                //TimerManager.getInstance().register(() -> GAutoEventManager.startRandomEvent(world), repeat, repeat);
+
+                //                final long repeat = (1000 * 60 * 60) * 4;
+                //                TaskExecutor.createRepeatingTask(() -> GAutoEventManager.startRandomEvent(world), repeat);
                 world.addScheduledEvent(new SOuterSpace(world));
                 LOGGER.info("World {} created in {}s", world.getId(), ((System.currentTimeMillis() - timeToTake) / 1000d));
             }
@@ -577,8 +572,7 @@ public class Server implements Runnable {
 
                 getWorlds().forEach(World::shutdown);
 
-                TimerManager.getInstance().purge();
-                TimerManager.getInstance().stop();
+                TaskExecutor.destroy();
 
                 LOGGER.info("Worlds & channels are now offline");
 

@@ -30,7 +30,8 @@ public class ViewAllCharSelectedWithPicHandler extends AbstractMaplePacketHandle
         }
         if (client.checkPic(pic) || !client.playerBelongs(playerId)) {
             if (client.getIdleTask() != null) {
-                client.getIdleTask().cancel(true);
+                client.getIdleTask().cancel();
+                client.setIdleTask(null);
             }
             try {
                 client.updateLoginState(MapleClient.LOGIN_SERVER_TRANSITION);

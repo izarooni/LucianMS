@@ -1,9 +1,10 @@
 package scheduler;
 
-import server.TimerManager;
-
 import java.util.HashMap;
 import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.ScheduledThreadPoolExecutor;
+import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
@@ -13,10 +14,22 @@ import java.util.concurrent.locks.ReentrantLock;
  */
 public final class TaskExecutor {
 
-    private static final HashMap<Integer, Task> tasks = new HashMap<>();
+    private static final HashMap<Integer, Task> TASKS = new HashMap<>();
+    private static final ScheduledThreadPoolExecutor EXECUTOR = new ScheduledThreadPoolExecutor(6, new ThreadFactory() {
+        private int threadId = 0;
+
+        @Override
+        public Thread newThread(Runnable r) {
+            return new Thread(r, "LTask" + (++threadId));
+        }
+    });
 
     private static AtomicInteger atomicInteger = new AtomicInteger(1);
     private static Lock lock = new ReentrantLock(true);
+
+    static {
+        EXECUTOR.prestartAllCoreThreads();
+    }
 
     private static Task setupTask(ScheduledFuture<?> future) {
         lock.lock();
@@ -28,11 +41,21 @@ public final class TaskExecutor {
                     return id;
                 }
             };
-            if (!tasks.containsKey(id)) {
-                tasks.put(id, task);
+            if (!TASKS.containsKey(id)) {
+                TASKS.put(id, task);
                 return task;
             }
             throw new RuntimeException(String.format("Created task with already existing id(%d)", id));
+        } finally {
+            lock.unlock();
+        }
+    }
+
+    public static void destroy() {
+        lock.lock();
+        try {
+            EXECUTOR.shutdownNow();
+            EXECUTOR.purge();
         } finally {
             lock.unlock();
         }
@@ -46,20 +69,32 @@ public final class TaskExecutor {
      * @return A {@code Task} object which is a wrapper for the {@link ScheduledFuture} object
      */
     public static Task createTask(Runnable r, long d) {
-        return setupTask(TimerManager.getInstance().schedule(r, d));
+        return setupTask(EXECUTOR.schedule(r, d, TimeUnit.MILLISECONDS));
     }
 
     /**
      * Create a task that infinitely repeats until stopped by invoking the {@link Task#cancel()} method
      *
      * @param r a runnable interface
-     * @param i the time between each excution
-     * @param d the delay before the task begins its first execution
+     * @param i the delay before the task begins its first execution
+     * @param d the time between each execution
      * @return A {@code Task} object which is a wrapper for the {@link ScheduledFuture} object
      */
     public static Task createRepeatingTask(Runnable r, long i, long d) {
-        return setupTask(TimerManager.getInstance().register(r, i, d));
+        return setupTask(EXECUTOR.scheduleWithFixedDelay(r, i, d, TimeUnit.MILLISECONDS));
     }
+
+    /**
+     * Create a task that infinitely repeats until stopped by invoking the {@link Task#cancel()} method
+     *
+     * @param r a runnable interface
+     * @param t the interval time and delay in milliseconds the task will execute
+     * @return a {@code Task} object which is a wrapper for the {@link ScheduledFuture} object
+     */
+    public static Task createRepeatingTask(Runnable r, long t) {
+        return setupTask(EXECUTOR.scheduleWithFixedDelay(r, t, t, TimeUnit.MILLISECONDS));
+    }
+
 
     /**
      * Cancels the specified task
@@ -69,8 +104,8 @@ public final class TaskExecutor {
     public static void cancelTask(int id) {
         lock.lock();
         try {
-            if (tasks.containsKey(id)) {
-                tasks.get(id).cancel();
+            if (TASKS.containsKey(id)) {
+                TASKS.get(id).cancel();
             }
         } finally {
             lock.unlock();
@@ -80,7 +115,7 @@ public final class TaskExecutor {
     public static Task getTask(int id) {
         lock.lock();
         try {
-            return tasks.get(id);
+            return TASKS.get(id);
         } finally {
             lock.unlock();
         }

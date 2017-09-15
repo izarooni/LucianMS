@@ -30,6 +30,7 @@ import net.server.world.*;
 import org.apache.mina.core.session.IoSession;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import scheduler.Task;
 import scheduler.TaskExecutor;
 import scripting.npc.NPCConversationManager;
 import scripting.npc.NPCScriptManager;
@@ -84,7 +85,7 @@ public class MapleClient {
     private int gmlevel;
     private Set<String> macs = new HashSet<>();
     private Map<String, ScriptEngine> engines = new HashMap<>();
-    private ScheduledFuture<?> idleTask = null;
+    private Task idleTask = null;
     private byte characterSlots = 3;
     private byte loginattempt = 0;
     private String pin = null;
@@ -867,19 +868,19 @@ public class MapleClient {
     }
 
     private void clear() {
-        this.accountName = null;
-        this.macs = null;
-        this.hwid = null;
-        this.birthday = null;
-        this.engines = null;
-        if (this.idleTask != null) {
-            this.idleTask.cancel(true);
-            this.idleTask = null;
+        accountName = null;
+        macs = null;
+        hwid = null;
+        birthday = null;
+        engines = null;
+        if (idleTask != null) {
+            idleTask.cancel();
+            idleTask = null;
         }
-        this.player = null;
-        this.receive = null;
-        this.send = null;
-        this.session = null;
+        player = null;
+        receive = null;
+        send = null;
+        session = null;
     }
 
     public int getChannel() {
@@ -1011,11 +1012,11 @@ public class MapleClient {
         engines.remove(name);
     }
 
-    public ScheduledFuture<?> getIdleTask() {
+    public Task getIdleTask() {
         return idleTask;
     }
 
-    public void setIdleTask(ScheduledFuture<?> idleTask) {
+    public void setIdleTask(Task idleTask) {
         this.idleTask = idleTask;
     }
 
