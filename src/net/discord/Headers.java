@@ -9,7 +9,8 @@ public enum Headers {
     Shutdown((byte) 0x0),
     SetFace((byte) 0x1),
     SetHair((byte) 0x2),
-    Online((byte) 0x3);
+    Online((byte) 0x3),
+    Bind((byte) 0x4);
     // @formatter:on
     public final byte value;
 

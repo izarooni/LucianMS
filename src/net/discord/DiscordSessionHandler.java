@@ -60,7 +60,6 @@ public class DiscordSessionHandler extends IoHandlerAdapter {
 
     @Override
     public void messageReceived(IoSession session, Object message) throws Exception {
-        LOGGER.info("Session #{} received message {}", session.getId(), message.getClass().getSimpleName());
         if (message instanceof byte[]) {
             byte[] bytes = (byte[]) message;
             GenericLittleEndianAccessor lea = new GenericLittleEndianAccessor(new ByteArrayByteStream(bytes));

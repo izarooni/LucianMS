@@ -24,16 +24,44 @@ package net.server.channel.handlers;
 import client.MapleCharacter;
 import client.MapleClient;
 import command.CommandWorker;
+import net.discord.DiscordSession;
+import net.discord.Headers;
+import net.discord.handlers.BindRequest;
+import tools.DatabaseConnection;
 import tools.MaplePacketCreator;
 import tools.data.input.SeekableLittleEndianAccessor;
+import tools.data.output.MaplePacketLittleEndianWriter;
+
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 
 public class GeneralChatHandler extends net.AbstractMaplePacketHandler {
 
     @Override
     public void handlePacket(SeekableLittleEndianAccessor slea, MapleClient client) {
         MapleCharacter player = client.getPlayer();
+        String message = slea.readMapleAsciiString();
+        if (client.getDiscordKey() != null && client.getDiscordId() > 0) {
+            if (message.equals(client.getDiscordKey())) {
+                MaplePacketLittleEndianWriter writer = new MaplePacketLittleEndianWriter();
+                writer.write(Headers.Bind.value);
+                writer.writeLong(0); // ignore channel_id
+                writer.writeLong(client.getDiscordId());
+                writer.write(3);
+                DiscordSession.sendPacket(writer.getPacket());
+                BindRequest.keys.remove(client.getDiscordKey());
+                client.setDiscordKey(null);
+                try (PreparedStatement ps = DatabaseConnection.getConnection().prepareStatement("update accounts set discord_id = ? where id = ?")) {
+                    ps.setLong(1, client.getDiscordId());
+                    ps.setInt(2, player.getAccountID());
+                    ps.executeUpdate();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+                return;
+            }
+        }
         if (!player.isMuted()) {
-            String message = slea.readMapleAsciiString();
             if (CommandWorker.isCommand(message)) {
                 if (CommandWorker.process(client, message, false)) {
                     return;
@@ -46,7 +74,7 @@ public class GeneralChatHandler extends net.AbstractMaplePacketHandler {
             }
             if (!player.isHidden()) {
                 player.getChatType().sendChat(player, message, show);
-//                player.getMap().broadcastMessage(MaplePacketCreator.getChatText(player.getId(), message, player.getWhiteChat(), show));
+                //                player.getMap().broadcastMessage(MaplePacketCreator.getChatText(player.getId(), message, player.getWhiteChat(), show));
             } else {
                 player.getMap().broadcastGMMessage(MaplePacketCreator.serverNotice(2, player.getClient().getChannel(), String.format("[hide] %s : %s", player.getName(), message)));
                 player.getMap().broadcastGMMessage(MaplePacketCreator.getChatText(player.getId(), message, false, 1));

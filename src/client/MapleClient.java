@@ -56,7 +56,6 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.*;
-import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -99,6 +98,9 @@ public class MapleClient {
     private int donationPoints;
     private int voteTime = -1;
     private long sessionId;
+
+    private long discordId = 0;
+    private String discordKey = null;
 
     public MapleClient(MapleAESOFB send, MapleAESOFB receive, IoSession session) {
         this.send = send;
@@ -1263,5 +1265,21 @@ public class MapleClient {
         } catch (SQLException e) {
             e.printStackTrace();
         }
+    }
+
+    public long getDiscordId() {
+        return discordId;
+    }
+
+    public void setDiscordId(long discordId) {
+        this.discordId = discordId;
+    }
+
+    public String getDiscordKey() {
+        return discordKey;
+    }
+
+    public void setDiscordKey(String discordKey) {
+        this.discordKey = discordKey;
     }
 }

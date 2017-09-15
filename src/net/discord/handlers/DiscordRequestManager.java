@@ -16,6 +16,7 @@ public class DiscordRequestManager {
         requests[Headers.SetFace.value] = new FaceChangeRequest();
         requests[Headers.SetHair.value] = new HairChangeRequest();
         requests[Headers.Online.value] = new OnlineRequest();
+        requests[Headers.Bind.value] = new BindRequest();
     }
 
     private DiscordRequestManager() {
