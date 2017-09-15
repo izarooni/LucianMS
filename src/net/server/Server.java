@@ -144,8 +144,6 @@ public class Server implements Runnable {
 
         LOGGER.info("LucianMS v{} starting up!", ServerConstants.VERSION);
 
-        DiscordSession.listen();
-
         try {
             if (Defaults.createDefaultIfAbsent(null, "server-config.json")) {
                 LOGGER.info("Server config created. Configure settings and restart the server");
@@ -167,6 +165,9 @@ public class Server implements Runnable {
             e.printStackTrace();
         }
 
+        DiscordSession.listen();
+
+        TaskExecutor.prestartAllCoreThreads();
         Runtime.getRuntime().addShutdownHook(new Thread(shutdown()));
 
         DatabaseConnection.getConnection();
@@ -572,7 +573,7 @@ public class Server implements Runnable {
 
                 getWorlds().forEach(World::shutdown);
 
-                TaskExecutor.destroy();
+                TaskExecutor.shutdownNow();
 
                 LOGGER.info("Worlds & channels are now offline");
 

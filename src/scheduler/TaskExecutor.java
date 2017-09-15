@@ -1,6 +1,7 @@
 package scheduler;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.ThreadFactory;
@@ -27,10 +28,6 @@ public final class TaskExecutor {
     private static AtomicInteger atomicInteger = new AtomicInteger(1);
     private static Lock lock = new ReentrantLock(true);
 
-    static {
-        EXECUTOR.prestartAllCoreThreads();
-    }
-
     private static Task setupTask(ScheduledFuture<?> future) {
         lock.lock();
         try {
@@ -51,14 +48,16 @@ public final class TaskExecutor {
         }
     }
 
-    public static void destroy() {
-        lock.lock();
-        try {
-            EXECUTOR.shutdownNow();
-            EXECUTOR.purge();
-        } finally {
-            lock.unlock();
-        }
+    public static List<Runnable> shutdownNow() {
+        return EXECUTOR.shutdownNow();
+    }
+
+    public static int prestartAllCoreThreads() {
+        return EXECUTOR.prestartAllCoreThreads();
+    }
+
+    public static void purge() {
+        EXECUTOR.purge();
     }
 
     /**

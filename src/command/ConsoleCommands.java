@@ -6,6 +6,7 @@ import net.server.channel.Channel;
 import net.server.world.World;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import scheduler.TaskExecutor;
 import server.Whitelist;
 
 import java.io.IOException;
@@ -99,6 +100,8 @@ public class ConsoleCommands {
                 e.printStackTrace();
             }
         } else if (command.equals("gc")) {
+            TaskExecutor.purge();
+            LOGGER.info("Tasks purged");
             System.gc();
             LOGGER.info("GC requested");
         } else if (command.equals("crash")) {
