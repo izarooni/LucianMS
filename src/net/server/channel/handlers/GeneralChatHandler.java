@@ -41,25 +41,24 @@ public class GeneralChatHandler extends net.AbstractMaplePacketHandler {
     public void handlePacket(SeekableLittleEndianAccessor slea, MapleClient client) {
         MapleCharacter player = client.getPlayer();
         String message = slea.readMapleAsciiString();
-        if (client.getDiscordKey() != null && client.getDiscordId() > 0) {
-            if (message.equals(client.getDiscordKey())) {
-                MaplePacketLittleEndianWriter writer = new MaplePacketLittleEndianWriter();
-                writer.write(Headers.Bind.value);
-                writer.writeLong(0); // ignore channel_id
-                writer.writeLong(client.getDiscordId());
-                writer.write(3);
-                DiscordSession.sendPacket(writer.getPacket());
-                BindRequest.keys.remove(client.getDiscordKey());
-                client.setDiscordKey(null);
-                try (PreparedStatement ps = DatabaseConnection.getConnection().prepareStatement("update accounts set discord_id = ? where id = ?")) {
-                    ps.setLong(1, client.getDiscordId());
-                    ps.setInt(2, player.getAccountID());
-                    ps.executeUpdate();
-                } catch (SQLException e) {
-                    e.printStackTrace();
-                }
-                return;
+        if (client.getDiscordKey() != null && client.getDiscordId() > 0 && message.equals(client.getDiscordKey())) {
+            MaplePacketLittleEndianWriter writer = new MaplePacketLittleEndianWriter();
+            writer.write(Headers.Bind.value);
+            writer.writeLong(0); // ignore channel_id
+            writer.writeLong(client.getDiscordId());
+            writer.write(3);
+            DiscordSession.sendPacket(writer.getPacket());
+            BindRequest.keys.remove(client.getDiscordKey());
+            client.setDiscordKey(null);
+            try (PreparedStatement ps = DatabaseConnection.getConnection().prepareStatement("update accounts set discord_id = ? where id = ?")) {
+                ps.setLong(1, client.getDiscordId());
+                ps.setInt(2, player.getAccountID());
+                ps.executeUpdate();
+                player.dropMessage("Success! Your Discord account is not bound to this LucianMS in-game account");
+            } catch (SQLException e) {
+                e.printStackTrace();
             }
+            return;
         }
         if (!player.isMuted()) {
             if (CommandWorker.isCommand(message)) {

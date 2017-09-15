@@ -73,16 +73,17 @@ public class BindRequest extends DiscordRequest {
                             writer.writeMapleAsciiString(key);
                             writer.writeMapleAsciiString(accountUsername);
                             DiscordSession.sendPacket(writer.getPacket());
+
                             for (World world : Server.getInstance().getWorlds()) {
                                 for (Channel channel : world.getChannels()) {
                                     MapleCharacter player = channel.getPlayerStorage().getCharacterById(rs.getInt("id"));
                                     if (player != null) {
                                         player.getClient().setDiscordId(authorId);
                                         player.getClient().setDiscordKey(key);
+                                        return;
                                     }
                                 }
                             }
-                            return;
                         }
                         writer.write(0);
                         writer.writeMapleAsciiString(accountUsername);
