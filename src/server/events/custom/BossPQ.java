@@ -57,7 +57,7 @@ public abstract class BossPQ extends GenericEvent {
         getMapInstance(mapId).broadcastMessage(packet);
     }
 
-    private void broadcastMessage(String message) {
+    public void broadcastMessage(String message) {
         getMapInstance(mapId).broadcastMessage(MaplePacketCreator.serverNotice(6, "[BossPQ] " + message));
     }
 
