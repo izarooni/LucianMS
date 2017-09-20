@@ -376,5 +376,4 @@ public class MapleMapFactory {
         myLife.setHide(hide);
         return myLife;
     }
-
 }

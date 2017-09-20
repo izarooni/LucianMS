@@ -2,7 +2,6 @@ package server.events.custom;
 
 import client.MapleCharacter;
 import net.server.channel.handlers.TakeDamageHandler;
-import net.server.world.MaplePartyCharacter;
 import scheduler.TaskExecutor;
 import server.life.MapleLifeFactory;
 import server.life.MapleMonster;
@@ -15,7 +14,6 @@ import tools.StringUtil;
 import tools.annotation.PacketWorker;
 
 import java.awt.*;
-import java.util.Collection;
 
 /**
  * @author izarooni
@@ -23,12 +21,10 @@ import java.util.Collection;
  */
 public abstract class BossPQ extends GenericEvent {
 
-    private static final int ReturnMap = 240070101;
-
     private final int mapId;
     private final int[] bosses;
-    private final MapleMapFactory mapFactory;
 
+    private MapleMapFactory mapFactory;
     private int round = 0;
     private int points = 0;
     private int nCashWinnings = 0; // how much NX is gained per round
@@ -50,7 +46,7 @@ public abstract class BossPQ extends GenericEvent {
     public abstract void giveRewards(MapleCharacter player);
 
     public MapleMap getMapInstance(int mapId) {
-        return mapFactory.skipMonsters(true).getMap(mapId);
+        return mapFactory == null ? null : mapFactory.skipMonsters(true).getMap(mapId);
     }
 
     private void broadcastPacket(byte[] packet) {
@@ -62,13 +58,20 @@ public abstract class BossPQ extends GenericEvent {
     }
 
     public final void registerPlayer(MapleCharacter player) {
+        player.saveLocation("OTHER");
         player.changeMap(getMapInstance(mapId));
         player.addGenericEvent(this);
     }
 
     public final void unregisterPlayer(MapleCharacter player) {
         player.removeGenericEvent(this);
+        int ReturnMap = player.getSavedLocation("OTHER");
+        if (ReturnMap == -1) {
+            ReturnMap = 240070101;
+        }
         player.changeMap(ReturnMap);
+
+        mapFactory = null;
     }
 
     public final void begin() {
