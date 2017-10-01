@@ -142,8 +142,8 @@ public final class ItemPickupHandler extends PacketHandler {
                         } else {
                             chr.gainMeso(mapitem.getMeso(), true, true, false);
                         }
-                    } else if (mapitem.getItem().getItemId() / 10000 == 243) {
-                        scriptedItem info = ii.getScriptedItemInfo(mapitem.getItem().getItemId());
+                    } else if (mapitem.getItemId() / 10000 == 243) {
+                        scriptedItem info = ii.getScriptedItemInfo(mapitem.getItemId());
                         if (info.runOnPickup()) {
                             ItemScriptManager ism = ItemScriptManager.getInstance();
                             String scriptName = info.getScript();
@@ -166,9 +166,9 @@ public final class ItemPickupHandler extends PacketHandler {
                     } else if (mapitem.getItemId() == 4031865 || mapitem.getItemId() == 4031866) {
                         // Add NX to account, show effect and make item disapear
                         chr.getCashShop().gainCash(1, mapitem.getItemId() == 4031865 ? 100 : 250);
-                    } else if (useItem(getClient(), mapitem.getItem().getItemId())) {
-                        if (mapitem.getItem().getItemId() / 10000 == 238) {
-                            chr.getMonsterBook().addCard(getClient(), mapitem.getItem().getItemId());
+                    } else if (useItem(getClient(), mapitem.getItemId())) {
+                        if (mapitem.getItemId() / 10000 == 238) {
+                            chr.getMonsterBook().addCard(getClient(), mapitem.getItemId());
                         }
                     } else if (MapleInventoryManipulator.addFromDrop(getClient(), mapitem.getItem(), true)) {
                         if (chr.getArcade() != null) {
@@ -199,7 +199,7 @@ public final class ItemPickupHandler extends PacketHandler {
                                 }
                             }
                         }
-                    } else if (mapitem.getItem().getItemId() == 4031868) {
+                    } else if (mapitem.getItemId() == 4031868) {
                         chr.getMap().broadcastMessage(MaplePacketCreator.updateAriantPQRanking(chr.getName(), chr.getItemQuantity(4031868, false), false));
                     } else {
                         getClient().announce(MaplePacketCreator.enableActions());

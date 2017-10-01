@@ -301,7 +301,7 @@ public class PlayerCommands {
             maps.put("ellin", 300000000);
             maps.put("maya", 100000001);
             if (args.length() == 1) {
-                String name = args.get(0);
+                String name = args.get(0).toLowerCase(Locale.ROOT);
                 if (maps.containsKey(name)) {
                     MapleMap map = ch.getMapFactory().getMap(maps.get(name));
                     if (map != null) {
@@ -309,8 +309,10 @@ public class PlayerCommands {
                             player.setJQController(null);
                         }
                         player.changeMap(map);
-                        return;
+                    } else {
+                        player.dropMessage(5, "Unable to warp to map " + name);
                     }
+                    return;
                 }
             }
             StringBuilder sb = new StringBuilder();

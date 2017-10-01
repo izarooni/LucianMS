@@ -1,8 +1,6 @@
 package server.quest.custom;
 
 import client.MapleCharacter;
-import client.inventory.MapleInventoryType;
-import constants.ItemConstants;
 import server.quest.custom.requirement.CQuestItemRequirement;
 import server.quest.custom.requirement.CQuestKillRequirement;
 import server.quest.custom.reward.CQuestReward;
@@ -50,14 +48,13 @@ public class CQuestData {
         toCollect.getItems().forEach((e, v) -> ret.toCollect.add(new CQuestItemRequirement.CQuestItem(v.getItemId(), v.getRequirement(), v.isUnique())));
 
         player.getCustomQuests().put(ret.getId(), ret);
+        player.dropMessage(5, String.format("New quest started : '%s'", ret.getName()));
+        player.announce(MaplePacketCreator.getShowQuestCompletion(0));
 
         // update progress of item requirements using the player's inventory
-        for (CQuestItemRequirement.CQuestItem qItem : toCollect.getItems().values()) {
-            MapleInventoryType iType = ItemConstants.getInventoryType(qItem.getItemId());
-            if (iType != MapleInventoryType.UNDEFINED) {
-                int q = player.getInventory(iType).countById(qItem.getItemId());
-                toCollect.incrementRequirement(qItem.getItemId(), q);
-            }
+        for (Integer itemId : ret.toCollect.getItems().keySet()) {
+            int quantity = player.getItemQuantity(itemId, false);
+            ret.toCollect.incrementRequirement(itemId, quantity);
         }
         /*
         For quests that have only item retrieval requirements, it's possible the player will already have

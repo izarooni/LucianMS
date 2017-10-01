@@ -747,7 +747,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
                             }
                         } else {
                             cQuest.setCompleted(true);
-                            cQuest.setCompletion(rs.getLong("completion"));
+                    cQuest.setCompletion(rs.getLong("completion"));
                         }
                     }
                 }

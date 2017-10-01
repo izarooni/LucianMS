@@ -89,7 +89,7 @@ public class MapleItemInformationProvider {
     private Map<Integer, String> equipmentSlotCache = new HashMap<>();
 
     private MapleItemInformationProvider() {
-//        loadCardIdData();
+        loadCardIdData();
         itemData = MapleDataProviderFactory.getDataProvider(new File(System.getProperty("wzpath") + "/Item.wz"));
         equipData = MapleDataProviderFactory.getDataProvider(new File(System.getProperty("wzpath") + "/Character.wz"));
         stringData = MapleDataProviderFactory.getDataProvider(new File(System.getProperty("wzpath") + "/String.wz"));
@@ -247,7 +247,7 @@ public class MapleItemInformationProvider {
                 if (iFile.getName().equals(idStr.substring(0, 4) + ".img")) {
                     MapleData ret = itemData.getData(topDir.getName() + "/" + iFile.getName());
                     if (ret == null) {
-                        LOGGER.warn("Unable to find data location for item {}", itemId);
+                        LOGGER.warn("Unable to find data node for item {}", itemId);
                         return null;
                     }
                     return ret.getChildByPath(idStr);
@@ -933,7 +933,13 @@ public class MapleItemInformationProvider {
             return consumeOnPickupCache.get(itemId);
         }
         MapleData data = getItemData(itemId);
-        boolean consume = MapleDataTool.getIntConvert("spec/consumeOnPickup", data, 0) == 1 || MapleDataTool.getIntConvert("specEx/consumeOnPickup", data, 0) == 1;
+        if (data == null) {
+            throw new NullPointerException("No data for item " + itemId);
+        }
+        boolean consume = MapleDataTool.getIntConvert("spec/consumeOnPickup", data, 0) == 1;
+        if (!consume) {
+            consume = MapleDataTool.getIntConvert("specEx/consumeOnPickup", data, 0) == 1;
+        }
         consumeOnPickupCache.put(itemId, consume);
         return consume;
     }
