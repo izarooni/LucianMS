@@ -31,7 +31,11 @@
 importPackage(Packages.client);
 
 function init() {
-    scheduleNew();
+    if (em.getChannel().getMapFactory().getMap(230020100) == null) {
+        print("Script AreaBossSeruf can't initialize due to an invalid map");
+    } else {
+        scheduleNew();
+    }
 }
 
 function scheduleNew() {
@@ -44,10 +48,10 @@ function cancelSchedule() {
 }
 
 function start() {
-    var theSeaweedTower = em.getChannel().getMapFactory().getMap(230020100);
+    var towerMap = em.getChannel().getMapFactory().getMap(230020100);
     var seruf = Packages.server.life.MapleLifeFactory.getMonster(4220001);
 	
-	if(theSeaweedTower.getMonsterById(4220001) != null) {
+	if(towerMap.getMonsterById(4220001) != null) {
 		em.schedule("start", 3 * 60 * 60 * 1000);
 		return;
 	}
@@ -55,7 +59,7 @@ function start() {
     var posX;
     var posY = 520;
     posX =  Math.floor((Math.random() * 2300) - 1500);
-    theSeaweedTower.spawnMonsterOnGroundBelow(seruf, new Packages.java.awt.Point(posX, posY));
-    theSeaweedTower.broadcastMessage(Packages.tools.MaplePacketCreator.serverNotice(6, "A strange shell has appeared from a grove of seaweed"));
+    towerMap.spawnMonsterOnGroundBelow(seruf, new Packages.java.awt.Point(posX, posY));
+    towerMap.broadcastMessage(Packages.tools.MaplePacketCreator.serverNotice(6, "A strange shell has appeared from a grove of seaweed"));
 	em.schedule("start", 3 * 60 * 60 * 1000);
 }

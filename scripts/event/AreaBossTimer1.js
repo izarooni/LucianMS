@@ -29,7 +29,11 @@
 importPackage(Packages.client);
 
 function init() {
-    scheduleNew();
+    if (em.getChannel().getMapFactory().getMap(220050100) == null) {
+        print("Script AreaBossTimer1 can't initialize due to an invalid map")
+    } else {
+        scheduleNew();
+    }
 }
 
 function scheduleNew() {

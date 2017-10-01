@@ -3,7 +3,7 @@ load("scripts/npc/generic_shop.js");
 var pointsType = "fishing points";
 
 try {
-    var file = new java.io.File("resources/data-fishing.json");
+    var file = new java.io.File("resources/data-fp.json");
     var content = Packages.org.apache.commons.io.FileUtils.readFileToString(file);
     var json = JSON.parse(content);
 

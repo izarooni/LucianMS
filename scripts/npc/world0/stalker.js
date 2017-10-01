@@ -33,7 +33,7 @@ function action(mode, type, selection) {
         text += "\r\n#L0#Search#l\r\n";
         for (var i = 0; i < players.length; i++) {
             var chr = players[i];
-            text += "\r\n#L" + chr.id + "#" + chr.name + "#l";
+            text += "\r\n#L" + chr.id + "# " + chr.name + "#l";
         }
         cm.sendSimple(text);
     } else if (status === 2) {

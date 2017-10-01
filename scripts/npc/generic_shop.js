@@ -68,7 +68,7 @@ function action(mode, type, selection) {
         }
     } else if (status == 3) {
         this.itemChoice = this.sub[selection];
-        cm.sendNext("Are you sure you want to buy this item for #b" + this.itemChoice[2] + " " + pointsType + "#k?\r\n#v" + this.itemChoice[0] + "##b#z" + this.itemChoice[0] + "#");
+        cm.sendNext("Ths item costs #b" + StringUtil.formatNumber(this.itemChoice[2]) + " " + pointsType + "#k, are you sure you want to buy this?\r\n\r\n\t\t#v" + this.itemChoice[0] + "##b#z" + this.itemChoice[0] + "#");
     } else if (status == 4) {
         if (getPoints(pointsType) >= this.itemChoice[2]) {
             if (InventoryModifier.checkSpace(client, this.itemChoice[0], this.itemChoice[1], "")) {
