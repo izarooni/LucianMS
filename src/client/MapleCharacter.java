@@ -747,6 +747,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
                             }
                         } else {
                             cQuest.setCompleted(true);
+                            cQuest.setCompletion(rs.getLong("completion"));
                         }
                     }
                 }
@@ -3349,7 +3350,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
         int improvingMaxHPLevel = 0;
         int improvingMaxMPLevel = 0;
 
-        remainingAp += 1;
+        remainingAp += 5;
 
         if (job == MapleJob.BEGINNER || job == MapleJob.NOBLESSE || job == MapleJob.LEGEND) {
             maxhp += Randomizer.rand(12, 16);
@@ -4318,11 +4319,12 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
                     }
                 }
             }
-            try (PreparedStatement stmt = con.prepareStatement("insert into cquest (questid, characterid, completed) values (?, ?, ?)", PreparedStatement.RETURN_GENERATED_KEYS)) {
+            try (PreparedStatement stmt = con.prepareStatement("insert into cquest (questid, characterid, completed, completion) values (?, ?, ?, ?)", PreparedStatement.RETURN_GENERATED_KEYS)) {
                 for (CQuestData data : customQuests.values()) {
                     stmt.setInt(1, data.getId());
                     stmt.setInt(2, getId());
                     stmt.setInt(3, data.isCompleted() ? 1 : 0);
+                    stmt.setLong(4, data.getCompletion());
                     stmt.executeUpdate();
                     if (!data.isCompleted()) {
                         try (ResultSet rs = stmt.getGeneratedKeys()) {

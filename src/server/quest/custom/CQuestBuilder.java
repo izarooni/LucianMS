@@ -89,8 +89,9 @@ public class CQuestBuilder {
             XMLDomMapleData xml = new XMLDomMapleData(fis, file);
             int questId = MapleDataTool.getInt(xml.getChildByPath("info/questId"));
             int pId = MapleDataTool.getInt(xml.getChildByPath("info/preQuest"), -1);
+            boolean daily = MapleDataTool.getInt(xml.getChildByPath("info/daily"), 0) == 1;
             // begin constructing custom quest data
-            CQuestData qData = new CQuestData(questId, xml.getName());
+            CQuestData qData = new CQuestData(questId, xml.getName(), daily);
             qData.setPreQuestId(pId);
             // iterate through monsters to kill, setting all progress to 0
             if (xml.getChildByPath("toKill") != null) {

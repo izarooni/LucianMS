@@ -18,18 +18,20 @@ import java.util.ArrayList;
 public class CQuestData {
 
     private final int id;
+    private final boolean daily;
     private final String name;
     private boolean completed = false;
+    private long completion = -1; // timestamp
     private int preQuestId = -1;
 
-    final CQuestKillRequirement toKill = new CQuestKillRequirement(); // monster kill requirements
+    private final CQuestKillRequirement toKill = new CQuestKillRequirement(); // monster kill requirements
     final CQuestItemRequirement toCollect = new CQuestItemRequirement(); // item collect requirements
-
     ArrayList<CQuestReward> rewards = new ArrayList<>();
 
-    CQuestData(int id, String name) {
+    CQuestData(int id, String name, boolean daily) {
         this.id = id;
         this.name = name;
+        this.daily = daily;
     }
 
     /**
@@ -41,7 +43,7 @@ public class CQuestData {
      * @param player A player to begin the quest
      */
     CQuestData beginNew(MapleCharacter player) {
-        CQuestData ret = new CQuestData(id, name);
+        CQuestData ret = new CQuestData(id, name, daily);
         ret.rewards.addAll(rewards); // rewards don't have any changeable variables so we can use the same Objects
         // ID and requirement don't change but reset progress then add to new QuestData
         toKill.getKills().forEach((e, v) -> ret.toKill.add(e, v.left));
@@ -91,7 +93,6 @@ public class CQuestData {
     }
 
     /**
-     *
      * @param preQuestId id of pre-quest
      */
     public void setPreQuestId(int preQuestId) {
@@ -112,6 +113,24 @@ public class CQuestData {
      */
     public void setCompleted(boolean completed) {
         this.completed = completed;
+    }
+
+    /**
+     * @return Timestamp in milliseconds of when the quest was completed
+     */
+    public long getCompletion() {
+        return completion;
+    }
+
+    /**
+     * @param completion Timestamp in milliseconds of when the quest was completed
+     */
+    public void setCompletion(long completion) {
+        this.completion = completion;
+    }
+
+    public boolean isDaily() {
+        return daily;
     }
 
     public CQuestKillRequirement getToKill() {
@@ -149,6 +168,7 @@ public class CQuestData {
             return false;
         }
         if (rewards.stream().allMatch(r -> r.canAccept(player))) {
+            setCompletion(System.currentTimeMillis());
             completed = true;
             rewards.forEach(r -> r.give(player));
             return true;
