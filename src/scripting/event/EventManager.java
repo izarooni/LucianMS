@@ -3,6 +3,8 @@ package scripting.event;
 import client.MapleCharacter;
 import net.server.channel.Channel;
 import net.server.world.MapleParty;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import scheduler.Task;
 import scheduler.TaskExecutor;
 import scripting.ScriptUtil;
@@ -18,13 +20,13 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Properties;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * @author izarooni
  */
 public class EventManager extends GenericEvent {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(EventManager.class);
 
     private final Channel channel;
     private final String scriptName;
@@ -40,8 +42,7 @@ public class EventManager extends GenericEvent {
         try {
             invocable = ScriptUtil.eval(null, "event/" + scriptName + ".js", Collections.singletonList(new Pair<>("em", this)));
         } catch (IOException | ScriptException e) {
-            System.err.println(String.format("Unable to eval script '%s'", scriptName));
-            e.printStackTrace();
+            LOGGER.error("Unable to eval script {}", scriptName, e);
         }
     }
 
@@ -70,8 +71,8 @@ public class EventManager extends GenericEvent {
     public void cancel() {
         try {
             getInvocable().invokeFunction("cancelSchedule", (Object) null);
-        } catch (ScriptException | NoSuchMethodException ex) {
-            ex.printStackTrace();
+        } catch (ScriptException | NoSuchMethodException e) {
+            LOGGER.error("Unable to invoke function cancelSchedule in script {}", scriptName, e);
         }
     }
 
@@ -85,8 +86,7 @@ public class EventManager extends GenericEvent {
                 try {
                     getInvocable().invokeFunction(function, eim);
                 } catch (ScriptException | NoSuchMethodException e) {
-                    System.err.println(String.format("Unable to invoke function '%s' in script '%s'", function, getScriptName()));
-                    e.printStackTrace();
+                    LOGGER.error("Unable to invoke function {} in script {}", function, scriptName, e);
                 }
             }
         }, delay);
@@ -99,8 +99,7 @@ public class EventManager extends GenericEvent {
                 try {
                     getInvocable().invokeFunction(function, args);
                 } catch (ScriptException | NoSuchMethodException e) {
-                    System.err.println(String.format("Unable to invoke function '%s' in script '%s'", function, getScriptName()));
-                    e.printStackTrace();
+                    LOGGER.error("Unable to invoke function {} in script {}", function, scriptName, e);
                 }
             }
         }, delay);
@@ -112,8 +111,7 @@ public class EventManager extends GenericEvent {
                 try {
                     getInvocable().invokeFunction(function, (Object) null);
                 } catch (ScriptException | NoSuchMethodException e) {
-                    System.err.println(String.format("Unable to invoke function '%s' in script '%s'", function, getScriptName()));
-                    e.printStackTrace();
+                    LOGGER.error("Unable to invoke function {} in script {}", function, scriptName, e);
                 }
             }
         }, timestamp - System.currentTimeMillis());
@@ -151,15 +149,15 @@ public class EventManager extends GenericEvent {
     /**
      * Setup an event instance for an expedition
      *
-     * @param exped the expedition to initialize
+     * @param expedition the expedition to initialize
      */
-    public void startInstance(MapleExpedition exped) {
+    public void startInstance(MapleExpedition expedition) {
         try {
             EventInstanceManager eim = (EventInstanceManager) (getInvocable().invokeFunction("setup", (Object) null));
-            eim.registerExpedition(exped);
-            exped.start();
-        } catch (ScriptException | NoSuchMethodException ex) {
-            Logger.getLogger(EventManager.class.getName()).log(Level.SEVERE, null, ex);
+            eim.registerExpedition(expedition);
+            expedition.start();
+        } catch (ScriptException | NoSuchMethodException e) {
+            LOGGER.error("Unable to start maple expedition {}", expedition.getType().name(), e);
         }
     }
 
@@ -173,8 +171,8 @@ public class EventManager extends GenericEvent {
             EventInstanceManager eim = (EventInstanceManager) (getInvocable().invokeFunction("setup", (Object) null));
             eim.registerPlayer(player);
             return eim;
-        } catch (ScriptException | NoSuchMethodException ex) {
-            Logger.getLogger(EventManager.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (ScriptException | NoSuchMethodException e) {
+            LOGGER.error("Unable to start event instance {} for a single player", scriptName, e);
             return null;
         }
     }
@@ -190,8 +188,8 @@ public class EventManager extends GenericEvent {
             EventInstanceManager eim = (EventInstanceManager) (getInvocable().invokeFunction("setup", (Object) null));
             eim.registerParty(party, map);
             return eim;
-        } catch (ScriptException | NoSuchMethodException ex) {
-            Logger.getLogger(EventManager.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (ScriptException | NoSuchMethodException e) {
+            LOGGER.error("Unable to start event instance {} for party", scriptName, e);
             return null;
         }
     }
@@ -200,8 +198,8 @@ public class EventManager extends GenericEvent {
         try {
             getInvocable().invokeFunction("setup", eim);
             eim.setProperty("leader", leader);
-        } catch (ScriptException | NoSuchMethodException ex) {
-            Logger.getLogger(EventManager.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (ScriptException | NoSuchMethodException e) {
+            LOGGER.error("Unable to invoke setup function of event {}", scriptName, e);
         }
     }
 }

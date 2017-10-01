@@ -38,6 +38,9 @@ public class CQuestBuilder {
             quests = new HashMap<>();
         }
         File file = new File("quests");
+        if (file.mkdirs()) {
+            LOGGER.info("Custom quests directory created");
+        }
         File[] files = file.listFiles();
         if (files != null) {
             for (File qFile : files) {

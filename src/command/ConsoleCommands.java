@@ -8,6 +8,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import scheduler.TaskExecutor;
 import server.Whitelist;
+import server.quest.custom.CQuestBuilder;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
@@ -99,6 +100,9 @@ public class ConsoleCommands {
             } catch (IOException | URISyntaxException e) {
                 e.printStackTrace();
             }
+        } else if (command.equals("reloadcquests")) {
+            CQuestBuilder.loadAllQuests();
+            LOGGER.info("Custom quests reloaded");
         } else if (command.equals("gc")) {
             TaskExecutor.purge();
             LOGGER.info("Tasks purged");
@@ -117,6 +121,13 @@ public class ConsoleCommands {
                 }
                 LOGGER.info("Unable to find any player named {}", username);
             }
+        } else if (command.equals("help", "commands")) {
+            LOGGER.info("gc - Requests JVM garbage collection");
+            LOGGER.info("exit - Safely stop and close the server");
+            LOGGER.info("online - View current online players");
+            LOGGER.info("reloadcquests - Reload custom quest files");
+            LOGGER.info("reloadwhitelist - Reload server white-list");
+            LOGGER.info("crash <username> - Crash an in-game character");
         }
     }
 }
