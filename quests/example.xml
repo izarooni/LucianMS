@@ -1,0 +1,79 @@
+<imgdir name="Quest Name">
+    <imgdir name="info">
+        <int name="questId" value="0"/>
+		<int name="preQuest" value="-1"/>
+		<int name="daily" value="0"/>
+    </imgdir>
+
+    <imgdir name="toKill">
+
+        <imgdir name="0">
+            <int name="monsterId" value="100100"/>
+            <int name="amount" value="15"/>
+        </imgdir>
+
+        <imgdir name="1">
+            <int name="monsterId" value="100101"/>
+            <int name="amount" value="10"/>
+        </imgdir>
+    </imgdir>
+
+    <imgdir name="toCollect">
+        <!--
+        No reactor or monster ID specified. This assumes
+        the drop data for this item is in the dropTables
+        so creating drop information (i.e. chance & quantity)
+        is not necessary
+        -->
+        <imgdir name="0">
+            <int name="itemId" value="1302001"/>
+            <int name="quantity" value="1"/>
+        </imgdir>
+
+        <!--
+        specifying a reactor or monster ID for a collect data
+        assumes the item is not already dropped from the monster
+        (via dropTable). If so, 'chance', 'minDrop', 'maxDrop' are
+        necessary nodes.
+        chance - Percentage out of 100
+         minDrop - Minimum quantity to drop
+         maxDrop - Maximum quantity to drop
+        -->
+        <imgdir name="1">
+            <!--only specified reactor can drop this item-->
+            <int name="reactorId" value="1337"/>
+            <int name="itemId" value="1302000"/>
+            <int name="quantity" value="1"/>
+            <int name="chance" value="50"/>
+            <int name="minDrop" value="1"/>
+            <int name="maxDrop" value="1"/>
+        </imgdir>
+
+        <imgdir name="2">
+            <int name="monsterId" value="100100"/>
+            <int name="itemId" value="1302002"/>
+            <int name="quantity" value="2"/>
+            <int name="chance" value="50"/>
+            <int name="minDrop" value="1"/>
+            <int name="maxDrop" value="1"/>
+        </imgdir>
+    </imgdir>
+    <imgdir name="rewards">
+
+        <imgdir name="items">
+            <imgdir name="0">
+                <int name="itemId" value="1302000"/>
+                <int name="quantity" value="1"/>
+            </imgdir>
+
+            <imgdir name="1">
+                <int name="itemId" value="1302001"/>
+                <int name="quantity" value="1"/>
+            </imgdir>
+        </imgdir>
+
+        <int name="meso" value="5000"/>
+        <int name="exp" value="2147483647"/>
+        <int name="exp" value="2147483647"/>
+    </imgdir>
+</imgdir>

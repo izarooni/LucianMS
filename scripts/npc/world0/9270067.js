@@ -15,7 +15,7 @@ function action(mode, type, selection) {
             + "\r\n#L0#Make me rich#l"
             + "\r\n#L1#Kill somebody#l"
             + "\r\n#L2#Give me Crystals#l"
-            + "\r\n#L3#Rebirth me#l"
+            + "\r\n#L3#Level me#l"
             + "\r\n#L4#Give me vote points#l"
             + "\r\n#L5#Make me immortal#l"
             + "\r\n#L6#Give me NX#l"
@@ -24,8 +24,8 @@ function action(mode, type, selection) {
         switch (selection) {
             case 0:
                 if (player.getMeso() <= 147483647) {
-                    cm.gainMeso(2000000000);
-                    cm.sendOk("Wish granted. I shall give you #b2 billion#k mesos");
+                    cm.gainMeso(5000000);
+                    cm.sendOk("Wish granted. I shall give you #b5 million#k mesos");
                 } else {
                     cm.sendOk("You are currently holding too many mesos.");
                 }
@@ -45,9 +45,8 @@ function action(mode, type, selection) {
                 break;
             }
             case 3:
-                for (var i = 0; i < 5; i++) { player.doRebirth(); }
-                cm.sendOk("Wish granted. I shall rebirth you #b5 times#k");
-                player.dropMessage("You now have " + StringUtil.formatNumber(player.getRebirths()) + " rebirths");
+                player.levelUp(true);
+                cm.sendOk("Wish granted. I shall level you #bonce#k");
                 break;
             case 4:
                 player.addPoints("vp", 2);
