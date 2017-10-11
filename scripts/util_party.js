@@ -1,3 +1,5 @@
+/* izarooni */
+
 function partyExists() {
     return cm.getParty() != null;
 }

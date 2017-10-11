@@ -1,3 +1,5 @@
+/* izarooni */
+
 // Create a log of a player's in-game shop transaction
 // of what they purchased, what it cost and when
 function createTransaction(playerId, log) {
