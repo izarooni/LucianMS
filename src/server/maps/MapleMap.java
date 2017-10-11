@@ -2491,30 +2491,6 @@ public class MapleMap {
         return mobInterval;
     }
 
-    public Collection<MapleCharacter> getNearestPvpChar(Point attacker, double maxRange, double maxHeight, Collection<MapleCharacter> chr) {
-        Collection<MapleCharacter> character = new LinkedList<>();
-        for (MapleCharacter a : characters) {
-            if (chr.contains(a.getClient().getPlayer())) {
-                Point attackedPlayer = a.getPosition();
-                MaplePortal Port = a.getMap().findClosestSpawnpoint(a.getPosition());
-                Point nearestPort = Port.getPosition();
-                double safeDis = attackedPlayer.distance(nearestPort);
-                double distanceX = attacker.distance(attackedPlayer.getX(), attackedPlayer.getY());
-                if (a.getPVP().isFacingLeft()) {
-                    if (attacker.x > attackedPlayer.x && distanceX < maxRange && distanceX > 2 && attackedPlayer.y >= attacker.y - maxHeight && attackedPlayer.y <= attacker.y + maxHeight) {
-                        character.add(a);
-                    }
-                }
-                if (a.getPVP().isFacingRight()) {
-                    if (attacker.x < attackedPlayer.x && distanceX < maxRange && distanceX > 2 && attackedPlayer.y >= attacker.y - maxHeight && attackedPlayer.y <= attacker.y + maxHeight) {
-                        character.add(a);
-                    }
-                }
-            }
-        }
-        return character;
-    }
-
     public Point getAutoKillPosition() {
         return autoKillPosition;
     }

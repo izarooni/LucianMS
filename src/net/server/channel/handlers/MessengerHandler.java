@@ -31,6 +31,7 @@ import tools.MaplePacketCreator;
 import tools.data.input.SeekableLittleEndianAccessor;
 
 public final class MessengerHandler extends AbstractMaplePacketHandler {
+
     public final void handlePacket(SeekableLittleEndianAccessor slea, MapleClient c) {
         String input;
         byte mode = slea.readByte();

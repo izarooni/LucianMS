@@ -1,0 +1,122 @@
+package scripting;
+
+import client.MapleCharacter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import tools.Pair;
+
+import javax.script.Invocable;
+import javax.script.ScriptException;
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collections;
+
+/**
+ * Could be a a bad implementation of this feature
+ * <p>Consider optimizations in the future</p>
+ *
+ * @author izarooni
+ */
+public class Achievements {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(Achievements.class);
+    private static ArrayList<Pair<String, Invocable>> invocables = null;
+
+    private Achievements() {
+    }
+
+    public static ArrayList<String> getNames() {
+        ArrayList<String> ret = new ArrayList<>(invocables.size());
+        invocables.forEach(p -> ret.add(p.getLeft()));
+        return ret;
+    }
+
+    public static void initialize() {
+        if (invocables != null) {
+            invocables.clear();
+            invocables = null;
+            System.gc();
+        }
+        try {
+            File dir = new File("scripts/achievements");
+            if (dir.mkdirs()) {
+                LOGGER.info("Achievements script directory created");
+            }
+            File[] files = dir.listFiles();
+            if (files != null) {
+                invocables = new ArrayList<>(files.length);
+                for (File file : files) {
+                    Invocable iv = ScriptUtil.eval(null, "achievements/" + file.getName(), Collections.emptyList());
+                    try {
+                        String name = (String) iv.invokeFunction("getName");
+                        invocables.add(new Pair<>(name, iv));
+                    } catch (NoSuchMethodException e) {
+                        LOGGER.warn("Unable to set achievement name for script {}", file.getName());
+                    }
+                }
+                LOGGER.info("{} achievement scripts loaded", invocables.size());
+            }
+        } catch (IOException | ScriptException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void testFor(MapleCharacter player, int monsterId) {
+        if (invocables != null) {
+            for (Pair<String, Invocable> pair : invocables) {
+                if (!player.getAchievement(pair.getLeft()).isCompleted()) {
+                    try {
+                        Invocable iv = pair.getRight();
+                        if (testForKill(iv, player, monsterId) && testForPlayer(iv, player)) {
+                            try {
+                                if (reward(iv, player)) {
+                                    player.dropMessage("You completed the achievement '" + pair.getLeft() + "'!");
+                                } else {
+                                    player.dropMessage("You were unable to claim reward for completing the achievement.");
+                                }
+                            } catch (NoSuchMethodException e) {
+                                LOGGER.warn("Achievement script {} contains no reward function", pair.getLeft());
+                            }
+                        }
+                    } catch (ScriptException e) {
+                        LOGGER.error("Achievement script error {}", pair.getLeft(), e);
+                    }
+                }
+            }
+        }
+    }
+
+    private static boolean reward(Invocable invocable, MapleCharacter player) throws ScriptException, NoSuchMethodException {
+        return (boolean) invocable.invokeFunction("reward", player);
+    }
+
+    /**
+     * @param invocable the achievement script invocable
+     * @param player    player to pass as a parameter
+     * @param monsterId a monster id to pass a parameter
+     * @return true if the test for kill requirement passes, false otherwise
+     */
+    private static boolean testForKill(Invocable invocable, MapleCharacter player, int monsterId) throws ScriptException {
+        try {
+            return (boolean) invocable.invokeFunction("testForKill", player, monsterId);
+        } catch (NoSuchMethodException ignore) {
+            // assume no kill requirements
+            return true;
+        }
+    }
+
+    /**
+     * @param invocable the achievement script invocable
+     * @param player    player to pass as a parameter to the script function
+     * @return true if the test for kill requirement passes, false otherwise
+     */
+    private static boolean testForPlayer(Invocable invocable, MapleCharacter player) throws ScriptException {
+        try {
+            return (boolean) invocable.invokeFunction("testForPlayer", player);
+        } catch (NoSuchMethodException ignore) {
+            // assume no player requirements
+            return true;
+        }
+    }
+}

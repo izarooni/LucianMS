@@ -29,6 +29,7 @@ import constants.skills.*;
 import net.server.world.MapleParty;
 import net.server.world.MaplePartyCharacter;
 import scheduler.TaskExecutor;
+import scripting.Achievements;
 import scripting.event.EventInstanceManager;
 import server.life.MapleLifeFactory.BanishInfo;
 import server.maps.MapleMap;
@@ -444,6 +445,8 @@ public class MapleMonster extends AbstractLoadedMapleLife {
             listener.monsterKilled(getAnimationTime("die1"));
         }
         MapleCharacter looter = map.getCharacterById(getHighestDamagerId());
+
+        Achievements.testFor(killer, getId());
 
         return looter != null ? looter : killer;
     }

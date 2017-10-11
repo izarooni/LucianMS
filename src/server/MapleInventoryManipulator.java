@@ -414,7 +414,7 @@ public class MapleInventoryManipulator {
             }
         }
         if (source.getItemId() == 1122017) {
-            c.getPlayer().equipPendantOfSpirit();
+            c.getPlayer().scheduleSpiritPendant();
         }
         //1112413, 1112414, 1112405 (Lilin's Ring)
         source = (Equip) c.getPlayer().getInventory(MapleInventoryType.EQUIP).getItem(src);

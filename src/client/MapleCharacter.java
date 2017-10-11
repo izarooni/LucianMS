@@ -25,6 +25,7 @@ import client.arcade.Arcade;
 import client.arcade.RPSGame;
 import client.autoban.Cheater;
 import client.inventory.*;
+import client.meta.Achievement;
 import constants.ExpTable;
 import constants.GameConstants;
 import constants.ItemConstants;
@@ -44,6 +45,7 @@ import provider.MapleData;
 import provider.MapleDataProviderFactory;
 import scheduler.Task;
 import scheduler.TaskExecutor;
+import scripting.Achievements;
 import scripting.event.EventInstanceManager;
 import server.*;
 import server.events.MapleEvents;
@@ -51,7 +53,6 @@ import server.events.RescueGaga;
 import server.events.custom.*;
 import server.events.gm.MapleFitness;
 import server.events.gm.MapleOla;
-import server.events.pvp.PVP;
 import server.life.FakePlayer;
 import server.life.MapleMonster;
 import server.life.MobSkill;
@@ -89,6 +90,11 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
     private static int[] ariantroomslot = new int[3];
     private static int FRECEIVAL_ITEM = 2022323;
 
+    private byte pendantExp = 0, lastmobcount = 0;
+
+    private short combocounter = 0;
+
+    //region integers
     private int world;
     private int accountid, id;
     private int rank, rankMove, jobRank, jobRankMove;
@@ -97,7 +103,6 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
     private int hair;
     private int face;
     private int remainingAp;
-    private int[] remainingSp = new int[10];
     private int fame;
     private int initialSpawnPoint;
     private int mapid;
@@ -111,7 +116,6 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
     private int energybar;
     private int gmLevel;
     private int ci = 0;
-    private MapleFamily family;
     private int familyId;
     private int bookCover;
     private int markedMonster = 0;
@@ -123,82 +127,8 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
     private int expRate = 1, mesoRate = 1, dropRate = 1;
     private int omokwins, omokties, omoklosses, matchcardwins, matchcardties, matchcardlosses;
     private int married;
-    private long dojoFinish, lastfametime, lastUsedCashItem, lastHealed, lastMesoDrop = -1;
-    private transient int localmaxhp, localmaxmp, localstr, localdex, localluk, localint_, magic, watk;
-    private boolean hidden, canDoor = true, berserk, hasMerchant, whiteChat = false;
-    private int linkedLevel = 0;
-    private String linkedName = null;
-    private boolean finishedDojoTutorial, dojoParty;
-    private String name;
-    private String chalktext;
-    private String dataString;
-    private String search = null;
-    private AtomicInteger exp = new AtomicInteger();
-    private AtomicInteger gachaexp = new AtomicInteger();
-    private AtomicInteger meso = new AtomicInteger();
     private int merchantmeso;
-    private BuddyList buddylist;
-    private EventInstanceManager eventInstance = null;
-    private HiredMerchant hiredMerchant = null;
-    private MapleClient client = null;
-    private MapleGuildCharacter mgc = null;
-    private MaplePartyCharacter mpc = null;
-    private MapleInventory[] inventory;
-    private MapleJob job = MapleJob.BEGINNER;
-    private MapleMap map, dojoMap;// Make a Dojo pq instance
-    private MapleMessenger messenger = null;
-    private MapleMiniGame miniGame;
-    private MapleMount maplemount;
-    private MapleParty party;
-    private MaplePet[] pets = new MaplePet[3];
-    private MaplePlayerShop playerShop = null;
-    private MapleShop shop = null;
-    private MapleSkinColor skinColor = MapleSkinColor.NORMAL;
-    private MapleStorage storage = null;
-    private MapleTrade trade = null;
-    private SavedLocation savedLocations[];
-    private SkillMacro[] skillMacros = new SkillMacro[5];
-    private List<Integer> lastmonthfameids;
-    private Map<Short, MapleQuestStatus> quests;
-    private Map<Integer, CQuestData> customQuests = new HashMap<>();
-    private Set<MapleMonster> controlled = new LinkedHashSet<>();
-    private Map<Integer, String> entered = new LinkedHashMap<>();
-    private Set<MapleMapObject> visibleMapObjects = new LinkedHashSet<>();
-    private Map<Skill, SkillEntry> skills = new LinkedHashMap<>();
-    private EnumMap<MapleBuffStat, MapleBuffStatValueHolder> effects = new EnumMap<>(MapleBuffStat.class);
-    private Map<Integer, MapleKeyBinding> keymap = new LinkedHashMap<>();
-    private Map<Integer, MapleSummon> summons = new LinkedHashMap<>();
-    private Map<Integer, MapleCoolDownValueHolder> coolDowns = new LinkedHashMap<>(50);
-    private EnumMap<MapleDisease, DiseaseValueHolder> diseases = new EnumMap<>(MapleDisease.class);
-    private List<MapleDoor> doors = new ArrayList<>();
-    private Task dragonBloodSchedule;
-    private Task[] fullnessSchedule = new Task[3];
-    private Task hpDecreaseTask;
-    private Task beholderHealingSchedule, beholderBuffSchedule, berserkTask;
-    private Task expirationTask;
-    private Task recoveryTask;
-    private List<Task> tasks = new ArrayList<>();
-    private ArrayList<Integer> excluded = new ArrayList<>();
-    private MonsterBook monsterbook;
-    private List<MapleRing> crushRings = new ArrayList<>();
-    private List<MapleRing> friendshipRings = new ArrayList<>();
-    private MapleRing marriageRing = null;
-    private CashShop cashshop;
-    private long portaldelay = 0, lastcombo = 0;
-    private short combocounter = 0;
-    private List<String> blockedPortals = new ArrayList<>();
-    private Map<Short, String> area_info = new LinkedHashMap<>();
-    private Cheater cheater = new Cheater();
-    private boolean isbanned = false;
-    private Task pendantOfSpirit = null; // 1122017
-    private byte pendantExp = 0, lastmobcount = 0;
-    private List<Integer> trockmaps = new ArrayList<>();
-    private List<Integer> viptrockmaps = new ArrayList<>();
-    private Map<String, MapleEvents> events = new LinkedHashMap<>();
-    private List<GenericEvent> genericEvents = new ArrayList<>();
-    private PartyQuest partyQuest = null;
-    private boolean loggedIn = false;
-    private MapleDragon dragon = null;
+    private int linkedLevel = 0;
     private int donorLevel;
     private int hidingLevel = 1;
     private int eventPoints;
@@ -208,30 +138,122 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
     private int killType;
     private int riceCakes = 0;
     private int rebirthPoints = 0;
+    private transient int localmaxhp, localmaxmp, localstr, localdex, localluk, localint_, magic, watk;
+    private int[] remainingSp = new int[10];
+    //endregion
+
+    private long dojoFinish, lastfametime, lastUsedCashItem, lastHealed, lastMesoDrop = -1;
+    private long portaldelay = 0, lastcombo = 0;
     private long immortalTimestamp = 0;
+
+    private boolean hidden, canDoor = true, berserk, hasMerchant, whiteChat = false;
+    private boolean finishedDojoTutorial, dojoParty;
+    private boolean isbanned = false;
+    private boolean loggedIn = false;
     private boolean muted = false;
     private boolean autorebirthing = false;
     private boolean eyeScannersEquiped = false;
-    private House house;
-    private Achievements achievements;
-    private PVP pvp;
-    private Arcade arcade;
-    private PlayerTitles title;
-    private JumpQuestController JQController;
-    private ChatType chatType = ChatType.NORMAL;
-    private Relationship relationship = new Relationship();
-    private FakePlayer fakePlayer = null;
+
+    private String name = null;
+    private String search = null;
+    private String chalktext = null;
+    private String dataString = null;
+    private String linkedName = null;
+
+    private AtomicInteger exp = new AtomicInteger();
+    private AtomicInteger meso = new AtomicInteger();
+    private AtomicInteger gachaexp = new AtomicInteger();
+
+    //region collections
+    private List<Task> tasks = new ArrayList<>();
+    private List<MapleDoor> doors = new ArrayList<>();
+    private List<MapleRing> crushRings = new ArrayList<>();
+    private List<MapleRing> friendshipRings = new ArrayList<>();
+    private List<GenericEvent> genericEvents = new ArrayList<>();
+    private List<Integer> excluded = new ArrayList<>();
+    private List<Integer> trockmaps = new ArrayList<>();
+    private List<Integer> viptrockmaps = new ArrayList<>();
+    private List<String> blockedPortals = new ArrayList<>();
+    private List<Integer> lastmonthfameids = new ArrayList<>(31);
+
+    private Map<Skill, SkillEntry> skills = new LinkedHashMap<>();
+    private Map<Short, MapleQuestStatus> quests = new LinkedHashMap<>();
+    private Map<Integer, String> entered = new LinkedHashMap<>();
+    private Map<Integer, CQuestData> customQuests = new HashMap<>();
+    private Map<Integer, MapleSummon> summons = new LinkedHashMap<>();
+    private Map<Integer, MapleKeyBinding> keymap = new LinkedHashMap<>();
+    private Map<Integer, MapleCoolDownValueHolder> coolDowns = new LinkedHashMap<>(50);
+    private Map<Short, String> area_info = new LinkedHashMap<>();
+    private Map<String, MapleEvents> events = new LinkedHashMap<>();
+    private Map<String, Achievement> achievements = new HashMap<>();
+    //endregion
+
+    private BuddyList buddylist = null;
+    private MapleFamily family = null;
+    private MapleClient client = null;
+    private HiredMerchant hiredMerchant = null;
+    private MapleGuildCharacter mgc = null;
+    private MaplePartyCharacter mpc = null;
+    private EventInstanceManager eventInstance = null;
+
+    private Task[] fullnessSchedule = new Task[3];
+    private MaplePet[] pets = new MaplePet[3];
+    private SkillMacro[] skillMacros = new SkillMacro[5];
+    private MapleInventory[] inventory;
+
+    private MapleJob job = MapleJob.BEGINNER;
+    private MapleMap map = null, dojoMap = null;
+    private MapleShop shop = null;
+    private MapleMount maplemount;
+    private MapleParty party = null;
+    private MapleTrade trade = null;
+    private MapleStorage storage = null;
+    private MapleMiniGame miniGame;
+    private MapleMessenger messenger = null;
+    private MaplePlayerShop playerShop = null;
+    private MapleSkinColor skinColor = MapleSkinColor.NORMAL;
+    private SavedLocation savedLocations[];
+
+    private Set<MapleMonster> controlled = new LinkedHashSet<>();
+    private Set<MapleMapObject> visibleMapObjects = new LinkedHashSet<>();
+
+    private EnumMap<MapleDisease, DiseaseValueHolder> diseases = new EnumMap<>(MapleDisease.class);
+    private EnumMap<MapleBuffStat, MapleBuffStatValueHolder> effects = new EnumMap<>(MapleBuffStat.class);
+
+    private Task recoveryTask = null;
+    private Task hpDecreaseTask = null;
+    private Task expirationTask = null;
+    private Task spiritPendantTask = null; // 1122017
+    private Task dragonBloodTask = null;
+    private Task beholderHealingTask = null;
+    private Task beholderBuffTask = null;
+    private Task berserkTask = null;
     private Task fishingTask = null;
 
-    private Timestamp daily;
-    private RPSGame RPSGame = null;
+    private Cheater cheater = new Cheater();
+    private CashShop cashshop;
+    private MapleRing marriageRing = null;
+    private PartyQuest partyQuest = null;
+    private MonsterBook monsterbook;
 
+    private House house = null;
+    private Arcade arcade = null;
+    private ChatType chatType = ChatType.NORMAL;
+    private Timestamp daily = null;
+    private FakePlayer fakePlayer = null;
+    private MapleDragon dragon = null;
+    private PlayerTitles title = null;
+    private Relationship relationship = new Relationship();
+    private JumpQuestController JQController;
+    private RPSGame RPSGame = null;
     private Occupations occupation;
+
     // EVENTS
     private byte team = 0;
     private MapleFitness fitness;
     private MapleOla ola;
     private long snowballattack;
+
     // Monster Carnival
     private int cp = 0;
     private int obtainedcp = 0;
@@ -255,7 +277,6 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
         for (int i = 0; i < SavedLocationType.values().length; i++) {
             savedLocations[i] = null;
         }
-        quests = new LinkedHashMap<>();
         setPosition(new Point(0, 0));
     }
 
@@ -698,6 +719,18 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
             rs.close();
             ps.close();
             if (channelserver) {
+                ps = con.prepareStatement("select * from achievements where player_id = ?");
+                ps.setInt(1, ret.getId());
+                rs = ps.executeQuery();
+                while (rs.next()) {
+                    Achievement achievement = ret.getAchievement(rs.getString("achievement_name"));
+                    achievement.setCompleted(rs.getInt("completed") == 1);
+                    achievement.setMonstersKilled(rs.getInt("killed_monster"));
+                    achievement.setCasino1Completed(rs.getInt("casino_one") == 1);
+                    achievement.setCasino1Completed(rs.getInt("casino_two") == 1);
+                }
+                rs.close();
+                ps.close();
                 ps = con.prepareStatement("SELECT * FROM queststatus WHERE characterid = ?");
                 ps.setInt(1, charid);
                 rs = ps.executeQuery();
@@ -747,7 +780,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
                             }
                         } else {
                             cQuest.setCompleted(true);
-                    cQuest.setCompletion(rs.getLong("completion"));
+                            cQuest.setCompletion(rs.getLong("completion"));
                         }
                     }
                 }
@@ -818,7 +851,6 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
                 ps.setInt(1, charid);
                 rs = ps.executeQuery();
                 ret.lastfametime = 0;
-                ret.lastmonthfameids = new ArrayList<>(31);
                 while (rs.next()) {
                     ret.lastfametime = Math.max(ret.lastfametime, rs.getTimestamp("when").getTime());
                     ret.lastmonthfameids.add(rs.getInt("characterid_to"));
@@ -1799,19 +1831,19 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
                         removeVisibleMapObject(summon);
                         summons.remove(summonId);
                         if (summon.getSkill() == DarkKnight.BEHOLDER) {
-                            if (beholderHealingSchedule != null) {
-                                beholderHealingSchedule.cancel();
-                                beholderHealingSchedule = null;
+                            if (beholderHealingTask != null) {
+                                beholderHealingTask.cancel();
+                                beholderHealingTask = null;
                             }
-                            if (beholderBuffSchedule != null) {
-                                beholderBuffSchedule.cancel();
-                                beholderBuffSchedule = null;
+                            if (beholderBuffTask != null) {
+                                beholderBuffTask.cancel();
+                                beholderBuffTask = null;
                             }
                         }
                     }
                 } else if (stat == MapleBuffStat.DRAGONBLOOD) {
-                    dragonBloodSchedule.cancel();
-                    dragonBloodSchedule = null;
+                    dragonBloodTask.cancel();
+                    dragonBloodTask = null;
                 }
             }
         }
@@ -2377,7 +2409,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
         this.eventInstance = eventInstance;
     }
 
-    public ArrayList<Integer> getExcluded() {
+    public List<Integer> getExcluded() {
         return excluded;
     }
 
@@ -3400,6 +3432,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
             }
         }
         level++;
+        Achievements.testFor(this, -1);
         if (level >= getMaxLevel()) {
             exp.set(0);
             level = getMaxLevel(); // To prevent levels past 200
@@ -3632,9 +3665,9 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
     }
 
     private void prepareDragonBlood(final MapleStatEffect bloodEffect) {
-        if (dragonBloodSchedule != null) {
-            dragonBloodSchedule.cancel();
-            dragonBloodSchedule = TaskExecutor.createRepeatingTask(new Runnable() {
+        if (dragonBloodTask != null) {
+            dragonBloodTask.cancel();
+            dragonBloodTask = TaskExecutor.createRepeatingTask(new Runnable() {
                 @Override
                 public void run() {
                     addHP(-bloodEffect.getX());
@@ -3791,20 +3824,20 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
             checkBerserk();
         } else if (effect.isBeholder()) {
             final int beholder = DarkKnight.BEHOLDER;
-            if (beholderHealingSchedule != null) {
-                beholderHealingSchedule.cancel();
-                beholderHealingSchedule = null;
+            if (beholderHealingTask != null) {
+                beholderHealingTask.cancel();
+                beholderHealingTask = null;
             }
-            if (beholderBuffSchedule != null) {
-                beholderBuffSchedule.cancel();
-                beholderBuffSchedule = null;
+            if (beholderBuffTask != null) {
+                beholderBuffTask.cancel();
+                beholderBuffTask = null;
             }
             Skill bHealing = SkillFactory.getSkill(DarkKnight.AURA_OF_THE_BEHOLDER);
             int bHealingLvl = getSkillLevel(bHealing);
             if (bHealingLvl > 0) {
                 final MapleStatEffect healEffect = bHealing.getEffect(bHealingLvl);
                 int healInterval = healEffect.getX() * 1000;
-                beholderHealingSchedule = TaskExecutor.createRepeatingTask(new Runnable() {
+                beholderHealingTask = TaskExecutor.createRepeatingTask(new Runnable() {
                     @Override
                     public void run() {
                         addHP(healEffect.getHp());
@@ -3818,7 +3851,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
             if (getSkillLevel(bBuff) > 0 && summons.containsKey(DarkKnight.BEHOLDER)) {
                 final MapleStatEffect buffEffect = bBuff.getEffect(getSkillLevel(bBuff));
                 int buffInterval = buffEffect.getX() * 1000;
-                beholderBuffSchedule = TaskExecutor.createRepeatingTask(new Runnable() {
+                beholderBuffTask = TaskExecutor.createRepeatingTask(new Runnable() {
                     @Override
                     public void run() {
                         buffEffect.applyTo(MapleCharacter.this);
@@ -4208,6 +4241,20 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
                     pets[i].saveToDb();
                 }
             }
+            deleteWhereCharacterId(con, "delete from achievements where player_id = ?");
+            ps = con.prepareStatement("insert into achievements (`completed`, `player_id`, `achievement_name`, `killed_monster`, `casino_one`, `casino_two`) values (?, ?, ?, ?, ?, ?)");
+            for (Entry<String, Achievement> entry : achievements.entrySet()) {
+                String name = entry.getKey();
+                Achievement achievement = entry.getValue();
+                ps.setInt(1, achievement.isCompleted() ? 1 : 0);
+                ps.setInt(2, getId());
+                ps.setString(3, name);
+                ps.setInt(4, achievement.getMonstersKilled());
+                ps.setInt(5, achievement.isCasino1Completed() ? 1 : 0);
+                ps.setInt(6, achievement.isCasino2Completed() ? 1 : 0);
+                ps.addBatch();
+            }
+            ps.executeBatch();
             deleteWhereCharacterId(con, "DELETE FROM keymap WHERE characterid = ?");
             ps = con.prepareStatement("INSERT INTO keymap (characterid, `key`, `type`, `action`) VALUES (?, ?, ?, ?)");
             ps.setInt(1, id);
@@ -5107,17 +5154,16 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
         return rCP;
     }
 
-    public void equipPendantOfSpirit() {
-        if (pendantOfSpirit == null) {
-            pendantOfSpirit = TaskExecutor.createRepeatingTask(new Runnable() {
+    public void scheduleSpiritPendant() {
+        if (spiritPendantTask == null) {
+            spiritPendantTask = TaskExecutor.createTask(new Runnable() {
                 @Override
                 public void run() {
                     if (pendantExp < 3) {
                         pendantExp++;
+                        spiritPendantTask = null;
                         message("Pendant of the Spirit has been equipped for " + pendantExp + " hour(s), you will now receive " + pendantExp + "0% bonus exp.");
-                    } else {
-                        pendantOfSpirit.cancel();
-                        pendantOfSpirit = null;
+                        scheduleSpiritPendant();
                     }
                 }
             }, 3600000); // 1 hour
@@ -5125,9 +5171,9 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
     }
 
     public void unequipPendantOfSpirit() {
-        if (pendantOfSpirit != null) {
-            pendantOfSpirit.cancel();
-            pendantOfSpirit = null;
+        if (spiritPendantTask != null) {
+            spiritPendantTask.cancel();
+            spiritPendantTask = null;
         }
         pendantExp = 0;
     }
@@ -5151,6 +5197,19 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
         return events;
     }
 
+    public Map<String, Achievement> getAchievements() {
+        return achievements;
+    }
+
+    public Achievement getAchievement(String achievementName) {
+        Achievement ret = achievements.get(achievementName);
+        if (ret == null) {
+            ret = new Achievement();
+            achievements.put(achievementName, ret);
+        }
+        return ret;
+    }
+
     public PartyQuest getPartyQuest() {
         return partyQuest;
     }
@@ -5160,21 +5219,21 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
     }
 
     public final void empty(final boolean remove) {
-        if (dragonBloodSchedule != null) {
-            dragonBloodSchedule.cancel();
-            dragonBloodSchedule = null;
+        if (dragonBloodTask != null) {
+            dragonBloodTask.cancel();
+            dragonBloodTask = null;
         }
         if (hpDecreaseTask != null) {
             hpDecreaseTask.cancel();
             hpDecreaseTask = null;
         }
-        if (beholderHealingSchedule != null) {
-            beholderHealingSchedule.cancel();
-            beholderHealingSchedule = null;
+        if (beholderHealingTask != null) {
+            beholderHealingTask.cancel();
+            beholderHealingTask = null;
         }
-        if (beholderBuffSchedule != null) {
-            beholderBuffSchedule.cancel();
-            beholderBuffSchedule = null;
+        if (beholderBuffTask != null) {
+            beholderBuffTask.cancel();
+            beholderBuffTask = null;
         }
         if (berserkTask != null) {
             berserkTask.cancel();
@@ -5340,13 +5399,6 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
         return this.title;
     }
 
-    public Achievements getAchievements() {
-        if (this.achievements == null) {
-            achievements = new Achievements(this);
-        }
-        return achievements;
-    }
-
     public void doRebirth() {
         rebirths += 1;
 
@@ -5467,14 +5519,6 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
 
     public void setArcade(Arcade arcade) {
         this.arcade = arcade;
-    }
-
-    public PVP getPVP() {
-        return pvp;
-    }
-
-    public void setPVP(PVP pvp) {
-        this.pvp = pvp;
     }
 
     public Map<Integer, CQuestData> getCustomQuests() {

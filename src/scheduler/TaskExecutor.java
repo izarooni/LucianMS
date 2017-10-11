@@ -1,5 +1,8 @@
 package scheduler;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.ScheduledFuture;
@@ -15,6 +18,7 @@ import java.util.concurrent.locks.ReentrantLock;
  */
 public final class TaskExecutor {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(TaskExecutor.class);
     private static final HashMap<Integer, Task> TASKS = new HashMap<>();
     private static final ScheduledThreadPoolExecutor EXECUTOR = new ScheduledThreadPoolExecutor(6, new ThreadFactory() {
         private int threadId = 0;
@@ -52,12 +56,24 @@ public final class TaskExecutor {
         return EXECUTOR.shutdownNow();
     }
 
-    public static int prestartAllCoreThreads() {
-        return EXECUTOR.prestartAllCoreThreads();
+    public static void prestartAllCoreThreads() {
+        int threads = EXECUTOR.prestartAllCoreThreads();
+        LOGGER.info("{} threads started", threads);
+
     }
 
     public static void purge() {
         EXECUTOR.purge();
+    }
+
+    /**
+     *
+     * @param r a runnable interface
+     * @param a the time in milliseconds of when to execute the task
+     * @return A {@code Task} object which is a wrapper for the {@link ScheduledFuture} object
+     */
+    public static Task runAt(Runnable r, long a) {
+        return setupTask(EXECUTOR.schedule(r, a - System.currentTimeMillis(), TimeUnit.MILLISECONDS));
     }
 
     /**

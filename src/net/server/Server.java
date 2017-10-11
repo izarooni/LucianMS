@@ -45,7 +45,9 @@ import org.json.JSONObject;
 import org.json.JSONTokener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import scheduler.Task;
 import scheduler.TaskExecutor;
+import scripting.Achievements;
 import server.CashShop.CashItemFactory;
 import server.MapleItemInformationProvider;
 import server.Whitelist;
@@ -76,6 +78,7 @@ public class Server implements Runnable {
     private final Map<Integer, MapleAlliance> alliances = new LinkedHashMap<>();
     private PlayerBuffStorage buffStorage = new PlayerBuffStorage();
     private boolean online = false;
+    private Task dailyTask = null;
 
     private Properties subnetInfo = new Properties();
     private Config config = null;
@@ -211,6 +214,10 @@ public class Server implements Runnable {
         CQuestBuilder.loadAllQuests();
         LOGGER.info("Custom quest data loaded in {}s", ((System.currentTimeMillis() - timeToTake) / 1000d));
 
+        timeToTake = System.currentTimeMillis();
+        Achievements.initialize();
+        LOGGER.info("Achievement scripts loaded in {}s", ((System.currentTimeMillis() - timeToTake) / 1000d));
+
         try {
             timeToTake = System.currentTimeMillis();
             int qWorlds = Integer.parseInt(p.getProperty("worlds"));
@@ -244,12 +251,32 @@ public class Server implements Runnable {
             System.exit(0);
         }
 
+        tomorrowSchedule();
+
         ConsoleCommands.beginReading();
         LOGGER.info("Console now listening for commands");
 
         LOGGER.info("LucianMS is now online.");
         online = true;
 
+    }
+
+    public void tomorrowSchedule() {
+        Calendar calendar = Calendar.getInstance();
+        calendar.set(Calendar.DAY_OF_MONTH, calendar.get(Calendar.DAY_OF_MONTH) + 1);
+        LOGGER.info("'tomorrow's 'schedule' is queued for " + calendar.getTime().toString());
+
+        dailyTask = TaskExecutor.runAt(new Runnable() {
+            @Override
+            public void run() {
+                LOGGER.info("Executing 'tomorrow's schedule'");
+
+                // testFor character data (character age)
+                getWorlds().forEach(w -> w.getPlayerStorage().getAllCharacters().forEach(p -> Achievements.testFor(p, -1)));
+
+                tomorrowSchedule();
+            }
+        }, calendar.getTime().getTime());
     }
 
     public Properties getSubnetInfo() {

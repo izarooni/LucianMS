@@ -23,8 +23,6 @@ package net.server.channel.handlers;
 
 import client.*;
 import client.inventory.MapleInventoryType;
-import client.inventory.MaplePet;
-import client.inventory.PetDataFactory;
 import constants.GameConstants;
 import net.AbstractMaplePacketHandler;
 import net.server.PlayerBuffValueHolder;
@@ -69,7 +67,7 @@ public final class PlayerLoggedinHandler extends AbstractMaplePacketHandler {
         } else {
             player.newClient(c);
         }
-        if (player == null) { //If you are still getting null here then please just uninstall the game >.>, we dont need you fucking with the logs
+        if (player == null) {
             c.disconnect(true, false);
             return;
         }
@@ -194,7 +192,7 @@ public final class PlayerLoggedinHandler extends AbstractMaplePacketHandler {
         player.updatePartyMemberHP();
 
         if (player.getInventory(MapleInventoryType.EQUIPPED).findById(1122017) != null) {
-            player.equipPendantOfSpirit();
+            player.scheduleSpiritPendant();
         }
         c.announce(MaplePacketCreator.updateBuddylist(player.getBuddylist().getBuddies()));
 
@@ -202,14 +200,6 @@ public final class PlayerLoggedinHandler extends AbstractMaplePacketHandler {
         if (pendingBuddyRequest != null) {
             c.announce(MaplePacketCreator.requestBuddylistAdd(pendingBuddyRequest.getId(), c.getPlayer().getId(), pendingBuddyRequest.getName()));
         }
-
-//        if (newcomer) {
-//            for (MaplePet pet : player.getPets()) {
-//                if (pet != null) {
-//                    player.startFullnessSchedule(PetDataFactory.getHunger(pet.getItemId()), pet, player.getPetIndex(pet));
-//                }
-//            }
-//        }
 
         c.announce(MaplePacketCreator.updateGender(player));
         player.checkMessenger();
@@ -224,9 +214,6 @@ public final class PlayerLoggedinHandler extends AbstractMaplePacketHandler {
         if (newcomer) {
             if (!c.hasVotedAlready()) {
                 player.announce(MaplePacketCreator.earnTitleMessage("You can vote now! Vote and earn a vote point!"));
-            }
-            if (player.isGM()) {
-                Server.getInstance().broadcastGMMessage(MaplePacketCreator.earnTitleMessage("GM " + player.getName() + " has logged in"));
             }
         }
     }

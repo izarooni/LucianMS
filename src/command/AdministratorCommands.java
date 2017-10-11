@@ -5,6 +5,7 @@ import client.MapleClient;
 import net.server.Server;
 import net.server.channel.Channel;
 import net.server.world.World;
+import scripting.Achievements;
 import scripting.event.EventManager;
 import scripting.map.MapScriptManager;
 import server.events.custom.auto.GAutoEvent;
@@ -36,6 +37,7 @@ public class AdministratorCommands {
             try {
                 commands.add("!reloadmapscripts - Clears stored map scripts");
                 commands.add("!reloadquests - Reload custom quest");
+                commands.add("!reloadachievements - Reload achievement scripts");
                 commands.add("!fae - Force an auto event execution");
                 commands.add("!list - Debug command");
                 commands.add("!reloadevents - Reload all event scripts");
@@ -52,6 +54,9 @@ public class AdministratorCommands {
         } else if (command.equals("reloadquests")) {
             CQuestBuilder.loadAllQuests();
             player.dropMessage("Quests reloaded");
+        } else if (command.equals("reloadachievements")) {
+            Achievements.initialize();
+            player.dropMessage("Achievements reloaded");
         } else if (command.equals("fae")) { // force auto event
             GAutoEventManager[] manager = GAutoEventManager.values();
             if (args.length() == 1) {

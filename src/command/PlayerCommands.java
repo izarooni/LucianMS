@@ -263,8 +263,6 @@ public class PlayerCommands {
             NPCScriptManager.dispose(client);
             player.announce(MaplePacketCreator.enableActions());
             player.dropMessage(6, "Disposed!");
-        } else if (command.equals("achievements")) {
-            player.getClient().announce(MaplePacketCreator.getNPCTalk(9040004, (byte) 0, "These are the currently available achievements, blue means they are unlocked, red is locked. \r\n\r\n" + player.getAchievements().getAll(), "00 00", (byte) 3));
         } else if (command.equals("home")) {
             player.changeMap(809);
         } else if (command.equals("online")) {
