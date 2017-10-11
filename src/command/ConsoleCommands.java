@@ -103,10 +103,8 @@ public class ConsoleCommands {
             }
         } else if (command.equals("reloadcquests")) {
             CQuestBuilder.loadAllQuests();
-            LOGGER.info("Custom quests reloaded");
         } else if (command.equals("reloadachievements")) {
             Achievements.initialize();
-            LOGGER.info("Achievement scripts reloaded");
         } else if (command.equals("gc")) {
             TaskExecutor.purge();
             LOGGER.info("Tasks purged");
@@ -127,7 +125,7 @@ public class ConsoleCommands {
             }
         } else if (command.equals("cls")) {
             if (args.length() == 1) {
-                Long var_amount = args.parseNumber(1);
+                Long var_amount = args.parseNumber(0);
                 if (var_amount == null) {
                     LOGGER.info("{} is an invalid number", args.get(0));
                     return;
