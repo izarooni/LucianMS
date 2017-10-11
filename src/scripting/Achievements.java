@@ -32,6 +32,9 @@ public class Achievements {
         return ret;
     }
 
+    /**
+     * List all achievement scripts, execute them and store their invocable objects for later use
+     */
     public static void initialize() {
         if (invocables != null) {
             invocables.clear();
@@ -62,6 +65,12 @@ public class Achievements {
         }
     }
 
+    /**
+     * Iterate through achievement scripts and test for player and kill requirements against the player and player achievement data
+     *
+     * @param player    playerr to pass as a parameter
+     * @param monsterId a monster id to pass as a parameter for kill requirements
+     */
     public static void testFor(MapleCharacter player, int monsterId) {
         if (invocables != null) {
             for (Pair<String, Invocable> pair : invocables) {
@@ -87,11 +96,20 @@ public class Achievements {
         }
     }
 
+    /**
+     * @param invocable the achievement script invocable
+     * @param player    player to pass as a parameter
+     * @return true if the reward was given to the player, false otherwise
+     * @throws ScriptException
+     * @throws NoSuchMethodException
+     */
     private static boolean reward(Invocable invocable, MapleCharacter player) throws ScriptException, NoSuchMethodException {
         return (boolean) invocable.invokeFunction("reward", player);
     }
 
     /**
+     * Confirm if the player kill requirement for a specified achievement has reached threshold
+     *
      * @param invocable the achievement script invocable
      * @param player    player to pass as a parameter
      * @param monsterId a monster id to pass a parameter
@@ -107,6 +125,8 @@ public class Achievements {
     }
 
     /**
+     * Confirm if any data accessible via player object meets specified achievement conditions
+     *
      * @param invocable the achievement script invocable
      * @param player    player to pass as a parameter to the script function
      * @return true if the test for kill requirement passes, false otherwise

@@ -7,6 +7,7 @@ import net.server.world.World;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import scheduler.TaskExecutor;
+import scripting.Achievements;
 import server.Whitelist;
 import server.quest.custom.CQuestBuilder;
 
@@ -103,6 +104,9 @@ public class ConsoleCommands {
         } else if (command.equals("reloadcquests")) {
             CQuestBuilder.loadAllQuests();
             LOGGER.info("Custom quests reloaded");
+        } else if (command.equals("reloadachievements")) {
+            Achievements.initialize();
+            LOGGER.info("Achievement scripts reloaded");
         } else if (command.equals("gc")) {
             TaskExecutor.purge();
             LOGGER.info("Tasks purged");
@@ -121,13 +125,31 @@ public class ConsoleCommands {
                 }
                 LOGGER.info("Unable to find any player named {}", username);
             }
+        } else if (command.equals("cls")) {
+            if (args.length() == 1) {
+                Long var_amount = args.parseNumber(1);
+                if (var_amount == null) {
+                    LOGGER.info("{} is an invalid number", args.get(0));
+                    return;
+                }
+                int amount = var_amount.intValue();
+                if (amount < 0) {
+                    LOGGER.info("You must enter a number larger than 0");
+                    return;
+                }
+                for (int i = 0; i < amount; i++) {
+                    System.out.println();
+                }
+            }
         } else if (command.equals("help", "commands")) {
             LOGGER.info("gc - Requests JVM garbage collection");
+            LOGGER.info("cls - Clear the buffer");
             LOGGER.info("exit - Safely stop and close the server");
             LOGGER.info("online - View current online players");
             LOGGER.info("reloadcquests - Reload custom quest files");
             LOGGER.info("reloadwhitelist - Reload server white-list");
             LOGGER.info("crash <username> - Crash an in-game character");
+            LOGGER.info("reloadachievements - Clear and re-load stored achievement scripts");
         }
     }
 }
