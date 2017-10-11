@@ -1,6 +1,6 @@
-<imgdir name="Daily - Stumped">
+<imgdir name="Daily - Mystery in space">
     <imgdir name="info">
-        <int name="questId" value="104"/>
+        <int name="questId" value="105"/>
 		<int name="preQuest" value="-1"/>
 		<int name="daily" value="1"/>
     </imgdir>
@@ -8,8 +8,8 @@
     <imgdir name="toKill">
 
         <imgdir name="0">
-            <int name="monsterId" value="1130100"/>
-            <int name="amount" value="99"/>
+            <int name="monsterId" value="9895257"/>
+            <int name="amount" value="1"/>
         </imgdir>
     </imgdir>
 
@@ -17,7 +17,7 @@
     </imgdir>
 
     <imgdir name="rewards">
-        <int name="meso" value="50000"/>
-        <int name="exp" value="50000"/>
+        <int name="meso" value="250000"/>
+        <int name="exp" value="200000"/>
     </imgdir>
 </imgdir>

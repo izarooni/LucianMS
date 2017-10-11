@@ -1,6 +1,6 @@
-<imgdir name="Daily - Blues">
+<imgdir name="Daily - Snails and caps">
     <imgdir name="info">
-        <int name="questId" value="101"/>
+        <int name="questId" value="103"/>
 		<int name="preQuest" value="-1"/>
 		<int name="daily" value="1"/>
     </imgdir>
@@ -8,20 +8,20 @@
     <imgdir name="toKill">
 
         <imgdir name="0">
-            <int name="monsterId" value="100101"/>
-            <int name="amount" value="40"/>
+            <int name="monsterId" value="8600000"/>
+            <int name="amount" value="25"/>
         </imgdir>
     </imgdir>
 
     <imgdir name="toCollect">
         <imgdir name="0">
-            <int name="itemId" value="4000000"/>
+            <int name="itemId" value="4000015"/>
             <int name="quantity" value="20"/>
         </imgdir>
     </imgdir>
 
     <imgdir name="rewards">
-        <int name="meso" value="15000"/>
-        <int name="exp" value="5000"/>
+        <int name="meso" value="125000"/>
+        <int name="exp" value="105000"/>
     </imgdir>
 </imgdir>

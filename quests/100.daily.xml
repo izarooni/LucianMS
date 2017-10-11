@@ -1,4 +1,4 @@
-<imgdir name="Daily - Greens">
+<imgdir name="Daily - Mushroom Soup">
     <imgdir name="info">
         <int name="questId" value="100"/>
 		<int name="preQuest" value="-1"/>
@@ -8,20 +8,20 @@
     <imgdir name="toKill">
 
         <imgdir name="0">
-            <int name="monsterId" value="100100"/>
+            <int name="monsterId" value="1210102"/>
             <int name="amount" value="50"/>
         </imgdir>
     </imgdir>
 
     <imgdir name="toCollect">
         <imgdir name="0">
-            <int name="itemId" value="4000019"/>
-            <int name="quantity" value="35"/>
+            <int name="itemId" value="4000001"/>
+            <int name="quantity" value="25"/>
         </imgdir>
     </imgdir>
  
     <imgdir name="rewards">
-        <int name="meso" value="20000"/>
-        <int name="exp" value="3800"/>
+        <int name="meso" value="125000"/>
+        <int name="exp" value="5000"/>
     </imgdir>
 </imgdir>

@@ -1,4 +1,4 @@
-<imgdir name="Daily - Reds">
+<imgdir name="Daily - Dangerous Cave">
     <imgdir name="info">
         <int name="questId" value="102"/>
 		<int name="preQuest" value="-1"/>
@@ -8,20 +8,20 @@
     <imgdir name="toKill">
 
         <imgdir name="0">
-            <int name="monsterId" value="130101"/>
-            <int name="amount" value="30"/>
+            <int name="monsterId" value="8130100"/>
+            <int name="amount" value="1"/>
         </imgdir>
     </imgdir>
 
     <imgdir name="toCollect">
         <imgdir name="0">
-            <int name="itemId" value="4000016"/>
-            <int name="quantity" value="30"/>
+            <int name="itemId" value="4020008"/>
+            <int name="quantity" value="1"/>
         </imgdir>
     </imgdir>
 
     <imgdir name="rewards">
-        <int name="meso" value="10000"/>
-        <int name="exp" value="6500"/>
+        <int name="meso" value="200000"/>
+        <int name="exp" value="85000"/>
     </imgdir>
 </imgdir>

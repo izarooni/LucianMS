@@ -1,6 +1,6 @@
-<imgdir name="Daily - Shrooms">
+<imgdir name="Daily - Blues">
     <imgdir name="info">
-        <int name="questId" value="103"/>
+        <int name="questId" value="101"/>
 		<int name="preQuest" value="-1"/>
 		<int name="daily" value="1"/>
     </imgdir>
@@ -8,20 +8,20 @@
     <imgdir name="toKill">
 
         <imgdir name="0">
-            <int name="monsterId" value="1210102"/>
-            <int name="amount" value="25"/>
+            <int name="monsterId" value="100101"/>
+            <int name="amount" value="100"/>
         </imgdir>
     </imgdir>
 
     <imgdir name="toCollect">
         <imgdir name="0">
-            <int name="itemId" value="4000001"/>
-            <int name="quantity" value="15"/>
+            <int name="itemId" value="4000000"/>
+            <int name="quantity" value="35"/>
         </imgdir>
     </imgdir>
 
     <imgdir name="rewards">
         <int name="meso" value="15000"/>
-        <int name="exp" value="15000"/>
+        <int name="exp" value="9000"/>
     </imgdir>
 </imgdir>

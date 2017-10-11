@@ -1,0 +1,64 @@
+<imgdir name="Forest Of The Unpassing">
+    <imgdir name="info">
+        <int name="questId" value="1"/>
+		<int name="preQuest" value="-1"/>
+		<int name="daily" value="0"/>
+    </imgdir>
+
+    <imgdir name="toKill">
+
+        <imgdir name="0">
+            <int name="monsterId" value="3503002"/>
+            <int name="amount" value="15"/>
+        </imgdir>
+
+        <imgdir name="1">
+            <int name="monsterId" value="3503003"/>
+            <int name="amount" value="20"/>
+        </imgdir>
+		
+		<imgdir name="2">
+			<int name="monsterId" value="3503004"/>
+			<int name="amount" value="25"/>
+		</imgdir>
+    
+		<imgdir name="3">
+			<int name="monsterId" value="3503005"/>
+			<int name="amount" value="20"/>
+		</imgdir>
+		
+		<imgdir name="4">
+			<int name="monsterId" value="3503006"/>
+			<int name="amount" value="25"/>
+		</imgdir>
+		
+		<imgdir name="5">
+			<int name="monsterId" value="3503007"/>
+			<int name="amount" value="25"/>
+		</imgdir>
+		
+		<imgdir name="6">
+			<int name="monsterId" value="3503008"/>
+			<int name="amount" value="15"/>
+		</imgdir>
+		
+		<imgdir name="7">
+			<int name="monsterId" value="3503009"/>
+			<int name="amount" value="15"/>
+		</imgdir>
+		
+		<imgdir name="8">
+			<int name="monsterId" value="3503010"/>
+			<int name="amount" value="10"/>
+		</imgdir>
+	</imgdir>
+    <imgdir name="rewards">
+
+        <imgdir name="items">
+            <imgdir name="0">
+                <int name="itemId" value="4011021"/>
+                <int name="quantity" value="1"/>
+            </imgdir>
+        </imgdir>
+    </imgdir>
+</imgdir>
