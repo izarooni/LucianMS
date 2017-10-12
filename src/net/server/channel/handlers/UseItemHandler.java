@@ -5,6 +5,7 @@ import client.MapleClient;
 import client.MapleDisease;
 import client.inventory.Item;
 import client.inventory.MapleInventoryType;
+import constants.ExpTable;
 import net.PacketHandler;
 import scripting.npc.NPCScriptManager;
 import server.MapleInventoryManipulator;
@@ -39,7 +40,20 @@ public class UseItemHandler extends PacketHandler {
         MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
         Item toUse = player.getInventory(MapleInventoryType.USE).getItem(slot);
         if (toUse != null && toUse.getQuantity() > 0 && toUse.getItemId() == itemId) {
-            if (itemId == 2022178 || itemId == 2022433 || itemId == 2050004) {
+            if (itemId == 2002031) { // [custom] exp ticket
+                double scale = (100d / ExpTable.getExpNeededForLevel(player.getLevel()));
+                int gain;
+                if (player.getLevel() <= 30) { // 15% gain
+                    gain = (int) Math.floor(scale * 15);
+                } else if (player.getLevel() <= 60) { // 8% gain
+                    gain = (int) Math.floor(scale * 8);
+                } else if (player.getLevel() <= 90) { // 5% gain
+                    gain = (int) Math.floor(scale * 5);
+                } else { // 2% gain
+                    gain = (int) Math.floor(scale * 2);
+                }
+                player.gainExp(gain, true, true);
+            } else if (itemId == 2022178 || itemId == 2022433 || itemId == 2050004) {
                 player.dispelDebuffs();
                 remove(getClient(), slot);
                 return;
@@ -60,8 +74,7 @@ public class UseItemHandler extends PacketHandler {
                 NPCScriptManager.start(getClient(), 9990248, player);
                 remove(getClient(), slot);
                 return;
-            }
-            if (isTownScroll(itemId)) {
+            } if (isTownScroll(itemId)) {
                 if (ii.getItemEffect(toUse.getItemId()).applyTo(player)) {
                     remove(getClient(), slot);
                 }
