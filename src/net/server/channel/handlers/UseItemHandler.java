@@ -41,18 +41,19 @@ public class UseItemHandler extends PacketHandler {
         Item toUse = player.getInventory(MapleInventoryType.USE).getItem(slot);
         if (toUse != null && toUse.getQuantity() > 0 && toUse.getItemId() == itemId) {
             if (itemId == 2002031) { // [custom] exp ticket
-                double scale = (100d / ExpTable.getExpNeededForLevel(player.getLevel()));
-                int gain;
-                if (player.getLevel() <= 30) { // 15% gain
-                    gain = (int) Math.floor(scale * 15);
-                } else if (player.getLevel() <= 60) { // 8% gain
-                    gain = (int) Math.floor(scale * 8);
-                } else if (player.getLevel() <= 90) { // 5% gain
-                    gain = (int) Math.floor(scale * 5);
-                } else { // 2% gain
-                    gain = (int) Math.floor(scale * 2);
+                int needed = ExpTable.getExpNeededForLevel(player.getLevel());
+                double scale = (needed / 100d);
+                double gain;
+                if (player.getLevel() <= 30) { // 18% gain
+                    gain = scale * 18d;
+                } else if (player.getLevel() <= 60) { // 12% gain
+                    gain = scale * 12d;
+                } else if (player.getLevel() <= 90) { // 8% gain
+                    gain = scale * 8d;
+                } else { // 5% gain
+                    gain = scale * 5d;
                 }
-                player.gainExp(gain, true, true);
+                player.gainExp((int) Math.floor(gain), true, true);
             } else if (itemId == 2022178 || itemId == 2022433 || itemId == 2050004) {
                 player.dispelDebuffs();
                 remove(getClient(), slot);
@@ -74,7 +75,8 @@ public class UseItemHandler extends PacketHandler {
                 NPCScriptManager.start(getClient(), 9990248, player);
                 remove(getClient(), slot);
                 return;
-            } if (isTownScroll(itemId)) {
+            }
+            if (isTownScroll(itemId)) {
                 if (ii.getItemEffect(toUse.getItemId()).applyTo(player)) {
                     remove(getClient(), slot);
                 }

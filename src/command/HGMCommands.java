@@ -82,7 +82,7 @@ public class HGMCommands {
                 }
                 if (command.equals("item")) {
                     if (MapleInventoryManipulator.addById(client, id, quantity, player.getName(), petId, -1)) {
-                        player.dropMessage(6, "Put item inside of your inventory.");
+                        client.announce(MaplePacketCreator.getShowItemGain(id, quantity));
                     } else {
                         player.dropMessage(5, "This item does not exist, please try again.");
                     }
@@ -94,7 +94,6 @@ public class HGMCommands {
                         toDrop = new Item(id, (byte) 0, quantity);
                     }
                     if (toDrop != null) {
-                        player.dropMessage(6, "Dropped the item on the floor.");
                         player.getMap().spawnItemDrop(player, player, toDrop, player.getPosition(), true, true);
                     } else {
                         player.dropMessage(5, "That item does not exist");
@@ -188,7 +187,7 @@ public class HGMCommands {
                     return;
                 }
                 int mobId = a1.intValue();
-                int amount = (a2 == null) ? 1: a2.intValue();
+                int amount = (a2 == null) ? 1 : a2.intValue();
                 int xpos = player.getPosition().x;
                 int ypos = player.getPosition().y;
                 int fh = player.getMap().getFootholds().findBelow(player.getPosition()).getId();
