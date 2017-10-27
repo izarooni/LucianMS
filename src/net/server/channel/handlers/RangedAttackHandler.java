@@ -51,7 +51,7 @@ public final class RangedAttackHandler extends AbstractDealDamageHandler {
     }
 
     @Override
-    public void onPacket() {
+    public Object onPacket() {
         MapleCharacter player = getClient().getPlayer();
         FakePlayer fakePlayer = player.getFakePlayer();
 
@@ -59,7 +59,7 @@ public final class RangedAttackHandler extends AbstractDealDamageHandler {
             if (player.getBuffEffect(MapleBuffStat.MORPH).isMorphWithoutAttack()) {
                 // How are they attacking when the client won't let them?
                 player.getClient().disconnect(false, false);
-                return;
+                return null;
             }
         }
 
@@ -91,7 +91,7 @@ public final class RangedAttackHandler extends AbstractDealDamageHandler {
             Item weapon = player.getInventory(MapleInventoryType.EQUIPPED).getItem((short) -11);
             MapleWeaponType type = MapleItemInformationProvider.getInstance().getWeaponType(weapon.getItemId());
             if (type == MapleWeaponType.NOT_A_WEAPON) {
-                return;
+                return null;
             }
             int projectile = 0;
             byte bulletCount = 1;
@@ -207,7 +207,7 @@ public final class RangedAttackHandler extends AbstractDealDamageHandler {
                     MapleStatEffect effect_ = skill.getEffect(player.getSkillLevel(skill));
                     if (effect_.getCooldown() > 0) {
                         if (player.skillisCooling(attackInfo.skill)) {
-                            return;
+                            return null;
                         } else {
                             getClient().announce(MaplePacketCreator.skillCooldown(attackInfo.skill, effect_.getCooldown()));
                             player.addCooldown(attackInfo.skill, System.currentTimeMillis(), effect_.getCooldown() * 1000, TaskExecutor.createTask(new CancelCooldownAction(player, attackInfo.skill), effect_.getCooldown() * 1000));
@@ -224,6 +224,7 @@ public final class RangedAttackHandler extends AbstractDealDamageHandler {
                 }
             }
         }
+        return null;
     }
 
     public AttackInfo getAttackInfo() {

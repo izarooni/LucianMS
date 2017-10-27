@@ -53,11 +53,11 @@ public final class ItemPickupHandler extends PacketHandler {
     }
 
     @Override
-    public void onPacket() {
+    public Object onPacket() {
         MapleCharacter chr = getClient().getPlayer();
         MapleMapObject ob = chr.getMap().getMapObject(objectId);
         if (ob == null) {
-            return;
+            return null;
         }
         MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
 
@@ -65,7 +65,7 @@ public final class ItemPickupHandler extends PacketHandler {
             MapleMapItem mapitem = (MapleMapItem) ob;
             if (System.currentTimeMillis() - mapitem.getDropTime() < 900) {
                 getClient().announce(MaplePacketCreator.enableActions());
-                return;
+                return null;
             }
             // un-obtainable item
             if (mapitem.getItem() != null && !mapitem.getItem().isObtainable()) {
@@ -76,7 +76,7 @@ public final class ItemPickupHandler extends PacketHandler {
                 chr.getMap().broadcastMessage(MaplePacketCreator.removeItemFromMap(mapitem.getObjectId(), 2, chr.getId()), mapitem.getPosition());
                 chr.getMap().removeMapObject(ob);
                 getClient().announce(MaplePacketCreator.enableActions());
-                return;
+                return null;
             }
             if (mapitem.getItemId() == 4031865 || mapitem.getItemId() == 4031866 || mapitem.getMeso() > 0 || ii.isConsumeOnPickup(mapitem.getItemId()) || MapleInventoryManipulator.checkSpace(getClient(), mapitem.getItemId(), mapitem.getItem().getQuantity(), mapitem.getItem().getOwner())) {
                 if ((chr.getMapId() > 209000000 && chr.getMapId() < 209000016) || (chr.getMapId() >= 990000500 && chr.getMapId() <= 990000502)) {//happyville trees and guild PQ
@@ -97,33 +97,33 @@ public final class ItemPickupHandler extends PacketHandler {
                             }
                         } else {
                             getClient().announce(MaplePacketCreator.enableActions());
-                            return;
+                            return null;
                         }
                     } else {
                         getClient().announce(MaplePacketCreator.getInventoryFull());
                         getClient().announce(MaplePacketCreator.getShowInventoryFull());
-                        return;
+                        return null;
                     }
                     getClient().announce(MaplePacketCreator.enableActions());
-                    return;
+                    return null;
                 }
 
                 synchronized (mapitem) {
                     if (mapitem.getQuest() > 0 && !chr.needQuestItem(mapitem.getQuest(), mapitem.getItemId())) {
                         getClient().announce(MaplePacketCreator.showItemUnavailable());
                         getClient().announce(MaplePacketCreator.enableActions());
-                        return;
+                        return null;
                     }
                     if (mapitem.isPickedUp()) {
                         getClient().announce(MaplePacketCreator.getInventoryFull());
                         getClient().announce(MaplePacketCreator.getShowInventoryFull());
-                        return;
+                        return null;
                     }
                     if (mapitem.getMeso() > 0) {
                         if (chr.getParty() != null) {
                             int mesosamm = mapitem.getMeso();
                             if (mesosamm > 50000 * chr.getMesoRate()) {
-                                return;
+                                return null;
                             }
                             int partynum = 0;
                             for (MaplePartyCharacter partymem : chr.getParty().getMembers()) {
@@ -154,7 +154,7 @@ public final class ItemPickupHandler extends PacketHandler {
                         } else {
                             if (!MapleInventoryManipulator.addFromDrop(getClient(), mapitem.getItem(), true)) {
                                 getClient().announce(MaplePacketCreator.enableActions());
-                                return;
+                                return null;
                             } else {
                                 if (chr.getArcade() != null) {
                                     if (!chr.getArcade().fail()) {
@@ -203,7 +203,7 @@ public final class ItemPickupHandler extends PacketHandler {
                         chr.getMap().broadcastMessage(MaplePacketCreator.updateAriantPQRanking(chr.getName(), chr.getItemQuantity(4031868, false), false));
                     } else {
                         getClient().announce(MaplePacketCreator.enableActions());
-                        return;
+                        return null;
                     }
                     mapitem.setPickedUp(true);
                     chr.getMap().broadcastMessage(MaplePacketCreator.removeItemFromMap(mapitem.getObjectId(), 2, chr.getId()), mapitem.getPosition());
@@ -212,6 +212,7 @@ public final class ItemPickupHandler extends PacketHandler {
             }
         }
         getClient().announce(MaplePacketCreator.enableActions());
+        return null;
     }
 
     public int getObjectId() {

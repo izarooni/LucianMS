@@ -28,6 +28,7 @@ import client.inventory.*;
 import constants.ItemConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import server.maps.MapleMapItem;
 import server.quest.custom.CQuestData;
 import server.quest.custom.requirement.CQuestItemRequirement;
 import tools.MaplePacketCreator;
@@ -478,7 +479,7 @@ public class MapleInventoryManipulator {
         c.getPlayer().equipChanged();
     }
 
-    public static void drop(MapleClient c, MapleInventoryType type, short src, short quantity) {
+    public static MapleMapItem drop(MapleClient c, MapleInventoryType type, short src, short quantity) {
         MapleCharacter player = c.getPlayer();
         MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
         if (src < 0) {
@@ -487,11 +488,11 @@ public class MapleInventoryManipulator {
         Item source = player.getInventory(type).getItem(src);
 
         if (player.getTrade() != null || player.getMiniGame() != null || source == null) { //Only check needed would prob be merchants (to see if the player is in one)
-            return;
+            return null;
         }
         int itemId = source.getItemId();
         if (itemId >= 5000000 && itemId <= 5002000) {
-            return;
+            return null;
         }
         if (type == MapleInventoryType.EQUIPPED && itemId == 1122017) {
             player.unequipPendantOfSpirit();
@@ -505,7 +506,7 @@ public class MapleInventoryManipulator {
             }
         }
         if ((!ItemConstants.isRechargable(itemId) && player.getItemQuantity(itemId, true) < quantity) || quantity < 0) {
-            return;
+            return null;
         }
         for (CQuestData data : player.getCustomQuests().values()) {
             if (!data.isCompleted()) {
@@ -538,17 +539,17 @@ public class MapleInventoryManipulator {
             c.announce(MaplePacketCreator.modifyInventory(true, Collections.singletonList(new ModifyInventory(1, source))));
             boolean weddingRing = source.getItemId() == 1112803 || source.getItemId() == 1112806 || source.getItemId() == 1112807 || source.getItemId() == 1112809;
             if (weddingRing) {
-                player.getMap().disappearingItemDrop(player, player, target, dropPos);
+                return player.getMap().disappearingItemDrop(player, player, target, dropPos);
             } else if (player.getMap().getEverlast()) {
                 //                if (ii.isDropRestricted(target.getItemId()) || MapleItemInformationProvider.getInstance().isCash(target.getItemId())) {
                 //                    player.getMap().disappearingItemDrop(player, player, target, dropPos);
                 //                } else {
-                player.getMap().spawnItemDrop(player, player, target, dropPos, true, false);
+                return player.getMap().spawnItemDrop(player, player, target, dropPos, true, false);
                 //                }
                 //            } else if (ii.isDropRestricted(target.getItemId()) || MapleItemInformationProvider.getInstance().isCash(target.getItemId())) {
                 //                player.getMap().disappearingItemDrop(player, player, target, dropPos);
             } else {
-                player.getMap().spawnItemDrop(player, player, target, dropPos, true, true);
+                return player.getMap().spawnItemDrop(player, player, target, dropPos, true, true);
             }
         } else {
             player.getInventory(type).removeSlot(src);
@@ -560,12 +561,12 @@ public class MapleInventoryManipulator {
 //                if (ii.isDropRestricted(itemId) || ii.isCash(itemId)) {
 //                    player.getMap().disappearingItemDrop(player, player, source, dropPos);
 //                } else {
-                    player.getMap().spawnItemDrop(player, player, source, dropPos, true, false);
+                    return player.getMap().spawnItemDrop(player, player, source, dropPos, true, false);
 //                }
 //            } else if (ii.isDropRestricted(itemId) || ii.isCash(itemId)) {
 //                player.getMap().disappearingItemDrop(player, player, source, dropPos);
             } else {
-                player.getMap().spawnItemDrop(player, player, source, dropPos, true, true);
+                return player.getMap().spawnItemDrop(player, player, source, dropPos, true, true);
             }
         }
     }

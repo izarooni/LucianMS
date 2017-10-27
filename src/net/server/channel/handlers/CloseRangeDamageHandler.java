@@ -49,14 +49,14 @@ public final class CloseRangeDamageHandler extends AbstractDealDamageHandler {
     }
 
     @Override
-    public void onPacket() {
+    public Object onPacket() {
         MapleCharacter player = getClient().getPlayer();
 
         if (player.getBuffEffect(MapleBuffStat.MORPH) != null) {
             if (player.getBuffEffect(MapleBuffStat.MORPH).isMorphWithoutAttack()) {
                 // How are they attacking when the client won't let them?
                 player.getClient().disconnect(false, false);
-                return;
+                return null;
             }
         }
 
@@ -71,7 +71,7 @@ public final class CloseRangeDamageHandler extends AbstractDealDamageHandler {
                         if ((weaponType != 44 && weaponType != 43) && (skill.getId() >= 1311001 && skill.getId() <= 1311004)) {
                             // 44 = pole arm, 43 = spear
                             // crusher & dragon fury | spear & pole arm skills
-                            return;
+                            return null;
                         }
                     }
                 }
@@ -159,14 +159,14 @@ public final class CloseRangeDamageHandler extends AbstractDealDamageHandler {
             attackCount = attackInfo.getAttackEffect(player, null).getAttackCount();
         }
         if (numFinisherOrbs == 0 && GameConstants.isFinisherSkill(attackInfo.skill)) {
-            return;
+            return null;
         }
         if (attackInfo.skill > 0) {
             Skill skill = SkillFactory.getSkill(attackInfo.skill);
             MapleStatEffect effect_ = skill.getEffect(player.getSkillLevel(skill));
             if (effect_.getCooldown() > 0) {
                 if (player.skillisCooling(attackInfo.skill)) {
-                    return;
+                    return null;
                 } else {
                     getClient().announce(MaplePacketCreator.skillCooldown(attackInfo.skill, effect_.getCooldown()));
                     player.addCooldown(attackInfo.skill, System.currentTimeMillis(), effect_.getCooldown() * 1000, TaskExecutor.createTask(new CancelCooldownAction(player, attackInfo.skill), effect_.getCooldown() * 1000));
@@ -181,6 +181,7 @@ public final class CloseRangeDamageHandler extends AbstractDealDamageHandler {
         if (fakePlayer != null) {
             applyAttack(fakePlayer, attackInfo, attackCount);
         }
+        return null;
     }
 
     public AttackInfo getAttackInfo() {

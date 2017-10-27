@@ -48,7 +48,7 @@ public class MoveDragonHandler extends PacketHandler {
     }
 
     @Override
-    public void onPacket() {
+    public Object onPacket() {
         final MapleCharacter player = getClient().getPlayer();
         final MapleDragon dragon = player.getDragon();
         if (dragon != null && movements != null) {
@@ -60,5 +60,6 @@ public class MoveDragonHandler extends PacketHandler {
                 player.getMap().broadcastMessage(player, MaplePacketCreator.moveDragon(dragon, pos, movements), dragon.getPosition());
             }
         }
+        return null;
     }
 }

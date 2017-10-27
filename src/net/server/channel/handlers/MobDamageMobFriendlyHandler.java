@@ -26,12 +26,12 @@ public class MobDamageMobFriendlyHandler extends PacketHandler {
     }
 
     @Override
-    public void onPacket() {
+    public Object onPacket() {
         MapleCharacter player = getClient().getPlayer();
         MapleMonster dMonster = player.getMap().getMonsterByOid(damagedID);
         MapleMonster aMonster = player.getMap().getMonsterByOid(attackerID);
         if (dMonster == null || aMonster == null) {
-            return;
+            return null;
         }
         int damage = Randomizer.nextInt(((dMonster.getMaxHp() / 13 + dMonster.getPADamage() * 10)) * 2 + 500) / 10; // Beng's forumla.
         if (dMonster.getId() == 9300061) { // Moon Bunny
@@ -45,5 +45,6 @@ public class MobDamageMobFriendlyHandler extends PacketHandler {
         }
         dMonster.getMap().broadcastMessage(MaplePacketCreator.MobDamageMobFriendly(dMonster, damage), dMonster.getPosition());
         getClient().announce(MaplePacketCreator.enableActions());
+        return null;
     }
 }

@@ -46,13 +46,14 @@ public final class MovePetHandler extends PacketHandler {
     }
 
     @Override
-    public void onPacket() {
+    public Object onPacket() {
         MapleCharacter player = getClient().getPlayer();
         byte index = player.getPetIndex(petId);
         if (index == -1) {
-            return;
+            return null;
         }
         player.getPet(index).updatePosition(movements);
         player.getMap().broadcastMessage(player, MaplePacketCreator.movePet(player.getId(), petId, index, movements), false);
+        return null;
     }
 }

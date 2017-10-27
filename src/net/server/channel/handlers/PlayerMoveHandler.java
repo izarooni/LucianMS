@@ -31,7 +31,7 @@ public final class PlayerMoveHandler extends PacketHandler {
     }
 
     @Override
-    public void onPacket() {
+    public Object onPacket() {
         MapleCharacter player = getClient().getPlayer();
 
         if (movements != null && !movements.isEmpty()) {
@@ -60,6 +60,7 @@ public final class PlayerMoveHandler extends PacketHandler {
                 player.updateSingleStat(MapleStat.HP, 0);
             }
         }
+        return null;
     }
 
     public List<LifeMovementFragment> getMovements() {

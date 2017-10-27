@@ -46,6 +46,8 @@ import server.MapleItemInformationProvider;
 import server.MaplePortal;
 import server.MapleStatEffect;
 import server.events.custom.GenericEvent;
+import server.events.custom.summoning.BlackMageSummoner;
+import server.events.custom.summoning.ShenronSummoner;
 import server.events.gm.*;
 import server.life.*;
 import server.life.MapleLifeFactory.SelfDestruction;
@@ -469,10 +471,11 @@ public class MapleMap {
         TaskExecutor.createTask(new ExpireMapItemJob(mdrop), 180000);
     }
 
-    public final void disappearingItemDrop(final MapleMapObject dropper, final MapleCharacter owner, final Item item, final Point pos) {
+    public final MapleMapItem disappearingItemDrop(final MapleMapObject dropper, final MapleCharacter owner, final Item item, final Point pos) {
         final Point droppos = calcDropPos(pos, pos);
         final MapleMapItem drop = new MapleMapItem(item, droppos, dropper, owner, (byte) 1, false);
         broadcastMessage(MaplePacketCreator.dropItemFromMapObject(drop, dropper.getPosition(), droppos, (byte) 3), drop.getPosition());
+        return drop;
     }
 
     public MapleMonster getMonsterById(int id) {
@@ -1312,7 +1315,7 @@ public class MapleMap {
         }, duration);
     }
 
-    public final void spawnItemDrop(final MapleMapObject dropper, final MapleCharacter owner, final Item item, Point pos, final boolean ffaDrop, final boolean playerDrop) {
+    public final MapleMapItem spawnItemDrop(final MapleMapObject dropper, final MapleCharacter owner, final Item item, Point pos, final boolean ffaDrop, final boolean playerDrop) {
         final Point droppos = calcDropPos(pos, pos);
         final MapleMapItem drop = new MapleMapItem(item, droppos, dropper, owner, (byte) (ffaDrop ? 2 : 0), playerDrop);
         drop.setDropTime(System.currentTimeMillis());
@@ -1329,6 +1332,7 @@ public class MapleMap {
             TaskExecutor.createTask(new ExpireMapItemJob(drop), 180000);
             activateItemReactors(drop, owner.getClient());
         }
+        return drop;
     }
 
     private void activateItemReactors(final MapleMapItem drop, final MapleClient c) {
@@ -1425,9 +1429,7 @@ public class MapleMap {
             chr.cancelEffectFromBuffStat(MapleBuffStat.MONSTER_RIDING);
             chr.cancelBuffStats(MapleBuffStat.MONSTER_RIDING);
         }
-        if (mapid == 923010000 && getMonsterById(9300102) == null) { // Kenta's
-            // Mount
-            // Quest
+        if (mapid == 923010000 && getMonsterById(9300102) == null) { // Kenta's Mount quest
             spawnMonsterOnGroundBelow(MapleLifeFactory.getMonster(9300102), new Point(77, 426));
         } else if (mapid == 910010200) { // Henesys Party Quest Bonus
             chr.announce(MaplePacketCreator.getClock(60 * 5));
@@ -1522,6 +1524,10 @@ public class MapleMap {
                     }
                 }
             }, 30 * 60 * 1000);
+        } else if (mapid == 97) {
+            new BlackMageSummoner().registerPlayer(chr);
+        } else if (mapid == 908) {
+            new ShenronSummoner().registerPlayer(chr);
         }
         MaplePet[] pets = chr.getPets();
         for (int i = 0; i < chr.getPets().length; i++) {

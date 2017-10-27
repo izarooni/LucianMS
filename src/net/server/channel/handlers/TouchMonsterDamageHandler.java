@@ -35,11 +35,12 @@ public final class TouchMonsterDamageHandler extends AbstractDealDamageHandler {
     }
 
     @Override
-    public void onPacket() {
+    public Object onPacket() {
         MapleCharacter player = getClient().getPlayer();
         if (player.getEnergyBar() == 15000 || player.getBuffedValue(MapleBuffStat.BODY_PRESSURE) != null) {
             applyAttack(player, attackInfo, 1);
         }
+        return null;
     }
 
     public AttackInfo getAttackInfo() {

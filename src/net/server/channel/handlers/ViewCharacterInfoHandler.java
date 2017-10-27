@@ -20,7 +20,7 @@ public class ViewCharacterInfoHandler extends PacketHandler {
     }
 
     @Override
-    public void onPacket() {
+    public Object onPacket() {
         MapleCharacter player = getClient().getPlayer();
         MapleMapObject target = player.getMap().getMapObject(playerId);
         if (target != null && target instanceof MapleCharacter) {
@@ -28,5 +28,6 @@ public class ViewCharacterInfoHandler extends PacketHandler {
         } else {
             getClient().announce(MaplePacketCreator.enableActions());
         }
+        return null;
     }
 }

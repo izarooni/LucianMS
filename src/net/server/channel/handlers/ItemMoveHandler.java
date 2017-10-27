@@ -57,14 +57,14 @@ public class ItemMoveHandler extends PacketHandler {
     }
 
     @Override
-    public void onPacket() {
+    public Object onPacket() {
         MapleCharacter player = getClient().getPlayer();
         Cheater.CheatEntry entry = player.getCheater().getCheatEntry(Cheats.FastInventorySort);
 
         if (System.currentTimeMillis() - entry.latestOperationTimestamp < 300) {
             entry.spamCount++;
             getClient().announce(MaplePacketCreator.enableActions());
-            return;
+            return null;
         } else {
             entry.spamCount = 0;
         }
@@ -74,10 +74,11 @@ public class ItemMoveHandler extends PacketHandler {
         } else if (action < 0) {
             MapleInventoryManipulator.equip(getClient(), source, action);
         } else if (action == 0) {
-            MapleInventoryManipulator.drop(getClient(), inventoryType, source, quantity);
+            return MapleInventoryManipulator.drop(getClient(), inventoryType, source, quantity);
         } else {
             MapleInventoryManipulator.move(getClient(), inventoryType, source, action);
         }
+        return null;
     }
 
     public MapleInventoryType getInventoryType() {

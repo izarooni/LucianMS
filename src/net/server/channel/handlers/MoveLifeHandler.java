@@ -74,11 +74,11 @@ public final class MoveLifeHandler extends PacketHandler {
     }
 
     @Override
-    public void onPacket() {
+    public Object onPacket() {
         MapleCharacter player = getClient().getPlayer();
         MapleMapObject mmo = player.getMap().getMapObject(objectId);
         if (mmo == null || mmo.getType() != MapleMapObjectType.MONSTER) {
-            return;
+            return null;
         }
         MapleMonster monster = (MapleMonster) mmo;
         MobSkill toUse = null;
@@ -102,7 +102,7 @@ public final class MoveLifeHandler extends PacketHandler {
             if (monster.isAttackedBy(player)) {// aggro and controller change
                 monster.switchController(player, true);
             } else {
-                return;
+                return null;
             }
         } else if (skill == -1 && monster.isControllerKnowsAboutAggro() && !monster.isMobile() && !monster.isFirstAttack()) {
             monster.setControllerHasAggro(false);
@@ -122,5 +122,6 @@ public final class MoveLifeHandler extends PacketHandler {
             MovementPacketHelper.updatePosition(movements, monster, -1);
             player.getMap().moveMonster(monster, monster.getPosition());
         }
+        return null;
     }
 }

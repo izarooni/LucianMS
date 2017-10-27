@@ -51,6 +51,7 @@ import server.*;
 import server.events.MapleEvents;
 import server.events.RescueGaga;
 import server.events.custom.*;
+import server.events.custom.summoning.ShenronSummoner;
 import server.events.gm.MapleFitness;
 import server.events.gm.MapleOla;
 import server.life.FakePlayer;
@@ -1637,9 +1638,9 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
         }
 
         List<GenericEvent> gEvents = getGenericEvents();
-        if (gEvents.stream().anyMatch(g -> (g instanceof DBZSummoner))) {
+        if (gEvents.stream().anyMatch(g -> (g instanceof ShenronSummoner))) {
             if (to.getId() != 908) {
-                gEvents.stream().filter(g -> (g instanceof DBZSummoner)).forEach(event -> event.unregisterPlayer(this));
+                gEvents.stream().filter(g -> (g instanceof ShenronSummoner)).forEach(event -> event.unregisterPlayer(this));
             }
         }
         if (getFakePlayer() != null) {

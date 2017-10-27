@@ -38,5 +38,5 @@ public abstract class PacketHandler {
 
     public abstract void process(SeekableLittleEndianAccessor slea);
 
-    public abstract void onPacket();
+    public abstract Object onPacket();
 }

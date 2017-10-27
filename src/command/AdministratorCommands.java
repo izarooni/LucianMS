@@ -10,6 +10,7 @@ import scripting.event.EventManager;
 import scripting.map.MapScriptManager;
 import server.events.custom.auto.GAutoEvent;
 import server.events.custom.auto.GAutoEventManager;
+import server.life.MapleMonster;
 import server.maps.MapleMapObject;
 import server.maps.MapleReactor;
 import server.quest.custom.CQuestBuilder;
@@ -95,6 +96,10 @@ public class AdministratorCommands {
                     for (MapleMapObject object : player.getMap().getAllReactor()) {
                         MapleReactor reactor = (MapleReactor) object;
                         player.dropMessage(String.format("{%s / id:%d / oid:%d / name:%s}", reactor.getPosition().toString(), reactor.getId(), reactor.getObjectId(), reactor.getName()));
+                    }
+                } else if (args.get(0).equalsIgnoreCase("monsters")) {
+                    for (MapleMonster monsters : player.getMap().getMonsters()) {
+                        player.dropMessage(String.format("{%s / id:%d / oid:%d / name:%s}", monsters.getPosition().toString(), monsters.getId(), monsters.getObjectId(), monsters.getName()));
                     }
                 }
             }

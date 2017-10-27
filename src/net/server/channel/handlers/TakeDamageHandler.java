@@ -71,7 +71,7 @@ public final class TakeDamageHandler extends PacketHandler {
     }
 
     @Override
-    public void onPacket() {
+    public Object onPacket() {
         MapleCharacter player = getClient().getPlayer();
 
         if (player.isImmortal()) {
@@ -94,7 +94,7 @@ public final class TakeDamageHandler extends PacketHandler {
                     if (player.getArcade() != null) {
                         player.getArcade().onHit(attacker.getId());
                     }
-                    return;
+                    return null;
                 }
                 if (damage > 0) {
                     loseItems = map.getMonsterById(monsterIdFrom).getStats().loseItem();
@@ -122,7 +122,7 @@ public final class TakeDamageHandler extends PacketHandler {
                     }
                 }
             } else {
-                return;
+                return null;
             }
         }
         if (damageFrom != -1 && damageFrom != -2 && attacker != null) {
@@ -246,6 +246,7 @@ public final class TakeDamageHandler extends PacketHandler {
             player.setDojoEnergy(player.isGM() ? 300 : player.getDojoEnergy() < 300 ? player.getDojoEnergy() + 1 : 0); //Fking gm's
             player.getClient().announce(MaplePacketCreator.getEnergy("energy", player.getDojoEnergy()));
         }
+        return null;
     }
 
     public int getDamage() {

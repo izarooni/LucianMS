@@ -36,7 +36,7 @@ public class ChangeMapHandler extends PacketHandler {
     }
 
     @Override
-    public void onPacket() {
+    public Object onPacket() {
         MapleCharacter player = getClient().getPlayer();
 
         if (player.getTrade() != null) {
@@ -46,7 +46,7 @@ public class ChangeMapHandler extends PacketHandler {
         if (eCashShop) {
             if (!player.getCashShop().isOpened()) {
                 getClient().disconnect(false, false);
-                return;
+                return null;
             }
             String[] socket = getClient().getChannelServer().getIP().split(":");
             player.getCashShop().open(false);
@@ -64,7 +64,7 @@ public class ChangeMapHandler extends PacketHandler {
         } else {
             if (player.getCashShop().isOpened()) {
                 getClient().disconnect(false, false);
-                return;
+                return null;
             }
             try {
                 MaplePortal portal = player.getMap().getPortal(startwp);
@@ -132,7 +132,7 @@ public class ChangeMapHandler extends PacketHandler {
                 if (portal != null && !portal.getPortalStatus()) {
                     getClient().announce(MaplePacketCreator.blockedMessage(1));
                     getClient().announce(MaplePacketCreator.enableActions());
-                    return;
+                    return null;
                 }
                 if (player.getMapId() == 109040004) {
                     player.getFitness().resetTimes();
@@ -143,7 +143,7 @@ public class ChangeMapHandler extends PacketHandler {
                 if (portal != null) {
                     if (portal.getPosition().distanceSq(player.getPosition()) > 400000) {
                         getClient().announce(MaplePacketCreator.enableActions());
-                        return;
+                        return null;
                     }
 
                     portal.enterPortal(getClient());
@@ -155,6 +155,7 @@ public class ChangeMapHandler extends PacketHandler {
                 e.printStackTrace();
             }
         }
+        return null;
     }
 
     public boolean iseCashShop() {

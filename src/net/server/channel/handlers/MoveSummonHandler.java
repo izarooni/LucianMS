@@ -51,7 +51,7 @@ public final class MoveSummonHandler extends PacketHandler {
     }
 
     @Override
-    public void onPacket() {
+    public Object onPacket() {
         MapleCharacter player = getClient().getPlayer();
         Collection<MapleSummon> summons = player.getSummons().values();
         MapleSummon summon = null;
@@ -65,5 +65,6 @@ public final class MoveSummonHandler extends PacketHandler {
             MovementPacketHelper.updatePosition(movements, summon, 0);
             player.getMap().broadcastMessage(player, MaplePacketCreator.moveSummon(player.getId(), objectId, new Point(xStart, yStart), movements), summon.getPosition());
         }
+        return null;
     }
 }

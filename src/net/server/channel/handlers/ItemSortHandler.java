@@ -25,14 +25,14 @@ public class ItemSortHandler extends PacketHandler {
     }
 
     @Override
-    public void onPacket() {
+    public Object onPacket() {
         MapleCharacter player = getClient().getPlayer();
         Cheater.CheatEntry cheat = player.getCheater().getCheatEntry(Cheats.FastInventorySort);
 
         if (System.currentTimeMillis() - cheat.latestOperationTimestamp < 300) {
             cheat.spamCount++;
             getClient().announce(MaplePacketCreator.enableActions());
-            return;
+            return null;
         } else {
             cheat.spamCount = 0;
         }
@@ -41,11 +41,11 @@ public class ItemSortHandler extends PacketHandler {
         MapleInventoryType inventoryType = MapleInventoryType.getByType(this.inventoryType);
         if (inventoryType == null || inventoryType == MapleInventoryType.UNDEFINED || player.getInventory(inventoryType).isFull()) {
             getClient().announce(MaplePacketCreator.enableActions());
-            return;
+            return null;
         }
         if (!player.isGM() && !ServerConstants.USE_ITEM_SORT) {
             getClient().announce(MaplePacketCreator.enableActions());
-            return;
+            return null;
         }
         MapleInventory inventory = player.getInventory(inventoryType);
 
@@ -70,5 +70,6 @@ public class ItemSortHandler extends PacketHandler {
         }
         getClient().announce(MaplePacketCreator.finishedSort(inventoryType.getType()));
         getClient().announce(MaplePacketCreator.enableActions());
+        return null;
     }
 }
