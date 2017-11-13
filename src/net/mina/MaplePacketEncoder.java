@@ -22,14 +22,19 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 package net.mina;
 
 import client.MapleClient;
-import java.util.concurrent.locks.Lock;
 import org.apache.mina.core.buffer.IoBuffer;
 import org.apache.mina.core.session.IoSession;
 import org.apache.mina.filter.codec.ProtocolEncoder;
 import org.apache.mina.filter.codec.ProtocolEncoderOutput;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import tools.MapleAESOFB;
 
+import java.util.concurrent.locks.Lock;
+
 public class MaplePacketEncoder implements ProtocolEncoder {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(MaplePacketEncoder.class);
 
     @Override
     public void encode(final IoSession session, final Object message, final ProtocolEncoderOutput out) throws Exception {
@@ -43,7 +48,6 @@ public class MaplePacketEncoder implements ProtocolEncoder {
             final byte[] ret = new byte[unencrypted.length + 4];
             final byte[] header = send_crypto.getPacketHeader(unencrypted.length);
             MapleCustomEncryption.encryptData(unencrypted);
-
             final Lock mutex = client.getLock();
             mutex.lock();
             try {
@@ -54,8 +58,6 @@ public class MaplePacketEncoder implements ProtocolEncoder {
             } finally {
                 mutex.unlock();
             }
-//            System.arraycopy(unencrypted, 0, ret, 4, unencrypted.length);
-//            out.write(ByteBuffer.wrap(ret));
         } else {
             out.write(IoBuffer.wrap(((byte[]) message)));
         }

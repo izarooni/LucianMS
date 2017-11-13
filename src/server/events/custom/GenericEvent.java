@@ -79,8 +79,9 @@ public abstract class GenericEvent {
     /**
      * When the player is being 'banished' (warped away) due to a monster skill
      *
-     * @param mapId the map the player will be banished to
-     *              @return true if the player should be banished
+     * @param player the player changing maps
+     * @param mapId  the map the player will be banished to
+     * @return true if the player should be banished
      */
     public boolean banishPlayer(MapleCharacter player, int mapId) {
         // do nothing

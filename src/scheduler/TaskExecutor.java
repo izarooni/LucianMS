@@ -20,7 +20,7 @@ public final class TaskExecutor {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(TaskExecutor.class);
     private static final HashMap<Integer, Task> TASKS = new HashMap<>();
-    private static final ScheduledThreadPoolExecutor EXECUTOR = new ScheduledThreadPoolExecutor(6, new ThreadFactory() {
+    private static final ScheduledThreadPoolExecutor EXECUTOR = new ScheduledThreadPoolExecutor(12 , new ThreadFactory() {
         private int threadId = 0;
 
         @Override
@@ -67,7 +67,6 @@ public final class TaskExecutor {
     }
 
     /**
-     *
      * @param r a runnable interface
      * @param a the time in milliseconds of when to execute the task
      * @return A {@code Task} object which is a wrapper for the {@link ScheduledFuture} object

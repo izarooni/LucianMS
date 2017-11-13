@@ -80,7 +80,7 @@ public class MapleAESOFB {
         return ret;
     }
 
-    public synchronized byte[] crypt(byte[] data) {
+    public synchronized void crypt(byte[] data) {
         int remaining = data.length;
         int llength = 0x5B0;
         int start = 0;
@@ -93,11 +93,8 @@ public class MapleAESOFB {
                 if ((x - start) % myIv.length == 0) {
                     try {
                         byte[] newIv = cipher.doFinal(myIv);
-                        for (int j = 0; j < myIv.length; j++) {
-                            myIv[j] = newIv[j];
-                        }
-                    } catch (IllegalBlockSizeException e) {
-                    } catch (BadPaddingException e) {
+                        System.arraycopy(newIv, 0, myIv, 0, myIv.length);
+                    } catch (IllegalBlockSizeException | BadPaddingException ignored) {
                     }
                 }
                 data[x] ^= myIv[(x - start) % myIv.length];
@@ -107,7 +104,6 @@ public class MapleAESOFB {
             llength = 0x5B4;
         }
         updateIv();
-        return data;
     }
 
     private synchronized void updateIv() {

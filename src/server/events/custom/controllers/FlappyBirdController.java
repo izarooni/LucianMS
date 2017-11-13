@@ -1,10 +1,11 @@
-package server.events.custom;
+package server.events.custom.controllers;
 
 import client.MapleCharacter;
 import net.SendOpcode;
 import net.server.channel.handlers.UseItemHandler;
 import scheduler.Task;
 import scheduler.TaskExecutor;
+import server.events.custom.GenericEvent;
 import server.life.MapleLifeFactory;
 import server.life.MapleNPC;
 import tools.annotation.PacketWorker;

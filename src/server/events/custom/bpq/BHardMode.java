@@ -1,7 +1,6 @@
 package server.events.custom.bpq;
 
 import client.MapleCharacter;
-import server.events.custom.BossPQ;
 
 import java.awt.*;
 

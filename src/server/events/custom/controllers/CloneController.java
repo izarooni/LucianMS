@@ -1,7 +1,8 @@
-package server.events.custom;
+package server.events.custom.controllers;
 
 import client.MapleCharacter;
 import net.server.channel.handlers.UseItemHandler;
+import server.events.custom.GenericEvent;
 import server.events.pvp.PlayerBattle;
 import server.life.FakePlayer;
 import tools.MaplePacketCreator;

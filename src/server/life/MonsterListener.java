@@ -1,6 +1,6 @@
 package server.life;
 
 public interface MonsterListener {
-    
-    public void monsterKilled(int aniTime);
+
+    void monsterKilled(int aniTime);
 }

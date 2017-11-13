@@ -1,8 +1,9 @@
-package server.events.custom;
+package server.events.custom.bpq;
 
 import client.MapleCharacter;
 import net.server.channel.handlers.TakeDamageHandler;
 import scheduler.TaskExecutor;
+import server.events.custom.GenericEvent;
 import server.life.MapleLifeFactory;
 import server.life.MapleMonster;
 import server.life.MapleMonsterStats;

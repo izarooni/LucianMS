@@ -24,6 +24,8 @@ package net.server.handlers.login;
 import client.MapleClient;
 import net.MaplePacketHandler;
 import net.server.Server;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import server.Whitelist;
 import tools.MaplePacketCreator;
 import tools.data.input.SeekableLittleEndianAccessor;
@@ -32,11 +34,12 @@ import java.util.Calendar;
 
 public final class LoginPasswordHandler implements MaplePacketHandler {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(LoginPasswordHandler.class);
+
     @Override
     public boolean validateState(MapleClient c) {
         return !c.isLoggedIn();
     }
-
 
     @Override
     public final void handlePacket(SeekableLittleEndianAccessor slea, MapleClient c) {
@@ -49,7 +52,7 @@ public final class LoginPasswordHandler implements MaplePacketHandler {
 
         if (Server.getInstance().getConfig().getBoolean("WhitelistEnabled")) {
             if (!Whitelist.hasAccount(c.getAccID())) {
-                System.out.println(String.format("Attempted non-whitelist account login username: %s , accountID: %d", login, c.getAccID()));
+                LOGGER.warn("Attempted non-whitelist account login username: {} , accountID: {}", login, c.getAccID());
                 c.announce(MaplePacketCreator.getLoginFailed(5));
                 c.announce(MaplePacketCreator.serverNotice(1, "The server is unavailable for regular players at this time\r\nPlease contact an administrator if this is a mistake"));
                 return;
