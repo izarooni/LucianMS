@@ -21,9 +21,9 @@ public class MonsterPark extends GenericEvent {
 
     private final int mapId;
     private final MapleMapFactory mapFactory;
-    private boolean canContinue = false;
+    private boolean canContinue = false; // todo use portal states
     private Task timeout = null;
-    private Hashtable<Integer, Integer> returnMaps = new Hashtable<>();
+    private Hashtable<MapleCharacter, Integer> returnMaps = new Hashtable<>();
 
     public MonsterPark(int world, int channel, int mapId) {
         registerAnnotationPacketEvents(this);
@@ -33,42 +33,14 @@ public class MonsterPark extends GenericEvent {
 
     @Override
     public void registerPlayer(MapleCharacter player) {
-        returnMaps.put(player.getId(), player.getMapId());
-        player.changeMap(mapId);
-        player.addGenericEvent(this);
-        timeout = TaskExecutor.createTask(new Runnable() {
-            @Override
-            public void run() {
+        if (timeout == null) { // initialization
+            timeout = TaskExecutor.createTask(() -> returnMaps.forEach((p, m) -> unregisterPlayer(player)), 1000 * 60 * 20);
 
-            }
-        }, 1000 * 60 * 20);
-    }
+            for (int i = mapId; i < (mapId + 6); i++) {
+                MapleMap instanceMap = mapFactory.getMap(i);
+                boolean finalMap = i == (mapId + 6);
 
-    @Override
-    public void unregisterPlayer(MapleCharacter player) {
-        player.removeGenericEvent(this);
-        player.changeMap(returnMaps.remove(player.getMapId()));
-    }
-
-    @PacketWorker
-    public void onChangeMap(ChangeMapHandler event) {
-        MapleCharacter player = event.getClient().getPlayer();
-
-        int targetMap = event.getTargetMapId();
-        int stage = (mapId + 6) - targetMap;
-        boolean finalMap = targetMap == (mapId + 6);
-
-        if (targetMap > mapId && targetMap <= (mapId + 6)) {
-            if (finalMap) {
-                player.announce(MaplePacketCreator.showEffect("monsterPark/stageEff/final"));
-            } else {
-                player.announce(MaplePacketCreator.showEffect("monsterPark/stageEff/stage"));
-                player.announce(MaplePacketCreator.showEffect("monsterPark/stageEff/number/" + stage));
-            }
-            boolean loaded = mapFactory.isMapLoaded(targetMap);
-            MapleMap instanceMap = mapFactory.getMap(targetMap);
-            instanceMap.toggleDrops();
-            if (!loaded) {
+                instanceMap.toggleDrops();
                 for (MapleMonster monster : instanceMap.getMonsters()) {
                     MapleMonsterStats stats = new MapleMonsterStats();
                     stats.setExp((int) (stats.getExp() * 1.2));
@@ -85,7 +57,7 @@ public class MonsterPark extends GenericEvent {
                                     TaskExecutor.createTask(new Runnable() {
                                         @Override
                                         public void run() {
-                                            returnMaps.forEach((p, m) -> currentMap.getCharacterById(p).changeMap(m));
+                                            returnMaps.forEach((p, m) -> unregisterPlayer(player));
                                         }
                                     }, 3500);
                                 } else {
@@ -96,9 +68,42 @@ public class MonsterPark extends GenericEvent {
                     });
                 }
             }
-            player.changeMap(instanceMap);
+        }
+        returnMaps.put(player, player.getMapId());
+        player.changeMap(mapId);
+        player.addGenericEvent(this);
+    }
+
+    @Override
+    public void unregisterPlayer(MapleCharacter player) {
+        player.removeGenericEvent(this);
+        player.changeMap(returnMaps.remove(player));
+    }
+
+    @PacketWorker
+    public void onChangeMap(ChangeMapHandler event) {
+        MapleCharacter player = event.getClient().getPlayer();
+
+        if (canContinue) {
+            int targetMap = event.getTargetMapId();
+            int stage = (mapId + 6) - targetMap;
+            boolean finalMap = targetMap == (mapId + 6);
+
+            if (targetMap > mapId && targetMap <= (mapId + 6)) {
+                if (finalMap) {
+                    player.announce(MaplePacketCreator.showEffect("monsterPark/stageEff/final"));
+                } else {
+                    player.announce(MaplePacketCreator.showEffect("monsterPark/stageEff/stage"));
+                    player.announce(MaplePacketCreator.showEffect("monsterPark/stageEff/number/" + stage));
+                }
+                MapleMap instanceMap = mapFactory.getMap(targetMap);
+                player.changeMap(instanceMap);
+                canContinue = false;
+            } else {
+                unregisterPlayer(player);
+            }
         } else {
-            unregisterPlayer(player);
+            player.dropMessage("You must clear all monsters on the map before proceeding");
         }
         event.setCanceled(true);
     }
