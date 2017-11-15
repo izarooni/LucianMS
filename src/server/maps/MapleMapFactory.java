@@ -27,10 +27,7 @@ import provider.MapleDataProvider;
 import provider.MapleDataProviderFactory;
 import provider.MapleDataTool;
 import server.PortalFactory;
-import server.life.AbstractLoadedMapleLife;
-import server.life.MapleLifeFactory;
-import server.life.MapleMonster;
-import server.life.MapleNPC;
+import server.life.*;
 import tools.DatabaseConnection;
 import tools.StringUtil;
 
@@ -173,10 +170,12 @@ public class MapleMapFactory {
                             ((MapleNPC) myLife).setScript(rs.getString("script"));
                             map.addMapObject(myLife);
                         } else if (type.equals("m")) {
+                            MapleMonster monster = ((MapleMonster) myLife);
                             if (skipMonsters) {
-                                continue;
+                                map.addMonsterSpawnPoint(new SpawnPoint(monster, monster.getPosition(), !monster.isMobile(), 0, 5000, -1));
+                            } else {
+                                map.addMonsterSpawn((MapleMonster) myLife, mobTime, -1);
                             }
-                            map.addMonsterSpawn((MapleMonster) myLife, mobTime, -1);
                         }
                     }
                 } catch (SQLException e) {
@@ -203,16 +202,18 @@ public class MapleMapFactory {
                     }
                     AbstractLoadedMapleLife myLife = loadLife(life, id, type);
                     if (myLife instanceof MapleMonster) {
-                        if (skipMonsters) {
-                            continue;
-                        }
                         MapleMonster monster = (MapleMonster) myLife;
                         int mobTime = MapleDataTool.getInt("mobTime", life, 0);
                         int team = MapleDataTool.getInt("team", life, -1);
-                        if (mobTime == -1) { //does not respawn, force spawn once
+                        if (!skipMonsters && mobTime == -1) { //does not respawn, force spawn once
                             map.spawnMonster(monster);
                         } else {
-                            map.addMonsterSpawn(monster, mobTime, team);
+                            if (skipMonsters) {
+                                SpawnPoint spawnPoint = new SpawnPoint(monster, map.calcPointBelow(monster.getPosition()), !monster.isMobile(), mobTime, 5000, team);
+                                map.addMonsterSpawnPoint(spawnPoint);
+                            } else {
+                                map.addMonsterSpawn(monster, mobTime, team);
+                            }
                         }
                     } else {
                         map.addMapObject(myLife);

@@ -4,6 +4,8 @@ import client.MapleCharacter;
 import client.inventory.Item;
 import net.server.channel.handlers.ItemMoveHandler;
 import net.server.channel.handlers.ItemPickupHandler;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import scheduler.TaskExecutor;
 import server.events.custom.GenericEvent;
 import server.life.MapleLifeFactory;
@@ -25,6 +27,8 @@ import java.util.Map;
  */
 public class ShenronSummoner extends GenericEvent {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(ShenronSummoner.class);
+
     //region constants
     private static final int SummoningMap = 908;
     // platform range
@@ -44,6 +48,7 @@ public class ShenronSummoner extends GenericEvent {
     // Object to summon
     private MapleNPC npc = null;
     private boolean summoning = false;
+    private boolean wishing = false;
 
     public ShenronSummoner() {
         registerAnnotationPacketEvents(this);
@@ -81,8 +86,9 @@ public class ShenronSummoner extends GenericEvent {
                 if (position.x >= min_x && position.x <= max_x && position.y == pos_y) { // ball is dropped within set boundaries
                     if (balls.size() == 6) { // all balls have been dropped
                         event.getClient().getWorldServer().broadcastPacket(MaplePacketCreator.serverNotice(6, player.getName() + " summoned the eternal Shenron! Let's hope they choose wisely"));
-                        System.out.println(String.format("%s summoned Shenron on %s", player.getName(), Calendar.getInstance().getTime().toString()));
+                        LOGGER.info("[] summoned Shenron on {}", player.getName(), Calendar.getInstance().getTime().toString());
                         summoning = true;
+                        wishing = true;
 
                         // create & position the npc & monster
                         MapleMonster monster = createMonster();
@@ -111,9 +117,10 @@ public class ShenronSummoner extends GenericEvent {
                         TaskExecutor.createTask(new Runnable() {
                             @Override
                             public void run() {
+                                wishing = false;
                                 if (player.getMapId() == SummoningMap) {
-                                    System.out.println(String.format("%s timed-out Shenron on %s", player.getName(), Calendar.getInstance().getTime().toString()));
-                                    map.removeMapObject(npc); // remove from map to disable speaking via packet editing
+                                    LOGGER.info("Shenron timeout with {} on {}", player.getName(), Calendar.getInstance().getTime().toString());
+                                    map.removeMapObject(npc);
                                 }
                                 player.announce(MaplePacketCreator.removeNPC(npc.getObjectId())); // remove NPC
                             }
@@ -169,5 +176,18 @@ public class ShenronSummoner extends GenericEvent {
             monster.setRx1(createNpc().getPosition().y);
         }
         return monster;
+    }
+
+    public boolean isWishing() {
+        return wishing;
+    }
+
+    public void setWishing(boolean wishing) {
+        this.wishing = wishing;
+    }
+
+    public void wish(MapleCharacter player) {
+        npc.sendDestroyData(player.getClient());
+        player.getMap().removeMapObject(npc.getObjectId());
     }
 }

@@ -6,9 +6,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import scheduler.Task;
 import scheduler.TaskExecutor;
-import server.life.MapleMonster;
-import server.life.MapleMonsterStats;
-import server.life.MonsterListener;
+import server.life.*;
 import server.maps.MapleMap;
 import server.maps.MapleMapFactory;
 import tools.MaplePacketCreator;
@@ -22,10 +20,11 @@ import java.util.Hashtable;
 public class MonsterPark extends GenericEvent {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MonsterPark.class);
-    private static final int Stages = 1;
+    private static final int Stages = 6;
 
     private final int mapId;
     private final MapleMapFactory mapFactory;
+    private long timestampStart = 0;
     private boolean canContinue = false; // todo use portal states
     private Task timeout = null;
     private Hashtable<MapleCharacter, Integer> returnMaps = new Hashtable<>();
@@ -34,55 +33,63 @@ public class MonsterPark extends GenericEvent {
         registerAnnotationPacketEvents(this);
         this.mapId = mapId;
         this.mapFactory = new MapleMapFactory(world, channel);
+
+        for (int i = mapId; i < (mapId + Stages); i++) {
+            MapleMap instanceMap = mapFactory.skipMonsters(true).getMap(i);
+            if (instanceMap != null) {
+                LOGGER.info("{} loaded with {} monsters", mapId, instanceMap.getMonsters().size());
+                boolean finalMap = i == (mapId + Stages);
+
+                for (SpawnPoint spawnPoint : instanceMap.getMonsterSpawnPoints()) {
+                    MapleMonster monster = MapleLifeFactory.getMonster(spawnPoint.getMonster().getId());
+                    if (monster != null) {
+                        MapleMonsterStats stats = new MapleMonsterStats();
+                        stats.setHp(monster.getHp());
+                        stats.setMp(monster.getMp());
+                        stats.setExp((int) (stats.getExp() * 1.25));
+                        monster.setOverrideStats(stats);
+                        monster.addListener(new MonsterListener() {
+                            @Override
+                            public void monsterKilled(int aniTime) {
+                                MapleMap currentMap = monster.getMap();
+                                if (currentMap.getMonsters().isEmpty()) {
+                                    canContinue = true;
+                                    if (finalMap) {
+                                        timeout.cancel();
+                                        currentMap.broadcastMessage(MaplePacketCreator.showEffect("monsterPark/clearF"));
+                                        TaskExecutor.createTask(new Runnable() {
+                                            @Override
+                                            public void run() {
+                                                for (int i = mapId; i < (mapId + Stages); i++) {
+                                                    MapleMap instanceMap = mapFactory.getMap(i);
+                                                    instanceMap.getAllPlayer().forEach(MonsterPark.this::unregisterPlayer);
+                                                }
+                                            }
+                                        }, 3500);
+                                    } else {
+                                        currentMap.broadcastMessage(MaplePacketCreator.showEffect("monsterPark/clear"));
+                                    }
+                                }
+                            }
+                        });
+                    }
+                    instanceMap.spawnMonsterOnGroudBelow(monster, spawnPoint.getPosition());
+                }
+            } else {
+                LOGGER.warn("Invalid map {}", i);
+            }
+        }
     }
 
     @Override
     public void registerPlayer(MapleCharacter player) {
         if (timeout == null) { // initialization
             timeout = TaskExecutor.createTask(() -> returnMaps.forEach((p, m) -> unregisterPlayer(player)), 1000 * 60 * 20);
-
-            for (int i = mapId; i < (mapId + Stages); i++) {
-                MapleMap instanceMap = mapFactory.getMap(i);
-                if (instanceMap != null) {
-                    boolean finalMap = i == (mapId + Stages);
-                    instanceMap.killAllMonsters();
-                    instanceMap.respawn(); // why ;w;
-                    instanceMap.toggleDrops();
-                    for (MapleMonster monster : instanceMap.getMonsters()) {
-                        MapleMonsterStats stats = new MapleMonsterStats();
-                        stats.setExp((int) (stats.getExp() * 1.2));
-                        monster.setOverrideStats(stats);
-                        monster.addListener(new MonsterListener() {
-                            @Override
-                            public void monsterKilled(int aniTime) {
-                                MapleMap currentMap = player.getMap();
-                                if (currentMap.getMonsters().isEmpty()) {
-                                    canContinue = true;
-                                    if (finalMap) {
-                                        timeout.cancel();
-                                        player.announce(MaplePacketCreator.showEffect("monsterPark/clearF"));
-                                        TaskExecutor.createTask(new Runnable() {
-                                            @Override
-                                            public void run() {
-                                                returnMaps.forEach((p, m) -> unregisterPlayer(player));
-                                            }
-                                        }, 3500);
-                                    } else {
-                                        player.announce(MaplePacketCreator.showEffect("monsterPark/clear"));
-                                    }
-                                }
-                            }
-                        });
-                    }
-                } else {
-                    LOGGER.warn("Invalid map for Monster Park: {}", i);
-                }
-            }
+            timestampStart = System.currentTimeMillis();
         }
-        MapleMap instanceMap = mapFactory.getMap(mapId);
         returnMaps.put(player, player.getMapId());
-        player.changeMap(instanceMap);
-        instanceMap.respawn();
+        player.changeMap(mapFactory.getMap(mapId));
+        player.announce(MaplePacketCreator.getClock((int) ((timestampStart + (60 * 20)) - System.currentTimeMillis())));
         player.addGenericEvent(this);
     }
 
@@ -110,6 +117,7 @@ public class MonsterPark extends GenericEvent {
                 }
                 MapleMap instanceMap = mapFactory.getMap(targetMap);
                 player.changeMap(instanceMap);
+                player.announce(MaplePacketCreator.getClock((int) ((timestampStart + (60 * 20)) - System.currentTimeMillis())));
                 canContinue = false;
             } else {
                 unregisterPlayer(player);

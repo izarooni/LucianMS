@@ -330,7 +330,7 @@ public class MapleMap {
         removeMapObject(obj.getObjectId());
     }
 
-    private Point calcPointBelow(Point initial) {
+    Point calcPointBelow(Point initial) {
         MapleFoothold fh = footholds.findBelow(initial);
         if (fh == null) {
             return null;
@@ -726,7 +726,7 @@ public class MapleMap {
         int buff = monster.getBuffToGive();
         if (buff > -1) {
             MapleItemInformationProvider mii = MapleItemInformationProvider.getInstance();
-            for (MapleMapObject mmo : this.getAllPlayer()) {
+            for (MapleMapObject mmo : getAllPlayer()) {
                 MapleCharacter character = (MapleCharacter) mmo;
                 if (character.isAlive()) {
                     MapleStatEffect statEffect = mii.getItemEffect(buff);
@@ -804,14 +804,14 @@ public class MapleMap {
     }
 
     public void killFriendlies(MapleMonster mob) {
-        this.killMonster(mob, (MapleCharacter) getAllPlayer().get(0), false);
+        this.killMonster(mob, getAllPlayer().get(0), false);
     }
 
     public void killMonster(int monsId) {
         for (MapleMapObject mmo : getMapObjects()) {
             if (mmo instanceof MapleMonster) {
                 if (((MapleMonster) mmo).getId() == monsId) {
-                    this.killMonster((MapleMonster) mmo, (MapleCharacter) getAllPlayer().get(0), false);
+                    this.killMonster((MapleMonster) mmo, getAllPlayer().get(0), false);
                 }
             }
         }
@@ -859,8 +859,8 @@ public class MapleMap {
         }
     }
 
-    public List<MapleMapObject> getAllPlayer() {
-        return getMapObjectsInRange(new Point(0, 0), Double.POSITIVE_INFINITY, Collections.singletonList(MapleMapObjectType.PLAYER));
+    public List<MapleCharacter> getAllPlayer() {
+        return getMapObjects().stream().filter(o -> o instanceof MapleCharacter).map(o -> (MapleCharacter) o).collect(Collectors.toList());
     }
 
     public void destroyReactor(int oid) {
@@ -1126,7 +1126,7 @@ public class MapleMap {
 
     public void spawnMonster(final MapleMonster monster) {
         if (mobCapacity != -1 && mobCapacity == spawnedMonstersOnMap.get()) {
-            return;// PyPQ
+            return;
         }
         monster.setMap(this);
         if (!monster.getMap().getAllPlayer().isEmpty()) {
@@ -1884,6 +1884,14 @@ public class MapleMap {
                 LOGGER.info("SpawnPoint unable to summon monster {} in map {}: null", monster.getId(), getId());
             }
         }
+    }
+
+    public void addMonsterSpawnPoint(SpawnPoint spawnPoint) {
+        monsterSpawn.add(spawnPoint);
+    }
+
+    public Collection<SpawnPoint> getMonsterSpawnPoints() {
+        return Collections.unmodifiableCollection(monsterSpawn);
     }
 
     public Collection<MapleCharacter> getCharacters() {

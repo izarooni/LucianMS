@@ -1651,7 +1651,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
             map.removeFakePlayer(getFakePlayer());
         }
         client.announce(warpPacket);
-        map.removePlayer(MapleCharacter.this);
+        map.removePlayer(this);
         if (client.getChannelServer().getPlayerStorage().getCharacterById(getId()) != null) {
             map = to;
             setPosition(pos);
