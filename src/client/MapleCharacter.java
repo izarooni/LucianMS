@@ -1660,7 +1660,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
                 getFakePlayer().setPosition(pos.getLocation());
                 map.addFakePlayer(getFakePlayer());
             }
-            map.addPlayer(MapleCharacter.this);
+            map.addPlayer(this);
             if (party != null) {
                 mpc.setMapId(to.getId());
                 silentPartyUpdate();

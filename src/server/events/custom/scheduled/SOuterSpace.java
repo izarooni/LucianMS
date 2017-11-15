@@ -77,7 +77,8 @@ public class SOuterSpace extends SAutoEvent {
         for (Channel channel : world.getChannels()) {
             MapleMap eventMap = channel.getMapFactory().getMap(MapId);
             eventMap.killAllMonsters();
-            int[] ipos = PortalPositions[Randomizer.nextInt(PortalPositions.length)];
+            final int PPIndex = Randomizer.nextInt(PortalPositions.length);
+            int[] ipos = PortalPositions[PPIndex];
             Point pos = new Point(ipos[0], ipos[1]);
             MapleMonster monster = MapleLifeFactory.getMonster(MonsterId);
             if (monster != null) {
@@ -100,7 +101,7 @@ public class SOuterSpace extends SAutoEvent {
                 });
                 eventMap.spawnMonsterOnGroudBelow(monster, pos);
                 channel.broadcastPacket(MaplePacketCreator.serverNotice(0, "The Space Slime has spawned in the Outer Space, Planet Lucian"));
-                LOGGER.info("The Space slime spawned successfully");
+                LOGGER.info("The Space slime spawned successfully at position index {}", PPIndex);
             } else {
                 System.err.println("Scheduled event 'Outer Space' was unable to spawn the monster " + MonsterId);
             }

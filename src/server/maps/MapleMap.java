@@ -69,6 +69,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock.ReadLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock.WriteLock;
+import java.util.stream.Collectors;
 
 public class MapleMap {
 
@@ -667,11 +668,8 @@ public class MapleMap {
     }
 
     public List<MapleMonster> getMonsters() {
-        List<MapleMonster> mobs = new ArrayList<>();
-        for (MapleMapObject object : this.getMapObjects()) {
-            mobs.add(this.getMonsterByOid(object.getObjectId()));
-        }
-        return mobs;
+        return getMapObjects().stream().filter(o -> (o instanceof MapleMonster)).map(o -> (MapleMonster) o).collect(Collectors.toList());
+
     }
 
     public void killMonster(final MapleMonster monster, final MapleCharacter chr, final boolean withDrops) {
@@ -1431,7 +1429,10 @@ public class MapleMap {
         }
         if (mapid == 923010000 && getMonsterById(9300102) == null) { // Kenta's Mount quest
             spawnMonsterOnGroundBelow(MapleLifeFactory.getMonster(9300102), new Point(77, 426));
-        } else if (mapid == 910010200) { // Henesys Party Quest Bonus
+        }
+
+        //region map timeouts
+        if (mapid == 910010200) { // Henesys Party Quest Bonus
             chr.announce(MaplePacketCreator.getClock(60 * 5));
             TaskExecutor.createTask(new Runnable() {
 
@@ -1508,7 +1509,10 @@ public class MapleMap {
                     }
                 }
             }, 60 * 1000);
-        } else if (mapid == 103040400) {
+        }
+        //endregion
+
+        if (mapid == 103040400) {
             if (chr.getEventInstance() != null) {
                 chr.getEventInstance().movePlayer(chr);
             }

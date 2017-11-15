@@ -117,7 +117,6 @@ public final class PacketProcessor {
             registerHandler(RecvOpcode.MESO_DROP, new MesoDropHandler());
             registerHandler(RecvOpcode.PLAYER_LOGGEDIN, new PlayerLoggedinHandler());
             registerHandler(RecvOpcode.USE_CASH_ITEM, new UseCashItemHandler());
-            registerHandler(RecvOpcode.USE_UPGRADE_SCROLL, new ScrollHandler());
             registerHandler(RecvOpcode.USE_SUMMON_BAG, new UseSummonBag());
             registerHandler(RecvOpcode.FACE_EXPRESSION, new FaceExpressionHandler());
             registerHandler(RecvOpcode.HEAL_OVER_TIME, new HealOvertimeHandler());

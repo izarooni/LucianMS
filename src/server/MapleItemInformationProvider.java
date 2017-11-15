@@ -427,9 +427,12 @@ public class MapleItemInformationProvider {
         List<Integer> ret = new ArrayList<>();
         MapleData data = getItemData(itemId);
         if (data == null) {
-            return ret;
+            return null;
         }
         data = data.getChildByPath("req");
+        if (data == null) {
+            return null;
+        }
         for (MapleData req : data.getChildren()) {
             ret.add(MapleDataTool.getInt(req));
         }
@@ -581,7 +584,7 @@ public class MapleItemInformationProvider {
                     nEquip.setLevel((byte) (nEquip.getLevel() + 1));
                 }
             } else {
-                if (!usingWhiteScroll && !isCleanSlate(scrollId) && !isGM) {
+                if (!usingWhiteScroll && !isCleanSlate(scrollId)) {
                     nEquip.setUpgradeSlots((byte) (nEquip.getUpgradeSlots() - 1));
                 }
                 if (Randomizer.nextInt(101) < stats.get("cursed")) {

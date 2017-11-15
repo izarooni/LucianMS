@@ -53,6 +53,7 @@ public final class PacketManager {
 
         handlers.set(RecvOpcode.USE_ITEM.getValue(), UseItemHandler.class);
         handlers.set(RecvOpcode.USE_RETURN_SCROLL.getValue(), UseItemHandler.class);
+        handlers.set(RecvOpcode.USE_UPGRADE_SCROLL.getValue(), ScrollHandler.class);
 
         handlers.set(RecvOpcode.CHAR_INFO_REQUEST.getValue(), ViewCharacterInfoHandler.class);
 

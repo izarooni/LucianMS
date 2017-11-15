@@ -1,135 +1,125 @@
-/*
- This file is part of the OdinMS Maple Story Server
- Copyright (C) 2008 Patrick Huy <patrick.huy@frz.cc>
- Matthias Butz <matze@odinms.de>
- Jan Christian Meyer <vimes@odinms.de>
-
- This program is free software: you can redistribute it and/or modify
- it under the terms of the GNU Affero General Public License as
- published by the Free Software Foundation version 3 as published by
- the Free Software Foundation. You may not use, modify or distribute
- this program under any other version of the GNU Affero General Public
- License.
-
- This program is distributed in the hope that it will be useful,
- but WITHOUT ANY WARRANTY; without even the implied warranty of
- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- GNU Affero General Public License for more details.
-
- You should have received a copy of the GNU Affero General Public License
- along with this program.  If not, see <http://www.gnu.org/licenses/>.
- */
 package net.server.channel.handlers;
 
-import client.MapleClient;
-import client.Skill;
+import client.MapleCharacter;
 import client.SkillFactory;
-import client.inventory.Equip;
+import client.inventory.*;
 import client.inventory.Equip.ScrollResult;
-import client.inventory.Item;
-import client.inventory.MapleInventory;
-import client.inventory.MapleInventoryType;
-import client.inventory.ModifyInventory;
-import java.util.ArrayList;
-import java.util.List;
-import net.AbstractMaplePacketHandler;
+import net.PacketHandler;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import server.MapleInventoryManipulator;
 import server.MapleItemInformationProvider;
 import tools.MaplePacketCreator;
 import tools.data.input.SeekableLittleEndianAccessor;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
+ * @author izarooni
  * @author Matze
  * @author Frz
  */
-public final class ScrollHandler extends AbstractMaplePacketHandler {
+public final class ScrollHandler extends PacketHandler {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(ScrollHandler.class);
+
+    private short slot;
+    private short destination;
+    private boolean whiteScroll;
+    private boolean legendarySpirit;
 
     @Override
-    public final void handlePacket(SeekableLittleEndianAccessor slea, MapleClient c) {
-        slea.readInt(); // whatever...
-        short slot = slea.readShort();
-        short dst = slea.readShort();
-        byte ws = (byte) slea.readShort();
-        boolean whiteScroll = false; // white scroll being used?
-        boolean legendarySpirit = false; // legendary spirit skill
-        if ((ws & 2) == 2) {
-            whiteScroll = true;
-        }
+    public void exceptionCaught(Throwable t) {
+        MapleCharacter player = getClient().getPlayer();
+        Item scroll = player.getInventory(MapleInventoryType.USE).getItem(slot);
+        Item equip = player.getInventory(destination < 0 ? MapleInventoryType.EQUIP : MapleInventoryType.EQUIPPED).getItem(destination);
+        LOGGER.warn("Unable to use scroll {} on item {}",
+                (scroll == null ? null : scroll.getItemId()),
+                (equip == null ? null : equip.getItemId()), t);
+    }
+
+    @Override
+    public void process(SeekableLittleEndianAccessor slea) {
+        MapleCharacter player = getClient().getPlayer();
+        slea.skip(4);
+        slot = slea.readShort();
+        destination = slea.readShort();
+        whiteScroll = (byte) (slea.readShort() & 2) == 2;
+        legendarySpirit = player.getSkillLevel(SkillFactory.getSkill(1003)) > 0 && destination >= 0;
+    }
+
+    @Override
+    public Object onPacket() {
+        MapleCharacter player = getClient().getPlayer();
         MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
-        Equip toScroll = (Equip) c.getPlayer().getInventory(MapleInventoryType.EQUIPPED).getItem(dst);
-        Skill LegendarySpirit = SkillFactory.getSkill(1003);
-        if (c.getPlayer().getSkillLevel(LegendarySpirit) > 0 && dst >= 0) {
-            legendarySpirit = true;
-            toScroll = (Equip) c.getPlayer().getInventory(MapleInventoryType.EQUIP).getItem(dst);
-        }
+
+        Equip toScroll = (Equip) player.getInventory(legendarySpirit ? MapleInventoryType.EQUIP : MapleInventoryType.EQUIPPED).getItem(destination);
         byte oldLevel = toScroll.getLevel();
         byte oldSlots = toScroll.getUpgradeSlots();
-        MapleInventory useInventory = c.getPlayer().getInventory(MapleInventoryType.USE);
+
+        MapleInventory useInventory = player.getInventory(MapleInventoryType.USE);
         Item scroll = useInventory.getItem(slot);
-        Item wscroll = null;
-        if (((Equip) toScroll).getUpgradeSlots() < 1 && !isCleanSlate(scroll.getItemId())) {
-            c.announce(MaplePacketCreator.getInventoryFull());
-            return;
+        if (toScroll.getUpgradeSlots() < 1 && !isCleanSlate(scroll.getItemId())) {
+            player.announce(MaplePacketCreator.getInventoryFull());
+            return null;
         }
+
         List<Integer> scrollReqs = ii.getScrollReqs(scroll.getItemId());
-        if (scrollReqs.size() > 0 && !scrollReqs.contains(toScroll.getItemId())) {
-            c.announce(MaplePacketCreator.getInventoryFull());
-            return;
-        }
-        if (whiteScroll) {
-            wscroll = useInventory.findById(2340000);
-            if (wscroll == null || wscroll.getItemId() != 2340000) {
-                whiteScroll = false;
+        if (scrollReqs != null) {
+            if (scrollReqs.size() > 0 && !scrollReqs.contains(toScroll.getItemId())) {
+                player.announce(MaplePacketCreator.getInventoryFull());
+                return null;
             }
         }
         if (!isChaosScroll(scroll.getItemId()) && !isCleanSlate(scroll.getItemId())) {
             if (!canScroll(scroll.getItemId(), toScroll.getItemId())) {
-                return;
+                return null;
             }
         }
-        
-        if (isCleanSlate(scroll.getItemId()) && !(toScroll.getLevel() + toScroll.getUpgradeSlots() < ii.getEquipStats(toScroll.getItemId()).get("tuc"))) { //upgrade slots can be over because of hammers
-            return;
+
+        if (isCleanSlate(scroll.getItemId()) && !(toScroll.getLevel() + toScroll.getUpgradeSlots() < ii.getEquipStats(toScroll.getItemId()).get("tuc"))) {
+            // upgrade slots can be over because of hammers
+            return null;
         }
-        Equip scrolled = (Equip) ii.scrollEquipWithId(toScroll, scroll.getItemId(), whiteScroll, c.getPlayer().isGM());
-        ScrollResult scrollSuccess = Equip.ScrollResult.FAIL; // fail
-        if (scrolled == null) {
-            scrollSuccess = Equip.ScrollResult.CURSE;
-        } else if (scrolled.getLevel() > oldLevel || (isCleanSlate(scroll.getItemId()) && scrolled.getUpgradeSlots() == oldSlots + 1)) {
-            scrollSuccess = Equip.ScrollResult.SUCCESS;
+
+        Item WSItem = player.getInventory(MapleInventoryType.USE).findById(2340000);
+
+        Equip scrolled = (Equip) ii.scrollEquipWithId(toScroll, scroll.getItemId(), whiteScroll, player.isGM());
+        ScrollResult scrollResult = (scrolled == null) ? ScrollResult.CURSE : Equip.ScrollResult.FAIL;
+        if (scrolled != null && (scrolled.getLevel() > oldLevel || (isCleanSlate(scroll.getItemId()) && scrolled.getUpgradeSlots() == oldSlots + 1))) {
+            scrollResult = Equip.ScrollResult.SUCCESS;
         }
-        MapleInventoryManipulator.removeFromSlot(c, MapleInventoryType.USE, scroll.getPosition(), (short) 1, false);
+        MapleInventoryManipulator.removeFromSlot(getClient(), MapleInventoryType.USE, scroll.getPosition(), (short) 1, false);
         if (whiteScroll && !isCleanSlate(scroll.getItemId())) {
-            MapleInventoryManipulator.removeFromSlot(c, MapleInventoryType.USE, wscroll.getPosition(), (short) 1, false, false);
+            MapleInventoryManipulator.removeFromSlot(getClient(), MapleInventoryType.USE, WSItem.getPosition(), (short) 1, false, false);
         }
+
         final List<ModifyInventory> mods = new ArrayList<>();
-        if (scrollSuccess == Equip.ScrollResult.CURSE) {
+        if (scrollResult == Equip.ScrollResult.CURSE) {
             mods.add(new ModifyInventory(3, toScroll));
-            if (dst < 0) {
-                c.getPlayer().getInventory(MapleInventoryType.EQUIPPED).removeItem(toScroll.getPosition());
-            } else {
-                c.getPlayer().getInventory(MapleInventoryType.EQUIP).removeItem(toScroll.getPosition());
-            }
+            player.getInventory(destination < 0 ? MapleInventoryType.EQUIPPED : MapleInventoryType.EQUIP).removeItem(toScroll.getPosition());
         } else {
             mods.add(new ModifyInventory(3, scrolled));
             mods.add(new ModifyInventory(0, scrolled));
         }
-        c.announce(MaplePacketCreator.modifyInventory(true, mods));
-        c.getPlayer().getMap().broadcastMessage(MaplePacketCreator.getScrollEffect(c.getPlayer().getId(), scrollSuccess, legendarySpirit));
-        if (dst < 0 && (scrollSuccess == Equip.ScrollResult.SUCCESS || scrollSuccess == Equip.ScrollResult.CURSE)) {
-            c.getPlayer().equipChanged();
+        player.announce(MaplePacketCreator.modifyInventory(true, mods));
+        player.getMap().broadcastMessage(MaplePacketCreator.getScrollEffect(player.getId(), scrollResult, legendarySpirit));
+        if (destination < 0 && (scrollResult == Equip.ScrollResult.SUCCESS || scrollResult == Equip.ScrollResult.CURSE)) {
+            player.equipChanged();
         }
+        return null;
     }
 
-    private boolean isCleanSlate(int scrollId) {
+    private static boolean isCleanSlate(int scrollId) {
         return scrollId > 2048999 && scrollId < 2049004;
     }
-    
-    private boolean isChaosScroll(int scrollId) {
-    	return scrollId >= 2049100 && scrollId <= 2049103;
+
+    private static boolean isChaosScroll(int scrollId) {
+        return scrollId >= 2049100 && scrollId <= 2049103;
     }
-    
-    public boolean canScroll(int scrollid, int itemid) {
-        return (scrollid / 100) % 100 == (itemid / 10000) % 100;
+
+    private static boolean canScroll(int scrollId, int itemId) {
+        return (scrollId / 100) % 100 == (itemId / 10000) % 100;
     }
 }

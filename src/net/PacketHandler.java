@@ -32,8 +32,12 @@ public abstract class PacketHandler {
         this.canceled = canceled;
     }
 
-    public boolean inValidState() {
+    boolean inValidState() {
         return client.isLoggedIn();
+    }
+
+    public void exceptionCaught(Throwable t) {
+        t.printStackTrace();
     }
 
     public abstract void process(SeekableLittleEndianAccessor slea);

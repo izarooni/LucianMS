@@ -30,7 +30,6 @@ import org.apache.mina.core.session.IdleStatus;
 import org.apache.mina.core.session.IoSession;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import server.events.custom.GenericEvent;
 import tools.FilePrinter;
 import tools.MapleAESOFB;
 import tools.MapleLogger;
@@ -40,10 +39,7 @@ import tools.data.input.GenericSeekableLittleEndianAccessor;
 import tools.data.input.SeekableLittleEndianAccessor;
 
 import java.io.IOException;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.List;
 import java.util.Random;
 
 public class MapleServerHandler extends IoHandlerAdapter {
@@ -163,18 +159,13 @@ public class MapleServerHandler extends IoHandlerAdapter {
                         handler.setClient(client);
                         if (handler.inValidState()) {
                             handler.process(slea);
-
-                            // avoid possible concurrent modifications
-                            List<GenericEvent> events = new ArrayList<>();
                             try {
-                                events.addAll(player.getGenericEvents());
-                                events.forEach(e -> e.onPacketEvent(handler));
-                            } finally {
-                                events.clear();
-                            }
-
-                            if (!handler.isCanceled()) {
-                                handler.onPacket();
+                                player.getGenericEvents().forEach(e -> e.onPacketEvent(handler));
+                                if (!handler.isCanceled()) {
+                                    handler.onPacket();
+                                }
+                            } catch (Throwable t) {
+                                handler.exceptionCaught(t);
                             }
                         }
                     } catch (InstantiationException | IllegalAccessException e) {
