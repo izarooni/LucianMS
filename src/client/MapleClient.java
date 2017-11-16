@@ -58,6 +58,7 @@ import java.sql.SQLException;
 import java.util.*;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
+import java.util.stream.Collectors;
 
 public class MapleClient {
 
@@ -195,9 +196,7 @@ public class MapleClient {
     }
 
     public List<String> loadCharacterNames(int serverId) {
-        List<String> ret = new ArrayList<>();
-        loadCharactersInternal(serverId).forEach(p -> ret.add(p.getRight()));
-        return ret;
+        return loadCharactersInternal(serverId).stream().map(Pair::getRight).collect(Collectors.toList());
     }
 
     private List<Pair<Integer, String>> loadCharactersInternal(int serverId) {
@@ -233,7 +232,7 @@ public class MapleClient {
                     }
                 }
             }
-        } catch (SQLException e) {
+        } catch (SQLException ignored) {
         }
         return ret;
     }
@@ -418,7 +417,7 @@ public class MapleClient {
                 ps.setInt(2, accId);
                 ps.executeUpdate();
             }
-        } catch (SQLException e) {
+        } catch (SQLException ignored) {
         }
     }
 
@@ -446,7 +445,7 @@ public class MapleClient {
                 ps.setInt(2, accId);
                 ps.executeUpdate();
             }
-        } catch (SQLException e) {
+        } catch (SQLException ignored) {
         }
     }
 
@@ -519,7 +518,7 @@ public class MapleClient {
                 if (rs != null && !rs.isClosed()) {
                     rs.close();
                 }
-            } catch (SQLException e) {
+            } catch (SQLException ignored) {
             }
         }
         if (loginok == 0) {
@@ -546,7 +545,7 @@ public class MapleClient {
             }
             lTempban.setTimeInMillis(rs.getTimestamp("tempban").getTime());
             return lTempban;
-        } catch (SQLException e) {
+        } catch (SQLException ignored) {
         } finally {
             try {
                 if (ps != null) {
@@ -555,7 +554,7 @@ public class MapleClient {
                 if (rs != null) {
                     rs.close();
                 }
-            } catch (SQLException e) {
+            } catch (SQLException ignored) {
             }
         }
         return null;//why oh why!?!
@@ -589,7 +588,7 @@ public class MapleClient {
                     if (ps != null && !ps.isClosed()) {
                         ps.close();
                     }
-                } catch (SQLException e) {
+                } catch (SQLException ignored) {
                 }
             }
         } else {
@@ -622,7 +621,7 @@ public class MapleClient {
                 if (ps != null && !ps.isClosed()) {
                     ps.close();
                 }
-            } catch (SQLException ex) {
+            } catch (SQLException ignored) {
             }
         }
     }
@@ -984,7 +983,7 @@ public class MapleClient {
                             getSession().closeNow();
                         }
                     }
-                } catch (NullPointerException e) {
+                } catch (NullPointerException ignored) {
                 }
             }
         }, 30000);
@@ -1051,7 +1050,7 @@ public class MapleClient {
             ps.setInt(1, accId);
             ps.executeUpdate();
             ps.close();
-        } catch (SQLException e) {
+        } catch (SQLException ignored) {
         }
         return disconnectForBeingAFaggot;
     }
@@ -1069,7 +1068,7 @@ public class MapleClient {
             ps.close();
             rs.close();
 
-        } catch (SQLException e) {
+        } catch (SQLException ignored) {
         }
         votePoints = points;
         return votePoints;
@@ -1125,7 +1124,7 @@ public class MapleClient {
                     ps.setInt(2, accId);
                     ps.executeUpdate();
                 }
-            } catch (SQLException e) {
+            } catch (SQLException ignored) {
             }
             return true;
         }
@@ -1153,7 +1152,7 @@ public class MapleClient {
                 if (rs != null) {
                     rs.close();
                 }
-            } catch (SQLException e) {
+            } catch (SQLException ignored) {
             }
         }
         return 0;
@@ -1171,7 +1170,7 @@ public class MapleClient {
                 ps.setInt(2, accId);
                 ps.executeUpdate();
             }
-        } catch (SQLException e) {
+        } catch (SQLException ignored) {
         }
     }
 
@@ -1246,7 +1245,7 @@ public class MapleClient {
             ps.close();
             rs.close();
 
-        } catch (SQLException e) {
+        } catch (SQLException ignored) {
         }
         donationPoints = points;
         return donationPoints;

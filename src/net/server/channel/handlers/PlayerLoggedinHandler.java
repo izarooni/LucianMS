@@ -34,6 +34,8 @@ import net.server.guild.MapleGuild;
 import net.server.world.MaplePartyCharacter;
 import net.server.world.PartyOperation;
 import net.server.world.World;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import tools.DatabaseConnection;
 import tools.MaplePacketCreator;
 import tools.data.input.SeekableLittleEndianAccessor;
@@ -45,6 +47,8 @@ import java.sql.SQLException;
 import java.util.List;
 
 public final class PlayerLoggedinHandler extends AbstractMaplePacketHandler {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(PlayerLoggedinHandler.class);
 
     @Override
     public final boolean validateState(MapleClient c) {
@@ -94,6 +98,8 @@ public final class PlayerLoggedinHandler extends AbstractMaplePacketHandler {
             return;
         }
         c.updateLoginState(MapleClient.LOGIN_LOGGEDIN);
+
+        LOGGER.info("Player {} logged-in", MapleCharacter.getNameById(cid));
 
         cserv.addPlayer(player);
         List<PlayerBuffValueHolder> buffs = server.getPlayerBuffStorage().getBuffsFromStorage(cid);
