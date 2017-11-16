@@ -21,6 +21,7 @@ public class MonsterPark extends GenericEvent {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MonsterPark.class);
     private static final int Stages = 6;
+    private static final int Increments = 100;
 
     private final int mapId;
     private final MapleMapFactory mapFactory;
@@ -34,7 +35,7 @@ public class MonsterPark extends GenericEvent {
         this.mapId = mapId;
         this.mapFactory = new MapleMapFactory(world, channel);
 
-        for (int i = mapId; i < (mapId + Stages); i++) {
+        for (int i = mapId; i < (mapId + (Stages * Increments)); i += Increments) {
             MapleMap instanceMap = mapFactory.skipMonsters(true).getMap(i);
             if (instanceMap != null) {
                 LOGGER.info("{} loaded with {} monsters", mapId, instanceMap.getMonsters().size());
