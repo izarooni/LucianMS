@@ -127,7 +127,6 @@ public final class PacketProcessor {
             registerHandler(RecvOpcode.DISTRIBUTE_AP, new DistributeAPHandler());
             registerHandler(RecvOpcode.DISTRIBUTE_SP, new DistributeSPHandler());
             registerHandler(RecvOpcode.CHANGE_KEYMAP, new KeymapChangeHandler());
-            registerHandler(RecvOpcode.CHANGE_MAP_SPECIAL, new ChangeMapSpecialHandler());
             registerHandler(RecvOpcode.STORAGE, new StorageHandler());
             registerHandler(RecvOpcode.GIVE_FAME, new GiveFameHandler());
             registerHandler(RecvOpcode.PARTY_OPERATION, new PartyOperationHandler());

@@ -21,11 +21,17 @@
 */
 package provider;
 
-import java.awt.Point;
-import java.awt.image.BufferedImage;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import provider.wz.MapleDataType;
 
+import java.awt.*;
+import java.awt.image.BufferedImage;
+
 public class MapleDataTool {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(MapleDataTool.class);
+
     public static String getString(MapleData data) {
         return ((String) data.getData());
     }
@@ -43,22 +49,27 @@ public class MapleDataTool {
     }
 
     public static String getString(String path, MapleData data, String def) {
-        return getString(data.getChildByPath(path), def);
+        try {
+            return getString(data.getChildByPath(path), def);
+        } catch (NullPointerException e) {
+            LOGGER.warn("Unable to obtain value from data path {}", path, e);
+            return def;
+        }
     }
 
     public static double getDouble(MapleData data) {
-        return ((Double) data.getData()).doubleValue();
+        return (Double) data.getData();
     }
 
     public static float getFloat(MapleData data) {
-        return ((Float) data.getData()).floatValue();
+        return (Float) data.getData();
     }
 
     public static int getInt(MapleData data) {
         if (data == null || data.getData() == null) {
             return 0;// DEF?
         }
-        return ((Integer) data.getData()).intValue();
+        return (Integer) data.getData();
     }
 
     public static int getInt(String path, MapleData data) {
@@ -84,11 +95,11 @@ public class MapleDataTool {
 
     public static int getInt(MapleData data, int def) {
         if (data == null || data.getData() == null) {
-            return  def;
+            return def;
         } else if (data.getType() == MapleDataType.STRING) {
             return Integer.parseInt(getString(data));
         } else {
-            return ((Integer) data.getData()).intValue();
+            return (Integer) data.getData();
         }
     }
 

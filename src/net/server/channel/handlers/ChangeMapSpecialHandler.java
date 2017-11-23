@@ -1,50 +1,48 @@
-/*
-	This file is part of the OdinMS Maple Story Server
-    Copyright (C) 2008 Patrick Huy <patrick.huy@frz.cc>
-		       Matthias Butz <matze@odinms.de>
-		       Jan Christian Meyer <vimes@odinms.de>
-
-    This program is free software: you can redistribute it and/or modify
-    it under the terms of the GNU Affero General Public License as
-    published by the Free Software Foundation version 3 as published by
-    the Free Software Foundation. You may not use, modify or distribute
-    this program under any other version of the GNU Affero General Public
-    License.
-
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU Affero General Public License for more details.
-
-    You should have received a copy of the GNU Affero General Public License
-    along with this program.  If not, see <http://www.gnu.org/licenses/>.
-*/
 package net.server.channel.handlers;
 
-import client.MapleClient;
-import net.AbstractMaplePacketHandler;
+import client.MapleCharacter;
+import net.PacketHandler;
 import server.MaplePortal;
 import server.MapleTrade;
 import tools.MaplePacketCreator;
 import tools.data.input.SeekableLittleEndianAccessor;
 
-public final class ChangeMapSpecialHandler extends AbstractMaplePacketHandler {
+/**
+ * @author izarooni
+ */
+public final class ChangeMapSpecialHandler extends PacketHandler {
+
+    private String startwp;
+
     @Override
-    public final void handlePacket(SeekableLittleEndianAccessor slea, MapleClient c) {
-        slea.readByte();
-        String startwp = slea.readMapleAsciiString();
-        slea.readShort();
-        MaplePortal portal = c.getPlayer().getMap().getPortal(startwp);
-        if (portal == null || c.getPlayer().portalDelay() > System.currentTimeMillis() || c.getPlayer().getBlockedPortals().contains(portal.getScriptName())) {
-            c.announce(MaplePacketCreator.enableActions());
-            return;
+    public void process(SeekableLittleEndianAccessor slea) {
+        slea.skip(1);
+        startwp = slea.readMapleAsciiString();
+        slea.skip(2);
+    }
+
+    @Override
+    public Object onPacket() {
+        MapleCharacter player = getClient().getPlayer();
+        MaplePortal portal = player.getMap().getPortal(startwp);
+
+        if (portal != null) {
+            if (player.isGM() && player.isDebug()) {
+                player.sendMessage("[DEBUG] ID: {}, Name: {}/{}, Target map: {}, Location: x:{}/y:{}", portal.getId(), portal.getName(), portal.getScriptName(), portal.getTarget(), portal.getPosition().x, portal.getPosition().y);
+                setCanceled(true);
+                player.announce(MaplePacketCreator.enableActions());
+                return null;
+            }
+
+            if (player.isBanned() || player.portalDelay() > System.currentTimeMillis() || player.getBlockedPortals().contains(portal.getScriptName())) {
+                player.announce(MaplePacketCreator.enableActions());
+                return null;
+            }
+            if (player.getTrade() != null) {
+                MapleTrade.cancelTrade(player);
+            }
+            portal.enterPortal(getClient());
         }
-		if (c.getPlayer().isBanned()) {
-			return;
-		}
-		if (c.getPlayer().getTrade() != null) {
-			MapleTrade.cancelTrade(c.getPlayer());
-		}
-        portal.enterPortal(c);   
+        return null;
     }
 }

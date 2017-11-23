@@ -20,13 +20,13 @@ import java.util.Hashtable;
 public class MonsterPark extends GenericEvent {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MonsterPark.class);
-    private static final int Stages = 6;
+    private static final int Stages = 5;
     private static final int Increments = 100;
 
     private final int mapId;
     private final MapleMapFactory mapFactory;
     private long timestampStart = 0;
-    private boolean canContinue = false; // todo use portal states
+    private boolean portalBlocked = true; // todo use portal states
     private Task timeout = null;
     private Hashtable<MapleCharacter, Integer> returnMaps = new Hashtable<>();
 
@@ -54,7 +54,7 @@ public class MonsterPark extends GenericEvent {
                             public void monsterKilled(int aniTime) {
                                 MapleMap currentMap = monster.getMap();
                                 if (currentMap.getMonsters().isEmpty()) {
-                                    canContinue = true;
+                                    portalBlocked = false;
                                     if (finalMap) {
                                         timeout.cancel();
                                         currentMap.broadcastMessage(MaplePacketCreator.showEffect("monsterPark/clearF"));
@@ -104,7 +104,7 @@ public class MonsterPark extends GenericEvent {
     public void onChangeMap(ChangeMapHandler event) {
         MapleCharacter player = event.getClient().getPlayer();
 
-        if (canContinue) {
+        if (!portalBlocked) {
             int targetMap = event.getTargetMapId();
             int stage = (mapId + Stages) - targetMap;
             boolean finalMap = targetMap == (mapId + Stages);
@@ -119,7 +119,7 @@ public class MonsterPark extends GenericEvent {
                 MapleMap instanceMap = mapFactory.getMap(targetMap);
                 player.changeMap(instanceMap);
                 player.announce(MaplePacketCreator.getClock((int) ((timestampStart + (60 * 20)) - System.currentTimeMillis())));
-                canContinue = false;
+                portalBlocked = true;
             } else {
                 unregisterPlayer(player);
             }
@@ -128,6 +128,19 @@ public class MonsterPark extends GenericEvent {
             player.announce(MaplePacketCreator.enableActions());
         }
         event.setCanceled(true);
+    }
+
+    public void advanceMap(MapleCharacter player) {
+        if (player.getMapId() == getMapId() + (Stages * Increments)) {
+            unregisterPlayer(player);
+            player.sendMessage("Complete!");
+        } else {
+            player.changeMap(mapFactory.getMap(player.getMap().getId() + Increments));
+        }
+    }
+
+    public boolean isPortalBlocked() {
+        return portalBlocked;
     }
 
     public int getMapId() {

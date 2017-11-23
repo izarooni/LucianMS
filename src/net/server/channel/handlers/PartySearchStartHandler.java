@@ -50,7 +50,7 @@ public class PartySearchStartHandler extends AbstractMaplePacketHandler {
 		int jobs = slea.readInt();
 		MapleCharacter chr = c.getPlayer();
 		MapleMap map = chr.getMap();
-		Collection<MapleMapObject> mapobjs = map.getAllPlayer();
+		Collection<MapleCharacter> mapobjs = map.getAllPlayer();
 		for (MapleMapObject mapobj : mapobjs) {
 			if (chr.getParty().getMembers().size() > 5) {
 				break;

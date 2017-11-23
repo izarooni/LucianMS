@@ -309,7 +309,7 @@ public class HGMCommands {
             ReactorScriptManager.clearDrops();
             player.dropMessage(6, "Reactor drops reloaded");
         } else if (command.equals("reloadportals")) {
-            PortalScriptManager.getInstance().reloadPortalScripts();
+            PortalScriptManager.clearPortalScripts();
             player.dropMessage(6, "Portal scripts reloaded");
         } else if (command.equals("reloadshosps")) {
             MapleShopFactory.getInstance().reloadShops();

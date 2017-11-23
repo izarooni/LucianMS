@@ -41,7 +41,7 @@ public class ChangeMapHandler extends PacketHandler {
         MaplePortal portal = player.getMap().getPortal(startwp);
 
 
-        if (player.isGM() && portal != null) {
+        if (portal != null && player.isGM() && player.isDebug()) {
             player.sendMessage("[DEBUG] ID: {}, Name: {}/{}, Target map: {}, Location: x:{}/y:{}", portal.getId(), portal.getName(), portal.getScriptName(), portal.getTarget(), portal.getPosition().x, portal.getPosition().y);
             setCanceled(true);
             player.announce(MaplePacketCreator.enableActions());

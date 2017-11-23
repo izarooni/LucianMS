@@ -22,10 +22,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 package server.maps;
 
 import client.MapleClient;
-import java.awt.Point;
 import scripting.portal.PortalScriptManager;
 import server.MaplePortal;
 import tools.MaplePacketCreator;
+
+import java.awt.*;
 
 public class MapleGenericPortal implements MaplePortal {
 
@@ -51,15 +52,15 @@ public class MapleGenericPortal implements MaplePortal {
 
     @Override
     public boolean isDisabled() {
-		return disabled;
-	}
+        return disabled;
+    }
 
     @Override
-	public void setDisabled(boolean disabled) {
-		this.disabled = disabled;
-	}
+    public void setDisabled(boolean disabled) {
+        this.disabled = disabled;
+    }
 
-	public void setId(int id) {
+    public void setId(int id) {
         this.id = id;
     }
 
@@ -128,7 +129,7 @@ public class MapleGenericPortal implements MaplePortal {
     public void enterPortal(MapleClient c) {
         boolean changed = false;
         if (getScriptName() != null) {
-            changed = PortalScriptManager.getInstance().executePortalScript(this, c);
+            changed = PortalScriptManager.executePortalScript(c, this);
         } else if (getTargetMapId() != 999999999 && !disabled) {
             MapleMap to = c.getPlayer().getEventInstance() == null ? c.getChannelServer().getMapFactory().getMap(getTargetMapId()) : c.getPlayer().getEventInstance().getMapInstance(getTargetMapId());
             MaplePortal pto = to.getPortal(getTarget());

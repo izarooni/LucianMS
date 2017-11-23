@@ -1,102 +1,53 @@
-/*
-This file is part of the OdinMS Maple Story Server
-Copyright (C) 2008 Patrick Huy <patrick.huy@frz.cc>
-Matthias Butz <matze@odinms.de>
-Jan Christian Meyer <vimes@odinms.de>
-
-This program is free software: you can redistribute it and/or modify
-it under the terms of the GNU Affero General Public License as
-published by the Free Software Foundation version 3 as published by
-the Free Software Foundation. You may not use, modify or distribute
-this program under any other version of the GNU Affero General Public
-License.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU Affero General Public License for more details.
-
-You should have received a copy of the GNU Affero General Public License
-along with this program.  If not, see <http://www.gnu.org/licenses/>.
- */
 package scripting.portal;
 
 import client.MapleClient;
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
-import java.lang.reflect.UndeclaredThrowableException;
-import java.util.HashMap;
-import java.util.Map;
-import javax.script.Compilable;
-import javax.script.Invocable;
-import javax.script.ScriptEngine;
-import javax.script.ScriptEngineFactory;
-import javax.script.ScriptEngineManager;
-import javax.script.ScriptException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import scripting.ScriptUtil;
 import server.MaplePortal;
-import tools.FilePrinter;
 
+import javax.script.Invocable;
+import javax.script.ScriptException;
+import java.io.IOException;
+import java.util.Collections;
+import java.util.HashMap;
+
+/**
+ * @author izarooni
+ */
 public class PortalScriptManager {
 
-    private static PortalScriptManager instance = new PortalScriptManager();
-    private Map<String, PortalScript> scripts = new HashMap<>();
-    private ScriptEngineFactory sef;
+    private static final Logger LOGGER = LoggerFactory.getLogger(PortalScriptManager.class);
+
+    private static HashMap<String, Invocable> scripts = new HashMap<>();
 
     private PortalScriptManager() {
-        ScriptEngineManager sem = new ScriptEngineManager();
-        sef = sem.getEngineByName("javascript").getFactory();
     }
 
-    public static PortalScriptManager getInstance() {
-        return instance;
+    private static Invocable getPortalScript(MapleClient client, String script) throws IOException, ScriptException {
+        if (scripts.containsKey(script)) {
+            return scripts.get(script);
+        }
+        Invocable iv = ScriptUtil.eval(client, "portal/" + script + ".js", Collections.emptyList());
+        if (iv != null) {
+            return scripts.put(script, iv);
+        }
+        return null;
     }
 
-    private PortalScript getPortalScript(String scriptName) {
-        if (scripts.containsKey(scriptName)) {
-            return scripts.get(scriptName);
-        }
-        File scriptFile = new File("scripts/portal/" + scriptName + ".js");
-        if (!scriptFile.exists()) {
-            scripts.put(scriptName, null);
-            return null;
-        }
-        FileReader fr = null;
-        ScriptEngine portal = sef.getScriptEngine();
+    public static void clearPortalScripts() {
+        scripts.clear();
+    }
+
+    public static boolean executePortalScript(MapleClient client, MaplePortal portal) {
         try {
-            fr = new FileReader(scriptFile);
-            ((Compilable) portal).compile(fr).eval();
-        } catch (ScriptException | IOException | UndeclaredThrowableException e) {
-            FilePrinter.printError(FilePrinter.PORTAL + scriptName + ".txt", e);
-        } finally {
-            if (fr != null) {
-                try {
-                    fr.close();
-                } catch (IOException e) {
-                    System.out.println("ERROR CLOSING " + e);
-                }
+            Invocable iv = getPortalScript(client, portal.getScriptName());
+            if (iv != null) {
+                return (boolean) iv.invokeFunction("start", new PortalPlayerInteraction(client, portal));
             }
-        }
-        PortalScript script = ((Invocable) portal).getInterface(PortalScript.class);
-        scripts.put(scriptName, script);
-        return script;
-    }
-
-    public boolean executePortalScript(MaplePortal portal, MapleClient c) {
-        try {
-            PortalScript script = getPortalScript(portal.getScriptName());
-            if (script != null) {
-                return script.enter(new PortalPlayerInteraction(c, portal));
-            }
-        } catch (UndeclaredThrowableException ute) {
-            FilePrinter.printError(FilePrinter.PORTAL + portal.getScriptName() + ".txt", ute);
-        } catch (final Exception e) {
-            FilePrinter.printError(FilePrinter.PORTAL + portal.getScriptName() + ".txt", e);
+        } catch (IOException | ScriptException | NoSuchMethodException e) {
+            LOGGER.info("Unable to invoke function 'start' in portal script {}/{} in map", portal.getScriptName(), portal.getId(), client.getPlayer().getMapId(), e);
         }
         return false;
-    }
-
-    public void reloadPortalScripts() {
-        scripts.clear();
     }
 }

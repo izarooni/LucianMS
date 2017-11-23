@@ -37,6 +37,7 @@ public final class PacketManager {
 
     private static void addPacketHandlers() {
         handlers.set(RecvOpcode.CHANGE_MAP.getValue(), ChangeMapHandler.class);
+        handlers.set(RecvOpcode.CHANGE_MAP_SPECIAL.getValue(), ChangeMapSpecialHandler.class);
 
         handlers.set(RecvOpcode.CHAR_INFO_REQUEST.getValue(), ViewCharacterInfoHandler.class);
 
