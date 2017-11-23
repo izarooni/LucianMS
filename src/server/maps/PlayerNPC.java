@@ -37,7 +37,7 @@ import java.util.Map;
  */
 public class PlayerNPC extends AbstractMapleMapObject {
 
-    private Map<Short, Integer> equips = new HashMap<Short, Integer>();
+    private Map<Short, Integer> equips = new HashMap<>();
     private int npcId, face, hair;
     private byte skin;
     private String name = "";
@@ -111,7 +111,7 @@ public class PlayerNPC extends AbstractMapleMapObject {
 
     @Override
     public void sendDestroyData(MapleClient client) {
-        return;
+        client.announce(MaplePacketCreator.removeNPC(getObjectId()));
     }
 
     @Override

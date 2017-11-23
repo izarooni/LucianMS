@@ -41,6 +41,7 @@ import net.server.guild.MapleGuildCharacter;
 import net.server.world.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.slf4j.helpers.MessageFormatter;
 import provider.MapleData;
 import provider.MapleDataProviderFactory;
 import scheduler.Task;
@@ -147,17 +148,18 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
     private int[] remainingSp = new int[10];
     //endregion
 
-    private long dojoFinish, lastfametime, lastUsedCashItem, lastHealed, lastMesoDrop = -1;
-    private long portaldelay = 0, lastcombo = 0;
     private long immortalTimestamp = 0;
+    private long portaldelay = 0, lastcombo = 0;
+    private long dojoFinish, lastfametime, lastUsedCashItem, lastHealed, lastMesoDrop = -1;
 
-    private boolean hidden, canDoor = true, berserk, hasMerchant, whiteChat = false;
-    private boolean finishedDojoTutorial, dojoParty;
+    private boolean muted = false;
+    private boolean debug = false;
     private boolean isbanned = false;
     private boolean loggedIn = false;
-    private boolean muted = false;
     private boolean autorebirthing = false;
     private boolean eyeScannersEquiped = false;
+    private boolean finishedDojoTutorial, dojoParty;
+    private boolean hidden, canDoor = true, berserk, hasMerchant, whiteChat = false;
 
     private String name = null;
     private String search = null;
@@ -171,26 +173,26 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
 
     //region collections
     private List<Task> tasks = new ArrayList<>();
+    private List<String> blockedPortals = new ArrayList<>();
+    private List<Integer> excluded = new ArrayList<>();
+    private List<Integer> trockmaps = new ArrayList<>();
+    private List<Integer> viptrockmaps = new ArrayList<>();
+    private List<Integer> lastmonthfameids = new ArrayList<>(31);
     private List<MapleDoor> doors = new ArrayList<>();
     private List<MapleRing> crushRings = new ArrayList<>();
     private List<MapleRing> friendshipRings = new ArrayList<>();
     private List<GenericEvent> genericEvents = new ArrayList<>();
-    private List<Integer> excluded = new ArrayList<>();
-    private List<Integer> trockmaps = new ArrayList<>();
-    private List<Integer> viptrockmaps = new ArrayList<>();
-    private List<String> blockedPortals = new ArrayList<>();
-    private List<Integer> lastmonthfameids = new ArrayList<>(31);
 
     private Map<Skill, SkillEntry> skills = new LinkedHashMap<>();
+    private Map<Short, String> area_info = new LinkedHashMap<>();
     private Map<Short, MapleQuestStatus> quests = new LinkedHashMap<>();
     private Map<Integer, String> entered = new LinkedHashMap<>();
+    private Map<String, MapleEvents> events = new LinkedHashMap<>();
+    private Map<String, Achievement> achievements = new HashMap<>();
     private Map<Integer, CQuestData> customQuests = new HashMap<>();
     private Map<Integer, MapleSummon> summons = new LinkedHashMap<>();
     private Map<Integer, MapleKeyBinding> keymap = new LinkedHashMap<>();
     private Map<Integer, MapleCoolDownValueHolder> coolDowns = new LinkedHashMap<>(50);
-    private Map<Short, String> area_info = new LinkedHashMap<>();
-    private Map<String, MapleEvents> events = new LinkedHashMap<>();
-    private Map<String, Achievement> achievements = new HashMap<>();
     //endregion
 
     private BuddyList buddylist = null;
@@ -204,20 +206,20 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
     private Task[] fullnessSchedule = new Task[3];
     private MaplePet[] pets = new MaplePet[3];
     private SkillMacro[] skillMacros = new SkillMacro[5];
-    private MapleInventory[] inventory;
+    private MapleInventory[] inventory = new MapleInventory[MapleInventoryType.values().length];
 
     private MapleJob job = MapleJob.BEGINNER;
     private MapleMap map = null, dojoMap = null;
     private MapleShop shop = null;
-    private MapleMount maplemount;
     private MapleParty party = null;
     private MapleTrade trade = null;
     private MapleStorage storage = null;
-    private MapleMiniGame miniGame;
+    private MapleMount maplemount = null;
+    private MapleMiniGame miniGame = null;
     private MapleMessenger messenger = null;
     private MaplePlayerShop playerShop = null;
     private MapleSkinColor skinColor = MapleSkinColor.NORMAL;
-    private SavedLocation savedLocations[];
+    private SavedLocation[] savedLocations = new SavedLocation[SavedLocationType.values().length];
 
     private Set<MapleMonster> controlled = new LinkedHashSet<>();
     private Set<MapleMapObject> visibleMapObjects = new LinkedHashSet<>();
@@ -267,20 +269,11 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
 
     public MapleCharacter() {
         setStance(0);
-        inventory = new MapleInventory[MapleInventoryType.values().length];
-        savedLocations = new SavedLocation[SavedLocationType.values().length];
         for (int i = 0; i < remainingSp.length; i++) {
             remainingSp[i] = 0;
         }
         for (MapleInventoryType type : MapleInventoryType.values()) {
-            byte b = 24;
-            if (type == MapleInventoryType.CASH) {
-                b = 96;
-            }
-            inventory[type.ordinal()] = new MapleInventory(type, (byte) b);
-        }
-        for (int i = 0; i < SavedLocationType.values().length; i++) {
-            savedLocations[i] = null;
+            inventory[type.ordinal()] = new MapleInventory(type, (byte) 96);
         }
         setPosition(new Point(0, 0));
     }
@@ -1974,6 +1967,16 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
         }
         addHP(-getMap().getHPDec());
         hpDecreaseTask = TaskExecutor.createTask(this::doHurtHp, 10000);
+    }
+
+    /**
+     * fuck a method {@link String#format(String, Object...)}
+     *
+     * @param message a message to send to the player
+     * @param object  arguements that are formatted to the specified message
+     */
+    public void sendMessage(String message, Object... object) {
+        dropMessage(MessageFormatter.arrayFormat(message, object).getMessage());
     }
 
     public void dropMessage(String message) {
@@ -5277,6 +5280,14 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
         return loggedIn;
     }
 
+    public boolean isDebug() {
+        return debug;
+    }
+
+    public void setDebug(boolean debug) {
+        this.debug = debug;
+    }
+
     public boolean getWhiteChat() {
         return isGM() && whiteChat;
     }
@@ -5721,6 +5732,4 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
             return skillevel + ":" + masterlevel;
         }
     }
-
-
 }

@@ -263,16 +263,6 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
 		MapleGuild.displayGuildRanks(getClient(), npc);
 	}
 
-	@Override
-	public MapleParty getParty() {
-		return getPlayer().getParty();
-	}
-
-	@Override
-	public void resetMap(int mapid) {
-		getClient().getChannelServer().getMapFactory().getMap(mapid).resetReactors();
-	}
-
 	public void gainCloseness(int closeness) {
 		for (MaplePet pet : getPlayer().getPets()) {
 			if (pet.getCloseness() > 30000) {

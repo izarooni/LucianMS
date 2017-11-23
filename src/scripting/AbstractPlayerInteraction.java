@@ -29,7 +29,6 @@ import client.inventory.*;
 import constants.ItemConstants;
 import constants.ServerConstants;
 import net.server.Server;
-import net.server.channel.Channel;
 import net.server.guild.MapleGuild;
 import net.server.world.MapleParty;
 import net.server.world.MaplePartyCharacter;
@@ -56,8 +55,8 @@ import tools.MaplePacketCreator;
 import java.awt.*;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.LinkedList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class AbstractPlayerInteraction {
 
@@ -105,18 +104,10 @@ public class AbstractPlayerInteraction {
     }
 
     public List<MapleCharacter> getPartyMembers() {
-        if (getPlayer().getParty() == null) {
-            return null;
+        if (getParty() != null) {
+            return getParty().getMembers().stream().filter(MaplePartyCharacter::isOnline).map(MaplePartyCharacter::getPlayer).collect(Collectors.toList());
         }
-        List<MapleCharacter> chars = new LinkedList<>();
-        for (Channel channel : Server.getInstance().getChannelsFromWorld(getPlayer().getWorld())) {
-            for (MapleCharacter chr : channel.getPartyMembers(getPlayer().getParty())) {
-                if (chr != null) {
-                    chars.add(chr);
-                }
-            }
-        }
-        return chars;
+        return null;
     }
 
     private MapleMap getWarpMap(int map) {

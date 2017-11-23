@@ -525,35 +525,18 @@ public class MapleMap {
                     return false;
                 }
                 Pair<Integer, Integer> cool = monster.getStats().getCool();
-                if (cool != null) {
-                    Pyramid pq = (Pyramid) chr.getPartyQuest();
-                    if (pq != null) {
-                        if (damage > 0) {
-                            if (damage >= cool.getLeft()) {
-                                if ((Math.random() * 100) < cool.getRight()) {
-                                    pq.cool();
-                                } else {
-                                    pq.kill();
-                                }
-                            } else {
-                                pq.kill();
-                            }
-                        } else {
-                            pq.miss();
-                        }
-                        killed = true;
-                    }
+
+                Pyramid pq = (Pyramid) chr.getPartyQuest();
+                if (cool != null && pq != null) {
+                    pq.hit(damage, cool);
+                    killed = true;
                 }
+
                 if (damage > 0) {
                     monster.damage(chr, damage);
                     if (!monster.isAlive()) { // monster just died
-                        // killMonster(monster, chr, true);
-                        if (getMapObjectsInRange(new Point(0, 0), Double.POSITIVE_INFINITY, Arrays.asList(MapleMapObjectType.ITEM)).size() >= 400) {
-                            monster.getMap().clearDrops();
-                            for (MapleCharacter player : getCharacters()) {
-                                player.dropMessage("All drops have been cleared from the floor automatically.");
-                            }
-                        }
+
+                        // Kaneki boss map
                         if (monster.getMap().getId() == 85) {
                             if (chr.getParty() != null) {
                                 for (MaplePartyCharacter player : chr.getParty().getMembers()) {
@@ -568,6 +551,7 @@ public class MapleMap {
                             }
                         }
 
+                        //region NX Cash gain
                         if (ServerConstants.NX_FROM_MONSTERS) {
                             int random = (Randomizer.nextInt(100)) + 1;
                             int levelDifference = chr.getLevel() - monster.getLevel();
@@ -613,6 +597,7 @@ public class MapleMap {
 
                             }
                         }
+                        //endregion
 
                         if (chr.getArcade() != null) {
                             chr.getArcade().onKill(monster.getId());
@@ -623,7 +608,6 @@ public class MapleMap {
                                 mob.setLevel(Integer.MAX_VALUE);
                                 spawnMonsterOnGroudBelow(mob, monster.getPosition());
                             }
-
                         }
 
                         if (monster.getId() == chr.getKillType() && chr.getCurrent() < chr.getGoal()) {
@@ -632,9 +616,7 @@ public class MapleMap {
                                 chr.dropMessage(6, "You have killed " + chr.getCurrent() + " out of " + chr.getGoal() + " " + monster.getName() + "'s");
                             }
                         }
-
                         killed = true;
-
                     }
                 } else if (monster.getId() >= 8810002 && monster.getId() <= 8810009) {
                     for (MapleMapObject object : chr.getMap().getMapObjects()) {

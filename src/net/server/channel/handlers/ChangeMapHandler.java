@@ -38,6 +38,15 @@ public class ChangeMapHandler extends PacketHandler {
     @Override
     public Object onPacket() {
         MapleCharacter player = getClient().getPlayer();
+        MaplePortal portal = player.getMap().getPortal(startwp);
+
+
+        if (player.isGM() && portal != null) {
+            player.sendMessage("[DEBUG] ID: {}, Name: {}/{}, Target map: {}, Location: x:{}/y:{}", portal.getId(), portal.getName(), portal.getScriptName(), portal.getTarget(), portal.getPosition().x, portal.getPosition().y);
+            setCanceled(true);
+            player.announce(MaplePacketCreator.enableActions());
+            return null;
+        }
 
         if (player.getTrade() != null) {
             MapleTrade.cancelTrade(player);
@@ -67,7 +76,6 @@ public class ChangeMapHandler extends PacketHandler {
                 return null;
             }
             try {
-                MaplePortal portal = player.getMap().getPortal(startwp);
                 if (targetMapId != -1 && !player.isAlive()) {
                     boolean executeStandardPath = true;
                     if (player.getEventInstance() != null) {

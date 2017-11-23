@@ -28,6 +28,7 @@ import scheduler.Task;
 import scheduler.TaskExecutor;
 import server.MapleItemInformationProvider;
 import tools.MaplePacketCreator;
+import tools.Pair;
 
 /**
  * @author kevintjuh93
@@ -267,6 +268,22 @@ public class Pyramid extends PartyQuest {
         }
         chr.announce(MaplePacketCreator.pyramidScore(rank, exp));
         chr.gainExp(exp, true, true);
+    }
+
+    public void hit(int damage, Pair<Integer, Integer> cool) {
+        if (damage > 0) {
+            if (damage >= cool.getLeft()) {
+                if ((Math.random() * 100) < cool.getRight()) {
+                    cool();
+                } else {
+                    kill();
+                }
+            } else {
+                kill();
+            }
+        } else {
+            miss();
+        }
     }
 }
 
