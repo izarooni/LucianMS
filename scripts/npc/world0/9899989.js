@@ -43,12 +43,12 @@ function action(mode, type, selection) {
         else
             status--;
         if (status == 0) {
-            cm.sendSimple("#L1#k den.#k#l\r\n\#r#L2#wat.#k#l");
+            cm.sendSimple("A #rBlack Hole#k appeared and it seems to attract everything into it. Must be some trick from #rThe Black Mage#k and his time traveling ability. Willing to take the risk? \r\n#b#L1#I am ready.#k#l\r\n\#r#L2#I am not ready yet.#k#l");
         } else if (status == 1) {
             if (selection == 1) {
-                cm.warp(92, 0);
+                cm.warp(41, 0);
                 cm.dispose();
-          cm.getPlayer().getMap().broadcastMessage(MaplePacketCreator.showEffect("PSO2/stuff/1"));
+          cm.getPlayer().getMap().broadcastMessage(MaplePacketCreator.showEffect("quest/party/clear2"));
             } else if (selection == 2) {
                 cm.sendOk("Hurry up or we might miss this oppertunity!");
                 cm.dispose();

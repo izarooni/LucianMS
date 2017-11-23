@@ -1,5 +1,5 @@
 /*
-    This file is part of the OdinMS Maple Story Server
+	This file is part of the OdinMS Maple Story Server
     Copyright (C) 2008 Patrick Huy <patrick.huy@frz.cc> 
                        Matthias Butz <matze@odinms.de>
                        Jan Christian Meyer <vimes@odinms.de>
@@ -18,41 +18,36 @@
     You should have received a copy of the GNU Affero General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
-importPackage(Packages.tools);
-var LifeFactory = Java.type("server.life.MapleLifeFactory");
-/* venem */
-/* Outer Space Mini Boss and 4 planets entrance */
-var status = 0;
 
-
+/* Lira
+ * 
+ * Adobis's Mission I : Breath of Lava <Level 2> (280020001)
+ * Zakum Quest NPC 
+ * Custom Quest 100202 -> Done this stage once
+ */
+ 
+var status;
+ 
 function start() {
-    status = -1;
-    action(1, 0, 0);
+    cm.sendNext("Congratulations on getting this far!  Well, I suppose I'd better give you your #bBreath of Fire#k.  You've certainly earned it!");
 }
-
+ 
 function action(mode, type, selection) {
-    if (mode == -1) {
+    if (mode < 1)
         cm.dispose();
-    } else {
-        if (mode == 0 && status == 0) {
-            cm.dispose();
-            return;
-        }
-        if (mode == 1)
-            status++;
-        else
-            status--;
-        if (status == 0) {
-            cm.sendSimple("#L1#k den.#k#l\r\n\#r#L2#wat.#k#l");
-        } else if (status == 1) {
-            if (selection == 1) {
-                cm.warp(92, 0);
-                cm.dispose();
-          cm.getPlayer().getMap().broadcastMessage(MaplePacketCreator.showEffect("PSO2/stuff/1"));
-            } else if (selection == 2) {
-                cm.sendOk("Hurry up or we might miss this oppertunity!");
-                cm.dispose();
+    else {
+        status++;
+        if (status == 1)
+            cm.sendNextPrev("Well, time for you to head off.");
+        else if (status == 2) {
+            cm.gainItem(4031062,1);
+            cm.warp(211042300);
+            if (cm.isQuestCompleted(100202)) {
+                cm.startQuest(100202);
+                cm.completeQuest(100202);
+                cm.gainExp(10000);
             }
+            cm.dispose();
         }
     }
 }

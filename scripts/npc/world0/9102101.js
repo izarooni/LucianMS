@@ -1,5 +1,5 @@
 /*
-    This file is part of the OdinMS Maple Story Server
+	This file is part of the OdinMS Maple Story Server
     Copyright (C) 2008 Patrick Huy <patrick.huy@frz.cc> 
                        Matthias Butz <matze@odinms.de>
                        Jan Christian Meyer <vimes@odinms.de>
@@ -18,41 +18,29 @@
     You should have received a copy of the GNU Affero General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
-importPackage(Packages.tools);
-var LifeFactory = Java.type("server.life.MapleLifeFactory");
-/* venem */
-/* Outer Space Mini Boss and 4 planets entrance */
-var status = 0;
 
+/**
+-- Odin JavaScript --------------------------------------------------------------------------------
+	? - Victoria Road: Pet-Walking Road (100000202)
+-- By ---------------------------------------------------------------------------------------------
+	Xterminator
+-- Version Info -----------------------------------------------------------------------------------
+	1.0 - First Version by Xterminator
+        2.0 - Second Version by Moogra
+---------------------------------------------------------------------------------------------------
+**/
 
 function start() {
-    status = -1;
-    action(1, 0, 0);
+    cm.sendYesNo("#b(I can see something covered in grass. Should I pull it out?)");
 }
 
 function action(mode, type, selection) {
     if (mode == -1) {
-        cm.dispose();
-    } else {
-        if (mode == 0 && status == 0) {
-            cm.dispose();
-            return;
-        }
-        if (mode == 1)
-            status++;
-        else
-            status--;
-        if (status == 0) {
-            cm.sendSimple("#L1#k den.#k#l\r\n\#r#L2#wat.#k#l");
-        } else if (status == 1) {
-            if (selection == 1) {
-                cm.warp(92, 0);
-                cm.dispose();
-          cm.getPlayer().getMap().broadcastMessage(MaplePacketCreator.showEffect("PSO2/stuff/1"));
-            } else if (selection == 2) {
-                cm.sendOk("Hurry up or we might miss this oppertunity!");
-                cm.dispose();
-            }
-        }
+    } else if (mode == 0) {
+        cm.sendNext("#b(I didn't think much of it, so I didn't touch it.)");
+    } else if (mode == 1) {
+        cm.sendNext("#b(Yuck... it's pet poop!)");
+        cm.gainItem(4031922, 1);
     }
+    cm.dispose();
 }

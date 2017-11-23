@@ -18,12 +18,7 @@
     You should have received a copy of the GNU Affero General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
-importPackage(Packages.tools);
-var LifeFactory = Java.type("server.life.MapleLifeFactory");
-/* venem */
-/* Outer Space Mini Boss and 4 planets entrance */
 var status = 0;
-
 
 function start() {
     status = -1;
@@ -33,26 +28,29 @@ function start() {
 function action(mode, type, selection) {
     if (mode == -1) {
         cm.dispose();
-    } else {
-        if (mode == 0 && status == 0) {
-            cm.dispose();
-            return;
-        }
+    }else if (mode == 0){
+        cm.dispose();
+    }else{
         if (mode == 1)
             status++;
         else
             status--;
-        if (status == 0) {
-            cm.sendSimple("#L1#k den.#k#l\r\n\#r#L2#wat.#k#l");
-        } else if (status == 1) {
-            if (selection == 1) {
-                cm.warp(92, 0);
-                cm.dispose();
-          cm.getPlayer().getMap().broadcastMessage(MaplePacketCreator.showEffect("PSO2/stuff/1"));
-            } else if (selection == 2) {
-                cm.sendOk("Hurry up or we might miss this oppertunity!");
-                cm.dispose();
-            }
-        }
+    if (status == 0) {
+    cm.sendNext("Bam bam bam bam!! You have won the game from the \r\n#bEVENT#k. Congratulations on making it this far!");
+    } else if (status == 1) {
+    cm.sendNext("You'll be awarded the #bScroll of Secrets#k as the winning prize. On the scroll, it has secret information written in ancient characters.");
+    } else if (status == 2) {
+    cm.sendNext("The Scroll of Secrets can be deciphered by #rChun Ji#k or \r\n#rGeanie#k at Ludibrium. Bring it with you and something good's bound to happen.");
+    } else if (status == 3) {
+    if (cm.canHold(4031019)) {
+    cm.gainItem(4031019);
+    cm.warp(cm.getPlayer().getSavedLocation("EVENT"));
+    cm.dispose();
+    } else {
+    cm.sendNext("I think your Etc window is full. Please make room, then talk to me.");
     }
-}
+    } else if (status == 4) {
+    cm.dispose();
+    }
+    }
+    }  

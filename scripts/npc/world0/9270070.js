@@ -1,4 +1,5 @@
 load("scripts/util_imports.js");
+var ShenronSummon = Java.type("server.events.custom.summoning.ShenronSummoner");
 /* izarooni */
 var status = 0;
 var usernameError = "";
@@ -9,6 +10,14 @@ function action(mode, type, selection) {
         return;
     } else {
         status++;
+    }
+    var optional = player.getGenericEvents().stream().filter(function(e) {
+        return e instanceof ShenronSummon;
+    }).findFirst();
+    if (optional.isPresent() && !optional.get().isWishing()) {
+        cm.sendOk("Who are you? You didn't summon me");
+        cm.dispose();
+        return;
     }
     if (status == 1) {
         cm.sendSimple("I am Shenron, I shall grant you any wish. Now speak!\r\n#b"
@@ -84,6 +93,7 @@ function action(mode, type, selection) {
                 }
                 break;
         }
+        optional.get().wish(player);
         cm.dispose();
     } else if (status == 3) {
         var username = cm.getText();
@@ -95,6 +105,7 @@ function action(mode, type, selection) {
                 target.setHp(0);
                 target.updateSingleStat(Packages.client.MapleStat.HP, 0);
                 cm.dispose();
+                optional.get().wish(player);
                 return;
             } else {
                 usernameError = "#r#eCould not find any player named \"#b" + username + "#r#e\"#k#n";
