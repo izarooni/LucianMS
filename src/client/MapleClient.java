@@ -95,8 +95,6 @@ public class MapleClient {
     private int picattempt = 0;
     private byte gender = -1;
     private boolean disconnecting = false;
-    private int votePoints;
-    private int donationPoints;
     private int voteTime = -1;
     private long sessionId;
 
@@ -1035,76 +1033,51 @@ public class MapleClient {
             return true;
         }
         try {
-            PreparedStatement ps = DatabaseConnection.getConnection().prepareStatement("SELECT `tos` FROM accounts WHERE id = ?");
-            ps.setInt(1, accId);
-            ResultSet rs = ps.executeQuery();
-
-            if (rs.next()) {
-                if (rs.getByte("tos") == 1) {
-                    disconnectForBeingAFaggot = true;
+            try (PreparedStatement ps = DatabaseConnection.getConnection().prepareStatement("SELECT `tos` FROM accounts WHERE id = ?")) {
+                ps.setInt(1, accId);
+                try (ResultSet rs = ps.executeQuery()) {
+                    if (rs.next()) {
+                        if (rs.getByte("tos") == 1) {
+                            disconnectForBeingAFaggot = true;
+                        }
+                    }
                 }
             }
-            ps.close();
-            rs.close();
-            ps = DatabaseConnection.getConnection().prepareStatement("UPDATE accounts SET tos = 1 WHERE id = ?");
-            ps.setInt(1, accId);
-            ps.executeUpdate();
-            ps.close();
+            try (PreparedStatement ps = DatabaseConnection.getConnection().prepareStatement("UPDATE accounts SET tos = 1 WHERE id = ?")) {
+                ps.setInt(1, accId);
+                ps.executeUpdate();
+            }
         } catch (SQLException ignored) {
         }
         return disconnectForBeingAFaggot;
     }
 
     public int getVotePoints() {
-        int points = 0;
-        try {
-            PreparedStatement ps = DatabaseConnection.getConnection().prepareStatement("SELECT `votes` FROM accounts WHERE id = ?");
+        try (PreparedStatement ps = DatabaseConnection.getConnection().prepareStatement("select votepoints from accounts where id = ?")) {
             ps.setInt(1, accId);
-            ResultSet rs = ps.executeQuery();
-
-            if (rs.next()) {
-                points = rs.getInt("votes");
-            }
-            ps.close();
-            rs.close();
-
-        } catch (SQLException ignored) {
-        }
-        votePoints = points;
-        return votePoints;
-    }
-
-    public void addVotePoints(int points) {
-        votePoints += points;
-        saveVotePoints();
-    }
-
-    public void addDonorPoints(int points) {
-        donationPoints += points;
-        setDonationPoints(donationPoints);
-    }
-
-    public void useVotePoints(int points) {
-        if (points > votePoints) {
-            //Should not happen, should probably log this
-            return;
-        }
-        votePoints -= points;
-        saveVotePoints();
-        LogHelper.logLeaf(player, false, Integer.toString(points));
-    }
-
-    private void saveVotePoints() {
-        try {
-            Connection con = DatabaseConnection.getConnection();
-            try (PreparedStatement ps = con.prepareStatement("UPDATE accounts SET votes = ? WHERE id = ?")) {
-                ps.setInt(1, votePoints);
-                ps.setInt(2, accId);
-                ps.executeUpdate();
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getInt("votepoints");
+                }
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            LOGGER.warn("Unable to retrieve vote points for account {} player {}", getAccountName(), ((player != null) ? player.getName() : "N/A"), e);
         }
+        return 0;
+    }
+
+    public void setVotePoints(int n) {
+        try (PreparedStatement ps = DatabaseConnection.getConnection().prepareStatement("update accounts set votepoints = ? where iod = ?")) {
+            ps.setInt(1, n);
+            ps.setInt(2, accId);
+            ps.executeUpdate();
+        } catch (SQLException e) {
+            LOGGER.warn("Unable to update vote points for account {} player {}", getAccountName(), ((player != null) ? player.getName() : "N/A"), e);
+        }
+    }
+
+    public void addVotePoints(int n) {
+        setVotePoints(getVotePoints() + n);
     }
 
     public final Lock getLock() {
@@ -1132,28 +1105,15 @@ public class MapleClient {
     }
 
     public final byte getGReason() {
-        final Connection con = DatabaseConnection.getConnection();
-        PreparedStatement ps = null;
-        ResultSet rs = null;
-        try {
-            ps = con.prepareStatement("SELECT `greason` FROM `accounts` WHERE id = ?");
+        try (PreparedStatement ps = DatabaseConnection.getConnection().prepareStatement("SELECT `greason` FROM `accounts` WHERE id = ?")) {
             ps.setInt(1, accId);
-            rs = ps.executeQuery();
-            if (rs.next()) {
-                return rs.getByte("greason");
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getByte("greason");
+                }
             }
         } catch (SQLException e) {
             e.printStackTrace();
-        } finally {
-            try {
-                if (ps != null) {
-                    ps.close();
-                }
-                if (rs != null) {
-                    rs.close();
-                }
-            } catch (SQLException ignored) {
-            }
         }
         return 0;
     }
@@ -1164,12 +1124,10 @@ public class MapleClient {
 
     public void setGender(byte m) {
         this.gender = m;
-        try {
-            try (PreparedStatement ps = DatabaseConnection.getConnection().prepareStatement("UPDATE accounts SET gender = ? WHERE id = ?")) {
-                ps.setByte(1, gender);
-                ps.setInt(2, accId);
-                ps.executeUpdate();
-            }
+        try (PreparedStatement ps = DatabaseConnection.getConnection().prepareStatement("UPDATE accounts SET gender = ? WHERE id = ?")) {
+            ps.setByte(1, gender);
+            ps.setInt(2, accId);
+            ps.executeUpdate();
         } catch (SQLException ignored) {
         }
     }
@@ -1233,37 +1191,31 @@ public class MapleClient {
     }
 
     public int getDonationPoints() {
-        int points = 0;
-        try {
-            PreparedStatement ps = DatabaseConnection.getConnection().prepareStatement("SELECT `donationpoints` FROM accounts WHERE id = ?");
+        try (PreparedStatement ps = DatabaseConnection.getConnection().prepareStatement("select donationpoints from accounts where id = ?")) {
             ps.setInt(1, accId);
-            ResultSet rs = ps.executeQuery();
-
-            if (rs.next()) {
-                points = rs.getInt("donationpoints");
-            }
-            ps.close();
-            rs.close();
-
-        } catch (SQLException ignored) {
-        }
-        donationPoints = points;
-        return donationPoints;
-
-    }
-
-    public void setDonationPoints(int donationPoints) {
-        this.donationPoints = donationPoints;
-        try {
-            Connection con = DatabaseConnection.getConnection();
-            try (PreparedStatement ps = con.prepareStatement("UPDATE accounts SET donationpoints = ? WHERE id = ?")) {
-                ps.setInt(1, donationPoints);
-                ps.setInt(2, accId);
-                ps.executeUpdate();
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getInt("donationpoints");
+                }
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            LOGGER.warn("Unable to retrieve donation points for account {} player {}", getAccountName(), ((player != null) ? player.getName() : "N/A"), e);
         }
+        return 0;
+    }
+
+    public void setDonationPoints(int n) {
+        try (PreparedStatement ps = DatabaseConnection.getConnection().prepareStatement("update accounts set donationpoints = ? where id = ?")) {
+            ps.setInt(1, n);
+            ps.setInt(2, accId);
+            ps.executeUpdate();
+        } catch (SQLException e) {
+            LOGGER.warn("Unable to update donation points for account {} player {}", getAccountName(), ((player != null) ? player.getName() : "N/A"), e);
+        }
+    }
+
+    public void addDonationPoints(int n) {
+        setDonationPoints(getDonationPoints() + n);
     }
 
     public long getDiscordId() {

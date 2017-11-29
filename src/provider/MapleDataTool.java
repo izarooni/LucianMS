@@ -49,12 +49,7 @@ public class MapleDataTool {
     }
 
     public static String getString(String path, MapleData data, String def) {
-        try {
-            return getString(data.getChildByPath(path), def);
-        } catch (NullPointerException e) {
-            LOGGER.warn("Unable to obtain value from data path {}", path, e);
-            return def;
-        }
+        return getString(data.getChildByPath(path), def);
     }
 
     public static double getDouble(MapleData data) {

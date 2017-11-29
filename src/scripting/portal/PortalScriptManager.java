@@ -28,9 +28,11 @@ public class PortalScriptManager {
         if (scripts.containsKey(script)) {
             return scripts.get(script);
         }
-        Invocable iv = ScriptUtil.eval(client, "portal/" + script + ".js", Collections.emptyList());
-        if (iv != null) {
+        try {
+            Invocable iv = ScriptUtil.eval(client, "portal/" + script + ".js", Collections.emptyList());
             return scripts.put(script, iv);
+        } catch (NullPointerException e) {
+            LOGGER.warn(e.getMessage());
         }
         return null;
     }

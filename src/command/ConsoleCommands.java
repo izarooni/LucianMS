@@ -1,6 +1,8 @@
 package command;
 
 import client.MapleCharacter;
+import net.discord.DiscordSession;
+import net.discord.Headers;
 import net.server.Server;
 import net.server.channel.Channel;
 import net.server.world.World;
@@ -10,6 +12,7 @@ import scheduler.TaskExecutor;
 import scripting.Achievements;
 import server.Whitelist;
 import server.quest.custom.CQuestBuilder;
+import tools.data.output.MaplePacketLittleEndianWriter;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
@@ -71,6 +74,10 @@ public class ConsoleCommands {
         if (command.equals("shutdown", "exit")) {
             reading = false;
             System.exit(0);
+
+            MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
+            mplew.write(Headers.Shutdown.value);
+            DiscordSession.sendPacket(mplew.getPacket());
         } else if (command.equals("online")) {
             LOGGER.info("Managed Sessions: " + Server.getInstance().getAcceptor().getManagedSessionCount());
             if (Server.getInstance().isOnline()) {

@@ -5456,7 +5456,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
                 setEventPoints(getEventPoints() + amount);
                 return true;
             case "dp": // donor points
-                getClient().addDonorPoints(amount);
+                getClient().setDonationPoints(getClient().getDonationPoints() + amount);
                 return true;
             case "vp": // vote points
                 getClient().addVotePoints(amount);
