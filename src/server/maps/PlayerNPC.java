@@ -22,6 +22,8 @@
 package server.maps;
 
 import client.MapleClient;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import tools.DatabaseConnection;
 import tools.MaplePacketCreator;
 
@@ -37,6 +39,8 @@ import java.util.Map;
  */
 public class PlayerNPC extends AbstractMapleMapObject {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(PlayerNPC.class);
+
     private Map<Short, Integer> equips = new HashMap<>();
     private int npcId, face, hair;
     private byte skin;
@@ -44,28 +48,28 @@ public class PlayerNPC extends AbstractMapleMapObject {
     private String script = null;
     private int FH, RX0, RX1, CY;
 
-    public PlayerNPC(ResultSet rs) {
-        try {
-            CY = rs.getInt("cy");
-            name = rs.getString("name");
-            hair = rs.getInt("hair");
-            face = rs.getInt("face");
-            skin = rs.getByte("skin");
-            FH = rs.getInt("Foothold");
-            RX0 = rs.getInt("rx0");
-            RX1 = rs.getInt("rx1");
-            npcId = rs.getInt("ScriptId");
-            script = rs.getString("script");
-            setPosition(new Point(rs.getInt("x"), CY));
-            PreparedStatement ps = DatabaseConnection.getConnection().prepareStatement("SELECT equippos, equipid FROM playernpcs_equip WHERE NpcId = ?");
+    public PlayerNPC(ResultSet rs) throws SQLException {
+        name = rs.getString("name");
+        hair = rs.getInt("hair");
+        face = rs.getInt("face");
+        skin = rs.getByte("skin");
+
+        FH = rs.getInt("foothold");
+        CY = rs.getInt("cy");
+        RX0 = rs.getInt("rx0");
+        RX1 = rs.getInt("rx1");
+        setPosition(new Point(rs.getInt("x"), CY));
+
+        npcId = rs.getInt("scriptid");
+        script = rs.getString("script");
+
+        try (PreparedStatement ps = DatabaseConnection.getConnection().prepareStatement("select equippos, equipid from playernpcs_equip where npcid = ?")) {
             ps.setInt(1, rs.getInt("id"));
-            ResultSet rs2 = ps.executeQuery();
-            while (rs2.next()) {
-                equips.put(rs2.getShort("equippos"), rs2.getInt("equipid"));
+            try (ResultSet rs2 = ps.executeQuery()) {
+                while (rs2.next()) {
+                    equips.put(rs2.getShort("equippos"), rs2.getInt("equipid"));
+                }
             }
-            rs2.close();
-            ps.close();
-        } catch (SQLException e) {
         }
     }
 

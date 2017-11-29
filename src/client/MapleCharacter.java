@@ -3556,7 +3556,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
 
     public void createPlayerNPC(MapleCharacter v, int scriptId, String script) {
         try {
-            int pNpcID = 0;
+            int pnpcid = 0;
             try (PreparedStatement ps = DatabaseConnection.getConnection().prepareStatement("insert into playernpcs (name, scriptid, script, map, hair, face, skin, gender, foothold, dir, x, cy, rx0, rx1) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", Statement.RETURN_GENERATED_KEYS)) {
                 ps.setString(1, v.getName());
                 ps.setInt(2, scriptId);
@@ -3575,13 +3575,13 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
                 ps.executeUpdate();
                 try (ResultSet rs = ps.getGeneratedKeys()) {
                     if (rs.next()) {
-                        pNpcID = rs.getInt(1);
+                        pnpcid = rs.getInt(1);
                     }
                 }
             }
-            if (pNpcID > 0) {
+            if (pnpcid > 0) {
                 try (PreparedStatement ps = DatabaseConnection.getConnection().prepareStatement("insert into playernpcs_equip (npcid, equipid, type, equippos) values (?, ?, 0, ?)")) {
-                    ps.setInt(1, pNpcID);
+                    ps.setInt(1, pnpcid);
                     for (Item item : v.getInventory(MapleInventoryType.EQUIPPED).list()) {
                         int slot = Math.abs(item.getPosition());
                         if ((slot < 12 && slot > 0) || (slot > 100 && slot < 112)) {
@@ -3592,8 +3592,8 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
                     }
                     ps.executeBatch();
                 }
-                try (PreparedStatement ps = DatabaseConnection.getConnection().prepareStatement("select * from playernpcs where scriptid = ?")) {
-                    ps.setInt(1, pNpcID);
+                try (PreparedStatement ps = DatabaseConnection.getConnection().prepareStatement("select * from playernpcs where id = ?")) {
+                    ps.setInt(1, pnpcid);
                     try (ResultSet rs = ps.executeQuery()) {
                         if (rs.next()) {
                             PlayerNPC playerNPC = new PlayerNPC(rs);
@@ -3603,6 +3603,8 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
                                 m.broadcastMessage(MaplePacketCreator.getPlayerNPC(playerNPC));
                                 m.addMapObject(playerNPC);
                             }
+                        } else {
+                            LOGGER.warn("Unable to find newly created player npc {}", pnpcid);
                         }
                     }
                 }

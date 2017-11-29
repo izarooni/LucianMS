@@ -58,6 +58,9 @@ public class NPCTalkHandler extends PacketHandler {
                 }
             } else if (mapObjects instanceof PlayerNPC) {
                 PlayerNPC npc = (PlayerNPC) mapObjects;
+                if (player.isGM() && player.isDebug()) {
+                    player.sendMessage("NPC Talk ID: {}, Script: {}", npc.getId(), npc.getScript());
+                }
                 NPCScriptManager.start(getClient(), npc.getId(), npc.getScript(), null);
             } else {
                 LOGGER.warn("{} attempted to speak to non-npc map object {}", player.getName(), mapObjects.getType().name());
