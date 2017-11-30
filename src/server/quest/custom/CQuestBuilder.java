@@ -167,10 +167,12 @@ public class CQuestBuilder {
                 return null;
             }
             int pId = MapleDataTool.getInt(xml.getChildByPath("info/preQuest"), -1);
+            int minLevel = MapleDataTool.getInt(xml.getChildByPath("info/minLevel"), 0);
             boolean daily = MapleDataTool.getInt(xml.getChildByPath("info/daily"), 0) == 1;
             // begin constructing custom quest data
             CQuestData qData = new CQuestData(questId, xml.getName(), daily);
             qData.setPreQuestId(pId);
+            qData.setMinimumLevel(minLevel);
             // iterate through monsters to kill, setting all progress to 0
             if (xml.getChildByPath("toKill") != null) {
                 for (MapleData toKill : xml.getChildByPath("toKill").getChildren()) {

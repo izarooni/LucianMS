@@ -24,6 +24,7 @@ public class CQuestData {
     private boolean completed = false;
     private long completion = -1; // timestamp
     private int preQuestId = -1;
+    private int minimumLevel = 0;
 
     private final CQuestKillRequirement toKill = new CQuestKillRequirement(); // monster kill requirements
     final CQuestItemRequirement toCollect = new CQuestItemRequirement(); // item collect requirements
@@ -95,8 +96,20 @@ public class CQuestData {
     /**
      * @param preQuestId id of pre-quest
      */
-    public void setPreQuestId(int preQuestId) {
+    void setPreQuestId(int preQuestId) {
         this.preQuestId = preQuestId;
+    }
+
+    /**
+     *
+     * @return minimum level requirement to accept the quest
+     */
+    public int getMinimumLevel() {
+        return minimumLevel;
+    }
+
+    void setMinimumLevel(int minimumLevel) {
+        this.minimumLevel = minimumLevel;
     }
 
     /**
