@@ -318,15 +318,16 @@ public class MapleInventoryManipulator {
     }
 
     public static void move(MapleClient c, MapleInventoryType type, short src, short dst) {
+        MapleCharacter player = c.getPlayer();
         if (src < 0 || dst < 0) {
             return;
         }
-        if (dst > c.getPlayer().getInventory(type).getSlotLimit()) {
+        if (dst > player.getInventory(type).getSlotLimit()) {
             return;
         }
         MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
-        Item source = c.getPlayer().getInventory(type).getItem(src);
-        Item initialTarget = c.getPlayer().getInventory(type).getItem(dst);
+        Item source = player.getInventory(type).getItem(src);
+        Item initialTarget = player.getInventory(type).getItem(dst);
         if (source == null) {
             return;
         }
@@ -336,7 +337,7 @@ public class MapleInventoryManipulator {
         }
         short oldsrcQ = source.getQuantity();
         short slotMax = ii.getSlotMax(c, source.getItemId());
-        c.getPlayer().getInventory(type).move(src, dst, slotMax);
+        player.getInventory(type).move(src, dst, slotMax);
         final List<ModifyInventory> mods = new ArrayList<>();
         if (!type.equals(MapleInventoryType.EQUIP) && initialTarget != null && initialTarget.getItemId() == source.getItemId() && !ItemConstants.isRechargable(source.getItemId())) {
             if ((olddstQ + oldsrcQ) > slotMax) {
@@ -353,11 +354,12 @@ public class MapleInventoryManipulator {
     }
 
     public static void equip(MapleClient c, short src, short dst) {
-        Equip source = (Equip) c.getPlayer().getInventory(MapleInventoryType.EQUIP).getItem(src);
-        if (source == null || !MapleItemInformationProvider.getInstance().canWearEquipment(c.getPlayer(), source, dst)) {
+        MapleCharacter player = c.getPlayer();
+        Equip source = (Equip) player.getInventory(MapleInventoryType.EQUIP).getItem(src);
+        if (source == null || !MapleItemInformationProvider.getInstance().canWearEquipment(player, source, dst)) {
             c.announce(MaplePacketCreator.enableActions());
             return;
-        } else if ((((source.getItemId() >= 1902000 && source.getItemId() <= 1902002) || source.getItemId() == 1912000) && c.getPlayer().isCygnus()) || ((source.getItemId() >= 1902005 && source.getItemId() <= 1902007) || source.getItemId() == 1912005) && !c.getPlayer().isCygnus()) {// Adventurer taming equipment
+        } else if ((((source.getItemId() >= 1902000 && source.getItemId() <= 1902002) || source.getItemId() == 1912000) && player.isCygnus()) || ((source.getItemId() >= 1902005 && source.getItemId() <= 1902007) || source.getItemId() == 1912005) && !player.isCygnus()) {// Adventurer taming equipment
             return;
         }
         boolean itemChanged = false;
@@ -366,63 +368,63 @@ public class MapleInventoryManipulator {
             itemChanged = true;
         }
         if (source.getRingId() > -1) {
-            c.getPlayer().getRingById(source.getRingId()).equip();
+            player.getRingById(source.getRingId()).equip();
         }
         if (dst == -6) { // unequip the overall
-            Item top = c.getPlayer().getInventory(MapleInventoryType.EQUIPPED).getItem((short) -5);
+            Item top = player.getInventory(MapleInventoryType.EQUIPPED).getItem((short) -5);
             if (top != null && isOverall(top.getItemId())) {
-                if (c.getPlayer().getInventory(MapleInventoryType.EQUIP).isFull()) {
+                if (player.getInventory(MapleInventoryType.EQUIP).isFull()) {
                     c.announce(MaplePacketCreator.getInventoryFull());
                     c.announce(MaplePacketCreator.getShowInventoryFull());
                     return;
                 }
-                unequip(c, (byte) -5, c.getPlayer().getInventory(MapleInventoryType.EQUIP).getNextFreeSlot());
+                unequip(c, (byte) -5, player.getInventory(MapleInventoryType.EQUIP).getNextFreeSlot());
             }
         } else if (dst == -5) {
-            final Item bottom = c.getPlayer().getInventory(MapleInventoryType.EQUIPPED).getItem((short) -6);
+            final Item bottom = player.getInventory(MapleInventoryType.EQUIPPED).getItem((short) -6);
             if (bottom != null && isOverall(source.getItemId())) {
-                if (c.getPlayer().getInventory(MapleInventoryType.EQUIP).isFull()) {
+                if (player.getInventory(MapleInventoryType.EQUIP).isFull()) {
                     c.announce(MaplePacketCreator.getInventoryFull());
                     c.announce(MaplePacketCreator.getShowInventoryFull());
                     return;
                 }
-                unequip(c, (byte) -6, c.getPlayer().getInventory(MapleInventoryType.EQUIP).getNextFreeSlot());
+                unequip(c, (byte) -6, player.getInventory(MapleInventoryType.EQUIP).getNextFreeSlot());
             }
         } else if (dst == -10) {// check if weapon is two-handed
-            Item weapon = c.getPlayer().getInventory(MapleInventoryType.EQUIPPED).getItem((short) -11);
+            Item weapon = player.getInventory(MapleInventoryType.EQUIPPED).getItem((short) -11);
             if (weapon != null && MapleItemInformationProvider.getInstance().isTwoHanded(weapon.getItemId())) {
-                if (c.getPlayer().getInventory(MapleInventoryType.EQUIP).isFull()) {
+                if (player.getInventory(MapleInventoryType.EQUIP).isFull()) {
                     c.announce(MaplePacketCreator.getInventoryFull());
                     c.announce(MaplePacketCreator.getShowInventoryFull());
                     return;
                 }
-                unequip(c, (byte) -11, c.getPlayer().getInventory(MapleInventoryType.EQUIP).getNextFreeSlot());
+                unequip(c, (byte) -11, player.getInventory(MapleInventoryType.EQUIP).getNextFreeSlot());
             }
         } else if (dst == -11) {
-            Item shield = c.getPlayer().getInventory(MapleInventoryType.EQUIPPED).getItem((short) -10);
+            Item shield = player.getInventory(MapleInventoryType.EQUIPPED).getItem((short) -10);
             if (shield != null && MapleItemInformationProvider.getInstance().isTwoHanded(source.getItemId())) {
-                if (c.getPlayer().getInventory(MapleInventoryType.EQUIP).isFull()) {
+                if (player.getInventory(MapleInventoryType.EQUIP).isFull()) {
                     c.announce(MaplePacketCreator.getInventoryFull());
                     c.announce(MaplePacketCreator.getShowInventoryFull());
                     return;
                 }
-                unequip(c, (byte) -10, c.getPlayer().getInventory(MapleInventoryType.EQUIP).getNextFreeSlot());
+                unequip(c, (byte) -10, player.getInventory(MapleInventoryType.EQUIP).getNextFreeSlot());
             }
         }
         if (dst == -18) {
-            if (c.getPlayer().getMount() != null) {
-                c.getPlayer().getMount().setItemId(source.getItemId());
+            if (player.getMount() != null) {
+                player.getMount().setItemId(source.getItemId());
             }
         }
         if (source.getItemId() == 1122017) {
-            c.getPlayer().scheduleSpiritPendant();
+            player.scheduleSpiritPendant();
         }
         //1112413, 1112414, 1112405 (Lilin's Ring)
-        source = (Equip) c.getPlayer().getInventory(MapleInventoryType.EQUIP).getItem(src);
-        Equip target = (Equip) c.getPlayer().getInventory(MapleInventoryType.EQUIPPED).getItem(dst);
-        c.getPlayer().getInventory(MapleInventoryType.EQUIP).removeSlot(src);
+        source = (Equip) player.getInventory(MapleInventoryType.EQUIP).getItem(src);
+        Equip target = (Equip) player.getInventory(MapleInventoryType.EQUIPPED).getItem(dst);
+        player.getInventory(MapleInventoryType.EQUIP).removeSlot(src);
         if (target != null) {
-            c.getPlayer().getInventory(MapleInventoryType.EQUIPPED).removeSlot(dst);
+            player.getInventory(MapleInventoryType.EQUIPPED).removeSlot(dst);
         }
 
         final List<ModifyInventory> mods = new ArrayList<>();
@@ -432,23 +434,48 @@ public class MapleInventoryManipulator {
         }
 
         source.setPosition(dst);
-        c.getPlayer().getInventory(MapleInventoryType.EQUIPPED).addFromDB(source);
+        player.getInventory(MapleInventoryType.EQUIPPED).addFromDB(source);
         if (target != null) {
             target.setPosition(src);
-            c.getPlayer().getInventory(MapleInventoryType.EQUIP).addFromDB(target);
+            player.getInventory(MapleInventoryType.EQUIP).addFromDB(target);
         }
-        if (c.getPlayer().getBuffedValue(MapleBuffStat.BOOSTER) != null && isWeapon(source.getItemId())) {
-            c.getPlayer().cancelBuffStats(MapleBuffStat.BOOSTER);
+        if (player.getBuffedValue(MapleBuffStat.BOOSTER) != null && isWeapon(source.getItemId())) {
+            player.cancelBuffStats(MapleBuffStat.BOOSTER);
         }
 
         mods.add(new ModifyInventory(2, source, src));
         c.announce(MaplePacketCreator.modifyInventory(true, mods));
-        c.getPlayer().equipChanged();
+        player.equipChanged();
+
+        for (CQuestData data : player.getCustomQuests().values()) {
+            if (!data.isCompleted()) {
+                CQuestItemRequirement toLoot = data.getToCollect();
+                toLoot.incrementRequirement(source.getItemId(), -source.getQuantity());
+                boolean checked = toLoot.isFinished(); // local bool before updating requirement checks; if false, quest is not finished
+                if (data.checkRequirements() && !checked) { // update requirement checks - it is important that checkRequirements is executed first
+                /*
+                If checkRequirements returns true, the quest is finished. If checked is also false, then
+                this is check means the quest is finished. The quest completion notification should only
+                happen once unless a progress variable drops below the requirement
+                 */
+                    c.announce(MaplePacketCreator.getShowQuestCompletion(1));
+                    c.announce(MaplePacketCreator.earnTitleMessage(String.format("Quest '%s' completed!", data.getName())));
+                    c.announce(MaplePacketCreator.serverNotice(5, String.format("Quest '%s' completed!", data.getName())));
+                }
+                CQuestItemRequirement.CQuestItem qItem = toLoot.get(source.getItemId());
+                if (qItem != null) {
+                    String name = MapleItemInformationProvider.getInstance().getName(source.getItemId());
+                    name = (name == null) ? "NO-NAME" : name; // hmmm
+                    player.announce(MaplePacketCreator.earnTitleMessage(String.format("[%s] Item Collection '%s' [%d / %d]", data.getName(), name, qItem.getProgress(), qItem.getRequirement())));
+                }
+            }
+        }
     }
 
     public static void unequip(MapleClient c, short src, short dst) {
-        Equip source = (Equip) c.getPlayer().getInventory(MapleInventoryType.EQUIPPED).getItem(src);
-        Equip target = (Equip) c.getPlayer().getInventory(MapleInventoryType.EQUIP).getItem(dst);
+        MapleCharacter player = c.getPlayer();
+        Equip source = (Equip) player.getInventory(MapleInventoryType.EQUIPPED).getItem(src);
+        Equip target = (Equip) player.getInventory(MapleInventoryType.EQUIP).getItem(dst);
         if (dst < 0) {
             return;
         }
@@ -477,6 +504,30 @@ public class MapleInventoryManipulator {
         }
         c.announce(MaplePacketCreator.modifyInventory(true, Collections.singletonList(new ModifyInventory(2, source, src))));
         c.getPlayer().equipChanged();
+
+        for (CQuestData data : player.getCustomQuests().values()) {
+            if (!data.isCompleted()) {
+                CQuestItemRequirement toLoot = data.getToCollect();
+                toLoot.incrementRequirement(source.getItemId(), source.getQuantity());
+                boolean checked = toLoot.isFinished(); // local bool before updating requirement checks; if false, quest is not finished
+                if (data.checkRequirements() && !checked) { // update requirement checks - it is important that checkRequirements is executed first
+                /*
+                If checkRequirements returns true, the quest is finished. If checked is also false, then
+                this is check means the quest is finished. The quest completion notification should only
+                happen once unless a progress variable drops below the requirement
+                 */
+                    c.announce(MaplePacketCreator.getShowQuestCompletion(1));
+                    c.announce(MaplePacketCreator.earnTitleMessage(String.format("Quest '%s' completed!", data.getName())));
+                    c.announce(MaplePacketCreator.serverNotice(5, String.format("Quest '%s' completed!", data.getName())));
+                }
+                CQuestItemRequirement.CQuestItem qItem = toLoot.get(source.getItemId());
+                if (qItem != null) {
+                    String name = MapleItemInformationProvider.getInstance().getName(source.getItemId());
+                    name = (name == null) ? "NO-NAME" : name; // hmmm
+                    player.announce(MaplePacketCreator.earnTitleMessage(String.format("[%s] Item Collection '%s' [%d / %d]", data.getName(), name, qItem.getProgress(), qItem.getRequirement())));
+                }
+            }
+        }
     }
 
     public static MapleMapItem drop(MapleClient c, MapleInventoryType type, short src, short quantity) {
@@ -541,13 +592,13 @@ public class MapleInventoryManipulator {
             if (weddingRing) {
                 return player.getMap().disappearingItemDrop(player, player, target, dropPos);
             } else if (player.getMap().getEverlast()) {
-                //                if (ii.isDropRestricted(target.getItemId()) || MapleItemInformationProvider.getInstance().isCash(target.getItemId())) {
-                //                    player.getMap().disappearingItemDrop(player, player, target, dropPos);
-                //                } else {
+//                if (ii.isDropRestricted(target.getItemId()) || MapleItemInformationProvider.getInstance().isCash(target.getItemId())) {
+//                    player.getMap().disappearingItemDrop(player, player, target, dropPos);
+//                } else {
                 return player.getMap().spawnItemDrop(player, player, target, dropPos, true, false);
-                //                }
-                //            } else if (ii.isDropRestricted(target.getItemId()) || MapleItemInformationProvider.getInstance().isCash(target.getItemId())) {
-                //                player.getMap().disappearingItemDrop(player, player, target, dropPos);
+//                }
+//            } else if (ii.isDropRestricted(target.getItemId()) || MapleItemInformationProvider.getInstance().isCash(target.getItemId())) {
+//                player.getMap().disappearingItemDrop(player, player, target, dropPos);
             } else {
                 return player.getMap().spawnItemDrop(player, player, target, dropPos, true, true);
             }
@@ -561,7 +612,7 @@ public class MapleInventoryManipulator {
 //                if (ii.isDropRestricted(itemId) || ii.isCash(itemId)) {
 //                    player.getMap().disappearingItemDrop(player, player, source, dropPos);
 //                } else {
-                    return player.getMap().spawnItemDrop(player, player, source, dropPos, true, false);
+                return player.getMap().spawnItemDrop(player, player, source, dropPos, true, false);
 //                }
 //            } else if (ii.isDropRestricted(itemId) || ii.isCash(itemId)) {
 //                player.getMap().disappearingItemDrop(player, player, source, dropPos);
