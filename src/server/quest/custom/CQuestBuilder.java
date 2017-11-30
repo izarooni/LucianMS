@@ -18,6 +18,7 @@ import tools.Pair;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.security.InvalidParameterException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -91,13 +92,13 @@ public class CQuestBuilder {
         if (qData != null) {
             return qData.getPreQuestId();
         }
-        throw new NullPointerException(String.format("Unable to obtain pre-quest; Invalid quest ID specified '%d'", questId));
+        throw new InvalidParameterException(String.format("Unable to obtain pre-quest; Invalid quest ID specified '%d'", questId));
     }
 
     public static String getName(int questId) {
         CQuestData qData = quests.get(questId);
         if (qData == null) {
-            throw new NullPointerException(String.format("Unable to obtain quest; Invalid quest ID specified '%d'", questId));
+            throw new InvalidParameterException(String.format("Unable to obtain quest; Invalid quest ID specified '%d'", questId));
         }
         return qData.getName();
     }

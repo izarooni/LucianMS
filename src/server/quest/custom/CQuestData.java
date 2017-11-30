@@ -1,12 +1,15 @@
 package server.quest.custom;
 
 import client.MapleCharacter;
+import constants.ItemConstants;
+import server.MapleInventoryManipulator;
 import server.quest.custom.requirement.CQuestItemRequirement;
 import server.quest.custom.requirement.CQuestKillRequirement;
 import server.quest.custom.reward.CQuestReward;
 import tools.MaplePacketCreator;
 
 import java.util.ArrayList;
+import java.util.Map;
 
 /**
  * Holds information for a quest (i.e. killed monsters, items looted)
@@ -167,6 +170,7 @@ public class CQuestData {
         if (rewards.stream().allMatch(r -> r.canAccept(player))) {
             setCompletion(System.currentTimeMillis());
             completed = true;
+            toCollect.getItems().forEach((key, value) -> MapleInventoryManipulator.removeById(player.getClient(), ItemConstants.getInventoryType(key), key, value.getRequirement(), false, false)) ;
             rewards.forEach(r -> r.give(player));
             return true;
         }
