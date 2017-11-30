@@ -1,0 +1,45 @@
+<imgdir name="Maple Collector">
+    <imgdir name="info">
+        <int name="questId" value="2"/>
+		<int name="preQuest" value="-1"/>
+		<int name="daily" value="0"/>
+    </imgdir>
+
+    <imgdir name="toKill">
+        <imgdir name="0">
+            <int name="monsterId" value="4001126"/>
+            <int name="amount" value="100"/>
+        </imgdir>
+        <imgdir name="1">
+            <int name="monsterId" value="4000021"/>
+            <int name="amount" value="25"/>
+        </imgdir>
+        <imgdir name="2">
+            <int name="monsterId" value="4000070"/>
+            <int name="amount" value="50"/>
+        </imgdir>
+        <imgdir name="3">
+            <int name="monsterId" value="4000168"/>
+            <int name="amount" value="50"/>
+        </imgdir>
+    </imgdir>
+
+    <imgdir name="toCollect">
+        <imgdir name="0">
+            <int name="itemId" value="9500110"/>
+            <int name="quantity" value="99"/>
+        </imgdir>
+        <imgdir name="1">
+            <int name="itemId" value="3000005"/>
+            <int name="quantity" value="99"/>
+        </imgdir>
+        <imgdir name="2">
+            <int name="itemId" value="3230100"/>
+            <int name="quantity" value="99"/>
+        </imgdir>
+    </imgdir>
+
+    <imgdir name="rewards">
+        <int name="exp" value="52500"/>
+    </imgdir>
+</imgdir>

@@ -36,7 +36,7 @@ function action(mode, type, selection) {
         if (this.quest == null || !this.finished) {
             var kills = cqb.getToKill(1);
             if (!kills.isEmpty()) {
-                var text = "This is what I'll need you to do for me\r\n\r\n";
+                var text = "#FUI/UIWindow/Quest/summary#\r\n";
                 text += "#eKill the following monsters#n#b";
                 kills.forEach(function(k, v) {
                     text += "\r\n" + v + " of #o" + k + "#";
@@ -57,7 +57,7 @@ function action(mode, type, selection) {
         if (this.quest == null || !this.finished) {
             var collects = cqb.getToCollect(1);
             if (!collects.isEmpty()) {
-                var text = "This is what I'll need you to do for me\r\n\r\n";
+                var text = "#FUI/UIWindow/Quest/summary#\r\n";
                 text += "#eCollect the following items#n#b";
                 collects.forEach(function(k, v) {
                     text += "\r\n" + v.getRequirement() + " of #z" + k + "#";
@@ -68,7 +68,7 @@ function action(mode, type, selection) {
             }
         }
     } else if (status == 4) {
-        var text = "Now finally, here are the rewards for completing this quest!\r\n\r\n";
+        var text = "#FUI/UIWindow/Quest/reward#\r\n\r\n";
         var rewards = cqb.getRewards(1);
         var total = 0;
         rewards.get("exp").forEach(function(r) {

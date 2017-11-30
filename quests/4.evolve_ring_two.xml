@@ -1,0 +1,33 @@
+<imgdir name="Evolving Ring">
+    <imgdir name="info">
+        <int name="questId" value="4"/>
+		<int name="preQuest" value="3"/>
+		<int name="daily" value="0"/>
+    </imgdir>
+
+    <imgdir name="toKill">
+
+        <imgdir name="0">
+            <int name="monsterId" value="3210203"/>
+            <int name="amount" value="150"/>
+        </imgdir>
+    </imgdir>
+
+    <imgdir name="toCollect">
+        
+        <imgdir name="0">
+            <int name="itemId" value="1112614"/>
+            <int name="quantity" value="1"/>
+        </imgdir>
+    </imgdir>
+
+    <imgdir name="rewards">
+
+        <imgdir name="items">
+            <imgdir name="0">
+                <int name="itemId" value="1112615"/>
+                <int name="quantity" value="1"/>
+            </imgdir>
+        </imgdir>
+    </imgdir>
+</imgdir>

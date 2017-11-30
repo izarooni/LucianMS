@@ -1,0 +1,38 @@
+<imgdir name="Just Toys">
+    <imgdir name="info">
+        <int name="questId" value="22"/>
+		<int name="preQuest" value="-1"/>
+        <int name="minLevel" value="35"/>
+		<int name="daily" value="0"/>
+    </imgdir>
+
+    <imgdir name="toKill">
+
+        <imgdir name="0">
+            <int name="monsterId" value="3000005"/>
+            <int name="amount" value="75"/>
+        </imgdir>
+        <imgdir name="1">
+            <int name="monsterId" value="3210203"/>
+            <int name="amount" value="50"/>
+        </imgdir>
+        <imgdir name="2">
+            <int name="monsterId" value="3110101"/>
+            <int name="amount" value="25"/>
+        </imgdir>
+    </imgdir>
+
+    <imgdir name="toCollect">
+    </imgdir>
+
+    <imgdir name="rewards">
+
+        <imgdir name="items">
+            <imgdir name="0">
+                <int name="itemId" value="1302013"/>
+                <int name="quantity" value="1"/>
+            </imgdir>
+        </imgdir>
+        <int name="exp" value="62000"/>
+    </imgdir>
+</imgdir>

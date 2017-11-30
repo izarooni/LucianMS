@@ -53,23 +53,23 @@ function action(mode, type, selection) {
 				}
 				else if (status == 3) {
 					if (selection == 0) {
-                        cm.sendSimple("PICK SOMETHING ALREADY!!! *glares* \r\n#L0#To make a #v1302030#, you will need #i1302020#, #i4001126# #rx10#k , and #b500k Mesoss#k.#l\r\n#L1#To make a #i1412011#, you will need #i1302020#, #i4001126# #rx10#k , and #b500k Mesoss#k.#l\r\n#L2#To make a #i1422014#, you will need #i1302020#, #i4001126# #rx10#k , and #b500k Mesoss#k.#l\r\n#L3#To make a #i1432012#, you will need #i1302020#, #i4001126# #rx10#k , and #b500k Mesoss#k.#l\r\n#L4#To make a #i1442024#, you will need #i1302020#, #i4001126# #rx10#k , and #b500k Mesoss#k.#l\r\n#L5#To make a #i1302064#, you will need #i1302030#, #i4001126# #rx15#k , and #b5mil Mesoss#k.#l\r\n#L6#To make a #i1312032#, you will need #i1412011#, #i4001126# #rx15#k , and #b5mil Mesoss#k.#l\r\n#L7#To make a #i1322054#, you will need #i1422014#, #i4001126# #rx15#k , and #b5mil Mesoss#k.#l\r\n#L8#To make a #i1402039#, you will need #i1302030#, #i4001126# #rx15#k , and #b5mil Mesoss#k.#l\r\n#L9#To make a #i1412027#, you will need #i1412011#, #i4001126# #rx15#k , and #b5mil Mesoss#k.#l\r\n#L10#To make a #i1422029#, you will need #i1422014#, #i4001126# #rx15#k , and #b5mil Mesoss#k.#l\r\n#L11#To make a #i1432040#, you will need #i1432012#, #i4001126# #rx15#k , and #b5mil Mesoss#k.#l\r\n#L12#To make a #i1442051#, you will need #i1442024#, #i4001126# #rx15#k , and #b5mil Mesoss#k.#l\r\n#L13#To make a #i1092046#, you will need #i1092030#, #i4001126# #rx15#k , and #b5mil Mesoss#k.#l");
+                        cm.sendSimple("PICK SOMETHING ALREADY!!! *glares* \r\n#L0#To make a #v1302030#, you will need #i1302020#, #i4001126# #rx600#k , and #b500k Mesoss#k.#l\r\n#L1#To make a #i1412011#, you will need #i1302020#, #i4001126# #rx600#k , and #b500k Mesoss#k.#l\r\n#L2#To make a #i1422014#, you will need #i1302020#, #i4001126# #rx600#k , and #b500k Mesoss#k.#l\r\n#L3#To make a #i1432012#, you will need #i1302020#, #i4001126# #rx600#k , and #b500k Mesoss#k.#l\r\n#L4#To make a #i1442024#, you will need #i1302020#, #i4001126# #rx600#k , and #b500k Mesoss#k.#l\r\n#L5#To make a #i1302064#, you will need #i1302030#, #i4001126# #rx600#k , and #b5mil Mesoss#k.#l\r\n#L6#To make a #i1312032#, you will need #i1412011#, #i4001126# #rx600#k , and #b5mil Mesoss#k.#l\r\n#L7#To make a #i1322054#, you will need #i1422014#, #i4001126# #rx600#k , and #b5mil Mesoss#k.#l\r\n#L8#To make a #i1402039#, you will need #i1302030#, #i4001126# #rx600#k , and #b5mil Mesoss#k.#l\r\n#L9#To make a #i1412027#, you will need #i1412011#, #i4001126# #rx600#k , and #b5mil Mesoss#k.#l\r\n#L10#To make a #i1422029#, you will need #i1422014#, #i4001126# #rx600#k , and #b5mil Mesoss#k.#l\r\n#L11#To make a #i1432040#, you will need #i1432012#, #i4001126# #rx600#k , and #b5mil Mesoss#k.#l\r\n#L12#To make a #i1442051#, you will need #i1442024#, #i4001126# #rx600#k , and #b5mil Mesoss#k.#l\r\n#L13#To make a #i1092046#, you will need #i1092030#, #i4001126# #rx600#k , and #b5mil Mesoss#k.#l");
 						warrior = 1;
 					}
 					if (selection == 1) {
-                        cm.sendSimple("PICK SOMETHING ALREADY!!! *glares* \r\n#L0#To make a #i1452022#, you will need #i1452016#, #i4001126# #rx10#k , and #b500k Mesoss#k.#l\r\n#L1#To make a #i1452045#, you will need #i1452022#, #i4001126# #rx15#k , and #b5mil Mesoss#k.#l\r\n#L2#To make a #i1462019#, you will need #i1462014#, #i4001126# #rx10#k , and #b500k Mesoss#k.#l\r\n#L3#To make a #i1462040#, you will need #i1462019#, #i4001126# #rx15#k , and #b5mil Mesoss#k.#l");
+                        cm.sendSimple("PICK SOMETHING ALREADY!!! *glares* \r\n#L0#To make a #i1452022#, you will need #i1452016#, #i4001126# #rx600#k , and #b500k Mesoss#k.#l\r\n#L1#To make a #i1452045#, you will need #i1452022#, #i4001126# #rx600#k , and #b5mil Mesoss#k.#l\r\n#L2#To make a #i1462019#, you will need #i1462014#, #i4001126# #rx600#k , and #b500k Mesoss#k.#l\r\n#L3#To make a #i1462040#, you will need #i1462019#, #i4001126# #rx600#k , and #b5mil Mesoss#k.#l");
 						bowman = 1;
 					}
 					if (selection == 2) {
-                        cm.sendSimple("PICK SOMETHING ALREADY!!! *glares* \r\n#L0#To make a #i1472032#, you will need #i1472030#, #i4001126# #rx10#k , and #b500k Mesoss#k.#l\r\n#L1#To make a #i1472055#, you will need #i1472032#, #i4001126# #rx15#k , and #b5mil Mesoss#k.#l\r\n#L2#To make a #i1332025#, you will need #i1472030#, #i4001126# #rx10#k , and #b500k Mesoss#k.#l\r\n#L3#To make a #i1332055#, you will need #i1332025#, #i4001126# #rx15#k , and #b5mil Mesoss#k.#l\r\n#L4#To make a #i1332056#, you will need #i1332025#, #i4001126# #rx15#k , and #b5mil Mesoss#k.#l\r\n#L5#To make a #i1092047#, you will need #i1092030#, #i4001126# #rx15#k , and #b5mil Mesoss#k.#l");
+                        cm.sendSimple("PICK SOMETHING ALREADY!!! *glares* \r\n#L0#To make a #i1472032#, you will need #i1472030#, #i4001126# #rx600#k , and #b500k Mesoss#k.#l\r\n#L1#To make a #i1472055#, you will need #i1472032#, #i4001126# #rx600#k , and #b5mil Mesoss#k.#l\r\n#L2#To make a #i1332025#, you will need #i1472030#, #i4001126# #rx600#k , and #b500k Mesoss#k.#l\r\n#L3#To make a #i1332055#, you will need #i1332025#, #i4001126# #rx600#k , and #b5mil Mesoss#k.#l\r\n#L4#To make a #i1332056#, you will need #i1332025#, #i4001126# #rx600#k , and #b5mil Mesoss#k.#l\r\n#L5#To make a #i1092047#, you will need #i1092030#, #i4001126# #rx600#k , and #b5mil Mesoss#k.#l");
 						thief = 1;
 					}
 					if (selection == 3) {
-                        cm.sendSimple("PICK SOMETHING ALREADY!!! *glares* \r\n#L0#To make a #i1382012#, you will need #i1382009#, #i4001126# #rx10#k , and #b500k Mesoss#k.#l\r\n#L1#To make a #i1372034#, you will need #i1382012#, #i4001126# #rx15#k , and #b5mil Mesoss#k.#l\r\n#L2#To make a #i1382039#, you will need #i1382012#, #i4001126# #rx15#k , and #b5mil Mesoss#k.#l\r\n#L3#To make a #i1092045#, you will need #i1092030#, #i4001126# #rx15#k , and #b5mil Mesoss#k.#l");
+                        cm.sendSimple("PICK SOMETHING ALREADY!!! *glares* \r\n#L0#To make a #i1382012#, you will need #i1382009#, #i4001126# #rx60#k , and #b500k Mesoss#k.#l\r\n#L1#To make a #i1372034#, you will need #i1382012#, #i4001126# #rx600#k , and #b5mil Mesoss#k.#l\r\n#L2#To make a #i1382039#, you will need #i1382012#, #i4001126# #rx600#k , and #b5mil Mesoss#k.#l\r\n#L3#To make a #i1092045#, you will need #i1092030#, #i4001126# #rx600#k , and #b5mil Mesoss#k.#l");
 						mage = 1;
 					}
 					if (selection == 4) {
-                        cm.sendSimple("PICK SOMETHING ALREADY!!! *glares* \r\n#L0#To make a #i1482021#, you will need #i1482020#, #i4001126# #rx10#k , and #b500k Mesoss#k.#l\r\n#L1#To make a #i1482022#, you will need #i1482021#, #i4001126# #rx15#k , and #b5mil Mesoss#k.#l\r\n#L2#To make a #i1492021#, you will need #i1492020#, #i4001126# #rx10#k , and #b500k Mesoss#k.#l\r\n#L3#To make a #i1492022#, you will need #i1492021#, #i4001126# #rx15#k , and #b5mil Mesoss#k.#l");
+                        cm.sendSimple("PICK SOMETHING ALREADY!!! *glares* \r\n#L0#To make a #i1482021#, you will need #i1482020#, #i4001126# #rx600#k , and #b500k Mesoss#k.#l\r\n#L1#To make a #i1482022#, you will need #i1482021#, #i4001126# #rx600#k , and #b5mil Mesoss#k.#l\r\n#L2#To make a #i1492021#, you will need #i1492020#, #i4001126# #rx600#k , and #b500k Mesoss#k.#l\r\n#L3#To make a #i1492022#, you will need #i1492021#, #i4001126# #rx600#k , and #b5mil Mesoss#k.#l");
 						pirate = 1;
 					}
 					if (selection == 5) {
@@ -80,8 +80,8 @@ function action(mode, type, selection) {
 			else if (status == 4) {
                 if (warrior == 1) {
 					if (selection == 0) {
-						if ((cm.haveItem(leaf, 10)) & (cm.haveItem(1302020)) && (cm.getMeso() >= 500000 )) {
-						cm.gainItem(leaf, -10);
+						if ((cm.haveItem(leaf, 600)) & (cm.haveItem(1302020)) && (cm.getMeso() >= 500000 )) {
+						cm.gainItem(leaf, -600);
 						cm.gainItem(1302020,-1);
 						cm.gainMeso(-500000);
 						cm.gainItem(1302030,1);
@@ -91,8 +91,8 @@ function action(mode, type, selection) {
 						cm.dispose();
 						}}
 					else if (selection == 1) {
-						if ((cm.haveItem(leaf, 10)) & (cm.haveItem(1302020)) && (cm.getMeso() >= 500000 )) {
-						cm.gainItem(leaf, -10);
+						if ((cm.haveItem(leaf, 600)) & (cm.haveItem(1302020)) && (cm.getMeso() >= 500000 )) {
+						cm.gainItem(leaf, -600);
 						cm.gainItem(1302020,-1);
 						cm.gainMeso(-500000);
 						cm.gainItem(1412011,1);
@@ -102,8 +102,8 @@ function action(mode, type, selection) {
 						cm.dispose();
 						}}
 					else if (selection == 2) {
-						if ((cm.haveItem(leaf, 10)) & (cm.haveItem(1302020)) && (cm.getMeso() >= 500000 )) {
-						cm.gainItem(leaf, -10);
+						if ((cm.haveItem(leaf, 600)) & (cm.haveItem(1302020)) && (cm.getMeso() >= 500000 )) {
+						cm.gainItem(leaf, -600);
 						cm.gainItem(1302020,-1);
 						cm.gainMeso(-500000);
 						cm.gainItem(1422014,1);
@@ -113,8 +113,8 @@ function action(mode, type, selection) {
 						cm.dispose();
 						}}
 					else if (selection == 3) {
-						if ((cm.haveItem(leaf, 10)) & (cm.haveItem(1302020)) && (cm.getMeso() >= 500000 )) {
-						cm.gainItem(leaf, -10);
+						if ((cm.haveItem(leaf, 600)) & (cm.haveItem(1302020)) && (cm.getMeso() >= 500000 )) {
+						cm.gainItem(leaf, -600);
 						cm.gainItem(1302020,-1);
 						cm.gainMeso(-500000);
 						cm.gainItem(1432012,1);
@@ -124,8 +124,8 @@ function action(mode, type, selection) {
 						cm.dispose();
 						}}
 					else if (selection == 4) {
-						if ((cm.haveItem(leaf, 10)) & (cm.haveItem(1302020)) && (cm.getMeso() >= 500000 )) {
-						cm.gainItem(leaf, -10);
+						if ((cm.haveItem(leaf, 600)) & (cm.haveItem(1302020)) && (cm.getMeso() >= 500000 )) {
+						cm.gainItem(leaf, -600);
 						cm.gainItem(1302020,-1);
 						cm.gainMeso(-500000);
 						cm.gainItem(1442024,1);
@@ -135,8 +135,8 @@ function action(mode, type, selection) {
 						cm.dispose();
 						}}
 					else if (selection == 5) {
-						if ((cm.haveItem(leaf, 15)) & (cm.haveItem(1302030)) && (cm.getMeso() >= 5000000 )) {
-						cm.gainItem(leaf, -15);
+						if ((cm.haveItem(leaf, 600)) & (cm.haveItem(1302030)) && (cm.getMeso() >= 5000000 )) {
+						cm.gainItem(leaf, -600);
 						cm.gainItem(1302030,-1);
 						cm.gainMeso(-5000000);
 						cm.gainItem(1302064,1);
@@ -146,8 +146,8 @@ function action(mode, type, selection) {
 						cm.dispose();
 						}}
 					else if (selection == 6) {
-						if ((cm.haveItem(leaf, 15)) & (cm.haveItem(1412011)) && (cm.getMeso() >= 5000000 )) {
-						cm.gainItem(leaf, -15);
+						if ((cm.haveItem(leaf, 600)) & (cm.haveItem(1412011)) && (cm.getMeso() >= 5000000 )) {
+						cm.gainItem(leaf, -600);
 						cm.gainItem(1412011,-1);
 						cm.gainMeso(-5000000);
 						cm.gainItem(1312032,1);
@@ -157,8 +157,8 @@ function action(mode, type, selection) {
 						cm.dispose();
 						}}
 					else if (selection == 7) {
-						if ((cm.haveItem(leaf, 15)) & (cm.haveItem(1422014)) && (cm.getMeso() >= 5000000 )) {
-						cm.gainItem(leaf, -15);
+						if ((cm.haveItem(leaf, 600)) & (cm.haveItem(1422014)) && (cm.getMeso() >= 5000000 )) {
+						cm.gainItem(leaf, -600);
 						cm.gainItem(1422014,-1);
 						cm.gainMeso(-5000000);
 						cm.gainItem(1322054,1);
@@ -168,8 +168,8 @@ function action(mode, type, selection) {
 						cm.dispose();
 						}}
 					else if (selection == 8) {
-						if ((cm.haveItem(leaf, 15)) & (cm.haveItem(1302030)) && (cm.getMeso() >= 5000000 )) {
-						cm.gainItem(leaf, -15);
+						if ((cm.haveItem(leaf, 600)) & (cm.haveItem(1302030)) && (cm.getMeso() >= 5000000 )) {
+						cm.gainItem(leaf, -600);
 						cm.gainItem(1302030,-1);
 						cm.gainMeso(-5000000);
 						cm.gainItem(1402039,1);
@@ -179,8 +179,8 @@ function action(mode, type, selection) {
 						cm.dispose();
 						}}
 					else if (selection == 9) {
-						if ((cm.haveItem(leaf, 15)) & (cm.haveItem(1412011)) && (cm.getMeso() >= 5000000 )) {
-						cm.gainItem(leaf, -15);
+						if ((cm.haveItem(leaf, 600)) & (cm.haveItem(1412011)) && (cm.getMeso() >= 5000000 )) {
+						cm.gainItem(leaf, -600);
 						cm.gainItem(1412011,-1);
 						cm.gainMeso(-5000000);
 						cm.gainItem(1412027,1);
@@ -190,8 +190,8 @@ function action(mode, type, selection) {
 						cm.dispose();
 						}}
 					else if (selection == 10) {
-						if ((cm.haveItem(leaf, 15)) & (cm.haveItem(1422014)) && (cm.getMeso() >= 5000000 )) {
-						cm.gainItem(leaf, -15);
+						if ((cm.haveItem(leaf, 600)) & (cm.haveItem(1422014)) && (cm.getMeso() >= 5000000 )) {
+						cm.gainItem(leaf, -600);
 						cm.gainItem(1422014,-1);
 						cm.gainMeso(-5000000);
 						cm.gainItem(1422029,1);
@@ -201,8 +201,8 @@ function action(mode, type, selection) {
 						cm.dispose();
 						}}
 					else if (selection == 11) {
-						if ((cm.haveItem(leaf, 15)) & (cm.haveItem(1432012)) && (cm.getMeso() >= 5000000 )) {
-						cm.gainItem(leaf, -15);
+						if ((cm.haveItem(leaf, 600)) & (cm.haveItem(1432012)) && (cm.getMeso() >= 5000000 )) {
+						cm.gainItem(leaf, -600);
 						cm.gainItem(1432012,-1);
 						cm.gainMeso(-5000000);
 						cm.gainItem(1432040,1);
@@ -212,8 +212,8 @@ function action(mode, type, selection) {
 						cm.dispose();
 						}}
 					else if (selection == 12) {
-						if ((cm.haveItem(leaf, 15)) & (cm.haveItem(1442024)) && (cm.getMeso() >= 5000000 )) {
-						cm.gainItem(leaf, -15);
+						if ((cm.haveItem(leaf, 600)) & (cm.haveItem(1442024)) && (cm.getMeso() >= 5000000 )) {
+						cm.gainItem(leaf, -600);
 						cm.gainItem(1442024,-1);
 						cm.gainMeso(-5000000);
 						cm.gainItem(1442051,1);
@@ -223,8 +223,8 @@ function action(mode, type, selection) {
 						cm.dispose();
 						}}
 					else if (selection == 13) {
-						if ((cm.haveItem(leaf, 5)) & (cm.haveItem(1092030)) && (cm.getMeso() >= 2500000 )) {
-						cm.gainItem(leaf, -5);
+						if ((cm.haveItem(leaf, 600)) & (cm.haveItem(1092030)) && (cm.getMeso() >= 2500000 )) {
+						cm.gainItem(leaf, -600);
 						cm.gainItem(1092030,-1);
 						cm.gainMeso(-5000000);
 						cm.gainItem(1092046,1);
@@ -237,8 +237,8 @@ function action(mode, type, selection) {
                 }
                 else if (bowman == 1) {
 					if (selection == 0) {
-						if ((cm.haveItem(leaf, 10)) & (cm.haveItem(1452016)) && (cm.getMeso() >= 500000 )) {
-						cm.gainItem(leaf, -10);
+						if ((cm.haveItem(leaf, 600)) & (cm.haveItem(1452016)) && (cm.getMeso() >= 500000 )) {
+						cm.gainItem(leaf, -600);
 						cm.gainItem(1452016,-1);
 						cm.gainMeso(-500000);
 						cm.gainItem(1452022,1);
@@ -248,8 +248,8 @@ function action(mode, type, selection) {
 						cm.dispose();
 						}}
 					else if (selection == 1) {
-						if ((cm.haveItem(leaf, 15)) && (cm.haveItem(1452022)) && (cm.getMeso() >= 5000000 )) {
-						cm.gainItem(leaf, -15);
+						if ((cm.haveItem(leaf, 600)) && (cm.haveItem(1452022)) && (cm.getMeso() >= 5000000 )) {
+						cm.gainItem(leaf, -600);
 						cm.gainItem(1452022,-1);
 						cm.gainMeso(-5000000);
 						cm.gainItem(1452045,1);
@@ -259,8 +259,8 @@ function action(mode, type, selection) {
 						cm.dispose();
 						}}
 					else if (selection == 2) {
-						if ((cm.haveItem(leaf, 10)) & (cm.haveItem(1462014)) && (cm.getMeso() >= 500000 )) {
-						cm.gainItem(leaf, -10);
+						if ((cm.haveItem(leaf, 600)) & (cm.haveItem(1462014)) && (cm.getMeso() >= 500000 )) {
+						cm.gainItem(leaf, -600);
 						cm.gainItem(1462014,-1);
 						cm.gainMeso(-500000);
 						cm.gainItem(1462019,1);
@@ -270,8 +270,8 @@ function action(mode, type, selection) {
 						cm.dispose();
 						}}
 					else if (selection == 3) {
-						if ((cm.haveItem(leaf, 15)) & (cm.haveItem(1462019)) && (cm.getMeso() >= 5000000 )) {
-						cm.gainItem(leaf, -15);
+						if ((cm.haveItem(leaf, 600)) & (cm.haveItem(1462019)) && (cm.getMeso() >= 5000000 )) {
+						cm.gainItem(leaf, -600);
 						cm.gainItem(1462019,-1);
 						cm.gainMeso(-5000000);
 						cm.gainItem(1462040,1);
@@ -284,8 +284,8 @@ function action(mode, type, selection) {
                 }
                 else if (thief == 1) {
 					if (selection == 0) {
-						if ((cm.haveItem(leaf, 10)) & (cm.haveItem(1472030)) && (cm.getMeso() >= 500000 )) {
-						cm.gainItem(leaf, -10);
+						if ((cm.haveItem(leaf, 600)) & (cm.haveItem(1472030)) && (cm.getMeso() >= 500000 )) {
+						cm.gainItem(leaf, -600);
 						cm.gainItem(1472030,-1);
 						cm.gainMeso(-500000);
 						cm.gainItem(1472032,1);
@@ -295,8 +295,8 @@ function action(mode, type, selection) {
 						cm.dispose();
 						}}
 					else if (selection == 1) {
-						if ((cm.haveItem(leaf, 15)) & (cm.haveItem(1472032)) && (cm.getMeso() >= 5000000 )) {
-						cm.gainItem(leaf, -15);
+						if ((cm.haveItem(leaf, 600)) & (cm.haveItem(1472032)) && (cm.getMeso() >= 5000000 )) {
+						cm.gainItem(leaf, -600);
 						cm.gainItem(1472032,-1);
 						cm.gainMeso(-5000000);
 						cm.gainItem(1472055,1);
@@ -306,8 +306,8 @@ function action(mode, type, selection) {
 						cm.dispose();
 						}}
 					else if (selection == 2) {
-						if ((cm.haveItem(leaf, 10)) & (cm.haveItem(1472030)) && (cm.getMeso() >= 500000 )) {
-						cm.gainItem(leaf, -10);
+						if ((cm.haveItem(leaf, 600)) & (cm.haveItem(1472030)) && (cm.getMeso() >= 500000 )) {
+						cm.gainItem(leaf, -600);
 						cm.gainItem(1472030,-1);
 						cm.gainMeso(-500000);
 						cm.gainItem(1332025,1);
@@ -317,8 +317,8 @@ function action(mode, type, selection) {
 						cm.dispose();
 						}}
 					else if (selection == 3) {
-						if ((cm.haveItem(leaf, 15)) & (cm.haveItem(1332025)) && (cm.getMeso() >= 5000000 )) {
-						cm.gainItem(leaf, -15);
+						if ((cm.haveItem(leaf, 600)) & (cm.haveItem(1332025)) && (cm.getMeso() >= 5000000 )) {
+						cm.gainItem(leaf, -600);
 						cm.gainItem(1332025,-1);
 						cm.gainMeso(-5000000);
 						cm.gainItem(1332055,1);
@@ -328,8 +328,8 @@ function action(mode, type, selection) {
 						cm.dispose();
 						}}
 					else if (selection == 4) {
-						if ((cm.haveItem(leaf, 15)) & (cm.haveItem(1332025)) && (cm.getMeso() >= 5000000 )) {
-						cm.gainItem(leaf, -15);
+						if ((cm.haveItem(leaf, 600)) & (cm.haveItem(1332025)) && (cm.getMeso() >= 5000000 )) {
+						cm.gainItem(leaf, -600);
 						cm.gainItem(1332025,-1);
 						cm.gainMeso(-5000000);
 						cm.gainItem(1332056,1);
@@ -339,8 +339,8 @@ function action(mode, type, selection) {
 						cm.dispose();
 						}}
 					else if (selection == 5) {
-						if ((cm.haveItem(leaf, 5)) & (cm.haveItem(1092030)) && (cm.getMeso() >= 2500000 )) {
-						cm.gainItem(leaf, -5);
+						if ((cm.haveItem(leaf, 600)) & (cm.haveItem(1092030)) && (cm.getMeso() >= 2500000 )) {
+						cm.gainItem(leaf, -600);
 						cm.gainItem(1092030,-1);
 						cm.gainMeso(-5000000);
 						cm.gainItem(1092047,1);
@@ -353,8 +353,8 @@ function action(mode, type, selection) {
                 }
 				else if (mage == 1) {
 					if (selection == 0) {
-						if ((cm.haveItem(leaf, 10)) & (cm.haveItem(1382009)) && (cm.getMeso() >= 500000 )) {
-						cm.gainItem(leaf, -10);
+						if ((cm.haveItem(leaf, 600)) & (cm.haveItem(1382009)) && (cm.getMeso() >= 500000 )) {
+						cm.gainItem(leaf, -600);
 						cm.gainItem(1382009,-1);
 						cm.gainMeso(-500000);
 						cm.gainItem(1382012,1);
@@ -364,8 +364,8 @@ function action(mode, type, selection) {
 						cm.dispose();
 						}}
 					else if (selection == 1) {
-						if ((cm.haveItem(leaf, 15)) & (cm.haveItem(1382012)) && (cm.getMeso() >= 5000000 )) {
-						cm.gainItem(leaf, -15);
+						if ((cm.haveItem(leaf, 600)) & (cm.haveItem(1382012)) && (cm.getMeso() >= 5000000 )) {
+						cm.gainItem(leaf, -600);
 						cm.gainItem(1382012,-1);
 						cm.gainMeso(-5000000);
 						cm.gainItem(1372034,1);
@@ -375,8 +375,8 @@ function action(mode, type, selection) {
 						cm.dispose();
 						}}
 					else if (selection == 2) {
-						if ((cm.haveItem(leaf, 15)) & (cm.haveItem(1382012)) && (cm.getMeso() >= 5000000 )) {
-						cm.gainItem(leaf, -15);
+						if ((cm.haveItem(leaf, 600)) & (cm.haveItem(1382012)) && (cm.getMeso() >= 5000000 )) {
+						cm.gainItem(leaf, -600);
 						cm.gainItem(1382012,-1);
 						cm.gainMeso(-5000000);
 						cm.gainItem(1382039,1);
@@ -386,8 +386,8 @@ function action(mode, type, selection) {
 						cm.dispose();
 						}}
 					else if (selection == 3) {
-						if ((cm.haveItem(leaf, 5)) & (cm.haveItem(1092030)) && (cm.getMeso() >= 2500000 )) {
-						cm.gainItem(leaf, -5);
+						if ((cm.haveItem(leaf, 600)) & (cm.haveItem(1092030)) && (cm.getMeso() >= 2500000 )) {
+						cm.gainItem(leaf, -600);
 						cm.gainItem(1092030,-1);
 						cm.gainMeso(-5000000);
 						cm.gainItem(1092045,1);
@@ -400,8 +400,8 @@ function action(mode, type, selection) {
 				}
 				else if (pirate == 1) {
 					if (selection == 0) {
-						if ((cm.haveItem(leaf, 10)) & (cm.haveItem(1482020)) && (cm.getMeso() >= 500000 )) {
-						cm.gainItem(leaf, -10);
+						if ((cm.haveItem(leaf, 600)) & (cm.haveItem(1482020)) && (cm.getMeso() >= 500000 )) {
+						cm.gainItem(leaf, -600);
 						cm.gainItem(1482020,-1);
 						cm.gainMeso(-500000);
 						cm.gainItem(1482021,1);
@@ -411,8 +411,8 @@ function action(mode, type, selection) {
 						cm.dispose();
 						}}
 					else if (selection == 1) {
-						if ((cm.haveItem(leaf, 15)) & (cm.haveItem(1482021)) && (cm.getMeso() >= 5000000 )) {
-						cm.gainItem(leaf, -15);
+						if ((cm.haveItem(leaf, 600)) & (cm.haveItem(1482021)) && (cm.getMeso() >= 5000000 )) {
+						cm.gainItem(leaf, -600);
 						cm.gainItem(1482021,-1);
 						cm.gainMeso(-5000000);
 						cm.gainItem(1482022,1);
@@ -422,8 +422,8 @@ function action(mode, type, selection) {
 						cm.dispose();
 						}}
 					else if (selection == 2) {
-						if ((cm.haveItem(leaf, 10)) & (cm.haveItem(1492020)) && (cm.getMeso() >= 500000 )) {
-						cm.gainItem(leaf, -10);
+						if ((cm.haveItem(leaf, 600)) & (cm.haveItem(1492020)) && (cm.getMeso() >= 500000 )) {
+						cm.gainItem(leaf, -600);
 						cm.gainItem(1492020,-1);
 						cm.gainMeso(-500000);
 						cm.gainItem(1492021,1);
@@ -433,8 +433,8 @@ function action(mode, type, selection) {
 						cm.dispose();
 						}}
 					else if (selection == 3) {
-						if ((cm.haveItem(leaf, 15)) & (cm.haveItem(1492021)) && (cm.getMeso() >= 5000000 )) {
-						cm.gainItem(leaf, -15);
+						if ((cm.haveItem(leaf, 600)) & (cm.haveItem(1492021)) && (cm.getMeso() >= 5000000 )) {
+						cm.gainItem(leaf, -600);
 						cm.gainItem(1492021,-1);
 						cm.gainMeso(-5000000);
 						cm.gainItem(1492022,1);

@@ -56,7 +56,12 @@ public class ConsoleCommands {
                         CommandWorker.Command command = new CommandWorker.Command(name);
                         CommandWorker.CommandArgs args = new CommandWorker.CommandArgs(sp);
 
-                        execute(command, args);
+                        try {
+                            execute(command, args);
+                        } catch (Throwable t) {
+                            // don't break the loop
+                            t.printStackTrace();
+                        }
                     }
                 }
                 scanner.close();

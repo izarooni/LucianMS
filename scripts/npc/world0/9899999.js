@@ -56,7 +56,7 @@ function action(mode, type, selection) {
         if (this.quest == null || !this.finished) {
             var kills = cqb.getToKill(quest_id);
             if (!kills.isEmpty()) {
-                var text = "Here are the tasks for today's quest\r\n\r\n";
+                var text = "#FUI/UIWindow/Quest/summary#\r\n";
                 text += "#eKill the following monsters#n#b";
                 kills.forEach(function(k, v) {
                     text += "\r\n" + v + " of #o" + k + "#";
@@ -69,7 +69,7 @@ function action(mode, type, selection) {
             if (this.quest.complete(player)) {
                 cm.sendOk("That's all for now, see you tomorrow!~");
             } else {
-                cm.sendOk("You need to make room in your inventory for your rewards.");
+                cm.sendOk("You need to make room in your inventory before you receive your rewards");
             }
             cm.dispose();
         }
@@ -77,7 +77,7 @@ function action(mode, type, selection) {
         if (this.quest == null || !this.finished) {
             var collects = cqb.getToCollect(quest_id);
             if (!collects.isEmpty()) {
-                var text = "Here are the tasks for today's quest\r\n\r\n";
+                var text = "#FUI/UIWindow/Quest/summary#\r\n";
                 text += "#eCollect the following items#n#b";
                 collects.forEach(function(k, v) {
                     text += "\r\n" + v.getRequirement() + " of #z" + k + "#";
@@ -88,7 +88,7 @@ function action(mode, type, selection) {
             }
         }
     } else if (status == 4) {
-        var text = "Now finally, here are the rewards for completing this quest!\r\n\r\n";
+        var text = "#FUI/UIWindow/Quest/reward#\r\n\r\n";
         var rewards = cqb.getRewards(quest_id);
         var total = 0;
         rewards.get("exp").forEach(function(r) {

@@ -8,7 +8,7 @@ var base = 0;
 
 function action(mode, type, selection) {
     if (mode < 1) {
-        cm.dispose();4
+        cm.dispose();
         return;
     } else {
         status++;
@@ -19,6 +19,17 @@ function action(mode, type, selection) {
     if (status == 1) {
         // skip
     } else if (status == 2) {
+        if (!player.isGM()) {
+            if (cm.getParty() == null || cm.getPartyMembers().size() <= minParticpants) {
+                cm.sendOk("You must be in a party with at least #b" + minParticpants + " members#k to enter ths monster park");
+                cm.dispose();
+                return;
+            } else if (!cm.isLeader()) {
+                cm.sendOk("Only your party leader may decide when to enter");
+                cm.dispose();
+                return;
+            }
+        }
         var text = "Are you ready to enter the #b";
         switch (selection) {
             case 3: // zebra
@@ -39,11 +50,19 @@ function action(mode, type, selection) {
         cm.sendNext(text);
     } else if (status == 3) {
         if (base == 0) {
-            cm.sendOk("Sorry, this monster park is currently not availble.");
+            cm.sendOk("Sorry, this monster park is currently not available.");
             cm.dispose();
         } else {
             var park = new MonsterPark(client.getWorld(), client.getChannel(), base);
-            park.registerPlayer(player);
+            if (cm.getParty() != null) {
+                cm.getPartyMembers().forEach(function(member) {
+                    if (member.getMapId() == player.getMapId()) {
+                        park.registerPlayer(member);
+                    }
+                });
+            } else if (player.isGM()) {
+                park.registerPlayer(player);
+            }
             cm.dispose();
         }
     }

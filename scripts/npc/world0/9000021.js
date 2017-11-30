@@ -90,9 +90,9 @@ function action(mode, type, selection) {
         else
             status--;
         if (status == 0) {
-            cm.sendNext("#eHello #d#h ##k! My name is #rGaga A#k and I have a mission for you.");
+            cm.sendNext("#eHello #d#h ##k! My name is #rGaga#k and I have a mission for you.");
         } else if (status == 1) {
-            cm.sendSimple("#eI want you to collect many items for me. If you collect the items you will recieve an eraser. Once you have gathered up all the erasers, I will give you a reward!#b(10,000,000 EXP, 4 Gachapon for net cafe, and 1,000 Golden Maple Leaf)#k \r\n\r\n#b#L0#What items do I have to collect?#l \r\n#L1#I have the erasers!#l");
+            cm.sendSimple("#eI want you to collect many items for me. If you collect the items you will recieve an eraser and 25,000 EXP. Once you have gathered up all the erasers, I will give you a reward!#b(5,000,000 EXP, 10 Gachapon Tickets, and 300 Maple Leaves and 2 Lucian Crystals)#k \r\n\r\n#b#L0#What items do I have to collect?#l \r\n#L1#I have the erasers!#l");
         } else {
             if (selection == 0) {
                 cm.sendSimple("#eWell, you will need to collect a lot of items. You need to collect 50 of each item. There will be 5 items per city. Once you turn in the required amount of items for the city, you will be rewarded an #beraser#k. If you collect all 7 erasers you can turn them in for the grand reward. \r\n#b#L2#See the items for Henesys#l\r\n#L3#See the items for Ariant#l\r\n#L4#See the items for Orbis#l\r\n#L5#See the items for Ludibrium#l\r\n#L6#See the items for Leafre#l\r\n#L7#See the items for Mu Lung#l\r\n#L8#See the items for Aquarium#l");
@@ -105,10 +105,11 @@ function action(mode, type, selection) {
                     cm.gainItem(4001013, -1);
                     cm.gainItem(4001014, -1);
                     cm.gainItem(4001021, -1);
-		    cm.gainItem(5220020, 4);
-                    cm.gainItem(4000313, 300);
-                    cm.gainExp(10000000);
-                    cm.sendOk("#eThere you are #d#h ##k, I hope you enjoy your prize!");
+		            cm.gainItem(5220000, 10);
+                    cm.gainItem(4001126, 300);
+                    cm.gainItem(4260002, 2);
+                    cm.gainExp(5000000);
+                    cm.sendOk("#eThere you are #d#h ##k, I hope you enjoy your sweet rewards!");
                     cm.dispose();
                 } else {
                     cm.sendSimple("#eYou do not have all 7 erasers, please come back when you do. \r\n#b#L9#See the erasers#l");
@@ -126,6 +127,7 @@ function action(mode, type, selection) {
                     cm.gainItem(4000039, -50);
                     cm.gainItem(4000022, -50);
                     cm.gainItem(4000016, -50);
+                    cm.gainExp(25000);
                     cm.dispose();
                 } else {
                     cm.sendOk("#eYou do not have 50 or more of each of those items.\r\n\r\n#i4000016# - "+henesys1+"\r\n#i4000004# - "+henesys2+"\r\n#i4000001# - "+henesys3+"\r\n#i4000039# - "+henesys4+"\r\n#i4000022# - "+henesys5+"");
@@ -141,6 +143,7 @@ function action(mode, type, selection) {
                     cm.gainItem(4000328, -50);
                     cm.gainItem(4000324, -50);
                     cm.gainItem(4000329, -50);
+                    cm.gainExp(25000);
                     cm.dispose();
                 } else {
                     cm.sendOk("#eYou do not have 50 or more of each of those items.\r\n\r\n#i4000329# - "+ariant1+"\r\n#i4010007# - "+ariant2+"\r\n#i4010007# - "+ariant3+"\r\n#i4000328# - "+ariant4+"\r\n#i4000324# - "+ariant5+"");
@@ -156,6 +159,7 @@ function action(mode, type, selection) {
                     cm.gainItem(4000084, -50);
                     cm.gainItem(4000072, -50);
                     cm.gainItem(4000062, -50);
+                    cm.gainExp(25000);
                     cm.dispose();
                 } else {
                     cm.sendOk("#eYou do not have 50 or more of each of those items.\r\n\r\n#i4000059# - "+orbis1+"\r\n#i4000083# - "+orbis2+"\r\n#i4000084# - "+orbis3+"\r\n#i4000072# - "+orbis4+"\r\n#i4000062# - "+orbis5+"");
@@ -171,6 +175,7 @@ function action(mode, type, selection) {
                     cm.gainItem(4000130, -50);
                     cm.gainItem(4000114, -50);
                     cm.gainItem(4000144, -50);
+                    cm.gainExp(25000);
                     cm.dispose();
                 } else {
                     cm.sendOk("#eYou do not have 50 or more of each of those items.\r\n\r\n#i4000143# - "+ludi1+"\r\n#i4000109# - "+ludi2+"\r\n#i4000130# - "+ludi3+"\r\n#i4000114# - "+ludi4+"\r\n#i4000144# - "+ludi5+"");
@@ -186,6 +191,7 @@ function action(mode, type, selection) {
                     cm.gainItem(4000242, -50);
                     cm.gainItem(4000266, -50);
                     cm.gainItem(4000270, -50);
+                    cm.gainExp(25000);
                     cm.dispose();
                 } else {
                     cm.sendOk("#eYou do not have 50 or more of each of those items.\r\n\r\n#i4000229# - "+leafre1+"\r\n#i4000231# - "+leafre2+"\r\n#i4000242# - "+leafre3+"\r\n#i4000266# - "+leafre4+"\r\n#i4000270# - "+leafre5+"");
@@ -201,6 +207,7 @@ function action(mode, type, selection) {
                     cm.gainItem(4000282, -50);
                     cm.gainItem(4000288, -50);
                     cm.gainItem(4000287, -50);
+                    cm.gainExp(25000);
                     cm.dispose();
                 } else {
                     cm.sendOk("#eYou do not have 50 or more of each of those items.\r\n\r\n#i4000276# - "+mulung1+"\r\n#i4000280# - "+mulung2+"\r\n#i4000282# - "+mulung3+"\r\n#i4000288# - "+mulung4+"\r\n#i4000287# - "+mulung5+"");
@@ -216,6 +223,7 @@ function action(mode, type, selection) {
                     cm.gainItem(4000154, -50);
                     cm.gainItem(4000157, -50);
                     cm.gainItem(4000179, -50);
+                    cm.gainExp(25000);
                     cm.dispose();
                     } else {
                     cm.sendOk("#eYou do not have 50 or more of each of those items.\r\n\r\n#i4000166# - "+aqua1+"\r\n#i4000164# - "+aqua2+"\r\n#i4000154# - "+aqua3+"\r\n#i4000157# - "+aqua4+"\r\n#i4000179# - "+aqua5+"");

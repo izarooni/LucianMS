@@ -27,7 +27,7 @@ function action(mode, type, selection) {
                 ttd = parseInt(ttd); // js trust issues -3-
                 if (now >= ttd) { // it's been at least 24 hours since last login
                     if (now - ttd >= TimeUnit.DAYS.toMillis(1)) { // been 2+ days since login
-                        cm.sendNext("Aw man, your " + this.streak + " daily login streak has been crushed!\r\nSadly, it has been over " + TimeUnit.MILLISECONDS.toDays(now - ttd) + " days since your last login.\r\nYou'll have to start over now...");
+                        cm.sendNext("Aw man, your " + this.streak + " daily login streak has been crushed!\r\nSadly, it has been over #b" + TimeUnit.MILLISECONDS.toDays(now - ttd) + " days#k since your last login.\r\nYou'll have to start over now...");
                     } else {
                         cm.sendNext("#eLogin Streak: #b" + this.streak + "#k#n\r\nThanks for playing, remember to vote for us~\r\nHave a nice day!");
                     }
@@ -40,10 +40,10 @@ function action(mode, type, selection) {
             }
         }
     } else if (status == 2) {
-        this.streak += 1;
         if (giveReward(this.streak)) {
-            recordStreak(this.streak);
             cm.sendOk("Here is your reward for your #b" + this.streak + aaa(this.streak) + "#k daily login reward!");
+            this.streak += 1;
+            recordStreak(this.streak);
         } else {
             cm.sendOk("Please make sure you have room in your inventory before claiming your reward");
         }
@@ -70,10 +70,10 @@ function aaa(streak) {
 }
 
 function giveReward(streak) {
-    if (streak == 1) {
-        // cm.gainItem(2000000, 1, true); // eEXP Ticket
-        // player.gainMeso(25000, true);
+    if (InventoryModifier.checkSpace(client, 2002031, 1, "")) {
+        cm.gainItem(2002031, 1, true); // EXP Ticket
+        player.gainMeso(25000, true);
         return true;
     }
-   return false;
+    return false;
 }
