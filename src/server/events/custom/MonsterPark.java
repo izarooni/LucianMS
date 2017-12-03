@@ -1,7 +1,6 @@
 package server.events.custom;
 
 import client.MapleCharacter;
-import net.server.channel.handlers.ChangeMapHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import scheduler.Task;
@@ -11,7 +10,6 @@ import server.life.*;
 import server.maps.MapleMap;
 import server.maps.MapleMapFactory;
 import tools.MaplePacketCreator;
-import tools.annotation.PacketWorker;
 
 import java.util.Hashtable;
 
@@ -28,23 +26,21 @@ public class MonsterPark extends GenericEvent {
     private final MapleMapFactory mapFactory;
     private long timestampStart = 0;
     private Task timeout = null;
-    private Hashtable<MapleCharacter, Integer> returnMaps = new Hashtable<>();
+    private Hashtable<Integer, Integer> returnMaps = new Hashtable<>();
 
     public MonsterPark(int world, int channel, int mapId) {
-        registerAnnotationPacketEvents(this);
         this.mapId = mapId;
         this.mapFactory = new MapleMapFactory(world, channel);
 
         for (int i = mapId; i < (mapId + (Stages * Increments)); i += Increments) {
             MapleMap instanceMap = mapFactory.skipMonsters(true).getMap(i);
             if (instanceMap != null) {
-                LOGGER.info("{} loaded with {} monsters", mapId, instanceMap.getMonsters().size());
 
                 final MaplePortal portal;
-                if (instanceMap.getPortal("mPark_nextStage") != null) {
-                    (portal = instanceMap.getPortal("mPark_nextStage")).setPortalStatus(false);
+                if (instanceMap.getPortal("next00") != null) {
+                    (portal = instanceMap.getPortal("next00")).setPortalStatus(false);
                 } else {
-                    portal = instanceMap.getPortal("mPark_final");
+                    portal = instanceMap.getPortal("final00");
                     if (portal != null) {
                         portal.setPortalState(false);
                     }
@@ -100,55 +96,42 @@ public class MonsterPark extends GenericEvent {
             timeout = TaskExecutor.createTask(() -> returnMaps.forEach((p, m) -> unregisterPlayer(player)), 1000 * 60 * 20);
             timestampStart = System.currentTimeMillis();
         }
-        returnMaps.put(player, player.getMapId());
+        returnMaps.put(player.getId(), player.getMapId());
         player.changeMap(mapFactory.getMap(mapId));
-        player.announce(MaplePacketCreator.getClock((int) ((timestampStart + (60 * 20)) - System.currentTimeMillis())));
+        player.announce(MaplePacketCreator.getClock((60 * 20)));
+        player.announce(MaplePacketCreator.showEffect("monsterPark/stageEff/stage"));
+        player.announce(MaplePacketCreator.showEffect("monsterPark/stageEff/number/1"));
         player.addGenericEvent(this);
     }
 
     @Override
     public void unregisterPlayer(MapleCharacter player) {
         player.removeGenericEvent(this);
-        player.changeMap(returnMaps.remove(player));
-    }
-
-    @PacketWorker
-    public void onChangeMap(ChangeMapHandler event) {
-        MapleCharacter player = event.getClient().getPlayer();
-
-        MaplePortal portal = player.getMap().getPortal(event.getStartwp());
-
-        if (portal.getPortalStatus()) {
-            int targetMap = event.getTargetMapId();
-            int stage = (mapId + Stages) - targetMap;
-            boolean finalMap = targetMap == (mapId + Stages);
-
-            if (targetMap > mapId && targetMap <= (mapId + Stages)) {
-                MapleMap instanceMap = mapFactory.getMap(targetMap);
-                player.changeMap(instanceMap);
-                player.announce(MaplePacketCreator.getClock((int) ((timestampStart + (60 * 20)) - System.currentTimeMillis())));
-                if (finalMap) {
-                    player.announce(MaplePacketCreator.showEffect("monsterPark/stageEff/final"));
-                } else {
-                    player.announce(MaplePacketCreator.showEffect("monsterPark/stageEff/stage"));
-                    player.announce(MaplePacketCreator.showEffect("monsterPark/stageEff/number/" + stage));
-                }
-            } else {
-                unregisterPlayer(player);
-            }
-        } else {
-            player.dropMessage("You must clear all monsters on the map before proceeding");
-            player.announce(MaplePacketCreator.enableActions());
-        }
-        event.setCanceled(true);
+        player.changeMap(returnMaps.remove(player.getId()));
     }
 
     public void advanceMap(MapleCharacter player) {
         if (player.getMapId() == getMapId() + (Stages * Increments)) {
             unregisterPlayer(player);
-            player.sendMessage("Complete!");
         } else {
-            player.changeMap(mapFactory.getMap(player.getMap().getId() + Increments));
+            int stage = ((player.getMapId() + Increments) % 1000 / 100);
+
+            // player is still in the monster park area
+            if (player.getMapId() >= mapId && player.getMapId() <= (mapId + (Stages * Increments))) {
+                player.changeMap(mapFactory.getMap(player.getMap().getId() + Increments));
+                // (start timestamp + 20min) = timeout
+                // timeout - (current time) = elapsed time (aka: seconds left)
+                int sLeft = (int) (((timestampStart + (1000 * 60 * 20)) - System.currentTimeMillis()) / 1000);
+                player.announce(MaplePacketCreator.getClock(sLeft));
+                if (stage == 5) { // proceeding to final stage; stage 6
+                    player.announce(MaplePacketCreator.showEffect("monsterPark/stageEff/final"));
+                } else {
+                    player.announce(MaplePacketCreator.showEffect("monsterPark/stageEff/stage"));
+                    player.announce(MaplePacketCreator.showEffect("monsterPark/stageEff/number/" + (stage + 1)));
+                }
+            } else {
+                unregisterPlayer(player);
+            }
         }
     }
 
