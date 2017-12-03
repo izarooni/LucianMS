@@ -12,17 +12,11 @@ import server.quest.custom.requirement.CQuestItemRequirement;
 import server.quest.custom.reward.CQuestExpReward;
 import server.quest.custom.reward.CQuestItemReward;
 import server.quest.custom.reward.CQuestMesoReward;
-import server.quest.custom.reward.CQuestReward;
-import tools.Pair;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.security.InvalidParameterException;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 /**
  * Collect quest information from an XML file
@@ -82,80 +76,13 @@ public class CQuestBuilder {
     }
 
     /**
-     * Obtain the prerequisite quest ID that's needed to begin the specified quest
+     * Get custom quest meta data without initializing a new object instance
      *
-     * @param questId ID of the quest to check
-     * @return the quest ID of the prerequisite quest
+     * @param questId ID of the quest
+     * @return an object containing the necessary data in a custom quest
      */
-    public static int getPreQuest(int questId) {
-        CQuestData qData = quests.get(questId);
-        if (qData != null) {
-            return qData.getPreQuestId();
-        }
-        throw new InvalidParameterException(String.format("Unable to obtain pre-quest; Invalid quest ID specified '%d'", questId));
-    }
-
-    public static String getName(int questId) {
-        CQuestData qData = quests.get(questId);
-        if (qData == null) {
-            throw new InvalidParameterException(String.format("Unable to obtain quest; Invalid quest ID specified '%d'", questId));
-        }
-        return qData.getName();
-    }
-
-    /**
-     * Get a {@code Map} of item IDs to quantity from the kills requirement of a custom quest
-     *
-     * @param questId the id of a custom quest
-     * @return a {@code Map} of item IDs to amount requirement
-     */
-    public static HashMap<Integer, Integer> getToKill(int questId) {
-        CQuestData qData = quests.get(questId);
-        if (qData == null) {
-            throw new NullPointerException(String.format("Unable to obtain quest; Invalid quest ID specified '%d'", questId));
-        }
-        Map<Integer, Pair<Integer, Integer>> to = qData.getToKill().getKills();
-
-        HashMap<Integer, Integer> kills = new HashMap<>(to.size());
-        to.forEach((k, v) -> kills.put(k, v.getLeft()));
-
-        return kills; // should this be unmodifiable?
-    }
-
-    /**
-     * Get a {@code Map} of item IDs to quantity from the collection requirement of a custom quest
-     *
-     * @param questId the id of a custom quest
-     * @return a {@code Map} of item IDs to quantity requirement
-     */
-    public static HashMap<Integer, CQuestItemRequirement.CQuestItem> getToCollect(int questId) {
-        CQuestData qData = quests.get(questId);
-        if (qData == null) {
-            throw new NullPointerException(String.format("Unable to obtain quest; Invalid quest ID specified '%d'", questId));
-        }
-        Map<Integer, CQuestItemRequirement.CQuestItem> to = qData.getToCollect().getItems();
-        return new HashMap<>(to); // should this be unmodifiable?
-    }
-
-    public static HashMap<String, List<CQuestReward>> getRewards(int questId) {
-        CQuestData qData = quests.get(questId);
-        if (qData == null) {
-            throw new NullPointerException(String.format("Unable to obtain quest; Invalid quest ID specified '%d'", questId));
-        }
-        HashMap<String, List<CQuestReward>> rewards = new HashMap<>(qData.rewards.size());
-        rewards.put("exp", new ArrayList<>());
-        rewards.put("meso", new ArrayList<>());
-        rewards.put("items", new ArrayList<>());
-        for (CQuestReward reward : qData.rewards) {
-            if (reward instanceof CQuestExpReward) {
-                rewards.get("exp").add(reward);
-            } else if (reward instanceof CQuestMesoReward) {
-                rewards.get("meso").add(reward);
-            } else if (reward instanceof CQuestItemReward) {
-                rewards.get("items").add(reward);
-            }
-        }
-        return rewards;
+    public static CQuestMetaData getMetaData(int questId) {
+        return quests.get(questId).getMetaData();
     }
 
     private static CQuestData parseFile(File file) throws IOException {
@@ -232,6 +159,7 @@ public class CQuestBuilder {
                     qData.rewards.add(new CQuestItemReward(itemId, quantity));
                 }
             }
+            qData.metadata = new CQuestMetaData(qData);
             return qData;
         }
     }

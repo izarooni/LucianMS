@@ -6,6 +6,7 @@ import tools.Pair;
 
 import javax.script.*;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.Collection;
@@ -16,7 +17,7 @@ public final class ScriptUtil {
         path = "scripts/" + path;
         File file = new File(path);
         if (!file.exists()) {
-            throw new NullPointerException("No script found for path " + path);
+            throw new FileNotFoundException("No script found for path " + path);
         }
         ScriptEngine engine = new NashornScriptEngineFactory().getScriptEngine();
         try (FileReader reader = new FileReader(file)) {

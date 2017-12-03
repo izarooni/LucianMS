@@ -7,6 +7,7 @@ import tools.Pair;
 
 import javax.script.Invocable;
 import javax.script.ScriptException;
+import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -42,7 +43,7 @@ public class NPCScriptManager {
             Invocable iv = null;
             try {
                 iv = ScriptUtil.eval(client, path, binds);
-            } catch (NullPointerException e) {
+            } catch (FileNotFoundException e) {
                 cm.sendOk("Hey! I don't have a purpose right now\r\nThis is my ID: #b" + npc + "");
             } catch (Exception e) {
                 String response = "An error occurred in this NPC";

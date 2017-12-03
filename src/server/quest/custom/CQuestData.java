@@ -9,7 +9,6 @@ import server.quest.custom.reward.CQuestReward;
 import tools.MaplePacketCreator;
 
 import java.util.ArrayList;
-import java.util.Map;
 
 /**
  * Holds information for a quest (i.e. killed monsters, items looted)
@@ -29,11 +28,16 @@ public class CQuestData {
     private final CQuestKillRequirement toKill = new CQuestKillRequirement(); // monster kill requirements
     final CQuestItemRequirement toCollect = new CQuestItemRequirement(); // item collect requirements
     ArrayList<CQuestReward> rewards = new ArrayList<>();
+    CQuestMetaData metadata;
 
     CQuestData(int id, String name, boolean daily) {
         this.id = id;
         this.name = name;
         this.daily = daily;
+    }
+
+    CQuestMetaData getMetaData() {
+        return metadata;
     }
 
     /**
@@ -101,7 +105,6 @@ public class CQuestData {
     }
 
     /**
-     *
      * @return minimum level requirement to accept the quest
      */
     public int getMinimumLevel() {
@@ -183,7 +186,7 @@ public class CQuestData {
         if (rewards.stream().allMatch(r -> r.canAccept(player))) {
             setCompletion(System.currentTimeMillis());
             completed = true;
-            toCollect.getItems().forEach((key, value) -> MapleInventoryManipulator.removeById(player.getClient(), ItemConstants.getInventoryType(key), key, value.getRequirement(), false, false)) ;
+            toCollect.getItems().forEach((key, value) -> MapleInventoryManipulator.removeById(player.getClient(), ItemConstants.getInventoryType(key), key, value.getRequirement(), false, false));
             rewards.forEach(r -> r.give(player));
             return true;
         }
