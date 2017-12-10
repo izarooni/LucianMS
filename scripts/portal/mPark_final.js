@@ -13,7 +13,7 @@ function start(ms) {
         if (ms.getPortal().getPortalStatus()) {
             // proceed  to the next stage of the monster park
             this.optional.get().advanceMap(ms.getPlayer());
-            return true;
+            return false;
         }
     }
     return false;

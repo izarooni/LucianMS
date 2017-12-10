@@ -14,6 +14,8 @@ function start(ms) {
             // proceed  to the next stage of the monster park
             this.optional.get().advanceMap(ms.getPlayer());
             return true;
+        } else {
+            ms.getPlayer().sendMessage("You must defeat all the monsters in the map before you proceed to the next stage");
         }
     } else {
         ms.getPlayer().sendMessage("You may not use this portal");

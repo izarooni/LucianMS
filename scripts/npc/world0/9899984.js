@@ -1,3 +1,4 @@
+importPackage(Packages.tools);
 var MaplePacketCreator = Java.type("tools.MaplePacketCreator");
 var LifeFactory = Java.type("server.life.MapleLifeFactory");
 
@@ -12,23 +13,22 @@ function action(mode, type, selection) {
         status++;
     }
     if (status == 1) {
-        cm.sendNext("I've been waiting for you for a decade.");
+        cm.sendNext("My time is up in this world. I need to head back into the #r Tomb of the nameless pharaoh #k");
     } else if (status == 2) {
-        cm.sendNext("You who posses big and great strengt and power. Power so powerfull that it's unstoppeable.");
+        cm.sendNext("I heard someone mention that my name was #r Atem, #k but I am not quite sure.");
     } else if (status == 3) {
-        cm.sendNext("The shadow realm has opened and the evil monsters has returned to the future world. My time is up so this will be on you.");
+        cm.sendNext("My puzzle seems to sense some kind of weird power within you.");
     } else if (status == 4) {
-        cm.sendNext("You will leave your current body 5 years behind and take over your future body.");
+        cm.sendNext("I think time's up..but before I leave..");
     } else if (status == 5) {
-        cm.sendNext("Here..Take this #r Millennium #k Puzzle with you. This way you'll always have me by your side no matter what. I'll be within the puzzle all the time.");
+        cm.sendNext("Take this. Something just tells me that my puzzle belongs with you.");
     } else if (status == 6) {
-        cm.sendNext("There are other heroes out there who already are taking their part in the fight versus the evil monsters! But none like you. You're special.");
+        cm.sendNext("Watch out though. The greater evil is after it and their leader is #r The Black Mage. r/n/ The Puzzle can sense when something is wrong and will help you out.");
     } else if (status == 6) {
-        cm.sendOK("Now go! I'll be with you inside the puzzle.");
-        cm.gainItem(1302000, 1);
-        cm.gainItem(1302001, 1);
+        cm.sendNext("Goodbye friend.");
+        cm.gainItem(1012089, 1);
         cm.warp(122000000);
-        cm.getPlayer().getMap().broadcastMessage(MaplePacketCreator.showEffect("quest/party/clear5"));
         cm.dispose();
+        cm.getPlayer().getMap().broadcastMessage(MaplePacketCreator.showEffect("quest/party/clear5"));
     }
 }

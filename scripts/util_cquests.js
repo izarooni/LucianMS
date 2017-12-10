@@ -1,12 +1,11 @@
+/* izarooni */
 // get a list of monsters to kill, and the kill progression
-function CQuestPKills(quest) {
+function CQuestPKills(map) {
     var text = "#eKill the following monsters#n#b";
-    var kills = quest.getToKill().getKills();
-    var entry = kills.entrySet();
-    entry.forEach(function(e) {
+    map.entrySet().forEach(function(e) {
         var goal = e.getValue().getLeft();
         var progress = e.getValue().getRight();
-        text += "\r\n" + goal + " / " + progress + " of #o" + e.getKey() + "#";
+        text += "\r\n" + progress + " / " + goal + " of #o" + e.getKey() + "#";
     });
     return text;
 }
@@ -53,7 +52,7 @@ function CQuestRewards(map) {
     }
 
     if (!map.get("items").isEmpty()) {
-        text += "#eItems#n#b"
+        text += "\r\n#eItems#n#b"
         map.get("items").forEach(function(r) {
             text += "\r\n\t" + r.getQuantity() + " of #z" + r.getItemId() + "#";
         });
