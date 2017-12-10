@@ -45,8 +45,6 @@ public class MonsterPark extends GenericEvent {
                         portal.setPortalState(false);
                     }
                 }
-                boolean finalMap = i == (mapId + Stages);
-
                 for (SpawnPoint spawnPoint : instanceMap.getMonsterSpawnPoints()) {
                     MapleMonster monster = MapleLifeFactory.getMonster(spawnPoint.getMonster().getId());
                     if (monster != null) {
@@ -60,7 +58,7 @@ public class MonsterPark extends GenericEvent {
                             public void monsterKilled(int aniTime) {
                                 MapleMap currentMap = monster.getMap();
                                 if (currentMap.getMonsters().isEmpty()) {
-                                    if (finalMap) {
+                                    if (getStage(instanceMap.getId()) == 5) {
                                         timeout.cancel();
                                         currentMap.broadcastMessage(MaplePacketCreator.showEffect("monsterPark/clearF"));
                                         TaskExecutor.createTask(new Runnable() {
@@ -100,7 +98,7 @@ public class MonsterPark extends GenericEvent {
         player.changeMap(mapFactory.getMap(mapId));
         player.announce(MaplePacketCreator.getClock((60 * 20)));
         player.announce(MaplePacketCreator.showEffect("monsterPark/stageEff/stage"));
-        player.announce(MaplePacketCreator.showEffect("monsterPark/stageEff/number/1"));
+        TaskExecutor.createTask(() -> player.announce(MaplePacketCreator.showEffect("monsterPark/stageEff/number/1")), 2345);
         player.addGenericEvent(this);
     }
 
@@ -110,11 +108,15 @@ public class MonsterPark extends GenericEvent {
         player.changeMap(returnMaps.remove(player.getId()));
     }
 
+    private int getStage(int mapId) {
+        return (mapId + Increments) % 1000 / 100;
+    }
+
     public void advanceMap(MapleCharacter player) {
         if (player.getMapId() == getMapId() + (Stages * Increments)) {
             unregisterPlayer(player);
         } else {
-            int stage = ((player.getMapId() + Increments) % 1000 / 100);
+            int stage = getStage(player.getMapId());
 
             // player is still in the monster park area
             if (player.getMapId() >= mapId && player.getMapId() <= (mapId + (Stages * Increments))) {
@@ -127,7 +129,7 @@ public class MonsterPark extends GenericEvent {
                     player.announce(MaplePacketCreator.showEffect("monsterPark/stageEff/final"));
                 } else {
                     player.announce(MaplePacketCreator.showEffect("monsterPark/stageEff/stage"));
-                    player.announce(MaplePacketCreator.showEffect("monsterPark/stageEff/number/" + (stage + 1)));
+                    TaskExecutor.createTask(() -> MaplePacketCreator.showEffect("monsterPark/stageEff/number/" + (stage + 1)), 2345);
                 }
             } else {
                 unregisterPlayer(player);
