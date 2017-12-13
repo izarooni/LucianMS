@@ -27,6 +27,7 @@ import client.autoban.Cheats;
 import client.inventory.Equip;
 import client.inventory.Item;
 import client.inventory.MapleInventoryType;
+import client.meta.Occupation;
 import client.status.MonsterStatus;
 import client.status.MonsterStatusEffect;
 import constants.GameConstants;
@@ -739,5 +740,15 @@ public abstract class AbstractDealDamageHandler extends PacketHandler {
             ret.position.setLocation(lea.readShort(), lea.readShort());
         }
         return ret;
+    }
+
+    @Override
+    public void post() {
+        MapleCharacter player = getClient().getPlayer();
+        Occupation occupation = player.getOccupation();
+        if (occupation != null && occupation.getType() == Occupation.Type.Undead) {
+            int gain = player.getMaxHp() * ((int) Math.floor(Math.random() * 0.3 + 0.1));
+            player.addHP(gain);
+        }
     }
 }

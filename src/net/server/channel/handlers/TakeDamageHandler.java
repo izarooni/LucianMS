@@ -29,6 +29,7 @@ import client.autoban.Cheater;
 import client.autoban.Cheats;
 import client.inventory.Item;
 import client.inventory.MapleInventoryType;
+import client.meta.Occupation;
 import client.status.MonsterStatus;
 import client.status.MonsterStatusEffect;
 import constants.skills.Aran;
@@ -37,8 +38,8 @@ import net.PacketHandler;
 import server.MapleInventoryManipulator;
 import server.MapleItemInformationProvider;
 import server.MapleStatEffect;
-import server.life.MapleLifeFactory.loseItem;
 import server.life.*;
+import server.life.MapleLifeFactory.loseItem;
 import server.maps.MapleMap;
 import tools.MaplePacketCreator;
 import tools.Randomizer;
@@ -133,9 +134,12 @@ public final class TakeDamageHandler extends PacketHandler {
                 }
                 mpattack += attackInfo.getMpBurn();
                 MobSkill skill = MobSkillFactory.getMobSkill(attackInfo.getDiseaseSkill(), attackInfo.getDiseaseLevel());
-                if (skill != null && damage > 0) {
-                    skill.applyEffect(player, attacker, false);
+                if (player.getOccupation() == null || player.getOccupation().getType() != Occupation.Type.Demon) {
+                    if (skill != null && damage > 0) {
+                        skill.applyEffect(player, attacker, false);
+                    }
                 }
+
                 attacker.setMp(attacker.getMp() - attackInfo.getMpCon());
                 if (player.getBuffedValue(MapleBuffStat.MANA_REFLECTION) != null && damage > 0 && !attacker.isBoss()) {
                     int jobid = player.getJob().getId();

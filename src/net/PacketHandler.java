@@ -40,6 +40,8 @@ public abstract class PacketHandler {
         t.printStackTrace();
     }
 
+    public void post() {}
+
     public abstract void process(SeekableLittleEndianAccessor slea);
 
     public abstract Object onPacket();

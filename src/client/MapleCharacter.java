@@ -26,6 +26,7 @@ import client.arcade.RPSGame;
 import client.autoban.Cheater;
 import client.inventory.*;
 import client.meta.Achievement;
+import client.meta.Occupation;
 import constants.ExpTable;
 import constants.GameConstants;
 import constants.ItemConstants;
@@ -253,7 +254,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
     private Relationship relationship = new Relationship();
     private JumpQuestController JQController;
     private RPSGame RPSGame = null;
-    private Occupations occupation;
+    private Occupation occupation = null;
 
     // EVENTS
     private byte team = 0;
@@ -3638,7 +3639,10 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
             this.dojoStage = 0;
         } else if (mapid > 980000100 && mapid < 980000700) {
             getMap().broadcastMessage(this, MaplePacketCreator.getMonsterCarnivalPlayerDeath(this));
-        } else if (getJob() != MapleJob.BEGINNER) { // Hmm...
+        } else if (getJob() != MapleJob.BEGINNER) {
+            if (getOccupation() != null && getOccupation().getType() == Occupation.Type.Undead) {
+                return;
+            }
             int XPdummy = ExpTable.getExpNeededForLevel(getLevel());
             if (getMap().isTown()) {
                 XPdummy /= 100;
@@ -4522,6 +4526,29 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
         expRate = w.getExpRate();
         mesoRate = w.getMesoRate();
         dropRate = w.getDropRate();
+
+        if (occupation != null) {
+            switch (occupation.getType()) {
+                case Pharaoh:
+                    expRate += 1;
+                    mesoRate -= 1;
+                    dropRate -= 1;
+                    break;
+                case Undead:
+                    break;
+                case Demon:
+                    break;
+                case Human:
+                    dropRate += 1;
+                    mesoRate += 1;
+                    break;
+            }
+        }
+
+        // lul just in case
+        expRate = Math.max(1, expRate);
+        mesoRate = Math.max(1, mesoRate);
+        dropRate = Math.max(1, dropRate);
     }
 
     public void setFinishedDojoTutorial() {
@@ -5563,6 +5590,14 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
         this.RPSGame = RPSGame;
     }
 
+    public Occupation getOccupation() {
+        return occupation;
+    }
+
+    public void setOccupation(Occupation occupation) {
+        this.occupation = occupation;
+    }
+
     public JumpQuestController getJQController() {
         return this.JQController;
     }
@@ -5652,13 +5687,6 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
 
     public void setEyeScannersEquiped(boolean eyeScannersEquiped) {
         this.eyeScannersEquiped = eyeScannersEquiped;
-    }
-
-    public Occupations getOccupation() {
-        if (this.occupation == null) {
-            this.occupation = new Occupations(this);
-        }
-        return this.occupation;
     }
 
     public enum FameStatus {

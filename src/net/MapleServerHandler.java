@@ -166,6 +166,8 @@ public class MapleServerHandler extends IoHandlerAdapter {
                                 }
                             } catch (Throwable t) {
                                 handler.exceptionCaught(t);
+                            } finally {
+                                handler.post();
                             }
                         }
                     } catch (InstantiationException | IllegalAccessException e) {
