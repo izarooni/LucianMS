@@ -26,7 +26,6 @@ import client.autoban.Cheater;
 import client.autoban.Cheats;
 import client.inventory.Item;
 import client.inventory.MapleInventoryType;
-import constants.ItemConstants;
 import net.PacketHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -45,7 +44,6 @@ public class ItemMoveHandler extends PacketHandler {
     private short source;
     private short action;
     private short quantity;
-
 
     @Override
     public void process(SeekableLittleEndianAccessor slea) {
@@ -69,16 +67,23 @@ public class ItemMoveHandler extends PacketHandler {
             entry.spamCount = 0;
         }
 
+        final Item item;
+
         if (source < 0 && action > 0) {
+            item = player.getInventory(MapleInventoryType.EQUIPPED).getItem(source);
             MapleInventoryManipulator.unequip(getClient(), source, action);
+            return item;
         } else if (action < 0) {
+            item = player.getInventory(MapleInventoryType.EQUIP).getItem(source);
             MapleInventoryManipulator.equip(getClient(), source, action);
+            return item;
         } else if (action == 0) {
             return MapleInventoryManipulator.drop(getClient(), inventoryType, source, quantity);
         } else {
+            item = player.getInventory(inventoryType).getItem(source);
             MapleInventoryManipulator.move(getClient(), inventoryType, source, action);
+            return item;
         }
-        return null;
     }
 
     public MapleInventoryType getInventoryType() {

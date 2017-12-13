@@ -25,7 +25,7 @@ public class BlackMageSummoner extends GenericEvent {
 
     //region constants
     private static final int SummoningMap = 97;
-    private static final int ReactionItem = 1302000;
+    private static final int ReactionItem = 4011022;
     private static final int SummoningMonster = 9895257;
     //endregion
 
@@ -63,8 +63,7 @@ public class BlackMageSummoner extends GenericEvent {
 
             final MapleMap map = player.getMap();
             if (event.getAction() == 0) { // dropping item
-                Item item = player.getInventory(event.getInventoryType()).getItem(event.getSource());
-                if (item.getItemId() == ReactionItem) { // dropped item is a ball
+                if (mapItem.getItemId() == ReactionItem) { // dropped item is a ball
                     summoning = true;
                     TaskExecutor.createTask(new Runnable() {
                         @Override
