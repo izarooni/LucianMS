@@ -20,7 +20,7 @@ public class MonsterPark extends GenericEvent {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MonsterPark.class);
     private static final int Stages = 5;
-    private static final int Increments = 100;
+    private static final int Increment = 100;
 
     private final int mapId;
     private final MapleMapFactory mapFactory;
@@ -32,7 +32,7 @@ public class MonsterPark extends GenericEvent {
         this.mapId = mapId;
         this.mapFactory = new MapleMapFactory(world, channel);
 
-        for (int i = mapId; i < (mapId + (Stages * Increments)); i += Increments) {
+        for (int i = mapId; i < (mapId + (Stages * Increment)); i += Increment) {
             MapleMap instanceMap = mapFactory.skipMonsters(true).getMap(i);
             if (instanceMap != null) {
 
@@ -56,11 +56,10 @@ public class MonsterPark extends GenericEvent {
                         monster.addListener(new MonsterListener() {
                             @Override
                             public void monsterKilled(int aniTime) {
-                                MapleMap currentMap = monster.getMap();
-                                if (currentMap.getMonsters().isEmpty()) {
+                                if (instanceMap.getMonsters().isEmpty()) {
                                     if (getStage(instanceMap.getId()) == 5) {
                                         timeout.cancel();
-                                        currentMap.broadcastMessage(MaplePacketCreator.showEffect("monsterPark/clearF"));
+                                        instanceMap.broadcastMessage(MaplePacketCreator.showEffect("monsterPark/clearF"));
                                         TaskExecutor.createTask(new Runnable() {
                                             @Override
                                             public void run() {
@@ -74,7 +73,7 @@ public class MonsterPark extends GenericEvent {
                                         if (portal != null) {
                                             portal.setPortalStatus(true);
                                         }
-                                        currentMap.broadcastMessage(MaplePacketCreator.showEffect("monsterPark/clear"));
+                                        instanceMap.broadcastMessage(MaplePacketCreator.showEffect("monsterPark/clear"));
                                     }
                                 }
                             }
@@ -109,27 +108,30 @@ public class MonsterPark extends GenericEvent {
     }
 
     private int getStage(int mapId) {
-        return (mapId + Increments) % 1000 / 100;
+        return mapId % 1000 / 100;
     }
 
     public void advanceMap(MapleCharacter player) {
-        if (player.getMapId() == getMapId() + (Stages * Increments)) {
+        if (player.getMapId() == getMapId() + (Stages * Increment)) {
             unregisterPlayer(player);
         } else {
-            int stage = getStage(player.getMapId());
+            final int cMapId = player.getMapId();
+            int stage = getStage(cMapId);
 
             // player is still in the monster park area
-            if (player.getMapId() >= mapId && player.getMapId() <= (mapId + (Stages * Increments))) {
-                player.changeMap(mapFactory.getMap(player.getMap().getId() + Increments));
+            if (cMapId >= mapId && cMapId <= (mapId + (Stages * Increment))) {
+                player.changeMap(mapFactory.getMap(cMapId + Increment));
                 // (start timestamp + 20min) = timeout
                 // timeout - (current time) = elapsed time (aka: seconds left)
                 int sLeft = (int) (((timestampStart + (1000 * 60 * 20)) - System.currentTimeMillis()) / 1000);
                 player.announce(MaplePacketCreator.getClock(sLeft));
-                if (stage == 5) { // proceeding to final stage; stage 6
+                if (stage == 4) { // proceeding to final stage; stage 6
                     player.announce(MaplePacketCreator.showEffect("monsterPark/stageEff/final"));
                 } else {
+                    // (stage + 2) because map index beings at 0 (advancing maps requires +1 to the ID)
+                    // but in game (front end), stages being at 1 so advancing to stage 2 we must increment by 2
                     player.announce(MaplePacketCreator.showEffect("monsterPark/stageEff/stage"));
-                    TaskExecutor.createTask(() -> MaplePacketCreator.showEffect("monsterPark/stageEff/number/" + (stage + 1)), 2345);
+                    TaskExecutor.createTask(() -> player.announce(MaplePacketCreator.showEffect("monsterPark/stageEff/number/" + (stage + 2))), 2345);
                 }
             } else {
                 unregisterPlayer(player);
