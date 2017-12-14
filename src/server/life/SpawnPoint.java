@@ -40,7 +40,7 @@ public class SpawnPoint {
 
     public SpawnPoint(final MapleMonster monster, Point pos, boolean immobile, int mobTime, int mobInterval, int team) {
         this.monster = monster.getId();
-        this.pos = new Point(pos);
+        this.pos = (pos == null) ? monster.getPosition() : pos.getLocation();
         this.mobTime = mobTime;
         this.team = team;
         this.fh = monster.getFh();
