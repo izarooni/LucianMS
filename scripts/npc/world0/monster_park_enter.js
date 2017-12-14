@@ -4,7 +4,13 @@
 var MonsterPark = Java.type("server.events.custom.MonsterPark");
 var status = 0;
 var minParticpants = 2;
-var base = 0;
+
+var areas = {
+    zebra: [["Auto Security Area", 953020000, 100], ["Clandestine Ruins", 953090000, 110], ["Dangerously Isolated Forest", 953080000, 120]],
+    tiger: [["Dead Tree Forest", 954010000, 130], ["Dragon Nest", 954030000, 140], ["Forbidden Time", 953050000, 150]],
+    leopard: [["Mossy Tree Forest", 953030000,160], ["Secret Pirate Hideout", 953060000, 170], ["Sky Forest Training Center", 953040000, 180]],
+    extreme: [["Temple of Oblivion", 954040000, 190]]
+};
 
 function action(mode, type, selection) {
     if (mode < 1) {
@@ -30,30 +36,27 @@ function action(mode, type, selection) {
                 return;
             }
         }
-        var text = "Are you ready to enter the #b";
-        switch (selection) {
-            case 3: // zebra
-                text += "zebra";
-                base = 953050000;
-                break;
-            case 4: // leopard
-                text += "leopard";
-                break;
-            case 2: // tiger
-                text += "tiger";
-                break;
-            case 5: // extreme
-                text += "extreme";
-                break;
-        }
-        text += "#k monster park?"
-        cm.sendNext(text);
-    } else if (status == 3) {
-        if (base == 0) {
-            cm.sendOk("Sorry, this monster park is currently not available.");
+        var area = getAreaFromValue(selection);
+        var text = "\r\n#b"
+
+        var range = getAreaLevelRange(area);
+        if (player.getLevel() > range.max || player.getLevel() < range.min) {
+            cm.sendOk("You are not within the recommended level range of this Monster Park.\r\n\t#b- Level Range: " + range.min + " ~ " + range.max);
             cm.dispose();
+            return;
         } else {
-            var park = new MonsterPark(client.getWorld(), client.getChannel(), base);
+            for (var i = 0; i < area.length; i++) {
+                text += "\r\n#L" + area[i][1] + "#" + area[i][0] + " (Lv." + area[i][2] + ")#l";
+            }
+        }
+
+        cm.sendSimple(text);
+    } else if (status == 3) {
+        var level = getAreaLevelFromMapId(selection);
+        if (player.getLevel() < level) {
+            cm.sendOk("You must be at least #blevel " + level + "#k to enter this area");
+        } else {
+            var park = new MonsterPark(client.getWorld(), client.getChannel(), selection);
             if (cm.getParty() != null) {
                 cm.getPartyMembers().forEach(function(member) {
                     if (member.getMapId() == player.getMapId()) {
@@ -63,7 +66,39 @@ function action(mode, type, selection) {
             } else if (player.isGM()) {
                 park.registerPlayer(player);
             }
-            cm.dispose();
+        }
+        cm.dispose();
+    }
+}
+
+function getAreaLevelFromMapId(m){
+    for (var a in areas) {
+        var area =  areas[a];
+        for (var i = 0; i < area.length; i++) {
+            if (area[i][1] == m) {
+                return areas[a][i][2];
+            }
         }
     }
+    return null;
+}
+
+function getAreaFromValue(n) {
+    switch (n) {
+        case 2: return areas.tiger;
+        case 3: return areas.zebra;
+        case 4: return areas.leopard;
+        case 5 : return areas.extreme;
+    }
+}
+
+function getAreaLevelRange(area) {
+    var range = {};
+    range.min = area[0][2];
+    range.max = area[area.length - 1][2];
+
+     // extreme monster park special case
+    if (range.min == range.max && range.min == 190) range.max = 200;
+    
+    return range;
 }
