@@ -10,8 +10,12 @@ public class Occupation {
         Pharaoh,
          Undead,
           Demon,
-          Human
+          Human;
         // @formatter:on
+
+        public static Type fromValue(int n) {
+            return Type.values()[n];
+        }
     }
 
     private final Type type;

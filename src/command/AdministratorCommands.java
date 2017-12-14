@@ -11,8 +11,10 @@ import scripting.map.MapScriptManager;
 import server.events.custom.auto.GAutoEvent;
 import server.events.custom.auto.GAutoEventManager;
 import server.life.MapleMonster;
+import server.life.MapleNPC;
 import server.maps.MapleMapObject;
 import server.maps.MapleReactor;
+import server.maps.PlayerNPC;
 import server.quest.custom.CQuestBuilder;
 
 import javax.script.ScriptException;
@@ -95,11 +97,22 @@ public class AdministratorCommands {
                 if (args.get(0).equalsIgnoreCase("reactors")) {
                     for (MapleMapObject object : player.getMap().getAllReactor()) {
                         MapleReactor reactor = (MapleReactor) object;
-                        player.dropMessage(String.format("{%s / id:%d / oid:%d / name:%s}", reactor.getPosition().toString(), reactor.getId(), reactor.getObjectId(), reactor.getName()));
+                        player.sendMessage("{} / id:{} / oid:{} / name:{}", reactor.getPosition().toString(), reactor.getId(), reactor.getObjectId(), reactor.getName());
                     }
                 } else if (args.get(0).equalsIgnoreCase("monsters")) {
                     for (MapleMonster monsters : player.getMap().getMonsters()) {
-                        player.dropMessage(String.format("{%s / id:%d / oid:%d / name:%s}", monsters.getPosition().toString(), monsters.getId(), monsters.getObjectId(), monsters.getName()));
+                        player.sendMessage("{} / id:{} / oid:{} / name:{}", monsters.getPosition().toString(), monsters.getId(), monsters.getObjectId(), monsters.getName());
+                    }
+                } else if (args.get(0).equalsIgnoreCase("npcs")) {
+                    for (MapleMapObject object : player.getMap().getMapObjects()) {
+                        if (object instanceof MapleNPC) {
+                            MapleNPC npc = ((MapleNPC) object);
+                            player.sendMessage("{} / id:{} / oid:{} / name:{} / script:{}", npc.getPosition().toString(), npc.getId(), npc.getObjectId(), npc.getName(), npc.getScript());
+                        } else if (object instanceof PlayerNPC) {
+                            PlayerNPC npc = ((PlayerNPC) object);
+                            player.sendMessage("{} / id:{} / oid:{} / name:{} / script:{}", npc.getPosition().toString(), npc.getId(), npc.getObjectId(), npc.getName(), npc.getScript());
+
+                        }
                     }
                 }
             }
