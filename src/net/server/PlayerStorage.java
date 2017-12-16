@@ -32,7 +32,7 @@ public final class PlayerStorage {
     private final ReentrantReadWriteLock locks = new ReentrantReadWriteLock();
     private final Lock rlock = locks.readLock();
     private final Lock wlock = locks.writeLock();
-    private final Map<Integer, MapleCharacter> storage = new LinkedHashMap<>();
+    private final Map<Integer, MapleCharacter> storage = new LinkedHashMap<>(100);
 
     public void clear() {
         storage.clear();

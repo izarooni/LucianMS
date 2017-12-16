@@ -123,7 +123,6 @@ public class World {
     }
 
     public void setExpRate(int exp) {
-        //System.out.println("Setting server EXP Rate to " + exp + "x.");
         this.exprate = exp;
         for (MapleCharacter chr : getPlayerStorage().getAllCharacters()) {
             chr.setRates();
