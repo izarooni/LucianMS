@@ -24,55 +24,54 @@ import java.util.Scanner;
 public class ConsoleCommands {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ConsoleCommands.class);
+    private static Thread thread;
     private static volatile boolean reading = false;
 
     private ConsoleCommands() {
     }
 
     public static void beginReading() {
-        new Thread(new Runnable() {
+        thread = new Thread(new Runnable() {
             @Override
             public void run() {
-                Scanner scanner = new Scanner(System.in);
                 reading = true;
-                while (reading) {
-                    String line = scanner.nextLine();
-                    if (line != null && !line.isEmpty()) {
-                        // from CommandWorker
-                        int cn = line.indexOf(" "); // command name split index
-                        String name; // command name
-                        String[] sp = new String[0]; // args of command
-                        if (cn > -1) { // a space exists in the message (this assumes there are arguments)
-                            // there are command arguments
-                            name = line.substring(0, cn); // substring command name
-                            if (line.length() > name.length()) { // separate command name from args
-                                sp = line.substring(cn + 1, line.length()).split(" ");
-                            }
-                        } else {
-                            // no command arguments
-                            name = line;
+                Scanner scanner = new Scanner(System.in);
+                String line;
+                while (reading && (line = scanner.nextLine()) != null && !line.isEmpty()) {
+                    // from CommandWorker
+                    int cn = line.indexOf(" "); // command name split index
+                    String name; // command name
+                    String[] sp = new String[0]; // args of command
+                    if (cn > -1) { // a space exists in the message (this assumes there are arguments)
+                        // there are command arguments
+                        name = line.substring(0, cn); // substring command name
+                        if (line.length() > name.length()) { // separate command name from args
+                            sp = line.substring(cn + 1, line.length()).split(" ");
                         }
+                    } else {
+                        // no command arguments
+                        name = line;
+                    }
 
-                        CommandWorker.Command command = new CommandWorker.Command(name);
-                        CommandWorker.CommandArgs args = new CommandWorker.CommandArgs(sp);
+                    CommandWorker.Command command = new CommandWorker.Command(name);
+                    CommandWorker.CommandArgs args = new CommandWorker.CommandArgs(sp);
 
-                        try {
-                            execute(command, args);
-                        } catch (Throwable t) {
-                            // don't break the loop
-                            t.printStackTrace();
-                        }
+                    try {
+                        execute(command, args);
+                    } catch (Throwable t) {
+                        // don't break the loop
+                        t.printStackTrace();
                     }
                 }
-                scanner.close();
-                scanner = null;
                 LOGGER.info("Console no longer reading commands");
             }
-        }, "ConsoleReader").start();
+        }, "ConsoleReader");
+        thread.start();
     }
 
     public static void stopReading() {
         reading = false;
+        thread.stop();
     }
 
     private static void execute(CommandWorker.Command command, CommandWorker.CommandArgs args) {
