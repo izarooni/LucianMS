@@ -6,11 +6,13 @@ import net.server.Server;
 import net.server.channel.Channel;
 import net.server.world.World;
 import scripting.Achievements;
+import scripting.event.EventInstanceManager;
 import scripting.event.EventManager;
 import scripting.map.MapScriptManager;
 import server.events.custom.auto.GAutoEvent;
 import server.events.custom.auto.GAutoEventManager;
 import server.life.MapleMonster;
+import server.life.MapleMonsterInformationProvider;
 import server.life.MapleNPC;
 import server.maps.MapleMapObject;
 import server.maps.MapleReactor;
@@ -38,6 +40,7 @@ public class AdministratorCommands {
         if (command.equals("admincommands")) {
             ArrayList<String> commands = new ArrayList<>();
             try {
+                commands.add("!reloaddrops - Clear monster drop cache");
                 commands.add("!reloadmapscripts - Clears stored map scripts");
                 commands.add("!reloadquests - Reload custom quest");
                 commands.add("!reloadachievements - Reload achievement scripts");
@@ -51,6 +54,8 @@ public class AdministratorCommands {
             } finally {
                 commands.clear();
             }
+        } else if (command.equals("reloaddrops")) {
+            MapleMonsterInformationProvider.getInstance().reload();
         } else if (command.equals("reloadmapscripts")) {
             MapScriptManager.getInstance().clearScripts();
             player.dropMessage("Map scripts cleared");
@@ -143,8 +148,9 @@ public class AdministratorCommands {
                     EventManager manager = channel.getEventScriptManager().getManager(scriptName);
                     if (manager == null) {
                         player.dropMessage(5, "Could not find any event named '" + scriptName + "'");
-                        break;
+                        return;
                     }
+                    manager.getInstances().forEach(EventInstanceManager::disbandParty);
                     channel.getEventScriptManager().putManager(scriptName);
                     try {
                         EventManager em = channel.getEventScriptManager().getManager(scriptName);
