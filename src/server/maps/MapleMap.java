@@ -389,7 +389,7 @@ public class MapleMap {
         }
 
         Collections.shuffle(dropEntry);
-        for (final MonsterDropEntry de : dropEntry) {
+        for (MonsterDropEntry de : dropEntry) {
             if (Randomizer.nextInt(999999) < de.chance * chServerrate) {
                 if (droptype == 3) {
                     pos.x = mobpos + (d % 2 == 0 ? (40 * (d + 1) / 2) : -(40 * (d / 2)));
@@ -1293,6 +1293,27 @@ public class MapleMap {
                 }
             }
         }, duration);
+    }
+
+    public MapleMapItem spawnItemDrop(MapleCharacter owner, MapleMapObject dropper, int itemId, short quantity, Point position, boolean disappear) {
+        final Point dropPosition = calcDropPos(position, position);
+
+        Item item = new Item(itemId, quantity, (short) -1);
+        MapleMapItem mapItem = new MapleMapItem(item, dropPosition, dropper ,owner, (byte) 2, false);
+        mapItem.setDropTime(System.currentTimeMillis());
+
+        spawnAndAddRangedMapObject(mapItem, new DelayedPacketCreation() {
+            @Override
+            public void sendPackets(MapleClient c) {
+                c.announce(MaplePacketCreator.dropItemFromMapObject(mapItem, dropper.getPosition(), dropPosition, (byte) 1));
+            }
+        });
+        broadcastMessage(MaplePacketCreator.dropItemFromMapObject(mapItem, dropper.getPosition(), dropPosition, (byte) 0));
+        if (disappear) {
+            TaskExecutor.createTask(new ExpireMapItemJob(mapItem), 180000);
+            activateItemReactors(mapItem, owner.getClient());
+        }
+        return mapItem;
     }
 
     public final MapleMapItem spawnItemDrop(final MapleMapObject dropper, final MapleCharacter owner, final Item item, Point pos, final boolean ffaDrop, final boolean playerDrop) {

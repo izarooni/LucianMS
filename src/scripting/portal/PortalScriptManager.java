@@ -45,7 +45,7 @@ public class PortalScriptManager {
         try {
             Invocable iv = getPortalScript(client, portal.getScriptName());
             if (iv != null) {
-                return (boolean) iv.invokeFunction("start", new PortalPlayerInteraction(client, portal));
+                return (boolean) iv.invokeFunction("enter", new PortalPlayerInteraction(client, portal));
             }
         } catch (IOException | ScriptException | NoSuchMethodException e) {
             LOGGER.info("Unable to invoke function 'start' in portal script {}/{} in map", portal.getScriptName(), portal.getId(), client.getPlayer().getMapId(), e);

@@ -416,14 +416,16 @@ public class AbstractPlayerInteraction {
         }
     }
 
-    public void removeFromParty(int id, List<MapleCharacter> party) {
-        for (MapleCharacter chr : party) {
-            MapleInventoryType type = MapleItemInformationProvider.getInstance().getInventoryType(id);
-            MapleInventory iv = chr.getInventory(type);
-            int possesed = iv.countById(id);
-            if (possesed > 0) {
-                MapleInventoryManipulator.removeById(c, MapleItemInformationProvider.getInstance().getInventoryType(id), id, possesed, true, false);
-                chr.announce(MaplePacketCreator.getShowItemGain(id, (short) -possesed, true));
+    public void removeFromParty(int itemId) {
+        if (getParty() == null) {
+            return;
+        }
+        for (MapleCharacter chr : getPartyMembers()) {
+            MapleInventory iv = chr.getInventory(ItemConstants.getInventoryType(itemId));
+            int count = iv.countById(itemId);
+            if (count > 0) {
+                MapleInventoryManipulator.removeById(c, MapleItemInformationProvider.getInstance().getInventoryType(itemId), itemId, count, true, false);
+                chr.announce(MaplePacketCreator.getShowItemGain(itemId, (short) -count, true));
             }
         }
     }

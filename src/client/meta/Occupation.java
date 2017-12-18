@@ -8,12 +8,13 @@ public class Occupation {
     public enum Type {
         // @formatter:off
         Pharaoh,
-         Undead,
-          Demon,
-          Human;
+        Undead,
+        Demon,
+        Human;
         // @formatter:on
 
         public static Type fromValue(int n) {
+            if (n == -1) return null;
             return Type.values()[n];
         }
     }

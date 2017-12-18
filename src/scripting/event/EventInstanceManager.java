@@ -139,7 +139,7 @@ public class EventInstanceManager {
             System.err.println(String.format("Unable to invoke function playerRevive in script(%s) for player(%s)", eventManager.getScriptName(), player.getName()));
             e.printStackTrace();
         }
-        return true; // maybe throw an exception instead
+        return true;
     }
 
     public void playerDisconnected(MapleCharacter player) {
@@ -154,7 +154,7 @@ public class EventInstanceManager {
     public void monsterKilled(MapleCharacter player, MapleMonster mob) {
         try {
             Integer kc = killCount.getOrDefault(player.getId(), 0);
-            kc += (int) eventManager.getInvocable().invokeFunction("monsterValue", this, mob.getId());
+            kc += (int) eventManager.getInvocable().invokeFunction("monsterValue", this, player, mob);
             killCount.put(player.getId(), kc);
             if (expedition != null) {
                 expedition.monsterKilled(player, mob);
