@@ -206,7 +206,7 @@ public class MaplePacketCreator {
 
     private static void addMiniGameInfo(final MaplePacketLittleEndianWriter mplew, MapleCharacter chr) {
         mplew.writeShort(0);
-		/*for (int m = size; m > 0; m--) {//nexon does this :P
+        /*for (int m = size; m > 0; m--) {//nexon does this :P
          mplew.writeInt(0);
          mplew.writeInt(0);
          mplew.writeInt(0);
@@ -1210,7 +1210,7 @@ public class MaplePacketCreator {
     }
 
     /*
-	 * Sends a packet to remove the tiger megaphone
+     * Sends a packet to remove the tiger megaphone
 	 * @return
 	 */
     public static byte[] byeAvatarMega() {

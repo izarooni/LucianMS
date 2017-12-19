@@ -8,6 +8,7 @@ import server.MaplePortal;
 
 import javax.script.Invocable;
 import javax.script.ScriptException;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.HashMap;
@@ -31,6 +32,8 @@ public class PortalScriptManager {
         try {
             Invocable iv = ScriptUtil.eval(client, "portal/" + script + ".js", Collections.emptyList());
             return scripts.put(script, iv);
+        } catch (FileNotFoundException e) {
+            LOGGER.warn("No portal script found '{}'", script);
         } catch (NullPointerException e) {
             LOGGER.warn(e.getMessage());
         }

@@ -284,7 +284,7 @@ public class MapleMapFactory {
 
     private AbstractLoadedMapleLife loadLife(MapleData life, String id, String type) {
         AbstractLoadedMapleLife myLife = MapleLifeFactory.getLife(Integer.parseInt(id), type);
-        if( myLife != null) {
+        if (myLife != null) {
             myLife.setCy(MapleDataTool.getInt(life.getChildByPath("cy")));
             MapleData dF = life.getChildByPath("f");
             if (dF != null) {
@@ -357,6 +357,16 @@ public class MapleMapFactory {
 
     public ArrayList<MapleMap> getMaps() {
         return new ArrayList<>(maps.values());
+    }
+
+    public synchronized void clear() {
+        maps.clear();
+        maps = null;
+
+        source = null;
+        nameData = null;
+
+        System.gc(); // can i do this?
     }
 
     public void reloadField(int fieldId) {
