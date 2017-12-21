@@ -31,6 +31,8 @@ import constants.skills.*;
 import scheduler.TaskExecutor;
 import server.MapleStatEffect;
 import server.life.FakePlayer;
+import server.life.MapleMonster;
+import server.maps.MapleMapObject;
 import tools.MaplePacketCreator;
 import tools.Pair;
 import tools.data.input.SeekableLittleEndianAccessor;
@@ -41,7 +43,26 @@ import java.util.List;
 
 public final class CloseRangeDamageHandler extends AbstractDealDamageHandler {
 
-    private AttackInfo attackInfo;
+    private AttackInfo attackInfo = null;
+
+    @Override
+    public void exceptionCaught(Throwable t) {
+        MapleCharacter player = getClient().getPlayer();
+
+        if (attackInfo != null) {
+            for (Integer integer : attackInfo.allDamage.keySet()) {
+                MapleMapObject mapObject = player.getMap().getMonsterByOid(integer);
+                if (mapObject != null) {
+                    MapleMonster monster = (MapleMonster) mapObject;
+                    if (!monster.isAlive()) {
+                        // monsters bugging out due to exceptions caused before being able to
+                        // send the monster leave map packet
+                        player.getMap().killMonster(monster, player, true);
+                    }
+                }
+            }
+        }
+    }
 
     @Override
     public void process(SeekableLittleEndianAccessor slea) {

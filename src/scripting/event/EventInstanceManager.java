@@ -170,7 +170,7 @@ public class EventInstanceManager {
         } catch (ScriptException | NoSuchMethodException e) {
             LOGGER.error("Unable to invoke function 'dispose' in event instance '{}'", getName(), e);
         }
-        playerStorage.getAllCharacters().forEach(this::unregisterPlayer);
+        playerStorage.getAllCharacters().forEach(this::removePlayer);
         playerStorage.clear();
 
         monsters.clear();

@@ -35,6 +35,9 @@ public class NPCTalkHandler extends PacketHandler {
         if (mapObjects != null) {
             if (mapObjects instanceof MapleNPC) {
                 MapleNPC npc = (MapleNPC) mapObjects;
+                if (player.isGM() && player.isDebug()) {
+                    player.sendMessage("NPC Talk ID: {}, Script: {}", npc.getId(), npc.getScript());
+                }
                 if (npc.getId() == 9010009) {
                     player.announce(MaplePacketCreator.sendDuey((byte) 8, DueyHandler.loadItems(player)));
                 } else if (npc.hasShop()) {
@@ -45,9 +48,6 @@ public class NPCTalkHandler extends PacketHandler {
                     if (getClient().getCM() != null || getClient().getQM() != null) {
                         player.announce(MaplePacketCreator.enableActions());
                         return null;
-                    }
-                    if (player.isGM() && player.isDebug()) {
-                        player.sendMessage("NPC Talk ID: {}, Script: {}", npc.getId(), npc.getScript());
                     }
                     if (npc.getId() >= 9100100 && npc.getId() <= 9100200) {
                         // Custom handling for gachapon scripts to reduce the amount of scripts needed.

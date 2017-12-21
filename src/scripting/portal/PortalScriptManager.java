@@ -42,6 +42,7 @@ public class PortalScriptManager {
 
     public static void clearPortalScripts() {
         scripts.clear();
+        System.gc();
     }
 
     public static boolean executePortalScript(MapleClient client, MaplePortal portal) {

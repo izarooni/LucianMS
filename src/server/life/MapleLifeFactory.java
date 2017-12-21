@@ -45,6 +45,7 @@ public class MapleLifeFactory {
 
     public static void clear() {
         monsterStats.clear();
+        System.gc();
     }
 
     public static AbstractLoadedMapleLife getLife(int id, String type) {

@@ -45,6 +45,7 @@ public class SkillFactory {
     }
 
     public static void loadAllSkills() {
+        skills.clear();
         Map<Integer, Skill> ret = new HashMap<>();
         final MapleDataDirectoryEntry root = datasource.getRoot();
         int skillid;
@@ -63,6 +64,7 @@ public class SkillFactory {
             }
         }
         skills = ret;
+        System.gc();
     }
 
     private static Skill loadFromData(int id, MapleData data) {

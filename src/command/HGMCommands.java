@@ -312,7 +312,7 @@ public class HGMCommands {
             PortalScriptManager.clearPortalScripts();
             player.dropMessage(6, "Portal scripts reloaded");
         } else if (command.equals("reloadshosps")) {
-            MapleShopFactory.getInstance().reloadShops();
+            MapleShopFactory.getInstance().clearCache();
             player.dropMessage(6, "Shops reloaded");
         } else if (command.equals("reloadskills")) {
             SkillFactory.loadAllSkills();

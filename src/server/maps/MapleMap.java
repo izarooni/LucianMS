@@ -699,12 +699,6 @@ public class MapleMap {
             entry.incrementCheatCount();
             entry.announce(chr.getClient(), String.format("[%d] %s (level %d) attacked a monster (%d) too high of level (level %d)", entry.cheatCount, chr.getName(), chr.getLevel(), monster.getId(), monster.getStats().getLevel()), 2500);
         }
-        /*
-         * if (chr.getQuest(MapleQuest.getInstance(29400)).getStatus().equals(
-		 * MapleQuestStatus.Status.STARTED)) { if (chr.getLevel() >= 120 &&
-		 * monster.getStats().getLevel() >= 120) { //FIX MEDAL SHET } else if
-		 * (monster.getStats().getLevel() >= chr.getLevel()) { } }
-		 */
         int buff = monster.getBuffToGive();
         if (buff > -1) {
             MapleItemInformationProvider mii = MapleItemInformationProvider.getInstance();
@@ -727,12 +721,7 @@ public class MapleMap {
         }
         if (monster.getId() == 9895253 && getId() == 97) {
             List<MapleCharacter> warp = new ArrayList<>(getCharacters());
-            TaskExecutor.createTask(new Runnable() {
-                @Override
-                public void run() {
-                    warp.forEach(c -> c.changeMap(333));
-                }
-            }, 2500);
+            TaskExecutor.createTask(() -> warp.forEach(c -> c.changeMap(333)), 2500);
         }
         spawnedMonstersOnMap.decrementAndGet();
         monster.setHp(0);
@@ -1299,7 +1288,7 @@ public class MapleMap {
         final Point dropPosition = calcDropPos(position, position);
 
         Item item = new Item(itemId, quantity, (short) -1);
-        MapleMapItem mapItem = new MapleMapItem(item, dropPosition, dropper ,owner, (byte) 2, false);
+        MapleMapItem mapItem = new MapleMapItem(item, dropPosition, dropper, owner, (byte) 2, false);
         mapItem.setDropTime(System.currentTimeMillis());
 
         spawnAndAddRangedMapObject(mapItem, new DelayedPacketCreation() {
