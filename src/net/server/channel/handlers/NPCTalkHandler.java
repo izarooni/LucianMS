@@ -41,7 +41,7 @@ public class NPCTalkHandler extends PacketHandler {
                 if (npc.getId() == 9010009) {
                     player.announce(MaplePacketCreator.sendDuey((byte) 8, DueyHandler.loadItems(player)));
                 } else if (npc.hasShop()) {
-                    if (player.getShop() != null) {
+                    if (player.getShop() == null) {
                         npc.sendShop(getClient());
                     }
                 } else {
