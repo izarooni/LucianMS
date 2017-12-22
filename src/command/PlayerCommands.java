@@ -50,8 +50,6 @@ public class PlayerCommands {
             commands.add("@rps - Start a game of rock paper scissors vs a bot");
             commands.add("@summer - Warp to the summer map");
             commands.add("@arcade - Warp to the arcade map");
-            commands.add("@rebirth - Reset job and level once max level is achieved");
-            commands.add("@autorb - Auto rebirth once max level is achieved");
             commands.add("@reset<str/dex/int/luk/stats> - Reset assigned AP");
             commands.add("@<str/dex/int/luk> - Assign any available AP to a specified stat");
             commands.add("@checkme - Check your player's stats");
@@ -82,8 +80,6 @@ public class PlayerCommands {
             player.sendMessage("Hair / Face: {} / {}", target.getHair(), target.getFace());
             player.sendMessage("Crystals: {}", target.getItemQuantity(ServerConstants.CURRENCY, false));
             player.sendMessage("Occuation: {}", target.getOccupation().getType().name());
-            player.sendMessage("Rebirths: {}", StringUtil.formatNumber(target.getRebirths()));
-            player.sendMessage("Rebirth Points: {}", StringUtil.formatNumber(target.getRebirthPoints()));
             player.sendMessage("Fishing Points: {}", StringUtil.formatNumber(target.getFishingPoints()));
             player.sendMessage("Event Points" + StringUtil.formatNumber(target.getEventPoints()));
             player.sendMessage("Donor Points: {}", StringUtil.formatNumber(client.getDonationPoints()));
@@ -259,6 +255,8 @@ public class PlayerCommands {
             NPCScriptManager.dispose(client);
             player.announce(MaplePacketCreator.enableActions());
             player.dropMessage(6, "Disposed!");
+        } else if (command.equals("achievements")) {
+            NPCScriptManager.start(client, 2007, "f_achievements", null);
         } else if (command.equals("home")) {
             player.changeMap(809);
         } else if (command.equals("online")) {
@@ -410,20 +408,6 @@ public class PlayerCommands {
             player.changeMap(978);
         } else if (command.equals("shenron")) {
             player.changeMap(908);
-        } else if (command.equals("rebirth")) {
-            if (player.getLevel() >= player.getMaxLevel()) {
-                player.doRebirth();
-                player.dropMessage("You now have " + player.getRebirths() + " rebirths");
-            } else {
-                player.dropMessage("YOu must be at least level " + player.getMaxLevel() + " to rebirth");
-            }
-        } else if (command.equals("autorb")) {
-            player.setAutorebirthing(!player.isAutorebirthing());
-            player.dropMessage("Auto-rebirthing is " + (player.isAutorebirthing() ? "now" : "no longer") + " enabled");
-            if (player.getLevel() >= player.getMaxLevel()) {
-                player.doRebirth();
-                player.dropMessage("You now have " + player.getRebirths() + " rebirths");
-            }
         } else if (command.equals("crystal")) {
             if (player.getMeso() >= 500000000) {
                 if (MapleInventoryManipulator.checkSpace(client, ServerConstants.CURRENCY, 1, "")) {
