@@ -52,10 +52,10 @@ function action(mode, type, selection) {
             status++;
         else
             status--;
-		
+
         if (status == 0) {
             cm.sendSimple("This is the entrance to the Ludibrium Maze. Enjoy!\r\n#b#L0#Enter the Lubidrium Maze#l\r\n#L1#What is the Ludibrium Maze?");
-	 	
+
         } else if (status == 1) {
             var em = cm.getEventManager("LudiMazePQ");
             if(selection == 0) {//ENTER THE PQ
@@ -74,8 +74,7 @@ function action(mode, type, selection) {
                 } else {
                     //cm.sendOk("You may enter");//ENTER PQ
                     em.startInstance(cm.getParty(), cm.getPlayer().getMap());
-                    var party = cm.getPlayer().getEventInstance().getPlayers();
-                    cm.removeFromParty(4001106, party);
+                    cm.removeFromParty(4001106);
                 }
                 cm.dispose();
             } else if(selection == 1) {
@@ -85,7 +84,7 @@ function action(mode, type, selection) {
         }
     }
 }
-     
+
 function getPartySize(){
     if(cm.getPlayer().getParty() == null){
         return 0;

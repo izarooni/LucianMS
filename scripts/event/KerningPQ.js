@@ -1,29 +1,10 @@
-/*
- * This file is part of the OdinMS Maple Story Server
-    Copyright (C) 2008 Patrick Huy <patrick.huy@frz.cc>
-                       Matthias Butz <matze@odinms.de>
-                       Jan Christian Meyer <vimes@odinms.de>
+/* izarooni
 
-    This program is free software: you can redistribute it and/or modify
-    it under the terms of the GNU Affero General Public License version 3
-    as published by the Free Software Foundation. You may not use, modify
-    or distribute this program under any other version of the
-    GNU Affero General Public License.
-
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU Affero General Public License for more details.
-
-    You should have received a copy of the GNU Affero General Public License
-    along with this program.  If not, see <http://www.gnu.org/licenses/>.
- */
-
-/*
-INSERT monsterdrops (monsterid,itemid,chance) VALUES (9300001,4001007,5);
-INSERT monsterdrops (monsterid,itemid,chance) VALUES (9300000,4001008,1);
-INSERT monsterdrops (monsterid,itemid,chance) VALUES (9300002,4001008,1);
-INSERT monsterdrops (monsterid,itemid,chance) VALUES (9300003,4001008,1);
+-- Ligator drops
+insert into drop_data values (default, 9300000, 4001008, 1, 1, 0, 999999);
+insert into drop_data values (default, 9300001, 4001007, 1, 1, 0, 999999);
+insert into drop_data values (default, 9300002, 4001008, 1, 1, 0, 999999);
+insert into drop_data values (default, 9300003, 4001008, 1, 1, 0, 999999);
 */
 
 importPackage(Packages.world);
@@ -37,10 +18,8 @@ function init() { // Initial loading.
     instanceId = 1;
 }
 
-
-
-function monsterValue(eim, mobId) { // Killed monster.
-    return 1; // returns an amount to add onto kill count.
+function monsterValue(eim, player, monster) {
+    return 1;
 }
 
 function setup() { // Invoked from "EventManager.startInstance()"
@@ -63,17 +42,17 @@ function playerDead(eim, player) {
 }
 
 function playerRevive(eim, player) { // player presses ok on the death pop up.
-    if (eim.isLeader(player) || party.size() <= minPlayers) { // Check for party leader
-        var party = eim.getPlayers();
-        for (var i = 0; i < party.size(); i++)
-            playerExit(eim, party.get(i));
+    var party = eim.getPlayers().toArray();
+    if (eim.isLeader(player) || party.length <= minPlayers) { // Check for party leader
+        for (var i = 0; i < party.length; i++)
+            playerExit(eim, party[i]);
         eim.dispose();
     } else
         playerExit(eim, player);
 }
 
 
-function respawn(eim) {	
+function respawn(eim) {
 	var map = eim.getMapInstance(103000800);
 	var map2 = eim.getMapInstance(103000805);
 	if (map.getSummonState()) {	//Map spawns are set to true by default
@@ -85,36 +64,37 @@ function respawn(eim) {
 	eim.schedule("respawn", 10000);
 }
 
-
-
 function playerDisconnected(eim, player) {
-    var party = eim.getPlayers();
-    if (eim.isLeader(player) || party.size() < minPlayers) {
-        var party = eim.getPlayers();
+    var party = eim.getPlayers().toArray();
+    if (eim.isLeader(player) || party.length < minPlayers) {
         for (var i = 0; i < party.size(); i++)
-            if (party.get(i).equals(player))
+            if (party[i].equals(player)) {
                 removePlayer(eim, player);
-            else
-                playerExit(eim, party.get(i));
+            } else {
+                playerExit(eim, party[i]);
+            }
         eim.dispose();
-    } else
+    } else {
         removePlayer(eim, player);
+    }
 }
 
 function leftParty(eim, player) {
-    var party = eim.getPlayers();
-    if (party.size() < minPlayers) {
-        for (var i = 0; i < party.size(); i++)
-            playerExit(eim,party.get(i));
+    var party = eim.getPlayers().toArray();
+    if (party.length < minPlayers) {
+        for (var i = 0; i < party.length; i++) {
+            playerExit(eim, party[i]);
+        }
         eim.dispose();
-    } else
+    } else {
         playerExit(eim, player);
+    }
 }
 
 function disbandParty(eim) {
-    var party = eim.getPlayers();
-    for (var i = 0; i < party.size(); i++) {
-        playerExit(eim, party.get(i));
+    var party = eim.getPlayers().toArray();
+    for (var i = 0; i < party.length; i++) {
+        playerExit(eim, party[i]);
     }
     eim.dispose();
 }
@@ -131,21 +111,18 @@ function removePlayer(eim, player) {
 }
 
 function clearPQ(eim) {
-    var party = eim.getPlayers();
-    for (var i = 0; i < party.size(); i++)
-        playerExit(eim, party.get(i));
+    var party = eim.getPlayers().toArray();
+    for (var i = 0; i < party.length; i++)
+        playerExit(eim, party[i]);
     eim.dispose();
 }
 
 function allMonstersDead(eim) {
 }
 
-function cancelSchedule() {
-}
-
 function dispose(eim) {
 	em.cancelSchedule();
-    em.schedule("OpenKPQ", 10000); // 10 seconds ?
+    em.schedule("OpenKPQ", 10000);
 }
 
 function OpenKPQ() {
@@ -156,8 +133,9 @@ function timeOut(eim) {
     if (eim != null) {
         if (eim.getPlayerCount() > 0) {
             var pIter = eim.getPlayers().iterator();
-            while (pIter.hasNext())
+            while (pIter.hasNext()) {
                 playerExit(eim, pIter.next());
+            }
         }
         eim.dispose();
     }

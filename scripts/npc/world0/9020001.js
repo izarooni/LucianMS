@@ -64,7 +64,7 @@ var stage4combos = Array(Array(0,0,0,1,1,1),Array(0,0,1,0,1,1),Array(0,0,1,1,0,1
     Array(0,1,1,1,0,0),Array(1,0,0,0,1,1),Array(1,0,0,1,0,1),
     Array(1,0,0,1,1,0),Array(1,0,1,0,0,1),Array(1,0,1,0,1,0),
     Array(1,0,1,1,0,0),Array(1,1,0,0,0,1),Array(1,1,0,0,1,0),
-    Array(1,1,0,1,0,0),Array(1,1,1,0,0,0));	
+    Array(1,1,0,1,0,0),Array(1,1,1,0,0,0));
 var eye = 9300002;
 var necki = 9300000;
 var slime = 9300003;
@@ -298,9 +298,10 @@ function Rectanglestages (cm) {
                     cm.dispose();
                 } else { // Check for people on ropes and their positions
                     var playersOnCombo = 0;
-                    for (var i = 0; i < party.size(); i++) {
+                    var mpt = cm.getPartyMembers();
+                    for (var i = 0; i < mpt.size(); i++) {
                         for (var y = 0; y < curArray.length; y++) {
-                            if (curArray[y].contains(party.get(i).getPosition())) {
+                            if (curArray[y].contains(mpt.get(i).getPosition())) {
                                 playersOnCombo++;
                                 objset[y] = 1;
                                 break;

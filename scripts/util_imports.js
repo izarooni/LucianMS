@@ -1,8 +1,8 @@
 /* izarooni */
 
 var InventoryModifier = Java.type("server.MapleInventoryManipulator");
-
 var ItemConstants = Java.type("constants.ItemConstants");
+var InventoryType = Java.type("client.inventory.MapleInventoryType");
 
 var StringUtil = Java.type("tools.StringUtil");
 

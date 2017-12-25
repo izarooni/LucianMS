@@ -30,6 +30,6 @@ function start(mode, type, selection){
 function action(mode, type, selection) {
     if(!(cm.haveItem(4031853) || cm.haveItem(4031854) || cm.haveItem(4031855)))
         cm.gainItem(4031854, 1);
-    cm.saveSquadMembers(cm.getText());
+    cm.sendOk("Obtained Abel's glasses");
     cm.dispose();
 }

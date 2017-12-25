@@ -42,7 +42,11 @@ function action(mode, type, selection) {
 		} else {
 			var eim = cm.getPlayer().getEventInstance();
 			if(eim != null) {
-				eim.removePlayer(cm.getPlayer());
+                if (cm.isLeader()) {
+                    eim.disbandParty();
+                } else {
+                    eim.removePlayer(cm.getPlayer());
+                }
 			} else {
 				cm.warp(922010000, 0);
 			}

@@ -1,29 +1,8 @@
-/*
-	This file is part of the OdinMS Maple Story Server
-    Copyright (C) 2008 Patrick Huy <patrick.huy@frz.cc>
-		       Matthias Butz <matze@odinms.de>
-		       Jan Christian Meyer <vimes@odinms.de>
+/* izarooni */
+var seeds = [4001095, 4001097, 4001096, 4001098, 4001099, 4001100];
 
-    This program is free software: you can redistribute it and/or modify
-    it under the terms of the GNU Affero General Public License as
-    published by the Free Software Foundation version 3 as published by
-    the Free Software Foundation. You may not use, modify or distribute
-    this program under any other version of the GNU Affero General Public
-    License.
-
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU Affero General Public License for more details.
-
-    You should have received a copy of the GNU Affero General Public License
-    along with this program.  If not, see <http://www.gnu.org/licenses/>.
-*/
-/**
- * @author BubblesDev
- * @purpose Drops Yellow Primrose Seeds (4001099)
- * @map Primrose Hill
- */
 function act() {
-    rm.dropItems();
+    if (Math.random() < 0.6) {
+        rm.dropItem(seeds[Math.floor(Math.random() * seeds.length)], 1);
+    }
 }

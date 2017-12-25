@@ -4,8 +4,8 @@ importPackage(Packages.server.life);
 
 //Time Setting is in millisecond
 var closeTime = 50 * 1000; //The time to close the gate
-var beginTime = 60 * 1000; //The time to begin the ride
-var rideTime = 120 * 1000; //The time that require move to destination
+var beginTime = 180 * 1000; //The time to begin the ride
+var rideTime = 300 * 1000; //The time that require move to destination
 var invasionTime = 30 * 1000; //The time that spawn balrog
 var Orbis_btf;
 var Boat_to_Orbis;
@@ -47,8 +47,6 @@ function stopentry() {
     Orbis_Boat_Cabin.resetReactors();
     Ellinia_Boat_Cabin.resetReactors();
 }
-
-
 
 function takeoff() {
     em.setProperty("docked","false");

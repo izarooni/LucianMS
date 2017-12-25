@@ -1,29 +1,9 @@
-/* 
- * This file is part of the OdinMS Maple Story Server
-    Copyright (C) 2008 Patrick Huy <patrick.huy@frz.cc> 
-                       Matthias Butz <matze@odinms.de>
-                       Jan Christian Meyer <vimes@odinms.de>
+/* izarooni
 
-    This program is free software: you can redistribute it and/or modify
-    it under the terms of the GNU Affero General Public License version 3
-    as published by the Free Software Foundation. You may not use, modify
-    or distribute this program under any other version of the
-    GNU Affero General Public License.
-
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU Affero General Public License for more details.
-
-    You should have received a copy of the GNU Affero General Public License
-    along with this program.  If not, see <http://www.gnu.org/licenses/>.
- */
-
-/*
- * @Author Raz
- * 
- * Ludi Maze PQ
- */
+-- Ratz drops
+insert into drop_data values (default9300006, 4001022, 1, 1, 0, 999999);
+insert into drop_data values (default9300005, 4001022, 1, 1, 0, 999999);
+*/
 var exitMap;
 var instanceId;
 var finishMap;
@@ -33,13 +13,13 @@ var pqTime = 3600;//60 Minutes
 
 function init() {
     instanceId = 1;
-	exitMap = em.getChannel().getMapFactory().getMap(922010000);//Exit
+	exitMap = em.getChannel().getMapFactory().getMap(922010000);
+    em.setProperty("LPQOpen", "true");
 }
 
-function monsterValue(eim, mobId) {
+function monsterValue(eim, player, monster) {
     return 1;
 }
-
 
 
 function setup() {
@@ -47,11 +27,11 @@ function setup() {
     var eim = em.newInstance(instanceName);
 	var eventTime = 60 * (1000 * 60); // 60 mins.
     instanceId++;
-	
+
 	em.schedule("timeOut", eim, eventTime); // invokes "timeOut" in how ever many seconds.
 	eim.startEventTimer(eventTime); // Sends a clock packet and tags a timer to the players.
     //eim.schedule("respawn", 5000);
-	
+
     var stage1Portal = eim.getMapInstance(922010100).getPortal("next00");
     stage1Portal.setScriptName("lpq1");
     var stage2Portal = eim.getMapInstance(922010200).getPortal("next00");
@@ -109,10 +89,9 @@ function leftParty(eim, player) {
 }
 
 function disbandParty(eim) {
-    //boot whole party and end
-    var party = eim.getPlayers();
-    for (var i = 0; i < party.size(); i++)
-        playerExit(eim, party.get(i));
+    eim.getPlayers().forEach(function(chr) {
+        playerExit(eim, chr);
+    });
     eim.dispose();
 }
 
@@ -177,14 +156,14 @@ function finishBonus(eim) {
 function startBonus(eim) {
 	var bonusMap = eim.getMapInstance(922011000);
 	var party = eim.getPlayers();
-	
+
 	em.schedule("finishBonus", eim, 60000); // invokes "timeOut" in how ever many seconds.
 	eim.startEventTimer(60000);
-	
+
 	for (var i = 0; i < party.size(); i++) {
 		if(party.get(i).getMap().getId() == 922010900) {
 			party.get(i).changeMap(bonusMap, bonusMap.getPortal(0));
 		}
 	}
-			
+
 }

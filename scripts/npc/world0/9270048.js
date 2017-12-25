@@ -35,7 +35,7 @@ function action(mode, type, selection) {
             cm.dispose();
         } else {
             status = 0;
-            cm.sendNext("More information coming soon!");
+            cm.sendNext("-----------------------------------#rKaneki#k-----------------------------------\r\n                                            Expedition\r\nRequirement:\r\n2 party members or more\r\nLevel 150+");
         }
     } else if (status == 3) {
 

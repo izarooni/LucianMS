@@ -1,6 +1,6 @@
 var MonsterPark = Java.type("server.events.custom.MonsterPark");
 
-function start(ms) {
+function enter(ms) {
 
     // get monster park event handler
     this.optional = ms.getPlayer().getGenericEvents().stream().filter(function(e){

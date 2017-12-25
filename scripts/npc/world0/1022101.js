@@ -25,8 +25,8 @@
 */
 
 var status = 0;
-var maps = new Array(6, 11, 810, 271000000, 273000000, 610050000, 211060010, 219000000, 951000000);
-var mapNames = new Array("#bTetris #k","#bWario#k", "#gCasino#k", "#dFuture Gate#k", "#rTwilight Perion#k", "#bBlackGate City#k", "#bLion King Castle", "#dCokeTown#k", "#rMonster Park#k");
+var maps = new Array(6, 11, 810, 271000000, 273000000, 610050000, 211060010, 219000000, 951000000, 910000025, 910001000);
+var mapNames = new Array("#bTetris #k","#bWario#k", "#gCasino#k", "#dFuture Gate#k", "#rTwilight Perion#k", "#bBlackGate City#k", "#bLion King Castle", "#dCokeTown#k", "#rMonster Park#k", "#bSmash The Wall#k", "#dHarvesting Area#k");
 var selectedMap = -1;
 
 function start() {

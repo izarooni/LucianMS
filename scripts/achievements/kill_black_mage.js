@@ -11,7 +11,7 @@ function testForKill(player, monsterId) {
         var achieve = player.getAchievement(getName());
         var current = achieve.getMonstersKilled() + 1;
         if (current >= _killRequire) {
-            acheive.setMonstersKilled(current);
+            achieve.setMonstersKilled(current);
             return true;
         }
     }

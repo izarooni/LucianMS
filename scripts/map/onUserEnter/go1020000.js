@@ -1,4 +1,4 @@
 function start(ms) {
-	ms.unlockUI(); 
+	ms.unlockUI();
 	ms.mapEffect("maplemap/enter/1020000");
 }
