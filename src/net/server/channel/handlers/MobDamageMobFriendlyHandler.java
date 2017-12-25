@@ -39,7 +39,7 @@ public class MobDamageMobFriendlyHandler extends PacketHandler {
                 dMonster.getMap().broadcastMessage(MaplePacketCreator.serverNotice(6, "The Moon Bunny went home because he was sick."));
                 dMonster.getMap().killFriendlies(dMonster);
                 EventInstanceManager eim = dMonster.getEventInstance();
-                eim.disbandParty(); // not disbanding -- simply warp all players out removing all party quest items from each player's inventory
+                eim.disbandParty();
             }
             dMonster.getMap().addBunnyHit();
         }

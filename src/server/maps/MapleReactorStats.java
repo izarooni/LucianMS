@@ -21,19 +21,21 @@
 */
 package server.maps;
 
-import java.awt.Point;
+import tools.Pair;
+
+import java.awt.*;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import tools.Pair;
 
 /**
  * @author Lerk
  */
 public class MapleReactorStats {
+
     private Point tl;
     private Point br;
-    private Map<Byte, List<StateData>> stateInfo = new HashMap<Byte, List<StateData>>();
+    private Map<Byte, List<StateData>> stateInfo = new HashMap<>();
 
     public void setTL(Point tl) {
         this.tl = tl;
@@ -88,16 +90,19 @@ public class MapleReactorStats {
     }
 
     public Pair<Integer, Integer> getReactItem(byte state, byte index) {
-        StateData nextState = stateInfo.get(state).get(index);
-        if (nextState != null) {
-            return nextState.getReactItem();
-        } else {
-            return null;
+        List<StateData> col = stateInfo.get(state);
+        if (col != null) {
+            StateData data = col.get(index);
+            if (data != null) {
+                return data.getReactItem();
+            }
         }
+        return null;
     }
 
 
     public static class StateData {
+
         private int type;
         private Pair<Integer, Integer> reactItem;
         private List<Integer> activeSkills;

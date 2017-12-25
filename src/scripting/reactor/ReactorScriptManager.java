@@ -22,6 +22,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 package scripting.reactor;
 
 import client.MapleClient;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import scripting.ScriptUtil;
 import server.maps.MapleReactor;
 import server.maps.ReactorDropEntry;
@@ -42,6 +44,7 @@ import java.util.*;
  */
 public class ReactorScriptManager {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(ReactorScriptManager.class);
     private static Map<Integer, List<ReactorDropEntry>> drops = new HashMap<>();
 
     public static void act(MapleClient c, MapleReactor reactor) {
@@ -80,6 +83,7 @@ public class ReactorScriptManager {
 
     public static void clearDrops() {
         drops.clear();
+        drops = new HashMap<>();
     }
 
     public static void touch(MapleClient c, MapleReactor reactor) {
@@ -90,11 +94,12 @@ public class ReactorScriptManager {
         touching(c, reactor, false);
     }
 
-    public static void touching(MapleClient c, MapleReactor reactor, boolean touching) {
+    private static void touching(MapleClient c, MapleReactor reactor, boolean touching) {
         try {
             ReactorActionManager rm = new ReactorActionManager(c, reactor);
             Invocable iv = ScriptUtil.eval(c, "reactor/" + reactor.getId() + ".js", Collections.singleton(new Pair<>("rm", rm)));
             if (iv == null) {
+                LOGGER.warn("Unable to find script for reactor ID {}, Name {}", reactor.getId(), reactor.getName());
                 return;
             }
             if (touching) {

@@ -25,6 +25,9 @@ import client.MapleClient;
 import client.inventory.Equip;
 import client.inventory.Item;
 import client.inventory.MapleInventoryType;
+import constants.ItemConstants;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import scripting.AbstractPlayerInteraction;
 import server.MapleItemInformationProvider;
 import server.life.MapleLifeFactory;
@@ -38,7 +41,6 @@ import tools.MaplePacketCreator;
 import tools.Randomizer;
 
 import java.awt.*;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -47,13 +49,33 @@ import java.util.List;
  */
 public class ReactorActionManager extends AbstractPlayerInteraction {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(ReactorActionManager.class);
     private MapleReactor reactor;
     private MapleClient client;
 
-    public ReactorActionManager(MapleClient c, MapleReactor reactor) {
-        super(c);
+    public ReactorActionManager(MapleClient client, MapleReactor reactor) {
+        super(client);
         this.reactor = reactor;
-        this.client = c;
+        this.client = client;
+    }
+
+    public void dropItem(int itemId, short quantity) {
+        MapleInventoryType iType = ItemConstants.getInventoryType(itemId);
+        if (iType == MapleInventoryType.UNDEFINED) {
+            LOGGER.error("Invalid item ID specified '{}' -- no inventory type", itemId);
+            return;
+        }
+        Item item;
+        if (iType == MapleInventoryType.EQUIP) {
+            item = MapleItemInformationProvider.getInstance().getEquipById(itemId);
+            if (item == null) {
+                LOGGER.error("Unable to retrieve equip stats with specified item ID '{}'", itemId);
+                return;
+            }
+        } else {
+            item = new Item(itemId, (short) 0, quantity);
+        }
+        reactor.getMap().spawnItemDrop(reactor, client.getPlayer(), item, reactor.getPosition(), true, false);
     }
 
     public void dropItems() {
@@ -71,9 +93,7 @@ public class ReactorActionManager extends AbstractPlayerInteraction {
         if (meso && Math.random() < (1 / (double) mesoChance)) {
             items.add(new ReactorDropEntry(0, mesoChance, -1));
         }
-        Iterator<ReactorDropEntry> iter = chances.iterator();
-        while (iter.hasNext()) {
-            ReactorDropEntry d = iter.next();
+        for (ReactorDropEntry d : chances) {
             if (Math.random() < (1 / (double) d.chance)) {
                 numItems++;
                 items.add(d);

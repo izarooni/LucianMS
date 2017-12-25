@@ -141,7 +141,6 @@ public final class PacketProcessor {
             registerHandler(RecvOpcode.USE_ITEMEFFECT, new UseItemEffectHandler());
             registerHandler(RecvOpcode.USE_CHAIR, new UseChairHandler());
             registerHandler(RecvOpcode.CANCEL_CHAIR, new CancelChairHandler());
-            registerHandler(RecvOpcode.DAMAGE_REACTOR, new ReactorHitHandler());
             registerHandler(RecvOpcode.GUILD_OPERATION, new GuildOperationHandler());
             registerHandler(RecvOpcode.DENY_GUILD_REQUEST, new DenyGuildRequestHandler());
             registerHandler(RecvOpcode.BBS_OPERATION, new BBSOperationHandler());
@@ -180,14 +179,12 @@ public final class PacketProcessor {
             registerHandler(RecvOpcode.USE_FAMILY, new FamilyUseHandler());
             registerHandler(RecvOpcode.USE_HAMMER, new UseHammerHandler());
             registerHandler(RecvOpcode.SCRIPTED_ITEM, new ScriptedItemHandler());
-            registerHandler(RecvOpcode.TOUCHING_REACTOR, new TouchReactorHandler());
             registerHandler(RecvOpcode.BEHOLDER, new BeholderHandler());
             registerHandler(RecvOpcode.ADMIN_COMMAND, new AdminCommandHandler());
             registerHandler(RecvOpcode.ADMIN_LOG, new AdminLogHandler());
             registerHandler(RecvOpcode.ALLIANCE_OPERATION, new AllianceOperationHandler());
             registerHandler(RecvOpcode.USE_SOLOMON_ITEM, new UseSolomonHandler());
             registerHandler(RecvOpcode.USE_GACHA_EXP, new UseGachaExpHandler());
-            registerHandler(RecvOpcode.USE_ITEM_REWARD, new ItemRewardHandler());
             registerHandler(RecvOpcode.USE_REMOTE, new RemoteGachaponHandler());
             registerHandler(RecvOpcode.ACCEPT_FAMILY, new AcceptFamilyHandler());
             registerHandler(RecvOpcode.DUEY_ACTION, new DueyHandler());

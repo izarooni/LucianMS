@@ -150,14 +150,16 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
         getClient().announce(MaplePacketCreator.getNPCTalkText(npc, text, ""));
     }
 
-    /*
-     * 0 = ariant colliseum
-     * 1 = Dojo
-     * 2 = Carnival 1
-     * 3 = Carnival 2
-     * 4 = Ghost Ship PQ?
-     * 5 = Pyramid PQ
-     * 6 = Kerning Subway
+    /**
+     * <ol start=0>
+     *   <li>ariant colliseum</li>
+     *   <li>Dojo</li>
+     *   <li>Carnival 1</li>
+     *   <li>Carnival 2</li>
+     *   <li>Ghost Ship PQ?</li>
+     *   <li>Pyramid PQ</li>
+     *   <li>Kerning Subway</li>
+     * <ol/>
      */
     public void sendDimensionalMirror(String text) {
         getClient().announce(MaplePacketCreator.getDimensionalMirror(text));
@@ -182,28 +184,28 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
     public void startQuest(short id) {
         try {
             MapleQuest.getInstance(id).forceStart(getPlayer(), npc);
-        } catch (NullPointerException ex) {
+        } catch (NullPointerException ignored) {
         }
     }
 
     public void completeQuest(short id) {
         try {
             MapleQuest.getInstance(id).forceComplete(getPlayer(), npc);
-        } catch (NullPointerException ex) {
+        } catch (NullPointerException ignored) {
         }
     }
 
     public void startQuest(int id) {
         try {
             MapleQuest.getInstance(id).forceStart(getPlayer(), npc);
-        } catch (NullPointerException ex) {
+        } catch (NullPointerException ignored) {
         }
     }
 
     public void completeQuest(int id) {
         try {
             MapleQuest.getInstance(id).forceComplete(getPlayer(), npc);
-        } catch (NullPointerException ex) {
+        } catch (NullPointerException ignored) {
         }
     }
 
@@ -348,7 +350,7 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
                 if (ps != null && !ps.isClosed()) {
                     ps.close();
                 }
-            } catch (SQLException ex) {
+            } catch (SQLException ignored) {
             }
         }
     }
@@ -455,8 +457,7 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
     }
 
     public MapleCharacter getMapleCharacter(String player) {
-        MapleCharacter target = Server.getInstance().getWorld(c.getWorld()).getChannel(c.getChannel()).getPlayerStorage().getCharacterByName(player);
-        return target;
+        return getClient().getChannelServer().getPlayerStorage().getCharacterByName(player);
     }
 
     public void logLeaf(String prize) {
@@ -478,15 +479,9 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
 
         for (byte b = 0; b < 5; b++) {//They cannot warp to the next map before the timer ends (:
             map = mf.getMap(mapid + b);
-            if (map.getCharacters().size() > 0) {
-                continue;
-            } else {
+            if (map.getCharacters().isEmpty()) {
                 break;
             }
-        }
-
-        if (map == null) {
-            return false;
         }
 
         if (!party) {

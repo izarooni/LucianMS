@@ -112,7 +112,7 @@ public class MapleMap {
     private Task mapMonitor = null;
     private Pair<Integer, String> timeMob = null;
     private short mobInterval = 5000;
-    private boolean allowSummons = true; // All maps should have this true at the beginning
+    private boolean summonState = true; // All maps should have this true at the beginning
     // HPQ
     private int riceCakes = 0;
     private int bunnyDamage = 0;
@@ -442,19 +442,19 @@ public class MapleMap {
     }
 
     private void spawnDrop(final Item idrop, final Point dropPos, final MapleMonster mob, final MapleCharacter chr, final byte droptype, final short questid) {
-        final MapleMapItem mdrop = new MapleMapItem(idrop, dropPos, mob, chr, droptype, false, questid);
-        mdrop.setDropTime(System.currentTimeMillis());
-        spawnAndAddRangedMapObject(mdrop, new DelayedPacketCreation() {
+        final MapleMapItem mapItem = new MapleMapItem(idrop, dropPos, mob, chr, droptype, false, questid);
+        mapItem.setDropTime(System.currentTimeMillis());
+        spawnAndAddRangedMapObject(mapItem, new DelayedPacketCreation() {
             @Override
             public void sendPackets(MapleClient c) {
                 if (questid <= 0 || (c.getPlayer().getQuestStatus(questid) == 1 && c.getPlayer().needQuestItem(questid, idrop.getItemId()))) {
-                    c.announce(MaplePacketCreator.dropItemFromMapObject(mdrop, mob.getPosition(), dropPos, (byte) 1));
+                    c.announce(MaplePacketCreator.dropItemFromMapObject(mapItem, mob.getPosition(), dropPos, (byte) 1));
                 }
             }
         }, null);
 
-        TaskExecutor.createTask(new ExpireMapItemJob(mdrop), 180000);
-        activateItemReactors(mdrop, chr.getClient());
+        TaskExecutor.createTask(new ExpireMapItemJob(mapItem), 180000);
+        activateItemReactors(chr.getClient(), mapItem);
     }
 
     public final void spawnMesoDrop(final int meso, final Point position, final MapleMapObject dropper, final MapleCharacter owner, final boolean playerDrop, final byte droptype) {
@@ -836,17 +836,19 @@ public class MapleMap {
 
     public void destroyReactor(int oid) {
         final MapleReactor reactor = getReactorByOid(oid);
-        broadcastMessage(MaplePacketCreator.destroyReactor(reactor));
-        reactor.setAlive(false);
-        removeMapObject(reactor);
-        reactor.setTimerActive(false);
-        if (reactor.getDelay() > 0) {
-            TaskExecutor.createTask(new Runnable() {
-                @Override
-                public void run() {
-                    respawnReactor(reactor);
-                }
-            }, reactor.getDelay());
+        if (reactor.isAlive()) {
+            reactor.setAlive(false);
+            reactor.setTimerActive(false);
+            broadcastMessage(MaplePacketCreator.destroyReactor(reactor));
+            removeMapObject(reactor);
+            if (reactor.getDelay() > 0) {
+                TaskExecutor.createTask(new Runnable() {
+                    @Override
+                    public void run() {
+                        respawnReactor(reactor);
+                    }
+                }, reactor.getDelay());
+            }
         }
     }
 
@@ -903,8 +905,7 @@ public class MapleMap {
     }
 
     /**
-     * Automagically finds a new controller for the given monster from the chars
-     * on the map...
+     * Automagically finds a new controller for the given monster from the chars on the map...
      *
      * @param monster
      */
@@ -977,8 +978,7 @@ public class MapleMap {
     }
 
     /**
-     * returns a monster with the given oid, if no such monster exists returns
-     * null
+     * returns a monster with the given oid, if no such monster exists returns null
      *
      * @param oid
      * @return
@@ -1018,9 +1018,10 @@ public class MapleMap {
         return null;
     }
 
-    public void spawnMonsterOnGroudBelow(int id, int x, int y) {
+    public MapleMonster spawnMonsterOnGroudBelow(int id, int x, int y) {
         MapleMonster mob = MapleLifeFactory.getMonster(id);
         spawnMonsterOnGroundBelow(mob, new Point(x, y));
+        return mob;
     }
 
     public void spawnMonsterOnGroudBelow(MapleMonster mob, Point pos) {
@@ -1300,7 +1301,7 @@ public class MapleMap {
         broadcastMessage(MaplePacketCreator.dropItemFromMapObject(mapItem, dropper.getPosition(), dropPosition, (byte) 0));
         if (disappear) {
             TaskExecutor.createTask(new ExpireMapItemJob(mapItem), 180000);
-            activateItemReactors(mapItem, owner.getClient());
+            activateItemReactors(owner.getClient(), mapItem);
         }
         return mapItem;
     }
@@ -1320,34 +1321,35 @@ public class MapleMap {
 
         if (!everlast) {
             TaskExecutor.createTask(new ExpireMapItemJob(drop), 180000);
-            activateItemReactors(drop, owner.getClient());
+            activateItemReactors(owner.getClient(), drop);
         }
         return drop;
     }
 
-    private void activateItemReactors(final MapleMapItem drop, final MapleClient c) {
-        final Item item = drop.getItem();
-
-        for (final MapleMapObject o : getAllReactor()) {
-            final MapleReactor react = (MapleReactor) o;
-
-            if (react.getReactorType() == 100) {
-                if (react.getReactItem((byte) 0).getLeft() == item.getItemId() && react.getReactItem((byte) 0).getRight() == item.getQuantity()) {
-
-                    if (react.getArea().contains(drop.getPosition())) {
-                        if (!react.isTimerActive()) {
-                            TaskExecutor.createTask(new ActivateItemReactor(drop, react, c), 5000);
-                            react.setTimerActive(true);
-                            break;
-                        }
+    private void activateItemReactors(MapleClient client, MapleMapItem mapItem) {
+        Item item = mapItem.getItem();
+        for (MapleMapObject mapObject : getReactors()) {
+            MapleReactor reactor = (MapleReactor) mapobjects;
+            if (reactor.getReactorType() == 100) {
+                Pair<Integer, Integer> pair = reactor.getReactItem((byte) 0);
+                if (pair.getLeft() == item.getItemId() && pair.getRight() == item.getQuantity()) {
+                    if (reactor.getArea().contains(mapItem.getPosition()) && !reactor.isTimerActive()) {
+                        TaskExecutor.createTask(new ActivateItemReactor(client, mapItem, reactor), 5000);
+                        reactor.setTimerActive(true);
+                        break;
                     }
                 }
             }
         }
     }
 
-    public final List<MapleMapObject> getAllReactor() {
-        return getMapObjectsInRange(new Point(0, 0), Double.POSITIVE_INFINITY, Collections.singletonList(MapleMapObjectType.REACTOR));
+    public final List<MapleReactor> getReactors() {
+        objectRLock.lock();
+        try {
+            return mapobjects.values().stream().filter(o -> (o instanceof MapleReactor)).map(o -> (MapleReactor) o).collect(Collectors.toList());
+        } finally {
+            objectRLock.unlock();
+        }
     }
 
     public void startMapEffect(String msg, int itemId) {
@@ -2095,27 +2097,30 @@ public class MapleMap {
 
     private class ActivateItemReactor implements Runnable {
 
-        private MapleMapItem mapitem;
+        private MapleMapItem mapItem;
         private MapleReactor reactor;
-        private MapleClient c;
+        private MapleClient client;
 
-        public ActivateItemReactor(MapleMapItem mapitem, MapleReactor reactor, MapleClient c) {
-            this.mapitem = mapitem;
+        public ActivateItemReactor(MapleClient client, MapleMapItem mapItem, MapleReactor reactor) {
+            this.client = client;
+            this.mapItem = mapItem;
             this.reactor = reactor;
-            this.c = c;
         }
 
         @Override
         public void run() {
-            if (mapitem != null && mapitem == getMapObject(mapitem.getObjectId())) {
-                mapitem.itemLock.lock();
+            if (mapItem != null && mapItem == getMapObject(mapItem.getObjectId())) {
+                mapItem.itemLock.lock();
                 try {
-                    if (mapitem.isPickedUp()) {
+                    if (mapItem.isPickedUp()) {
                         return;
                     }
-                    MapleMap.this.broadcastMessage(MaplePacketCreator.removeItemFromMap(mapitem.getObjectId(), 0, 0), mapitem.getPosition());
-                    MapleMap.this.removeMapObject(mapitem);
-                    reactor.hitReactor(c);
+                    if (client.getPlayer().isDebug()) {
+                        client.getPlayer().sendMessage("Reactor Activated ID {}, Name {}, State {}", reactor.getId(), reactor.getName(), reactor.getState());
+                    }
+                    broadcastMessage(MaplePacketCreator.removeItemFromMap(mapItem.getObjectId(), 0, 0), mapItem.getPosition());
+                    removeMapObject(mapItem);
+                    reactor.hitReactor(client);
                     reactor.setTimerActive(false);
                     if (reactor.getDelay() > 0) {
                         TaskExecutor.createTask(new Runnable() {
@@ -2127,7 +2132,7 @@ public class MapleMap {
                         }, reactor.getDelay());
                     }
                 } finally {
-                    mapitem.itemLock.unlock();
+                    mapItem.itemLock.unlock();
                 }
             }
         }
@@ -2336,12 +2341,12 @@ public class MapleMap {
         this.riceCakes = 0;
     }
 
-    public void allowSummonState(boolean b) {
-        MapleMap.this.allowSummons = b;
+    public boolean getSummonState() {
+        return summonState;
     }
 
-    public boolean getSummonState() {
-        return MapleMap.this.allowSummons;
+    public void setSummonState(boolean summonState) {
+        this.summonState = summonState;
     }
 
     public void warpEveryone(int to) {

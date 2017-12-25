@@ -43,6 +43,7 @@ public class HGMCommands {
             ArrayList<String> commands = new ArrayList<>();
             commands.add("!item <id> <OPT=amount> - spawn an item, and optionally choose an amount");
             commands.add("!drop <id> <OPT=amount> - drop an item on the ground, and optionally choose an amount");
+            commands.add("!respawn - Respawn monsters and reset reactors in the current map");
             commands.add("!spawn <monster> <OPT=amount> - spawn a monster, and optionally multiple of the same sort");
             commands.add("!npc <id> - spawn a npc at your location");
             commands.add("!pnpc <id> - spawn a permanent npc at your location");
@@ -60,7 +61,7 @@ public class HGMCommands {
             commands.add("!reloadshops - Reload shop items");
             commands.add("!reloadskills - Relaod loaded skill data");
             commands.add("!reloadmobs - Reload mob data");
-            commands.add("!resetreactors - Reset all reactors in the m");
+            commands.add("!resetreactors - Reset all reactors in the map");
             commands.add("!godmeup - Change values of all stats for all equips");
             commands.forEach(player::dropMessage);
             commands.clear();
@@ -102,6 +103,11 @@ public class HGMCommands {
             } else {
                 player.dropMessage(5, "You need to specify the ID of the item you want.");
             }
+        } else if (command.equals("respawn")) {
+            player.getMap().respawn();
+            player.sendMessage("Monsters respawned");
+            player.getMap().resetReactors();
+            player.sendMessage("Reactors reset");
         } else if (command.equals("spawn")) {
             if (args.length() > 0) {
                 Long a1 = args.parseNumber(0);

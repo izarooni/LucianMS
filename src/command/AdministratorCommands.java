@@ -56,6 +56,7 @@ public class AdministratorCommands {
             }
         } else if (command.equals("reloaddrops")) {
             MapleMonsterInformationProvider.getInstance().reload();
+            player.dropMessage("Drops reloaded");
         } else if (command.equals("reloadmapscripts")) {
             MapScriptManager.getInstance().clearScripts();
             player.dropMessage("Map scripts cleared");
@@ -100,7 +101,7 @@ public class AdministratorCommands {
         } else if (command.equals("list")) {
             if (args.length() == 1) {
                 if (args.get(0).equalsIgnoreCase("reactors")) {
-                    for (MapleMapObject object : player.getMap().getAllReactor()) {
+                    for (MapleMapObject object : player.getMap().getReactors()) {
                         MapleReactor reactor = (MapleReactor) object;
                         player.sendMessage("{} / id:{} / oid:{} / name:{}", reactor.getPosition().toString(), reactor.getId(), reactor.getObjectId(), reactor.getName());
                     }

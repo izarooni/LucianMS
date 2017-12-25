@@ -51,11 +51,10 @@ public class SpawnPoint {
     }
 
     public boolean shouldSpawn() {
-        if (mobTime < 0 || ((mobTime != 0 || immobile) && spawnedMonsters.get() > 0) || spawnedMonsters.get() > 2) {//lol
-            return false;
-        }
+        return mobTime >= 0
+                && ((mobTime == 0 && !immobile) || spawnedMonsters.get() <= 0)
+                && spawnedMonsters.get() <= 2 && nextPossibleSpawn <= System.currentTimeMillis();
 
-        return nextPossibleSpawn <= System.currentTimeMillis();
     }
 
     public boolean shouldForceSpawn() {

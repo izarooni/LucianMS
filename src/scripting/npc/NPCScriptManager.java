@@ -2,6 +2,8 @@ package scripting.npc;
 
 import client.MapleCharacter;
 import client.MapleClient;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import scripting.ScriptUtil;
 import tools.Pair;
 
@@ -17,6 +19,7 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public class NPCScriptManager {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(NPCScriptManager.class);
     private static ConcurrentHashMap<Integer, Pair<Invocable, NPCConversationManager>> storage = new ConcurrentHashMap<>();
 
     private NPCScriptManager() {
@@ -52,9 +55,7 @@ public class NPCScriptManager {
                 }
                 response += "\r\nNPC ID: " + npc;
                 client.getPlayer().dropMessage(1, response);
-
-                System.err.println(String.format("Unable to eval script file '%s' for player %s", path, client.getPlayer().getName()));
-                e.printStackTrace();
+                LOGGER.error("Unable to execute script '{}' npc '{}' using player '{}'", path, npc, client.getPlayer().getName(), e);
             }
             if (iv == null) {
                 dispose(client);
@@ -71,7 +72,7 @@ public class NPCScriptManager {
                         try {
                             iv.invokeFunction("action", 1, 0, -1);
                         } catch (NoSuchMethodError e3) {
-                            System.out.println(String.format("No start function for script '%s' from npc %d", fileName, npc));
+                            LOGGER.warn("No initializer function for script '{}' npc '{}' using player '{}'", fileName, npc, client.getPlayer().getName());
                             dispose(client);
                         }
                     }
@@ -83,9 +84,8 @@ public class NPCScriptManager {
                 }
                 response += "\r\nNPC ID: " + npc;
                 client.getPlayer().dropMessage(1, response);
-
-                System.err.println("Error invoking function 'action' for NPC script " + (cm.getScriptName() == null ? cm.getNpc() : cm.getScriptName()) + ".js");
-                e.printStackTrace();
+                dispose(client);
+                LOGGER.error("Unable to invoke initializer function for script '{}' npc '{}' using player '{}'", fileName, npc, client.getPlayer(), e);
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -107,10 +107,8 @@ public class NPCScriptManager {
                 }
                 response += "\r\nNPC ID: " + cm.getNpc();
                 client.getPlayer().dropMessage(1, response);
-
-                System.err.println("Error invoking function 'action' for NPC script " + (cm.getScriptName() == null ? cm.getNpc() : cm.getScriptName()) + ".js");
-                e.printStackTrace();
                 dispose(client);
+                LOGGER.error("Unable to invoke 'action' function for script '{}' npc '{}' using player '{}'", cm.getScriptName(), cm.getNpc(), client.getPlayer().getName(), e);
             }
         }
     }

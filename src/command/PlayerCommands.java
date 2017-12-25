@@ -271,27 +271,29 @@ public class PlayerCommands {
             }
         } else if (command.equals("go")) {
             WeakHashMap<String, Integer> maps = new WeakHashMap<>();
-            maps.put("fm", 910000000);
-            maps.put("henesys", 100000000);
-            maps.put("perion", 102000000);
-            maps.put("kerning", 103000000);
-            maps.put("ellinia", 103000000);
-            maps.put("lith", 104000000);
-            maps.put("harbor", 104000000);
-            maps.put("ellinia", 180000000);
-            maps.put("florina", 110000000);
-            maps.put("nautilus", 120000000);
-            maps.put("ereve", 130000000);
-            maps.put("rien", 140000000);
-            maps.put("orbis", 200000000);
-            maps.put("ludi", 220000000);
-            maps.put("aqua", 230000000);
-            maps.put("leafre", 240000000);
-            maps.put("mulung", 250000000);
-            maps.put("ariant", 260000000);
+            // @formatter:off
+            maps.put("fm",         910000000);
+            maps.put("henesys",    100000000);
+            maps.put("maya",       100000001);
+            maps.put("ellinia",    101000000);
+            maps.put("perion",     102000000);
+            maps.put("kerning",    103000000);
+            maps.put("lith",       104000000);
+            maps.put("harbor",     104000000);
+            maps.put("ellinia",    180000000);
+            maps.put("florina",    110000000);
+            maps.put("nautilus",   120000000);
+            maps.put("ereve",      130000000);
+            maps.put("rien",       140000000);
+            maps.put("orbis",      200000000);
+            maps.put("ludi",       220000000);
+            maps.put("aqua",       230000000);
+            maps.put("leafre",     240000000);
+            maps.put("mulung",     250000000);
+            maps.put("ariant",     260000000);
             maps.put("timetemple", 270000000);
-            maps.put("ellin", 300000000);
-            maps.put("maya", 100000001);
+            maps.put("ellin",      300000000);
+            // @formatter:on
             if (args.length() == 1) {
                 String name = args.get(0).toLowerCase(Locale.ROOT);
                 if (maps.containsKey(name)) {

@@ -14,6 +14,8 @@ import provider.MapleDataTool;
 import server.MapleInventoryManipulator;
 import server.MapleItemInformationProvider;
 import server.maps.MapleMap;
+import server.maps.MapleMapItem;
+import server.maps.MapleMapObject;
 import tools.DatabaseConnection;
 import tools.MaplePacketCreator;
 import tools.Pair;
@@ -78,6 +80,7 @@ public class GameMasterCommands {
             commands.add("!online - list all visible GMs and players online");
             commands.add("!gift - Give a player a certain type and specified amount of points");
             commands.add("!! <message> - sends a message to all GMs online");
+            commands.add("!itemvac - Loot all item drops in the map");
             commands.add("!characters <username> - lists other characters that belong to a player");
             commands.add("!ak <OPT=reset> - set the autokill position of the map to your y-position");
             commands.add("!bomb <OPT=username> - spawns a bomb at the specified player location, or your location if no name provided");
@@ -414,6 +417,7 @@ public class GameMasterCommands {
                 player.setMp(player.getMaxMp());
                 player.updateSingleStat(MapleStat.HP, player.getHp());
                 player.updateSingleStat(MapleStat.MP, player.getMp());
+                player.dispelDebuffs();
                 player.dropMessage(6, "Healed");
             }
         } else if (command.equals("notice")) {
@@ -631,6 +635,22 @@ public class GameMasterCommands {
             } else {
                 player.dropMessage(5, "You must specify a message");
             }
+        } else if (command.equals("itemvac")) {
+            List<MapleMapObject> objects = new ArrayList<>(player.getMap().getMapObjects());
+            for (MapleMapObject mapObject : objects) {
+                if (mapObject instanceof MapleMapItem) {
+                    MapleMapItem mapItem = ((MapleMapItem) mapObject);
+                    if (mapItem.getMeso() > 0) {
+                        player.gainMeso(mapItem.getMeso(), true);
+                    } else {
+                        MapleInventoryManipulator.addFromDrop(client, mapItem.getItem(), true);
+                    }
+                    mapItem.setPickedUp(true);
+                    player.getMap().broadcastMessage(MaplePacketCreator.removeItemFromMap(mapItem.getObjectId(), 2, player.getId()), mapItem.getPosition());
+                    player.getMap().removeMapObject(mapObject);
+                }
+            }
+            objects.clear();
         } else if (command.equals("characters")) {
             if (args.length() == 1) {
                 String username = args.get(0);

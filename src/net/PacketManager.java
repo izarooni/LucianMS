@@ -58,12 +58,16 @@ public final class PacketManager {
         handlers.set(RecvOpcode.TOUCH_MONSTER_ATTACK.getValue(), TouchMonsterDamageHandler.class);
         handlers.set(RecvOpcode.TAKE_DAMAGE.getValue(), TakeDamageHandler.class);
         handlers.set(RecvOpcode.MOB_DAMAGE_MOB_FRIENDLY.getValue(), MobDamageMobFriendlyHandler.class);
+
+        handlers.set(RecvOpcode.DAMAGE_REACTOR.getValue(), ReactorHitHandler.class);
+        handlers.set(RecvOpcode.TOUCHING_REACTOR.getValue(), TouchReactorHandler.class);
         //endregion
 
         //region item mod handlers
         handlers.set(RecvOpcode.USE_ITEM.getValue(), UseItemHandler.class);
         handlers.set(RecvOpcode.USE_RETURN_SCROLL.getValue(), UseItemHandler.class);
         handlers.set(RecvOpcode.USE_UPGRADE_SCROLL.getValue(), ScrollHandler.class);
+        handlers.set(RecvOpcode.USE_ITEM_REWARD.getValue(), ItemRewardHandler.class);
         //endregion
 
         //region inventory handlers
