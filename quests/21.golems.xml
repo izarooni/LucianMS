@@ -1,4 +1,4 @@
-<imgdir name="Golems, Golems and more Golems">
+<imgdir name="Golems, Golems And More Golems">
     <imgdir name="info">
         <int name="questId" value="21"/>
 		<int name="preQuest" value="-1"/>
@@ -24,7 +24,7 @@
 
     <imgdir name="toCollect">
     </imgdir>
-    
+
     <imgdir name="rewards">
         <int name="exp" value="85000"/>
     </imgdir>

@@ -40,6 +40,6 @@
     </imgdir>
 
     <imgdir name="rewards">
-        <int name="exp" value="52500"/>
+        <int name="exp" value="82500"/>
     </imgdir>
 </imgdir>

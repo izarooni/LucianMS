@@ -1,4 +1,4 @@
-<imgdir name="Castle Crusader">
+<imgdir name="From The Past">
     <imgdir name="info">
         <int name="questId" value="24"/>
 		<int name="preQuest" value="-1"/>
