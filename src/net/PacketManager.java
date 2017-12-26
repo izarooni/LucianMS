@@ -43,6 +43,8 @@ public final class PacketManager {
 
         handlers.set(RecvOpcode.NPC_TALK.getValue(), NPCTalkHandler.class);
 
+        handlers.set(RecvOpcode.MONSTER_CARNIVAL.getValue(), MonsterCarnivalHandler.class);
+
         //region movement handlers
         handlers.set(RecvOpcode.MOVE_PLAYER.getValue(), PlayerMoveHandler.class);
         handlers.set(RecvOpcode.MOVE_LIFE.getValue(), MoveLifeHandler.class);
