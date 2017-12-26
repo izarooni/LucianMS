@@ -4,6 +4,7 @@ import client.MapleCharacter;
 import client.MapleStat;
 import net.server.channel.handlers.ChangeMapHandler;
 import server.events.custom.GenericEvent;
+import server.maps.MapleMap;
 import tools.MaplePacketCreator;
 import tools.annotation.PacketWorker;
 
@@ -11,6 +12,8 @@ import tools.annotation.PacketWorker;
  * @author izarooni
  */
 public class MCarnivalGame extends GenericEvent {
+
+    private static final int M_Office= 980000000;
 
     private final MCarnivalLobby lobby;
     private long startTimestamp = -1;
@@ -35,12 +38,19 @@ public class MCarnivalGame extends GenericEvent {
     @Override
     public void unregisterPlayer(MapleCharacter player) {
         player.removeGenericEvent(this);
-        player.changeMap(980000000); // hub
+        player.changeMap(M_Office);
         player.announce(MaplePacketCreator.getMonsterCarnivalStop(player));
     }
 
     @Override
+    public void onPlayerDisconnect(MapleCharacter player) {
+        player.setMapId(M_Office);
+    }
+
+    @Override
     public void onPlayerDeath(MapleCharacter player) {
+        MapleMap map = player.getClient().getChannelServer().getMapFactory().getMap(lobby.getBattlefieldMapId());
+        map.broadcastMessage(MaplePacketCreator.getMonsterCarnivalPlayerDeath(player));
     }
 
     @PacketWorker
@@ -55,7 +65,7 @@ public class MCarnivalGame extends GenericEvent {
     }
 
     public long getTimeLeft() {
-        return 60000 - (System.currentTimeMillis() - startTimestamp);
+        return (((1000 * 60 * 10) + startTimestamp) - System.currentTimeMillis());
     }
 
     public MCarnivalLobby getLobby() {

@@ -1,7 +1,6 @@
 package server.events.custom.summoning;
 
 import client.MapleCharacter;
-import client.inventory.Item;
 import net.server.channel.handlers.ItemMoveHandler;
 import net.server.channel.handlers.ItemPickupHandler;
 import org.slf4j.Logger;
@@ -26,7 +25,7 @@ public class BlackMageSummoner extends GenericEvent {
     //region constants
     private static final int SummoningMap = 97;
     private static final int ReactionItem = 4011022;
-    private static final int SummoningMonster = 9895257;
+    private static final int SummoningMonster = 9895253;
     //endregion
 
     private int reactionItemOID = 0;

@@ -268,7 +268,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
     private long snowballattack;
 
     // Monster Carnival
-    private int cp = 0;
+    private int carnivalPoints = 0;
     private int obtainedcp = 0;
     private MonsterCarnivalParty carnivalparty;
     private MonsterCarnival carnival;
@@ -5170,8 +5170,16 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
         this.carnival = car;
     }
 
+    public int getCarnivalPoints() {
+        return carnivalPoints;
+    }
+
+    public void setCarnivalPoints(int carnivalPoints) {
+        this.carnivalPoints = carnivalPoints;
+    }
+
     public int getCP() {
-        return cp;
+        return carnivalPoints;
     }
 
     public int getObtainedCP() {
@@ -5183,21 +5191,21 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
     }
 
     public void addCP(int cp) {
-        this.cp += cp;
+        this.carnivalPoints += cp;
         this.obtainedcp += cp;
     }
 
     public void useCP(int cp) {
-        this.cp -= cp;
+        this.carnivalPoints -= cp;
     }
 
     public int getAndRemoveCP() {
         int rCP = 10;
-        if (cp < 9) {
-            rCP = cp;
-            cp = 0;
+        if (carnivalPoints < 9) {
+            rCP = carnivalPoints;
+            carnivalPoints = 0;
         } else {
-            cp -= 10;
+            carnivalPoints -= 10;
         }
 
         return rCP;

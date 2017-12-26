@@ -45,7 +45,7 @@ public class MonsterCarnival {
     private long timeStarted = 0;
     private Task task = null;
 
-    public MonsterCarnival(int room, byte channel, MonsterCarnivalParty red1, MonsterCarnivalParty blue1) {
+    public MonsterCarnival(int room, MonsterCarnivalParty red1, MonsterCarnivalParty blue1) {
         //this.map = Channel.getInstance(channel).getMapFactory().getMap(980000001 + (room * 100));
         this.room = room;
         this.red = red1;

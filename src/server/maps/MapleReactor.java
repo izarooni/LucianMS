@@ -23,10 +23,12 @@ package server.maps;
 
 import client.MapleCharacter;
 import client.MapleClient;
+import client.status.MonsterStatus;
 import scheduler.TaskExecutor;
 import scripting.reactor.ReactorScriptManager;
 import server.life.MapleLifeFactory;
 import server.life.MapleMonster;
+import server.life.MobSkill;
 import tools.MaplePacketCreator;
 import tools.Pair;
 
@@ -43,9 +45,11 @@ public class MapleReactor extends AbstractMapleMapObject {
     private String name;
     private int id;
     private int delay;
-    private AtomicInteger state;
+    private AtomicInteger state = new AtomicInteger();
     private boolean timerActive;
     private boolean alive = true;
+
+    private Pair<MonsterStatus, MobSkill> status = null;
 
     private volatile long lastHit = 0;
 
@@ -211,5 +215,13 @@ public class MapleReactor extends AbstractMapleMapObject {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public void setMonsterStatus(MonsterStatus status, MobSkill skill) {
+        this.status = new Pair<>(status, skill);
+    }
+
+    public Pair<MonsterStatus, MobSkill> getMonsterStatus() {
+        return status;
     }
 }

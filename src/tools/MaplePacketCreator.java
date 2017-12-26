@@ -2048,7 +2048,7 @@ public class MaplePacketCreator {
     }
 
     /* 00 = /
-	 * 01 = You don't have enough in stock
+     * 01 = You don't have enough in stock
 	 * 02 = You do not have enough mesos
 	 * 03 = Please check if your inventory is full or not
 	 * 05 = You don't have enough in stock
@@ -6767,12 +6767,13 @@ public class MaplePacketCreator {
     /**
      * Sends a CPQ Message<br>
      * <p>
-     * Possible values for <code>message</code>:<br> 1: You don't have enough CP
-     * to continue.<br> 2: You can no longer summon the Monster.<br> 3: You can
-     * no longer summon the being.<br> 4: This being is already summoned.<br> 5:
-     * This request has failed due to an unknown error.<br>
-     *
-     * @param message Displays a message inside Carnival PQ
+     * <code>message</code>:<br>
+     * 1: You don't have enough CP to continue.<br>
+     * 2: You can no longer summon the Monster.<br>
+     * 3: You can no longer summon the being.<br>
+     * 4: This being is already summoned.<br>
+     * 5: This request has failed due to an unknown error.<br>
+     ** @param message Displays a message inside Carnival PQ
      */
     public static byte[] getMonsterCarnivalResponse(byte message) {
         final MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter(3);

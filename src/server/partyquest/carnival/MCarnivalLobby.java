@@ -3,6 +3,7 @@ package server.partyquest.carnival;
 import net.server.world.MapleParty;
 import scheduler.Task;
 import scheduler.TaskExecutor;
+import tools.MaplePacketCreator;
 import tools.Randomizer;
 
 /**
@@ -16,6 +17,8 @@ public class MCarnivalLobby {
         Starting, // Lobby is about to begin
         InProgress // Game started
     }
+
+    private static final int M_Office = 980000000;
 
     private final int maxPartySize;
     private final int battlefieldMapId;
@@ -62,12 +65,21 @@ public class MCarnivalLobby {
                 MCarnivalGame carnivalGame = createGame();
                 party1.getMembers().forEach(p -> carnivalGame.registerPlayer(p.getPlayer()));
                 party2.getMembers().forEach(p -> carnivalGame.registerPlayer(p.getPlayer()));
+                waitingTask = TaskExecutor.createTask(new Runnable() {
+                    @Override
+                    public void run() {
+                        party1.getMembers().forEach(p -> carnivalGame.unregisterPlayer(p.getPlayer()));
+                        party2.getMembers().forEach(p -> carnivalGame.unregisterPlayer(p.getPlayer()));
+                    }
+                }, 1000 * 60 * 10); // 10 min game
                 break;
             }
             case Starting: {
                 if (waitingTask != null) {
                     waitingTask.cancel();
                 }
+                party1.broadcastPacket(MaplePacketCreator.getClock(5));
+                party2.broadcastPacket(MaplePacketCreator.getClock(5));
                 waitingTask = TaskExecutor.createTask(new Runnable() {
                     @Override
                     public void run() {
@@ -90,13 +102,12 @@ public class MCarnivalLobby {
                     waitingTask.cancel();
                     waitingTask = null;
                 }
-                int hubMapId = 980000000;
                 if (party1 != null) {
-                    party1.getMembers().forEach(m -> m.getPlayer().changeMap(hubMapId));
+                    party1.getMembers().forEach(m -> m.getPlayer().changeMap(M_Office));
                     party1 = null;
                 }
                 if (party2 != null) {
-                    party2.getMembers().forEach(m -> m.getPlayer().changeMap(hubMapId));
+                    party2.getMembers().forEach(m -> m.getPlayer().changeMap(M_Office));
                     party2 = null;
                 }
                 break;

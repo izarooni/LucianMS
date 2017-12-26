@@ -35,7 +35,7 @@ public class PortalScriptManager {
         } catch (FileNotFoundException e) {
             LOGGER.warn("No portal script found '{}'", script);
         } catch (NullPointerException e) {
-            LOGGER.warn(e.getMessage());
+            LOGGER.warn("Unable to execute script '{}' in map '{}'", script, client.getPlayer().getMapId(), e);
         }
         return null;
     }
@@ -52,7 +52,7 @@ public class PortalScriptManager {
                 return (boolean) iv.invokeFunction("enter", new PortalPlayerInteraction(client, portal));
             }
         } catch (IOException | ScriptException | NoSuchMethodException e) {
-            LOGGER.info("Unable to invoke function 'start' in portal script {}/{} in map", portal.getScriptName(), portal.getId(), client.getPlayer().getMapId(), e);
+            LOGGER.info("Unable to invoke function 'start' in script Name: {}, ID: {}, Map: {}", portal.getScriptName(), portal.getId(), client.getPlayer().getMapId(), e);
         }
         return false;
     }

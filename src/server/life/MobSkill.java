@@ -21,29 +21,27 @@
 */
 package server.life;
 
-import java.awt.Point;
-import java.awt.Rectangle;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 import client.MapleCharacter;
 import client.MapleDisease;
 import client.status.MonsterStatus;
-import java.util.LinkedList;
-import java.util.Map;
-import tools.Randomizer;
 import server.maps.MapleMapObject;
 import server.maps.MapleMapObjectType;
 import server.maps.MapleMist;
 import tools.ArrayMap;
+import tools.Randomizer;
+
+import java.awt.*;
+import java.util.*;
+import java.util.List;
 
 /**
  *
  * @author Danny (Leifde)
  */
 public class MobSkill {
+
     private int skillId, skillLevel, mpCon;
-    private List<Integer> toSummon = new ArrayList<Integer>();
+    private List<Integer> toSummon = new ArrayList<>();
     private int spawnEffect, hp, x, y;
     private long duration, cooltime;
     private float prop;
@@ -55,38 +53,12 @@ public class MobSkill {
         this.skillLevel = level;
     }
 
-    public void setMpCon(int mpCon) {
-        this.mpCon = mpCon;
-    }
-
     public void addSummons(List<Integer> toSummon) {
-        for (Integer summon : toSummon) {
-            this.toSummon.add(summon);
-        }
-    }
-
-    public void setSpawnEffect(int spawnEffect) {
-        this.spawnEffect = spawnEffect;
+        this.toSummon.addAll(toSummon);
     }
 
     public void setHp(int hp) {
         this.hp = hp;
-    }
-
-    public void setX(int x) {
-        this.x = x;
-    }
-
-    public void setY(int y) {
-        this.y = y;
-    }
-
-    public void setDuration(long duration) {
-        this.duration = duration;
-    }
-
-    public void setCoolTime(long cooltime) {
-        this.cooltime = cooltime;
     }
 
     public void setProp(float prop) {
@@ -98,79 +70,75 @@ public class MobSkill {
         this.rb = rb;
     }
 
-    public void setLimit(int limit) {
-        this.limit = limit;
-    }
-
     public void applyEffect(MapleCharacter player, MapleMonster monster, boolean skill) {
         MapleDisease disease = null;
-		Map<MonsterStatus, Integer> stats = new ArrayMap<MonsterStatus, Integer>();
-		List<Integer> reflection = new LinkedList<Integer>();
+        Map<MonsterStatus, Integer> stats = new ArrayMap<>();
+        List<Integer> reflection = new LinkedList<>();
         switch (skillId) {
             case 100:
             case 110:
             case 150:
-                stats.put(MonsterStatus.WEAPON_ATTACK_UP, Integer.valueOf(x));
+                stats.put(MonsterStatus.WEAPON_ATTACK_UP, x);
                 break;
             case 101:
             case 111:
             case 151:
-                stats.put(MonsterStatus.MAGIC_ATTACK_UP, Integer.valueOf(x));
+                stats.put(MonsterStatus.MAGIC_ATTACK_UP, x);
                 break;
             case 102:
             case 112:
             case 152:
-                stats.put(MonsterStatus.WEAPON_DEFENSE_UP, Integer.valueOf(x));
+                stats.put(MonsterStatus.WEAPON_DEFENSE_UP, x);
                 break;
             case 103:
             case 113:
             case 153:
-                stats.put(MonsterStatus.MAGIC_DEFENSE_UP, Integer.valueOf(x));
+                stats.put(MonsterStatus.MAGIC_DEFENSE_UP, x);
                 break;
-	    case 114:
-		if (lt != null && rb != null && skill) {
-		    List<MapleMapObject> objects = getObjectsInRange(monster, MapleMapObjectType.MONSTER);
-		    final int hps = (getX() / 1000) * (int) (950 + 1050 * Math.random());
-		    for (MapleMapObject mons : objects) {
-			((MapleMonster) mons).heal(hps, getY());
-		    }
-		} else {
-		    monster.heal(getX(), getY());
-		}
-		break;
-	    case 120:
-	    	disease = MapleDisease.SEAL;
-		break;
-	    case 121:
-	    	disease = MapleDisease.DARKNESS;
-		break;
-	    case 122:
-	    	disease = MapleDisease.WEAKEN;
-		break;
-	    case 123:
-	    	disease = MapleDisease.STUN;
-		break;
-	    case 124:
-	    	disease = MapleDisease.CURSE;
-		break;
-	    case 125:
-	    	disease = MapleDisease.POISON;
-		break;
-	    case 126: // Slow
-	    	disease = MapleDisease.SLOW;
-		break;
-	    case 127:
-		if (lt != null && rb != null && skill) {
-		    for (MapleCharacter character : getPlayersInRange(monster, player)) {
-			character.dispel();
-		    }
-		} else {
-		    player.dispel();
-		}
-		break;
-	    case 128: // Seduce
-	    	disease = MapleDisease.SEDUCE;
-		break;
+            case 114:
+                if (lt != null && rb != null && skill) {
+                    List<MapleMapObject> objects = getObjectsInRange(monster, MapleMapObjectType.MONSTER);
+                    final int hps = (getX() / 1000) * (int) (950 + 1050 * Math.random());
+                    for (MapleMapObject mons : objects) {
+                        ((MapleMonster) mons).heal(hps, getY());
+                    }
+                } else {
+                    monster.heal(getX(), getY());
+                }
+                break;
+            case 120:
+                disease = MapleDisease.SEAL;
+                break;
+            case 121:
+                disease = MapleDisease.DARKNESS;
+                break;
+            case 122:
+                disease = MapleDisease.WEAKEN;
+                break;
+            case 123:
+                disease = MapleDisease.STUN;
+                break;
+            case 124:
+                disease = MapleDisease.CURSE;
+                break;
+            case 125:
+                disease = MapleDisease.POISON;
+                break;
+            case 126: // Slow
+                disease = MapleDisease.SLOW;
+                break;
+            case 127:
+                if (lt != null && rb != null && skill) {
+                    for (MapleCharacter character : getPlayersInRange(monster, player)) {
+                        character.dispel();
+                    }
+                } else {
+                    player.dispel();
+                }
+                break;
+            case 128: // Seduce
+                disease = MapleDisease.SEDUCE;
+                break;
             case 129: // Banish
                 if (lt != null && rb != null && skill) {
                     for (MapleCharacter chr : getPlayersInRange(monster, player)) {
@@ -190,30 +158,30 @@ public class MobSkill {
                 break;
             case 140:
                 if (makeChanceResult() && !monster.isBuffed(MonsterStatus.MAGIC_IMMUNITY)) {
-                    stats.put(MonsterStatus.WEAPON_IMMUNITY, Integer.valueOf(x));
+                    stats.put(MonsterStatus.WEAPON_IMMUNITY, x);
                 }
                 break;
             case 141:
                 if (makeChanceResult() && !monster.isBuffed(MonsterStatus.WEAPON_IMMUNITY)) {
-                    stats.put(MonsterStatus.MAGIC_IMMUNITY, Integer.valueOf(x));
+                    stats.put(MonsterStatus.MAGIC_IMMUNITY, x);
                 }
                 break;
-	    case 143: // Weapon Reflect
-			stats.put(MonsterStatus.WEAPON_REFLECT, Integer.valueOf(x));
-			stats.put(MonsterStatus.WEAPON_IMMUNITY, Integer.valueOf(x));
-			reflection.add(x);
-		break;
-	    case 144: // Magic Reflect
-			stats.put(MonsterStatus.MAGIC_REFLECT, Integer.valueOf(x));
-			stats.put(MonsterStatus.MAGIC_IMMUNITY, Integer.valueOf(x));
-			reflection.add(x);
-		break;
-	    case 145: // Weapon / Magic reflect
-			stats.put(MonsterStatus.WEAPON_REFLECT, Integer.valueOf(x));
-			stats.put(MonsterStatus.WEAPON_IMMUNITY, Integer.valueOf(x));
-			stats.put(MonsterStatus.MAGIC_REFLECT, Integer.valueOf(x));
-			stats.put(MonsterStatus.MAGIC_IMMUNITY, Integer.valueOf(x));
-			reflection.add(x);
+            case 143: // Weapon Reflect
+                stats.put(MonsterStatus.WEAPON_REFLECT, x);
+                stats.put(MonsterStatus.WEAPON_IMMUNITY, x);
+                reflection.add(x);
+                break;
+            case 144: // Magic Reflect
+                stats.put(MonsterStatus.MAGIC_REFLECT, x);
+                stats.put(MonsterStatus.MAGIC_IMMUNITY, x);
+                reflection.add(x);
+                break;
+            case 145: // Weapon / Magic reflect
+                stats.put(MonsterStatus.WEAPON_REFLECT, x);
+                stats.put(MonsterStatus.WEAPON_IMMUNITY, x);
+                stats.put(MonsterStatus.MAGIC_REFLECT, x);
+                stats.put(MonsterStatus.MAGIC_IMMUNITY, x);
+                reflection.add(x);
                 break;
             case 154: // accuracy up
             case 155: // avoid up
@@ -245,7 +213,7 @@ public class MobSkill {
                                 } else {
                                     xpos = (int) (monster.getPosition().getX() + Randomizer.nextInt(1000) - 500);
                                 }
-                                break;          
+                                break;
                         }
                         switch (monster.getMap().getId()) {
                             case 220080001: //Pap map
@@ -265,27 +233,27 @@ public class MobSkill {
                         }
                         toSpawn.setPosition(new Point(xpos, ypos));
                         if (toSpawn.getId() == 8500004) {
-                        	monster.getMap().spawnFakeMonster(toSpawn);
+                            monster.getMap().spawnFakeMonster(toSpawn);
                         } else {
-                        	monster.getMap().spawnMonsterWithEffect(toSpawn, getSpawnEffect(), toSpawn.getPosition());
+                            monster.getMap().spawnMonsterWithEffect(toSpawn, getSpawnEffect(), toSpawn.getPosition());
                         }
-                        
+
                     }
                 }
                 break;
-              default:
-            	  System.out.println("Unhandeled Mob skill: " + skillId);
-            	  break;
+            default:
+                System.out.println("Unhandeled Mob skill: " + skillId);
+                break;
         }
-		if (stats.size() > 0) {
-		    if (lt != null && rb != null && skill) {
-				for (MapleMapObject mons : getObjectsInRange(monster, MapleMapObjectType.MONSTER)) {
-				    ((MapleMonster) mons).applyMonsterBuff(stats, getX(), getSkillId(), getDuration(), this, reflection);
-				}
-		    } else {
-		    	monster.applyMonsterBuff(stats, getX(), getSkillId(), getDuration(), this, reflection);
-		    }
-		}        
+        if (stats.size() > 0) {
+            if (lt != null && rb != null && skill) {
+                for (MapleMapObject mons : getObjectsInRange(monster, MapleMapObjectType.MONSTER)) {
+                    ((MapleMonster) mons).applyMonsterBuff(stats, getX(), getSkillId(), getDuration(), this, reflection);
+                }
+            } else {
+                monster.applyMonsterBuff(stats, getX(), getSkillId(), getDuration(), this, reflection);
+            }
+        }
         if (disease != null) {
             if (lt != null && rb != null && skill) {
                 int i = 0;
@@ -310,7 +278,7 @@ public class MobSkill {
     }
 
     private List<MapleCharacter> getPlayersInRange(MapleMonster monster, MapleCharacter player) {
-        List<MapleCharacter> players = new ArrayList<MapleCharacter>();
+        List<MapleCharacter> players = new ArrayList<>();
         players.add(player);
         return monster.getMap().getPlayersInRange(calculateBoundingBox(monster.getPosition(), monster.isFacingLeft()), players);
     }
@@ -327,12 +295,20 @@ public class MobSkill {
         return mpCon;
     }
 
+    public void setMpCon(int mpCon) {
+        this.mpCon = mpCon;
+    }
+
     public List<Integer> getSummons() {
         return Collections.unmodifiableList(toSummon);
     }
 
     public int getSpawnEffect() {
         return spawnEffect;
+    }
+
+    public void setSpawnEffect(int spawnEffect) {
+        this.spawnEffect = spawnEffect;
     }
 
     public int getHP() {
@@ -343,16 +319,32 @@ public class MobSkill {
         return x;
     }
 
+    public void setX(int x) {
+        this.x = x;
+    }
+
     public int getY() {
         return y;
+    }
+
+    public void setY(int y) {
+        this.y = y;
     }
 
     public long getDuration() {
         return duration;
     }
 
+    public void setDuration(long duration) {
+        this.duration = duration;
+    }
+
     public long getCoolTime() {
         return cooltime;
+    }
+
+    public void setCoolTime(long cooltime) {
+        this.cooltime = cooltime;
     }
 
     public Point getLt() {
@@ -367,6 +359,10 @@ public class MobSkill {
         return limit;
     }
 
+    public void setLimit(int limit) {
+        this.limit = limit;
+    }
+
     public boolean makeChanceResult() {
         return prop == 1.0 || Math.random() < prop;
     }
@@ -379,7 +375,7 @@ public class MobSkill {
     }
 
     private List<MapleMapObject> getObjectsInRange(MapleMonster monster, MapleMapObjectType objectType) {
-        List<MapleMapObjectType> objectTypes = new ArrayList<MapleMapObjectType>();
+        List<MapleMapObjectType> objectTypes = new ArrayList<>();
         objectTypes.add(objectType);
         return monster.getMap().getMapObjectsInBox(calculateBoundingBox(monster.getPosition(), monster.isFacingLeft()), objectTypes);
     }
