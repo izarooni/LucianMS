@@ -1981,13 +1981,25 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
     }
 
     /**
-     * fuck a method {@link String#format(String, Object...)}
-     *
      * @param message a message to send to the player
      * @param object  arguements that are formatted to the specified message
      */
     public void sendMessage(String message, Object... object) {
-        dropMessage(MessageFormatter.arrayFormat(message, object).getMessage());
+        sendMessage(6, message, object);
+    }
+
+    /**
+     * fuck a method {@link String#format(String, Object...)}
+     * <p>
+     *     Construct a formatted String using the formatter via the Logger library
+     * </p>
+     *
+     * @param type message color type
+     * @param message a message to send to the player
+     * @param object  arguements that are formatted to the specified message
+     */
+    public void sendMessage(int type, String message, Object... object) {
+        dropMessage(type, MessageFormatter.arrayFormat(message, object).getMessage());
     }
 
     public void dropMessage(String message) {

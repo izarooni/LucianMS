@@ -58,7 +58,6 @@ public final class Channel {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(Channel.class);
 
-    private int port = 7575;
     private PlayerStorage players = new PlayerStorage();
     private int world, channel;
     private IoAcceptor acceptor;
@@ -78,7 +77,8 @@ public final class Channel {
         this.mapFactory = new MapleMapFactory(world, channel);
         TaskExecutor.createRepeatingTask(() -> mapFactory.getMaps().forEach(MapleMap::respawn), 10000, 10000);
         reloadEventScriptManager();
-        carnivalLobbyManager = new MCarnivalLobbyManager();
+        carnivalLobbyManager = new MCarnivalLobbyManager(this);
+        int port = 7575;
         try {
             port = 7575 + this.channel - 1;
             port += (world * 100);

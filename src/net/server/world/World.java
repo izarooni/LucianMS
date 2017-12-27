@@ -54,13 +54,16 @@ public class World {
     private int id, flag, exprate, droprate, mesorate, bossdroprate;
     private String eventmsg;
     private List<Channel> channels = new ArrayList<>();
+
     private Map<Integer, MapleParty> parties = new HashMap<>();
     private Map<Integer, MapleMessenger> messengers = new HashMap<>();
     private Map<Integer, MapleGuildSummary> gsStore = new HashMap<>();
     private Map<Integer, MapleFamily> families = new LinkedHashMap<>();
     private Map<String, SAutoEvent> scheduledEvents = new HashMap<>();
+
     private AtomicInteger runningPartyId = new AtomicInteger(1);
     private AtomicInteger runningMessengerId = new AtomicInteger(1);
+
     private PlayerStorage players = new PlayerStorage();
     private ManualPlayerEvent playerEvent;
 
@@ -163,11 +166,7 @@ public class World {
     }
 
     public void addFamily(int id, MapleFamily f) {
-        synchronized (families) {
-            if (!families.containsKey(id)) {
-                families.put(id, f);
-            }
-        }
+        families.putIfAbsent(id, f);
     }
 
     public ManualPlayerEvent getPlayerEvent() {
@@ -179,12 +178,7 @@ public class World {
     }
 
     public MapleFamily getFamily(int id) {
-        synchronized (families) {
-            if (families.containsKey(id)) {
-                return families.get(id);
-            }
-            return null;
-        }
+        return families.get(id);
     }
 
     public MapleGuild getGuild(MapleGuildCharacter mgc) {
@@ -619,24 +613,20 @@ public class World {
         }
     }
 
-    public void setServerMessage(String msg) {
-        for (Channel ch : channels) {
-            ch.setServerMessage(msg);
-        }
+    public void broadcastMessage(int type, String content, Object... args) {
+        channels.forEach(ch -> ch.getPlayerStorage().getAllCharacters().forEach(chr -> chr.sendMessage(type, content, args)));
     }
 
-    public void broadcastPacket(final byte[] data) {
-        for (MapleCharacter chr : players.getAllCharacters()) {
-            chr.announce(data);
-        }
+    public void setServerMessage(String message) {
+        channels.forEach(ch-> ch.setServerMessage(message));
+    }
+
+    public void broadcastPacket(byte[] data) {
+        players.getAllCharacters().forEach(p -> p.announce(data));
     }
 
     public void broadcastGMPacket(byte[] data) {
-        for (MapleCharacter players : players.getAllCharacters()) {
-            if (players.isGM()) {
-                players.announce(data);
-            }
-        }
+        players.getAllCharacters().stream().filter(MapleCharacter::isGM).forEach(p -> p.announce(data));
     }
 
     public final void shutdown() {

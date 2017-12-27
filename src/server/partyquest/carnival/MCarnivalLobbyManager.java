@@ -1,5 +1,7 @@
 package server.partyquest.carnival;
 
+import net.server.channel.Channel;
+
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -11,7 +13,7 @@ public class MCarnivalLobbyManager {
 
     private LinkedHashMap<Integer, MCarnivalLobby> lobbies = new LinkedHashMap<>();
 
-    public MCarnivalLobbyManager() {
+    public MCarnivalLobbyManager(Channel channel) {
         int bMapId = 980000000;
         for (int i = 1; i < 7; i++) {
             int nMapId = bMapId + (i * 100);
@@ -23,7 +25,13 @@ public class MCarnivalLobbyManager {
             } else {
                 maxPartySize = 5;
             }
-            lobbies.put(nMapId, new MCarnivalLobby(maxPartySize,nMapId + 1));
+            lobbies.put(nMapId, new MCarnivalLobby(channel, maxPartySize,nMapId + 1));
+        }
+    }
+
+    public void reset() {
+        for (MCarnivalLobby lobby : lobbies.values()) {
+            lobby.setState(MCarnivalLobby.State.Available);
         }
     }
 

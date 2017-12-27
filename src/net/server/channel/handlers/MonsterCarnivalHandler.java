@@ -50,26 +50,36 @@ public final class MonsterCarnivalHandler extends PacketHandler {
 
             if (friendly != null && enemy != null) {
                 LOGGER.info("player '{}', Action {}, Value {}", player.getName(), action, value);
-                int nReturn = getPrice(action, value);
-                if (player.getCarnivalPoints() >= nReturn) {
+                final int nPrice = getPrice(action, value);
+                final int nMonster = getMonster(value);
+                if (player.getCarnivalPoints() >= nPrice) {
                     if (action == 0) { // Spawning
-                        // todo: maximum 7 summons
-                        if (nReturn == -1) {
-                            LOGGER.error("Invalid action/value Action {}, Value {}", action, value);
-                            player.announce(MaplePacketCreator.getMonsterCarnivalResponse((byte) 5));
-                            return null;
-                        } else if ((nReturn = getMonster(value)) == -1) {
-                            LOGGER.error("Invalid monster value {}", value);
-                            player.announce(MaplePacketCreator.getMonsterCarnivalResponse((byte) 5));
-                            return null;
-                        }
-                        MapleMonster monster = MapleLifeFactory.getMonster(nReturn);
-                        if (monster != null) {
-                            monster.setTeam(enemy.getId());
-                            map.getReactors().stream().filter(r -> r.getId() == (ID_Reactor + enemy.getId())).forEach(r -> r.getMonsterStatus().getRight().applyEffect(null, monster, true));
-                            map.spawnMonsterOnGroudBelow(monster, new Point(1, 1));
+                        if (friendly.getSummonedMonsters() <= 7) {
+                            if (nPrice == -1) {
+                                LOGGER.error("Invalid action/value Action {}, Value {}", action, value);
+                                player.announce(MaplePacketCreator.getMonsterCarnivalResponse((byte) 5));
+                                return null;
+                            } else if (nMonster == -1) {
+                                LOGGER.error("Invalid monster value {}", value);
+                                player.announce(MaplePacketCreator.getMonsterCarnivalResponse((byte) 5));
+                                return null;
+                            }
+                            MapleMonster monster = MapleLifeFactory.getMonster(nMonster);
+                            if (monster != null) {
+                                player.useCP(nPrice);
+                                friendly.setAvailableCarnivalPoints(friendly.getAvailableCarnivalPoints() - nPrice);
+
+                                monster.setPosition(new Point(1, 1));
+                                monster.setTeam(friendly.getId());
+                                map.getReactors().stream().filter(r -> r.getId() == (ID_Reactor + enemy.getId())).forEach(r -> r.getMonsterStatus().getRight().applyEffect(null, monster, true));
+
+                                map.addCarnivalMonster(monster, friendly);
+                                friendly.setSummonedMonsters(friendly.getSummonedMonsters() + 1);
+                            } else {
+                                LOGGER.error("Unable to summon monster '{}'", getMonster(value));
+                            }
                         } else {
-                            LOGGER.error("Unable to summon monster '{}'", getMonster(value));
+                            player.announce(MaplePacketCreator.getMonsterCarnivalResponse((byte) 2));
                         }
                     } else if (action == 1) { // Buffs
 
@@ -124,64 +134,50 @@ public final class MonsterCarnivalHandler extends PacketHandler {
     }
 
     public int getMonster(int n) {
-        switch (n) {
-            // @formatter:off
-            default: return -1;
-            case 0: return 9300127;
-            case 1: return 9300128;
-            case 2: return 9300129;
-            case 3: return 9300130;
-            case 4: return 9300131;
-            case 5: return 9300132;
-            case 6: return 9300133;
-            case 7: return 9300134;
-            case 8: return 9300135;
-            case 9: return 9300136;
-            // @formatter:on
-        }
+        return (n >= 0 && n <= 9) ? (9300127 + n) : -1;
     }
 
     public int getPrice(int action, int n) {
         if (action == 0) {
             switch (n) {
                 // @formatter:off
-                case 1:
-                case 2:return 7;
-                case 3:
-                case 4:return 8;
-                case 5:
-                case 6:return 9;
-                case 7:return 10;
-                case 8:return 11;
-                case 9:return 12;
-                case 10:return 30;
+                case 1: return 7; // Brown Teddy
+                case 2: return 7; // Blocotpus
+                case 3: return 8; // Ratz
+                case 4: return 8; // Chronos
+                case 5: return 9; // Toy Trojan
+                case 6: return 9; // Tick-Tock
+                case 7: return 10; // Robo
+                case 8: return 11; // King Block Golem
+                case 9: return 12; // Master Chronos
+                case 10: return 30; // Rombots
                 // @formatter:on
             }
         } else if (action == 1) {
             switch (n) {
                 // @formatter:off
-                case 1: return 17;
-                case 2:
-                case 4: return 19;
-                case 3: return 12;
-                case 5: return 16;
-                case 6: return 14;
-                case 7: return 22;
-                case 8: return 18;
+                case 1: return 17; // Darkness (Party)
+                case 2: return 19; // Weakness (Party)
+                case 4: return 12; // Curse (Party)
+                case 3: return 19; // Poison (Party)
+                case 5: return 16; // Slow (Party)
+                case 6: return 14; // Seal (Single)
+                case 7: return 22; // Stun (Single)
+                case 8: return 18; // Cancel Buffs (Single)
                 // @formatter:on
             }
         } else {
             switch (n) {
                 // @formatter:off
-                case 1:
-                case 3: return 17;
-                case 2:
-                case 4:
-                case 6: return 16;
-                case 5: return 13;
-                case 7: return 12;
-                case 8:
-                case 9: return 35;
+                case 0: return 17; // Power UP
+                case 1: return 16; // Guard UP
+                case 2: return 17; // Magic UP
+                case 3: return 16; // Shield UP
+                case 4: return 13; // Accuracy UP
+                case 5: return 16; // Avoidability UP
+                case 6: return 12; // Speed UP
+                case 7: return 35; // Cancel Weapon
+                case 8: return 35; // Cancel Magic
                 // @formatter:on
             }
         }

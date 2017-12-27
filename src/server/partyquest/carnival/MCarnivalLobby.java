@@ -1,6 +1,8 @@
 package server.partyquest.carnival;
 
+import net.server.channel.Channel;
 import net.server.world.MapleParty;
+import net.server.world.MaplePartyCharacter;
 import scheduler.Task;
 import scheduler.TaskExecutor;
 import tools.MaplePacketCreator;
@@ -20,9 +22,11 @@ public class MCarnivalLobby {
 
     private static final int M_Office = 980000000;
 
+    private final Channel channel;
     private final int maxPartySize;
     private final int battlefieldMapId;
 
+    private MCarnivalGame carnivalGame = null;
     private State state = State.Available;
 
     private MapleParty party1 = null;
@@ -30,9 +34,14 @@ public class MCarnivalLobby {
 
     private Task waitingTask;
 
-    public MCarnivalLobby(int maxPartySize, int battlefieldMapId) {
+    public MCarnivalLobby(Channel channel, int maxPartySize, int battlefieldMapId) {
+        this.channel = channel;
         this.maxPartySize = maxPartySize;
         this.battlefieldMapId = battlefieldMapId;
+    }
+
+    public Channel getChannel() {
+        return channel;
     }
 
     public int getMaxPartySize() {
@@ -70,6 +79,8 @@ public class MCarnivalLobby {
                     public void run() {
                         party1.getMembers().forEach(p -> carnivalGame.unregisterPlayer(p.getPlayer()));
                         party2.getMembers().forEach(p -> carnivalGame.unregisterPlayer(p.getPlayer()));
+
+                        carnivalGame.dispose();
                     }
                 }, 1000 * 60 * 10); // 10 min game
                 break;
@@ -78,23 +89,13 @@ public class MCarnivalLobby {
                 if (waitingTask != null) {
                     waitingTask.cancel();
                 }
-                party1.broadcastPacket(MaplePacketCreator.getClock(5));
-                party2.broadcastPacket(MaplePacketCreator.getClock(5));
-                waitingTask = TaskExecutor.createTask(new Runnable() {
-                    @Override
-                    public void run() {
-                        setState(State.InProgress);
-                    }
-                }, 5000);
+                party1.broadcastPacket(MaplePacketCreator.getClock(10));
+                // party 2 clock via npc
+                waitingTask = TaskExecutor.createTask(() -> setState(State.InProgress), 10000);
                 break;
             }
             case Waiting: {
-                waitingTask = TaskExecutor.createTask(new Runnable() {
-                    @Override
-                    public void run() {
-                        setState(State.Available);
-                    }
-                }, 60000 * 5); // 5 minutes
+                waitingTask = TaskExecutor.createTask(() -> setState(State.Available), 60000 * 5); // 5 minutes
                 break;
             }
             case Available: {
@@ -103,11 +104,23 @@ public class MCarnivalLobby {
                     waitingTask = null;
                 }
                 if (party1 != null) {
-                    party1.getMembers().forEach(m -> m.getPlayer().changeMap(M_Office));
+                    for (MaplePartyCharacter m : party1.getMembers()) {
+                        if (carnivalGame != null) {
+                            carnivalGame.unregisterPlayer(m.getPlayer());
+                        } else {
+                            m.getPlayer().changeMap(M_Office);
+                        }
+                    }
                     party1 = null;
                 }
                 if (party2 != null) {
-                    party2.getMembers().forEach(m -> m.getPlayer().changeMap(M_Office));
+                    for (MaplePartyCharacter m : party2.getMembers()) {
+                        if (carnivalGame != null) {
+                            carnivalGame.unregisterPlayer(m.getPlayer());
+                        } else {
+                            m.getPlayer().changeMap(M_Office);
+                        }
+                    }
                     party2 = null;
                 }
                 break;
@@ -154,7 +167,7 @@ public class MCarnivalLobby {
     }
 
     private MCarnivalGame createGame() {
-        MCarnivalGame carnivalGame = new MCarnivalGame(this);
+        carnivalGame = new MCarnivalGame(this);
         if (Randomizer.nextInt(1) == 0) {
             carnivalGame.setTeamRed(new MCarnivalTeam(0, party1));
             carnivalGame.setTeamBlue(new MCarnivalTeam(1, party2));

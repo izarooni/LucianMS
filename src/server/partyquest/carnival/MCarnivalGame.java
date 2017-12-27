@@ -4,16 +4,19 @@ import client.MapleCharacter;
 import client.MapleStat;
 import net.server.channel.handlers.ChangeMapHandler;
 import server.events.custom.GenericEvent;
+import server.life.SpawnPoint;
 import server.maps.MapleMap;
 import tools.MaplePacketCreator;
 import tools.annotation.PacketWorker;
+
+import java.util.ArrayList;
 
 /**
  * @author izarooni
  */
 public class MCarnivalGame extends GenericEvent {
 
-    private static final int M_Office= 980000000;
+    private static final int M_Office = 980000000;
 
     private final MCarnivalLobby lobby;
     private long startTimestamp = -1;
@@ -31,8 +34,6 @@ public class MCarnivalGame extends GenericEvent {
         }
         player.addGenericEvent(this);
         player.changeMap(lobby.getBattlefieldMapId());
-        player.announce(MaplePacketCreator.showForcedEquip(player.getTeam()));
-        player.announce(MaplePacketCreator.getMonsterCarnivalStart(player, this));
     }
 
     @Override
@@ -62,6 +63,23 @@ public class MCarnivalGame extends GenericEvent {
             player.updateSingleStat(MapleStat.HP, 50);
         }
         event.setCanceled(true);
+    }
+
+    public void dispose() {
+        MapleMap map = lobby.getChannel().getMapFactory().getMap(lobby.getBattlefieldMapId());
+
+        // remove spawn points created
+        ArrayList<SpawnPoint> spawnPoints = map.getMonsterSpawnPoints();
+        for (int i = 0; i < spawnPoints.size(); i++) {
+            SpawnPoint spawnPoint = spawnPoints.get(i);
+            if (spawnPoint.getTeam() != -1) {
+                map.removeSpawnPoint(i);
+            }
+        }
+
+        map.killAllMonsters();
+        map.clearDrops();
+        lobby.setState(MCarnivalLobby.State.Available);
     }
 
     public long getTimeLeft() {

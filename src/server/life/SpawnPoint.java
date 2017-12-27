@@ -38,15 +38,25 @@ public class SpawnPoint {
     private AtomicInteger spawnedMonsters = new AtomicInteger(0);
     private boolean immobile;
 
+    /**
+     *
+     * @param monster the monster associated with a SpawnPoint
+     * @param pos position the specified monster will be summoned
+     * @param immobile ?
+     * @param mobTime additional delay time before the next summon
+     * @param mobInterval the delay between each summon
+     * @param team a belonging team
+     */
     public SpawnPoint(final MapleMonster monster, Point pos, boolean immobile, int mobTime, int mobInterval, int team) {
         this.monster = monster.getId();
-        this.pos = (pos == null) ? monster.getPosition() : pos.getLocation();
-        this.mobTime = mobTime;
-        this.team = team;
         this.fh = monster.getFh();
         this.f = monster.getF();
+
+        this.pos = (pos == null) ? monster.getPosition() : pos.getLocation();
         this.immobile = immobile;
+        this.mobTime = mobTime;
         this.mobInterval = mobInterval;
+        this.team = team;
         this.nextPossibleSpawn = System.currentTimeMillis();
     }
 
@@ -70,7 +80,7 @@ public class SpawnPoint {
         if (mob == null) {
             return null;
         }
-        mob.setPosition(new Point(pos));
+        mob.setPosition(pos.getLocation());
         mob.setTeam(team);
         mob.setFh(fh);
         mob.setF(f);
@@ -103,5 +113,9 @@ public class SpawnPoint {
 
     public final int getFh() {
         return fh;
+    }
+
+    public int getTeam() {
+        return team;
     }
 }
