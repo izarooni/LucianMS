@@ -197,10 +197,6 @@ public class MapleMonster extends AbstractLoadedMapleLife {
         return stats.getTagBgColor();
     }
 
-    /**
-     * @param from   the player that dealt the damage
-     * @param damage
-     */
     public synchronized void damage(MapleCharacter from, int damage) { // may be pointless synchronization
         if (!isAlive()) {
             return;
@@ -330,7 +326,7 @@ public class MapleMonster extends AbstractLoadedMapleLife {
                     MapleParty p = mc.getParty();
                     if (p != null) {
                         int pID = p.getId();
-                        int pXP = xp + (partyExp.containsKey(pID) ? partyExp.get(pID) : 0);
+                        int pXP = xp + (partyExp.getOrDefault(pID, 0));
                         partyExp.put(pID, pXP);
                     } else {
                         giveExpToCharacter(mc, xp, isKiller, 1);
@@ -719,7 +715,6 @@ public class MapleMonster extends AbstractLoadedMapleLife {
 
     public void applyMonsterBuff(final Map<MonsterStatus, Integer> stats, final int x, int skillId, long duration, MobSkill skill, final List<Integer> reflection) {
         final Runnable run = new Runnable() {
-
             @Override
             public void run() {
                 if (isAlive()) {

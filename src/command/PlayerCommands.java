@@ -2,6 +2,7 @@ package command;
 
 import client.*;
 import client.Relationship.Status;
+import client.meta.Occupation;
 import constants.ServerConstants;
 import net.server.channel.Channel;
 import net.server.channel.handlers.RockPaperScissorsHandler;
@@ -75,11 +76,13 @@ public class PlayerCommands {
                 }
             }
             player.sendMessage("================ '{}''s Stats ================", target.getName());
+            player.sendMessage("EXP {}x, MESO {}x, DROP {}x", player.getExpRate(), player.getMesoRate(), player.getDropRate());
             player.sendMessage("Mesos: {}", StringUtil.formatNumber(target.getMeso()));
             player.sendMessage("Ability Power: {}", StringUtil.formatNumber(target.getRemainingAp()));
             player.sendMessage("Hair / Face: {} / {}", target.getHair(), target.getFace());
             player.sendMessage("Crystals: {}", target.getItemQuantity(ServerConstants.CURRENCY, false));
-            player.sendMessage("Occuation: {}", target.getOccupation().getType().name());
+            Occupation occupation = target.getOccupation();
+            player.sendMessage("Occupation: {}", (occupation == null) ? "N/A" : occupation.getType().name());
             player.sendMessage("Fishing Points: {}", StringUtil.formatNumber(target.getFishingPoints()));
             player.sendMessage("Event Points" + StringUtil.formatNumber(target.getEventPoints()));
             player.sendMessage("Donor Points: {}", StringUtil.formatNumber(client.getDonationPoints()));
