@@ -204,26 +204,32 @@ public class MapleMonster extends AbstractLoadedMapleLife {
         int trueDamage = Math.min(hp, damage); // since magic happens otherwise B^)
 
         hp -= damage;
-        if (takenDamage.containsKey(from.getId())) {
-            takenDamage.get(from.getId()).addAndGet(trueDamage);
-        } else {
-            takenDamage.put(from.getId(), new AtomicInteger(trueDamage));
-        }
-
-        if (hasBossHPBar()) {
-            from.getMap().broadcastMessage(makeBossHPBarPacket(), getPosition());
-        } else if (!isBoss()) {
-            int remainingHP = (int) Math.max(1, hp * 100f / getMaxHp());
-            byte[] packet = MaplePacketCreator.showMonsterHP(getObjectId(), Math.min(getMaxHp(), remainingHP));
-            if (from.getParty() != null) {
-                for (MaplePartyCharacter mpc : from.getParty().getMembers()) {
-                    MapleCharacter member = from.getMap().getCharacterById(mpc.getId()); // god bless
-                    if (member != null) {
-                        member.announce(packet.clone()); // clone it just in case of crypto
-                    }
-                }
+        try {
+            if (takenDamage.containsKey(from.getId())) {
+                takenDamage.get(from.getId()).addAndGet(trueDamage);
             } else {
-                from.announce(packet);
+                takenDamage.put(from.getId(), new AtomicInteger(trueDamage));
+            }
+
+            if (hasBossHPBar()) {
+                from.getMap().broadcastMessage(makeBossHPBarPacket(), getPosition());
+            } else if (!isBoss()) {
+                int remainingHP = (int) Math.max(1, hp * 100f / getMaxHp());
+                byte[] packet = MaplePacketCreator.showMonsterHP(getObjectId(), Math.min(getMaxHp(), remainingHP));
+                if (from.getParty() != null) {
+                    for (MaplePartyCharacter mpc : from.getParty().getMembers()) {
+                        MapleCharacter member = from.getMap().getCharacterById(mpc.getId()); // god bless
+                        if (member != null) {
+                            member.announce(packet.clone()); // clone it just in case of crypto
+                        }
+                    }
+                } else {
+                    from.announce(packet);
+                }
+            }
+        } finally {
+            if (!isAlive()) {
+                getMap().killMonster(this, from, true);
             }
         }
     }
@@ -872,23 +878,10 @@ public class MapleMonster extends AbstractLoadedMapleLife {
 
         @Override
         public void run() {
-            int damage = dealDamage;
-            if (chr.getFakePlayer() != null) {
-                damage = damage * 2;
-            }
-            if (damage >= hp) {
-                damage = hp - 1;
-                if (type == 1 || type == 2) {
-                    // double damage if you have a clone, probably works like this.
-                    map.broadcastMessage(MaplePacketCreator.damageMonster(getObjectId(), damage), getPosition());
-                    cancelTask.run();
-                    status.getCancelTask().cancel();
-                }
-            }
-            if (hp > 1 && damage > 0) {
-                damage(chr, damage);
+            if (hp > 1 && dealDamage > 0) {
+                damage(chr, dealDamage);
                 if (type == 1) {
-                    map.broadcastMessage(MaplePacketCreator.damageMonster(getObjectId(), damage), getPosition());
+                    map.broadcastMessage(MaplePacketCreator.damageMonster(getObjectId(), dealDamage), getPosition());
                 }
             }
         }

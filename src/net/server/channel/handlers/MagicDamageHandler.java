@@ -23,7 +23,6 @@ package net.server.channel.handlers;
 
 import client.MapleBuffStat;
 import client.MapleCharacter;
-import client.MapleCharacter.CancelCooldownAction;
 import client.Skill;
 import client.SkillFactory;
 import constants.skills.Bishop;
@@ -63,26 +62,13 @@ public class MagicDamageHandler extends AbstractDealDamageHandler {
 
         FakePlayer fakePlayer = player.getFakePlayer();
         if (fakePlayer != null && fakePlayer.isFollowing()) {
-            TaskExecutor.createTask(new Runnable() {
-                @Override
-                public void run() {
-                    fakePlayer.getMap().broadcastMessage(fakePlayer, MaplePacketCreator.magicAttack(fakePlayer, attackInfo.skill, attackInfo.skilllevel, attackInfo.stance, attackInfo.numAttackedAndDamage, attackInfo.allDamage, attackInfo.charge, attackInfo.speed, attackInfo.direction, attackInfo.display), false, true);
-                }
-            }, 100);
+            TaskExecutor.createTask(() -> fakePlayer.getMap().broadcastMessage(fakePlayer, MaplePacketCreator.magicAttack(fakePlayer, attackInfo.skill, attackInfo.skilllevel, attackInfo.stance, attackInfo.numAttackedAndDamage, attackInfo.allDamage, attackInfo.charge, attackInfo.speed, attackInfo.direction, attackInfo.display), false, true), 100);
         }
 
         player.getMap().broadcastMessage(player, packet, false, true);
         MapleStatEffect effect = attackInfo.getAttackEffect(player, null);
-        Skill skill = SkillFactory.getSkill(attackInfo.skill);
-        MapleStatEffect effect_ = skill.getEffect(player.getSkillLevel(skill));
-        if (effect_.getCooldown() > 0) {
-            if (player.skillisCooling(attackInfo.skill)) {
-                return null;
-            } else {
-                getClient().announce(MaplePacketCreator.skillCooldown(attackInfo.skill, effect_.getCooldown()));
-                player.addCooldown(attackInfo.skill, System.currentTimeMillis(), effect_.getCooldown() * 1000, TaskExecutor.createTask(new CancelCooldownAction(player, attackInfo.skill), effect_.getCooldown() * 1000));
-            }
-        }
+        addCooldown(attackInfo);
+
         applyAttack(player, attackInfo, effect.getAttackCount());
         if (fakePlayer != null) {
             applyAttack(fakePlayer, attackInfo, effect.getAttackCount());

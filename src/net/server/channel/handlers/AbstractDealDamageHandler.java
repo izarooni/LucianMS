@@ -751,4 +751,18 @@ public abstract class AbstractDealDamageHandler extends PacketHandler {
             player.addHP(gain);
         }
     }
+
+    void addCooldown(AttackInfo attackInfo) {
+        MapleCharacter player = getClient().getPlayer();
+        if (attackInfo.skill > 0) {
+            Skill skill = SkillFactory.getSkill(attackInfo.skill);
+            MapleStatEffect effect_ = skill.getEffect(player.getSkillLevel(skill));
+            if (effect_.getCooldown() > 0) {
+                if (!player.skillisCooling(attackInfo.skill)) {
+                    getClient().announce(MaplePacketCreator.skillCooldown(attackInfo.skill, effect_.getCooldown()));
+                    player.addCooldown(attackInfo.skill, System.currentTimeMillis(), effect_.getCooldown() * 1000, TaskExecutor.createTask(new MapleCharacter.CancelCooldownAction(player, attackInfo.skill), effect_.getCooldown() * 1000));
+                }
+            }
+        }
+    }
 }

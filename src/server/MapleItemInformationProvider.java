@@ -36,6 +36,7 @@ import constants.skills.NightWalker;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import provider.*;
+import provider.wz.MapleDataType;
 import tools.DatabaseConnection;
 import tools.Pair;
 import tools.Randomizer;
@@ -404,7 +405,13 @@ public class MapleItemInformationProvider {
         }
         for (MapleData data : info.getChildren()) {
             if (data.getName().startsWith("inc")) {
-                ret.put(data.getName().substring(3), MapleDataTool.getIntConvert(data));
+                int value;
+                if (data.getType() == MapleDataType.SHORT) {
+                    value = Short.parseShort(MapleDataTool.getString(data));
+                } else {
+                    value = MapleDataTool.getIntConvert(data);
+                }
+                ret.put(data.getName().substring(3), value);
             }
         }
         ret.put("reqJob", MapleDataTool.getInt("reqJob", info, 0));

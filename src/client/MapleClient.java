@@ -1067,7 +1067,7 @@ public class MapleClient {
     }
 
     public void setVotePoints(int n) {
-        try (PreparedStatement ps = DatabaseConnection.getConnection().prepareStatement("update accounts set votepoints = ? where iod = ?")) {
+        try (PreparedStatement ps = DatabaseConnection.getConnection().prepareStatement("update accounts set votepoints = ? where id = ?")) {
             ps.setInt(1, n);
             ps.setInt(2, accId);
             ps.executeUpdate();

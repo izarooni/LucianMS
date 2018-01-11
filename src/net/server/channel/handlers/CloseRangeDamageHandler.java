@@ -28,6 +28,8 @@ import client.inventory.MapleInventoryType;
 import client.inventory.MapleWeaponType;
 import constants.GameConstants;
 import constants.skills.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import scheduler.TaskExecutor;
 import server.MapleStatEffect;
 import server.life.FakePlayer;
@@ -43,6 +45,7 @@ import java.util.List;
 
 public final class CloseRangeDamageHandler extends AbstractDealDamageHandler {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(CloseRangeDamageHandler.class);
     private AttackInfo attackInfo = null;
 
     @Override
@@ -51,10 +54,11 @@ public final class CloseRangeDamageHandler extends AbstractDealDamageHandler {
 
         if (attackInfo != null) {
             for (Integer integer : attackInfo.allDamage.keySet()) {
-                MapleMapObject mapObject = player.getMap().getMonsterByOid(integer);
-                if (mapObject != null) {
-                    MapleMonster monster = (MapleMonster) mapObject;
+                MapleMonster monster = player.getMap().getMonsterByOid(integer);
+                if (monster != null) {
+                    LOGGER.warn("Monster exception 1 {}", monster.getHp());
                     if (!monster.isAlive()) {
+                    LOGGER.warn("Monster exception 2");
                         // monsters bugging out due to exceptions caused before being able to
                         // send the monster leave map packet
                         player.getMap().killMonster(monster, player, true);
@@ -182,18 +186,9 @@ public final class CloseRangeDamageHandler extends AbstractDealDamageHandler {
         if (numFinisherOrbs == 0 && GameConstants.isFinisherSkill(attackInfo.skill)) {
             return null;
         }
-        if (attackInfo.skill > 0) {
-            Skill skill = SkillFactory.getSkill(attackInfo.skill);
-            MapleStatEffect effect_ = skill.getEffect(player.getSkillLevel(skill));
-            if (effect_.getCooldown() > 0) {
-                if (player.skillisCooling(attackInfo.skill)) {
-                    return null;
-                } else {
-                    getClient().announce(MaplePacketCreator.skillCooldown(attackInfo.skill, effect_.getCooldown()));
-                    player.addCooldown(attackInfo.skill, System.currentTimeMillis(), effect_.getCooldown() * 1000, TaskExecutor.createTask(new CancelCooldownAction(player, attackInfo.skill), effect_.getCooldown() * 1000));
-                }
-            }
-        }
+
+        addCooldown(attackInfo);
+
         if ((player.getSkillLevel(SkillFactory.getSkill(NightWalker.VANISH)) > 0 || player.getSkillLevel(SkillFactory.getSkill(WindArcher.WIND_WALK)) > 0 || player.getSkillLevel(SkillFactory.getSkill(Rogue.DARK_SIGHT)) > 0) && player.getBuffedValue(MapleBuffStat.DARKSIGHT) != null) {// && player.getBuffSource(MapleBuffStat.DARKSIGHT) != 9101004
             player.cancelEffectFromBuffStat(MapleBuffStat.DARKSIGHT);
             player.cancelBuffStats(MapleBuffStat.DARKSIGHT);

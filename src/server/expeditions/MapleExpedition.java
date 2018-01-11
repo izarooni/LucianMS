@@ -41,7 +41,8 @@ import java.util.List;
  */
 public class MapleExpedition {
 
-    private static final int[] EXPEDITION_BOSSES = {8800000, // Zakum's first body
+    private static final int[] EXPEDITION_BOSSES = {
+            8800000, // Zakum's first body
             8800001, // Zakum's second body
             8800002, // Zakum's third body
             8800003, // Zakum's Arm 1
@@ -78,8 +79,8 @@ public class MapleExpedition {
     private MapleMap startMap;
     private ArrayList<String> bossLogs;
     private Task task;
-    private List<MapleCharacter> members = new ArrayList<MapleCharacter>();
-    private List<MapleCharacter> banned = new ArrayList<MapleCharacter>();
+    private List<MapleCharacter> members = new ArrayList<>();
+    private List<MapleCharacter> banned = new ArrayList<>();
     private long startTime;
 
     public MapleExpedition(MapleCharacter player, MapleExpeditionType met) {
@@ -87,7 +88,7 @@ public class MapleExpedition {
         members.add(leader);
         startMap = player.getMap();
         type = met;
-        bossLogs = new ArrayList<String>();
+        bossLogs = new ArrayList<>();
         beginRegistration();
     }
 
@@ -206,8 +207,8 @@ public class MapleExpedition {
     }
 
     public void monsterKilled(MapleCharacter chr, MapleMonster mob) {
-        for (int i = 0; i < EXPEDITION_BOSSES.length; i++) {
-            if (mob.getId() == EXPEDITION_BOSSES[i]) { //If the monster killed was a boss
+        for (int EXPEDITION_BOSS : EXPEDITION_BOSSES) {
+            if (mob.getId() == EXPEDITION_BOSS) { //If the monster killed was a boss
                 String timeStamp = new SimpleDateFormat("HH:mm:ss").format(new Date());
                 bossLogs.add(">" + mob.getName() + " was killed after " + LogHelper.getTimeString(startTime) + " - " + timeStamp + "\r\n");
                 return;

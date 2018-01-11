@@ -13,6 +13,7 @@ import server.events.custom.ManualPlayerEvent;
 import server.events.custom.auto.GAutoEvent;
 import server.events.custom.auto.GAutoEventManager;
 import server.events.pvp.PlayerBattle;
+import server.life.MapleMonster;
 import server.maps.MapleMap;
 import tools.MaplePacketCreator;
 import tools.Pair;
@@ -257,6 +258,7 @@ public class PlayerCommands {
         } else if (command.equals("dispose")) {
             NPCScriptManager.dispose(client);
             player.announce(MaplePacketCreator.enableActions());
+            player.getMap().getMonsters().stream().filter(m -> !m.isAlive()).forEach(m -> player.getMap().killMonster(m, null, false));
             player.dropMessage(6, "Disposed!");
         } else if (command.equals("achievements")) {
             NPCScriptManager.start(client, 2007, "f_achievements", null);
@@ -283,7 +285,6 @@ public class PlayerCommands {
             maps.put("kerning",    103000000);
             maps.put("lith",       104000000);
             maps.put("harbor",     104000000);
-            maps.put("ellinia",    180000000);
             maps.put("florina",    110000000);
             maps.put("nautilus",   120000000);
             maps.put("ereve",      130000000);

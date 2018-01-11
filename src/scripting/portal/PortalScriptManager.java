@@ -52,7 +52,7 @@ public class PortalScriptManager {
                 return (boolean) iv.invokeFunction("enter", new PortalPlayerInteraction(client, portal));
             }
         } catch (IOException | ScriptException | NoSuchMethodException e) {
-            LOGGER.info("Unable to invoke function 'start' in script Name: {}, ID: {}, Map: {}", portal.getScriptName(), portal.getId(), client.getPlayer().getMapId(), e);
+            LOGGER.info("Unable to invoke function 'enter' in script Name: {}, ID: {}, Map: {}", portal.getScriptName(), portal.getId(), client.getPlayer().getMapId(), e);
         }
         return false;
     }

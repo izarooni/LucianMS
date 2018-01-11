@@ -23,8 +23,6 @@ package net.server.channel.handlers;
 
 import client.MapleBuffStat;
 import client.MapleCharacter;
-import client.MapleCharacter.CancelCooldownAction;
-import client.Skill;
 import client.SkillFactory;
 import client.inventory.Item;
 import client.inventory.MapleInventory;
@@ -116,8 +114,7 @@ public final class RangedAttackHandler extends AbstractDealDamageHandler {
                     boolean cbow = ItemConstants.isArrowForCrossBow(id);
                     if (item.getQuantity() >= bulletCount) { //Fixes the bug where you can't use your last arrow.
                         if (type == MapleWeaponType.CLAW && ItemConstants.isThrowingStar(id) && weapon.getItemId() != 1472063) {
-                            if (((id == 2070007 || id == 2070018) && player.getLevel() < 70) || (id == 2070016 && player.getLevel() < 50)) {
-                            } else {
+                            if (((id != 2070007 && id != 2070018) || player.getLevel() >= 70) && (id != 2070016 || player.getLevel() >= 50)) {
                                 projectile = id;
                                 break;
                             }
@@ -182,12 +179,7 @@ public final class RangedAttackHandler extends AbstractDealDamageHandler {
 
                 if (fakePlayer != null && fakePlayer.isFollowing()) {
                     int finalVisProjectile = visProjectile;
-                    TaskExecutor.createTask(new Runnable() {
-                        @Override
-                        public void run() {
-                            fakePlayer.getMap().broadcastMessage(fakePlayer, MaplePacketCreator.rangedAttack(fakePlayer, attackInfo.skill, attackInfo.skilllevel, attackInfo.stance, attackInfo.numAttackedAndDamage, finalVisProjectile, attackInfo.allDamage, attackInfo.speed, attackInfo.direction, attackInfo.display), false, true);
-                        }
-                    }, 100);
+                    TaskExecutor.createTask(() -> fakePlayer.getMap().broadcastMessage(fakePlayer, MaplePacketCreator.rangedAttack(fakePlayer, attackInfo.skill, attackInfo.skilllevel, attackInfo.stance, attackInfo.numAttackedAndDamage, finalVisProjectile, attackInfo.allDamage, attackInfo.speed, attackInfo.direction, attackInfo.display), false, true), 100);
                 }
 
                 player.getMap().broadcastMessage(player, packet, false, true);
@@ -202,18 +194,7 @@ public final class RangedAttackHandler extends AbstractDealDamageHandler {
                         player.gainMeso(-money, false);
                     }
                 }
-                if (attackInfo.skill != 0) {
-                    Skill skill = SkillFactory.getSkill(attackInfo.skill);
-                    MapleStatEffect effect_ = skill.getEffect(player.getSkillLevel(skill));
-                    if (effect_.getCooldown() > 0) {
-                        if (player.skillisCooling(attackInfo.skill)) {
-                            return null;
-                        } else {
-                            getClient().announce(MaplePacketCreator.skillCooldown(attackInfo.skill, effect_.getCooldown()));
-                            player.addCooldown(attackInfo.skill, System.currentTimeMillis(), effect_.getCooldown() * 1000, TaskExecutor.createTask(new CancelCooldownAction(player, attackInfo.skill), effect_.getCooldown() * 1000));
-                        }
-                    }
-                }
+                addCooldown(attackInfo);
                 if ((player.getSkillLevel(SkillFactory.getSkill(NightWalker.VANISH)) > 0 || player.getSkillLevel(SkillFactory.getSkill(WindArcher.WIND_WALK)) > 0) && player.getBuffedValue(MapleBuffStat.DARKSIGHT) != null && attackInfo.numAttacked > 0 && player.getBuffSource(MapleBuffStat.DARKSIGHT) != 9101004) {
                     player.cancelEffectFromBuffStat(MapleBuffStat.DARKSIGHT);
                     player.cancelBuffStats(MapleBuffStat.DARKSIGHT);

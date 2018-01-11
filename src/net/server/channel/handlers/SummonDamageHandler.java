@@ -26,8 +26,6 @@ import client.MapleClient;
 import client.Skill;
 import client.SkillFactory;
 import client.status.MonsterStatusEffect;
-import java.util.ArrayList;
-import java.util.List;
 import net.AbstractMaplePacketHandler;
 import server.MapleStatEffect;
 import server.life.MapleMonster;
@@ -35,7 +33,11 @@ import server.maps.MapleSummon;
 import tools.MaplePacketCreator;
 import tools.data.input.SeekableLittleEndianAccessor;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public final class SummonDamageHandler extends AbstractMaplePacketHandler {
+
     public final class SummonAttackEntry {
 
         private int monsterOid;

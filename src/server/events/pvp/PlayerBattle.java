@@ -8,6 +8,8 @@ import net.server.channel.handlers.AbstractDealDamageHandler;
 import net.server.channel.handlers.CloseRangeDamageHandler;
 import net.server.channel.handlers.MagicDamageHandler;
 import net.server.channel.handlers.RangedAttackHandler;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import server.events.custom.GenericEvent;
 import server.life.MapleLifeFactory;
 import server.life.MapleMonster;
@@ -26,6 +28,8 @@ import java.util.concurrent.locks.ReentrantLock;
  * @author izarooni
  */
 public class PlayerBattle extends GenericEvent {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(PlayerBattle.class);
 
     private final MapleCharacter attacker;
     private HashMap<Integer, Point> locations = new HashMap<>();
@@ -129,7 +133,9 @@ public class PlayerBattle extends GenericEvent {
                 .filter(player -> player.getId() != attacker.getId() && player.getGenericEvents().stream().anyMatch(g -> g instanceof PlayerBattle) // find players register in a pvp event and exclude the attacker
                         && player.isAlive()) // make sure they're alive
                 .forEach(player -> locations.put(player.getId(), player.getPosition().getLocation()));
-        System.out.println(locations.size() + " targets initialized");
+        if (attacker.isGM()) {
+            LOGGER.info(locations.size() + " targets initialized");
+        }
     }
 
     /**
@@ -148,7 +154,9 @@ public class PlayerBattle extends GenericEvent {
         for (Map.Entry<Integer, Point> entry : locations.entrySet()) { // all targets in the field
             Point targetLocation = entry.getValue();
             double lDistance = attackerLocation.distance(targetLocation);
-            System.out.println("A<->T dist: " + lDistance + " / Required: " + (cAttackRange == -1 ? fAttackRange : cAttackRange));
+            if (attacker.isGM()) {
+                LOGGER.info("A<->T dist: " + lDistance + " / Required: " + (cAttackRange == -1 ? fAttackRange : cAttackRange));
+            }
             if (lDistance <= (cAttackRange == -1 ? fAttackRange : cAttackRange)) { // target within attacking distance
                 if (fAttackRange > 0) {
                     if (Math.abs(attackerLocation.getY() - targetLocation.getY()) > 85) { // character height
@@ -157,10 +165,8 @@ public class PlayerBattle extends GenericEvent {
                 }
                 if ((attackerLocation.getX() <= targetLocation.getX() && !facingLeft) || global) { // (attacker)-> (target)
                     neighbors.put(entry.getKey(), entry.getValue());
-                    System.out.println("attacker found (right)");
                 } else if ((attackerLocation.getX() >= targetLocation.getX() && facingLeft) || global) { // (target) <-(attacker)
                     neighbors.put(entry.getKey(), entry.getValue());
-                    System.out.println("attacker found (left)");
                 }
             }
         }
@@ -254,7 +260,7 @@ public class PlayerBattle extends GenericEvent {
                 }
                 break;
             default:
-                System.out.println("Unhandled weapon type for distance calc'u: " + wt);
+                LOGGER.warn("Unhandled weapon type for distance calculations: {}", wt);
                 break;
         }
 
@@ -355,10 +361,9 @@ public class PlayerBattle extends GenericEvent {
             //endregion
 
             default:
-                System.out.println("Unhandled skill for distance calc'u: " + attackInfo.skill);
+                LOGGER.warn("Unhandled skill for distance calculation: {}", attackInfo.skill);
                 break;
         }
-        System.out.println("Distance calc'd: {c:" + cAttackRange + ",f:" + fAttackRange + "}");
 
         int damage = attacker.calculateMaxBaseDamage(attacker.getTotalWatk());
         String dString = Integer.toString(damage);
@@ -368,7 +373,10 @@ public class PlayerBattle extends GenericEvent {
         int max = (tDamage + 25);
         int eDamage = Randomizer.rand(min, max);
         this.damage = eDamage;
-        System.out.println("watk damage calc: " + damage);
-        System.out.println("calc: " + eDamage);
+        if (attacker.isGM()) {
+            LOGGER.info("Distance calculated: [c: {}, f: {}]", cAttackRange, fAttackRange);
+            LOGGER.info("Weapon attack damage calculation: {}", damage);
+            LOGGER.info("Extra damage randomizer: {}", eDamage);
+        }
     }
 }

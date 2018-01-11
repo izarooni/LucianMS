@@ -106,7 +106,7 @@ public class MapleServerHandler extends IoHandlerAdapter {
     }
 
     @Override
-    public void sessionClosed(IoSession session) throws Exception {
+    public void sessionClosed(IoSession session) {
         MapleClient client = (MapleClient) session.getAttribute(MapleClient.CLIENT_KEY);
         if (client != null) {
             try {
@@ -123,7 +123,6 @@ public class MapleServerHandler extends IoHandlerAdapter {
                 //client.empty();
             }
         }
-        super.sessionClosed(session);
     }
 
     @Override
@@ -140,7 +139,7 @@ public class MapleServerHandler extends IoHandlerAdapter {
                         try {
                             MapleLogger.logRecv(client, packetId, message);
                             handler.handlePacket(slea, client);
-                        } catch (final Throwable t) {
+                        } catch (final Exception t) {
                             LOGGER.info(slea.toString());
                             LOGGER.error("Unable to process handler {}, user {} player {}", handler.getClass().getSimpleName(), client.getAccountName(), (client.getPlayer() != null ? client.getPlayer().getName() : "N/A"));
                             t.printStackTrace();
@@ -164,7 +163,7 @@ public class MapleServerHandler extends IoHandlerAdapter {
                                 if (!handler.isCanceled()) {
                                     handler.onPacket();
                                 }
-                            } catch (Throwable t) {
+                            } catch (Exception t) {
                                 handler.exceptionCaught(t);
                             } finally {
                                 handler.post();

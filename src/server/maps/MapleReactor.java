@@ -33,6 +33,7 @@ import tools.MaplePacketCreator;
 import tools.Pair;
 
 import java.awt.*;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
@@ -164,7 +165,8 @@ public class MapleReactor extends AbstractMapleMapObject {
             if (!(type == 2 && (charPos == 0 || charPos == 2))) { // get next state
                 for (byte b = 0; b < stats.getStateSize(state); b++) {
                     final byte nextState = stats.getNextState(state, b);
-                    if (stats.getActiveSkills(state, b).stream().noneMatch(i -> i == skillId)) {
+                    List<Integer> activeSkills = stats.getActiveSkills(state, b);
+                    if (activeSkills != null && activeSkills.stream().noneMatch(i -> i == skillId)) {
                         continue;
                     }
                     if (nextState == -1) {// end of reactor

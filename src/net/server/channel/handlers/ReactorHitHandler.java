@@ -1,9 +1,9 @@
 package net.server.channel.handlers;
 
 import client.MapleCharacter;
-import client.MapleClient;
-import net.AbstractMaplePacketHandler;
 import net.PacketHandler;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import server.maps.MapleReactor;
 import tools.data.input.SeekableLittleEndianAccessor;
 
@@ -12,11 +12,22 @@ import tools.data.input.SeekableLittleEndianAccessor;
  */
 public class ReactorHitHandler extends PacketHandler {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(ReactorHitHandler.class);
+
     private int objectId;
     private int position;
     private int skillId;
 
     private short stance;
+
+    @Override
+    public void exceptionCaught(Throwable t) {
+        super.exceptionCaught(t);
+        MapleReactor reactor = getClient().getPlayer().getMap().getReactorById(objectId);
+        if (reactor != null) {
+            LOGGER.warn("An occurred occurred within the reactor '{}'", reactor.getId());
+        }
+    }
 
     @Override
     public void process(SeekableLittleEndianAccessor slea) {

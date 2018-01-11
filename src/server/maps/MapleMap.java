@@ -570,11 +570,13 @@ public class MapleMap {
                                     if (chr.getParty() != null) {
                                         receive = (int) (monster.getLevel() * ServerConstants.LEVEL_TO_NX_MULTIPLIER) / chr.getParty().getMembers().size();
                                         for (MaplePartyCharacter players : chr.getParty().getMembers()) {
-                                            if (players.getPlayer().getLevel() - chr.getLevel() < -10) {
-                                                players.getPlayer().getCashShop().gainCash(1, receive);
-                                            }
-                                            if (receive >= 1) {
-                                                players.getPlayer().announce(MaplePacketCreator.earnTitleMessage("You gained " + receive + " NX cash"));
+                                            if (players.isOnline()) {
+                                                if (players.getPlayer().getLevel() - chr.getLevel() < -10) {
+                                                    players.getPlayer().getCashShop().gainCash(1, receive);
+                                                }
+                                                if (receive >= 1) {
+                                                    players.getPlayer().announce(MaplePacketCreator.earnTitleMessage("You gained " + receive + " NX cash"));
+                                                }
                                             }
                                         }
                                     } else if (receive > 0) {
@@ -588,11 +590,13 @@ public class MapleMap {
                                     if (chr.getParty() != null) {
                                         receive = (int) (monster.getLevel() * ServerConstants.LEVEL_TO_NX_MULTIPLIER + random - (random / 2)) / chr.getParty().getMembers().size();
                                         for (MaplePartyCharacter players : chr.getParty().getMembers()) {
-                                            if (players.getPlayer().getLevel() - chr.getLevel() < -10) {
-                                                players.getPlayer().getCashShop().gainCash(1, receive);
-                                            }
-                                            if (receive >= 1) {
-                                                players.getPlayer().announce(MaplePacketCreator.earnTitleMessage("You gained " + receive + " NX cash"));
+                                            if (players.isOnline()) {
+                                                if (players.getPlayer().getLevel() - chr.getLevel() < -10) {
+                                                    players.getPlayer().getCashShop().gainCash(1, receive);
+                                                }
+                                                if (receive >= 1) {
+                                                    players.getPlayer().announce(MaplePacketCreator.earnTitleMessage("You gained " + receive + " NX cash"));
+                                                }
                                             }
                                         }
                                     } else if (receive > 0) {
@@ -643,14 +647,12 @@ public class MapleMap {
                 monster.monsterLock.unlock();
             }
             if (monster.getStats().getSelfDestruction() != null && monster.getStats().getSelfDestruction().getHp() > -1) {// should
-                // work
-                // ;p
                 if (monster.getHp() <= monster.getStats().getSelfDestruction().getHp()) {
                     killMonster(monster, chr, true, false, monster.getStats().getSelfDestruction().getAction());
                     return true;
                 }
             }
-            if (killed) {
+            if (!monster.isAlive() || killed) {
                 killMonster(monster, chr, true);
             }
             return true;
@@ -1542,7 +1544,11 @@ public class MapleMap {
         MaplePet[] pets = chr.getPets();
         for (int i = 0; i < chr.getPets().length; i++) {
             if (pets[i] != null) {
-                pets[i].setPos(getGroundBelow(chr.getPosition()));
+                Point nPosition = getGroundBelow(chr.getPosition());
+                if (nPosition == null) {
+                    nPosition = chr.getPosition().getLocation();
+                }
+                pets[i].setPos(nPosition);
                 chr.announce(MaplePacketCreator.showPet(chr, pets[i], false, false));
             } else {
                 break;

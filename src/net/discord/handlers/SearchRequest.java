@@ -49,23 +49,12 @@ public class SearchRequest extends DiscordRequest {
                     retNpcs.add(npcPair.getLeft() + " - " + npcPair.getRight());
                 }
             }
-            if (retNpcs.size() > SearchLimit) {
-                writer.writeInt(-1);
-                writer.writeMapleAsciiString("There are too many results to display. Please be more specific with your search query");
-            } else {
-                writer.writeInt(retNpcs.size());
-                retNpcs.forEach(writer::writeMapleAsciiString);
-            }
+            EncodeData(writer, retNpcs);
             retNpcs.clear();
             npcPairList.clear();
         } else if (type.equalsIgnoreCase("MAP") || type.equalsIgnoreCase("MAPS")) {
             List<String> retMaps = new ArrayList<>();
             data = dataProvider.getData("Map.img");
-            if (data == null) {
-                writer.writeInt(-1);
-                writer.writeMapleAsciiString("An error occurred while looking for map names");
-                return;
-            }
             List<Pair<Integer, String>> mapPairList = new LinkedList<>();
             for (MapleData mapAreaData : data.getChildren()) {
                 for (MapleData mapIdData : mapAreaData.getChildren()) {
@@ -79,13 +68,7 @@ public class SearchRequest extends DiscordRequest {
                     retMaps.add(mapPair.getLeft() + " - " + mapPair.getRight());
                 }
             }
-            if (retMaps.size() > SearchLimit) {
-                writer.writeInt(-1);
-                writer.writeMapleAsciiString("There are too many results to display. Please be more specific with your search query");
-            } else {
-                writer.writeInt(retMaps.size());
-                retMaps.forEach(writer::writeMapleAsciiString);
-            }
+            EncodeData(writer, retMaps);
             retMaps.clear();
             mapPairList.clear();
         } else if (type.equalsIgnoreCase("MOB") || type.equalsIgnoreCase("MOBS") || type.equalsIgnoreCase("MONSTER") || type.equalsIgnoreCase("MONSTERS")) {
@@ -102,13 +85,7 @@ public class SearchRequest extends DiscordRequest {
                     retMobs.add(mobPair.getLeft() + " - " + mobPair.getRight());
                 }
             }
-            if (retMobs.size() > SearchLimit) {
-                writer.writeInt(-1);
-                writer.writeMapleAsciiString("There are too many results to display. Please be more specific with your search query");
-            } else {
-                writer.writeInt(retMobs.size());
-                retMobs.forEach(writer::writeMapleAsciiString);
-            }
+            EncodeData(writer, retMobs);
             retMobs.clear();
             mobPairList.clear();
         } else if (type.equalsIgnoreCase("ITEM") || type.equalsIgnoreCase("ITEMS")) {
@@ -118,16 +95,20 @@ public class SearchRequest extends DiscordRequest {
                     retItems.add(itemPair.getLeft() + " - " + itemPair.getRight());
                 }
             }
-            if (retItems.size() > SearchLimit) {
-                writer.writeInt(-1);
-                writer.writeMapleAsciiString("There are too many results to display. Please be more specific with your search query");
-            } else {
-                writer.writeInt(retItems.size());
-                retItems.forEach(writer::writeMapleAsciiString);
-            }
+            EncodeData(writer, retItems);
             retItems.clear();
         }
         DiscordSession.sendPacket(writer.getPacket());
         System.gc();
+    }
+
+    private void EncodeData(MaplePacketLittleEndianWriter writer, List<String> array) {
+        if (array.size() > SearchLimit) {
+            writer.writeInt(-1);
+            writer.writeMapleAsciiString("There are too many results to display. Please be more specific with your search query");
+        } else {
+            writer.writeInt(array.size());
+            array.forEach(writer::writeMapleAsciiString);
+        }
     }
 }
