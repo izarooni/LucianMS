@@ -13,7 +13,6 @@ import server.events.custom.ManualPlayerEvent;
 import server.events.custom.auto.GAutoEvent;
 import server.events.custom.auto.GAutoEventManager;
 import server.events.pvp.PlayerBattle;
-import server.life.MapleMonster;
 import server.maps.MapleMap;
 import tools.MaplePacketCreator;
 import tools.Pair;
@@ -59,6 +58,7 @@ public class PlayerCommands {
             commands.add("@fixexp - Reset EXP");
             commands.add("@maxskills - Max your skills for all jobs");
             commands.add("@shenron - Warp to the Shenron summoning map");
+            commands.add("@quests - List your quests currently in-progress");
             Collections.sort(commands);
             commands.forEach(player::dropMessage);
             commands.clear();
@@ -414,6 +414,8 @@ public class PlayerCommands {
             player.changeMap(978);
         } else if (command.equals("shenron")) {
             player.changeMap(908);
+        } else if (command.equals("quests")) {
+            NPCScriptManager.start(client, 2007, "f_quests", null);
         } else if (command.equals("crystal")) {
             if (player.getMeso() >= 500000000) {
                 if (MapleInventoryManipulator.checkSpace(client, ServerConstants.CURRENCY, 1, "")) {

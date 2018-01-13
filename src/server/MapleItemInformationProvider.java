@@ -973,7 +973,8 @@ public class MapleItemInformationProvider {
 
     public boolean isCash(int itemId) {
         try {
-            return itemId / 1000000 == 5 || getEquipStats(itemId).get("cash") == 1;
+            Map<String, Integer> stats = getEquipStats(itemId);
+            return itemId / 1000000 == 5 || (stats != null && stats.get("cash") == 1);
         } catch (NullPointerException e) {
             System.err.println("Could not find item property 'cash' for item " + itemId);
             throw e;

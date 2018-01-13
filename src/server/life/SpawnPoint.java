@@ -61,18 +61,8 @@ public class SpawnPoint {
     }
 
     public boolean shouldSpawn() {
-        return mobTime >= 0
-                && ((mobTime == 0 && !immobile) || spawnedMonsters.get() <= 0)
-                && spawnedMonsters.get() <= 2 && nextPossibleSpawn <= System.currentTimeMillis();
+        return mobTime >= 0 && ((mobTime == 0 && !immobile) || spawnedMonsters.get() <= 0) && spawnedMonsters.get() <= 2 && nextPossibleSpawn <= System.currentTimeMillis();
 
-    }
-
-    public boolean shouldForceSpawn() {
-        if (mobTime < 0 || ((mobTime != 0 || immobile) && spawnedMonsters.get() > 0) || spawnedMonsters.get() > 2) {//lol
-            return false;
-        }
-
-        return true;
     }
 
     public MapleMonster getMonster() {
@@ -94,7 +84,10 @@ public class SpawnPoint {
                 } else {
                     nextPossibleSpawn += aniTime;
                 }
-                spawnedMonsters.decrementAndGet();
+                if (spawnedMonsters.get() > 0) {
+                    // i have everything
+                    spawnedMonsters.decrementAndGet();
+                }
             }
         });
         if (mobTime == 0) {

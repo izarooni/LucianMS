@@ -3,7 +3,10 @@ package net.server.channel.handlers;
 import client.MapleCharacter;
 import client.MapleClient;
 import client.inventory.MapleInventoryType;
+import constants.ServerConstants;
 import net.PacketHandler;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import server.MapleInventoryManipulator;
 import server.MaplePortal;
 import server.MapleTrade;
@@ -15,6 +18,8 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 
 public class ChangeMapHandler extends PacketHandler {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(ChangeMapHandler.class);
 
     private boolean eCashShop = false;
     private boolean wheelOfDestiny = false;
@@ -39,7 +44,6 @@ public class ChangeMapHandler extends PacketHandler {
     public Object onPacket() {
         MapleCharacter player = getClient().getPlayer();
         MaplePortal portal = player.getMap().getPortal(startwp);
-
 
         if (portal != null && player.isGM() && player.isDebug()) {
             player.sendMessage("[DEBUG] ID: {}, Name: {}/{}, Target map: {}, Location: x:{}/y:{}", portal.getId(), portal.getName(), portal.getScriptName(), portal.getTarget(), portal.getPosition().x, portal.getPosition().y);
@@ -89,6 +93,11 @@ public class ChangeMapHandler extends PacketHandler {
                         } else {
                             player.cancelAllBuffs(false);
                             to = player.getMap().getReturnMap();
+                            if (to == null) {
+                                LOGGER.info("Player '{}' unable to return to map {}", player.getName(), player.getMap().getReturnMapId());
+                                player.sendMessage("The return map is obstructed");
+                                to = getClient().getChannelServer().getMapFactory().getMap(ServerConstants.HOME_MAP);
+                            }
                             player.setStance(0);
                         }
                         player.setHp(50);

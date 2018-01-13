@@ -71,7 +71,7 @@ public class NPCScriptManager {
                     } catch (NoSuchMethodException e2) {
                         try {
                             iv.invokeFunction("action", 1, 0, -1);
-                        } catch (NoSuchMethodError e3) {
+                        } catch (NoSuchMethodException e3) {
                             LOGGER.warn("No initializer function for script '{}' npc '{}' using player '{}'", fileName, npc, client.getPlayer().getName());
                             dispose(client);
                         }

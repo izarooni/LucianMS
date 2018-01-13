@@ -87,9 +87,9 @@ public final class PlayerLoggedinHandler extends AbstractMaplePacketHandler {
                 for (Channel ch : c.getWorldServer().getChannels()) {
                     if (ch.isConnected(charName)) {
                         allowLogin = false;
+                        break;
                     }
                 }
-                break;
             }
         }
         if (state != MapleClient.LOGIN_SERVER_TRANSITION || !allowLogin) {
@@ -108,11 +108,11 @@ public final class PlayerLoggedinHandler extends AbstractMaplePacketHandler {
         }
         Connection con = DatabaseConnection.getConnection();
         try {
-            try (PreparedStatement ps = con.prepareStatement("SELECT Mesos FROM dueypackages WHERE RecieverId = ? and Checked = 1")) {
+            try (PreparedStatement ps = con.prepareStatement("SELECT Mesos FROM dueypackages WHERE RecieverId = ? AND Checked = 1")) {
                 ps.setInt(1, player.getId());
                 try (ResultSet rs = ps.executeQuery()) {
                     if (rs.next()) {
-                        try (PreparedStatement pss = DatabaseConnection.getConnection().prepareStatement("UPDATE dueypackages SET Checked = 0 where RecieverId = ?")) {
+                        try (PreparedStatement pss = DatabaseConnection.getConnection().prepareStatement("UPDATE dueypackages SET Checked = 0 WHERE RecieverId = ?")) {
                             pss.setInt(1, player.getId());
                             pss.executeUpdate();
                         }
@@ -125,7 +125,7 @@ public final class PlayerLoggedinHandler extends AbstractMaplePacketHandler {
         }
         c.announce(MaplePacketCreator.getCharInfo(player));
         if (!player.isHidden()) {
-            player.toggleHide(true);
+            player.setHidden(true, true);
         }
         player.sendKeymap();
         player.sendMacros();
@@ -217,10 +217,8 @@ public final class PlayerLoggedinHandler extends AbstractMaplePacketHandler {
         if (GameConstants.hasSPTable(player.getJob()) && player.getJob().getId() != 2001) {
             player.createDragon();
         }
-        if (newcomer) {
-            if (!c.hasVotedAlready()) {
-                player.announce(MaplePacketCreator.earnTitleMessage("You can vote now! Vote and earn a vote point!"));
-            }
+        if (newcomer && !c.hasVotedAlready()) {
+            player.announce(MaplePacketCreator.earnTitleMessage("You can vote now! Vote and earn a vote point!"));
         }
     }
 }

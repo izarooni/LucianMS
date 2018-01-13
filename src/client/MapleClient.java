@@ -161,7 +161,7 @@ public class MapleClient {
      * @return true if the account the specified character belongs to this account, false otherwise
      */
     public boolean playerBelongs(int playerId) {
-        try (PreparedStatement ps = DatabaseConnection.getConnection().prepareStatement("select count(*) as total from characters where id = ? and accountid = ? ")) {
+        try (PreparedStatement ps = DatabaseConnection.getConnection().prepareStatement("SELECT count(*) AS total FROM characters WHERE id = ? AND accountid = ? ")) {
             ps.setInt(1, playerId);
             ps.setInt(2, getAccID());
             try (ResultSet rs = ps.executeQuery()) {
@@ -199,7 +199,7 @@ public class MapleClient {
 
     private List<Pair<Integer, String>> loadCharactersInternal(int serverId) {
         List<Pair<Integer, String>> ret = new ArrayList<>();
-        try (PreparedStatement ps = DatabaseConnection.getConnection().prepareStatement("select id, name from characters where accountid = ? and world = ?")) {
+        try (PreparedStatement ps = DatabaseConnection.getConnection().prepareStatement("SELECT id, name FROM characters WHERE accountid = ? AND world = ?")) {
             ps.setInt(1, getAccID());
             ps.setInt(2, serverId);
             try (ResultSet rs = ps.executeQuery()) {
@@ -209,7 +209,7 @@ public class MapleClient {
             }
             return ret;
         } catch (SQLException e) {
-            e.printStackTrace();
+            LOGGER.info("Unable to load account ID: '{}', Name: {} character id and username information", accId, accountName, e);
             return Collections.emptyList();
         }
     }
@@ -655,7 +655,7 @@ public class MapleClient {
     public int getLoginState() {  // 0 = LOGIN_NOTLOGGEDIN, 1= LOGIN_SERVER_TRANSITION, 2 = LOGIN_LOGGEDIN
         try {
             Connection con = DatabaseConnection.getConnection();
-            PreparedStatement ps = con.prepareStatement("SELECT loggedin, lastlogin, UNIX_TIMESTAMP(birthday) as birthday FROM accounts WHERE id = ?");
+            PreparedStatement ps = con.prepareStatement("SELECT loggedin, lastlogin, UNIX_TIMESTAMP(birthday) AS birthday FROM accounts WHERE id = ?");
             ps.setInt(1, getAccID());
             ResultSet rs = ps.executeQuery();
             if (!rs.next()) {
@@ -863,23 +863,6 @@ public class MapleClient {
             session.removeAttribute(MapleClient.CLIENT_KEY); // prevents double dcing during login
             session.closeNow(); // instead of using a deprecated method
         }
-        clear();
-    }
-
-    private void clear() {
-        accountName = null;
-        macs = null;
-        hwid = null;
-        birthday = null;
-        engines = null;
-        if (idleTask != null) {
-            idleTask.cancel();
-            idleTask = null;
-        }
-        player = null;
-        receive = null;
-        send = null;
-        session = null;
     }
 
     public int getChannel() {
@@ -1053,7 +1036,7 @@ public class MapleClient {
     }
 
     public int getVotePoints() {
-        try (PreparedStatement ps = DatabaseConnection.getConnection().prepareStatement("select votepoints from accounts where id = ?")) {
+        try (PreparedStatement ps = DatabaseConnection.getConnection().prepareStatement("SELECT votepoints FROM accounts WHERE id = ?")) {
             ps.setInt(1, accId);
             try (ResultSet rs = ps.executeQuery()) {
                 if (rs.next()) {
@@ -1067,7 +1050,7 @@ public class MapleClient {
     }
 
     public void setVotePoints(int n) {
-        try (PreparedStatement ps = DatabaseConnection.getConnection().prepareStatement("update accounts set votepoints = ? where id = ?")) {
+        try (PreparedStatement ps = DatabaseConnection.getConnection().prepareStatement("UPDATE accounts SET votepoints = ? WHERE id = ?")) {
             ps.setInt(1, n);
             ps.setInt(2, accId);
             ps.executeUpdate();
@@ -1191,7 +1174,7 @@ public class MapleClient {
     }
 
     public int getDonationPoints() {
-        try (PreparedStatement ps = DatabaseConnection.getConnection().prepareStatement("select donationpoints from accounts where id = ?")) {
+        try (PreparedStatement ps = DatabaseConnection.getConnection().prepareStatement("SELECT donationpoints FROM accounts WHERE id = ?")) {
             ps.setInt(1, accId);
             try (ResultSet rs = ps.executeQuery()) {
                 if (rs.next()) {
@@ -1205,7 +1188,7 @@ public class MapleClient {
     }
 
     public void setDonationPoints(int n) {
-        try (PreparedStatement ps = DatabaseConnection.getConnection().prepareStatement("update accounts set donationpoints = ? where id = ?")) {
+        try (PreparedStatement ps = DatabaseConnection.getConnection().prepareStatement("UPDATE accounts SET donationpoints = ? WHERE id = ?")) {
             ps.setInt(1, n);
             ps.setInt(2, accId);
             ps.executeUpdate();

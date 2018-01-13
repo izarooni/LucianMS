@@ -1342,8 +1342,7 @@ public class MapleMap {
 
     private void activateItemReactors(MapleClient client, MapleMapItem mapItem) {
         Item item = mapItem.getItem();
-        for (MapleMapObject mapObject : getReactors()) {
-            MapleReactor reactor = (MapleReactor) mapobjects;
+        for (MapleReactor reactor : getReactors()) {
             if (reactor.getReactorType() == 100) {
                 Pair<Integer, Integer> pair = reactor.getReactItem((byte) 0);
                 if (pair.getLeft() == item.getItemId() && pair.getRight() == item.getQuantity()) {
@@ -1360,7 +1359,9 @@ public class MapleMap {
     public final List<MapleReactor> getReactors() {
         objectRLock.lock();
         try {
-            return mapobjects.values().stream().filter(o -> (o instanceof MapleReactor)).map(o -> (MapleReactor) o).collect(Collectors.toList());
+            ArrayList<MapleReactor> array = new ArrayList();
+            mapobjects.values().stream().filter(o -> (o instanceof MapleReactor)).map(o -> (MapleReactor) o).forEach(array::add);
+            return array;
         } finally {
             objectRLock.unlock();
         }

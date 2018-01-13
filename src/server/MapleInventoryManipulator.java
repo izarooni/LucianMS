@@ -126,18 +126,25 @@ public class MapleInventoryManipulator {
             }
         } else if (quantity == 1) {
             Item nEquip = ii.getEquipById(itemId);
-            nEquip.setFlag(flag);
-            nEquip.setExpiration(expiration);
-            if (owner != null) {
-                nEquip.setOwner(owner);
-            }
-            short newSlot = c.getPlayer().getInventory(type).addItem(nEquip);
-            if (newSlot == -1) {
+            if (nEquip != null) {
+                nEquip.setFlag(flag);
+                nEquip.setExpiration(expiration);
+                if (owner != null) {
+                    nEquip.setOwner(owner);
+                }
+                short newSlot = c.getPlayer().getInventory(type).addItem(nEquip);
+                if (newSlot == -1) {
+                    c.announce(MaplePacketCreator.getInventoryFull());
+                    c.announce(MaplePacketCreator.getShowInventoryFull());
+                    return false;
+                }
+                c.announce(MaplePacketCreator.modifyInventory(true, Collections.singletonList(new ModifyInventory(0, nEquip))));
+            } else {
+                LOGGER.warn("Invalid item {} from player '{}'", itemId, c.getPlayer().getName());
                 c.announce(MaplePacketCreator.getInventoryFull());
                 c.announce(MaplePacketCreator.getShowInventoryFull());
                 return false;
             }
-            c.announce(MaplePacketCreator.modifyInventory(true, Collections.singletonList(new ModifyInventory(0, nEquip))));
         } else {
             throw new RuntimeException("Trying to create equip with non-one quantity");
         }

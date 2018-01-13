@@ -39,7 +39,7 @@ import server.MapleInventoryManipulator;
 import server.MapleItemInformationProvider;
 import server.MapleStatEffect;
 import server.life.*;
-import server.life.MapleLifeFactory.loseItem;
+import server.life.MapleLifeFactory.LoseItem;
 import server.maps.MapleMap;
 import tools.MaplePacketCreator;
 import tools.Randomizer;
@@ -89,7 +89,7 @@ public final class TakeDamageHandler extends PacketHandler {
         final MapleMap map = player.getMap();
         if (damageFrom != -3 && damageFrom != -4) {
             attacker = (MapleMonster) map.getMapObject(objectId);
-            List<loseItem> loseItems;
+            List<LoseItem> loseItems;
             if (attacker != null) {
                 if (attacker.isBuffed(MonsterStatus.NEUTRALISE)) {
                     if (player.getArcade() != null) {
@@ -104,7 +104,7 @@ public final class TakeDamageHandler extends PacketHandler {
                         final int xPosition = player.getPosition().x;
                         byte d = 1;
                         Point pos = new Point(0, player.getPosition().y);
-                        for (loseItem loseItem : loseItems) {
+                        for (LoseItem loseItem : loseItems) {
                             type = MapleItemInformationProvider.getInstance().getInventoryType(loseItem.getId());
                             for (byte b = 0; b < loseItem.getX(); b++) {//LOL?
                                 if (Randomizer.nextInt(101) >= loseItem.getChance()) {

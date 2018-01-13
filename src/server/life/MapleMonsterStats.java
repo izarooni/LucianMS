@@ -28,7 +28,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import server.life.MapleLifeFactory.BanishInfo;
-import server.life.MapleLifeFactory.loseItem;
+import server.life.MapleLifeFactory.LoseItem;
 import server.life.MapleLifeFactory.SelfDestruction;
 import tools.Pair;
 
@@ -39,14 +39,14 @@ public class MapleMonsterStats {
     private int exp, hp, mp, level, PADamage, PDDamage, MADamage, MDDamage, dropPeriod, cp, buffToGive, removeAfter;
     private boolean boss, undead, ffaLoot, isExplosiveReward, firstAttack, removeOnMiss;
     private String name;
-    private Map<String, Integer> animationTimes = new HashMap<String, Integer>();
-    private Map<Element, ElementalEffectiveness> resistance = new HashMap<Element, ElementalEffectiveness>();
+    private Map<String, Integer> animationTimes = new HashMap<>();
+    private Map<Element, ElementalEffectiveness> resistance = new HashMap<>();
     private List<Integer> revives = Collections.emptyList();
     private byte tagColor, tagBgColor;
-    private List<Pair<Integer, Integer>> skills = new ArrayList<Pair<Integer, Integer>>();
+    private List<Pair<Integer, Integer>> skills = new ArrayList<>();
     private Pair<Integer, Integer> cool = null;
     private BanishInfo banish = null;
-    private List<loseItem> loseItem = null;
+    private List<LoseItem> loseItem = null;
     private SelfDestruction selfDestruction = null;
     private boolean friendly;
 
@@ -123,7 +123,7 @@ public class MapleMonsterStats {
         if (ret == null) {
             return 500;
         }
-        return ret.intValue();
+        return ret;
     }
 
     public boolean isMobile() {
@@ -250,13 +250,13 @@ public class MapleMonsterStats {
         this.cp = cp;
     }
 
-    public List<loseItem> loseItem() {
+    public List<LoseItem> loseItem() {
         return loseItem;
     }
 
-    public void addLoseItem(loseItem li) {
+    public void addLoseItem(LoseItem li) {
         if (loseItem == null) {
-            loseItem = new LinkedList<loseItem>();
+            loseItem = new LinkedList<>();
         }
         loseItem.add(li);
     }

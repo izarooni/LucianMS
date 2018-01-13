@@ -148,7 +148,7 @@ public class AHeartlessWall extends GAutoEvent {
         MapleMonster monster = MapleLifeFactory.getMonster(TheWall);
         if (monster != null) {
             MapleMonsterStats stats = new MapleMonsterStats();
-            stats.setHp(Integer.MAX_VALUE); // todo increase when max value is increased
+            stats.setHp(Integer.MAX_VALUE);
             monster.setOverrideStats(stats);
             monster.addListener(new MonsterListener() {
                 @Override

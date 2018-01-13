@@ -49,26 +49,6 @@ public final class CloseRangeDamageHandler extends AbstractDealDamageHandler {
     private AttackInfo attackInfo = null;
 
     @Override
-    public void exceptionCaught(Throwable t) {
-        MapleCharacter player = getClient().getPlayer();
-
-        if (attackInfo != null) {
-            for (Integer integer : attackInfo.allDamage.keySet()) {
-                MapleMonster monster = player.getMap().getMonsterByOid(integer);
-                if (monster != null) {
-                    LOGGER.warn("Monster exception 1 {}", monster.getHp());
-                    if (!monster.isAlive()) {
-                    LOGGER.warn("Monster exception 2");
-                        // monsters bugging out due to exceptions caused before being able to
-                        // send the monster leave map packet
-                        player.getMap().killMonster(monster, player, true);
-                    }
-                }
-            }
-        }
-    }
-
-    @Override
     public void process(SeekableLittleEndianAccessor slea) {
         attackInfo = parseDamage(slea, false, false);
     }

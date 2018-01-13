@@ -96,7 +96,7 @@ public class MapleLifeFactory {
             special = monsterInfoData.getChildByPath("loseItem");
             if (special != null) {
                 for (MapleData liData : special.getChildren()) {
-                    stats.addLoseItem(new loseItem(MapleDataTool.getInt(liData.getChildByPath("id")), (byte) MapleDataTool.getInt(liData.getChildByPath("prop")), (byte) MapleDataTool.getInt(liData.getChildByPath("x"))));
+                    stats.addLoseItem(new LoseItem(MapleDataTool.getInt(liData.getChildByPath("id")), (byte) MapleDataTool.getInt(liData.getChildByPath("prop")), (byte) MapleDataTool.getInt(liData.getChildByPath("x"))));
                 }
             }
             special = monsterInfoData.getChildByPath("selfDestruction");
@@ -189,12 +189,12 @@ public class MapleLifeFactory {
         }
     }
 
-    public static class loseItem {
+    public static class LoseItem {
 
         private int id;
         private byte chance, x;
 
-        private loseItem(int id, byte chance, byte x) {
+        private LoseItem(int id, byte chance, byte x) {
             this.id = id;
             this.chance = chance;
             this.x = x;

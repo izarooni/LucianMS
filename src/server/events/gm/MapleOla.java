@@ -49,7 +49,7 @@ public class MapleOla {
         }, 360000);
     }
 
-    public void startOla() { // TODO: Messages
+    public void startOla() {
         chr.getMap().startEvent();
         chr.getClient().announce(MaplePacketCreator.getClock(360));
         this.timeStarted = System.currentTimeMillis();

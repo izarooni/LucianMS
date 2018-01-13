@@ -391,11 +391,11 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
         MapleCharacter.deleteWhereCharacterId(con, "DELETE FROM cooldowns WHERE charid = ?", playerid);
         System.out.println("\tDeleted cooldowns");
 
-        try (PreparedStatement ps = con.prepareStatement("select * from cquest where characterid = ?")) {
+        try (PreparedStatement ps = con.prepareStatement("SELECT * FROM cquest WHERE characterid = ?")) {
             ps.setInt(1, playerid);
             try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
-                    try (PreparedStatement ps2 = con.prepareStatement("delete from cquestdata where qtableid = ?")) {
+                    try (PreparedStatement ps2 = con.prepareStatement("DELETE FROM cquestdata WHERE qtableid = ?")) {
                         ps2.setInt(1, rs.getInt("id"));
                         ps2.executeUpdate();
                     }
@@ -677,7 +677,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
             }
             rs.close();
             ps.close();
-            ps = con.prepareStatement("select id from marriages where groom = ? or bride = ?");
+            ps = con.prepareStatement("SELECT id FROM marriages WHERE groom = ? OR bride = ?");
             ps.setInt(1, ret.id);
             ps.setInt(2, ret.id);
             rs = ps.executeQuery();
@@ -717,7 +717,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
             rs.close();
             ps.close();
             ret.cashshop = new CashShop(ret.accountid, ret.id, ret.getJobType());
-            ps = con.prepareStatement("SELECT name, level FROM characters WHERE accountid = ? AND id != ? ORDER BY level DESC limit 1");
+            ps = con.prepareStatement("SELECT name, level FROM characters WHERE accountid = ? AND id != ? ORDER BY level DESC LIMIT 1");
             ps.setInt(1, ret.accountid);
             ps.setInt(2, charid);
             rs = ps.executeQuery();
@@ -728,7 +728,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
             rs.close();
             ps.close();
             if (channelserver) {
-                ps = con.prepareStatement("select * from achievements where player_id = ?");
+                ps = con.prepareStatement("SELECT * FROM achievements WHERE player_id = ?");
                 ps.setInt(1, ret.getId());
                 rs = ps.executeQuery();
                 while (rs.next()) {
@@ -772,14 +772,14 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
                     ps.close();
                 }
                 psf.close();
-                ps = con.prepareStatement("select * from cquest where characterid = ?");
+                ps = con.prepareStatement("SELECT * FROM cquest WHERE characterid = ?");
                 ps.setInt(1, ret.id);
                 rs = ps.executeQuery();
                 while (rs.next()) {
                     CQuestData cQuest = CQuestBuilder.beginQuest(ret, rs.getInt("questid"));
                     if (cQuest != null) {
                         if (rs.getInt("completed") == 0) {
-                            try (PreparedStatement stmt = con.prepareStatement("select * from cquestdata where qtableid = ?")) {
+                            try (PreparedStatement stmt = con.prepareStatement("SELECT * FROM cquestdata WHERE qtableid = ?")) {
                                 stmt.setInt(1, rs.getInt("id"));
                                 try (ResultSet res = stmt.executeQuery()) {
                                     while (res.next()) {
@@ -1231,17 +1231,24 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
         lastmobcount = count;
     }
 
-    public void newClient(MapleClient c) {
+    /**
+     * Applies information from the old client to the new session client before
+     * assigning the actual client object to the existing player
+     *
+     * @param client new client to assign to the player
+     */
+    public void newClient(MapleClient client) {
         this.loggedIn = true;
-        c.setAccountName(this.client.getAccountName()); // No null's for accountName
-        this.client = c;
+        client.setAccountName(this.client.getAccountName());
+        this.client = client;
+
+        map = this.client.getChannelServer().getMapFactory().getMap(getMapId());
         MaplePortal portal = map.findClosestSpawnpoint(getPosition());
         if (portal == null) {
             portal = map.getPortal(0);
         }
         this.setPosition(portal.getPosition());
         this.initialSpawnPoint = portal.getId();
-        this.map = c.getChannelServer().getMapFactory().getMap(getMapId());
     }
 
     public void cancelBuffEffects() {
@@ -1328,35 +1335,32 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
         }
     }
 
-    public void Hide(boolean hide, boolean login) {
-        if (isGM() && hide != this.hidden) {
-            if (!hide) {
-                this.hidden = false;
-                announce(MaplePacketCreator.getGMEffect(0x10, (byte) 0));
+    public void setHidden(boolean hidden, boolean login) {
+        if (isGM()) {
+            this.hidden = hidden;
+            announce(MaplePacketCreator.getGMEffect(0x10, (byte) (hidden ? 1 : 0)));
+            if (!hidden & isHidden()) {
                 List<MapleBuffStat> dsstat = Collections.singletonList(MapleBuffStat.DARKSIGHT);
                 getMap().broadcastGMMessage(this, MaplePacketCreator.cancelForeignBuff(id, dsstat), false);
                 getMap().broadcastMessage(this, MaplePacketCreator.spawnPlayerMapobject(this), false);
                 updatePartyMemberHP();
-
+                getMap().getMonsters().forEach(getMap()::updateMonsterController);
                 if (getFakePlayer() != null) {
                     getMap().addFakePlayer(getFakePlayer());
                 }
-            } else {
-                this.hidden = true;
-                announce(MaplePacketCreator.getGMEffect(0x10, (byte) 1));
+            } else if (hidden && !isHidden()) {
                 if (!login) {
                     getMap().broadcastMessage(this, MaplePacketCreator.removePlayerFromMap(getId()), false);
                 }
-                getMap().broadcastGMMessage(this, MaplePacketCreator.spawnPlayerMapobject(this), false);
                 List<Pair<MapleBuffStat, Integer>> dsstat = Collections.singletonList(new Pair<MapleBuffStat, Integer>(MapleBuffStat.DARKSIGHT, 0));
+                getMap().broadcastGMMessage(this, MaplePacketCreator.spawnPlayerMapobject(this), false);
                 getMap().broadcastGMMessage(this, MaplePacketCreator.giveForeignBuff(id, dsstat), false);
-                for (MapleMonster mon : this.getControlledMonsters()) {
+                for (MapleMonster mon : getControlledMonsters()) {
                     mon.setController(null);
                     mon.setControllerHasAggro(false);
                     mon.setControllerKnowsAboutAggro(false);
                     mon.getMap().updateMonsterController(mon);
                 }
-
                 if (getFakePlayer() != null) {
                     getMap().removeFakePlayer(getFakePlayer());
                 }
@@ -1365,12 +1369,8 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
         }
     }
 
-    public void Hide(boolean hide) {
-        Hide(hide, false);
-    }
-
-    public void toggleHide(boolean login) {
-        Hide(!isHidden());
+    public void toggleHide() {
+        setHidden(!isHidden(), false);
     }
 
     private void cancelFullnessSchedule(int petSlot) {
@@ -3580,7 +3580,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
     public void createPlayerNPC(MapleCharacter v, int scriptId, String script) {
         try {
             int pnpcid = 0;
-            try (PreparedStatement ps = DatabaseConnection.getConnection().prepareStatement("insert into playernpcs (name, scriptid, script, map, hair, face, skin, gender, foothold, dir, x, cy, rx0, rx1) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", Statement.RETURN_GENERATED_KEYS)) {
+            try (PreparedStatement ps = DatabaseConnection.getConnection().prepareStatement("INSERT INTO playernpcs (name, scriptid, script, map, hair, face, skin, gender, foothold, dir, x, cy, rx0, rx1) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", Statement.RETURN_GENERATED_KEYS)) {
                 ps.setString(1, v.getName());
                 ps.setInt(2, scriptId);
                 ps.setString(3, script);
@@ -3603,7 +3603,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
                 }
             }
             if (pnpcid > 0) {
-                try (PreparedStatement ps = DatabaseConnection.getConnection().prepareStatement("insert into playernpcs_equip (npcid, equipid, type, equippos) values (?, ?, 0, ?)")) {
+                try (PreparedStatement ps = DatabaseConnection.getConnection().prepareStatement("INSERT INTO playernpcs_equip (npcid, equipid, type, equippos) VALUES (?, ?, 0, ?)")) {
                     ps.setInt(1, pnpcid);
                     for (Item item : v.getInventory(MapleInventoryType.EQUIPPED).list()) {
                         int slot = Math.abs(item.getPosition());
@@ -3615,7 +3615,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
                     }
                     ps.executeBatch();
                 }
-                try (PreparedStatement ps = DatabaseConnection.getConnection().prepareStatement("select * from playernpcs where id = ?")) {
+                try (PreparedStatement ps = DatabaseConnection.getConnection().prepareStatement("SELECT * FROM playernpcs WHERE id = ?")) {
                     ps.setInt(1, pnpcid);
                     try (ResultSet rs = ps.executeQuery()) {
                         if (rs.next()) {
@@ -4280,7 +4280,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
                 }
             }
             deleteWhereCharacterId(con, "delete from achievements where player_id = ?");
-            ps = con.prepareStatement("insert into achievements (`completed`, `player_id`, `achievement_name`, `killed_monster`, `casino_one`, `casino_two`) values (?, ?, ?, ?, ?, ?)");
+            ps = con.prepareStatement("INSERT INTO achievements (`completed`, `player_id`, `achievement_name`, `killed_monster`, `casino_one`, `casino_two`) VALUES (?, ?, ?, ?, ?, ?)");
             for (Entry<String, Achievement> entry : achievements.entrySet()) {
                 String name = entry.getKey();
                 Achievement achievement = entry.getValue();
@@ -4394,7 +4394,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
             }
             ps.executeBatch();
             deleteWhereCharacterId(con, "DELETE FROM eventstats WHERE characterid = ?");
-            try (PreparedStatement stmt = con.prepareStatement("select count(*) as total from cquest where characterid = ?")) {
+            try (PreparedStatement stmt = con.prepareStatement("SELECT count(*) AS total FROM cquest WHERE characterid = ?")) {
                 stmt.setInt(1, getId());
                 try (ResultSet rs = stmt.executeQuery()) {
                     if (rs.next() && rs.getInt("total") > 0) {
@@ -4404,7 +4404,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
                     }
                 }
             }
-            try (PreparedStatement stmt = con.prepareStatement("insert into cquest (questid, characterid, completed, completion) values (?, ?, ?, ?)", PreparedStatement.RETURN_GENERATED_KEYS)) {
+            try (PreparedStatement stmt = con.prepareStatement("INSERT INTO cquest (questid, characterid, completed, completion) VALUES (?, ?, ?, ?)", PreparedStatement.RETURN_GENERATED_KEYS)) {
                 for (CQuestData data : customQuests.values()) {
                     stmt.setInt(1, data.getId());
                     stmt.setInt(2, getId());
@@ -4414,7 +4414,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
                     if (!data.isCompleted()) {
                         try (ResultSet rs = stmt.getGeneratedKeys()) {
                             if (rs.next()) {
-                                try (PreparedStatement stmt2 = con.prepareStatement("insert into cquestdata (qtableid, monsterid, kills) values (?, ?, ?)")) {
+                                try (PreparedStatement stmt2 = con.prepareStatement("INSERT INTO cquestdata (qtableid, monsterid, kills) VALUES (?, ?, ?)")) {
                                     for (Entry<Integer, Pair<Integer, Integer>> entry : data.getToKill().getKills().entrySet()) {
                                         stmt2.setInt(1, rs.getInt(1));
                                         stmt2.setInt(2, entry.getKey());
@@ -5639,6 +5639,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
 
     public void setOccupation(Occupation occupation) {
         this.occupation = occupation;
+        setRates();
     }
 
     public JumpQuestController getJQController() {
