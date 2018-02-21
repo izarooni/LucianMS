@@ -1,6 +1,13 @@
 /* izarooni */
 var status = 0;
-var features = [OuterSpace, CarnivalStart, LocateReactors, SummonMonster];
+var features = [
+    ListPortals,
+    SpawnPoints,
+    MonsterData,
+    OuterSpace,
+    CarnivalStart,
+    TriggerReactors, DespawnReactors, LocateReactors,
+    SummonMonster];
 
 function action(mode, type, selection) {
     if (mode < 1) {
@@ -23,6 +30,56 @@ function action(mode, type, selection) {
         }
     } else {
         this.feature(selection);
+    }
+}
+
+function TriggerReactors(selection) {
+    player.getMap().getReactors().forEach(function(reactor) {
+        player.announce(Packages.tools.MaplePacketCreator.triggerReactor(reactor, 0));
+    });
+    player.sendMessage("Done!");
+    cm.dispose();
+}
+
+function DespawnReactors(selection) {
+    player.getMap().getReactors().forEach(function(reactor) {
+        reactor.sendDestroyData(client);
+        player.sendMessage("{} {} {}", reactor.getObjectId(), reactor.getState(), reactor.getPosition());
+    });
+    cm.dispose();
+}
+
+function ListPortals(selection) {
+    if (status == 1) {
+        var content = "";
+        player.getMap().getPortals().forEach(function(p) {
+            content += "\r\n#L" + p.getId() + "#" + p.getName() + "#l";
+        });
+        cm.sendSimple(content);
+        cm.dispose();
+    }
+}
+
+function SpawnPoints(seleciton) {
+    var content = "";
+    player.getMap().getMonsterSpawnPoints().forEach(function(sp) {
+        content += "\r\n" + sp.getMonster().getId() + ", " + sp.shouldSpawn() + ", " + sp.getMonster().isMobile();
+    });
+    cm.sendOk(content);
+    cm.dispose();
+}
+
+function MonsterData(selection) {
+    if (status == 1) {
+        var content = "";
+        player.getMap().getMonsters().forEach(function(m){
+            content += "\r\nID: " + m.getId()+ ", Name: " + m.getName() + ", HP: " + m.getHp();
+            if (m.getHp() < 1) {
+                player.getMap().killMonster(m, player, true);
+            }
+        });
+        cm.sendOk(content);
+        cm.dispose();
     }
 }
 

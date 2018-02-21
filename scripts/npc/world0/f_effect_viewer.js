@@ -16,6 +16,7 @@ function action(mode, type, selection) {
     if (status == 1) {
         var text = "You want to view an effect?\r\n#b";
         text += "#L" + effects.length + "#Custom effect#l\r\n";
+        text += "#L" + (effects.length + 1) + "#Play sound#l\r\n";
         for (var i = 0; i < effects.length; i++) {
             text += "\r\n#L" + i + "#" + effects[i][0] + "#l";
         }
@@ -28,7 +29,7 @@ function action(mode, type, selection) {
             player.announce(MaplePacketCreator.showEffect(effects[this.choice][1]));
             cm.dispose();
         } else {
-            cm.sendGetText(error + "\r\nAbsolutely you can enter your own effect path!");
+            cm.sendGetText(error + "\r\nAbsolutely you can enter your own node path!");
         }
     } else if (status == 3) {
         var effect = cm.getText();
@@ -38,7 +39,11 @@ function action(mode, type, selection) {
             action(1, 0, 0);
             return;
         } else {
-            player.announce(MaplePacketCreator.showEffect(effect));
+            if (this.choice == effects.length + 1) {
+                player.announce(MaplePacketCreator.playSound(effect));
+            } else {
+                player.announce(MaplePacketCreator.showEffect(effect));
+            }
         }
         cm.dispose();
     }

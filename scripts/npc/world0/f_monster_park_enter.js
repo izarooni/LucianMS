@@ -99,6 +99,6 @@ function getAreaLevelRange(area) {
 
      // extreme monster park special case
     if (range.min == range.max && range.min == 190) range.max = 200;
-    
+
     return range;
 }

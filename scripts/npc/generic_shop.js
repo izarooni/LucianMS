@@ -3,6 +3,7 @@ load("scripts/util_transaction.js");
 /* izarooni */
 var status = 0;
 var broken = null;
+var display = null;
 var items = {
     get: function(idx, ob) {
         var i = 0;
@@ -16,6 +17,9 @@ var items = {
 };
 
 function action(mode, type, selection) {
+    if (display == null) {
+        display = (typeof pointsType == 'number') ? "#z" + pointsType + "#" : pointsType;
+    }
     if (mode < 1) {
         if (status == 3) {
             status = 2;
@@ -29,14 +33,14 @@ function action(mode, type, selection) {
     if (status == 1) {
         if (broken != null) {
             if (player.isGM()) {
-                cm.sendOk("Hey #h #, I see you're a GM. An error occurred while parsing the " + pointsType + " trader data. Please let a Developer know ASAP!\r\n#r" + broken);
+                cm.sendOk("Hey #h #, I see you're a GM. An error occurred while parsing the " + display + " trader data. Please let a Developer know ASAP!\r\n#r" + broken);
             } else {
                 cm.sendOk("Someone stole my shop items, I have nothing to sell!\r\nPlease report me to an Administrator ASAP so I can get my shop open once again");
             }
             cm.dispose();
             return;
         }
-        var text = "Hey #h #! You currently have #b" + getPoints(pointsType) + " " + pointsType + "#k\r\nIs there anything you would like to buy?\r\n#b";
+        var text = "Hey #h #! You currently have #b" + getPoints(pointsType) + " " + display + "#k\r\nIs there anything you would like to buy?\r\n#b";
         var i = 0;
         for (var it in items) {
             if (!(items[it] instanceof Function)) {
@@ -68,12 +72,12 @@ function action(mode, type, selection) {
         }
     } else if (status == 3) {
         this.itemChoice = this.sub[selection];
-        cm.sendNext("Ths item costs #b" + StringUtil.formatNumber(this.itemChoice[2]) + " " + pointsType + "#k, are you sure you want to buy this?\r\n\r\n\t\t#v" + this.itemChoice[0] + "##b#z" + this.itemChoice[0] + "#");
+        cm.sendNext("Ths item costs #b" + StringUtil.formatNumber(this.itemChoice[2]) + " " + display + "#k, are you sure you want to buy this?\r\n\r\n\t\t#v" + this.itemChoice[0] + "# #b#z" + this.itemChoice[0] + "#");
     } else if (status == 4) {
         if (getPoints(pointsType) >= this.itemChoice[2]) {
             if (InventoryModifier.checkSpace(client, this.itemChoice[0], this.itemChoice[1], "")) {
 
-                var log = player.getName() + " traded " + this.itemChoice[2] + " " + pointsType + " for " + this.itemChoice[1] + " of item " + this.itemChoice[0];
+                var log = player.getName() + " traded " + this.itemChoice[2] + " " + display + " for " + this.itemChoice[1] + " of item " + this.itemChoice[0];
                 var transactionId = createTransaction(player.getId(), log);
                 if (transactionId == -1) {
                     print("Error creating transaction log...");
@@ -82,21 +86,24 @@ function action(mode, type, selection) {
 
                 if (gainPoints(pointsType, -this.itemChoice[2])) {
                     cm.gainItem(this.itemChoice[0], this.itemChoice[1], true);
-                    cm.sendOk("Thank you for your purchase!\r\nYou now have #b" + getPoints(pointsType) + " " + pointsType + "\r\n#kHere is your transaction ID : #b" + transactionId);
+                    cm.sendOk("Thank you for your purchase!\r\nYou now have #b" + getPoints(pointsType) + " " + display + "\r\n#kHere is your transaction ID : #b" + transactionId);
                 } else {
-                    cm.sendOk("I'm sorry! Something wrong must have happened, I apparently don't accept the " + pointsType + " currency. Please let an Administrator know about this ASAP!");
+                    cm.sendOk("I'm sorry! Something wrong must have happened, I apparently don't accept the " + display + " currency. Please let an Administrator know about this ASAP!");
                 }
             } else {
                 cm.sendOk("You do not have enough #b" + ItemConstants.getInventoryType(this.itemChoice[0]).name() + "#k inventory space to purchase this item");
             }
         } else {
-            cm.sendOk("You don't have enough #b" + pointsType + "#k to make this purchase");
+            cm.sendOk("You don't have enough #b" + display + "#k to make this purchase");
         }
         cm.dispose();
     }
 }
 
 function getPoints(s) {
+    if (typeof s == 'number') {
+        return cm.itemQuantity(s);
+    }
     switch(s) {
         default: return -1;
         case "donor points": return client.getDonationPoints();
@@ -107,9 +114,13 @@ function getPoints(s) {
 }
 
 function gainPoints(s, amt) {
+    if (typeof s == 'number') {
+        cm.gainItem(s, -amt, true);
+        return true;
+    }
     switch (s) {
         default: return false;
-        case "event points": 
+        case "event points":
             player.addPoints("ep", amt);
             return true;
         case "donor points":
@@ -118,7 +129,7 @@ function gainPoints(s, amt) {
         case "fishing points":
             player.addPoints("fp", amt);
             return true;
-        case "vote points": 
+        case "vote points":
             player.addPoints("vp", amt);
             return true;
     }

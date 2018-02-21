@@ -3,11 +3,11 @@ load("scripts/util_transaction.js");
 /* izarooni*/
 var SPEC_PROP = "npc.coin_shop.special_idx";
 var status = 0;
-var coin_id = 4011020;
+var coin_id = 4011027;
 var special = null;
 var items = {
-    regulars: [[1302001, 1, 1], [1302002, 1, 1]],
-    specials: [[1302003, 1, 1]]
+    regulars: [[2022282, 1, 1], [2022283, 1, 1]],
+    specials: [[2340000, 1, 1], [2049100, 1, 1]],
 };
 
 if (System.getProperties().getProperty(SPEC_PROP) == null) {

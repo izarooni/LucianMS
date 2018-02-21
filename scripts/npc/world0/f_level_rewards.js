@@ -78,27 +78,6 @@ function action(mode, type, selection) {
             player.sendMessage("Error: Unable to find reward box");
         }
         cm.dispose();
-    } else if (status == 1) {
-        var jcategory = getJobCategory(cm.getJobId());
-        if (jcategory != null) {
-            var sub = items[jcategory];
-            var i = 0;
-            for (var l in sub) {
-                var level = parseInt(l.split("-")[1]);
-                if (i == getLevelReward() && level <= player.getLevel()) {
-                    var item = new Packages.client.inventory.Item(ID_RewardBox, 0, 1);
-                    item.setOwner("Level " + level + " - Reward Box")
-                    if (!InventoryModifier.addFromDrop(client, item, true)) {
-                        player.dropMessage(1, "Make room in your USE inventory before receiving your reward box");
-                    }
-                    break;
-                }
-                i++;
-            }
-        } else {
-            cm.sendOk("Unfortunately your job is currently not supported to accept level rewards.");
-        }
-        cm.dispose();
     }
 }
 

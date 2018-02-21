@@ -1,4 +1,3 @@
-
 /*
     This file is part of the OdinMS Maple Story Server
     Copyright (C) 2008 Patrick Huy <patrick.huy@frz.cc> 
@@ -19,34 +18,40 @@
     You should have received a copy of the GNU Affero General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
-
-/**
- Joel (Ellinia Ticket Usher)
-**/
-
 importPackage(Packages.tools);
 var LifeFactory = Java.type("server.life.MapleLifeFactory");
+/* venem */
+/* Outer Space Mini Boss and 4 planets entrance */
 var status = 0;
 
+
 function start() {
+    status = -1;
     action(1, 0, 0);
 }
 
 function action(mode, type, selection) {
-    if (status == 0) {
-        cm.sendYesNo("Welcome to #rLucianMS#k\r\nTo play this server you need our custom WZ files but since you are talking to me I assume you are already set and ready to go.\r\nIf you find a bug, crash or find any other issues please sumbit it on our forums or to a GM/Admin on our discord!\r\n\r\n#dAre you ready to continue in the tutorial?#k\r\nThen click the #gYes#k button.");
-        status++;
+    if (mode == -1) {
+        cm.dispose();
     } else {
-        if ((status == 1 && type == 1 && selection == -1 && mode == 0) || mode == -1) {
+        if (mode == 0 && status == 0) {
             cm.dispose();
-        } else {
-            if (status == 1) {
-                    cm.sendNext ("Good luck.");
-                    status++
-            } else if (status == 2) {
-                    cm.warp(90000001, 0);
-                    cm.dispose();
-                    cm.getPlayer().getMap().broadcastMessage(MaplePacketCreator.showEffect("PSO2/stuff/1"));
+            return;
+        }
+        if (mode == 1)
+            status++;
+        else
+            status--;
+        if (status == 0) {
+            cm.sendSimple("A #rBlack Hole#k appeared and it seems to attract everything into it. Must be some trick from #rThe Black Mage#k and his time traveling ability. Willing to take the risk? \r\n#b#L1#I am ready.#k#l\r\n\#r#L2#I am not ready yet.#k#l");
+        } else if (status == 1) {
+            if (selection == 1) {
+                cm.warp(41, 0);
+                cm.dispose();
+          cm.getPlayer().getMap().broadcastMessage(MaplePacketCreator.showEffect("quest/party/clear2"));
+            } else if (selection == 2) {
+                cm.sendOk("Hurry up or we might miss this oppertunity!");
+                cm.dispose();
             }
         }
     }

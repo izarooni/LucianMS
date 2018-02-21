@@ -28,9 +28,10 @@ function action(mode, type, selection) {
         status++;
     }
     this.quest = player.getCustomQuest(quest_id);
+    this.meta = cqb.getMetaData(quest_id);
     if (status == 1) {
         if (this.quest == null) {
-            cm.sendNext("#eQuest Name : #b" + cqb.getName(quest_id) + "#k#n\r\nHey #h #, are you interested in today's daily quest? Every daily quest is diffrent in its level difficulty.");
+            cm.sendNext("#eQuest Name : #b" + this.meta.getName() + "#k#n\r\nHey #h #, are you interested in today's daily quest? Every daily quest is diffrent in its level difficulty.");
         } else {
             this.finished = this.quest.checkRequirements();
             if (this.quest.isCompleted()) {

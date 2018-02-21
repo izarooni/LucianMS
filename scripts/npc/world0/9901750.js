@@ -56,44 +56,27 @@ function action(mode, type, selection) {
     } else {
         status++;
     }
-    if (selection > -1) {
-        var item = player.getInventory(InventoryType.USE).getItem(selection);
-        if (item != null && item.getItemId() == ID_RewardBox) {
-            var level = parseInt(item.getOwner().split(" ")[1]);
-            var rewards = items[getJobCategory(cm.getJobId())]["lvl-" + level];
-            for (var i = 0; i < rewards.length; i++) {
-                if (!InventoryModifier.checkSpace(client, rewards[i], 1, "")) {
-                    player.sendMessage(1, "Make more room in your EQUIP inventory before receiving your rewards");
-                    cm.dispose();
-                    return;
-                }
-            }
-            for (var i = 0; i < rewards.length; i++) {
-                cm.gainItem(rewards[i], 1);
-            }
-            cm.gainItem(item.getItemId(), -1);
-            setLevelReward(getLevelReward() + 1);
-            cm.sendOk("Enjoy your new equips!~");
-        } else {
-            player.sendMessage("Error: Unable to find reward box");
-        }
-        cm.dispose();
-    } else if (status == 1) {
+    if (status == 1) {
         var jcategory = getJobCategory(cm.getJobId());
         if (jcategory != null) {
             var sub = items[jcategory];
             var i = 0;
             for (var l in sub) {
                 var level = parseInt(l.split("-")[1]);
-                if (i == getLevelReward() && level <= player.getLevel()) {
+                var obtained = false;
+                if (getLevelReward() <= (i++) && level <= player.getLevel()) {
                     var item = new Packages.client.inventory.Item(ID_RewardBox, 0, 1);
                     item.setOwner("Level " + level + " - Reward Box")
-                    if (!InventoryModifier.addFromDrop(client, item, true)) {
-                        player.dropMessage(1, "Make room in your USE inventory before receiving your reward box");
+                    if (!(obtained = InventoryModifier.addFromDrop(client, item, true))) {
+                        player.dropMessage(1, "Make room in your USE inventory before receiving your reward box.");
+                    } else {
+                        setLevelReward(getLevelReward() + 1);
                     }
                     break;
                 }
-                i++;
+            }
+            if (!obtained) {
+                cm.sendOk("You do not have any reward boxes to claim.");
             }
         } else {
             cm.sendOk("Unfortunately your job is currently not supported to accept level rewards.");
