@@ -29,7 +29,6 @@ public final class ChangeMapSpecialHandler extends PacketHandler {
         if (portal != null) {
             if (player.isGM() && player.isDebug()) {
                 player.sendMessage("[DEBUG] ID: {}, Name: {}/{}, Target map: {}, Location: x:{}/y:{}", portal.getId(), portal.getName(), portal.getScriptName(), portal.getTarget(), portal.getPosition().x, portal.getPosition().y);
-                setCanceled(true);
                 player.announce(MaplePacketCreator.enableActions());
                 return null;
             }

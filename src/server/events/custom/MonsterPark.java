@@ -78,8 +78,10 @@ public class MonsterPark extends GenericEvent {
                                 }
                             }
                         });
+                        instanceMap.spawnMonsterOnGroudBelow(monster, spawnPoint.getPosition());
+                    } else {
+                        LOGGER.warn("Invalid monster {} for map {}", spawnPoint.getMonster().getId(), mapId);
                     }
-                    instanceMap.spawnMonsterOnGroudBelow(monster, spawnPoint.getPosition());
                 }
             } else {
                 LOGGER.warn("Invalid map {}", i);

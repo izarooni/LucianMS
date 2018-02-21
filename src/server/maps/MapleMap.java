@@ -41,6 +41,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import scheduler.Task;
 import scheduler.TaskExecutor;
+import scripting.ScriptUtil;
 import scripting.map.MapScriptManager;
 import server.MapleItemInformationProvider;
 import server.MaplePortal;
@@ -62,10 +63,13 @@ import tools.MaplePacketCreator;
 import tools.Pair;
 import tools.Randomizer;
 
+import javax.script.ScriptException;
 import java.awt.*;
+import java.io.IOException;
 import java.util.*;
 import java.util.List;
 import java.util.Map.Entry;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock.ReadLock;
@@ -115,10 +119,13 @@ public class MapleMap {
     private boolean everlast = false;
     private boolean isOxQuiz = false;
     private boolean summonState = true; // All maps should have this true at the beginning
+    private boolean respawnEnabled = true;
     private MapleMapEffect mapEffect = null;
     private MapleOxQuiz ox;
     private Task mapMonitor = null;
     private Pair<Integer, String> timeMob = null;
+    private long nextEmergency = 0L;
+
     //region Henesys PQ
     private int riceCakes = 0;
     private int bunnyDamage = 0;
@@ -207,6 +214,14 @@ public class MapleMap {
 
     public int getId() {
         return mapid;
+    }
+
+    public long getNextEmergency() {
+        return nextEmergency;
+    }
+
+    public void setNextEmergency(long nextEmergency) {
+        this.nextEmergency = nextEmergency;
     }
 
     public void removeSpawnPoint(int idx) {
@@ -1054,7 +1069,11 @@ public class MapleMap {
     public void spawnMonsterOnGroundBelow(MapleMonster mob, Point pos) {
         Point spos = new Point(pos.x, pos.y - 1);
         spos = calcPointBelow(spos);
-        spos.y--;
+        if (spos != null) {
+            spos.y--;
+        } else {
+            spos = mob.getPosition().getLocation();
+        }
         mob.setPosition(spos);
         spawnMonster(mob);
     }
@@ -1626,6 +1645,32 @@ public class MapleMap {
             chr.announce(MaplePacketCreator.rollSnowBall(true, 0, null, null));
         }
 
+        if (characters.size() == 1
+                || (chr.getPartyId() > 0 && characters.stream().allMatch(p -> p.getPartyId() == chr.getPartyId()))) {
+            if ((chr.isGM() && chr.isDebug()) || (System.currentTimeMillis() > nextEmergency && Randomizer.nextInt(25) == 1)) {
+                TaskExecutor.createTask(new Runnable() {
+                    @Override
+                    public void run() {
+                        ArrayList<Pair<String, Object>> binds = new ArrayList<>();
+                        binds.add(new Pair<>("player", chr));
+                        binds.add(new Pair<>("ch", chr.getClient().getChannel()));
+                        try {
+                            ScriptUtil.eval(chr.getClient(), "generic/PSO2Emergency.js", binds);
+                        } catch (Exception e) {
+                            respawnEnabled = true;
+                            if (e instanceof IOException || e instanceof ScriptException) {
+                                LOGGER.info("Unable to execute PSO2Emergency script", e);
+                                chr.sendMessage("The PSO2 event was unable to properly execute, please report to an administrator ASAP!");
+                            }
+                        }
+                    }
+                }, 1500);
+                nextEmergency = System.currentTimeMillis() + TimeUnit.MINUTES.toMillis(8);
+            } else {
+                nextEmergency = System.currentTimeMillis() + TimeUnit.SECONDS.toMillis(15);
+            }
+        }
+
         Optional<GenericEvent> op = chr.getGenericEvents().stream().filter(o -> o instanceof MCarnivalGame).findFirst();
         MCarnivalGame carnivalGame = null;
         if (op.isPresent()) {
@@ -2106,7 +2151,9 @@ public class MapleMap {
     }
 
     public void respawn() {
-        if (characters.isEmpty()) {
+        if (!isRespawnEnabled()) {
+            return;
+        } else if (characters.isEmpty()) {
             killAllMonsters();
             return;
         }
@@ -2205,6 +2252,14 @@ public class MapleMap {
 
     public void setOxQuiz(boolean b) {
         this.isOxQuiz = b;
+    }
+
+    public boolean isRespawnEnabled() {
+        return respawnEnabled;
+    }
+
+    public void setRespawnEnabled(boolean respawnEnabled) {
+        this.respawnEnabled = respawnEnabled;
     }
 
     public String getOnUserEnter() {

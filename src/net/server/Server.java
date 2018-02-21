@@ -176,8 +176,8 @@ public class Server implements Runnable {
         DatabaseConnection.getConnection();
         LOGGER.info("Database connection established");
         try {
-            DatabaseConnection.getConnection().createStatement().execute("update accounts set loggedin = 0");
-            DatabaseConnection.getConnection().createStatement().execute("update characters set hasmerchant = 0");
+            DatabaseConnection.getConnection().createStatement().execute("UPDATE accounts SET loggedin = 0");
+            DatabaseConnection.getConnection().createStatement().execute("UPDATE characters SET hasmerchant = 0");
         } catch (SQLException e) {
             e.printStackTrace();
         }

@@ -90,10 +90,10 @@ public final class Channel {
             acceptor = new NioSocketAcceptor();
             acceptor.setHandler(new MapleServerHandler(world, channel));
             acceptor.getSessionConfig().setIdleTime(IdleStatus.BOTH_IDLE, 30);
+            ((SocketSessionConfig) acceptor.getSessionConfig()).setTcpNoDelay(true);
             acceptor.getFilterChain().addLast("codec", new ProtocolCodecFilter(new MapleCodecFactory()));
             acceptor.bind(new InetSocketAddress(port));
 
-            ((SocketSessionConfig) acceptor.getSessionConfig()).setTcpNoDelay(true);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -108,14 +108,14 @@ public final class Channel {
         if (eventScriptManager != null) {
             eventScriptManager.close();
         }
-        this.eventScriptManager = new EventScriptManager(this);
+        eventScriptManager = new EventScriptManager(this);
         File eventFiles = new File("scripts/event");
         File[] files = eventFiles.listFiles();
         if (files != null) {
             for (File file : files) {
                 if (file.isFile()) {
                     String scriptName = FilenameUtils.removeExtension(file.getName());
-                    this.eventScriptManager.putManager(scriptName);
+                    eventScriptManager.putManager(scriptName);
                 }
             }
         }

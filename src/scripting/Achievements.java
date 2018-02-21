@@ -3,6 +3,7 @@ package scripting;
 import client.MapleCharacter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import tools.MaplePacketCreator;
 import tools.Pair;
 
 import javax.script.Invocable;
@@ -78,6 +79,7 @@ public class Achievements {
                     try {
                         Invocable iv = pair.getRight();
                         if (testForKill(iv, player, monsterId) && testForPlayer(iv, player)) {
+                            player.announce(MaplePacketCreator.showEffect("PSO2/stuff/2"));
                             try {
                                 if (reward(iv, player)) {
                                     player.dropMessage("You completed the achievement '" + pair.getLeft() + "'!");

@@ -154,6 +154,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
     private int[] remainingSp = new int[10];
     //endregion
 
+    private long lastEmergency = 0;
     private long immortalTimestamp = 0;
     private long portaldelay = 0, lastcombo = 0;
     private long dojoFinish, lastfametime, lastUsedCashItem, lastHealed, lastMesoDrop = -1;
@@ -5703,6 +5704,14 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
 
     public void setRebirthPoints(int rebirthPoints) {
         this.rebirthPoints = rebirthPoints;
+    }
+
+    public long getLastEmergency() {
+        return lastEmergency;
+    }
+
+    public void setLastEmergency(long lastEmergency) {
+        this.lastEmergency = lastEmergency;
     }
 
     public boolean isImmortal() {
