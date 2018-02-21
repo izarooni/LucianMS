@@ -1653,7 +1653,7 @@ public class MapleMap {
                     public void run() {
                         ArrayList<Pair<String, Object>> binds = new ArrayList<>();
                         binds.add(new Pair<>("player", chr));
-                        binds.add(new Pair<>("ch", chr.getClient().getChannel()));
+                        binds.add(new Pair<>("ch", chr.getClient().getChannelServer()));
                         try {
                             ScriptUtil.eval(chr.getClient(), "generic/PSO2Emergency.js", binds);
                         } catch (Exception e) {

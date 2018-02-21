@@ -64,7 +64,7 @@ public class SearchRequest extends DiscordRequest {
                 }
             }
             for (Pair<Integer, String> mapPair : mapPairList) {
-                if (mapPair.getRight().toLowerCase().contains(search)) {
+                if (mapPair.getLeft().toString().equals(search) || mapPair.getRight().toLowerCase().contains(search)) {
                     retMaps.add(mapPair.getLeft() + " - " + mapPair.getRight());
                 }
             }
