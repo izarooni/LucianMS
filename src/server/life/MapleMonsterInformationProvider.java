@@ -60,7 +60,6 @@ public class MapleMonsterInformationProvider {
         try (PreparedStatement ps = DatabaseConnection.getConnection().prepareStatement("SELECT * FROM drop_data WHERE dropperid = ?")) {
             ps.setInt(1, monsterId);
             try (ResultSet rs = ps.executeQuery()) {
-
                 while (rs.next()) {
                     ret.add(
                             new MonsterDropEntry(

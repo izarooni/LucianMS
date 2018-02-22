@@ -1645,7 +1645,6 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
                 }
             }
         }
-
         List<GenericEvent> gEvents = getGenericEvents();
         if (gEvents.stream().anyMatch(g -> (g instanceof ShenronSummoner))) {
             if (to.getId() != 908) {

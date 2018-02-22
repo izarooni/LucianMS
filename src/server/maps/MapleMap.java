@@ -41,11 +41,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import scheduler.Task;
 import scheduler.TaskExecutor;
-import scripting.ScriptUtil;
 import scripting.map.MapScriptManager;
 import server.MapleItemInformationProvider;
 import server.MaplePortal;
 import server.MapleStatEffect;
+import server.events.custom.EmergencyAttack;
 import server.events.custom.GenericEvent;
 import server.events.custom.summoning.BlackMageSummoner;
 import server.events.custom.summoning.ShenronSummoner;
@@ -63,9 +63,7 @@ import tools.MaplePacketCreator;
 import tools.Pair;
 import tools.Randomizer;
 
-import javax.script.ScriptException;
 import java.awt.*;
-import java.io.IOException;
 import java.util.*;
 import java.util.List;
 import java.util.Map.Entry;
@@ -1645,29 +1643,26 @@ public class MapleMap {
             chr.announce(MaplePacketCreator.rollSnowBall(true, 0, null, null));
         }
 
+        // empty map or contains only party members
         if (characters.size() == 1
                 || (chr.getPartyId() > 0 && characters.stream().allMatch(p -> p.getPartyId() == chr.getPartyId()))) {
-            if ((chr.isGM() && chr.isDebug()) || (System.currentTimeMillis() > nextEmergency && Randomizer.nextInt(25) == 1)) {
-                TaskExecutor.createTask(new Runnable() {
-                    @Override
-                    public void run() {
-                        ArrayList<Pair<String, Object>> binds = new ArrayList<>();
-                        binds.add(new Pair<>("player", chr));
-                        binds.add(new Pair<>("ch", chr.getClient().getChannelServer()));
-                        try {
-                            ScriptUtil.eval(chr.getClient(), "generic/PSO2Emergency.js", binds);
-                        } catch (Exception e) {
-                            respawnEnabled = true;
-                            if (e instanceof IOException || e instanceof ScriptException) {
-                                LOGGER.info("Unable to execute PSO2Emergency script", e);
-                                chr.sendMessage("The PSO2 event was unable to properly execute, please report to an administrator ASAP!");
+            // must be a map that contains monster spawnpoints and is a hutning field
+            if (!isTown() && !spawnPoints.isEmpty()) {
+                // 1/25 chance to trigger emergency
+                if ((chr.isGM() && chr.isDebug()) || (System.currentTimeMillis() > nextEmergency && Randomizer.nextInt(25) == 1)) {
+                    EmergencyAttack eAttack = new EmergencyAttack();
+                    TaskExecutor.createTask(new Runnable() {
+                        @Override
+                        public void run() {
+                            eAttack.registerPlayer(chr);
+                            if (!eAttack.isCanceled()) {
+                                nextEmergency = System.currentTimeMillis() + TimeUnit.MINUTES.toMillis(8);
                             }
                         }
-                    }
-                }, 1500);
-                nextEmergency = System.currentTimeMillis() + TimeUnit.MINUTES.toMillis(8);
-            } else {
-                nextEmergency = System.currentTimeMillis() + TimeUnit.SECONDS.toMillis(15);
+                    }, 1500);
+                } else {
+                    nextEmergency = System.currentTimeMillis() + TimeUnit.SECONDS.toMillis(15);
+                }
             }
         }
 
