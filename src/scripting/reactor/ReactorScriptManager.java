@@ -52,6 +52,7 @@ public class ReactorScriptManager {
             ReactorActionManager rm = new ReactorActionManager(c, reactor);
             Invocable iv = ScriptUtil.eval(c, "reactor/" + reactor.getId() + ".js", Collections.singleton(new Pair<>("rm", rm)));
             if (iv == null) {
+                LOGGER.warn("Unable to find script for reactor ID:{}, Name:'{}'", reactor.getId(), reactor.getName());
                 return;
             }
             iv.invokeFunction("act");
@@ -99,7 +100,7 @@ public class ReactorScriptManager {
             ReactorActionManager rm = new ReactorActionManager(c, reactor);
             Invocable iv = ScriptUtil.eval(c, "reactor/" + reactor.getId() + ".js", Collections.singleton(new Pair<>("rm", rm)));
             if (iv == null) {
-                LOGGER.warn("Unable to find script for reactor ID {}, Name {}", reactor.getId(), reactor.getName());
+                LOGGER.warn("Unable to find script for reactor ID:{}, Name:'{}'", reactor.getId(), reactor.getName());
                 return;
             }
             if (touching) {

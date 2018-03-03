@@ -1,7 +1,5 @@
 package net.discord.handlers;
 
-import command.ConsoleCommands;
-import net.discord.DiscordSession;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import tools.data.input.GenericLittleEndianAccessor;

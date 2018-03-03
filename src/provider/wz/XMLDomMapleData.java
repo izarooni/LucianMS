@@ -62,7 +62,7 @@ public class XMLDomMapleData implements MapleData {
                 Field field = FileInputStream.class.getDeclaredField("path");
                 field.setAccessible(true);
                 String str = (String) field.get(fis);
-                LOGGER.warn("Unable to parse file {} due to exception\r\n{} {}", str, e.getMessage(), e);
+                LOGGER.warn("Unable to parse file {} due to exception\r\n{}", str, e.getMessage());
             } catch (IllegalAccessException | NoSuchFieldException e1) {
                 e1.printStackTrace();
             }

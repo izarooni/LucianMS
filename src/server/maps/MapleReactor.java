@@ -24,6 +24,8 @@ package server.maps;
 import client.MapleCharacter;
 import client.MapleClient;
 import client.status.MonsterStatus;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import scheduler.TaskExecutor;
 import scripting.reactor.ReactorScriptManager;
 import server.life.MapleLifeFactory;
@@ -41,6 +43,8 @@ import java.util.concurrent.atomic.AtomicInteger;
  * @author izarooni
  */
 public class MapleReactor extends AbstractMapleMapObject {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(MapleReactor.class);
 
     private MapleReactorStats stats;
     private String name;
@@ -151,7 +155,9 @@ public class MapleReactor extends AbstractMapleMapObject {
     }
 
     public void hitReactor(MapleClient client, int charPos, short stance, int skillId) {
-        if (!isAlive() || (System.currentTimeMillis() - lastHit) < 1500) {
+        final long elapsed = (System.currentTimeMillis() - lastHit);
+        if (!isAlive() || elapsed < 700) {
+            LOGGER.warn("Hitting reactor too frequently or reactor is destroyed ID:{}, elapsed_time:{}", id, elapsed);
             return;
         }
         MapleCharacter player = client.getPlayer();
@@ -166,10 +172,11 @@ public class MapleReactor extends AbstractMapleMapObject {
                 for (byte b = 0; b < stats.getStateSize(state); b++) {
                     final byte nextState = stats.getNextState(state, b);
                     List<Integer> activeSkills = stats.getActiveSkills(state, b);
-                    if (activeSkills != null && activeSkills.stream().noneMatch(i -> i == skillId)) {
+                    if (activeSkills != null && !activeSkills.contains(skillId)) {
                         continue;
                     }
-                    if (nextState == -1) {// end of reactor
+                    this.state.set(nextState);
+                    if (stats.getNextState(nextState, b) == -1) {// end of reactor
                         if (type < 100) { // reactor broken
                             if (delay > 0) {
                                 map.destroyReactor(getObjectId());
@@ -191,7 +198,7 @@ public class MapleReactor extends AbstractMapleMapObject {
                         }
                     } else { // reactor not broken yet
                         map.broadcastMessage(MaplePacketCreator.triggerReactor(this, stance));
-                        if (state == nextState) { // current state == next state, looping reactor
+                        if (state == nextState) {
                             ReactorScriptManager.act(client, this);
                         }
                     }

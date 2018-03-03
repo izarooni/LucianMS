@@ -71,7 +71,6 @@ public class ConsoleCommands {
 
     public static void stopReading() {
         reading = false;
-        thread.stop();
     }
 
     private static void execute(CommandWorker.Command command, CommandWorker.CommandArgs args) {
