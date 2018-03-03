@@ -91,8 +91,10 @@ public final class ItemPickupHandler extends PacketHandler {
                             chr.getMap().removeMapObject(ob);
                             mapitem.setPickedUp(true);
                             if (chr.getArcade() != null) {
-                                if (!chr.getArcade().fail()) {
-                                    chr.getArcade().add();
+                                if(chr.getArcade().getId() == 4) {
+                                    if (!chr.getArcade().fail()) {
+                                        chr.getArcade().add();
+                                    }
                                 }
                             }
                         } else {

@@ -16,14 +16,14 @@ public class BobOnly extends Arcade {
         this.mapId = 910100000;
         this.arcadeId = 1;
         this.rewardPerKill = 0.40;
-        this.itemReward = 4310149;
+        this.itemReward = 04011024;
     }
 
     @Override
     public boolean fail() {
         if (killedWrong) {
 
-            player.changeMap(970000000, 0);
+            player.changeMap(978, 0);
             player.announce(MaplePacketCreator.serverNotice(1, "Game Over!"));
             if (saveData(highscore)) {
                 player.dropMessage(5, "[Game Over] Your new highscore for Bob Only is " + highscore);

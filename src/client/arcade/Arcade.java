@@ -8,13 +8,13 @@ import server.life.MapleMonster;
 import server.maps.MapleMap;
 import server.maps.MapleMapFactory;
 import tools.DatabaseConnection;
+import tools.MaplePacketCreator;
 
 import java.awt.*;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.concurrent.ScheduledFuture;
 
 public abstract class Arcade {
 
@@ -42,6 +42,10 @@ public abstract class Arcade {
     public synchronized void start() {
         MapleMapFactory factory = new MapleMapFactory(player.getWorld(), player.getClient().getChannel());
         player.changeMap(factory.getMap(mapId), factory.getMap(mapId).getPortal(0));
+
+        // disable portals, we do not want them to leave the map. TODO: disable commands
+        player.getMap().getPortals().forEach((portal) -> portal.setDisabled(true));
+
         player.getMap().setMobInterval((short) 5);
 
         respawnTask = TaskExecutor.createRepeatingTask(() -> factory.getMaps().forEach(MapleMap::respawn), 10000, 1000);
@@ -54,9 +58,14 @@ public abstract class Arcade {
             MapleMonster toSpawn = MapleLifeFactory.getMonster(9500140);
             toSpawn.setHp(350000);
             player.getMap().spawnMonsterOnGroudBelow(toSpawn, new Point(206, 35));
+        } else if (player.getArcade().arcadeId == 5) {
+            player.announce(MaplePacketCreator.getClock(300));
+            TaskExecutor.createTask(this::fail, 300000);
+            player.getMap().toggleDrops();
         }
 
     }
+
 
     public boolean saveData(int score) {
         if (score > Arcade.getHighscore(arcadeId, player)) {
@@ -123,4 +132,15 @@ public abstract class Arcade {
         return sb.toString();
     }
 
+    public int getMapId() {
+        return mapId;
+    }
+
+    public int getId() {
+        return arcadeId;
+    }
+
+    public MapleCharacter getPlayer() {
+        return player;
+    }
 }

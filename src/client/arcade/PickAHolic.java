@@ -15,7 +15,7 @@ public class PickAHolic extends Arcade {
         this.arcadeId = 0;
         this.mapId = 677000002;
         this.rewardPerKill = 0.2;
-        this.itemReward = 4310149;
+        this.itemReward = 04011024;
 
     }
 
@@ -27,7 +27,7 @@ public class PickAHolic extends Arcade {
         if (quantity >= 1) {
             MapleInventoryManipulator.removeById(player.getClient(), MapleInventoryType.USE, itemId, quantity, false, false);
 
-            player.changeMap(970000000, 0);
+            player.changeMap(978, 0);
             player.announce(MaplePacketCreator.serverNotice(1, "Game Over!"));
             if (saveData(highscore)) {
                 player.dropMessage(5, "[Game Over] Your new highscore for Loot-A-Holic is " + highscore);

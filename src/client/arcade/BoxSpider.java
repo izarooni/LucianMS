@@ -13,7 +13,7 @@ public class BoxSpider extends Arcade {
 
     private int[] platform;
 
-    int xStart = 2624, xEnd = 619;
+    int xStart = -2723, xEnd = -1788;
 
 
     private int highscore = 0;
@@ -25,19 +25,19 @@ public class BoxSpider extends Arcade {
 
     public BoxSpider(MapleCharacter player) {
         super(player);
-        this.mapId = 130000101;
+        this.mapId = 130000120;
         this.arcadeId = 2;
-        this.platform = new int[]{88, -210, -569, -897, -1224};
+        this.platform = new int[]{-1888, -2208, -2177, -1849};
         this.rewardPerKill = 0.15;
-        this.itemReward = 4310149;
-
+        this.itemReward = 04011024;
     }
 
     @Override
     public boolean fail() {
         if (touched) {
 
-            player.changeMap(970000000, 0);
+            player.changeMap(978, 0);
+
             player.announce(MaplePacketCreator.serverNotice(1, "Game Over!"));
             if (saveData(highscore)) {
                 player.dropMessage(5, "[Game Over] Your new highscore for Box Spider is " + highscore);

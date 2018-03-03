@@ -16,12 +16,12 @@ public class CrowOnly extends Arcade {
         this.mapId = 677000008;
         this.arcadeId = 3;
         this.rewardPerKill = 0.1;
-        this.itemReward = 4310149;
+        this.itemReward = 04011024;
     }
 
     @Override
     public boolean fail() {
-        player.changeMap(970000000, 0);
+        player.changeMap(978, 0);
         player.announce(MaplePacketCreator.serverNotice(1, "Game Over!"));
         if (saveData(highscore)) {
             player.dropMessage(5, "[Game Over] Your new highscore for Crow Only is " + highscore);

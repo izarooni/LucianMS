@@ -22,7 +22,7 @@ public class BalrogKiller extends Arcade {
         this.arcadeId = 4;
         this.mapId = 677000003;
         this.rewardPerKill = 0.9;
-        this.itemReward = 4310149;
+        this.itemReward = 04011024;
     }
 
     @Override
@@ -32,7 +32,7 @@ public class BalrogKiller extends Arcade {
         player.setExp(currExp);
         player.updateSingleStat(MapleStat.EXP, currExp);
         player.updateSingleStat(MapleStat.HP, player.getMaxHp());
-        player.changeMap(970000000, 0);
+        player.changeMap(978, 0);
 
         player.announce(MaplePacketCreator.serverNotice(1, "Game Over!"));
         if (saveData(highscore)) {
@@ -69,7 +69,7 @@ public class BalrogKiller extends Arcade {
 
     @Override
     public void onHit(int monster) {
-        player.setHp(player.getHp() - 5000);
+        player.setHp(player.getHp() - 1000);
         if (player.getHp() < 1) {
             fail();
         }
