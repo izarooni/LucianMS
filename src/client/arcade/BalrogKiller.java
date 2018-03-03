@@ -22,7 +22,7 @@ public class BalrogKiller extends Arcade {
         this.arcadeId = 4;
         this.mapId = 677000003;
         this.rewardPerKill = 0.9;
-        this.itemReward = 04011024;
+        this.itemReward = 4011024;
     }
 
     @Override
@@ -40,7 +40,12 @@ public class BalrogKiller extends Arcade {
         } else {
             player.dropMessage(5, "[Game Over] Your highscore for Balrog Killer remains at " + Arcade.getHighscore(arcadeId, player));
         }
-        MapleInventoryManipulator.addById(player.getClient(), itemReward, (short) (rewardPerKill * highscore));
+        // You know i had to do it to 'em
+        for(int i =((int)(rewardPerKill * highscore)); i > 0; i--) {
+            MapleInventoryManipulator.addById(player.getClient(), itemReward, (short) 1);
+        }
+
+
         respawnTask.cancel();
         respawnTask = null;
         player.setArcade(null);

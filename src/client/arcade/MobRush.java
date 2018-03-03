@@ -15,10 +15,11 @@ public class MobRush extends Arcade {
         this.mapId = 910330100;
         this.arcadeId = 5;
         this.rewardPerKill = 0.02;
-        this.itemReward = 04011024;
+        this.itemReward = 4011024;
     }
 
     @Override
+
     public boolean fail() {
         player.changeMap(978, 0);
         player.announce(MaplePacketCreator.serverNotice(1, "Game Over!"));
@@ -27,7 +28,12 @@ public class MobRush extends Arcade {
         } else {
             player.dropMessage(5, "[Game Over] Your highscore for Mob Rush remains at " + Arcade.getHighscore(arcadeId, player));
         }
-        MapleInventoryManipulator.addById(player.getClient(), itemReward, (short) (rewardPerKill * highscore));
+
+        // You know i had to do it to 'em
+        for(int i =((int)(rewardPerKill * highscore)); i > 0; i--) {
+            MapleInventoryManipulator.addById(player.getClient(), itemReward, (short) 1);
+        }
+
         respawnTask.cancel();
         respawnTask = null;
         player.setArcade(null);
@@ -51,8 +57,8 @@ public class MobRush extends Arcade {
             fail();
         }
 
-        // more than 120 = fail :rage:
-        if(player.getMap().getMonsters().size() >= 60) {
+        // more than 90 = fail :rage:
+        if(player.getMap().getMonsters().size() >= 90) {
             this.fail();
         }
     }

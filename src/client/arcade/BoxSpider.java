@@ -29,7 +29,7 @@ public class BoxSpider extends Arcade {
         this.arcadeId = 2;
         this.platform = new int[]{-1888, -2208, -2177, -1849};
         this.rewardPerKill = 0.15;
-        this.itemReward = 04011024;
+        this.itemReward = 4011024;
     }
 
     @Override
@@ -45,7 +45,12 @@ public class BoxSpider extends Arcade {
                 player.dropMessage(5, "[Game Over] Your highscore for Box Spider remains at " + Arcade.getHighscore(arcadeId, player));
             }
         }
-        MapleInventoryManipulator.addById(player.getClient(), itemReward, (short) (rewardPerKill * highscore));
+
+        // You know i had to do it to 'em
+        for(int i =((int)(rewardPerKill * highscore)); i > 0; i--) {
+            MapleInventoryManipulator.addById(player.getClient(), itemReward, (short) 1);
+        }
+
         respawnTask.cancel();
         respawnTask = null;
         player.setArcade(null);

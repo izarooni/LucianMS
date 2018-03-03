@@ -15,7 +15,7 @@ public class PickAHolic extends Arcade {
         this.arcadeId = 0;
         this.mapId = 677000002;
         this.rewardPerKill = 0.2;
-        this.itemReward = 04011024;
+        this.itemReward = 4011024;
 
     }
 
@@ -34,7 +34,12 @@ public class PickAHolic extends Arcade {
             } else {
                 player.dropMessage(5, "[Game Over] Your highscore for Loot-A-Holic remains at " + Arcade.getHighscore(arcadeId, player));
             }
-            MapleInventoryManipulator.addById(player.getClient(), itemReward, (short) (rewardPerKill * highscore));
+
+            // You know i had to do it to 'em
+            for(int i =((int)(rewardPerKill * highscore)); i > 0; i--) {
+                MapleInventoryManipulator.addById(player.getClient(), itemReward, (short) 1);
+            }
+
             respawnTask.cancel();
             respawnTask = null;
             player.setArcade(null);
@@ -56,12 +61,10 @@ public class PickAHolic extends Arcade {
     }
 
     @Override
-    public void onKill(int monster) {
-    }
+    public void onKill(int monster) {}
 
     @Override
-    public void onHit(int monster) {
-    }
+    public void onHit(int monster) {}
 
     @Override
     public boolean onBreak(int reactor) {

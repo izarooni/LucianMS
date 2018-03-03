@@ -50,21 +50,25 @@ public abstract class Arcade {
 
         respawnTask = TaskExecutor.createRepeatingTask(() -> factory.getMaps().forEach(MapleMap::respawn), 10000, 1000);
 
-        if (player.getArcade().arcadeId == 2) {
+        player.getMap().toggleDrops();
+        if(player.getArcade().arcadeId == 0) {
+            player.getMap().toggleDrops(); // drops should be enabled in loot-a-holic
+        } else if (player.getArcade().arcadeId == 2) {
             MapleMonster toSpawn = MapleLifeFactory.getMonster(9500365);
             toSpawn.setHp(4);
-            player.getMap().spawnMonsterOnGroudBelow(toSpawn, new Point(-1258, 88));
+            player.getMap().spawnMonsterOnGroudBelow(toSpawn, new Point(-2255, -1880));
         } else if (player.getArcade().arcadeId == 4) {
             MapleMonster toSpawn = MapleLifeFactory.getMonster(9500140);
             toSpawn.setHp(350000);
             player.getMap().spawnMonsterOnGroudBelow(toSpawn, new Point(206, 35));
         } else if (player.getArcade().arcadeId == 5) {
-            player.announce(MaplePacketCreator.getClock(300));
-            TaskExecutor.createTask(this::fail, 300000);
-            player.getMap().toggleDrops();
+            player.announce(MaplePacketCreator.getClock(150));
+            TaskExecutor.createTask(this::fail, 150000);
+
         }
 
     }
+
 
 
     public boolean saveData(int score) {

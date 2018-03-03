@@ -16,7 +16,7 @@ public class BobOnly extends Arcade {
         this.mapId = 910100000;
         this.arcadeId = 1;
         this.rewardPerKill = 0.40;
-        this.itemReward = 04011024;
+        this.itemReward = 4011024;
     }
 
     @Override
@@ -30,7 +30,12 @@ public class BobOnly extends Arcade {
             } else {
                 player.dropMessage(5, "[Game Over] Your highscore for Bob Only remains at " + Arcade.getHighscore(arcadeId, player));
             }
-            MapleInventoryManipulator.addById(player.getClient(), itemReward, (short) (rewardPerKill * highscore));
+
+            // You know i had to do it to 'em
+            for(int i =((int)(rewardPerKill * highscore)); i > 0; i--) {
+                MapleInventoryManipulator.addById(player.getClient(), itemReward, (short) 1);
+            }
+
             respawnTask.cancel();
             respawnTask = null;
             player.setArcade(null);
