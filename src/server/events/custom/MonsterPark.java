@@ -12,6 +12,7 @@ import server.maps.MapleMapFactory;
 import tools.MaplePacketCreator;
 
 import java.util.Hashtable;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * @author izarooni
@@ -22,6 +23,7 @@ public class MonsterPark extends GenericEvent {
     private static final int Stages = 5;
     private static final int Increment = 100;
 
+    private final AtomicInteger totalExp = new AtomicInteger(0);
     private final int mapId;
     private final MapleMapFactory mapFactory;
     private long timestampStart = 0;
@@ -56,6 +58,7 @@ public class MonsterPark extends GenericEvent {
                         monster.addListener(new MonsterListener() {
                             @Override
                             public void monsterKilled(int aniTime) {
+                                totalExp.addAndGet(monster.getExp());
                                 if (instanceMap.getMonsters().isEmpty()) {
                                     if (getStage(instanceMap.getId()) == 5) {
                                         timeout.cancel();
@@ -115,6 +118,8 @@ public class MonsterPark extends GenericEvent {
 
     public void advanceMap(MapleCharacter player) {
         if (player.getMapId() == getMapId() + (Stages * Increment)) {
+            // final stage
+            player.gainExp((int) (totalExp.get() * 1.1), true, true);
             unregisterPlayer(player);
         } else {
             final int cMapId = player.getMapId();
@@ -136,6 +141,7 @@ public class MonsterPark extends GenericEvent {
                     TaskExecutor.createTask(() -> player.announce(MaplePacketCreator.showEffect("monsterPark/stageEff/number/" + (stage + 2))), 2345);
                 }
             } else {
+                // player is in another map?
                 unregisterPlayer(player);
             }
         }
