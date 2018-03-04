@@ -63,6 +63,11 @@ public class BobOnly extends Arcade {
     }
 
     @Override
+    public boolean nextRound() {
+        return false;
+    }
+
+    @Override
     public void onHit(int monster) {
     }
 

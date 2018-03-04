@@ -52,6 +52,12 @@ public class BalrogKiller extends Arcade {
         return true;
     }
 
+
+    @Override
+    public boolean nextRound() {
+        return false;
+    }
+
     @Override
     public void add() {
         currExp = player.getExp();

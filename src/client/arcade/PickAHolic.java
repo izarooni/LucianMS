@@ -20,6 +20,11 @@ public class PickAHolic extends Arcade {
     }
 
     @Override
+    public boolean nextRound() {
+        return false;
+    }
+
+    @Override
     public boolean fail() {
         int itemId = 2100067;
         int quantity = player.getInventory(MapleInventoryType.USE).countById(itemId);

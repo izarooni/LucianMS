@@ -19,6 +19,12 @@ public class CrowOnly extends Arcade {
         this.itemReward = 4011024;
     }
 
+
+    @Override
+    public boolean nextRound() {
+        return false;
+    }
+
     @Override
     public boolean fail() {
         player.changeMap(978, 0);

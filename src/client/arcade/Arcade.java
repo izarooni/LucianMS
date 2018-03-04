@@ -39,6 +39,8 @@ public abstract class Arcade {
 
     public abstract boolean onBreak(int reactor);
 
+    public abstract boolean nextRound(); // in case of next round.
+
     public synchronized void start() {
         MapleMapFactory factory = new MapleMapFactory(player.getWorld(), player.getClient().getChannel());
         player.changeMap(factory.getMap(mapId), factory.getMap(mapId).getPortal(0));
@@ -62,9 +64,16 @@ public abstract class Arcade {
             toSpawn.setHp(350000);
             player.getMap().spawnMonsterOnGroudBelow(toSpawn, new Point(206, 35));
         } else if (player.getArcade().arcadeId == 5) {
-            player.announce(MaplePacketCreator.getClock(150));
-            TaskExecutor.createTask(this::fail, 150000);
 
+            player.announce(MaplePacketCreator.getClock(180));
+            TaskExecutor.createTask(this::nextRound, 180000);
+
+            TaskExecutor.createTask(() -> {
+                player.getMap().broadcastMessage(MaplePacketCreator.showEffect("effect/killing/first/start"));
+                player.getMap().broadcastMessage(MaplePacketCreator.showEffect("effect/killing/first/stage"));
+            }, 2000);
+
+            TaskExecutor.createTask(() ->  player.getMap().broadcastMessage(MaplePacketCreator.showEffect("effect/killing/first/number/1")), 2000);
         }
 
     }

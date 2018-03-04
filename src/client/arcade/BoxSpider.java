@@ -33,6 +33,11 @@ public class BoxSpider extends Arcade {
     }
 
     @Override
+    public boolean nextRound() {
+        return false;
+    }
+
+    @Override
     public boolean fail() {
         if (touched) {
 

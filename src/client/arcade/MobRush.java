@@ -10,11 +10,13 @@ public class MobRush extends Arcade {
     private int highscore = 0;
     private int prevScore = getHighscore(arcadeId, player);
 
+    private int stage = 1;
+
     public MobRush(MapleCharacter player) {
         super(player);
         this.mapId = 910330100;
         this.arcadeId = 5;
-        this.rewardPerKill = 0.02;
+        this.rewardPerKill = 0.01;
         this.itemReward = 4011024;
     }
 
@@ -41,6 +43,33 @@ public class MobRush extends Arcade {
     }
 
     @Override
+    public boolean nextRound() {
+        if(stage <= 3) {
+            this.mapId += 1;
+            this.stage += 1;
+
+            player.getMap().getAllPlayer().forEach((target) -> target.changeMap(this.mapId));
+
+            player.getMap().getPortals().forEach((portal) -> portal.setDisabled(true));
+            player.getMap().setMobInterval((short) 5);
+
+            // disable drops
+            player.getMap().toggleDrops();
+
+            player.getMap().broadcastMessage(MaplePacketCreator.showEffect("effect/killing/first/start"));
+            TaskExecutor.createTask(() ->  player.getMap().broadcastMessage(MaplePacketCreator.showEffect("effect/killing/first/number/" + this.stage)), 3000);
+
+            player.announce(MaplePacketCreator.getClock(180));
+            TaskExecutor.createTask(this::nextRound, 180000);
+        } else {
+            player.getMap().broadcastMessage(MaplePacketCreator.showEffect("effect/killing/clear"));
+            TaskExecutor.createTask(this::fail, 3000); // Game over
+        }
+
+        return false;
+    }
+
+    @Override
     public void add() {
         ++highscore;
         player.announce(MaplePacketCreator.sendHint("#e[Mob rush]#n\r\nYou have killed " + ((prevScore < highscore) ? "#g" : "#r") + highscore + "#k monster(s)!", 300, 40));
@@ -57,8 +86,7 @@ public class MobRush extends Arcade {
             fail();
         }
 
-        // more than 90 = fail :rage:
-        if(player.getMap().getMonsters().size() >= 90) {
+        if(player.getMap().getMonsters().size() >= 60) {
             this.fail();
         }
     }
