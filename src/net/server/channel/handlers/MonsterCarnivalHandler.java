@@ -27,6 +27,7 @@ public final class MonsterCarnivalHandler extends PacketHandler {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MonsterCarnivalHandler.class);
     private static final int ID_Reactor = 9980000;
+    private static final int MaximumSpawns = 10;
 
     private byte action;
     private int value;
@@ -54,7 +55,7 @@ public final class MonsterCarnivalHandler extends PacketHandler {
                 final int nMonster = getMonster(value);
                 if (player.getCarnivalPoints() >= nPrice) {
                     if (action == 0) { // Spawning
-                        if (friendly.getSummonedMonsters() <= 7) {
+                        if (friendly.getSummonedMonsters() <= MaximumSpawns) {
                             if (nPrice == -1) {
                                 LOGGER.error("Invalid action/value Action {}, Value {}", action, value);
                                 player.announce(MaplePacketCreator.getMonsterCarnivalResponse((byte) 5));
@@ -75,6 +76,7 @@ public final class MonsterCarnivalHandler extends PacketHandler {
 
                                 map.addCarnivalMonster(monster, friendly);
                                 friendly.setSummonedMonsters(friendly.getSummonedMonsters() + 1);
+                                map.broadcastMessage(MaplePacketCreator.getMonsterCarnivalPointsUpdateParty(friendly));
                             } else {
                                 LOGGER.error("Unable to summon monster '{}'", getMonster(value));
                             }

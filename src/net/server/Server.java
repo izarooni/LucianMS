@@ -187,7 +187,7 @@ public class Server implements Runnable {
             IoBuffer.setAllocator(new SimpleBufferAllocator());
             acceptor = new NioSocketAcceptor();
             acceptor.getFilterChain().addLast("codec", new ProtocolCodecFilter(new MapleCodecFactory()));
-            acceptor.getSessionConfig().setIdleTime(IdleStatus.BOTH_IDLE, 30);
+            acceptor.getSessionConfig().setIdleTime(IdleStatus.BOTH_IDLE, 120);
             acceptor.setHandler(new MapleServerHandler());
             acceptor.bind(new InetSocketAddress(8484));
             LOGGER.info("Listening on port 8484");

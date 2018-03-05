@@ -66,17 +66,7 @@ public class MCarnivalGame extends GenericEvent {
     }
 
     public void dispose() {
-        MapleMap map = lobby.getChannel().getMapFactory().getMap(lobby.getBattlefieldMapId());
-
-        // remove spawn points created
-        ArrayList<SpawnPoint> spawnPoints = map.getMonsterSpawnPoints();
-        for (int i = 0; i < spawnPoints.size(); i++) {
-            SpawnPoint spawnPoint = spawnPoints.get(i);
-            if (spawnPoint.getTeam() != -1) {
-                map.removeSpawnPoint(i);
-            }
-        }
-
+        MapleMap map = lobby.getChannel().getMapFactory().remove(lobby.getBattlefieldMapId());
         map.killAllMonsters();
         map.clearDrops();
         lobby.setState(MCarnivalLobby.State.Available);

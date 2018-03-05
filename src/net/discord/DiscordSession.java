@@ -3,6 +3,7 @@ package net.discord;
 import net.discord.proto.RawDecoder;
 import net.discord.proto.RawEncoder;
 import org.apache.mina.core.service.IoAcceptor;
+import org.apache.mina.core.session.IdleStatus;
 import org.apache.mina.core.session.IoSession;
 import org.apache.mina.filter.codec.ProtocolCodecFactory;
 import org.apache.mina.filter.codec.ProtocolCodecFilter;
@@ -36,6 +37,7 @@ public class DiscordSession {
         }
         try {
             acceptor = new NioSocketAcceptor();
+            acceptor.getSessionConfig().setIdleTime(IdleStatus.BOTH_IDLE, 300);
             acceptor.getFilterChain().addLast("codec", new ProtocolCodecFilter(new ProtocolCodecFactory() {
                 private RawDecoder decoder = new RawDecoder();
                 private RawEncoder encoder = new RawEncoder();

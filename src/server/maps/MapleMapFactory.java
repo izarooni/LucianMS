@@ -325,7 +325,7 @@ public class MapleMapFactory {
         StringBuilder builder = new StringBuilder();
         if (mapid < 100000000) {
             builder.append("maple");
-        } else if (mapid >= 100000000 && mapid < 200000000) {
+        } else if (mapid < 200000000) {
             builder.append("victoria");
         } else if (mapid >= 200000000 && mapid < 300000000) {
             builder.append("ossyria");
@@ -353,6 +353,10 @@ public class MapleMapFactory {
 
     public void setWorld(int world) {
         this.channel = world;
+    }
+
+    public MapleMap remove(int mapId) {
+        return maps.remove(mapId);
     }
 
     public ArrayList<MapleMap> getMaps() {
