@@ -69,11 +69,11 @@ public abstract class Arcade {
             TaskExecutor.createTask(this::nextRound, 180000);
 
             TaskExecutor.createTask(() -> {
-                player.getMap().broadcastMessage(MaplePacketCreator.showEffect("effect/killing/first/start"));
-                player.getMap().broadcastMessage(MaplePacketCreator.showEffect("effect/killing/first/stage"));
+                player.getMap().broadcastMessage(MaplePacketCreator.showEffect("killing/first/start"));
+                player.getMap().broadcastMessage(MaplePacketCreator.showEffect("killing/first/stage"));
             }, 2000);
 
-            TaskExecutor.createTask(() ->  player.getMap().broadcastMessage(MaplePacketCreator.showEffect("effect/killing/first/number/1")), 2000);
+            TaskExecutor.createTask(() ->  player.getMap().broadcastMessage(MaplePacketCreator.showEffect("killing/first/number/1")), 2000);
         }
 
     }
@@ -133,7 +133,7 @@ public abstract class Arcade {
                     String user = MapleCharacter.getNameById(rs.getInt("charid"));
                     if (user != null) {
                         i++;
-                        sb.append("#k" + (i <= 3 ? "#b" : "") + (i > 3 && i <= 5 ? "" : "") + i + ". " + user + " with a score of " + rs.getInt("highscore") + "\r\n");
+                        sb.append("#k").append(i <= 3 ? "#b" : "").append(i > 3 && i <= 5 ? "" : "").append(i).append(". ").append(user).append(" with a score of ").append(rs.getInt("highscore")).append("\r\n");
                     }
                 }
             }

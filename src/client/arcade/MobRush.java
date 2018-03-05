@@ -56,13 +56,13 @@ public class MobRush extends Arcade {
             // disable drops
             player.getMap().toggleDrops();
 
-            player.getMap().broadcastMessage(MaplePacketCreator.showEffect("effect/killing/first/start"));
-            TaskExecutor.createTask(() ->  player.getMap().broadcastMessage(MaplePacketCreator.showEffect("effect/killing/first/number/" + this.stage)), 3000);
+            player.getMap().broadcastMessage(MaplePacketCreator.showEffect("killing/first/start"));
+            TaskExecutor.createTask(() ->  player.getMap().broadcastMessage(MaplePacketCreator.showEffect("killing/first/number/" + this.stage)), 3000);
 
             player.announce(MaplePacketCreator.getClock(180));
             TaskExecutor.createTask(this::nextRound, 180000);
         } else {
-            player.getMap().broadcastMessage(MaplePacketCreator.showEffect("effect/killing/clear"));
+            player.getMap().broadcastMessage(MaplePacketCreator.showEffect("killing/clear"));
             TaskExecutor.createTask(this::fail, 3000); // Game over
         }
 
