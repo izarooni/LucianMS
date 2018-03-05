@@ -173,15 +173,6 @@ public class Server implements Runnable {
         TaskExecutor.prestartAllCoreThreads();
         Runtime.getRuntime().addShutdownHook(new Thread(shutdown()));
 
-        DatabaseConnection.getConnection();
-        LOGGER.info("Database connection established");
-        try {
-            DatabaseConnection.getConnection().createStatement().execute("UPDATE accounts SET loggedin = 0");
-            DatabaseConnection.getConnection().createStatement().execute("UPDATE characters SET hasmerchant = 0");
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-
         try {
             IoBuffer.setUseDirectBuffer(false);
             IoBuffer.setAllocator(new SimpleBufferAllocator());
@@ -192,6 +183,17 @@ public class Server implements Runnable {
             acceptor.bind(new InetSocketAddress(8484));
             LOGGER.info("Listening on port 8484");
         } catch (IOException e) {
+            e.printStackTrace();
+            System.exit(0);
+            return;
+        }
+
+        DatabaseConnection.getConnection();
+        LOGGER.info("Database connection established");
+        try {
+            DatabaseConnection.getConnection().createStatement().execute("UPDATE accounts SET loggedin = 0");
+            DatabaseConnection.getConnection().createStatement().execute("UPDATE characters SET hasmerchant = 0");
+        } catch (SQLException e) {
             e.printStackTrace();
         }
 
