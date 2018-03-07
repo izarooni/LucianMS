@@ -14,8 +14,6 @@ import net.server.Server;
  */
 public class DatabaseConnection {
         
-    public static final int RETURN_GENERATED_KEYS = 1;
-
     private static ThreadLocal<Connection> con = new ThreadLocalConnection();
 
     public static Connection getConnection() {

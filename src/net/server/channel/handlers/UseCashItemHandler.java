@@ -196,8 +196,8 @@ public final class UseCashItemHandler extends AbstractMaplePacketHandler {
                         c.announce(MaplePacketCreator.updatePlayerStats(MaplePacketCreator.EMPTY_STATUPDATE, true, c.getPlayer()));
                         return;
                 }
-                DistributeAPHandler.addStat(c, APTo);
-                c.announce(MaplePacketCreator.updatePlayerStats(statupdate, true, c.getPlayer()));
+                DistributeAPHandler.addStat(player, APTo);
+                c.announce(MaplePacketCreator.updatePlayerStats(statupdate, true, player));
             }
             remove(c, itemId);
         } else if (itemType == 506) {

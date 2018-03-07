@@ -22,7 +22,6 @@
 package net.server.channel.handlers;
 
 import client.MapleCharacter;
-import client.MapleClient;
 import client.MapleJob;
 import client.MapleStat;
 import client.Skill;
@@ -32,66 +31,67 @@ import constants.skills.Brawler;
 import constants.skills.DawnWarrior;
 import constants.skills.Magician;
 import constants.skills.Warrior;
-import net.AbstractMaplePacketHandler;
+import net.PacketHandler;
 import tools.MaplePacketCreator;
 import tools.data.input.SeekableLittleEndianAccessor;
 
-public final class DistributeAPHandler extends AbstractMaplePacketHandler {
-    private static final int max = 999;
+public final class DistributeAPHandler extends PacketHandler {
 
-    public final void handlePacket(SeekableLittleEndianAccessor slea, MapleClient c) {
+    private int stat;
+
+    @Override
+    public void process(SeekableLittleEndianAccessor slea) {
         slea.readInt();
-        int num = slea.readInt();
-        if (c.getPlayer().getRemainingAp() > 0) {
-            if (addStat(c, num)) { 
-                c.getPlayer().setRemainingAp(c.getPlayer().getRemainingAp() - 1);
-                c.getPlayer().updateSingleStat(MapleStat.AVAILABLEAP, c.getPlayer().getRemainingAp());
-            }
-        }
-        c.announce(MaplePacketCreator.enableActions());
+        stat = slea.readInt();
     }
-    
-    static boolean addStat(MapleClient c, int apTo) {
-        switch (apTo) {
+
+    @Override
+    public Object onPacket() {
+        MapleCharacter player = getClient().getPlayer();
+        if (player.getRemainingAp() > 0) {
+            addStat(player, stat);
+            player.setRemainingAp(player.getRemainingAp() - 1);
+            player.updateSingleStat(MapleStat.AVAILABLEAP, player.getRemainingAp());
+        }
+        player.announce(MaplePacketCreator.enableActions());
+        return null;
+    }
+
+    static void addStat(MapleCharacter player, int stat) {
+        switch (stat) {
             case 64: // Str
-                if (c.getPlayer().getStr() >= max) {
-                    return false;
+                if (player.getStr() < Short.MAX_VALUE) {
+                    player.addStat(1, 1);
                 }
-                c.getPlayer().addStat(1, 1);
                 break;
             case 128: // Dex
-                if (c.getPlayer().getDex() >= max) {
-                    return false;
+                if (player.getDex() < Short.MAX_VALUE) {
+                    player.addStat(2, 1);
                 }
-                c.getPlayer().addStat(2, 1);
                 break;
             case 256: // Int
-                if (c.getPlayer().getInt() >= max) {
-                    return false;
+                if (player.getInt() < Short.MAX_VALUE) {
+                    player.addStat(3, 1);
                 }
-                c.getPlayer().addStat(3, 1);
                 break;
             case 512: // Luk
-                if (c.getPlayer().getLuk() >= max) {
-                    return false;
+                if (player.getLuk() < Short.MAX_VALUE) {
+                    player.addStat(4, 1);
                 }
-                c.getPlayer().addStat(4, 1);
                 break;
             case 2048: // HP
-                addHP(c.getPlayer(), addHP(c));
-                break;
+//                addHP(player, addHP(player));
+//                break;
             case 8192: // MP
-                addMP(c.getPlayer(), addMP(c));
+//                addMP(player, addMP(player));
+                player.dropMessage(1, "Distributing AP into HP and MP is currently disabled");
                 break;
             default:
-                c.announce(MaplePacketCreator.updatePlayerStats(MaplePacketCreator.EMPTY_STATUPDATE, true, c.getPlayer()));
-                return false;
+                player.announce(MaplePacketCreator.updatePlayerStats(MaplePacketCreator.EMPTY_STATUPDATE, true, player));
         }
-        return true;
     }
 
-    static int addHP(MapleClient c) {
-        MapleCharacter player = c.getPlayer();
+    private static int addHP(MapleCharacter player) {
         MapleJob job = player.getJob();
         int MaxHP = player.getMaxHp();
         if (player.getHpMpApUsed() > 9999 || MaxHP >= 30000) {
@@ -123,8 +123,7 @@ public final class DistributeAPHandler extends AbstractMaplePacketHandler {
         return MaxHP;
     }
 
-    static int addMP(MapleClient c) {
-        MapleCharacter player = c.getPlayer();
+    private static int addMP(MapleCharacter player) {
         int MaxMP = player.getMaxMp();
         MapleJob job = player.getJob();
         if (player.getHpMpApUsed() > 9999 || player.getMaxMp() >= 30000) {
@@ -136,9 +135,9 @@ public final class DistributeAPHandler extends AbstractMaplePacketHandler {
             Skill increaseMP = SkillFactory.getSkill(job.isA(MapleJob.BLAZEWIZARD1) ? BlazeWizard.INCREASING_MAX_MP : Magician.IMPROVED_MAXMP_INCREASE);
             int sLvl = player.getSkillLevel(increaseMP);
             
-            if(sLvl > 0)
+            if(sLvl > 0) {
                 MaxMP += increaseMP.getEffect(sLvl).getY();
-            
+            }
             MaxMP += 18;
         } else if (job.isA(MapleJob.BOWMAN) || job.isA(MapleJob.WINDARCHER1) || job.isA(MapleJob.THIEF) || job.isA(MapleJob.NIGHTWALKER1)) {
             MaxMP += 10;
@@ -150,14 +149,14 @@ public final class DistributeAPHandler extends AbstractMaplePacketHandler {
         return MaxMP;
     }
 
-    static void addHP(MapleCharacter player, int MaxHP) {
+    private static void addHP(MapleCharacter player, int MaxHP) {
         MaxHP = Math.min(30000, MaxHP);
         player.setHpMpApUsed(player.getHpMpApUsed() + 1);
         player.setMaxHp(MaxHP);
         player.updateSingleStat(MapleStat.MAXHP, MaxHP);
     }
 
-    static void addMP(MapleCharacter player, int MaxMP) {
+    private static void addMP(MapleCharacter player, int MaxMP) {
         MaxMP = Math.min(30000, MaxMP);
         player.setHpMpApUsed(player.getHpMpApUsed() + 1);
         player.setMaxMp(MaxMP);
