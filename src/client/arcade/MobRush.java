@@ -1,6 +1,7 @@
 package client.arcade;
 
 import client.MapleCharacter;
+import scheduler.Task;
 import scheduler.TaskExecutor;
 import server.MapleInventoryManipulator;
 import tools.MaplePacketCreator;
@@ -9,6 +10,7 @@ public class MobRush extends Arcade {
 
     private int highscore = 0;
     private int prevScore = getHighscore(arcadeId, player);
+    private Task task;
 
     private int stage = 1;
 
@@ -38,6 +40,7 @@ public class MobRush extends Arcade {
 
         respawnTask.cancel();
         respawnTask = null;
+        this.task.cancel();
         player.setArcade(null);
         return true;
     }
@@ -57,10 +60,10 @@ public class MobRush extends Arcade {
             player.getMap().toggleDrops();
 
             player.getMap().broadcastMessage(MaplePacketCreator.showEffect("killing/first/start"));
-            TaskExecutor.createTask(() ->  player.getMap().broadcastMessage(MaplePacketCreator.showEffect("killing/first/number/" + this.stage)), 3000);
+           TaskExecutor.createTask(() ->  player.getMap().broadcastMessage(MaplePacketCreator.showEffect("killing/first/number/" + this.stage)), 3000);
 
             player.announce(MaplePacketCreator.getClock(180));
-            TaskExecutor.createTask(this::nextRound, 180000);
+            this.task = TaskExecutor.createTask(this::nextRound, 180000);
         } else {
             player.getMap().broadcastMessage(MaplePacketCreator.showEffect("killing/clear"));
             TaskExecutor.createTask(this::fail, 3000); // Game over
