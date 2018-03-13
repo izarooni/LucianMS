@@ -24,11 +24,11 @@ function playerEntry(eim, player) {
 	} else {
 		myRide = 1;
 	}
-	docked = eim.getEm().getChannelServer().getMapFactory().getMap(rideTo[myRide]);
+	docked = eim.getEventManager().getChannel().getMapFactory().getMap(rideTo[myRide]);
     returnMap = eim.getMapFactory().getMap(returnTo[myRide]);
     onRide = eim.getMapFactory().getMap(trainRide[myRide]);
     player.changeMap(onRide, onRide.getPortal(0));
-    player.getClient().getSession().write(MaplePacketCreator.getClock(timeOnRide));
+    player.announce(MaplePacketCreator.getClock(timeOnRide));
     eim.schedule("timeOut", timeOnRide * 1000);
 }
 
@@ -36,10 +36,11 @@ function timeOut() {
 	onRide.warpEveryone(docked.getId());
 }
 
-
-
 function playerDisconnected(eim, player) {
     return 0;
+}
+
+function disbandParty(eim) {
 }
 
 function cancelSchedule() {}

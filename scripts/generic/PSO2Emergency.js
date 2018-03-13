@@ -31,7 +31,7 @@ var monsters = [
     //{level:145, mID:},
     {level:150, mID:9400112},
     {level:155, mID:9400113},
-    //{level:160, mID:},
+    {level:160, mID:8642003},
     //{level:165, mID:},
     {level:170, mID:8610006},
     //{level:175, mID:},
@@ -44,7 +44,12 @@ var monsters = [
 
 var spawnPoints = map.getMonsterSpawnPoints();
 var spawned = 0;
+var timeout = 120;
 cancelTask = null;
+
+if (player.getParty() != null && player.getParty().getMembers().size() > 2) {
+    timeout = 60;
+}
 
 if (!map.isTown() && !spawnPoints.isEmpty()) {
     map.killAllMonsters();
@@ -53,7 +58,7 @@ if (!map.isTown() && !spawnPoints.isEmpty()) {
         map.killAllMonsters();
         map.setRespawnEnabled(true);
         map.broadcastMessage(MaplePacketCreator.showEffect("dojang/timeOver"));
-    }, 1000 * 60);
+    }, 1000 * timeout);
 
     var mselect = null;
     for (var i = 0; i < monsters.length; i++) {
@@ -67,10 +72,10 @@ if (!map.isTown() && !spawnPoints.isEmpty()) {
 
     if (mselect != null) {
         var summons =  Math.min(30, spawnPoints.size());
-        map.broadcastMessage(MaplePacketCreator.getClock(60));
+        map.broadcastMessage(MaplePacketCreator.getClock(timeout));
         map.broadcastMessage(MaplePacketCreator.earnTitleMessage(summons + " monsters at level " + mselect.level + " have appeared!"));
         map.broadcastMessage(MaplePacketCreator.showEffect("PSO2/stuff/3"));
-        map.broadcastMessage(MaplePacketCreator.playSound("PSO2/attack"));
+        map.broadcastMessage(MaplePacketCreator.playSound("PSO2/Attack"));
         for (var s = 0; s < summons; s++) {
             var sp = spawnPoints.get(Math.floor(Math.random() * spawnPoints.size()));
             var monster = MapleLifeFactory.getMonster(mselect.mID);
@@ -90,7 +95,7 @@ function monsterDeath(monster) {
         map.setRespawnEnabled(true);
         map.broadcastMessage(MaplePacketCreator.removeClock());
         map.broadcastMessage(MaplePacketCreator.showEffect("PSO2/stuff/5"));
-        map.broadcastMessage(MaplePacketCreator.playSound("PSO2/completed"));
+        map.broadcastMessage(MaplePacketCreator.playSound("PSO2/Completed"));
     } else {
         map.broadcastMessage(MaplePacketCreator.serverNotice(5, "[Emergency] There are " + spawned + " monsters left"));
     }

@@ -57,22 +57,23 @@ function action(mode, type, selection) {
 }
 
 function Progress(questId) {
+    var metadata = CQuests.getMetaData(questId);
     if (status >= 3 && status <= 5) {
         var text = "#FUI/UIWindow/Quest/summary#\r\n";
         if (status == 3) {
-            var res = CQuestPKills(player.getCustomQuest(questId));
+            var res = CQuestPKills(player.getCustomQuest(questId).getToKill().getKills());
             if (res != null) {
                 cm.sendNext(text + res);
                 return;
             }
         } else if (status == 4) {
-            var res = CQuestCollect(CQuests.getToCollect(questId));
+            var res = CQuestCollect(metadata.getToCollect());
             if (res != null) {
                 cm.sendNext(text + res);
                 return;
             }
         } else if (status == 5) {
-            var res = CQuestRewards(CQuests.getRewards(questId));
+            var res = CQuestRewards(metadata.getRewards());
             if (res != null) {
                 cm.sendNext(text + res);
                 return;

@@ -7,8 +7,8 @@ var minParticpants = 2;
 
 var areas = {
     zebra: [["Auto Security Area", 953020000, 100], ["Clandestine Ruins", 953090000, 110], ["Dangerously Isolated Forest", 953080000, 120]],
-    tiger: [["Dead Tree Forest", 954010000, 130], ["Dragon Nest", 954030000, 140], ["Forbidden Time", 953050000, 150]],
-    leopard: [["Mossy Tree Forest", 953030000,160], ["Secret Pirate Hideout", 953060000, 170], ["Sky Forest Training Center", 953040000, 180]],
+    leopard: [["Dead Tree Forest", 954010000, 130], ["Dragon Nest", 954030000, 140], ["Forbidden Time", 953050000, 150]],
+    tiger: [["Mossy Tree Forest", 953030000,160], ["Secret Pirate Hideout", 953060000, 170], ["Sky Forest Training Center", 953040000, 180]],
     extreme: [["Temple of Oblivion", 954040000, 190]]
 };
 
@@ -84,6 +84,7 @@ function getAreaLevelFromMapId(m){
 }
 
 function getAreaFromValue(n) {
+    print(n)
     switch (n) {
         case 2: return areas.tiger;
         case 3: return areas.zebra;

@@ -36,7 +36,7 @@ function scheduleNew() {
 
 function cancelSchedule() {
     if (setupTask != null)
-        setupTask.cancel(true);
+        setupTask.cancel();
 }
 
 function start() {

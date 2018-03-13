@@ -1,6 +1,6 @@
 /*
 	This file is part of the OdinMS Maple Story Server
-    Copyright (C) 2008 Patrick Huy <patrick.huy@frz.cc> 
+    Copyright (C) 2008 Patrick Huy <patrick.huy@frz.cc>
 					   Matthias Butz <matze@odinms.de>
 					   Jan Christian Meyer <vimes@odinms.de>
 
@@ -39,18 +39,18 @@ function scheduleNew() {
 
 function cancelSchedule() {
     if (setupTask != null)
-        setupTask.cancel(true);
+        setupTask.cancel();
 }
 
 function start() {
     var theForestOfEvil1 = em.getChannel().getMapFactory().getMap(100040105);
     var faust1 = Packages.server.life.MapleLifeFactory.getMonster(5220002);
-	
+
 	if(theForestOfEvil1.getMonsterById(5220002) != null) {
 		em.schedule("start", 3 * 60 *60 * 1000);
 		return;
 	}
-	
+
     theForestOfEvil1.spawnMonsterOnGroundBelow(faust1, new Packages.java.awt.Point(456, 278));
     theForestOfEvil1.broadcastMessage(Packages.tools.MaplePacketCreator.serverNotice(6, "Faust appeared amidst the blue fog."));
 	em.schedule("start", 3 * 60 *60 * 1000);

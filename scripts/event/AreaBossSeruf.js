@@ -1,6 +1,6 @@
 /*
 	This file is part of the OdinMS Maple Story Server
-    Copyright (C) 2008 Patrick Huy <patrick.huy@frz.cc> 
+    Copyright (C) 2008 Patrick Huy <patrick.huy@frz.cc>
 					   Matthias Butz <matze@odinms.de>
 					   Jan Christian Meyer <vimes@odinms.de>
 
@@ -44,18 +44,18 @@ function scheduleNew() {
 
 function cancelSchedule() {
     if (setupTask != null)
-        setupTask.cancel(true);
+        setupTask.cancel();
 }
 
 function start() {
     var towerMap = em.getChannel().getMapFactory().getMap(230020100);
     var seruf = Packages.server.life.MapleLifeFactory.getMonster(4220001);
-	
+
 	if(towerMap.getMonsterById(4220001) != null) {
 		em.schedule("start", 3 * 60 * 60 * 1000);
 		return;
 	}
-	
+
     var posX;
     var posY = 520;
     posX =  Math.floor((Math.random() * 2300) - 1500);

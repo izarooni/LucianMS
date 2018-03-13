@@ -1,11 +1,10 @@
+var StringUtil = Java.type("tools.StringUtil");
 /* izarooni */
 // get a list of monsters to kill, and the kill progression
 function CQuestPKills(map) {
     var text = "#eKill the following monsters#n#b";
-    map.entrySet().forEach(function(e) {
-        var goal = e.getValue().getLeft();
-        var progress = e.getValue().getRight();
-        text += "\r\n" + progress + " / " + goal + " of #o" + e.getKey() + "#";
+    map.forEach(function(k, v) {
+        text += "\r\n" + v.getRight() + " / " + v.getLeft() + " of #o" + k + "#";
     });
     return text;
 }

@@ -36,18 +36,18 @@ function scheduleNew() {
 
 function cancelSchedule() {
     if (setupTask != null)
-        setupTask.cancel(true);
+        setupTask.cancel();
 }
 
 function start() {
     var royalCatthusDesert = em.getChannel().getMapFactory().getMap(260010201);
     var deo = Packages.server.life.MapleLifeFactory.getMonster(3220001);
-	
+
 	if(royalCatthusDesert.getMonsterById(3220001) != null) {
 		em.schedule("start", 3 * 60 *60 * 1000);
 		return;
 	}
-	
+
     royalCatthusDesert.spawnMonsterOnGroundBelow(deo, new Packages.java.awt.Point(645, 275));
     royalCatthusDesert.broadcastMessage(Packages.tools.MaplePacketCreator.serverNotice(6, "Deo slowly appeared out of the sand dust."));
 	em.schedule("start", 3 * 60 *60 * 1000);
