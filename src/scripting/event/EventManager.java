@@ -135,7 +135,10 @@ public class EventManager extends GenericEvent {
     }
 
     public void removeInstance(String name) {
-        instances.remove(name);
+        EventInstanceManager remove = instances.remove(name);
+        if (remove != null) {
+            remove.dispose();
+        }
     }
 
     public String getProperty(String key) {

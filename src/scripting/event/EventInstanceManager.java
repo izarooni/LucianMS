@@ -165,6 +165,9 @@ public class EventInstanceManager {
     }
 
     public void dispose() {
+        if (mapFactory == null) {
+            throw new RuntimeException("Event instance '" + getName() + "' already disposed");
+        }
         try {
             eventManager.getInvocable().invokeFunction("dispose", this);
         } catch (ScriptException | NoSuchMethodException e) {

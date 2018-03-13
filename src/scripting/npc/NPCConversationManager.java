@@ -74,6 +74,10 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
         return npc;
     }
 
+    public void setNpc(int npc) {
+        this.npc = npc;
+    }
+
     public String getScriptName() {
         return scriptName;
     }
