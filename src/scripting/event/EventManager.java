@@ -1,6 +1,7 @@
 package scripting.event;
 
 import client.MapleCharacter;
+import lang.DuplicateEntryException;
 import net.server.channel.Channel;
 import net.server.world.MapleParty;
 import org.slf4j.Logger;
@@ -71,7 +72,8 @@ public class EventManager extends GenericEvent {
     public void cancel() {
         try {
             getInvocable().invokeFunction("cancelSchedule", (Object) null);
-        } catch (ScriptException | NoSuchMethodException e) {
+        } catch (NoSuchMethodException ignore) {
+        } catch (ScriptException e) {
             LOGGER.error("Unable to invoke function cancelSchedule in script {}", scriptName, e);
         }
     }
@@ -127,7 +129,7 @@ public class EventManager extends GenericEvent {
 
     public EventInstanceManager newInstance(String name) {
         if (instances.containsKey(name)) {
-            throw new RuntimeException(String.format("Could not create new event instance with name(%s) already used for event(%s)", name, scriptName));
+            throw new DuplicateEntryException(String.format("Could not create new event instance with name(%s) as it's already used", name));
         }
         EventInstanceManager ret = new EventInstanceManager(this, name);
         instances.put(name, ret);
