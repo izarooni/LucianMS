@@ -1642,7 +1642,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
 
         // yeet
         if(this.getArcade() != null && to.getId() != this.getArcade().getMapId()) {
-            this.setArcade(null);
+            this.getArcade().fail();
         }
 
         ManualPlayerEvent playerEvent = client.getWorldServer().getPlayerEvent();
