@@ -129,7 +129,7 @@ public class EventManager extends GenericEvent {
 
     public EventInstanceManager newInstance(String name) {
         if (instances.containsKey(name)) {
-            throw new DuplicateEntryException(String.format("Could not create new event instance with name(%s) as it's already used", name));
+            throw new DuplicateEntryException(String.format("Could not create new event instance with name(%s) for event '%s'", name, scriptName));
         }
         EventInstanceManager ret = new EventInstanceManager(this, name);
         instances.put(name, ret);

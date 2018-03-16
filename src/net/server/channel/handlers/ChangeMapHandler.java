@@ -105,12 +105,9 @@ public class ChangeMapHandler extends PacketHandler {
                 } else if (targetMapId != -1 && player.isGM()) {
                     MapleMap to = getClient().getChannelServer().getMapFactory().getMap(targetMapId);
                     if (to != null) {
-                        player.changeMap(to, to.getPortal(0));
-                    } else {
-                        player.dropMessage("That map doesn't exist!");
-                        player.announce(MaplePacketCreator.enableActions());
+                        player.changeMap(to);
                     }
-                } else if (targetMapId != -1 && !player.isGM()) {//Thanks celino for saving me some time (:
+                } else if (targetMapId != -1 && !player.isGM()) { // Thanks celino for saving me some time (:
                     final int divi = player.getMapId() / 100;
                     boolean warp = false;
                     if (divi == 0) {

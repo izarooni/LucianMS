@@ -7,7 +7,8 @@ var features = [
     OuterSpace,
     CarnivalStart,
     TriggerReactors, DespawnReactors, LocateReactors,
-    SummonMonster];
+    SummonMonster,
+    ListEventInstances];
 
 function action(mode, type, selection) {
     if (mode < 1) {
@@ -22,7 +23,7 @@ function action(mode, type, selection) {
             for (var i = 0; i < features.length; i++) {
                 text += "\r\n#L" + i + "#" + features[i].name + "#l";
             }
-            cm.sendSimple(text);
+            cm.sendSimple(text, 2);
         } else if (status == 2) {
             this.feature = features[selection];
             status = 0;
@@ -31,6 +32,16 @@ function action(mode, type, selection) {
     } else {
         this.feature(selection);
     }
+}
+
+function ListEventInstances(selection) {
+    let content = "A list of event instances:\r\n";
+    let manager = ch.getEventScriptManager().getManager("KerningTrain");
+    manager.getInstances().forEach((as) => {
+        content += "\r\n" + as.getName();
+    });
+    cm.sendOk(content);
+    cm.dispose();
 }
 
 function TriggerReactors(selection) {
