@@ -1649,7 +1649,11 @@ public class MapleMap {
             // must be a map that contains monster spawnpoints and is a hutning field
             if (!isTown() && !spawnPoints.isEmpty()) {
                 // 1/25 chance to trigger emergency
-                if ((chr.isGM() && chr.isDebug()) || (System.currentTimeMillis() > nextEmergency && Randomizer.nextInt(25) == 1)) {
+                if (((chr.isGM() && chr.isDebug()) || (System.currentTimeMillis() > nextEmergency))
+                        && Randomizer.nextInt(25) == 1
+                        && chr.getGenericEvents().isEmpty()
+                        && chr.getEventInstance() == null
+                        && chr.getArcade() == null) {
                     EmergencyAttack eAttack = new EmergencyAttack();
                     TaskExecutor.createTask(new Runnable() {
                         @Override

@@ -1,22 +1,43 @@
 package tools;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
-
-import constants.ServerConstants;
 import io.Config;
 import net.server.Server;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.sql.*;
 
 /**
  * @author Frz (Big Daddy)
  * @author The Real Spookster (some modifications to this beautiful code)
  */
 public class DatabaseConnection {
-        
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(DatabaseConnection.class);
     private static ThreadLocal<Connection> con = new ThreadLocalConnection();
+    private static long timeout = 28000;
+    private static volatile long lastUse = System.currentTimeMillis();
+
+    static {
+        try (PreparedStatement ps = getConnection().prepareStatement("SELECT @@GLOBAL.wait_timeout")) {
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    timeout = rs.getInt(1);
+                    LOGGER.info("Retrieved wait_timeout value is: {}", timeout);
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
 
     public static Connection getConnection() {
+        final long current = System.currentTimeMillis();
+        if (current - lastUse >= timeout) {
+            con.remove();
+        }
+        lastUse = current;
+
         Connection c = con.get();
         try {
             c.getMetaData();

@@ -112,6 +112,11 @@ public class MonsterPark extends GenericEvent {
         player.changeMap(returnMaps.remove(player.getId()));
     }
 
+    @Override
+    public boolean banishPlayer(MapleCharacter player, int mapId) {
+        return false;
+    }
+
     private int getStage(int mapId) {
         return mapId % 1000 / 100;
     }

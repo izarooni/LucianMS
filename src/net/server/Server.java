@@ -61,6 +61,9 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.URISyntaxException;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.*;
 
@@ -188,11 +191,11 @@ public class Server implements Runnable {
             return;
         }
 
-        DatabaseConnection.getConnection();
+        Connection con = DatabaseConnection.getConnection();
         LOGGER.info("Database connection established");
         try {
-            DatabaseConnection.getConnection().createStatement().execute("UPDATE accounts SET loggedin = 0");
-            DatabaseConnection.getConnection().createStatement().execute("UPDATE characters SET hasmerchant = 0");
+            con.createStatement().execute("UPDATE accounts SET loggedin = 0");
+            con.createStatement().execute("UPDATE characters SET hasmerchant = 0");
         } catch (SQLException e) {
             e.printStackTrace();
         }
