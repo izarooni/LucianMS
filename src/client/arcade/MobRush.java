@@ -40,7 +40,9 @@ public class MobRush extends Arcade {
 
         respawnTask.cancel();
         respawnTask = null;
-        this.task.cancel();
+        if(this.task != null) {
+            this.task.cancel();
+        }
         player.setArcade(null);
         return true;
     }
