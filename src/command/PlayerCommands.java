@@ -64,7 +64,7 @@ public class PlayerCommands {
             commands.forEach(player::dropMessage);
             commands.clear();
         } else if (command.equals("uptime")) {
-            player.sendMessage("The server has been online for {}", StringUtil.getTimeElapse(Server.Uptime));
+            player.sendMessage("The server has been online for {}", StringUtil.getTimeElapse(System.currentTimeMillis() - Server.Uptime));
         } else if (command.equals("checkme", "spy")) {
             MapleCharacter target = player;
             if (command.equals("spy")) {
