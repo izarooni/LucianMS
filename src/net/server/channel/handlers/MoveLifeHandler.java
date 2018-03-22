@@ -87,7 +87,7 @@ public final class MoveLifeHandler extends PacketHandler {
             Pair<Integer, Integer> skillToUse = monster.getSkills().get(random);
             toUse = MobSkillFactory.getMobSkill(skillToUse.getLeft(), skillToUse.getRight());
             int percHpLeft = (monster.getHp() / monster.getMaxHp()) * 100;
-            if (toUse.getHP() < percHpLeft || !monster.canUseSkill(toUse)) {
+            if (toUse != null && (toUse.getHP() < percHpLeft || !monster.canUseSkill(toUse))) {
                 toUse = null;
             }
         }

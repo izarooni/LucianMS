@@ -4,6 +4,7 @@ import client.*;
 import client.Relationship.Status;
 import client.meta.Occupation;
 import constants.ServerConstants;
+import net.server.Server;
 import net.server.channel.Channel;
 import net.server.channel.handlers.RockPaperScissorsHandler;
 import scripting.npc.NPCScriptManager;
@@ -62,6 +63,8 @@ public class PlayerCommands {
             Collections.sort(commands);
             commands.forEach(player::dropMessage);
             commands.clear();
+        } else if (command.equals("uptime")) {
+            player.sendMessage("The server has been online for {}", StringUtil.getTimeElapse(Server.Uptime));
         } else if (command.equals("checkme", "spy")) {
             MapleCharacter target = player;
             if (command.equals("spy")) {
@@ -263,7 +266,7 @@ public class PlayerCommands {
         } else if (command.equals("achievements")) {
             NPCScriptManager.start(client, 2007, "f_achievements", null);
         } else if (command.equals("home")) {
-            player.changeMap(809);
+            player.changeMap(ServerConstants.HOME_MAP);
         } else if (command.equals("online")) {
             for (Channel channel : client.getWorldServer().getChannels()) {
                 StringBuilder sb = new StringBuilder();

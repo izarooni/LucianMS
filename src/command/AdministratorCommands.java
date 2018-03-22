@@ -117,7 +117,6 @@ public class AdministratorCommands {
                         } else if (object instanceof PlayerNPC) {
                             PlayerNPC npc = ((PlayerNPC) object);
                             player.sendMessage("{} / id:{} / oid:{} / name:{} / script:{}", npc.getPosition().toString(), npc.getId(), npc.getObjectId(), npc.getName(), npc.getScript());
-
                         }
                     }
                 }

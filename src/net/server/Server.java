@@ -70,7 +70,7 @@ import java.util.*;
 public class Server implements Runnable {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(Server.class);
-    public static long uptime = System.currentTimeMillis();
+    public static final long Uptime = System.currentTimeMillis();
 
     private static Server instance = null;
     private IoAcceptor acceptor;

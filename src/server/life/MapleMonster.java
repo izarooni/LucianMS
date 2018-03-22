@@ -870,7 +870,8 @@ public class MapleMonster extends AbstractLoadedMapleLife {
         @Override
         public void run() {
             if (hp > 1 && dealDamage > 0) {
-                damage(chr, dealDamage);
+                final int damage = Math.max(1, (hp - dealDamage));
+                damage(chr, damage);
                 if (type == 1) {
                     map.broadcastMessage(MaplePacketCreator.damageMonster(getObjectId(), dealDamage), getPosition());
                 }
