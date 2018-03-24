@@ -139,7 +139,11 @@ public class CashShop {
         private static final Map<Integer, List<Integer>> packages = new HashMap<>();
         private static final List<SpecialCashItem> specialcashitems = new ArrayList<>();
 
-        static {
+        public static void loadCommodities() {
+            items.clear();
+            packages.clear();
+            specialcashitems.clear();
+
             MapleDataProvider etc = MapleDataProviderFactory.getDataProvider(new File("wz/Etc.wz"));
 
             for (MapleData item : etc.getData("Commodity.img").getChildren()) {
@@ -192,19 +196,6 @@ public class CashShop {
 
         public static List<SpecialCashItem> getSpecialCashItems() {
             return specialcashitems;
-        }
-
-        public static void reloadSpecialCashItems() {//Yay?
-            specialcashitems.clear();
-            try (PreparedStatement ps = DatabaseConnection.getConnection().prepareStatement("SELECT * FROM specialcashitems")) {
-                try (ResultSet rs = ps.executeQuery()) {
-                    while (rs.next()) {
-                        specialcashitems.add(new SpecialCashItem(rs.getInt("sn"), rs.getInt("modifier"), rs.getByte("info")));
-                    }
-                }
-            } catch (SQLException ex) {
-                ex.printStackTrace();
-            }
         }
     }
 
