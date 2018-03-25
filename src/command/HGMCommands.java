@@ -262,12 +262,12 @@ public class HGMCommands {
         } else if (command.equals("pos")) {
             player.dropMessage(player.getPosition().toString());
         } else if (command.equals("shout", "say")) {
-            if (args.length() > 0) {
-                if (command.equals("say")) {
-                    String message = String.format("%s : %s", player.getName(), args.concatFrom(1));
-                    client.getWorldServer().broadcastPacket(MaplePacketCreator.serverNotice(6, message));
-                } else {
-                    client.getWorldServer().broadcastPacket(MaplePacketCreator.earnTitleMessage(args.concatFrom(1)));
+                    if (args.length() > 0) {
+                        if (command.equals("say")) {
+                            String message = String.format("%s : %s", player.getName(), args.concatFrom(0));
+                            client.getWorldServer().broadcastPacket(MaplePacketCreator.serverNotice(6, message));
+                        } else {
+                    client.getWorldServer().broadcastPacket(MaplePacketCreator.earnTitleMessage(args.concatFrom(0)));
                 }
             } else {
                 player.dropMessage("You must enter a message");

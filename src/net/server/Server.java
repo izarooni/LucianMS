@@ -62,8 +62,6 @@ import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.URISyntaxException;
 import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.*;
 
@@ -212,8 +210,9 @@ public class Server implements Runnable {
 
         timeToTake = System.currentTimeMillis();
         MapleItemInformationProvider.getInstance().getAllItems();
-        CashItemFactory.getSpecialCashItems();
         LOGGER.info("Item data loaded in {}s", ((System.currentTimeMillis() - timeToTake) / 1000d));
+        CashItemFactory.loadCommodities();
+        LOGGER.info("Cash shop commodities loaded in {}s", ((System.currentTimeMillis() - timeToTake) / 1000d));
 
         timeToTake = System.currentTimeMillis();
         CQuestBuilder.loadAllQuests();

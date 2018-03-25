@@ -10,6 +10,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import scheduler.TaskExecutor;
 import scripting.Achievements;
+import server.CashShop;
 import server.Whitelist;
 import server.quest.custom.CQuestBuilder;
 import tools.data.output.MaplePacketLittleEndianWriter;
@@ -75,12 +76,15 @@ public class ConsoleCommands {
 
     private static void execute(CommandWorker.Command command, CommandWorker.CommandArgs args) {
         if (command.equals("shutdown", "exit")) {
-            reading = false;
-            System.exit(0);
-
             MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
             mplew.write(Headers.Shutdown.value);
             DiscordSession.sendPacket(mplew.getPacket());
+
+            reading = false;
+            System.exit(0);
+        } else if (command.equals("reloadcs")) {
+            CashShop.CashItemFactory.loadCommodities();
+            LOGGER.info("Cash Shop commodities reloaded");
         } else if (command.equals("online")) {
             LOGGER.info("Managed Sessions: " + Server.getInstance().getAcceptor().getManagedSessionCount());
             if (Server.getInstance().isOnline()) {

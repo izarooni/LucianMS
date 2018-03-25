@@ -56,6 +56,7 @@ import java.awt.*;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 public class AbstractPlayerInteraction {
@@ -214,17 +215,16 @@ public class AbstractPlayerInteraction {
     public Item gainItem(int id, short quantity, boolean randomStats, boolean showMessage, long expires) {
         Item item = null;
         if (id >= 5000000 && id <= 5002000) {
-            MapleInventoryManipulator.addById(c, id, (short) 1, null, MaplePet.createPet(id), expires == -1 ? -1 : System.currentTimeMillis() + expires);
+            long expiration = System.currentTimeMillis() + ((expires == -1) ? TimeUnit.DAYS.toMillis(365) : expires);
+            MapleInventoryManipulator.addById(c, id, (short) 1, null, MaplePet.createPet(id), expiration);
         }
         if (quantity >= 0) {
             MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
-
             if (ii.getInventoryType(id).equals(MapleInventoryType.EQUIP)) {
                 item = ii.getEquipById(id);
             } else {
                 item = new Item(id, (short) 0, quantity);
             }
-
             if (expires != -1) {
                 item.setExpiration(System.currentTimeMillis() + expires);
             }
