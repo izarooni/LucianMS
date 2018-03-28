@@ -25,33 +25,33 @@ public class DiscordSessionHandler extends IoHandlerAdapter {
     private static final Logger LOGGER = LoggerFactory.getLogger(DiscordSessionHandler.class);
 
 
-    public DiscordSessionHandler() {
+    DiscordSessionHandler() {
     }
 
     @Override
-    public void sessionCreated(IoSession session) throws Exception {
+    public void sessionCreated(IoSession session) {
         LOGGER.info("Session #{} created", session.getId());
     }
 
     @Override
-    public void sessionOpened(IoSession session) throws Exception {
+    public void sessionOpened(IoSession session) {
         LOGGER.info("Session #{} opened", session.getId());
 
         DiscordSession.setSession(session);
     }
 
     @Override
-    public void sessionClosed(IoSession session) throws Exception {
+    public void sessionClosed(IoSession session) {
         LOGGER.info("Session #{} closed", session.getId());
     }
 
     @Override
-    public void sessionIdle(IoSession session, IdleStatus status) throws Exception {
+    public void sessionIdle(IoSession session, IdleStatus status) {
         LOGGER.info("Session #{} idle status {}", session.getId(), status.toString());
     }
 
     @Override
-    public void exceptionCaught(IoSession session, Throwable cause) throws Exception {
+    public void exceptionCaught(IoSession session, Throwable cause) {
         if (cause instanceof IOException) {
             return;
         }
@@ -59,7 +59,7 @@ public class DiscordSessionHandler extends IoHandlerAdapter {
     }
 
     @Override
-    public void messageReceived(IoSession session, Object message) throws Exception {
+    public void messageReceived(IoSession session, Object message) {
         if (message instanceof byte[]) {
             byte[] bytes = (byte[]) message;
             GenericLittleEndianAccessor lea = new GenericLittleEndianAccessor(new ByteArrayByteStream(bytes));
@@ -82,7 +82,7 @@ public class DiscordSessionHandler extends IoHandlerAdapter {
     }
 
     @Override
-    public void messageSent(IoSession session, Object message) throws Exception {
+    public void messageSent(IoSession session, Object message) {
         LOGGER.info("Session #{} sent message", session.getId());
     }
 }

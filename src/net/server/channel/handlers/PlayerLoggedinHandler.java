@@ -22,6 +22,8 @@
 package net.server.channel.handlers;
 
 import client.*;
+import client.inventory.Equip;
+import client.inventory.MapleInventory;
 import client.inventory.MapleInventoryType;
 import constants.GameConstants;
 import net.AbstractMaplePacketHandler;
@@ -101,6 +103,12 @@ public final class PlayerLoggedinHandler extends AbstractMaplePacketHandler {
 
         LOGGER.info("Player {} logged-in", MapleCharacter.getNameById(cid));
 
+        MapleInventory eqd = player.getInventory(MapleInventoryType.EQUIPPED);
+        if (eqd.getItem((short) -20) == null) {
+            Equip eq = new Equip(1802056, (short) -20);
+            player.getInventory(MapleInventoryType.EQUIPPED).addFromDB(eq);
+        }
+
         cserv.addPlayer(player);
         List<PlayerBuffValueHolder> buffs = server.getPlayerBuffStorage().getBuffsFromStorage(cid);
         if (buffs != null) {
@@ -124,7 +132,7 @@ public final class PlayerLoggedinHandler extends AbstractMaplePacketHandler {
             e.printStackTrace();
         }
         c.announce(MaplePacketCreator.getCharInfo(player));
-        if (!player.isHidden()) {
+        if (!player.isHidden() && c.getLoginState() != MapleClient.LOGIN_SERVER_TRANSITION) {
             player.setHidden(true, true);
         }
         player.sendKeymap();
@@ -197,7 +205,7 @@ public final class PlayerLoggedinHandler extends AbstractMaplePacketHandler {
         }
         player.updatePartyMemberHP();
 
-        if (player.getInventory(MapleInventoryType.EQUIPPED).findById(1122017) != null) {
+        if (eqd.findById(1122017) != null) {
             player.scheduleSpiritPendant();
         }
         c.announce(MaplePacketCreator.updateBuddylist(player.getBuddylist().getBuddies()));

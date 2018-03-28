@@ -29,6 +29,7 @@ import client.inventory.MapleInventoryType;
 import net.PacketHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import scripting.npc.NPCScriptManager;
 import server.MapleInventoryManipulator;
 import tools.MaplePacketCreator;
 import tools.data.input.SeekableLittleEndianAccessor;
@@ -52,6 +53,11 @@ public class ItemMoveHandler extends PacketHandler {
         source = slea.readShort();
         action = slea.readShort();
         quantity = slea.readShort();
+
+        if (source < 0 && action > 0 && source == -149) {
+            NPCScriptManager.start(getClient(), 9010000, "f_equip_info", null);
+            setCanceled(true);
+        }
     }
 
     @Override

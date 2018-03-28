@@ -65,7 +65,7 @@ public class MapleReactorFactory {
                         MapleData eventData = reactorInfoData.getChildByPath("event");
                         if (eventData != null) {
                             for (MapleData fknexon : eventData.getChildren()) {
-                                if (fknexon.getName().equals("timeOut")) continue;
+                                if (fknexon.getName().equalsIgnoreCase("timeOut")) continue;
                                 Pair<Integer, Integer> reactItem = null;
                                 int type = MapleDataTool.getIntConvert("type", fknexon, -1);
                                 if (type == 100) { //reactor waits for item
