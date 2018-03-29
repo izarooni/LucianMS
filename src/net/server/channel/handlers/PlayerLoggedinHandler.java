@@ -104,8 +104,8 @@ public final class PlayerLoggedinHandler extends AbstractMaplePacketHandler {
         LOGGER.info("Player {} logged-in", MapleCharacter.getNameById(cid));
 
         MapleInventory eqd = player.getInventory(MapleInventoryType.EQUIPPED);
-        if (eqd.getItem((short) -20) == null) {
-            Equip eq = new Equip(1802056, (short) -20);
+        if (eqd.getItem((short) -149) == null) {
+            Equip eq = new Equip(1802056, (short) -149);
             player.getInventory(MapleInventoryType.EQUIPPED).addFromDB(eq);
         }
 

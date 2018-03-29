@@ -1580,6 +1580,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
         MapleMap warpMap;
         if (getEventInstance() != null) {
             warpMap = getEventInstance().getMapInstance(map);
+            LOGGER.info("Player '{}' transfering to even map instance {}", getName(), map);
         } else {
             warpMap = client.getChannelServer().getMapFactory().getMap(map);
         }
@@ -1591,6 +1592,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
         MapleMap warpMap;
         if (getEventInstance() != null) {
             warpMap = getEventInstance().getMapInstance(map);
+            LOGGER.info("Player '{}' transfering to even map instance {}", getName(), map);
         } else {
             warpMap = client.getChannelServer().getMapFactory().getMap(map);
         }
@@ -1602,6 +1604,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
         MapleMap warpMap;
         if (getEventInstance() != null) {
             warpMap = getEventInstance().getMapInstance(map);
+            LOGGER.info("Player '{}' transfering to even map instance {}", getName(), map);
         } else {
             warpMap = client.getChannelServer().getMapFactory().getMap(map);
         }
@@ -1637,12 +1640,10 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
         if (getTrade() != null) {
             MapleTrade.cancelTrade(this);
         }
-
         // yeet
-        if(this.getArcade() != null && to.getId() != this.getArcade().getMapId()) {
-            this.setArcade(null);
+        if (getArcade() != null && to.getId() != getArcade().getMapId()) {
+            setArcade(null);
         }
-
         ManualPlayerEvent playerEvent = client.getWorldServer().getPlayerEvent();
         if (playerEvent != null) {
             if (to != playerEvent.getMap() && getMap() == playerEvent.getMap()) {
@@ -1997,10 +1998,10 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
     /**
      * fuck a method {@link String#format(String, Object...)}
      * <p>
-     *     Construct a formatted String using the formatter via the Logger library
+     * Construct a formatted String using the formatter via the Logger library
      * </p>
      *
-     * @param type message color type
+     * @param type    message color type
      * @param message a message to send to the player
      * @param object  arguements that are formatted to the specified message
      */
