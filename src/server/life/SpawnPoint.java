@@ -85,7 +85,6 @@ public class SpawnPoint {
                     nextPossibleSpawn += aniTime;
                 }
                 if (spawnedMonsters.get() > 0) {
-                    // i have everything
                     spawnedMonsters.decrementAndGet();
                 }
             }

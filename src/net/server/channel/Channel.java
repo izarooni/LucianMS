@@ -49,6 +49,7 @@ import server.partyquest.carnival.MCarnivalLobbyManager;
 import tools.MaplePacketCreator;
 
 import java.io.File;
+import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.util.*;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
@@ -78,23 +79,20 @@ public final class Channel {
         TaskExecutor.createRepeatingTask(() -> mapFactory.getMaps().forEach(MapleMap::respawn), 10000, 10000);
         reloadEventScriptManager();
         carnivalLobbyManager = new MCarnivalLobbyManager(this);
-        int port = 7575;
+        final int port = (7575 + (this.channel - 1)) + (world * 100);
+        ip = Server.getInstance().getConfig().getString("ServerHost") + ":" + port;
+
+        IoBuffer.setUseDirectBuffer(false);
+        IoBuffer.setAllocator(new SimpleBufferAllocator());
+
         try {
-            port = 7575 + this.channel - 1;
-            port += (world * 100);
-            ip = Server.getInstance().getConfig().getString("ServerHost") + ":" + port;
-
-            IoBuffer.setUseDirectBuffer(false);
-            IoBuffer.setAllocator(new SimpleBufferAllocator());
-
             acceptor = new NioSocketAcceptor();
             acceptor.setHandler(new MapleServerHandler(world, channel));
             acceptor.getSessionConfig().setIdleTime(IdleStatus.BOTH_IDLE, 30);
             ((SocketSessionConfig) acceptor.getSessionConfig()).setTcpNoDelay(true);
             acceptor.getFilterChain().addLast("codec", new ProtocolCodecFilter(new MapleCodecFactory()));
             acceptor.bind(new InetSocketAddress(port));
-
-        } catch (Exception e) {
+        } catch (IOException e) {
             e.printStackTrace();
         }
         LOGGER.info("Channel {} bind to port {}", getId(), port);

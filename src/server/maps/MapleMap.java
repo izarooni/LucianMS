@@ -845,17 +845,17 @@ public class MapleMap {
     }
 
     public void killAllMonsters() {
-        for (MapleMapObject monstermo : getMapObjectsInRange(new Point(0, 0), Double.POSITIVE_INFINITY, Collections.singletonList(MapleMapObjectType.MONSTER))) {
-            MapleMonster monster = (MapleMonster) monstermo;
+        for (MapleMonster monster : getMapObjects(MapleMonster.class)) {
             spawnedMonstersOnMap.decrementAndGet();
             monster.setHp(0);
+            monster.killBy(null);
             broadcastMessage(MaplePacketCreator.killMonster(monster.getObjectId(), true), monster.getPosition());
             removeMapObject(monster);
         }
     }
 
     public List<MapleCharacter> getAllPlayer() {
-        return getMapObjects().stream().filter(o -> o instanceof MapleCharacter).map(o -> (MapleCharacter) o).collect(Collectors.toList());
+        return getMapObjects(MapleCharacter.class);
     }
 
     public void destroyReactor(int oid) {
@@ -1129,6 +1129,7 @@ public class MapleMap {
 
     public void spawnMonster(final MapleMonster monster) {
         if (mobCapacity != -1 && mobCapacity == spawnedMonstersOnMap.get()) {
+            LOGGER.info("Unable to spawn monster due to mob capacity {}", mobCapacity);
             return;
         }
         monster.setMap(this);
@@ -1871,6 +1872,24 @@ public class MapleMap {
         }
     }
 
+    public <T> ArrayList<T> getMapObjects(Class<T> t) {
+        if (!MapleMapObject.class.isAssignableFrom(t)) {
+            throw new IllegalArgumentException();
+        }
+        ArrayList<T> ret = new ArrayList<>();
+        objectRLock.lock();
+        try {
+            for (MapleMapObject object : mapobjects.values()) {
+                if (object.getClass() == t) {
+                    ret.add((T) object);
+                }
+            }
+            return ret;
+        } finally {
+            objectRLock.unlock();
+        }
+    }
+
     public List<MapleMapObject> getMapObjectsInBox(Rectangle box, List<MapleMapObjectType> types) {
         List<MapleMapObject> ret = new LinkedList<>();
         objectRLock.lock();
@@ -2001,18 +2020,14 @@ public class MapleMap {
         player.setPosition(newPosition);
         Collection<MapleMapObject> visibleObjects = player.getVisibleMapObjects();
         MapleMapObject[] visibleObjectsNow = visibleObjects.toArray(new MapleMapObject[visibleObjects.size()]);
-        try {
-            for (MapleMapObject mo : visibleObjectsNow) {
-                if (mo != null) {
-                    if (mapobjects.get(mo.getObjectId()) == mo) {
-                        updateMapObjectVisibility(player, mo);
-                    } else {
-                        player.removeVisibleMapObject(mo);
-                    }
+        for (MapleMapObject mo : visibleObjectsNow) {
+            if (mo != null) {
+                if (mapobjects.get(mo.getObjectId()) == mo) {
+                    updateMapObjectVisibility(player, mo);
+                } else {
+                    player.removeVisibleMapObject(mo);
                 }
             }
-        } catch (Exception e) {
-            e.printStackTrace();
         }
         for (MapleMapObject mo : getMapObjectsInRange(player.getPosition(), 722500, rangedMapobjectTypes)) {
             if (!player.isMapObjectVisible(mo)) {
@@ -2153,7 +2168,7 @@ public class MapleMap {
         if (!isRespawnEnabled()) {
             return;
         } else if (characters.isEmpty()) {
-            killAllMonsters();
+//            killAllMonsters();
             return;
         }
         short numShouldSpawn = (short) ((spawnPoints.size() - spawnedMonstersOnMap.get()));

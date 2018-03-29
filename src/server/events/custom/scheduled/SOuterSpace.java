@@ -97,7 +97,7 @@ public class SOuterSpace extends SAutoEvent {
                 finished[channel.getId() - 1] = false;
                 eventMap.spawnMonsterOnGroudBelow(monster, pos);
                 channel.broadcastPacket(MaplePacketCreator.serverNotice(0, "The Space Slime has spawned in the Outer Space, Planet Lucian"));
-                LOGGER.info("Space slime spawned at {}", Arrays.toString(ipos));
+                LOGGER.info("spawned at {} in channel {}", Arrays.toString(ipos), channel.getId());
             } else {
                 LOGGER.warn("Scheduled event 'Outer Space' was unable to spawn the monster " + MonsterId);
             }

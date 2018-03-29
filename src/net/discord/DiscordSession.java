@@ -64,7 +64,7 @@ public class DiscordSession {
         if (acceptor != null) {
             acceptor.unbind();
             acceptor.dispose();
-            LOGGER.info("Discord listener unbind from 8483");
+            LOGGER.info("Discord listener disposed");
         } else {
             LOGGER.info("No Discord listener assigned");
         }
