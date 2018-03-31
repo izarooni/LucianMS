@@ -72,7 +72,7 @@ public class UseItemHandler extends PacketHandler {
                 remove(getClient(), slot);
                 return null;
             } else if (itemId == 2000039) {
-                NPCScriptManager.start(getClient(), 9990248, player);
+                NPCScriptManager.start(getClient(), 9990248);
                 remove(getClient(), slot);
                 return null;
             }
