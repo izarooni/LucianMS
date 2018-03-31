@@ -47,6 +47,8 @@ public final class PacketManager {
 
         handlers.set(RecvOpcode.DISTRIBUTE_AP.getValue(), DistributeAPHandler.class);
 
+        handlers.set(RecvOpcode.RPS_ACTION.getValue(), RockPaperScissorsHandler.class);
+
         //region movement handlers
         handlers.set(RecvOpcode.MOVE_PLAYER.getValue(), PlayerMoveHandler.class);
         handlers.set(RecvOpcode.MOVE_LIFE.getValue(), MoveLifeHandler.class);

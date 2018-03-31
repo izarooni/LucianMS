@@ -1,9 +1,8 @@
 package net.server.channel.handlers;
 
 import client.MapleCharacter;
-import client.MapleClient;
 import client.arcade.RPSGame;
-import net.AbstractMaplePacketHandler;
+import net.PacketHandler;
 import net.SendOpcode;
 import tools.Randomizer;
 import tools.data.input.SeekableLittleEndianAccessor;
@@ -13,70 +12,90 @@ import tools.data.output.MaplePacketLittleEndianWriter;
  * @author izarooni
  * @author kevintjuh93
  */
-public class RockPaperScissorsHandler extends AbstractMaplePacketHandler {
+public class RockPaperScissorsHandler extends PacketHandler {
+
+    private byte operation;
+    private byte choice;
 
     @Override
-    public void handlePacket(SeekableLittleEndianAccessor slea, MapleClient client) {
-        MapleCharacter player = client.getPlayer();
+    public void process(SeekableLittleEndianAccessor slea) {
+        operation = slea.readByte();
+        switch (operation) {
+            case 0x1:
+                choice = slea.readByte();
+                break;
+        }
+    }
+
+    @Override
+    public Object onPacket() {
+        MapleCharacter player = getClient().getPlayer();
         RPSGame game = player.getRPSGame();
         if (game == null) {
-            return;
+            player.setRPSGame((game = new RPSGame()));
         }
-        byte action = slea.readByte();
+
         MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
         mplew.writeShort(SendOpcode.RPS_GAME.getValue());
-        switch (action) {
+        switch (operation) {
             case 0x0: // start
             case 0x5: { // retry
-                mplew.write(0x9); // action
-                client.announce(mplew.getPacket());
                 game.setSelection((byte) -1); // allow selection
+
+                mplew.write(0x9); // action
+                getClient().announce(mplew.getPacket());
                 break;
             }
             case 0x1: { // select
                 if (game.getSelection() == -1) {
-                    byte selection = slea.readByte();
                     byte npc = (byte) Randomizer.nextInt(3);
                     int round = game.getRound();
-                    game.setSelection(selection);
+                    game.setSelection(choice);
 
                     mplew.write(0xb); // action
                     mplew.write(npc); // npc choice
 
-                    if (selection == npc) {
+                    if (choice == npc) {
+                        game.setSelection((byte) -1);
                         mplew.write(round); // draw
-                    } else if ((selection == 0 && npc == 1)  // P:Rock     Vs. C:Paper
-                            || (selection == 1 && npc == 2)  // P:Paper    Vs. C:Scissors
-                            || (selection == 2 && npc == 0)) // P:Scissors Vs  C:Rock
+                    } else if ((choice == 0 && npc == 1)  // P:Rock     Vs. C:Paper
+                            || (choice == 1 && npc == 2)  // P:Paper    Vs. C:Scissors
+                            || (choice == 2 && npc == 0)) // P:Scissors Vs  C:Rock
                     {
-                        mplew.write(--round); // NPC win
+                        game.setRound(0);
+                        mplew.write(-1); // NPC win
                     } else {
                         mplew.write(++round); // Player win
                     }
-                    client.announce(mplew.getPacket());
+                    getClient().announce(mplew.getPacket());
                 }
                 break;
             }
             case 0x3: { // continue
+                game.setSelection((byte) -1); // allow selection
+
                 mplew.write(0xC); // action
-                client.announce(mplew.getPacket());
+                getClient().announce(mplew.getPacket());
                 break;
             }
             case 0x4: { // exit
-                mplew.write(0xd); // action
-                client.announce(mplew.getPacket());
                 player.setRPSGame(null);
+
+                mplew.write(0xd); // action
+                getClient().announce(mplew.getPacket());
                 break;
             }
         }
+        return null;
     }
 
     public static void startGame(MapleCharacter player) {
+        player.setRPSGame(new RPSGame());
+
         MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter(5);
         mplew.writeShort(SendOpcode.RPS_GAME.getValue());
         mplew.write(8);
         mplew.writeInt(9000019);
         player.announce(mplew.getPacket());
-        player.setRPSGame(new RPSGame());
     }
 }
