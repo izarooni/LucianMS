@@ -27,11 +27,11 @@ public class NPCScriptManager {
     private NPCScriptManager() {
     }
 
-    public static void start(MapleClient client, int npc, MapleCharacter chr) {
-        start(client, npc, null, chr);
+    public static void start(MapleClient client, int npc) {
+        start(client, npc, null);
     }
 
-    public static void start(MapleClient client, int npc, String fileName, MapleCharacter chr) {
+    public static void start(MapleClient client, int npc, String fileName) {
         MapleCharacter player = client.getPlayer();
         SpamTracker.SpamData spamTracker = player.getSpamTracker(SpamTracker.SpamOperation.NpcTalk);
         if (!spamTracker.testFor(400)) {
@@ -76,14 +76,10 @@ public class NPCScriptManager {
                     iv.invokeFunction("start");
                 } catch (NoSuchMethodException e1) {
                     try {
-                        iv.invokeFunction("start", chr);
-                    } catch (NoSuchMethodException e2) {
-                        try {
-                            iv.invokeFunction("action", 1, 0, -1);
-                        } catch (NoSuchMethodException e3) {
-                            LOGGER.warn("No initializer function for script '{}' npc '{}' using player '{}'", fileName, npc, player.getName());
-                            dispose(client);
-                        }
+                        iv.invokeFunction("action", 1, 0, -1);
+                    } catch (NoSuchMethodException e3) {
+                        LOGGER.warn("No initializer function for script '{}' npc '{}' using player '{}'", fileName, npc, player.getName());
+                        dispose(client);
                     }
                 }
             } catch (ScriptException e) {

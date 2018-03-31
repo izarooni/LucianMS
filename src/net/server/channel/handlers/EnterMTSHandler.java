@@ -47,7 +47,7 @@ public final class EnterMTSHandler extends AbstractMaplePacketHandler {
         MapleCharacter chr = c.getPlayer();
     	if (!ServerConstants.USE_MTS){
     	    chr.announce(MaplePacketCreator.enableActions());
-            NPCScriptManager.start(c, 2007, "f_multipurpose", null);
+            NPCScriptManager.start(c, 2007, "f_multipurpose");
     		return;
     	}
         if (!chr.isAlive()) {

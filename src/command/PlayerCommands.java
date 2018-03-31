@@ -275,7 +275,7 @@ public class PlayerCommands {
             player.getMap().getMonsters().stream().filter(m -> !m.isAlive()).forEach(m -> player.getMap().killMonster(m, null, false));
             player.dropMessage(6, "Disposed!");
         } else if (command.equals("achievements")) {
-            NPCScriptManager.start(client, 2007, "f_achievements", null);
+            NPCScriptManager.start(client, 2007, "f_achievements");
         } else if (command.equals("home")) {
             player.changeMap(ServerConstants.HOME_MAP);
         } else if (command.equals("online")) {
@@ -353,7 +353,7 @@ public class PlayerCommands {
                 player.dropMessage(5, "You must specify a message");
             }
         } else if (command.equals("style", "styler", "stylist")) {
-            NPCScriptManager.start(player.getClient(), 9900001, player);
+            NPCScriptManager.start(player.getClient(), 9900001);
         } else if (command.equals("report")) {
             if (args.length() > 1) {
                 String username = args.get(0);
@@ -427,7 +427,7 @@ public class PlayerCommands {
         } else if (command.equals("shenron")) {
             player.changeMap(908);
         } else if (command.equals("quests")) {
-            NPCScriptManager.start(client, 2007, "f_quests", null);
+            NPCScriptManager.start(client, 2007, "f_quests");
         } else if (command.equals("crystal")) {
             if (player.getMeso() >= 500000000) {
                 if (MapleInventoryManipulator.checkSpace(client, ServerConstants.CURRENCY, 1, "")) {
