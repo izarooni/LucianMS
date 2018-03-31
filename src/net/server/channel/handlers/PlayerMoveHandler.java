@@ -36,7 +36,6 @@ public final class PlayerMoveHandler extends PacketHandler {
 
         if (movements != null && !movements.isEmpty()) {
             MovementPacketHelper.updatePosition(movements, player, 0);
-            player.setLastTimeMoved(System.currentTimeMillis());
             player.getMap().movePlayer(player, player.getPosition());
             if (player.isHidden()) {
                 player.getMap().broadcastGMMessage(player, MaplePacketCreator.movePlayer(player.getId(), movements), false);

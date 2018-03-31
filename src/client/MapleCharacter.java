@@ -158,7 +158,6 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
     private long immortalTimestamp = 0;
     private long portaldelay = 0, lastcombo = 0;
     private long dojoFinish, lastfametime, lastUsedCashItem, lastHealed, lastMesoDrop = -1;
-    private long lastTimeMoved = System.currentTimeMillis();
     private boolean muted = false;
     private boolean debug = false;
     private boolean isbanned = false;
@@ -5728,10 +5727,6 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
     public boolean isImmortal() {
         return System.currentTimeMillis() + 60000 <= immortalTimestamp && immortalTimestamp > 0;
     }
-
-    public long getLastTimeMoved() { return lastTimeMoved;  }
-
-    public void setLastTimeMoved(long moved) { lastTimeMoved = moved; }
 
     public long getImmortalTimestamp() {
         return immortalTimestamp;

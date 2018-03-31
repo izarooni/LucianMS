@@ -153,7 +153,7 @@ public class PlayerCommands {
             if(args.length() >= 1) {
                 MapleCharacter target = ch.getPlayerStorage().getCharacterByName(args.get(0));
                 if(target != null) {
-                    player.dropMessage(String.format("%s is currently %s", target.getName(), (target.getLastTimeMoved() >= 120000 ? "AFK" : "not AFK")));
+                    player.dropMessage(String.format("%s is currently %s", target.getName(), (target.getClient().getSession().isBothIdle() ? "AFK" : "not AFK")));
                 } else {
                     player.dropMessage("The player you tried to check is not online, or does not exist.");
                 }
