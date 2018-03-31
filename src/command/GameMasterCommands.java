@@ -344,7 +344,9 @@ public class GameMasterCommands {
                         MapleCharacter target = ch.getPlayerStorage().getCharacterByName(username);
                         if (target != null) {
                             target.setLevel(level);
+                            target.setExp(0);
                             target.updateSingleStat(MapleStat.LEVEL, level);
+                            target.updateSingleStat(MapleStat.EXP, 0);
                             target.dropMessage("Your level has been updated to " + target.getLevel());
                         } else {
                             player.dropMessage(String.format("Unable to find any player named '%s'", username));
@@ -352,7 +354,9 @@ public class GameMasterCommands {
                     }
                 } else {
                     player.setLevel(level);
+                    player.setExp(0);
                     player.updateSingleStat(MapleStat.LEVEL, level);
+                    player.updateSingleStat(MapleStat.EXP, 0);
                 }
             } else {
                 player.dropMessage(5, "Syntax: !level <number> [usernames...]");
