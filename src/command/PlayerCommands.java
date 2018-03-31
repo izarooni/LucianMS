@@ -422,8 +422,6 @@ public class PlayerCommands {
         } else if (command.equals("rps")) {
             RockPaperScissorsHandler.startGame(player);
             player.dropMessage(6, "Let's play some rock paper scissors!");
-        } else if (command.equals("summer")) {
-            player.changeMap(83);
         } else if (command.equals("arcade")) {
             player.changeMap(978);
         } else if (command.equals("shenron")) {
