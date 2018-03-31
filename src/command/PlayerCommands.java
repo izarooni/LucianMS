@@ -29,6 +29,14 @@ public class PlayerCommands {
     // TODO: Not all command will be seen due to it overflowing the entire text screen!
     public static void execute(MapleClient client, CommandWorker.Command command, CommandWorker.CommandArgs args) {
         MapleCharacter player = client.getPlayer();
+
+        SpamTracker.SpamData spamTracker = player.getSpamTracker(SpamTracker.SpamOperation.PlayerCommands);
+        if (!spamTracker.testFor(1300) && spamTracker.getTriggers() > 3) {
+            player.sendMessage(5, "You are doing this too fast");
+            return;
+        }
+        spamTracker.record();
+
         Channel ch = client.getChannelServer();
 
         if (command.equals("help", "commands")) {

@@ -31,12 +31,12 @@ import java.util.List;
 
 public class Equip extends Item {
 
-    public static enum ScrollResult {
+    public enum ScrollResult {
 
         FAIL(0), SUCCESS(1), CURSE(2);
-        private int value = -1;
+        private final int value;
 
-        private ScrollResult(int value) {
+        ScrollResult(int value) {
             this.value = value;
         }
 
@@ -51,6 +51,7 @@ public class Equip extends Item {
     private float itemExp;
     private int ringid = -1;
     private boolean wear = false;
+    private int regalia = 0;
 
     public Equip(int id, short position) {
         super(id, position, (short) 1);

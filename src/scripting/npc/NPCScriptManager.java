@@ -2,6 +2,7 @@ package scripting.npc;
 
 import client.MapleCharacter;
 import client.MapleClient;
+import client.SpamTracker;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import scripting.ScriptUtil;
@@ -22,6 +23,7 @@ public class NPCScriptManager {
     private static final Logger LOGGER = LoggerFactory.getLogger(NPCScriptManager.class);
     private static ConcurrentHashMap<Integer, Pair<Invocable, NPCConversationManager>> storage = new ConcurrentHashMap<>();
 
+
     private NPCScriptManager() {
     }
 
@@ -30,6 +32,12 @@ public class NPCScriptManager {
     }
 
     public static void start(MapleClient client, int npc, String fileName, MapleCharacter chr) {
+        MapleCharacter player = client.getPlayer();
+        SpamTracker.SpamData spamTracker = player.getSpamTracker(SpamTracker.SpamOperation.NpcTalk);
+        if (!spamTracker.testFor(400)) {
+            return;
+        }
+
         try {
             if (storage.containsKey(client.getAccID())) {
                 dispose(client);
@@ -39,7 +47,7 @@ public class NPCScriptManager {
             String path = "npc/world" + client.getWorld() + "/" + (fileName == null ? npc : fileName) + ".js";
             ArrayList<Pair<String, Object>> binds = new ArrayList<>();
             binds.add(new Pair<>("client", client));
-            binds.add(new Pair<>("player", client.getPlayer()));
+            binds.add(new Pair<>("player", player));
             binds.add(new Pair<>("ch", client.getChannelServer()));
             binds.add(new Pair<>("cm", cm));
 
@@ -54,13 +62,14 @@ public class NPCScriptManager {
                     response += "\r\nName: " + fileName;
                 }
                 response += "\r\nNPC ID: " + npc;
-                client.getPlayer().dropMessage(1, response);
-                LOGGER.error("Unable to execute script '{}' npc '{}' using player '{}'", path, npc, client.getPlayer().getName(), e);
+                player.dropMessage(1, response);
+                LOGGER.error("Unable to execute script '{}' npc '{}' using player '{}'", path, npc, player.getName(), e);
             }
             if (iv == null) {
                 dispose(client);
                 return;
             }
+            spamTracker.record();
             storage.put(client.getAccID(), new Pair<>(iv, cm));
             try {
                 try {
@@ -72,7 +81,7 @@ public class NPCScriptManager {
                         try {
                             iv.invokeFunction("action", 1, 0, -1);
                         } catch (NoSuchMethodException e3) {
-                            LOGGER.warn("No initializer function for script '{}' npc '{}' using player '{}'", fileName, npc, client.getPlayer().getName());
+                            LOGGER.warn("No initializer function for script '{}' npc '{}' using player '{}'", fileName, npc, player.getName());
                             dispose(client);
                         }
                     }
@@ -83,9 +92,9 @@ public class NPCScriptManager {
                     response += "\r\nName: " + fileName;
                 }
                 response += "\r\nNPC ID: " + npc;
-                client.getPlayer().dropMessage(1, response);
+                player.dropMessage(1, response);
                 dispose(client);
-                LOGGER.error("Unable to invoke initializer function for script '{}' npc '{}' using player '{}'", fileName, npc, client.getPlayer(), e);
+                LOGGER.error("Unable to invoke initializer function for script '{}' npc '{}' using player '{}'", fileName, npc, player, e);
             }
         } catch (Exception e) {
             e.printStackTrace();
