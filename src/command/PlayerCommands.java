@@ -67,6 +67,7 @@ public class PlayerCommands {
             commands.add("@fixexp - Reset EXP");
             commands.add("@shenron - Warp to the Shenron summoning map");
             commands.add("@quests - List your quests currently in-progress");
+            commands.add("@afk <ign> - Check if someone is AFK");
             commands.add("@uptime - Display how long the server has been live");
             commands.add("@time - Display the current server time");
             Collections.sort(commands);
@@ -148,6 +149,17 @@ public class PlayerCommands {
             player.updateSingleStat(MapleStat.AVAILABLEAP, player.getRemainingAp());
             player.announce(MaplePacketCreator.updatePlayerStats(statChange, player));
             player.dropMessage(6, "Done!");
+        } else if(command.equals("afk", "away")) {
+            if(args.length() >= 1) {
+                MapleCharacter target = ch.getPlayerStorage().getCharacterByName(args.get(0));
+                if(target != null) {
+                    player.dropMessage(String.format("%s is currently %s", target.getName(), (target.getLastTimeMoved() >= 120000 ? "AFK" : "not AFK")));
+                } else {
+                    player.dropMessage("The player you tried to check is not online, or does not exist.");
+                }
+            } else {
+                player.dropMessage("Please make sure to specify a username.");
+            }
         } else if (command.matches("^(str|dex|int|luk)$")) {
             if (args.length() == 1) {
                 Long var_nStat = args.parseNumber(0);
