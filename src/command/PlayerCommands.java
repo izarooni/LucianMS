@@ -67,9 +67,13 @@ public class PlayerCommands {
             commands.add("@fixexp - Reset EXP");
             commands.add("@shenron - Warp to the Shenron summoning map");
             commands.add("@quests - List your quests currently in-progress");
+            commands.add("@uptime - Display how long the server has been live");
+            commands.add("@time - Display the current server time");
             Collections.sort(commands);
             commands.forEach(player::dropMessage);
             commands.clear();
+        } else if (command.equals("time")) {
+            player.sendMessage("Server time is: {}", Calendar.getInstance().getTime().toString());
         } else if (command.equals("uptime")) {
             player.sendMessage("The server has been online for {}", StringUtil.getTimeElapse(System.currentTimeMillis() - Server.Uptime));
         } else if (command.equals("checkme", "spy")) {

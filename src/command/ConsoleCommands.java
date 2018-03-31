@@ -38,7 +38,7 @@ public class ConsoleCommands {
                 reading = true;
                 Scanner scanner = new Scanner(System.in);
                 String line;
-                while (reading && (line = scanner.nextLine()) != null) {
+                while (scanner.hasNext() && reading && (line = scanner.nextLine()) != null) {
                     // from CommandWorker
                     int cn = line.indexOf(" "); // command name split index
                     String name; // command name
