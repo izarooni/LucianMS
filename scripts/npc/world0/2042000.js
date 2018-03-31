@@ -19,14 +19,14 @@ function action(mode, type, selection) {
     }
 }
 
-function Entrance(seleciton) {
+function Entrance(selection) {
     if (status == 1) {
         cm.sendSimple("#e<Competition: Monster Carnival>#n\r\nIf you're itching for some action, then the Monster Carnival is the place for you!\r\n#b"
         + "\r\n#L0#I want to participate in the Monster Carnival.#l"
         + "\r\n#L1#Tell me more about the Monster Carnival.#l"
         +" \r\n#L2#I want to trade in my Maple Shiny Coins.#l");
     } else if (status == 2) {
-        if (seleciton == 0) {
+        if (selection == 0) {
 
         } else if (selection == 1) {
             cm.sendNext("The #bMonster Carnival#k is that magical place where you team up with others to obliterate hordes of monsters faster than the other folks.");

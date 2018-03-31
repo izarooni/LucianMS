@@ -91,13 +91,15 @@ function action(mode, type, selection) {
                         }
                         cm.sendPrev(
                                 "#e" + this.stalk.name + "'s stats#n\r\n"
-                                + "\r\nAccount Name: " + t.getClient().getName()
-                                + "\r\nAccount Id: " + t.getAccountId()
+                                + "\r\nAccount Name: " + t.getClient().getAccountName()
+                                + "\r\nAccount Id: " + t.getAccountID()
                                 + "\r\nCharacter Id: " + t.getId()
                                 + "\r\nOther characters: \r\n" + otherChars
                                 + "\r\n\r\nRemote address: " + t.getClient().getSession().getRemoteAddress().toString().substring(1).split(":")[0]
-                                + "\r\n\r\nMACs: " + java.util.Arrays.toString(t.getClient().getMacs())
+                                + "\r\n\r\nMACs: " + t.getClient().getMacs()
                                 + "\r\nHWID: " + t.getClient().getHWID()
+                                + "\r\nCrush rings: " + t.getCrushRings()
+                                + "\r\nFriendship rings: " + t.getFriendshipRings()
                                 );
                     } else {
                         cm.sendNext("The player could not be found");
@@ -151,9 +153,11 @@ function action(mode, type, selection) {
                 text += "\r\n#L9#MP: " + this.item.getMp() + "#l";
                 text += "\r\n#L10#SPEED: " + this.item.getSpeed() + "#l";
                 text += "\r\n#L11#JUMP: " + this.item.getJump() + "#l";
+                text += "\r\n#L15#Ring ID: " + this.item.getRingId() + "#l";
             } else {
                 text += "\r\n#L12#QUANTITY: " + this.item.getQuantity() + "#l";
             }
+            text += "\r\n#L16#EXPIRATION: " + this.item.getExpiration() + "#l";
             text += "\r\n#L13#OWNER: " + this.item.getOwner() + "#l";
             text += "\r\n#L14#Remove#l";
             cm.sendSimple(text);
@@ -183,7 +187,7 @@ function action(mode, type, selection) {
         } else {
             var newval = parseInt(cm.getText()); // the new value for the item stat
             this.error = null; // reset error message
-            if (isNaN(newval) || newval < 0 || newval > 32767) {
+            if (isNaN(newval) || ((newval < 0 || newval > 32767) && this.changeStat != 16)) {
                 this.error = "#r'" + cm.getText() + "' is an invalid number#k\r\n"; // set error message
                 status -= 2; // return to previous status to display error message
             } else {
@@ -264,34 +268,21 @@ function getInventoryType(i) {
 // Used to get stat name by selection value
 function getUpdateName(stat) {
     switch (stat) {
-        case 0:
-            return "str";
-        case 1:
-            return "dex";
-        case 2:
-            return "int";
-        case 3:
-            return "luk";
-        case 4:
-            return "watk";
-        case 5:
-            return "matk";
-        case 6:
-            return "wdef";
-        case 7:
-            return "mdef";
-        case 8:
-            return "hp";
-        case 9:
-            return "mp";
-        case 10:
-            return "speed";
-        case 11:
-            return "jump";
-        case 12:
-            return "quantity";
-        case 13:
-            return "owner";
+        case 0: return "str";
+        case 1: return "dex";
+        case 2: return "int";
+        case 3: return "luk";
+        case 4: return "watk";
+        case 5: return "matk";
+        case 6: return "wdef";
+        case 7: return "mdef";
+        case 8: return "hp";
+        case 9: return "mp";
+        case 10: return "speed";
+        case 11: return "jump";
+        case 12: return "quantity";
+        case 13: return "owner";
+        case 16: return "expiration";
     }
 }
 
@@ -302,34 +293,21 @@ function updateItem(player, item, stat, newval) {
         cm.getPlayer().dropMesseage("The player could not be found");
         return;
     }
-    if (stat === 0)
-        item.setStr(newval);
-    else if (stat === 1)
-        item.setDex(newval);
-    else if (stat === 2)
-        item.setInt(newval);
-    else if (stat === 3)
-        item.setLuk(newval);
-    else if (stat === 4)
-        item.setWatk(newval);
-    else if (stat === 5)
-        item.setMatk(newval);
-    else if (stat === 6)
-        item.setWdef(newval);
-    else if (stat === 7)
-        item.setMdef(newval);
-    else if (stat === 8)
-        item.setHp(newval);
-    else if (stat === 9)
-        item.setMp(newval);
-    else if (stat === 10)
-        item.setSpeed(newval);
-    else if (stat === 11)
-        item.setJump(newval);
-    else if (stat === 12)
-        item.setQuantity(newval);
-    else if (stat === 13)
-        item.setOwner(newval);
+    if (stat === 0) item.setStr(newval);
+    else if (stat === 1) item.setDex(newval);
+    else if (stat === 2) item.setInt(newval);
+    else if (stat === 3) item.setLuk(newval);
+    else if (stat === 4) item.setWatk(newval);
+    else if (stat === 5) item.setMatk(newval);
+    else if (stat === 6) item.setWdef(newval);
+    else if (stat === 7) item.setMdef(newval);
+    else if (stat === 8) item.setHp(newval);
+    else if (stat === 9) item.setMp(newval);
+    else if (stat === 10) item.setSpeed(newval);
+    else if (stat === 11) item.setJump(newval);
+    else if (stat === 12) item.setQuantity(newval);
+    else if (stat === 13) item.setOwner(newval);
+    else if (stat == 16) item.setExpiration(newval);
     player.forceUpdateItem(item);
 }
 
