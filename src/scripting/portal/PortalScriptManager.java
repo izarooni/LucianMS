@@ -1,6 +1,8 @@
 package scripting.portal;
 
+import client.MapleCharacter;
 import client.MapleClient;
+import client.SpamTracker;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import scripting.ScriptUtil;
@@ -46,13 +48,20 @@ public class PortalScriptManager {
     }
 
     public static boolean executePortalScript(MapleClient client, MaplePortal portal) {
+        MapleCharacter player = client.getPlayer();
+        SpamTracker.SpamData spamTracker = player.getSpamTracker(SpamTracker.SpamOperation.PortalScripts);
+        if (!spamTracker.testFor(1000)) {
+            return false;
+        }
+        spamTracker.record();
+
         try {
             Invocable iv = getPortalScript(client, portal.getScriptName());
             if (iv != null) {
                 return (boolean) iv.invokeFunction("enter", new PortalPlayerInteraction(client, portal));
             }
         } catch (IOException | ScriptException | NoSuchMethodException e) {
-            LOGGER.info("Unable to invoke function 'enter' in script Name: {}, ID: {}, Map: {}", portal.getScriptName(), portal.getId(), client.getPlayer().getMapId(), e);
+            LOGGER.info("Unable to invoke function 'enter' in script Name: {}, ID: {}, Map: {}", portal.getScriptName(), portal.getId(), player.getMapId(), e);
         }
         return false;
     }

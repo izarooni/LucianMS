@@ -105,7 +105,6 @@ public final class PacketProcessor {
             registerHandler(RecvOpcode.VIEW_ALL_PIC_REGISTER, new ViewAllPicRegisterHandler());
         } else {
             //CHANNEL HANDLERS
-            registerHandler(RecvOpcode.RPS_ACTION, new RockPaperScissorsHandler());
             registerHandler(RecvOpcode.CHANGE_CHANNEL, new ChangeChannelHandler());
             registerHandler(RecvOpcode.STRANGE_DATA, LoginRequiringNoOpHandler.getInstance());
             registerHandler(RecvOpcode.GENERAL_CHAT, new GeneralChatHandler());

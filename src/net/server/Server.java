@@ -56,6 +56,9 @@ import server.quest.MapleQuest;
 import server.quest.custom.CQuestBuilder;
 import tools.DatabaseConnection;
 import tools.Pair;
+import tools.StringUtil;
+import tools.workers.DailyWorker;
+import tools.workers.RankingWorker;
 
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -64,6 +67,7 @@ import java.net.URISyntaxException;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 
 public class Server implements Runnable {
 
@@ -155,7 +159,6 @@ public class Server implements Runnable {
                 return;
             } else {
                 config = new Config(new JSONObject(new JSONTokener(new FileInputStream("server-config.json"))));
-                LOGGER.info("Server config loaded");
             }
 
             if (config.getBoolean("WhitelistEnabled")) {
@@ -200,8 +203,19 @@ public class Server implements Runnable {
 
         TaskExecutor.createRepeatingTask(RankingWorker::new, ServerConstants.RANKING_INTERVAL);
 
+        // schedule a daily task
+        Calendar tmrw = Calendar.getInstance();
+        tmrw.set(Calendar.DATE, tmrw.get(Calendar.DATE) + 1);
+        tmrw.set(Calendar.HOUR_OF_DAY, 2);
+        tmrw.set(Calendar.MINUTE, 0);
+        tmrw.set(Calendar.SECOND, 0);
+        tmrw.set(Calendar.MILLISECOND, 0);
+        TaskExecutor.createRepeatingTask(new DailyWorker(), (tmrw.getTimeInMillis() - System.currentTimeMillis()), TimeUnit.DAYS.toMillis(1));
+        LOGGER.info("Entry reset scheduled to run in {}", StringUtil.getTimeElapse(tmrw.getTimeInMillis() - System.currentTimeMillis()));
+
         long timeToTake = System.currentTimeMillis();
         MapleQuest.loadAllQuest();
+        CQuestBuilder.loadAllQuests();
         LOGGER.info("Quest data loaded in {}s", ((System.currentTimeMillis() - timeToTake) / 1000d));
 
         timeToTake = System.currentTimeMillis();
@@ -213,10 +227,6 @@ public class Server implements Runnable {
         LOGGER.info("Item data loaded in {}s", ((System.currentTimeMillis() - timeToTake) / 1000d));
         CashItemFactory.loadCommodities();
         LOGGER.info("Cash shop commodities loaded in {}s", ((System.currentTimeMillis() - timeToTake) / 1000d));
-
-        timeToTake = System.currentTimeMillis();
-        CQuestBuilder.loadAllQuests();
-        LOGGER.info("Custom quest data loaded in {}s", ((System.currentTimeMillis() - timeToTake) / 1000d));
 
         timeToTake = System.currentTimeMillis();
         Achievements.initialize();
@@ -248,39 +258,19 @@ public class Server implements Runnable {
                 //                final long repeat = (1000 * 60 * 60) * 4;
                 //                TaskExecutor.createRepeatingTask(() -> GAutoEventManager.startRandomEvent(world), repeat);
                 world.addScheduledEvent(new SOuterSpace(world));
-                LOGGER.info("World {} created in {}s", world.getId(), ((System.currentTimeMillis() - timeToTake) / 1000d));
+                LOGGER.info("World {} created in {}s", (world.getId() + 1), ((System.currentTimeMillis() - timeToTake) / 1000d));
             }
         } catch (Exception e) {
             e.printStackTrace();// For those who get errors
             System.exit(0);
         }
 
-        tomorrowSchedule();
-
         ConsoleCommands.beginReading();
         LOGGER.info("Console now listening for commands");
 
-        LOGGER.info("LucianMS is now online.");
+        LOGGER.info("LucianMS took {}s to start", ((System.currentTimeMillis() - timeToTake) / 1000d));
         online = true;
 
-    }
-
-    public void tomorrowSchedule() {
-        Calendar calendar = Calendar.getInstance();
-        calendar.set(Calendar.DAY_OF_MONTH, calendar.get(Calendar.DAY_OF_MONTH) + 1);
-        LOGGER.info("'tomorrow's 'schedule' is queued for " + calendar.getTime().toString());
-
-        dailyTask = TaskExecutor.runAt(new Runnable() {
-            @Override
-            public void run() {
-                LOGGER.info("Executing 'tomorrow's schedule'");
-
-                // testFor character data (character age)
-                getWorlds().forEach(w -> w.getPlayerStorage().getAllCharacters().forEach(p -> Achievements.testFor(p, -1)));
-
-                tomorrowSchedule();
-            }
-        }, calendar.getTime().getTime());
     }
 
     public Properties getSubnetInfo() {

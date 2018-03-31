@@ -1,36 +1,45 @@
-var status;
-var text = "I am the gate of #rOrichalcos#k. I bare the soul of the defeated Black Mage commander.";
+var ITEM = 4011025; //4000000
+var MOB = 9895257;  //100100
+
+var MSG_1 = "I am the gate of #rOrichalcos#k. I bare the soul of the defeated Black Mage commander.";
+var MSG_2 = "The gate of #rOrichalcos#k is told to bare the soul of a lost commander.\r\n#L0#Reincarnate #bBlack Mage's commander#k";
+var MSG_NO_ITEM = "You don't have the required item, or the boss is already summoned.";
+var MSG_BYE = "#e#kOk, see you next time!";
+
+var MapleLifeFactory = Java.type('server.life.MapleLifeFactory');
+var status = 0;
 
 function start() {
-    status = -1;
     action(1, 0, 0);
 }
 
 function action(mode, type, selection) {
-    if (mode == 1)
-        status++;
-    else {
-        cm.sendOk("#e#kOk, see you next time!");
-        cm.dispose();
-        return;
+    status++;
+    if(mode==-1){
+        cm.sendOk(MSG_BYE);
+        return cm.dispose();
     }
-        if (status == 12) {   
-            cm.sendNext("I am the gate of #rOrichalcos#k. I bare the soul of the defeated Black Mage commander.");  
-        }  
-        else if (status == 0) {  
-    cm.sendSimple("The gate of #rOrichalcos#k is told to bare the soul of a lost commander.\r\n#L0#Reincarnate #bBlack Mage's commander#k");
-        } 
-        else if (status == 1) {
-        
-        if (selection == 0) {  
-     if (cm.getPlayer().getMap().getMonsterCount() == 0 && cm.haveItem(9895255, 1)) {
-            cm.summonMob(9895255, 1);
-            cm.gainItem(4011025, -1);
-            cm.dispose();
-        } else {
-      cm.sendOk("You don't have the required item, or the boss is already summoned.");
-      cm.dispose();
+    
+    if(status==1){
+        return cm.sendNext(MSG_1); 
+    }
+
+    if(status==2){
+        return cm.sendSimple(MSG_2);
+    }
+
+    if(status==3){
+        if(selection==-1){
+            cm.sendOk(MSG_BYE);
+            return cm.dispose();
+        }
+        if (cm.getPlayer().getMap().countMonster(MOB) == 0 && cm.haveItem(ITEM, 1)) {
+            var mob = MapleLifeFactory.getMonster(MOB);
+            cm.getPlayer().getMap().spawnMonsterOnGroundBelow(mob,cm.getPlayer().getPosition());
+            cm.gainItem(ITEM, -1);
+            return cm.dispose();
+        }
+        cm.sendOk(MSG_NO_ITEM);
+    }
+    cm.dispose();
 }
-}
-        }  
-    } 

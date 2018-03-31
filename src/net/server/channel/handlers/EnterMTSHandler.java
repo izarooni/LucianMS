@@ -35,6 +35,7 @@ import java.util.List;
 import constants.ServerConstants;
 import net.AbstractMaplePacketHandler;
 import net.server.Server;
+import scripting.npc.NPCScriptManager;
 import server.MTSItemInfo;
 import tools.DatabaseConnection;
 import tools.MaplePacketCreator;
@@ -43,10 +44,12 @@ import tools.data.input.SeekableLittleEndianAccessor;
 public final class EnterMTSHandler extends AbstractMaplePacketHandler {
     @Override
     public final void handlePacket(SeekableLittleEndianAccessor slea, MapleClient c) {
+        MapleCharacter chr = c.getPlayer();
     	if (!ServerConstants.USE_MTS){
+    	    chr.announce(MaplePacketCreator.enableActions());
+            NPCScriptManager.start(c, 2007, "f_multipurpose", null);
     		return;
     	}
-        MapleCharacter chr = c.getPlayer();
         if (!chr.isAlive()) {
             c.announce(MaplePacketCreator.enableActions());
             return;

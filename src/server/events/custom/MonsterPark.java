@@ -1,6 +1,7 @@
 package server.events.custom;
 
 import client.MapleCharacter;
+import constants.ExpTable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import scheduler.Task;
@@ -30,7 +31,7 @@ public class MonsterPark extends GenericEvent {
     private Task timeout = null;
     private Hashtable<Integer, Integer> returnMaps = new Hashtable<>();
 
-    public MonsterPark(int world, int channel, int mapId) {
+    public MonsterPark(int world, int channel, int mapId, int baseLevel) {
         this.mapId = mapId;
         this.mapFactory = new MapleMapFactory(world, channel);
 
@@ -53,10 +54,10 @@ public class MonsterPark extends GenericEvent {
                         MapleMonsterStats stats = new MapleMonsterStats();
                         stats.setHp(monster.getHp());
                         stats.setMp(monster.getMp());
-                        stats.setExp((int) (stats.getExp() * 1.25));
+                        stats.setExp((int) (ExpTable.getExpNeededForLevel(baseLevel) * (Math.random() * 0.006) + 0.01));
                         monster.setOverrideStats(stats);
                         monster.addListener(new MonsterListener() {
-                            @Override
+                                @Override
                             public void monsterKilled(int aniTime) {
                                 totalExp.addAndGet(monster.getExp());
                                 if (instanceMap.getMonsters().isEmpty()) {

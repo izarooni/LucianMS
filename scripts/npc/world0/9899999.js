@@ -55,7 +55,7 @@ function action(mode, type, selection) {
         }
     } else if (status == 2) {
         if (this.quest == null || !this.finished) {
-            var kills = cqb.getToKill(quest_id);
+            var kills = this.meta.getToKill();
             if (!kills.isEmpty()) {
                 var text = "#FUI/UIWindow/Quest/summary#\r\n";
                 text += "#eKill the following monsters#n#b";
@@ -76,7 +76,7 @@ function action(mode, type, selection) {
         }
     } else if (status == 3) {
         if (this.quest == null || !this.finished) {
-            var collects = cqb.getToCollect(quest_id);
+            var collects = this.meta.getToCollect();
             if (!collects.isEmpty()) {
                 var text = "#FUI/UIWindow/Quest/summary#\r\n";
                 text += "#eCollect the following items#n#b";
@@ -90,7 +90,7 @@ function action(mode, type, selection) {
         }
     } else if (status == 4) {
         var text = "#FUI/UIWindow/Quest/reward#\r\n\r\n";
-        var rewards = cqb.getRewards(quest_id);
+        var rewards = this.meta.getRewards();
         var total = 0;
         rewards.get("exp").forEach(function(r) {
             total += r.getExp();

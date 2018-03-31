@@ -261,6 +261,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
     private JumpQuestController JQController;
     private RPSGame RPSGame = null;
     private Occupation occupation = null;
+    private final SpamTracker spamTracker = new SpamTracker();
 
     // EVENTS
     private byte team = 0;
@@ -5647,6 +5648,10 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
     public void setOccupation(Occupation occupation) {
         this.occupation = occupation;
         setRates();
+    }
+
+    public SpamTracker.SpamData getSpamTracker(SpamTracker.SpamOperation operation) {
+        return spamTracker.getData(operation);
     }
 
     public JumpQuestController getJQController() {

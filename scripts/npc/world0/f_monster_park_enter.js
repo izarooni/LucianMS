@@ -1,11 +1,13 @@
 /* izarooni */
 // npc: 9071000
 // map: 951000000
-var MonsterPark = Java.type("server.events.custom.MonsterPark");
+const MonsterPark = Java.type("server.events.custom.MonsterPark");
+const EntryLimits = Java.type("tools.EntryLimits");
+const ENTRY_TYPE = "m_park";
 var status = 0;
-var minParticpants = 2;
 
-var areas = {
+const minParticpants = 2;
+const areas = {
     zebra: [["Auto Security Area", 953020000, 100], ["Clandestine Ruins", 953090000, 110], ["Dangerously Isolated Forest", 953080000, 120]],
     leopard: [["Dead Tree Forest", 954010000, 130], ["Dragon Nest", 954030000, 140], ["Forbidden Time", 953050000, 150]],
     tiger: [["Mossy Tree Forest", 953030000,160], ["Secret Pirate Hideout", 953060000, 170], ["Sky Forest Training Center", 953040000, 180]],
@@ -25,6 +27,7 @@ function action(mode, type, selection) {
     if (status == 1) {
         // skip
     } else if (status == 2) {
+        let canEnter = true;
         if (!player.isGM()) {
             if (cm.getParty() == null || cm.getPartyMembers().size() <= minParticpants) {
                 cm.sendOk("You must be in a party with at least #b" + minParticpants + " members#k to enter ths monster park");
@@ -35,6 +38,16 @@ function action(mode, type, selection) {
                 cm.dispose();
                 return;
             }
+            cm.getPartyMembers().forEach(function(member) {
+                if (EntryLimits.getEntries(member.getId(), ENTRY_TYPE) > 3) {
+                    canEnter = false;
+                }
+            });
+        }
+        if (!canEnter) {
+            cm.sendOk("One or more of your party members have reached the daily limit for entering the monster park");
+            cm.dispose();
+            return;
         }
         var area = getAreaFromValue(selection);
         var text = "\r\n#b"
@@ -56,15 +69,17 @@ function action(mode, type, selection) {
         if (player.getLevel() < level) {
             cm.sendOk("You must be at least #blevel " + level + "#k to enter this area");
         } else {
-            var park = new MonsterPark(client.getWorld(), client.getChannel(), selection);
+            var park = new MonsterPark(client.getWorld(), client.getChannel(), selection, level);
             if (cm.getParty() != null) {
                 cm.getPartyMembers().forEach(function(member) {
                     if (member.getMapId() == player.getMapId()) {
                         park.registerPlayer(member);
+                        EntryLimits.incrementEntry(member.getId(), ENTRY_TYPE);
                     }
                 });
             } else if (player.isGM()) {
                 park.registerPlayer(player);
+                EntryLimits.incrementEntry(player.getId(), ENTRY_TYPE);
             }
         }
         cm.dispose();
@@ -84,7 +99,6 @@ function getAreaLevelFromMapId(m){
 }
 
 function getAreaFromValue(n) {
-    print(n)
     switch (n) {
         case 2: return areas.tiger;
         case 3: return areas.zebra;

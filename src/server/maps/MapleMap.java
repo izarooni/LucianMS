@@ -1947,7 +1947,7 @@ public class MapleMap {
     public void addMonsterSpawn(MapleMonster monster, int mobTime, int team) {
         Point newpos = calcPointBelow(monster.getPosition());
         if (newpos == null) {
-            LOGGER.warn("Can't add spawn point for monster {} at {} in map {}: No foothold found below", monster.getId(), monster.getPosition().toString(), getId());
+            LOGGER.warn("No foothold for monster {} at x:{},y:{} in map {}", monster.getId(), monster.getPosition().x, monster.getPosition().y, getId());
             return;
         }
         newpos.y -= 1;

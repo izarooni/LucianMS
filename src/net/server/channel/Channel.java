@@ -69,7 +69,7 @@ public final class Channel {
     private final Map<Integer, Integer> storedVars = new HashMap<>();
     private ReentrantReadWriteLock merchant_lock = new ReentrantReadWriteLock(true);
     private List<MapleExpedition> expeditions = new ArrayList<>();
-    private MCarnivalLobbyManager carnivalLobbyManager = null;
+    private MCarnivalLobbyManager carnivalLobbyManager;
     private MapleEvent event;
 
     public Channel(final int world, final int channel) {

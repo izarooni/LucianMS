@@ -37,6 +37,7 @@ public class CQuestBuilder {
             quests.clear();
             quests = new HashMap<>();
         }
+        final long timeToTake = System.currentTimeMillis();
         File file = new File("quests");
         if (file.mkdirs()) {
             LOGGER.info("Custom quests directory created");
@@ -57,7 +58,7 @@ public class CQuestBuilder {
                 }
             }
         }
-        LOGGER.info("{} custom quests loaded", quests.size());
+        LOGGER.info("{} custom quests loaded in {}s", quests.size(), ((System.currentTimeMillis() - timeToTake) / 1000d));
     }
 
     /**

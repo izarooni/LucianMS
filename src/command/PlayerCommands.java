@@ -29,6 +29,14 @@ public class PlayerCommands {
     // TODO: Not all command will be seen due to it overflowing the entire text screen!
     public static void execute(MapleClient client, CommandWorker.Command command, CommandWorker.CommandArgs args) {
         MapleCharacter player = client.getPlayer();
+
+        SpamTracker.SpamData spamTracker = player.getSpamTracker(SpamTracker.SpamOperation.PlayerCommands);
+        if (!spamTracker.testFor(1300) && spamTracker.getTriggers() > 3) {
+            player.sendMessage(5, "You are doing this too fast");
+            return;
+        }
+        spamTracker.record();
+
         Channel ch = client.getChannelServer();
 
         if (command.equals("help", "commands")) {
@@ -60,9 +68,13 @@ public class PlayerCommands {
             commands.add("@shenron - Warp to the Shenron summoning map");
             commands.add("@quests - List your quests currently in-progress");
             commands.add("@afk <ign> - Check if someone is AFK");
+            commands.add("@uptime - Display how long the server has been live");
+            commands.add("@time - Display the current server time");
             Collections.sort(commands);
             commands.forEach(player::dropMessage);
             commands.clear();
+        } else if (command.equals("time")) {
+            player.sendMessage("Server time is: {}", Calendar.getInstance().getTime().toString());
         } else if (command.equals("uptime")) {
             player.sendMessage("The server has been online for {}", StringUtil.getTimeElapse(System.currentTimeMillis() - Server.Uptime));
         } else if (command.equals("checkme", "spy")) {
@@ -422,8 +434,6 @@ public class PlayerCommands {
         } else if (command.equals("rps")) {
             RockPaperScissorsHandler.startGame(player);
             player.dropMessage(6, "Let's play some rock paper scissors!");
-        } else if (command.equals("summer")) {
-            player.changeMap(83);
         } else if (command.equals("arcade")) {
             player.changeMap(978);
         } else if (command.equals("shenron")) {
