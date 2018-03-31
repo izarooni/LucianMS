@@ -51,9 +51,9 @@ public class NPCTalkHandler extends PacketHandler {
                     }
                     if (npc.getId() >= 9100100 && npc.getId() <= 9100200) {
                         // Custom handling for gachapon scripts to reduce the amount of scripts needed.
-                        NPCScriptManager.start(getClient(), npc.getId(), "gachapon", null);
+                        NPCScriptManager.start(getClient(), npc.getId(), "gachapon");
                     } else {
-                        NPCScriptManager.start(getClient(), npc.getId(), npc.getScript(), null);
+                        NPCScriptManager.start(getClient(), npc.getId(), npc.getScript());
                     }
                 }
             } else if (mapObjects instanceof PlayerNPC) {
@@ -61,7 +61,7 @@ public class NPCTalkHandler extends PacketHandler {
                 if (player.isGM() && player.isDebug()) {
                     player.sendMessage("NPC Talk ID: {}, Script: {}", npc.getId(), npc.getScript());
                 }
-                NPCScriptManager.start(getClient(), npc.getId(), npc.getScript(), null);
+                NPCScriptManager.start(getClient(), npc.getId(), npc.getScript());
             } else {
                 LOGGER.warn("{} attempted to speak to non-npc map object {}", player.getName(), mapObjects.getType().name());
             }

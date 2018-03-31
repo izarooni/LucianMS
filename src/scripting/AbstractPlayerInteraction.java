@@ -158,7 +158,7 @@ public class AbstractPlayerInteraction {
 
     public void openNpc(int npcid, String script) {
         NPCScriptManager.dispose(c);
-        NPCScriptManager.start(c, npcid, script, null);
+        NPCScriptManager.start(c, npcid, script);
     }
 
     public void updateQuest(int questid, String data) {

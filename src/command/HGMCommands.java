@@ -295,11 +295,11 @@ public class HGMCommands {
             if (args.length() == 1) {
                 Long a1 = args.parseNumber(0);
                 if (args.getError(0) != null) {
-                    NPCScriptManager.start(client, 10200, args.get(0), player);
+                    NPCScriptManager.start(client, 10200, args.get(0));
                     return;
                 }
                 int npcId = a1.intValue();
-                NPCScriptManager.start(client, npcId, player);
+                NPCScriptManager.start(client, npcId);
             } else {
                 player.dropMessage(5, "You must specify an NPC ID");
             }

@@ -38,7 +38,7 @@ public class ItemRewardHandler extends PacketHandler {
     public Object onPacket() {
         MapleCharacter player = getClient().getPlayer();
         if (itemId == 2022336) {
-            NPCScriptManager.start(getClient(), 2007, "f_level_rewards", null);
+            NPCScriptManager.start(getClient(), 2007, "f_level_rewards");
             NPCScriptManager.action(getClient(), (byte) 1, (byte) 0, slot); // open box
             getClient().announce(MaplePacketCreator.enableActions());
             return null;

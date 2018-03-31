@@ -28,10 +28,10 @@ import server.quest.MapleQuest;
 import tools.MaplePacketCreator;
 
 public class MapScriptMethods extends AbstractPlayerInteraction {
-   
-	private String rewardstring = " title has been rewarded. Please see NPC Dalair to receive your Medal.";
-    
-	public MapScriptMethods(MapleClient c) {
+
+    private String rewardstring = " title has been rewarded. Please see NPC Dalair to receive your Medal.";
+
+    public MapScriptMethods(MapleClient c) {
         super(c);
     }
 
@@ -58,20 +58,15 @@ public class MapScriptMethods extends AbstractPlayerInteraction {
     }
 
     public void startExplorerExperience() {
-        if (c.getPlayer().getMapId() == 1020100) //Swordman
-        {
+        if (c.getPlayer().getMapId() == 1020100) {
             c.announce(MaplePacketCreator.showIntro("Effect/Direction3.img/swordman/Scene" + c.getPlayer().getGender()));
-        } else if (c.getPlayer().getMapId() == 1020200) //Magician
-        {
+        } else if (c.getPlayer().getMapId() == 1020200) {
             c.announce(MaplePacketCreator.showIntro("Effect/Direction3.img/magician/Scene" + c.getPlayer().getGender()));
-        } else if (c.getPlayer().getMapId() == 1020300) //Archer
-        {
+        } else if (c.getPlayer().getMapId() == 1020300) {
             c.announce(MaplePacketCreator.showIntro("Effect/Direction3.img/archer/Scene" + c.getPlayer().getGender()));
-        } else if (c.getPlayer().getMapId() == 1020400) //Rogue
-        {
+        } else if (c.getPlayer().getMapId() == 1020400) {
             c.announce(MaplePacketCreator.showIntro("Effect/Direction3.img/rogue/Scene" + c.getPlayer().getGender()));
-        } else if (c.getPlayer().getMapId() == 1020500) //Pirate
-        {
+        } else if (c.getPlayer().getMapId() == 1020500) {
             c.announce(MaplePacketCreator.showIntro("Effect/Direction3.img/pirate/Scene" + c.getPlayer().getGender()));
         }
     }

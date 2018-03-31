@@ -55,7 +55,7 @@ public class ItemMoveHandler extends PacketHandler {
         quantity = slea.readShort();
 
         if (source < 0 && action > 0 && source == -149) {
-            NPCScriptManager.start(getClient(), 9010000, "f_equip_info", null);
+            NPCScriptManager.start(getClient(), 9010000, "f_equip_info");
             setCanceled(true);
         }
     }

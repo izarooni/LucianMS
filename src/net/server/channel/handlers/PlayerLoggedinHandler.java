@@ -38,6 +38,7 @@ import net.server.world.PartyOperation;
 import net.server.world.World;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import scripting.npc.NPCScriptManager;
 import tools.DatabaseConnection;
 import tools.MaplePacketCreator;
 import tools.data.input.SeekableLittleEndianAccessor;
@@ -80,7 +81,7 @@ public final class PlayerLoggedinHandler extends AbstractMaplePacketHandler {
         c.setPlayer(player);
         c.setAccID(player.getAccountID());
 
-        int state = c.getLoginState();
+        final int state = c.getLoginState();
         boolean allowLogin = true;
         Channel cserv = c.getChannelServer();
 
@@ -132,7 +133,7 @@ public final class PlayerLoggedinHandler extends AbstractMaplePacketHandler {
             e.printStackTrace();
         }
         c.announce(MaplePacketCreator.getCharInfo(player));
-        if (!player.isHidden() && c.getLoginState() != MapleClient.LOGIN_SERVER_TRANSITION) {
+        if (!player.isHidden()) {
             player.setHidden(true, true);
         }
         player.sendKeymap();
@@ -228,5 +229,7 @@ public final class PlayerLoggedinHandler extends AbstractMaplePacketHandler {
         if (newcomer && !c.hasVotedAlready()) {
             player.announce(MaplePacketCreator.earnTitleMessage("You can vote now! Vote and earn a vote point!"));
         }
+
+        NPCScriptManager.start(c, 2007, "f_daily_login");
     }
 }
