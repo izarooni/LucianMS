@@ -144,7 +144,7 @@ public class GameMasterCommands {
                                     return;
                                 }
                             }
-                            MapleMap map = ch.getMapFactory().getMap(a1.intValue());
+                            MapleMap map = ch.getMap(a1.intValue());
                             if (map != null) {
                                 target.changeMap(map);
                             } else {
@@ -165,7 +165,7 @@ public class GameMasterCommands {
                                     return;
                                 }
                             }
-                            map = ch.getMapFactory().getMap(a1.intValue());
+                            map = ch.getMap(a1.intValue());
                         }
                         if (map != null) {
                             for (MapleCharacter players : player.getMap().getCharacters()) {
@@ -194,7 +194,7 @@ public class GameMasterCommands {
                         }
                         int mapId = a1.intValue();
                         int portal = (a2 == null) ? 0 : a2.intValue();
-                        MapleMap map = ch.getMapFactory().getMap(mapId);
+                        MapleMap map = ch.getMap(mapId);
                         if (map == null) {
                             player.dropMessage(5, "That map doesn't exist");
                             return;
@@ -504,7 +504,7 @@ public class GameMasterCommands {
         } else if (command.equals("reloadmap")) {
             if (args.length() == 0) {
                 for (Channel channel : client.getWorldServer().getChannels()) {
-                    channel.getMapFactory().reloadField(player.getMapId());
+                    channel.reloadMap(player.getMapId());
                 }
             } else if (args.length() == 1) {
                 Long var_mapId = args.parseNumber(0);
@@ -514,7 +514,7 @@ public class GameMasterCommands {
                 }
                 int mapId = var_mapId.intValue();
                 for (Channel channel : client.getWorldServer().getChannels()) {
-                    channel.getMapFactory().reloadField(mapId);
+                    channel.reloadMap(mapId);
                 }
                 player.dropMessage("Map " + mapId + " reloaded!");
             } else {

@@ -329,7 +329,7 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
 
         sendNext("You have obtained a #b#t" + item.getId() + "##k.");
 
-        String map = c.getChannelServer().getMapFactory().getMap(maps[(getNpc() != 9100117 && getNpc() != 9100109) ? (getNpc() - 9100100) : getNpc() == 9100109 ? 8 : 9]).getMapName();
+        String map = c.getChannelServer().getMap(maps[(getNpc() != 9100117 && getNpc() != 9100109) ? (getNpc() - 9100100) : getNpc() == 9100109 ? 8 : 9]).getMapName();
 
         LogHelper.logGacha(getPlayer(), item.getId(), map);
 
@@ -472,7 +472,6 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
         PyramidMode mod = PyramidMode.valueOf(mode);
 
         MapleParty partyz = getPlayer().getParty();
-        MapleMapFactory mf = c.getChannelServer().getMapFactory();
 
         MapleMap map = null;
         int mapid = 926010100;
@@ -482,7 +481,7 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
         mapid += (mod.getMode() * 1000);
 
         for (byte b = 0; b < 5; b++) {//They cannot warp to the next map before the timer ends (:
-            map = mf.getMap(mapid + b);
+            map = c.getChannelServer().getMap(mapid + b);
             if (map.getCharacters().isEmpty()) {
                 break;
             }

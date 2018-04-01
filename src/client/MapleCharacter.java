@@ -624,8 +624,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
                 }
             }
             if (channelserver) {
-                MapleMapFactory mapFactory = client.getChannelServer().getMapFactory();
-                ret.map = mapFactory.getMap(ret.mapid);
+                ret.map = client.getChannelServer().getMap(ret.mapid);
                 MaplePortal portal = ret.map.getPortal(ret.initialSpawnPoint);
                 if (portal == null) {
                     portal = ret.map.getPortal(0);
@@ -1242,7 +1241,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
         client.setAccountName(this.client.getAccountName());
         this.client = client;
 
-        map = this.client.getChannelServer().getMapFactory().getMap(getMapId());
+        map = this.client.getChannelServer().getMap(getMapId());
         MaplePortal portal = map.findClosestSpawnpoint(getPosition());
         if (portal == null) {
             portal = map.getPortal(0);
@@ -1581,7 +1580,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
             warpMap = getEventInstance().getMapInstance(map);
             LOGGER.info("Player '{}' transfering to even map instance {}", getName(), map);
         } else {
-            warpMap = client.getChannelServer().getMapFactory().getMap(map);
+            warpMap = client.getChannelServer().getMap(map);
         }
 
         changeMap(warpMap, warpMap.getPortal(portal));
@@ -1593,7 +1592,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
             warpMap = getEventInstance().getMapInstance(map);
             LOGGER.info("Player '{}' transfering to even map instance {}", getName(), map);
         } else {
-            warpMap = client.getChannelServer().getMapFactory().getMap(map);
+            warpMap = client.getChannelServer().getMap(map);
         }
 
         changeMap(warpMap, warpMap.getPortal(portal));
@@ -1605,7 +1604,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
             warpMap = getEventInstance().getMapInstance(map);
             LOGGER.info("Player '{}' transfering to even map instance {}", getName(), map);
         } else {
-            warpMap = client.getChannelServer().getMapFactory().getMap(map);
+            warpMap = client.getChannelServer().getMap(map);
         }
 
         changeMap(warpMap, portal);
@@ -1631,7 +1630,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
             }
         }
         dropMessage(5, msg);
-        MapleMap map_ = client.getChannelServer().getMapFactory().getMap(mapid);
+        MapleMap map_ = client.getChannelServer().getMap(mapid);
         changeMap(map_, map_.getPortal(portal));
     }
 
@@ -3627,7 +3626,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
                         if (rs.next()) {
                             PlayerNPC playerNPC = new PlayerNPC(rs);
                             for (Channel channel : Server.getInstance().getChannelsFromWorld(world)) {
-                                MapleMap m = channel.getMapFactory().getMap(getMapId());
+                                MapleMap m = channel.getMap(getMapId());
                                 m.broadcastMessage(MaplePacketCreator.spawnPlayerNPC(playerNPC));
                                 m.broadcastMessage(MaplePacketCreator.getPlayerNPC(playerNPC));
                                 m.addMapObject(playerNPC);
@@ -4758,7 +4757,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
             @Override
             public void run() {
                 if (rightMap) {
-                    client.getPlayer().changeMap(client.getChannelServer().getMapFactory().getMap(925020000));
+                    client.getPlayer().changeMap(client.getChannelServer().getMap(925020000));
                 }
             }
         }, time * 1000 + 3000); // let the TIMES UP display for 3 seconds, then

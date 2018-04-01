@@ -75,7 +75,7 @@ public class SOuterSpace extends SAutoEvent {
     public void run() {
         setOpen(true);
         for (Channel channel : world.getChannels()) {
-            MapleMap eventMap = channel.getMapFactory().getMap(MapId);
+            MapleMap eventMap = channel.getMap(MapId);
             eventMap.killAllMonsters();
             eventMap.clearDrops();
 

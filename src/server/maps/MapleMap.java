@@ -229,11 +229,15 @@ public class MapleMap {
     }
 
     public MapleMap getReturnMap() {
-        return Server.getInstance().getWorld(world).getChannel(channel).getMapFactory().getMap(returnMapId);
+        return Server.getInstance().getWorld(world).getChannel(channel).getMap(returnMapId);
     }
 
     public int getReturnMapId() {
         return returnMapId;
+    }
+
+    public void setReturnMapId(int returnMapId) {
+        this.returnMapId = returnMapId;
     }
 
     public void setReactorState() {
@@ -257,7 +261,7 @@ public class MapleMap {
     }
 
     public MapleMap getForcedReturnMap() {
-        return Server.getInstance().getWorld(world).getChannel(channel).getMapFactory().getMap(forcedReturnMap);
+        return Server.getInstance().getWorld(world).getChannel(channel).getMap(forcedReturnMap);
     }
 
     public void setForcedReturnMap(int map) {
@@ -352,7 +356,7 @@ public class MapleMap {
         removeMapObject(obj.getObjectId());
     }
 
-    Point calcPointBelow(Point initial) {
+    public Point calcPointBelow(Point initial) {
         MapleFoothold fh = footholds.findBelow(initial);
         if (fh == null) {
             return null;
@@ -2514,6 +2518,14 @@ public class MapleMap {
 
     public void setMobInterval(short interval) {
         this.mobInterval = interval;
+    }
+
+    public byte getMonsterRate() {
+        return monsterRate;
+    }
+
+    public void setMonsterRate(byte monsterRate) {
+        this.monsterRate = monsterRate;
     }
 
     public Point getAutoKillPosition() {

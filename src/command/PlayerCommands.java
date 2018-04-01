@@ -71,9 +71,12 @@ public class PlayerCommands {
             commands.add("@afk <ign> - Check if someone is AFK");
             commands.add("@uptime - Display how long the server has been live");
             commands.add("@time - Display the current server time");
+            commands.add("@house - Display the house manager NPC");
             Collections.sort(commands);
             commands.forEach(player::dropMessage);
             commands.clear();
+        } else if (command.equals("house")) {
+            NPCScriptManager.start(client, 2007, "f_house_manager");
         } else if (command.equals("time")) {
             player.sendMessage("Server time is: {}", Calendar.getInstance().getTime().toString());
         } else if (command.equals("uptime")) {
@@ -150,10 +153,10 @@ public class PlayerCommands {
             player.updateSingleStat(MapleStat.AVAILABLEAP, player.getRemainingAp());
             player.announce(MaplePacketCreator.updatePlayerStats(statChange, player));
             player.dropMessage(6, "Done!");
-        } else if(command.equals("afk", "away")) {
-            if(args.length() >= 1) {
+        } else if (command.equals("afk", "away")) {
+            if (args.length() >= 1) {
                 MapleCharacter target = ch.getPlayerStorage().getCharacterByName(args.get(0));
-                if(target != null) {
+                if (target != null) {
                     player.dropMessage(String.format("%s is currently %s", target.getName(), (target.getClient().getSession().isBothIdle() ? "AFK" : "not AFK")));
                 } else {
                     player.dropMessage("The player you tried to check is not online, or does not exist.");
@@ -329,7 +332,7 @@ public class PlayerCommands {
             if (args.length() == 1) {
                 String name = args.get(0).toLowerCase(Locale.ROOT);
                 if (maps.containsKey(name)) {
-                    MapleMap map = ch.getMapFactory().getMap(maps.get(name));
+                    MapleMap map = ch.getMap(maps.get(name));
                     if (map != null) {
                         if (player.getJQController() != null) {
                             player.setJQController(null);

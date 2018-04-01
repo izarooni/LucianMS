@@ -150,7 +150,7 @@ public class ReactorActionManager extends AbstractPlayerInteraction {
     }
 
     public void createMapMonitor(int mapId, String portal) {
-        new MapMonitor(client.getChannelServer().getMapFactory().getMap(mapId), portal);
+        new MapMonitor(client.getChannelServer().getMap(mapId), portal);
     }
 
     public void spawnMonster(int id, int qty) {

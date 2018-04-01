@@ -45,7 +45,7 @@ public final class MonsterCarnivalHandler extends PacketHandler {
         if (optional.isPresent()) {
 
             MCarnivalGame game = (MCarnivalGame) optional.get();
-            final MapleMap map = getClient().getChannelServer().getMapFactory().getMap(game.getLobby().getBattlefieldMapId());
+            final MapleMap map = getClient().getChannelServer().getMap(game.getLobby().getBattlefieldMapId());
             final MCarnivalTeam friendly = game.getTeam(player.getTeam());
             final MCarnivalTeam enemy = game.getTeamOpposite(player.getTeam());
 

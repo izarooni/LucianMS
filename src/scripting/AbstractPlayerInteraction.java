@@ -114,12 +114,12 @@ public class AbstractPlayerInteraction {
     private MapleMap getWarpMap(int map) {
         MapleMap target;
         if (getPlayer().getEventInstance() == null) {
-            target = c.getChannelServer().getMapFactory().getMap(map);
+            target = c.getChannelServer().getMap(map);
         } else {
             target = getPlayer().getEventInstance().getMapInstance(map);
         }
         if (target == null) {
-            target = c.getChannelServer().getMapFactory().getMap(1000000000); // if it's null, we go to henesys
+            target = c.getChannelServer().getMap(1000000000); // if it's null, we go to henesys
         }
         return target;
     }
@@ -455,7 +455,7 @@ public class AbstractPlayerInteraction {
     }
 
     public int getPlayerCount(int mapid) {
-        return c.getChannelServer().getMapFactory().getMap(mapid).getCharacters().size();
+        return c.getChannelServer().getMap(mapid).getCharacters().size();
     }
 
     public void showInstruction(String msg, int width, int height) {
