@@ -37,7 +37,7 @@ public class HouseManager {
         return null;
     }
 
-    public House getHouse(int ownerID) {
+    public static House getHouse(int ownerID) {
         return houses.computeIfAbsent(ownerID, HouseManager::loadHouse);
     }
 
@@ -55,7 +55,7 @@ public class HouseManager {
     }
 
     public static House createHouse(int ownerID, int mapID, String password) {
-        try (PreparedStatement ps = DatabaseConnection.getConnection().prepareStatement("insert into houses (ownerID, mapID, `passowrd`, bill) values (?, ?, ?, ?)")) {
+        try (PreparedStatement ps = DatabaseConnection.getConnection().prepareStatement("insert into houses (ownerID, mapID, `password`, bill) values (?, ?, ?, ?)")) {
             // does this work
             Calendar calendar = Calendar.getInstance();
             calendar.set(Calendar.MONTH, calendar.get(Calendar.MONTH) + 1);
