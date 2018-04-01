@@ -30,7 +30,6 @@ public interface MaplePortal {
     int MAP_PORTAL = 2;
     int DOOR_PORTAL = 6;
     boolean OPEN = true;
-    boolean CLOSED = false;
 
     int getType();
 
@@ -53,12 +52,4 @@ public interface MaplePortal {
     int getTargetMapId();
 
     void enterPortal(MapleClient c);
-
-    void setPortalState(boolean state);
-
-    void setDisabled(boolean disabled);
-
-    boolean isDisabled();
-
-    boolean getPortalState();
 }

@@ -46,7 +46,7 @@ public abstract class Arcade {
         player.changeMap(factory.getMap(mapId), factory.getMap(mapId).getPortal(0));
 
         // disable portals, we do not want them to leave the map. TODO: disable commands
-        player.getMap().getPortals().forEach((portal) -> portal.setDisabled(true));
+        player.getMap().getPortals().forEach((portal) -> portal.setPortalStatus(true));
 
         player.getMap().setMobInterval((short) 5);
 

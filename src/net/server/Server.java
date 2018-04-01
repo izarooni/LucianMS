@@ -54,6 +54,7 @@ import server.Whitelist;
 import server.events.custom.scheduled.SOuterSpace;
 import server.quest.MapleQuest;
 import server.quest.custom.CQuestBuilder;
+import server.world.HouseManager;
 import tools.DatabaseConnection;
 import tools.Pair;
 import tools.StringUtil;
@@ -229,8 +230,12 @@ public class Server implements Runnable {
         LOGGER.info("Cash shop commodities loaded in {}s", ((System.currentTimeMillis() - timeToTake) / 1000d));
 
         timeToTake = System.currentTimeMillis();
-        Achievements.initialize();
+        Achievements.loadAchievements();
         LOGGER.info("Achievement scripts loaded in {}s", ((System.currentTimeMillis() - timeToTake) / 1000d));
+
+        timeToTake = System.currentTimeMillis();
+        int count = HouseManager.loadHouses();
+        LOGGER.info("{} houses loaded in {}s", count, ((System.currentTimeMillis() - timeToTake) / 1000d));
 
         try {
             timeToTake = System.currentTimeMillis();

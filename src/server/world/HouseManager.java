@@ -18,7 +18,7 @@ import java.util.concurrent.ConcurrentHashMap;
 public class HouseManager {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(HouseManager.class);
-    private static final ConcurrentHashMap<Integer, House> houses = new ConcurrentHashMap<>();
+    private static ConcurrentHashMap<Integer, House> houses = new ConcurrentHashMap<>();
 
     private HouseManager() {
     }
@@ -28,7 +28,7 @@ public class HouseManager {
             ps.setInt(1, ownerID);
             try (ResultSet rs = ps.executeQuery()) {
                 if (rs.next()) {
-                    return new House(ownerID, rs.getInt("mapID"), rs.getString("password"));
+                    return new House(ownerID, rs.getInt("mapID"), rs.getString("password"), rs.getTime("bill").getTime());
                 }
             }
         } catch (SQLException e) {
@@ -41,17 +41,20 @@ public class HouseManager {
         return houses.computeIfAbsent(ownerID, HouseManager::loadHouse);
     }
 
-    public static void loadHouses() {
+    public static int loadHouses() {
+        // initialize with previous size for load factor calculation
+        houses = new ConcurrentHashMap<>((int) ((houses.size() / 0.75f) + 1));
         try (PreparedStatement ps = DatabaseConnection.getConnection().prepareStatement("select * from houses")) {
             try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
-                    House house = new House(rs.getInt("ownerID"), rs.getInt("mapID"), rs.getString("password"));
+                    House house = new House(rs.getInt("ownerID"), rs.getInt("mapID"), rs.getString("password"), rs.getTime("bill").getTime());
                     houses.put(house.getOwnerID(), house);
                 }
             }
         } catch (SQLException e) {
             LOGGER.error("Unable to load house information", e);
         }
+        return houses.size();
     }
 
     public static House createHouse(int ownerID, int mapID, String password) {
@@ -67,7 +70,7 @@ public class HouseManager {
             ps.setTimestamp(4, timestamp);
             ps.executeUpdate();
 
-            House house = new House(ownerID, mapID, password);
+            House house = new House(ownerID, mapID, password, timestamp.getTime());
             houses.put(ownerID, house);
             return house;
         } catch (SQLException e) {

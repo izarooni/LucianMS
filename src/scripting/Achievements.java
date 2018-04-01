@@ -36,7 +36,7 @@ public class Achievements {
     /**
      * List all achievement scripts, execute them and store their invocable objects for later use
      */
-    public static void initialize() {
+    public static int loadAchievements() {
         if (invocables != null) {
             invocables.clear();
             invocables = null;
@@ -64,6 +64,7 @@ public class Achievements {
         } catch (IOException | ScriptException e) {
             e.printStackTrace();
         }
+        return invocables.size();
     }
 
     /**

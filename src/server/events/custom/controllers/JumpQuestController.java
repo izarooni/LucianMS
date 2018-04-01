@@ -30,7 +30,7 @@ public class JumpQuestController {
 		MapleMapFactory tempFactory = new MapleMapFactory(player.getWorld(), player.getClient().getChannel());
 		player.changeMap(tempFactory.getMap(map));
 		
-		player.getMap().getPortals().forEach((portal) -> { portal.setDisabled(true); }); // disabling portals.
+		player.getMap().getPortals().forEach((portal) -> { portal.setPortalStatus(true); }); // disabling portals.
 		player.dropMessage(6, "Good luck, you'll need it.");
 		
 		timeStarted = System.currentTimeMillis();

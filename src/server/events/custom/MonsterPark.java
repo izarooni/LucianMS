@@ -45,7 +45,7 @@ public class MonsterPark extends GenericEvent {
                 } else {
                     portal = instanceMap.getPortal("final00");
                     if (portal != null) {
-                        portal.setPortalState(false);
+                        portal.setPortalStatus(false);
                     }
                 }
                 for (SpawnPoint spawnPoint : instanceMap.getMonsterSpawnPoints()) {

@@ -1,6 +1,7 @@
 package server.events.custom;
 
 import server.FieldBuilder;
+import server.MaplePortal;
 import server.maps.MapleMap;
 
 /**
@@ -13,17 +14,23 @@ public class House {
     private final int ownerID;
     private int mapID;
     private String password;
+    private long billDate;
     private MapleMap map;
 
-    public House(int ownerID, int mapID, String password) {
+    public House(int ownerID, int mapID, String password, long billDate) {
         this.ownerID = ownerID;
         this.mapID = mapID;
         this.password = password;
+        this.billDate = billDate;
 
         map = new FieldBuilder(0, 0, mapID)
                 .loadFootholds()
                 .loadPortals()
                 .build();
+        for (MaplePortal portal : map.getPortals()) {
+            portal.setPortalStatus(false);
+            portal.setScriptName(null);
+        }
     }
 
     public int getOwnerID() {
@@ -44,6 +51,14 @@ public class House {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public long getBillDate() {
+        return billDate;
+    }
+
+    public void setBillDate(long billDate) {
+        this.billDate = billDate;
     }
 
     public MapleMap getMap() {

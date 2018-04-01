@@ -50,16 +50,6 @@ public class MapleGenericPortal implements MaplePortal {
         return id;
     }
 
-    @Override
-    public boolean isDisabled() {
-        return disabled;
-    }
-
-    @Override
-    public void setDisabled(boolean disabled) {
-        this.disabled = disabled;
-    }
-
     public void setId(int id) {
         this.id = id;
     }
@@ -142,15 +132,5 @@ public class MapleGenericPortal implements MaplePortal {
         if (!changed) {
             c.announce(MaplePacketCreator.enableActions());
         }
-    }
-
-    @Override
-    public void setPortalState(boolean state) {
-        this.portalState = state;
-    }
-
-    @Override
-    public boolean getPortalState() {
-        return portalState;
     }
 }
