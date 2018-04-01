@@ -363,7 +363,7 @@ public class MapleMapFactory {
         return new ArrayList<>(maps.values());
     }
 
-    public synchronized void clear() {
+    public void clear() {
         maps.clear();
         maps = null;
 

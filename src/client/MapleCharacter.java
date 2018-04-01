@@ -249,7 +249,6 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
     private PartyQuest partyQuest = null;
     private MonsterBook monsterbook;
 
-    private House house = null;
     private Arcade arcade = null;
     private ChatType chatType = ChatType.NORMAL;
     private Timestamp daily = null;
@@ -5422,13 +5421,6 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
 
     public void setMuted(boolean muted) {
         this.muted = muted;
-    }
-
-    public House getHouse() {
-        if (house == null) {
-            house = new House(this);
-        }
-        return house;
     }
 
     public int getFishingPoints() {
