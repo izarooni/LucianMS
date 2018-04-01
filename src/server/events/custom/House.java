@@ -22,6 +22,7 @@ public class House {
 
         map = new FieldBuilder(0, 0, mapID)
                 .loadFootholds()
+                .loadPortals()
                 .build();
     }
 

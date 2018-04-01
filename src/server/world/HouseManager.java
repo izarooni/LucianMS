@@ -65,6 +65,7 @@ public class HouseManager {
             ps.setInt(2, mapID);
             ps.setString(3, password);
             ps.setTimestamp(4, timestamp);
+            ps.executeUpdate();
 
             House house = new House(ownerID, mapID, password);
             houses.put(ownerID, house);
