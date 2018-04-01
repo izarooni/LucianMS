@@ -15,6 +15,7 @@ import server.events.custom.auto.GAutoEvent;
 import server.events.custom.auto.GAutoEventManager;
 import server.events.pvp.PlayerBattle;
 import server.maps.MapleMap;
+import server.maps.SavedLocationType;
 import tools.MaplePacketCreator;
 import tools.Pair;
 import tools.StringUtil;
@@ -289,6 +290,7 @@ public class PlayerCommands {
         } else if (command.equals("achievements")) {
             NPCScriptManager.start(client, 2007, "f_achievements");
         } else if (command.equals("home")) {
+            player.saveLocation(SavedLocationType.FREE_MARKET.name());
             player.changeMap(ServerConstants.HOME_MAP);
         } else if (command.equals("online")) {
             for (Channel channel : client.getWorldServer().getChannels()) {

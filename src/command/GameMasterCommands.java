@@ -122,11 +122,11 @@ public class GameMasterCommands {
                     String username = args.get(0);
                     MapleCharacter target = client.getWorldServer().getPlayerStorage().getCharacterByName(username);
                     boolean exact = command.getName().endsWith("x");
-                    if (target != null && command.equals("warp", "wh", "whx")) { // !<warp_cmd> <username>
+                    if (target != null && command.equals("warp", "wh", "whx")) { // !<warp_cmd> <username/map>
                         if (target.getClient().getChannel() != client.getChannel()) {
                             client.changeChannel(target.getClient().getChannel());
                         }
-                        if (args.length() == 1 && command.equals("warp", "wh", "whx")) { // !warp <username>
+                        if (args.length() == 1 && command.equals("warp", "wh", "whx")) { // !<warp_cmd> <username>
                             MapleCharacter warpie = (command.equals("warp") ? player : target); // person to warp
                             MapleCharacter warper = (command.equals("warp") ? target : player); // destination
                             if (exact || command.equals("warp")) {
@@ -137,8 +137,12 @@ public class GameMasterCommands {
                         } else if (args.length() == 2) { // !<warp_cmd> <username> <map_ID>
                             Long a1 = args.parseNumber(1);
                             if (a1 == null) {
-                                player.dropMessage(5, args.getError(1));
-                                return;
+                                if (args.get(1).equalsIgnoreCase("ox")) {
+                                    a1 = (long) 109020001;
+                                } else {
+                                    player.dropMessage(5, args.getError(1));
+                                    return;
+                                }
                             }
                             MapleMap map = ch.getMapFactory().getMap(a1.intValue());
                             if (map != null) {
@@ -153,14 +157,15 @@ public class GameMasterCommands {
                             Long a1 = args.parseNumber(0);
                             if (a1 == null) {
                                 if (args.get(1).equalsIgnoreCase("here")) {
-                                    map = player.getMap();
+                                    a1 = (long) player.getMapId();
+                                } else if (args.get(1).equalsIgnoreCase("ox")) {
+                                    a1 = (long) 109020001;
                                 } else {
                                     player.dropMessage(5, args.getError(0));
                                     return;
                                 }
-                            } else {
-                                map = ch.getMapFactory().getMap(a1.intValue());
                             }
+                            map = ch.getMapFactory().getMap(a1.intValue());
                         }
                         if (map != null) {
                             for (MapleCharacter players : player.getMap().getCharacters()) {
@@ -174,14 +179,18 @@ public class GameMasterCommands {
                         } else {
                             player.dropMessage(5, "That is an invalid map");
                         }
-                    } else { // !<warp_cmd> <map_ID> (portal_ID)
+                    } else { // !<warp_cmd> <map_ID> [portal_ID]
                         // map, warp
                         Long a1 = args.parseNumber(0);
                         Long a2 = args.parseNumber(1);
                         String error = args.getError(0, 1);
                         if (a1 == null || error != null) {
-                            player.dropMessage(5, args.getError(0));
-                            return;
+                            if (args.get(1).equalsIgnoreCase("ox")) {
+                                a1 = (long) 109020001;
+                            } else {
+                                player.dropMessage(5, args.getError(0));
+                                return;
+                            }
                         }
                         int mapId = a1.intValue();
                         int portal = (a2 == null) ? 0 : a2.intValue();
