@@ -1,5 +1,6 @@
 package server.events.custom;
 
+import server.FieldBuilder;
 import server.maps.MapleMap;
 
 /**
@@ -18,6 +19,10 @@ public class House {
         this.ownerID = ownerID;
         this.mapID = mapID;
         this.password = password;
+
+        map = new FieldBuilder(0, 0, mapID)
+                .loadFootholds()
+                .build();
     }
 
     public int getOwnerID() {
