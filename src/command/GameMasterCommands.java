@@ -137,7 +137,7 @@ public class GameMasterCommands {
                         } else if (args.length() == 2) { // !<warp_cmd> <username> <map_ID>
                             Long a1 = args.parseNumber(1);
                             if (a1 == null) {
-                                if (args.get(1).equalsIgnoreCase("ox")) {
+                                if (args.get(0).equalsIgnoreCase("ox")) {
                                     a1 = (long) 109020001;
                                 } else {
                                     player.dropMessage(5, args.getError(1));
@@ -156,9 +156,9 @@ public class GameMasterCommands {
                         if (args.length() == 1) { // !<warp_cmd> <map_ID>
                             Long a1 = args.parseNumber(0);
                             if (a1 == null) {
-                                if (args.get(1).equalsIgnoreCase("here")) {
+                                if (args.get(0).equalsIgnoreCase("here")) {
                                     a1 = (long) player.getMapId();
-                                } else if (args.get(1).equalsIgnoreCase("ox")) {
+                                } else if (args.get(0).equalsIgnoreCase("ox")) {
                                     a1 = (long) 109020001;
                                 } else {
                                     player.dropMessage(5, args.getError(0));
@@ -185,7 +185,7 @@ public class GameMasterCommands {
                         Long a2 = args.parseNumber(1);
                         String error = args.getError(0, 1);
                         if (a1 == null || error != null) {
-                            if (args.get(1).equalsIgnoreCase("ox")) {
+                            if (args.get(0).equalsIgnoreCase("ox")) {
                                 a1 = (long) 109020001;
                             } else {
                                 player.dropMessage(5, args.getError(0));
