@@ -28,7 +28,7 @@ public class HouseManager {
             ps.setInt(1, ownerID);
             try (ResultSet rs = ps.executeQuery()) {
                 if (rs.next()) {
-                    return new House(ownerID, rs.getInt("mapID"), rs.getString("password"), rs.getTime("bill").getTime());
+                    return new House(ownerID, rs.getInt("mapID"), rs.getString("password"), rs.getTimestamp("bill").getTime());
                 }
             }
         } catch (SQLException e) {
@@ -47,7 +47,7 @@ public class HouseManager {
         try (PreparedStatement ps = DatabaseConnection.getConnection().prepareStatement("select * from houses")) {
             try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
-                    House house = new House(rs.getInt("ownerID"), rs.getInt("mapID"), rs.getString("password"), rs.getTime("bill").getTime());
+                    House house = new House(rs.getInt("ownerID"), rs.getInt("mapID"), rs.getString("password"), rs.getTimestamp("bill").getTime());
                     houses.put(house.getOwnerID(), house);
                 }
             }
