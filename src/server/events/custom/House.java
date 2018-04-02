@@ -1,5 +1,6 @@
 package server.events.custom;
 
+import constants.ServerConstants;
 import server.FieldBuilder;
 import server.MaplePortal;
 import server.maps.MapleMap;
@@ -27,6 +28,9 @@ public class House {
                 .loadFootholds()
                 .loadPortals()
                 .build();
+        map.setForcedReturnMap(ServerConstants.HOME_MAP);
+        map.setReturnMapId(ServerConstants.HOME_MAP);
+
         for (MaplePortal portal : map.getPortals()) {
             portal.setPortalStatus(false);
             portal.setScriptName(null);
