@@ -89,4 +89,22 @@ public class HouseManager {
             houses.remove(ownerID);
         }
     }
+
+    public static void updateRent(int ownerID) {
+        House house = getHouse(ownerID);
+        if (house == null) {
+            LOGGER.warn("Unable to update rent for player {} as they do not own a home", ownerID);
+            return;
+        }
+        Calendar calendar = Calendar.getInstance();
+        calendar.set(Calendar.MONTH, calendar.get(Calendar.MONTH) + 1);
+        house.setBillDate(calendar.getTimeInMillis());
+        try (PreparedStatement ps = DatabaseConnection.getConnection().prepareStatement("update houses set bill = ? where ownerID = ?")) {
+            ps.setLong(1, house.getBillDate());
+            ps.setInt(2, ownerID);
+            ps.executeUpdate();
+        } catch (SQLException e) {
+            LOGGER.error("Unable to update rent for player {}", ownerID, e);
+        }
+    }
 }
