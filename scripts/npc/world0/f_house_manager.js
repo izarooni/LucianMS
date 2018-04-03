@@ -3,7 +3,7 @@ const MapleCharacter = Java.type("client.MapleCharacter");
 const StringUtil = Java.type("tools.StringUtil");
 
 const FEE_INITIAL = 3000000;
-const FEE_RENT = 2250000;
+const FEE_RENT = 2100000;
 
 /* izarooni */
 let status = 0;
@@ -28,7 +28,7 @@ function action(mode, type, selection) {
         status++;
     }
     if (status == 0) {
-        cm.sendNext("Due to being unable to pay rent after the 1 week grace period, your home has been removed and is now available for other players to purcahse", 1);
+        cm.sendNext("Due to being unable to pay rent after the 1 week grace period, your home has been removed and is now available for other players to purchase", 1);
     } else if (status == 1) {
         let content = "Hey #b#h ##k, I am the house manager.\r\nWhat can I help you with?\r\n#b";
         content += "\r\n#L0#Enter someone's home#l";
@@ -52,6 +52,9 @@ function action(mode, type, selection) {
                 cm.sendOk("You do not have a home to return to!");
                 cm.dispose();
             }
+        } else if (operation == 3) {
+            cm.sendOk("Selling houses is currently unavailable.");
+            cm.dispose();
         } else if (operation == 4) {
             let rent = house.getBillDate();
             if (rent > Date.now()) {
@@ -62,8 +65,10 @@ function action(mode, type, selection) {
             } else {
                 cm.sendNext("The fee will be exactly #b" + StringUtil.formatNumber(FEE_RENT) + "#k mesos.\r\nAre you ready to pay the rent for this month?");
             }
+        } else if (this.operation == 5) {
+            cm.sendNext("Homes are unique maps that are separated from the server map loader. You will not see monsters, NPCs or players regardless of the map you select although any person may enter should they know your security password that is also provided upon purchasing.");
         } else if (this.operation == 1) {
-            if (cm.getMeso() >= FEE_INITIAL) {
+            if (house == null && cm.getMeso() >= FEE_INITIAL) {
                 cm.sendGetText(errorMsg + "\r\nPlease provide the ID of the map you wish to use for your home.");
             } else {
                 cm.sendOk("You do not have enough mesos to purchase a home.");
@@ -113,6 +118,8 @@ function action(mode, type, selection) {
                 cm.sendOk("You do not have enough mesos to pay rent.\r\nFailure to pay rent within #b" + StringUtil.getTimeElapse(future - Date.now()) + "#k will cause you to lose your home");
                 cm.dispose();
             }
+        } else if (this.operation == 5) {
+            cm.sendNext("You may purchase NPCs for your homes with set functions such as private minigames that you can play with party members who are also in your home");
         }
     } else if (status == 4) {
         if (this.operation == 0) {
@@ -124,6 +131,9 @@ function action(mode, type, selection) {
             cm.dispose();
         } else if (this.operation == 1) {
             cm.sendGetText("What will be the password for your home?");
+        } else if (this.operation == 5) {
+            cm.sendNext("There is an initial fee of #b" + StringUtil.formatNumber(FEE_INITIAL) + "#k mesos when purchasing a home.\r\nA recurring monthly fee of #b" + StringUtil.formatNumber(FEE_RENT) + "#k mesos that requires you to be online to pay. Failure to pay after the grace period of #b1 week#k will cause you to lose your home.\r\nIf you no longer wish to own a home, you may choose to sell it, but will not include any internal features that you may have purchased (i.e NPCs).");
+            status = 0;
         }
     } else if (status == 5) {
         if (this.operation == 1) {
