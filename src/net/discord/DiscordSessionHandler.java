@@ -47,7 +47,6 @@ public class DiscordSessionHandler extends IoHandlerAdapter {
 
     @Override
     public void sessionIdle(IoSession session, IdleStatus status) {
-        LOGGER.info("Session #{} idle status {}", session.getId(), status.toString());
     }
 
     @Override
