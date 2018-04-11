@@ -1648,11 +1648,22 @@ public class MapleMap {
             chr.announce(MaplePacketCreator.rollSnowBall(true, 0, null, null));
         }
 
+        //region emergency attack
         // empty map or contains only party members
         if (characters.size() == 1
                 || (chr.getPartyId() > 0 && characters.stream().allMatch(p -> p.getPartyId() == chr.getPartyId()))) {
-            // must be a map that contains monster spawnpoints and is a hutning field
-            if (!isTown() && !spawnPoints.isEmpty()) {
+            /*
+            May only activate under the following conditions:
+            Contains monster spawn points,
+            Contains no boss-type monsters,
+            Map is a non-town type,
+            Is not explicity excluded via server configuration
+             */
+            // must be a map that contains monster spawnpoints, contains no boss entity and is a hutning field
+            if (!isTown()
+                    && spawnPoints.stream().noneMatch(sp -> sp.getMonster().isBoss())
+                    && !spawnPoints.isEmpty()
+                    && Arrays.binarySearch(Server.getInstance().getConfig().getIntArray("EmergencyExcludes"), getId()) < 0) {
                 // 1/25 chance to trigger emergency
                 if (((chr.isGM() && chr.isDebug()) || (System.currentTimeMillis() > nextEmergency))
                         && Randomizer.nextInt(25) == 1
@@ -1674,6 +1685,7 @@ public class MapleMap {
                 }
             }
         }
+        //endregion
 
         Optional<GenericEvent> op = chr.getGenericEvents().stream().filter(o -> o instanceof MCarnivalGame).findFirst();
         MCarnivalGame carnivalGame = null;
