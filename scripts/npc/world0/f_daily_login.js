@@ -36,10 +36,11 @@ function action(mode, type, selection) {
             if (now >= ttd) { // it's been at least 24 hours since last login
                 if (now - ttd >= TimeUnit.DAYS.toMillis(1)) { // been 2+ days since login
                     cm.sendNext("Aw man, your " + streak + " daily login streak has been crushed!\r\nSadly, it has been over #b" + TimeUnit.MILLISECONDS.toDays(now - ttd) + " days#k since your last login.\r\nYou'll have to start over now...", 1);
-                    recordStreak(0);
+                    recordStreak(1);
+                    giveReward(1);
                     cm.dispose();
                 } else {
-                    cm.sendNext("#eLogin Streak: #b" + streak + "#k#n\r\nThanks for playing, remember to vote for us~\r\nHave a nice day!", 1);
+                    cm.sendNext("#eLogin Streak: #b" + (streak + 1) + "#k#n\r\nThanks for playing, remember to vote for us~\r\nHave a nice day!", 1);
                 }
             } else {
                 cm.sendOk("You're currently on a #b" + streak + "#k day login streak!\r\nYour next attendance is in #b" + StringUtil.getTimeElapse(ttd - now));
