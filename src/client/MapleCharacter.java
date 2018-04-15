@@ -407,8 +407,6 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
 
         MapleCharacter.deleteWhereCharacterId(con, "DELETE FROM famelog WHERE characterid_to = ?", playerid);
         System.out.println("\tDeleted fame logs");
-        MapleCharacter.deleteWhereCharacterId(con, "DELETE FROM gmlog WHERE cid = ?", playerid);
-        System.out.println("\tDeleted GM command logs");
         MapleCharacter.deleteWhereCharacterId(con, "DELETE FROM inventoryitems WHERE characterid = ?", playerid);
         System.out.println("\tDeleted inventory itemes");
         MapleCharacter.deleteWhereCharacterId(con, "DELETE FROM jailtimes WHERE playerId = ?", playerid);
