@@ -26,18 +26,18 @@ import java.util.Scanner;
 public class ConsoleCommands {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ConsoleCommands.class);
-    private static Thread thread;
     private static volatile boolean reading = false;
+    private static Scanner scanner;
 
     private ConsoleCommands() {
     }
 
     public static void beginReading() {
-        thread = new Thread(new Runnable() {
+        new Thread(new Runnable() {
             @Override
             public void run() {
                 reading = true;
-                Scanner scanner = new Scanner(System.in);
+                scanner = new Scanner(System.in);
                 String line;
                 while (scanner.hasNext() && reading && (line = scanner.nextLine()) != null) {
                     // from CommandWorker
@@ -67,12 +67,12 @@ public class ConsoleCommands {
                 }
                 LOGGER.info("Console no longer reading commands");
             }
-        }, "ConsoleReader");
-        thread.start();
+        }, "ConsoleReader").start();
     }
 
     public static void stopReading() {
         reading = false;
+        scanner.close();
     }
 
     private static void execute(CommandWorker.Command command, CommandWorker.CommandArgs args) {

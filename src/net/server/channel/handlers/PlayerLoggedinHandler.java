@@ -25,6 +25,7 @@ import client.*;
 import client.inventory.Equip;
 import client.inventory.MapleInventory;
 import client.inventory.MapleInventoryType;
+import com.lucianms.helpers.JailManager;
 import constants.GameConstants;
 import net.AbstractMaplePacketHandler;
 import net.server.PlayerBuffValueHolder;
@@ -101,6 +102,10 @@ public final class PlayerLoggedinHandler extends AbstractMaplePacketHandler {
             return;
         }
         c.updateLoginState(MapleClient.LOGIN_LOGGEDIN);
+
+        if (JailManager.isJailed(player.getId())) {
+            player.setMapId(JailManager.getRandomField());
+        }
 
         LOGGER.info("Player {} logged-in", MapleCharacter.getNameById(cid));
 

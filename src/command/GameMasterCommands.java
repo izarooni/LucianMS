@@ -5,8 +5,11 @@ import client.inventory.Equip;
 import client.inventory.Item;
 import client.inventory.MapleInventory;
 import client.inventory.MapleInventoryType;
+import com.lucianms.helpers.JailManager;
 import constants.ItemConstants;
+import constants.ServerConstants;
 import net.server.channel.Channel;
+import net.server.world.World;
 import provider.MapleData;
 import provider.MapleDataProvider;
 import provider.MapleDataProviderFactory;
@@ -19,15 +22,14 @@ import server.maps.MapleMapObject;
 import tools.DatabaseConnection;
 import tools.MaplePacketCreator;
 import tools.Pair;
-import tools.Randomizer;
 
 import java.awt.*;
 import java.io.File;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.text.DateFormat;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.function.Consumer;
@@ -38,25 +40,24 @@ import java.util.function.Consumer;
 public class GameMasterCommands {
 
 
-    private static HashMap<Integer, String> jailReasons = new HashMap<Integer, String>();
-
-    public static int tagRange = 5000;
+    private static int TagRange = 5000;
 
     public static void execute(MapleClient client, CommandWorker.Command command, CommandWorker.CommandArgs args) {
         MapleCharacter player = client.getPlayer();
         Channel ch = client.getChannelServer();
+        World world = client.getWorldServer();
 
         if (command.equals("gmcommands")) {
             ArrayList<String> commands = new ArrayList<>();
             commands.add("!help - to see what commands there are");
             commands.add("!commands - another way to see the commands");
-            commands.add("!dc <player> | map - DC a player or the entire map");
+            commands.add("!dc <username> | map - DC a player or the entire map");
             commands.add("!warp <mapid> - Warp to the specified map, by ID");
-            commands.add("!warphere <player> - warp a player to your map");
+            commands.add("!warphere <username> - warp a player to your map");
             commands.add("!goto <mapid> - another way to warp to a map by ID");
             commands.add("!heal <OPT=player> - Heal yourself, or a player.");
             commands.add("!notice <message> - Send a notice to the server");
-            commands.add("!mute <player> - cancel a player from chatting");
+            commands.add("!mute <username> - cancel a player from chatting");
             commands.add("!clock <time> - add a clock timer for an amount of seconds");
             commands.add("!tag - tag nearby players, range is determined by tagrange");
             commands.add("!tagrange - set the range for players to tag");
@@ -82,13 +83,13 @@ public class GameMasterCommands {
             commands.add("!! <message> - sends a message to all GMs online");
             commands.add("!itemvac - Loot all item drops in the map");
             commands.add("!characters <username> - lists other characters that belong to a player");
-            commands.add("!ak <OPT=reset> - set the autokill position of the map to your y-position");
-            commands.add("!bomb <OPT=username> - spawns a bomb at the specified player location, or your location if no name provided");
+            commands.add("!bomb [username] - spawns a bomb at the specified player location, or your location if no name provided");
             commands.add("!bombmap - spawns bombs everywhere");
-            commands.add("!jail <player> <OPT=reason> - jail a person, and optionally specify a reason");
+            commands.add("!jail <username> <reason> - Jail a player");
+            commands.add("!unjail <username> - Remove a player for jail");
             commands.add("!search <category> <name> - Search for a map, items, npcs or skills");
             commands.add("!chattype <type> - Change your general chat color");
-            commands.add("!buff <OPT=username> - Buff yourself or a specified player");
+            commands.add("!buff [username] - Buff yourself or a specified player");
             commands.add("!ap <amount> - Give yourself or another player AP");
             commands.add("!sp <amount> - Give yourself or another player SP");
             commands.add("!setall <number> [username] - Set all stats for yourself or a player");
@@ -396,7 +397,7 @@ public class GameMasterCommands {
             }
         } else if (command.equals("tag")) {
             ArrayList<MapleCharacter> players = new ArrayList<>(player.getMap().getCharacters());
-            for (MapleCharacter chrs : player.getMap().getPlayersInRange(new Rectangle(tagRange / 100, tagRange / 100), players)) {
+            for (MapleCharacter chrs : player.getMap().getPlayersInRange(new Rectangle(TagRange / 100, TagRange / 100), players)) {
                 if (chrs != player && !chrs.isGM()) {
                     chrs.setHpMp(0);
                     chrs.dropMessage(6, "You have been tagged!");
@@ -450,7 +451,7 @@ public class GameMasterCommands {
                     return;
                 }
                 int amount = a1.intValue();
-                MapleCharacter target = ch.getPlayerStorage().getCharacterByName(username);
+                MapleCharacter target = world.getPlayerStorage().getCharacterByName(username);
                 if (target != null) {
                     if (target.addPoints(type, amount)) {
                         player.dropMessage(6, target.getName() + " received " + amount + " " + type);
@@ -491,7 +492,7 @@ public class GameMasterCommands {
                     if (args.length() > 0) {
                         for (int i = 0; i < args.length(); i++) {
                             String username = args.get(i);
-                            MapleCharacter target = ch.getPlayerStorage().getCharacterByName(username);
+                            MapleCharacter target = world.getPlayerStorage().getCharacterByName(username);
                             if (target != null) {
                                 target.getClient().disconnect(false, target.getCashShop().isOpened());
                             }
@@ -694,33 +695,44 @@ public class GameMasterCommands {
                 player.dropMessage(5, "You must specify a username");
             }
         } else if (command.equals("jail")) {
-            if (args.length() >= 1) {
-                if (!args.get(0).equalsIgnoreCase("list")) {
-                    MapleCharacter target = ch.getPlayerStorage().getCharacterByName(args.get(0));
-
-                    if (target != null) {
-                        StringBuilder sb = new StringBuilder();
-                        if (args.length() >= 2) {
-
-                            for (int i = 2; i < args.length(); i++) {
-                                sb.append(args.get(i)).append(" ");
-                            }
-                        }
-                        target.dropMessage(6, String.format("You have been jailed by %s %s", player.getName(), (sb.toString().isEmpty() ? "for " + sb.toString() : "")));
-                        int random = Randomizer.nextInt() * 100;
-                        jailReasons.put(target.getId(), sb.toString());
-                        target.changeMap((random <= 50 ? 80 : 81)); // idk, both are jail maps.
+            if (args.length() >= 2) {
+                MapleCharacter target = world.getPlayerStorage().getCharacterByName(args.get(0));
+                if (target != null) {
+                    String reason = args.concatFrom(1);
+                    if (!reason.isEmpty()) {
+                        JailManager.insertJail(target.getId(), player.getId(), reason);
+                        target.changeMap(JailManager.getRandomField());
+                        target.sendMessage(5, "You have been jailed by '{}'", player.getName());
+                        client.getWorldServer().broadcastMessage(6, "'{}' has been jailed for '{}'", target.getName(), reason);
                     } else {
-                        player.dropMessage(5, "This player is not online, or does not exist.");
+                        player.sendMessage(5, "You must provide a reason for your jail");
                     }
                 } else {
-                    jailReasons.forEach((id, reason) -> {
-                        MapleCharacter target = ch.getPlayerStorage().getCharacterById(id);
-                        player.dropMessage(String.format("%s: %s", target.getName(), (reason == "" ? "No reason given" : reason)));
-                    });
+                    player.sendMessage(5, "Unable to find player named '{}'", args.get(0));
+                }
+            } else if (args.length() == 1 && args.get(0).equalsIgnoreCase("logs")) {
+                ArrayList<JailManager.JailLog> logs = JailManager.retrieveLogs();
+                for (JailManager.JailLog log : logs) {
+                    String tUsername = MapleCharacter.getNameById(log.playerId);
+                    String aUsername = MapleCharacter.getNameById(log.accuser);
+                    player.sendMessage("'{}' jailed '{}' for '{}' on {}", aUsername, tUsername, log.reason, DateFormat.getDateTimeInstance().format(log.timestamp));
                 }
             } else {
-                player.dropMessage(5, "Correct usage: !jail <player> <OPT=reason>");
+                player.dropMessage(5, "Correct usage: !jail <username> <reason>");
+            }
+        } else if (command.equals("unjail")) {
+            if (args.length() == 1) {
+                MapleCharacter target = world.getPlayerStorage().getCharacterByName(args.get(0));
+                if (target != null) {
+                    JailManager.removeJail(target.getId());
+                    if (JailManager.isJailField(target.getMapId())) {
+                        target.changeMap(ServerConstants.HOME_MAP);
+                    }
+                    target.sendMessage(6, "You have been unjailed by '{}'", player.getName());
+                    player.sendMessage(6, "Success!");
+                } else {
+                    player.sendMessage(5, "Unable to find any player named '{}'", args.get(0));
+                }
             }
         } else if (command.equals("search")) {
             if (args.length() > 1) {

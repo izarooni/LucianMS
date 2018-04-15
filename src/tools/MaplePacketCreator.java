@@ -1211,8 +1211,8 @@ public class MaplePacketCreator {
 
     /*
      * Sends a packet to remove the tiger megaphone
-	 * @return
-	 */
+     * @return
+     */
     public static byte[] byeAvatarMega() {
         final MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
         mplew.writeShort(SendOpcode.CLEAR_AVATAR_MEGAPHONE.getValue());
@@ -2049,15 +2049,15 @@ public class MaplePacketCreator {
 
     /* 00 = /
      * 01 = You don't have enough in stock
-	 * 02 = You do not have enough mesos
-	 * 03 = Please check if your inventory is full or not
-	 * 05 = You don't have enough in stock
-	 * 06 = Due to an error, the trade did not happen
-	 * 07 = Due to an error, the trade did not happen
-	 * 08 = /
-	 * 0D = You need more items
-	 * 0E = CRASH; LENGTH NEEDS TO BE LONGER :O
-	 */
+     * 02 = You do not have enough mesos
+     * 03 = Please check if your inventory is full or not
+     * 05 = You don't have enough in stock
+     * 06 = Due to an error, the trade did not happen
+     * 07 = Due to an error, the trade did not happen
+     * 08 = /
+     * 0D = You need more items
+     * 0E = CRASH; LENGTH NEEDS TO BE LONGER :O
+     */
     public static byte[] shopTransaction(byte code) {
         final MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter(3);
         mplew.writeShort(SendOpcode.CONFIRM_SHOP_TRANSACTION.getValue());
@@ -2987,10 +2987,10 @@ public class MaplePacketCreator {
     }
 
     /*
-	   * 0x0A = Inv full
-	   * 0x0B = You do not have enough mesos
-	   * 0x0C = One-Of-A-Kind error
-	   */
+     * 0x0A = Inv full
+     * 0x0B = You do not have enough mesos
+     * 0x0C = One-Of-A-Kind error
+     */
     public static byte[] getStorageError(byte i) {
         final MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
         mplew.writeShort(SendOpcode.STORAGE.getValue());
@@ -4790,13 +4790,13 @@ public class MaplePacketCreator {
         mplew.write(ch);
         return mplew.getPacket();
     }
-			   /*
-			    * Possible things for ENTRUSTED_SHOP_CHECK_RESULT
-			    * 0x0E = 00 = Renaming Failed - Can't find the merchant, 01 = Renaming succesful
-			    * 0x10 = Changes channel to the store (Store is open at Channel 1, do you want to change channels?)
-			    * 0x11 = You cannot sell any items when managing.. blabla
-			    * 0x12 = FKING POPUP LOL
-			    */
+    /*
+     * Possible things for ENTRUSTED_SHOP_CHECK_RESULT
+     * 0x0E = 00 = Renaming Failed - Can't find the merchant, 01 = Renaming succesful
+     * 0x10 = Changes channel to the store (Store is open at Channel 1, do you want to change channels?)
+     * 0x11 = You cannot sell any items when managing.. blabla
+     * 0x12 = FKING POPUP LOL
+     */
 
     public static byte[] getHiredMerchant(MapleCharacter chr, HiredMerchant hm, boolean firstTime) {//Thanks Dustin
         final MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
@@ -5037,10 +5037,10 @@ public class MaplePacketCreator {
     }
 
     /*
-			    *  0 = Player online, use whisper
-			    *  1 = Check player's name
-			    *  2 = Receiver inbox full
-			    */
+     *  0 = Player online, use whisper
+     *  1 = Check player's name
+     *  2 = Receiver inbox full
+     */
     public static byte[] noteError(byte error) {
         final MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter(4);
         mplew.writeShort(SendOpcode.MEMO_RESULT.getValue());
@@ -6512,24 +6512,24 @@ public class MaplePacketCreator {
     }
 
     /*
-			    * 00 = Due to an unknown error, failed
-			    * A4 = Due to an unknown error, failed + warpout
-			    * A5 = You don't have enough cash.
-			    * A6 = long as shet msg
-			    * A7 = You have exceeded the allotted limit of price for gifts.
-			    * A8 = You cannot send a gift to your own account. Log in on the char and purchase
-			    * A9 = Please confirm whether the character's name is correct.
-			    * AA = Gender restriction!
-			    * //Skipped a few
-			    * B0 = Wrong Coupon Code
-			    * B1 = Disconnect from CS because of 3 wrong coupon codes < lol
-			    * B2 = Expired Coupon
-			    * B3 = Coupon has been used already
-			    * B4 = Nexon internet cafes? lolfk
-			    *
-			    * BB = inv full
-			    * C2 = not enough mesos? Lol not even 1 mesos xD
-			    */
+     * 00 = Due to an unknown error, failed
+     * A4 = Due to an unknown error, failed + warpout
+     * A5 = You don't have enough cash.
+     * A6 = long as shet msg
+     * A7 = You have exceeded the allotted limit of price for gifts.
+     * A8 = You cannot send a gift to your own account. Log in on the char and purchase
+     * A9 = Please confirm whether the character's name is correct.
+     * AA = Gender restriction!
+     * //Skipped a few
+     * B0 = Wrong Coupon Code
+     * B1 = Disconnect from CS because of 3 wrong coupon codes < lol
+     * B2 = Expired Coupon
+     * B3 = Coupon has been used already
+     * B4 = Nexon internet cafes? lolfk
+     *
+     * BB = inv full
+     * C2 = not enough mesos? Lol not even 1 mesos xD
+     */
     public static byte[] showCashShopMessage(byte message) {
         final MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter(4);
         mplew.writeShort(SendOpcode.CASHSHOP_OPERATION.getValue());
@@ -6766,14 +6766,14 @@ public class MaplePacketCreator {
 
     /**
      * Sends a CPQ Message<br>
-     * <p>
+     *
      * <code>message</code>:<br>
      * 1: You don't have enough CP to continue.<br>
      * 2: You can no longer summon the Monster.<br>
      * 3: You can no longer summon the being.<br>
      * 4: This being is already summoned.<br>
      * 5: This request has failed due to an unknown error.<br>
-     ** @param message Displays a message inside Carnival PQ
+     * * @param message Displays a message inside Carnival PQ
      */
     public static byte[] getMonsterCarnivalResponse(byte message) {
         final MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter(3);
