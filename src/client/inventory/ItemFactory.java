@@ -47,7 +47,7 @@ public enum ItemFactory {
     private boolean account;
 	private static ReentrantLock lock = new ReentrantLock(true);
 
-    private ItemFactory(int value, boolean account) {
+    ItemFactory(int value, boolean account) {
         this.value = value;
         this.account = account;
     }
@@ -108,7 +108,8 @@ public enum ItemFactory {
                     equip.setExpiration(rs.getLong("expiration"));
                     equip.setGiftFrom(rs.getString("giftFrom"));
                     equip.setRingId(rs.getInt("ringid"));
-                    items.add(new Pair<Item, MapleInventoryType>(equip, mit));
+                    equip.setEliminations(rs.getInt("eliminations"));
+                    items.add(new Pair<>(equip, mit));
                 } else {
                     Item item = new Item(rs.getInt("itemid"), (byte) rs.getInt("position"), (short) rs.getInt("quantity"), rs.getInt("petid"));
                     item.setOwner(rs.getString("owner"));

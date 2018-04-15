@@ -51,7 +51,7 @@ public class Equip extends Item {
     private float itemExp;
     private int ringid = -1;
     private boolean wear = false;
-    private int regalia = 0;
+    private int eliminations;
 
     public Equip(int id, short position) {
         super(id, position, (short) 1);
@@ -428,5 +428,13 @@ public class Equip extends Item {
 
     public byte getItemLevel() {
         return itemLevel;
+    }
+
+    public int getEliminations() {
+        return eliminations;
+    }
+
+    public void setEliminations(int eliminations) {
+        this.eliminations = eliminations;
     }
 }

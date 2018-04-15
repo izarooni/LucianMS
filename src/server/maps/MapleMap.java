@@ -721,6 +721,8 @@ public class MapleMap {
                     }
                 }
             }
+            Equip weapon = (Equip) chr.getInventory(MapleInventoryType.EQUIPPED).getItem((short) -11);
+            weapon.setEliminations(weapon.getEliminations() + 1);
         }
         if (monster.getStats().getLevel() >= chr.getLevel() + 30 && !chr.isGM()) {
             Cheater.CheatEntry entry = chr.getCheater().getCheatEntry(Cheats.UnderLevelAttack);
