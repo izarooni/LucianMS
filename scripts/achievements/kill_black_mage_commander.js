@@ -1,6 +1,6 @@
 /* izarooni */
-var _monsterId = 9895257;
-var _killRequire = 1;
+let _monsterId = 9895257;
+let _killRequire = 1;
 
 function getName() {
     return "Kill the Black Mage Commander";
@@ -8,8 +8,8 @@ function getName() {
 
 function testForKill(player, monsterId) {
     if (monsterId == _monsterId) {
-        var achieve = player.getAchievement(getName());
-        var current = achieve.getMonstersKilled() + 1;
+        let achieve = player.getAchievement(getName());
+        let current = achieve.getMonstersKilled() + 1;
         if (current >= _killRequire) {
             achieve.setMonstersKilled(current);
             return true;
@@ -19,7 +19,10 @@ function testForKill(player, monsterId) {
 }
 
 function reward(player) {
-    var achieve = player.getAchievement(getName());
+    let achieve = player.getAchievement(getName());
     achieve.setCompleted(true);
     return true;
+}
+
+function readableRewards(rr) {
 }
