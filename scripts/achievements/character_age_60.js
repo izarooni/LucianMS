@@ -13,7 +13,7 @@ function testForPlayer(player) {
         let timestamp = rs.getTimestamp("createdate").getTime();
         timestamp = parseInt(timestamp);
         let diff = Date.now() - timestamp;
-        let days = ((diff / (1000 * 60 * 60 * 24) % 30));
+        let days = (diff / (1000 * 60 * 60 * 24));
         if (days >= 60) {
             return true;
         }
