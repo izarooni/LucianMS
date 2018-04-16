@@ -25,7 +25,10 @@ function action(mode, type, selection) {
             cm.dispose();
         }
     } else if (status == 2) {
-        cm.sendOk(inventory.getItem(selection));
+        let item = inventory.getItem(selection);
+        let content = item.toString();
+        content += "\r\nEliminations: " + item.getEliminations();
+        cm.sendOk(content);
         cm.dispose();
     }
 }
