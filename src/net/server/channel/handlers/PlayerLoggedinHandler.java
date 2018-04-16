@@ -25,6 +25,7 @@ import client.*;
 import client.inventory.Equip;
 import client.inventory.MapleInventory;
 import client.inventory.MapleInventoryType;
+import client.meta.Achievement;
 import com.lucianms.helpers.JailManager;
 import constants.GameConstants;
 import net.AbstractMaplePacketHandler;
@@ -39,6 +40,7 @@ import net.server.world.PartyOperation;
 import net.server.world.World;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import scripting.Achievements;
 import scripting.npc.NPCScriptManager;
 import tools.DatabaseConnection;
 import tools.MaplePacketCreator;
@@ -236,5 +238,7 @@ public final class PlayerLoggedinHandler extends AbstractMaplePacketHandler {
         }
 
         NPCScriptManager.start(c, 2007, "f_daily_login");
+
+        Achievements.testFor(player, -1);
     }
 }
