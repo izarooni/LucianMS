@@ -12,7 +12,7 @@ function testForPlayer(player) {
         for (let i = 0; i < Rewards.length; i++) {
             if (weapon.getItemLevel() == i && weapon.getEliminations() == Rewards[i]) {
                 weapon.setItemLevel(weapon.getItemLevel() + 1);
-                return false;
+                return true;
             }
         }
     }
