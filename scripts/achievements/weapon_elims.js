@@ -10,8 +10,9 @@ function testForPlayer(player) {
     let weapon = getWeapon(player);
     if (weapon !=  null) {
         for (let i = 0; i < Rewards.length; i++) {
-            if (weapon.getEliminations() == Rewards[i]) {
-                return true;
+            if (weapon.getItemLevel() == i && weapon.getEliminations() == Rewards[i]) {
+                weapon.setItemLevel(weapon.getItemLevel() + 1);
+                return false;
             }
         }
     }
