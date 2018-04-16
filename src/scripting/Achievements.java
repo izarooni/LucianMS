@@ -12,6 +12,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 
 /**
  * Could be a a bad implementation of this feature
@@ -23,6 +24,7 @@ public class Achievements {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(Achievements.class);
     private static ArrayList<Pair<String, Invocable>> invocables = null;
+    private static HashMap<String, ArrayList<String>> rewards = new HashMap<>();
 
     private Achievements() {
     }
@@ -38,8 +40,8 @@ public class Achievements {
      */
     public static int loadAchievements() {
         if (invocables != null) {
-            invocables.clear();
-            invocables = null;
+            invocables = new ArrayList<>(invocables.size());
+            rewards = new HashMap<>(rewards.size());
             System.gc();
         }
         try {
@@ -54,9 +56,12 @@ public class Achievements {
                     Invocable iv = ScriptUtil.eval(null, "achievements/" + file.getName(), Collections.emptyList());
                     try {
                         String name = (String) iv.invokeFunction("getName");
+                        ArrayList<String> rr = new ArrayList<>();
+                        iv.invokeFunction("readableRewards", rr);
                         invocables.add(new Pair<>(name, iv));
-                    } catch (NoSuchMethodException e) {
-                        LOGGER.warn("Unable to set achievement name for script {}", file.getName());
+                        rewards.put(name, rr);
+                    } catch (Exception e) {
+                        LOGGER.error("Unable to cache achievement '{}'", file.getName(), e);
                     }
                 }
                 LOGGER.info("{} achievement scripts loaded", invocables.size());
@@ -65,6 +70,13 @@ public class Achievements {
             e.printStackTrace();
         }
         return invocables.size();
+    }
+
+    public static ArrayList<String> getRewards(String achievement) {
+        if (invocables != null) {
+            return rewards.get(achievement);
+        }
+        return null;
     }
 
     /**

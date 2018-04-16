@@ -1,7 +1,6 @@
 package tools;
 
 import io.Config;
-import net.server.Server;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -14,11 +13,18 @@ import java.sql.*;
 public class DatabaseConnection {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(DatabaseConnection.class);
-    private static ThreadLocal<Connection> con = new ThreadLocalConnection();
+    private static ThreadLocal<Connection> lConnection = null;
     private static long timeout = 28000;
     private static volatile long lastUse = System.currentTimeMillis();
 
-    static {
+    public static void useConfig(Config config) {
+        lConnection = new ThreadLocalConnection(config);
+
+        try {
+            Class.forName("com.mysql.jdbc.Driver");
+        } catch (ClassNotFoundException e) {
+            LOGGER.error("Unable to register jdbc driver", e);
+        }
         try (PreparedStatement ps = getConnection().prepareStatement("SELECT @@GLOBAL.wait_timeout")) {
             try (ResultSet rs = ps.executeQuery()) {
                 if (rs.next()) {
@@ -34,36 +40,34 @@ public class DatabaseConnection {
     public static Connection getConnection() {
         final long current = System.currentTimeMillis();
         if (current - lastUse >= timeout) {
-            con.remove();
+            lConnection.remove();
         }
         lastUse = current;
 
-        Connection c = con.get();
+        Connection c = lConnection.get();
         try {
             c.getMetaData();
         } catch (SQLException e) { // connection is dead, therefore discard old object 5ever
-            con.remove();
-            c = con.get();
+            lConnection.remove();
+            c = lConnection.get();
         }
         return c;
     }
 
     private static class ThreadLocalConnection extends ThreadLocal<Connection> {
 
+        private final Config config;
+
+        public ThreadLocalConnection(Config config) {
+            this.config = config;
+        }
+
         @Override
         protected Connection initialValue() {
             try {
-                Class.forName("com.mysql.jdbc.Driver"); // touch the mysql driver
-            } catch (ClassNotFoundException e) {
-                System.out.println("[SEVERE] SQL Driver Not Found. Consider death by clams.");
-                e.printStackTrace();
-                return null;
-            }
-            try {
-                Config config = Server.getInstance().getConfig();
                 return DriverManager.getConnection(config.getString("DatabaseURL"), config.getString("DatabaseUsername"), config.getString("DatabasePassword"));
             } catch (SQLException e) {
-                System.out.println("[SEVERE] Unable to make database connection.");
+                LOGGER.error("Unable to establish database connection", e);
                 e.printStackTrace();
                 return null;
             }

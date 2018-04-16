@@ -193,6 +193,7 @@ public class Server implements Runnable {
             return;
         }
 
+        DatabaseConnection.useConfig(config);
         Connection con = DatabaseConnection.getConnection();
         LOGGER.info("Database connection established");
         try {
@@ -383,7 +384,7 @@ public class Server implements Runnable {
         byte highest = 0;
         for (Iterator<Integer> it = channels.get(0).keySet().iterator(); it.hasNext(); ) {
             Integer channel = it.next();
-            if (channel != null && channel.intValue() > highest) {
+            if (channel != null && channel > highest) {
                 highest = channel.byteValue();
             }
         }
