@@ -162,11 +162,10 @@ public class MapleServerHandler extends IoHandlerAdapter {
                                 player.getGenericEvents().forEach(e -> e.onPacketEvent(handler));
                                 if (!handler.isCanceled()) {
                                     handler.onPacket();
+                                    handler.post();
                                 }
                             } catch (Exception t) {
                                 handler.exceptionCaught(t);
-                            } finally {
-                                handler.post();
                             }
                         }
                     } catch (InstantiationException | IllegalAccessException e) {

@@ -370,23 +370,17 @@ public class MapleItemInformationProvider {
             return equipmentSlotCache.get(itemId);
         }
 
-
         MapleData item = getItemData(itemId);
-
         if (item == null) {
             return null;
         }
 
         MapleData info = item.getChildByPath("info");
-
         if (info == null) {
             return null;
         }
-
         String ret = MapleDataTool.getString("islot", info, "");
-
         equipmentSlotCache.put(itemId, ret);
-
         return ret;
     }
 
@@ -1037,7 +1031,7 @@ public class MapleItemInformationProvider {
 
         String islot = getEquipmentSlot(id);
 
-        if (!EquipSlot.getFromTextSlot(islot).isAllowed(dst, isCash(id))) {
+        if (islot != null && !islot.isEmpty() && !EquipSlot.getFromTextSlot(islot).isAllowed(dst, isCash(id))) {
             equip.wear(false);
             Cheater.CheatEntry entry = chr.getCheater().getCheatEntry(Cheats.ForcedEquip);
             entry.incrementCheatCount();

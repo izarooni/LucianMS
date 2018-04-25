@@ -38,7 +38,6 @@ import java.awt.*;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -50,22 +49,15 @@ public class XMLDomMapleData implements MapleData {
     private Node node;
     private File imageDataDir;
 
-    public XMLDomMapleData(FileInputStream fis, File imageDataDir) {
+    public XMLDomMapleData(FileInputStream fis, File imageDataDir) throws SAXException {
         try {
             DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
             DocumentBuilder documentBuilder = documentBuilderFactory.newDocumentBuilder();
             Document document = documentBuilder.parse(fis);
             this.node = document.getFirstChild();
             fis.close();
-        } catch (ParserConfigurationException | SAXException | IOException e) {
-            try {
-                Field field = FileInputStream.class.getDeclaredField("path");
-                field.setAccessible(true);
-                String str = (String) field.get(fis);
-                LOGGER.warn("Unable to parse file {} due to exception\r\n{}", str, e.getMessage());
-            } catch (IllegalAccessException | NoSuchFieldException e1) {
-                e1.printStackTrace();
-            }
+        } catch (ParserConfigurationException | IOException e) {
+            e.printStackTrace();
         }
         this.imageDataDir = imageDataDir;
     }

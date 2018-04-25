@@ -230,9 +230,7 @@ public class Server implements Runnable {
         CashItemFactory.loadCommodities();
         LOGGER.info("Cash shop commodities loaded in {}s", ((System.currentTimeMillis() - timeToTake) / 1000d));
 
-        timeToTake = System.currentTimeMillis();
         Achievements.loadAchievements();
-        LOGGER.info("Achievement scripts loaded in {}s", ((System.currentTimeMillis() - timeToTake) / 1000d));
 
         timeToTake = System.currentTimeMillis();
         int count = HouseManager.loadHouses();

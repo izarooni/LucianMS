@@ -65,16 +65,18 @@ public class ItemMoveHandler extends PacketHandler {
         MapleCharacter player = getClient().getPlayer();
         Cheater.CheatEntry entry = player.getCheater().getCheatEntry(Cheats.FastInventorySort);
 
-        if (System.currentTimeMillis() - entry.latestOperationTimestamp < 300) {
+        if (System.currentTimeMillis() - entry.latestOperationTimestamp < 180) {
             entry.spamCount++;
             getClient().announce(MaplePacketCreator.enableActions());
+            player.dropMessage("You are doing that too fast");
             return null;
         } else {
             entry.spamCount = 0;
+            entry.latestOperationTimestamp = System.currentTimeMillis();
         }
 
-        final Item item;
 
+        Item item;
         if (source < 0 && action > 0) {
             item = player.getInventory(MapleInventoryType.EQUIPPED).getItem(source);
             MapleInventoryManipulator.unequip(getClient(), source, action);

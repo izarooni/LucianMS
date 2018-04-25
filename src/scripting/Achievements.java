@@ -45,6 +45,7 @@ public class Achievements {
             System.gc();
         }
         try {
+            final long start = System.currentTimeMillis();
             File dir = new File("scripts/achievements");
             if (dir.mkdirs()) {
                 LOGGER.info("Achievements script directory created");
@@ -64,7 +65,7 @@ public class Achievements {
                         LOGGER.error("Unable to cache achievement '{}'", file.getName(), e);
                     }
                 }
-                LOGGER.info("{} achievement scripts loaded", invocables.size());
+                LOGGER.info("{} achievement scripts loaded in {}s", invocables.size(), ((System.currentTimeMillis() - start) / 1000d));
             }
         } catch (IOException | ScriptException e) {
             e.printStackTrace();
@@ -95,9 +96,7 @@ public class Achievements {
                             player.announce(MaplePacketCreator.showEffect("PSO2/stuff/2"));
                             try {
                                 if (reward(iv, player)) {
-                                    player.dropMessage("You completed the achievement '" + pair.getLeft() + "'!");
-                                } else {
-                                    player.dropMessage("You were unable to claim reward for completing the achievement.");
+                                    player.sendMessage("You completed the '{}' achievement!", pair.getLeft());
                                 }
                             } catch (NoSuchMethodException e) {
                                 LOGGER.warn("Achievement script {} contains no reward function", pair.getLeft());

@@ -433,7 +433,6 @@ public class MapleInventoryManipulator {
         if (target != null) {
             player.getInventory(MapleInventoryType.EQUIPPED).removeSlot(dst);
         }
-
         final List<ModifyInventory> mods = new ArrayList<>();
         if (itemChanged) {
             mods.add(new ModifyInventory(3, source));
