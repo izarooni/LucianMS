@@ -1,9 +1,12 @@
 const Equip = Java.type("client.inventory.Equip");
 const MaplePacketCreator = Java.type("tools.MaplePacketCreator");
 const MapleInventoryType = Java.type("client.inventory.MapleInventoryType");
+const MapleInventoryManipulator = Java.type("server.MapleInventoryManipulator");
 /* izarooni */
-var status = 0;
+let status = 0;
 const features = [
+    ListGEvents,
+    null,
     NewEquip,
     CreateRing,
     null,
@@ -28,7 +31,7 @@ function action(mode, type, selection) {
         status++;
     }
     if (this.feature == null) {
-        if (status == 1) {
+        if (status === 1) {
             let text = "What can I help you with?\r\n#b";
             for (let i = 0; i < features.length; i++) {
                 if (features[i] == null) {
@@ -38,7 +41,7 @@ function action(mode, type, selection) {
                 text += "\r\n#L" + i + "#" + features[i].name + "#l";
             }
             cm.sendSimple(text, 2);
-        } else if (status == 2) {
+        } else if (status === 2) {
             this.feature = features[selection];
             status = 0;
             action(1, 0, 0);
@@ -46,6 +49,15 @@ function action(mode, type, selection) {
     } else {
         this.feature(selection);
     }
+}
+
+function ListGEvents(selection) {
+    let content = "";
+    player.getGenericEvents().forEach(function(e) {
+        content += "\r\n" + e.getClass().getSimpleName();
+    });
+    cm.sendOk(content);
+    cm.dispose();
 }
 
 function VisibleMapObjects(selection) {
@@ -65,9 +77,9 @@ function NewEquip(selection) {
 }
 
 function CreateRing(selection) {
-    if (status == 1) {
+    if (status === 1) {
         cm.sendGetText("ID of the ring you want to create?");
-    } else if (status == 2) {
+    } else if (status === 2) {
         this.itemID = parseInt(cm.getText());
         if (isNaN(this.itemID)) {
             status = 0;
@@ -75,9 +87,9 @@ function CreateRing(selection) {
         } else {
             cm.sendNext("Are you sure you want to create a ring with this item?\r\n#b#z" + this.itemID + "#");
         }
-    } else if (status == 3) {
+    } else if (status === 3) {
         cm.sendGetText("Who will be your partner for this ring?");
-    } else if (status == 4) {
+    } else if (status === 4) {
         this.partner = ch.getPlayerStorage().getCharacterByName(cm.getText());
         if (this.partner != null) {
             let MapleInventoryManipulator = Java.type("server.MapleInventoryManipulator");
@@ -138,8 +150,8 @@ function DespawnReactors(selection) {
 }
 
 function ListPortals(selection) {
-    if (status == 1) {
-        var content = "";
+    if (status === 1) {
+        let content = "";
         player.getMap().getPortals().forEach(function(p) {
             content += "\r\n#L" + p.getId() + "#" + p.getName() + "#l";
         });
@@ -149,7 +161,7 @@ function ListPortals(selection) {
 }
 
 function SpawnPoints(selection) {
-    var content = "";
+    let content = "";
     player.getMap().getMonsterSpawnPoints().forEach(function(sp) {
         content += "\r\nID:" + sp.getMonster().getId() + ", SP:" + sp.shouldSpawn() + ", Mobile:" + sp.getMonster().isMobile();
     });
@@ -158,8 +170,8 @@ function SpawnPoints(selection) {
 }
 
 function MonsterData(selection) {
-    if (status == 1) {
-        var content = "";
+    if (status === 1) {
+        let content = "";
         player.getMap().getMonsters().forEach(function(m){
             content += "\r\nID: " + m.getId()+ ", Name: " + m.getName() + ", HP: " + m.getHp();
             if (m.getHp() < 1) {
@@ -172,7 +184,7 @@ function MonsterData(selection) {
 }
 
 function OuterSpace(selection) {
-    var event = client.getWorldServer().getScheduledEvent("SOuterSpace");
+    let event = client.getWorldServer().getScheduledEvent("SOuterSpace");
     if (event != null) {
         event.run();
     } else {
@@ -182,8 +194,8 @@ function OuterSpace(selection) {
 }
 
 function CarnivalStart(selection) {
-    if (status == 1) {
-        var mplew = new Packages.tools.data.output.MaplePacketLittleEndianWriter(25);
+    if (status === 1) {
+        let mplew = new Packages.tools.data.output.MaplePacketLittleEndianWriter(25);
         mplew.writeShort(Packages.net.SendOpcode.MONSTER_CARNIVAL_START.getValue());
         mplew.write(player.getTeam()); //team
         mplew.writeShort(player.getCP()); //Obtained CP - Used CP
@@ -197,8 +209,8 @@ function CarnivalStart(selection) {
         mplew.writeLong(0); //Probably useless nexon shit
         player.announce(mplew.getPacket());
         cm.sendNext("Enabled~\r\n\r\nWant to disable?");
-    } else if (status == 2) {
-        var mplew = new Packages.tools.data.output.MaplePacketLittleEndianWriter();
+    } else if (status === 2) {
+        let mplew = new Packages.tools.data.output.MaplePacketLittleEndianWriter();
         mplew.writeShort(Packages.net.SendOpcode.MONSTER_CARNIVAL_LEAVE.getValue());
         mplew.write(0); //Something
         mplew.write(player.getTeam()); //Team
@@ -210,9 +222,9 @@ function CarnivalStart(selection) {
 }
 
 function SummonMonster(selection) {
-    if (status == 1) {
+    if (status === 1) {
         cm.sendGetText("What monster are you spawning?");
-    } else if (status == 2) {
+    } else if (status === 2) {
         this.monster = java.lang.Integer.parseInt(cm.getText());
         if (this.monster != null) {
             cm.sendGetText("Where would you like to spawn this monster?\r\nEnter #bx,y#k position (no spaces).\r\n#bExmaple: 59,20");
@@ -220,39 +232,39 @@ function SummonMonster(selection) {
             cm.sendOk("This monster does not exist");
             cm.dispose();
         }
-    } else if (status == 3) {
-        var split = cm.getText().split(",");
-        var x = java.lang.Integer.parseInt(split[0]);
-        var y = java.lang.Integer.parseInt(split[1]);
+    } else if (status === 3) {
+        let split = cm.getText().split(",");
+        let x = java.lang.Integer.parseInt(split[0]);
+        let y = java.lang.Integer.parseInt(split[1]);
         player.getMap().spawnMonsterOnGroudBelow(Packages.server.life.MapleLifeFactory.getMonster(this.monster), new java.awt.Point(x, y));
         cm.dispose();
     }
 }
 
 function LocateReactors(selection) {
-    var Locate = function(reactor) {
-        var pair = reactor.getReactItem(0);
+    let Locate = function(reactor) {
+        let pair = reactor.getReactItem(0);
         if (pair != null) {
-            var item = new Packages.client.inventory.Item(pair.getLeft(), 0, pair.getRight());
+            let item = new Packages.client.inventory.Item(pair.getLeft(), 0, pair.getRight());
             player.getMap().spawnItemDrop(player, player, item, reactor.getPosition(), false, true);
         }
     };
-    if (status == 1) {
-        var text ="\r\n#b";
+    if (status === 1) {
+        let text ="\r\n#b";
         text += "\r\n#L" + (player.getMap().getReactors().size() + 1) + "# Activate all #l\r\n"; player.getMap().getReactors().stream().forEach(function(r) {
             text += "\r\n#L" + r.getId() + "#" + r.getName() + " - " + r.getId() + "#l";
         });
         cm.sendSimple(text);
-    } else if (status == 2) {
-        if (selection == player.getMap().getReactors().size() + 1) {
-            var delay = 500;
+    } else if (status === 2) {
+        if (selection === player.getMap().getReactors().size() + 1) {
+            let delay = 500;
             player.getMap().getReactors().stream().forEach(function(r) {
                 cm.delayCall(function() {
                     Locate(r);
                 }, (delay += 300));
             });
         } else {
-            var reactor = player.getMap().getReactorById(selection);
+            let reactor = player.getMap().getReactorById(selection);
             if (reactor != null) {
 
                 Locate(reactor);

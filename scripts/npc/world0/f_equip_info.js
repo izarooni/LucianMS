@@ -26,7 +26,8 @@ function action(mode, type, selection) {
         }
     } else if (status == 2) {
         let item = inventory.getItem(selection);
-        let content = item.toString();
+        let content = "#b" + item.getItemId() + "\t-\t#z" + item.getItemId() + "##k";
+        content += "\r\nLevel: " + item.getItemLevel();
         content += "\r\nEliminations: " + item.getEliminations();
         cm.sendOk(content);
         cm.dispose();

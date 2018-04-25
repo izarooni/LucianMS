@@ -28,6 +28,7 @@ function reward(player) {
         achieve.setCompleted(true);
         return true;
     }
+    player.sendMessage(`Unable to receive achievement reward '${getName()}' due to mesos overflow`);
     return false;
 }
 
