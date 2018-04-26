@@ -70,8 +70,7 @@ public enum ItemFactory {
                 while (rs.next()) {
                     MapleInventoryType mit = MapleInventoryType.getByType(rs.getByte("inventorytype"));
                     if (mit == MapleInventoryType.EQUIP || mit == MapleInventoryType.EQUIPPED) {
-                        Equip equip = new Equip(rs.getInt("itemid"), (byte) rs.getInt("position"));
-                        System.out.println(equip.getItemId() + " , " + equip.getPosition());
+                        Equip equip = new Equip(rs.getInt("itemid"), (short) rs.getInt("position"));
                         equip.setOwner(rs.getString("owner"));
                         equip.setQuantity((short) rs.getInt("quantity"));
                         equip.setAcc((short) rs.getInt("acc"));
@@ -99,6 +98,7 @@ public enum ItemFactory {
                         equip.setGiftFrom(rs.getString("giftFrom"));
                         equip.setRingId(rs.getInt("ringid"));
                         equip.setEliminations(rs.getInt("eliminations"));
+                        equip.setRegalia(rs.getInt("regalia") == 1);
                         items.add(new Pair<>(equip, mit));
                     } else {
                         Item item = new Item(rs.getInt("itemid"), (byte) rs.getInt("position"), (short) rs.getInt("quantity"), rs.getInt("petid"));
@@ -143,7 +143,7 @@ public enum ItemFactory {
                         ps.setLong(11, item.getExpiration());
                         ps.setString(12, item.getGiftFrom());
                         ps.executeUpdate();
-                        try (PreparedStatement pse = con.prepareStatement("INSERT INTO `inventoryequipment` VALUES (DEFAULT, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)")) {
+                        try (PreparedStatement pse = con.prepareStatement("INSERT INTO `inventoryequipment` VALUES (DEFAULT, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)")) {
                             if (mit == MapleInventoryType.EQUIP || mit == MapleInventoryType.EQUIPPED) {
                                 try (ResultSet rs = ps.getGeneratedKeys()) {
                                     if (!rs.next()) {
@@ -175,6 +175,7 @@ public enum ItemFactory {
                                 pse.setInt(22, equip.getItemExp());
                                 pse.setInt(23, equip.getRingId());
                                 pse.setInt(24, equip.getEliminations());
+                                pse.setInt(25, equip.isRegalia() ? 1 : 0);
                                 pse.executeUpdate();
                             }
                         }
