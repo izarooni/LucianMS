@@ -21,9 +21,10 @@
  */
 package net.server.handlers.login;
 
+import client.MapleCharacter;
 import client.MapleClient;
 import net.AbstractMaplePacketHandler;
-import tools.FilePrinter;
+import net.server.Server;
 import tools.MaplePacketCreator;
 import tools.data.input.SeekableLittleEndianAccessor;
 
@@ -34,7 +35,7 @@ public final class DeleteCharHandler extends AbstractMaplePacketHandler {
         String pic = slea.readMapleAsciiString();
         int cid = slea.readInt();
         if (c.checkPic(pic)) {
-            FilePrinter.printError(FilePrinter.DELETED_CHARACTERS + c.getAccountName() + ".txt", c.getAccountName() + " deleted CID: " + cid + "\r\n");
+            Server.insertLog(getClass().getSimpleName(), "character({}) '{}' deleted from account({}) '{}'", cid, MapleCharacter.getNameById(cid), c.getAccID(), c.getAccountName());
             c.announce(MaplePacketCreator.deleteCharResponse(cid, 0));
             c.deleteCharacter(cid);
         } else {

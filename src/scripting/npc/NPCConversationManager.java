@@ -41,13 +41,10 @@ import server.events.gm.MapleEvent;
 import server.gachapon.MapleGachapon;
 import server.gachapon.MapleGachapon.MapleGachaponItem;
 import server.maps.MapleMap;
-import server.maps.MapleMapFactory;
 import server.partyquest.Pyramid;
 import server.partyquest.Pyramid.PyramidMode;
 import server.quest.MapleQuest;
 import tools.DatabaseConnection;
-import tools.FilePrinter;
-import tools.LogHelper;
 import tools.MaplePacketCreator;
 
 import java.io.File;
@@ -156,13 +153,13 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
 
     /**
      * <ol start=0>
-     *   <li>ariant colliseum</li>
-     *   <li>Dojo</li>
-     *   <li>Carnival 1</li>
-     *   <li>Carnival 2</li>
-     *   <li>Ghost Ship PQ?</li>
-     *   <li>Pyramid PQ</li>
-     *   <li>Kerning Subway</li>
+     * <li>ariant colliseum</li>
+     * <li>Dojo</li>
+     * <li>Carnival 1</li>
+     * <li>Carnival 2</li>
+     * <li>Ghost Ship PQ?</li>
+     * <li>Pyramid PQ</li>
+     * <li>Kerning Subway</li>
      * <ol/>
      */
     public void sendDimensionalMirror(String text) {
@@ -218,9 +215,6 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
     }
 
     public void gainMeso(int gain) {
-        if (gain > 0) {
-            FilePrinter.printError(FilePrinter.EXPLOITS + c.getPlayer().getName() + ".txt", c.getPlayer().getName() + " gained " + gain + " mesos from NPC " + npc + "\r\n");
-        }
         getPlayer().gainMeso(gain, true, false, true);
     }
 
@@ -322,40 +316,24 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
 
     public void doGachapon() {
         int[] maps = {100000000, 101000000, 102000000, 103000000, 105040300, 800000000, 809000101, 809000201, 600000000, 120000000};
-
         MapleGachaponItem item = MapleGachapon.getInstance().process(npc);
-
         Item itemGained = gainItem(item.getId(), (short) (item.getId() / 10000 == 200 ? 100 : 1), true, true); // For normal potions, make it give 100.
-
         sendNext("You have obtained a #b#t" + item.getId() + "##k.");
-
         String map = c.getChannelServer().getMap(maps[(getNpc() != 9100117 && getNpc() != 9100109) ? (getNpc() - 9100100) : getNpc() == 9100109 ? 8 : 9]).getMapName();
-
-        LogHelper.logGacha(getPlayer(), item.getId(), map);
-
+        Server.insertLog(getClass().getSimpleName(), "{} got {} from the {} gachapon", getPlayer().getName(), item.getId(), map);
         if (item.getTier() > 0) { //Uncommon and Rare
             Server.getInstance().broadcastMessage(MaplePacketCreator.gachaponMessage(itemGained, map, getPlayer()));
         }
     }
 
     public void disbandAlliance(MapleClient c, int allianceId) {
-        PreparedStatement ps = null;
-        try {
-            ps = DatabaseConnection.getConnection().prepareStatement("DELETE FROM `alliance` WHERE id = ?");
+        Server.getInstance().allianceMessage(c.getPlayer().getGuild().getAllianceId(), MaplePacketCreator.disbandAlliance(allianceId), -1, -1);
+        Server.getInstance().disbandAlliance(allianceId);
+        try (PreparedStatement ps = DatabaseConnection.getConnection().prepareStatement("DELETE FROM `alliance` WHERE id = ?")) {
             ps.setInt(1, allianceId);
             ps.executeUpdate();
-            ps.close();
-            Server.getInstance().allianceMessage(c.getPlayer().getGuild().getAllianceId(), MaplePacketCreator.disbandAlliance(allianceId), -1, -1);
-            Server.getInstance().disbandAlliance(allianceId);
         } catch (SQLException sqle) {
             sqle.printStackTrace();
-        } finally {
-            try {
-                if (ps != null && !ps.isClosed()) {
-                    ps.close();
-                }
-            } catch (SQLException ignored) {
-            }
         }
     }
 
@@ -465,7 +443,7 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
     }
 
     public void logLeaf(String prize) {
-        LogHelper.logLeaf(getPlayer(), true, prize);
+        Server.insertLog("{} used a maple leaf to buy {}", getPlayer().getName(), prize);
     }
 
     public boolean createPyramid(String mode, boolean party) {//lol

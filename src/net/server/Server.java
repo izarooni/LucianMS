@@ -45,6 +45,7 @@ import org.json.JSONObject;
 import org.json.JSONTokener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.slf4j.helpers.MessageFormatter;
 import scheduler.Task;
 import scheduler.TaskExecutor;
 import scripting.Achievements;
@@ -66,6 +67,7 @@ import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.URISyntaxException;
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
@@ -94,6 +96,16 @@ public class Server implements Runnable {
             instance = new Server();
         }
         return instance;
+    }
+
+    public static void insertLog(String author, String description, Object... args) {
+        try (PreparedStatement ps = DatabaseConnection.getConnection().prepareStatement("insert into loggers (author, description) values (?, ?)")) {
+            ps.setString(1, author);
+            ps.setString(2, MessageFormatter.arrayFormat(description, args).getMessage());
+            ps.executeUpdate();
+        } catch (SQLException e) {
+            LOGGER.info("Unable to insert log from '{}': {}", author, description, e);
+        }
     }
 
     public static void main(String args[]) {

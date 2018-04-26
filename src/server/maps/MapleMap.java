@@ -1158,7 +1158,7 @@ public class MapleMap {
             } else if (monster.getId() == 9300061) {
                 monsterItemDrop(monster, new Item(4001101, (short) 0, (short) 1), monster.getDropPeriodTime() / 3);
             } else {
-                FilePrinter.printError(FilePrinter.UNHANDLED_EVENT, "UNCODED TIMED MOB DETECTED: " + monster.getId());
+                LOGGER.warn("Unhandled timed monster", monster.getId());
             }
         }
         spawnedMonstersOnMap.incrementAndGet();

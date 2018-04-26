@@ -23,9 +23,10 @@ package scripting.quest;
 
 import client.MapleClient;
 import client.MapleQuestStatus;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import scripting.ScriptUtil;
 import server.quest.MapleQuest;
-import tools.FilePrinter;
 import tools.Pair;
 
 import javax.script.Invocable;
@@ -40,6 +41,7 @@ import java.util.Map;
  */
 public class QuestScriptManager {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(QuestScriptManager.class);
     private static Map<MapleClient, Pair<Invocable, QuestActionManager>> storage = new HashMap<>();
 
     private QuestScriptManager() {
@@ -59,7 +61,7 @@ public class QuestScriptManager {
             Collection<Pair<String, Object>> binds = Collections.singletonList(new Pair<>("qm", qm));
             Invocable iv = ScriptUtil.eval(client, "quest/" + questId + ".js", binds);
             if (iv == null) {
-                FilePrinter.printError(FilePrinter.QUEST_UNCODED, "Quest " + questId + " is uncoded.\r\n");
+                LOGGER.warn("No script for quest {}", questId);
                 qm.dispose();
                 return;
             }

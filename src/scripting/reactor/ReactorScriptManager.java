@@ -75,7 +75,7 @@ public class ReactorScriptManager {
                     }
                 }
             } catch (Throwable e) {
-                FilePrinter.printError(FilePrinter.REACTOR + rid + ".txt", e);
+                e.printStackTrace();
             }
             drops.put(rid, ret);
         }

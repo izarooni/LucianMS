@@ -30,16 +30,13 @@ import org.apache.mina.core.session.IdleStatus;
 import org.apache.mina.core.session.IoSession;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import tools.FilePrinter;
 import tools.MapleAESOFB;
-import tools.MapleLogger;
 import tools.MaplePacketCreator;
 import tools.data.input.ByteArrayByteStream;
 import tools.data.input.GenericSeekableLittleEndianAccessor;
 import tools.data.input.SeekableLittleEndianAccessor;
 
 import java.io.IOException;
-import java.util.Calendar;
 import java.util.Random;
 
 public class MapleServerHandler extends IoHandlerAdapter {
@@ -66,7 +63,7 @@ public class MapleServerHandler extends IoHandlerAdapter {
         }
         MapleClient mc = (MapleClient) session.getAttribute(MapleClient.CLIENT_KEY);
         if (mc != null && mc.getPlayer() != null) {
-            FilePrinter.printError(FilePrinter.EXCEPTION_CAUGHT, cause, "Exception caught by: " + mc.getPlayer());
+            cause.printStackTrace();
         }
     }
 
@@ -116,7 +113,7 @@ public class MapleServerHandler extends IoHandlerAdapter {
                 }
                 client.disconnect(false, inCashShop);
             } catch (Throwable t) {
-                FilePrinter.printError(FilePrinter.ACCOUNT_STUCK, t);
+                t.printStackTrace();
             } finally {
                 session.closeNow();
                 session.removeAttribute(MapleClient.CLIENT_KEY);
@@ -137,7 +134,6 @@ public class MapleServerHandler extends IoHandlerAdapter {
                 if (handler != null) {
                     if (handler.validateState(client)) {
                         try {
-                            MapleLogger.logRecv(client, packetId, message);
                             handler.handlePacket(slea, client);
                         } catch (final Exception t) {
                             LOGGER.info(slea.toString());

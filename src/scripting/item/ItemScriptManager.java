@@ -23,6 +23,7 @@ package scripting.item;
 
 import client.MapleClient;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.lang.reflect.UndeclaredThrowableException;
@@ -63,7 +64,7 @@ public class ItemScriptManager {
             try {
                 scripts.get(scriptName).invokeFunction("start", new ItemScriptMethods(c));
             } catch (ScriptException | NoSuchMethodException ex) {
-                FilePrinter.printError(FilePrinter.ITEM + scriptName + ".txt", ex);
+                ex.printStackTrace();
             }
             return;
         }
@@ -72,27 +73,16 @@ public class ItemScriptManager {
             c.announce(MaplePacketCreator.enableActions());
             return;
         }
-        FileReader fr = null;
         ScriptEngine portal = sef.getScriptEngine();
-        try {
-            fr = new FileReader(scriptFile);
+        try (FileReader fr = new FileReader(scriptFile)) {
             CompiledScript compiled = ((Compilable) portal).compile(fr);
             compiled.eval();
 
             final Invocable script = ((Invocable) portal);
             scripts.put(scriptName, script);
             script.invokeFunction("start", new ItemScriptMethods(c));
-        } catch (final UndeclaredThrowableException | ScriptException ute) {
-            FilePrinter.printError(FilePrinter.ITEM + scriptName + ".txt", ute);
-        } catch (final Exception e) {
-            FilePrinter.printError(FilePrinter.ITEM + scriptName + ".txt", e);
-        } finally {
-            if (fr != null) {
-                try {
-                    fr.close();
-                } catch (IOException e) {
-                }
-            }
+        } catch (NoSuchMethodException | ScriptException | IOException e) {
+            e.printStackTrace();
         }
     }
 }

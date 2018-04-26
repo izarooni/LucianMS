@@ -27,7 +27,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import tools.LogHelper;
+import net.server.Server;
 import tools.MaplePacketCreator;
 import client.MapleCharacter;
 import client.inventory.Item;
@@ -235,7 +235,18 @@ public class MapleTrade {
                     c.addMesosTraded(local.exchangeMeso);
                 }
             }
-            LogHelper.logTrade(local, partner);
+            StringBuilder description = new StringBuilder("trading items [");
+            for (Item item : local.getItems()) {
+                description.append(item.getQuantity()).append(" of ").append(item.getItemId()).append(", ");
+            }
+            description.append(local.getMeso()).append("mesos");
+            description.append("] and [");
+            for (Item item : partner.getItems()) {
+                description.append(item.getQuantity()).append(" of ").append(item.getItemId());
+            }
+            description.append(partner.getMeso()).append("mesos");
+            description.append("] from players {} and {} respectively");
+            Server.insertLog(MapleTrade.class.getSimpleName(), description.toString(), local.getChr().getName(), partner.getChr().getName());
             local.complete2();
             partner.complete2();
             partner.getChr().setTrade(null);

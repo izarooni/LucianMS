@@ -250,7 +250,7 @@ public class MapleClient {
                 }
             }
         } catch (SQLException e) {
-            FilePrinter.printError("hasVotedAlready.txt", e);
+            e.printStackTrace();
             return -1;
         }
         return voteTime;
@@ -750,7 +750,7 @@ public class MapleClient {
                 player.getMap().removeFakePlayer(player.getFakePlayer());
             }
         } catch (final Throwable t) {
-            FilePrinter.printError(FilePrinter.ACCOUNT_STUCK, t);
+            t.printStackTrace();
         }
     }
 
@@ -845,7 +845,7 @@ public class MapleClient {
                     }
                 }
             } catch (final Exception e) {
-                FilePrinter.printError(FilePrinter.ACCOUNT_STUCK, e);
+                e.printStackTrace();
             } finally {
                 getChannelServer().removePlayer(player);
                 if (!this.serverTransition) {
