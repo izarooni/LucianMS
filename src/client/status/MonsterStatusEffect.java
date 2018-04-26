@@ -37,9 +37,9 @@ public class MonsterStatusEffect {
     private Task cancelTask = null;
     private Task damageTask = null;
 
-    public MonsterStatusEffect(Map<MonsterStatus, Integer> stati, Skill skillId, MobSkill mobskill, boolean monsterSkill) {
+    public MonsterStatusEffect(Map<MonsterStatus, Integer> stati, Skill skill, MobSkill mobskill, boolean monsterSkill) {
         this.stati = new ArrayMap<>(stati);
-        this.skill = skillId;
+        this.skill = skill;
         this.monsterSkill = monsterSkill;
         this.mobskill = mobskill;
     }

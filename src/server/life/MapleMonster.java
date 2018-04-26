@@ -28,6 +28,7 @@ import constants.ServerConstants;
 import constants.skills.*;
 import net.server.world.MapleParty;
 import net.server.world.MaplePartyCharacter;
+import scheduler.Task;
 import scheduler.TaskExecutor;
 import scripting.Achievements;
 import scripting.event.EventInstanceManager;
@@ -49,24 +50,26 @@ import java.util.concurrent.locks.ReentrantLock;
 
 public class MapleMonster extends AbstractLoadedMapleLife {
 
+    private int hp, mp;
+    private int team;
+    private int venomMultiplier = 0;
+    private boolean controllerHasAggro = false;
+    private boolean controllerKnowsAboutAggro = false;
+    private MapleMap map;
     private MapleMonsterStats stats;
     private MapleMonsterStats overrideStats = null;
-    private int hp, mp;
     private WeakReference<MapleCharacter> controller = new WeakReference<>(null);
-    private boolean controllerHasAggro, controllerKnowsAboutAggro;
     private EventInstanceManager eventInstance = null;
+    private List<Integer> stolenItems = new ArrayList<>();
+    private List<Pair<Integer, Integer>> usedSkills = new ArrayList<>();
+    private ArrayList<MonsterStatus> alreadyBuffed = new ArrayList<>();
     private Collection<MonsterListener> listeners = new LinkedList<>();
+    private Map<Pair<Integer, Integer>, Integer> skillsUsed = new HashMap<>();
     private EnumMap<MonsterStatus, MonsterStatusEffect> stati = new EnumMap<>(MonsterStatus.class);
-    private ArrayList<MonsterStatus> alreadyBuffed = new ArrayList<MonsterStatus>();
-    private MapleMap map;
-    private int VenomMultiplier = 0;
+    private final HashMap<Integer, AtomicInteger> takenDamage = new HashMap<>();
     private boolean fake = false;
     private boolean dropsDisabled = false;
-    private List<Pair<Integer, Integer>> usedSkills = new ArrayList<>();
-    private Map<Pair<Integer, Integer>, Integer> skillsUsed = new HashMap<>();
-    private List<Integer> stolenItems = new ArrayList<>();
-    private int team;
-    private final HashMap<Integer, AtomicInteger> takenDamage = new HashMap<>();
+    private boolean damagedOvertime = false;
 
     public ReentrantLock monsterLock = new ReentrantLock();
 
@@ -99,6 +102,14 @@ public class MapleMonster extends AbstractLoadedMapleLife {
 
     public boolean dropsDisabled() {
         return dropsDisabled;
+    }
+
+    public boolean isDamagedOvertime() {
+        return damagedOvertime;
+    }
+
+    public void setDamagedOvertime(boolean damagedOvertime) {
+        this.damagedOvertime = damagedOvertime;
     }
 
     public void setMap(MapleMap map) {
@@ -166,11 +177,11 @@ public class MapleMonster extends AbstractLoadedMapleLife {
     }
 
     public int getVenomMulti() {
-        return this.VenomMultiplier;
+        return this.venomMultiplier;
     }
 
     public void setVenomMulti(int multiplier) {
-        this.VenomMultiplier = multiplier;
+        this.venomMultiplier = multiplier;
     }
 
     public MapleMonsterStats getStats() {
@@ -213,8 +224,8 @@ public class MapleMonster extends AbstractLoadedMapleLife {
         if (hasBossHPBar()) {
             from.getMap().broadcastMessage(makeBossHPBarPacket(), getPosition());
         } else if (!isBoss()) {
-            int remainingHP = (int) Math.max(1, hp * 100f / getMaxHp());
-            byte[] packet = MaplePacketCreator.showMonsterHP(getObjectId(), Math.min(getMaxHp(), remainingHP));
+            int remainingHP = (int) Math.max(0, hp * 100f / getMaxHp());
+            byte[] packet = MaplePacketCreator.showMonsterHP(getObjectId(), remainingHP);
             if (from.getParty() != null) {
                 for (MaplePartyCharacter mpc : from.getParty().getMembers()) {
                     MapleCharacter member = from.getMap().getCharacterById(mpc.getId()); // god bless
@@ -579,6 +590,23 @@ public class MapleMonster extends AbstractLoadedMapleLife {
         return stats.getEffectiveness(e);
     }
 
+    public void applyDamageOvertime(MapleCharacter from, long duration) {
+        MobSkill mSkill = MobSkillFactory.getMobSkill(145, 1);
+        mSkill.setDuration(duration);
+        mSkill.applyEffect(from, this, false);
+
+        setDamagedOvertime(true);
+        int calcDamage = from.calculateMaxBaseDamage(from.getTotalWatk());
+        Task damageTask = TaskExecutor.createRepeatingTask(new DamageTask(calcDamage, from, null, null, 1), 1000);
+        TaskExecutor.createTask(new Runnable() {
+            @Override
+            public void run() {
+                damageTask.cancel();
+                setDamagedOvertime(false);
+            }
+        }, duration);
+    }
+
     public boolean applyStatus(MapleCharacter from, final MonsterStatusEffect status, boolean poison, long duration) {
         return applyStatus(from, status, poison, duration, false);
     }
@@ -871,11 +899,17 @@ public class MapleMonster extends AbstractLoadedMapleLife {
 
         @Override
         public void run() {
-            if (hp > 1 && dealDamage > 0) {
-                final int damage = Math.max(1, (hp - dealDamage));
+            final int localHP = hp;
+
+            if (localHP > 1 && dealDamage > 0) {
+                int damage = dealDamage;
+                if (localHP - dealDamage < 1) {
+                    // damage run would kill the monster
+                    damage = (hp - 1);
+                }
                 damage(chr, damage);
                 if (type == 1) {
-                    map.broadcastMessage(MaplePacketCreator.damageMonster(getObjectId(), dealDamage), getPosition());
+                    map.broadcastMessage(MaplePacketCreator.damageMonster(getObjectId(), damage), getPosition());
                 }
             }
         }

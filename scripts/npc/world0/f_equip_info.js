@@ -26,10 +26,15 @@ function action(mode, type, selection) {
         }
     } else if (status == 2) {
         let item = inventory.getItem(selection);
-        let content = "#b" + item.getItemId() + "\t-\t#z" + item.getItemId() + "##k";
-        content += "\r\nLevel: " + item.getItemLevel();
+        this.selectedItem = item;
+        let content = "#v" + item.getItemId() + "#";
+        content += "\r\nWeapon Level: " + item.getItemLevel();
         content += "\r\nEliminations: " + item.getEliminations();
-        cm.sendOk(content);
-        cm.dispose();
+        content += "\r\nRegalia: " + item.isRegalia();
+        content += "\r\n\r\n#bWould you like to make this item your Regalia?";
+        cm.sendNext(content);
+    } else if (status == 3) {
+        this.selectedItem.setRegalia(!this.selectedItem.isRegalia());
+        cm.sendOk("\t\t\t\t\t\t  #eYour #v" + this.selectedItem.getItemId() + "# is " + (this.selectedItem.isRegalia() ? "now" : "no longer") + " a Regalia");;
     }
 }

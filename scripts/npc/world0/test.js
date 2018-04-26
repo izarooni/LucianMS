@@ -7,6 +7,7 @@ let status = 0;
 const features = [
     ListGEvents,
     null,
+    ListEquips,
     NewEquip,
     CreateRing,
     null,
@@ -64,6 +65,16 @@ function VisibleMapObjects(selection) {
     let content = "";
     player.getVisibleMapObjects().forEach(function(m) {
             content += "\r\n" + m.getType() + " : " + m.getId();
+    });
+    cm.sendOk(content);
+    cm.dispose();
+}
+
+function ListEquips(selection) {
+    let equips = player.getInventory(MapleInventoryType.EQUIPPED).list();
+    let content = "\r\n";
+    equips.forEach(item => {
+        content += "\r\n" + item.toString() + "\t#v" + item.getItemId() + "#";
     });
     cm.sendOk(content);
     cm.dispose();
