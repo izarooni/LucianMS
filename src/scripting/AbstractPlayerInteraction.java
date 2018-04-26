@@ -606,7 +606,7 @@ public class AbstractPlayerInteraction {
     }
 
     public void endExpedition(MapleExpedition exped) {
-        exped.dispose(true);
+        exped.dispose();
         getPlayer().getClient().getChannelServer().getExpeditions().remove(exped);
     }
 
