@@ -121,7 +121,7 @@ public final class Channel {
                 }
             }
         }
-        this.eventScriptManager.init();
+        eventScriptManager.init();
     }
 
     public final void shutdown() {

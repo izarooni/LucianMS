@@ -87,7 +87,7 @@ public class ConsoleCommands {
             if (args.length() == 1) {
                 switch (args.get(0)) {
                     default:
-                        LOGGER.info("Available operations: cs, whitelist, cquests, achievements, houses, emergency");
+                        LOGGER.info("Available operations: cs, whitelist, cquests, achievements, houses, config");
                         break;
                     case "cs":
                         CashShop.CashItemFactory.loadCommodities();
@@ -116,14 +116,14 @@ public class ConsoleCommands {
                         LOGGER.info("Reloaded {} houses", count);
                         break;
                     }
-                    case "cache": {
+                    case "config": {
                         Server.getInstance().getConfig().clearCaches();
                         LOGGER.info("Server configuration cache cleared!");
                         break;
                     }
                 }
             } else {
-                LOGGER.info("Available operations: cs, whitelist, cquests, achievements, houses, emergency");
+                LOGGER.info("Available operations: cs, whitelist, cquests, achievements, houses, config");
             }
         } else if (command.equals("online")) {
             LOGGER.info("Managed LOGIN Sessions: " + Server.getInstance().getAcceptor().getManagedSessionCount());
