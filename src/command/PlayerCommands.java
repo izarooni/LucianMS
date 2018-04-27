@@ -72,6 +72,7 @@ public class PlayerCommands {
             commands.add("@uptime - Display how long the server has been live");
             commands.add("@time - Display the current server time");
             commands.add("@house - Display the house manager NPC");
+            commands.add("@jobs - Display a list of job modifications");
             Collections.sort(commands);
             commands.forEach(player::dropMessage);
             commands.clear();
@@ -239,8 +240,8 @@ public class PlayerCommands {
             player.dropMessage(6, "EXP rate: " + player.getExpRate());
             player.dropMessage(6, "Drop rate: " + player.getDropRate());
             player.dropMessage(6, "Meso rate: " + player.getMesoRate());
-        } else if (command.equals("job")) {
-            NPCScriptManager.start(client, 9201095, null);
+        } else if (command.equals("job", "jobs")) {
+            NPCScriptManager.start(client, command.equals("job") ? 9201095 : 9900000, null);
         } else if (command.equals("joinevent", "leaveevent")) {
             boolean join = command.equals("joinevent");
             ManualPlayerEvent playerEvent = client.getWorldServer().getPlayerEvent();
@@ -328,6 +329,7 @@ public class PlayerCommands {
             maps.put("ariant",     260000000);
             maps.put("timetemple", 270000000);
             maps.put("ellin",      300000000);
+            maps.put("arcade",     978);
             // @formatter:on
             if (args.length() == 1) {
                 String name = args.get(0).toLowerCase(Locale.ROOT);
