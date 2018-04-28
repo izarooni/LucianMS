@@ -115,12 +115,12 @@ public class EventCommands {
                             break;
                         }
                         case "gate": {
-                            Long a1 = args.parseNumber(1);
-                            if (a1 == null || args.getError(1) != null) {
-                                player.dropMessage(args.getError(1));
+                            Integer time = args.parseNumber(1, int.class);
+                            String error = args.getFirstError();
+                            if (error != null) {
+                                player.dropMessage(5, error);
                                 return true;
                             }
-                            int time = a1.intValue();
                             playerEvent.setGateTime(time);
                             player.dropMessage(String.format("Event time is now set to %d seconds", time));
                             break;
@@ -245,12 +245,12 @@ public class EventCommands {
             boolean map = command.equals("reversemap", "revm");
             try {
                 if (args.length() > 0) {
-                    MobSkill skill = MobSkillFactory.getMobSkill(132, 2);
-                    Long a1 = args.parseNumber(0);
-                    if (a1 == null) {
-                        player.dropMessage(5, args.getError(0));
-                        return true;
+                    Integer level = args.parseNumber(0, 2, int.class);
+                    String error = args.getFirstError();
+                    if (error != null) {
+                        player.dropMessage(5, error);
                     }
+                    MobSkill skill = MobSkillFactory.getMobSkill(132, level);
                     if (map) {
                         for (MapleCharacter players : player.getMap().getCharacters()) {
                             if (!players.isGM()) {
@@ -272,9 +272,9 @@ public class EventCommands {
                     }
                 } else {
                     if (map) {
-                        player.dropMessage(5, "Syntax: !" + command.getName() + " <mode>");
+                        player.sendMessage(5, "Syntax: !{} <mode>", command.getName());
                     } else {
-                        player.dropMessage(5, "Syntax: !" + command.getName() + " <mode> <usernames>");
+                        player.sendMessage(5, "Syntax: !{} <mode> <usernames>", command.getName());
                     }
                 }
             } catch (NullPointerException e) {
@@ -386,7 +386,7 @@ public class EventCommands {
                 int time = 2;
                 MapleCharacter target;
                 if (args.length() > 0) {
-                    int i1;
+                    int timeArg;
                     String username = args.get(0);
                     target = ch.getPlayerStorage().getCharacterByName(username);
                     if (target != null) {
@@ -395,13 +395,14 @@ public class EventCommands {
                         player.dropMessage(5, String.format("Could not find any player named '%s'", username));
                         return true;
                     }
-                    if ((i1 = args.findArg("-t")) > -1) {
-                        Long a1 = args.parseNumber(i1);
-                        if (a1 == null) {
-                            player.dropMessage(5, args.getError(i1));
+                    if ((timeArg = args.findArg("-t")) > -1) {
+                        Integer temp = args.parseNumber(timeArg, int.class);
+                        String error = args.getFirstError();
+                        if (error != null) {
+                            player.dropMessage(5, error);
                             return true;
                         }
-                        time = a1.intValue();
+                        time = temp;
                     }
                 } else {
                     target = player;

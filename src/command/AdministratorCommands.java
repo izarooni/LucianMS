@@ -69,12 +69,12 @@ public class AdministratorCommands {
         } else if (command.equals("fae")) { // force auto event
             GAutoEventManager[] manager = GAutoEventManager.values();
             if (args.length() == 1) {
-                Long a1 = args.parseNumber(0);
-                if (args.getError(0) != null) {
-                    player.dropMessage(args.getError(0));
+                Integer index = args.parseNumber(0, int.class);
+                String error = args.getFirstError();
+                if (error != null) {
+                    player.dropMessage(5, error);
                     return;
                 }
-                int index = a1.intValue() - 1;
                 if (index < 0 || index >= manager.length) {
                     player.dropMessage("You must pick a number between 1 and " + manager.length);
                     return;
@@ -123,15 +123,13 @@ public class AdministratorCommands {
             }
         } else if (command.equals("wpos")) {
             if (args.length() == 2) {
-                Long a1 = args.parseNumber(0);
-                Long a2 = args.parseNumber(1);
-                String error = args.getError(1, 2);
+                Integer x = args.parseNumber(0, int.class);
+                Integer y = args.parseNumber(1, int.class);
+                String error = args.getFirstError();
                 if (error != null) {
-                    player.dropMessage(error);
+                    player.dropMessage(5, error);
                     return;
                 }
-                int x = a1.intValue();
-                int y = a2.intValue();
                 player.changeMap(player.getMap(), new Point(x, y));
             }
         } else if (command.equals("reloadevents")) {

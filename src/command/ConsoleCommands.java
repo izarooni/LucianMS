@@ -166,12 +166,12 @@ public class ConsoleCommands {
             }
         } else if (command.equals("cls")) {
             if (args.length() == 1) {
-                Long var_amount = args.parseNumber(0);
-                if (var_amount == null) {
-                    LOGGER.info("{} is an invalid number", args.get(0));
+                Integer amount = args.parseNumber(0, int.class);
+                String error = args.getFirstError();
+                if (error != null) {
+                    LOGGER.info(error);
                     return;
                 }
-                int amount = var_amount.intValue();
                 if (amount < 0) {
                     LOGGER.info("You must enter a number larger than 0");
                     return;

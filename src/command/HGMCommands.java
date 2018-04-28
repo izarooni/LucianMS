@@ -18,6 +18,7 @@ import server.MapleShop;
 import server.MapleShopFactory;
 import server.life.MapleLifeFactory;
 import server.life.MapleMonster;
+import server.life.MapleMonsterStats;
 import server.life.MapleNPC;
 import server.maps.MapleFoothold;
 import tools.DatabaseConnection;
@@ -41,13 +42,12 @@ public class HGMCommands {
 
         if (command.equals("hgmcommands")) {
             ArrayList<String> commands = new ArrayList<>();
-            commands.add("!item <id> <OPT=amount> - spawn an item, and optionally choose an amount");
-            commands.add("!drop <id> <OPT=amount> - drop an item on the ground, and optionally choose an amount");
+            commands.add("!item <id> [amount] - spawn an item, and optionally choose an amount");
+            commands.add("!drop <id> [amount] - drop an item on the ground, and optionally choose an amount");
             commands.add("!respawn - Respawn monsters and reset reactors in the current map");
-            commands.add("!spawn <monster> <OPT=amount> - spawn a monster, and optionally multiple of the same sort");
+            commands.add("!spawn <monster> [amount] - spawn a monster, and optionally multiple of the same sort");
             commands.add("!npc <id> - spawn a npc at your location");
             commands.add("!pnpc <id> - spawn a permanent npc at your location");
-            commands.add("!mob <id> <OPT=amount> - Another way to spawn a monster");
             commands.add("!pmob <id> <amount> - Spawn a permanent monster");
             commands.add("!playernpc <player> <scriptId> - Create a player npc");
             commands.add("!pos - Show the position you're currently at");
@@ -67,17 +67,14 @@ public class HGMCommands {
             commands.clear();
         } else if (command.equals("item", "drop")) {
             if (args.length() > 0) {
-                Long a1 = args.parseNumber(0);
-                Long a2 = args.parseNumber(1);
-                String error = args.getError(0, 1);
-                if (a1 == null || error != null) {
-                    player.dropMessage(error);
+                Integer id = args.parseNumber(0, int.class);
+                Short quantity = args.parseNumber(1, short.class);
+                String error = args.getFirstError();
+                if (error != null) {
+                    player.dropMessage(5, error);
                     return;
                 }
-                int id = a1.intValue();
-                short quantity = (a2 == null) ? 1 : a2.shortValue();
                 int petId = -1;
-
                 if (ItemConstants.isPet(id)) {
                     petId = MaplePet.createPet(id);
                 }
@@ -110,20 +107,24 @@ public class HGMCommands {
             player.sendMessage("Reactors reset");
         } else if (command.equals("spawn")) {
             if (args.length() > 0) {
-                Long a1 = args.parseNumber(0);
-                Long a2 = args.parseNumber(1);
-                String error = args.getError(0, 1);
-                if (a1 == null || error != null) {
-                    player.dropMessage(error);
+                Integer monsterId = args.parseNumber(0, int.class);
+                Integer amount = args.parseNumber(1, 1, int.class);
+                Integer hp = args.parseNumber(args.findArg("hp"), int.class);
+                String error = args.getFirstError();
+                if (error != null) {
+                    player.dropMessage(5, error);
                     return;
                 }
-                int monsterId = a1.intValue();
-                int amount = (a2 == null) ? 1 : a2.intValue();
                 for (int i = 0; i < amount; i++) {
                     MapleMonster monster = MapleLifeFactory.getMonster(monsterId);
                     if (monster == null) {
                         player.dropMessage(5, String.format("'%d' is not a valid monster", monsterId));
                         return;
+                    }
+                    if (hp != null) {
+                        MapleMonsterStats stats = new MapleMonsterStats();
+                        stats.setHp(hp);
+                        monster.setOverrideStats(stats);
                     }
                     player.getMap().spawnMonsterOnGroudBelow(monster, player.getPosition());
                 }
@@ -133,17 +134,13 @@ public class HGMCommands {
         } else if (command.equals("npc", "pnpc")) { // !pnpc <npc_id> [script_name]
             if (args.length() > 0) {
                 boolean permanent = command.equals("pnpc");
-                Long a1 = args.parseNumber(0);
-                String script = null;
-                if (args.length() == 2) {
-                    script = args.get(1);
-                }
-                String error = args.getError(0);
+                Integer npcId = args.parseNumber(0, int.class);
+                String script = (args.length() == 2) ? args.get(1) : null;
+                String error = args.getFirstError();
                 if (error != null) {
-                    player.dropMessage(error);
+                    player.dropMessage(5, error);
                     return;
                 }
-                int npcId = a1.intValue();
                 MapleNPC npc = MapleLifeFactory.getNPC(npcId);
                 npc.setPosition(player.getPosition());
                 npc.setCy(player.getPosition().y);
@@ -185,15 +182,13 @@ public class HGMCommands {
             }
         } else if (command.equals("pmob")) {
             if (args.length() > 0) {
-                Long a1 = args.parseNumber(0);
-                Long a2 = args.parseNumber(1);
-                String error = args.getError(0, 1);
-                if (a1 == null || error != null) {
-                    player.dropMessage(error);
+                Integer mobId = args.parseNumber(0, int.class);
+                Integer amount = args.parseNumber(1, 1, int.class);
+                String error = args.getFirstError();
+                if (error != null) {
+                    player.dropMessage(5, error);
                     return;
                 }
-                int mobId = a1.intValue();
-                int amount = (a2 == null) ? 1 : a2.intValue();
                 int xpos = player.getPosition().x;
                 int ypos = player.getPosition().y;
                 int fh = player.getMap().getFootholds().findBelow(player.getPosition()).getId();
@@ -234,18 +229,14 @@ public class HGMCommands {
             }
         } else if (command.equals("playernpc")) {
             if (args.length() > 1) {
-                Long a1 = args.parseNumber(0);
+                Integer npcId = args.parseNumber(0, int.class);
                 String username = args.get(1);
-                String script = null;
-                if (args.length() == 3) {
-                    script = args.get(2);
-                }
-                String error = args.getError(0);
-                if (a1 == null) {
-                    player.dropMessage(error);
+                String script = (args.length() == 3) ? args.get(2) : null;
+                String error = args.getFirstError();
+                if (error != null) {
+                    player.dropMessage(5, error);
                     return;
                 }
-                int npcId = a1.intValue();
                 MapleCharacter target = player.getClient().getChannelServer().getPlayerStorage().getCharacterByName(username);
                 if (target != null) {
                     if (npcId >= 9901000 && npcId <= 9901909) {
@@ -262,11 +253,11 @@ public class HGMCommands {
         } else if (command.equals("pos")) {
             player.dropMessage(player.getPosition().toString());
         } else if (command.equals("shout", "say")) {
-                    if (args.length() > 0) {
-                        if (command.equals("say")) {
-                            String message = String.format("%s : %s", player.getName(), args.concatFrom(0));
-                            client.getWorldServer().broadcastPacket(MaplePacketCreator.serverNotice(6, message));
-                        } else {
+            if (args.length() > 0) {
+                if (command.equals("say")) {
+                    String message = String.format("%s : %s", player.getName(), args.concatFrom(0));
+                    client.getWorldServer().broadcastPacket(MaplePacketCreator.serverNotice(6, message));
+                } else {
                     client.getWorldServer().broadcastPacket(MaplePacketCreator.earnTitleMessage(args.concatFrom(0)));
                 }
             } else {
@@ -278,12 +269,12 @@ public class HGMCommands {
             player.dropMessage(6, "Map street name - " + player.getMap().getStreetName());
         } else if (command.equals("oshop")) {
             if (args.length() == 1) {
-                Long var_shopId = args.parseNumber(0);
-                if (var_shopId == null) {
-                    player.dropMessage(5, String.format("%s is not a valid number", args.get(0)));
+                Integer shopId = args.parseNumber(0, int.class);
+                String error = args.getFirstError();
+                if (error != null) {
+                    player.dropMessage(5, error);
                     return;
                 }
-                int shopId = var_shopId.intValue();
                 MapleShop shop = MapleShopFactory.getInstance().getShop(shopId);
                 if (shop != null) {
                     shop.sendShop(client);
@@ -293,13 +284,12 @@ public class HGMCommands {
             }
         } else if (command.equals("onpc")) {
             if (args.length() == 1) {
-                Long a1 = args.parseNumber(0);
-                if (args.getError(0) != null) {
-                    NPCScriptManager.start(client, 10200, args.get(0));
-                    return;
+                Integer npcId = args.parseNumber(0, int.class);
+                String error = args.getFirstError();
+                if (error == null && npcId < 9901000) {
+                    NPCScriptManager.start(client, npcId);
                 }
-                int npcId = a1.intValue();
-                NPCScriptManager.start(client, npcId);
+                NPCScriptManager.start(client, 10200, args.get(0));
             } else {
                 player.dropMessage(5, "You must specify an NPC ID");
             }
@@ -339,12 +329,12 @@ public class HGMCommands {
         } else if (command.equals("godmeup")) {
             if (args.length() > 0) {
                 List<ModifyInventory> mods = new ArrayList<>();
-                Long a1 = args.parseNumber(0);
-                if (a1 == null || args.getError(0) != null) {
-                    player.dropMessage(args.getError(0));
+                Short stat = args.parseNumber(0, short.class);
+                String error = args.getFirstError();
+                if (error != null) {
+                    player.dropMessage(5, error);
                     return;
                 }
-                short stat = a1.shortValue();
                 for (Item item : player.getInventory(MapleInventoryType.EQUIPPED).list()) {
                     if (item instanceof Equip) {
                         Equip eq = (Equip) item;

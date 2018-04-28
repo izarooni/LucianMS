@@ -167,12 +167,12 @@ public class PlayerCommands {
             }
         } else if (command.matches("^(str|dex|int|luk)$")) {
             if (args.length() == 1) {
-                Long var_nStat = args.parseNumber(0);
-                if (var_nStat == null) {
-                    player.dropMessage(String.format("%s is not a number", args.get(0)));
+                Integer nStat = args.parseNumber(0, int.class);
+                String error = args.getFirstError();
+                if (error != null) {
+                    player.dropMessage(5, error);
                     return;
                 }
-                int nStat = var_nStat.intValue();
                 if (nStat == 0) {
                     player.dropMessage("You need to enter a number less than, or larger than 0");
                     return;

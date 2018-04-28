@@ -3,7 +3,6 @@ package command;
 import client.MapleCharacter;
 import client.MapleClient;
 
-import java.util.function.Consumer;
 import java.util.regex.Pattern;
 
 /**
@@ -132,26 +131,20 @@ public class CommandWorker {
     /**
      * Helper class that manages and eases functionality of command arguments
      */
-    static class CommandArgs {
+    public static class CommandArgs {
 
         private final String[] args;
         private final String[] errors;
 
-        CommandArgs(String[] args) {
+        public CommandArgs(String[] args) {
             this.args = args;
             errors = new String[args.length];
         }
 
-        /**
-         * Iterate through errors and return those with indexes that match with the specified indexes
-         *
-         * @param index errors to index
-         * @return the first non-null String found in the array of errors
-         */
-        public String getError(int... index) {
-            for (int i : index) {
-                if (i > -1 && i < errors.length && errors[i] != null) {
-                    return errors[i];
+        public String getFirstError() {
+            for (String error : errors) {
+                if (error != null) {
+                    return error;
                 }
             }
             return null;
@@ -203,24 +196,47 @@ public class CommandWorker {
             return sb.toString();
         }
 
+        public <T extends Number> T parseNumber(int index, Class<? extends Number> t) {
+            if (index == -1) {
+                return null;
+            }
+            try {
+                String arg = args[index];
+                Object ret = null;
+                if (t == byte.class) {
+                    ret = Byte.parseByte(arg);
+                } else if (t == short.class) {
+                    ret = Short.parseShort(arg);
+                } else if (t == int.class) {
+                    ret = Integer.parseInt(arg);
+                } else if (t == long.class) {
+                    ret = Long.parseLong(arg);
+                }
+                return (T) ret;
+            } catch (NumberFormatException e) {
+                errors[index] = String.format("'%s' is not a number", args[index]);
+                return null;
+            } catch (IndexOutOfBoundsException e) {
+                return null;
+            }
+        }
+
         /**
-         * Attempts to parse a String to a Long
+         * Parse the String argument at the specified index as the specified Number type
          * <p>
          * Should parsing fail, an error message will be created and stored in the errors array at the specified index
          * </p>
          *
          * @param index index to parse and the index the error message will be put
+         * @param def   the default value to return
          * @return Long object of the parsed String, null if failure
          */
-        public Long parseNumber(int index) {
+        public <T extends Number> T parseNumber(int index, T def, Class<? extends Number> t) {
             try {
-                return Long.parseLong(args[index]);
-            } catch (NumberFormatException e) {
-                errors[index] = String.format("'%s' is not a number", args[index]);
-                return null;
-            } catch (IndexOutOfBoundsException e) {
-                // will probably make another method that handles a fallback value
-                return null;
+                Number number = parseNumber(index, t);
+                return number == null ? def : (T) number;
+            } catch (Exception e) {
+                return def;
             }
         }
 
@@ -239,12 +255,6 @@ public class CommandWorker {
                 }
             }
             return -1;
-        }
-
-        public void forEachStringFrom(int index, Consumer<String> consumer) {
-            for (int j = index; j < args.length; j++) {
-                consumer.accept(args[j]);
-            }
         }
     }
 }

@@ -6,10 +6,7 @@ import org.json.JSONObject;
 import org.json.JSONTokener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import scripting.Achievements;
-import server.Whitelist;
 
-import javax.xml.crypto.Data;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.net.URISyntaxException;
@@ -23,9 +20,8 @@ public class Tester {
     private static Config config = null;
 
     public static void main(String[] args) {
-        initConfig();
-        DatabaseConnection.useConfig(config);
-        Achievements.loadAchievements();
+//        initConfig();
+//        DatabaseConnection.useConfig(config);
     }
 
     private static void initConfig() {
