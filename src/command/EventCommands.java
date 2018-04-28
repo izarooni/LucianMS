@@ -33,14 +33,22 @@ public class EventCommands {
         ManualPlayerEvent playerEvent = client.getWorldServer().getPlayerEvent();
 
         if (command.equals("eventcommands")) {
-            player.dropMessage("!event - setup/start/close an event");
-            player.dropMessage("!lock<m> - Disable skills for specified players or everybody (map)");
-            player.dropMessage("!reverse<m> - Give specified players or everybody the reverse debuff");
-            player.dropMessage("!seduce<m> - Give specified players or everybody the seduce debuff");
-            player.dropMessage("!partycheck - Check all players party information");
-            player.dropMessage("!ak - Set the auto kill position");
-            player.dropMessage("!bomb<m> - Spawn a timed bomb at your position or around everybody in the map");
-//            player.dropMessage("");
+            ArrayList<String> commands = new ArrayList<>();
+            commands.add("!event - setup/start/close an event");
+            commands.add("!lock<m> - Disable skills for specified players or everybody (map)");
+            commands.add("!reverse<m> - Give specified players or everybody the reverse debuff");
+            commands.add("!seduce<m> - Give specified players or everybody the seduce debuff");
+            commands.add("!partycheck - Check all players party information");
+            commands.add("!ak - Set the auto kill position");
+            commands.add("!bomb<m> - Spawn a timed bomb at your position or around everybody in the map");
+            commands.sort(String::compareTo);
+            commands.forEach(player::dropMessage);
+        } else if (command.equals("help")) {
+            // the staff help command must be declared in the lowest tier GM command system
+            player.dropMessage("!eventcommands - Display the list of event commands");
+            player.dropMessage("!gmcommands - Display the list of commands available to Game Masters and above");
+            player.dropMessage("!hgmcommands - Display the list of commands available to Head GMs and above");
+            player.dropMessage("!admincommands - Display the list of commands available to Administrators");
         } else if (command.equals("event")) {
             if (args.length() > 0) {
                 switch (args.get(0)) {

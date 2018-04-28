@@ -92,6 +92,7 @@ public class GameMasterCommands {
             commands.add("!ap <amount> - Give yourself or another player AP");
             commands.add("!sp <amount> - Give yourself or another player SP");
             commands.add("!setall <number> [username] - Set all stats for yourself or a player");
+            commands.sort(String::compareTo);
             commands.forEach(player::dropMessage);
             commands.clear();
         } else if (command.equals("dc")) {

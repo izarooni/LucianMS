@@ -49,7 +49,7 @@ public class AdministratorCommands {
                 commands.add("!reloadevents - Reload all event scripts");
                 commands.add("!reloadevent - Reload a specified event script");
                 commands.add("!wpos - Warp yourself to a specified {x,y} position in the current map");
-                Collections.sort(commands);
+                commands.sort(String::compareTo);
                 commands.forEach(player::dropMessage);
             } finally {
                 commands.clear();

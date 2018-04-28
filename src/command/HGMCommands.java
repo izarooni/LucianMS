@@ -63,6 +63,7 @@ public class HGMCommands {
             commands.add("!reloadmobs - Reload mob data");
             commands.add("!resetreactors - Reset all reactors in the map");
             commands.add("!godmeup - Change values of all stats for all equips");
+            commands.sort(String::compareTo);
             commands.forEach(player::dropMessage);
             commands.clear();
         } else if (command.equals("item", "drop")) {
