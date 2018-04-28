@@ -152,9 +152,6 @@ public class EventInstanceManager {
             Integer kc = killCount.getOrDefault(player.getId(), 0);
             kc += (int) eventManager.getInvocable().invokeFunction("monsterValue", this, player, monster);
             killCount.put(player.getId(), kc);
-            if (expedition != null) {
-                expedition.monsterKilled(player, monster);
-            }
         } catch (ScriptException | NoSuchMethodException e) {
             LOGGER.error("Unable to invoke function 'monsterValue' with player '{}' and monster '{}' in event instance '{}'", player.getName(), monster.getId(), getName(), e);
         }

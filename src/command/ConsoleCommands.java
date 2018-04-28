@@ -13,6 +13,7 @@ import scripting.Achievements;
 import server.CashShop;
 import server.Whitelist;
 import server.quest.custom.CQuestBuilder;
+import server.world.HouseManager;
 import tools.data.output.MaplePacketLittleEndianWriter;
 
 import java.io.IOException;
@@ -25,18 +26,18 @@ import java.util.Scanner;
 public class ConsoleCommands {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ConsoleCommands.class);
-    private static Thread thread;
     private static volatile boolean reading = false;
+    private static Scanner scanner;
 
     private ConsoleCommands() {
     }
 
     public static void beginReading() {
-        thread = new Thread(new Runnable() {
+        new Thread(new Runnable() {
             @Override
             public void run() {
                 reading = true;
-                Scanner scanner = new Scanner(System.in);
+                scanner = new Scanner(System.in);
                 String line;
                 while (scanner.hasNext() && reading && (line = scanner.nextLine()) != null) {
                     // from CommandWorker
@@ -66,12 +67,12 @@ public class ConsoleCommands {
                 }
                 LOGGER.info("Console no longer reading commands");
             }
-        }, "ConsoleReader");
-        thread.start();
+        }, "ConsoleReader").start();
     }
 
     public static void stopReading() {
         reading = false;
+        scanner.close();
     }
 
     private static void execute(CommandWorker.Command command, CommandWorker.CommandArgs args) {
@@ -82,11 +83,50 @@ public class ConsoleCommands {
 
             reading = false;
             System.exit(0);
-        } else if (command.equals("reloadcs")) {
-            CashShop.CashItemFactory.loadCommodities();
-            LOGGER.info("Cash Shop commodities reloaded");
+        } else if (command.equals("reload")) {
+            if (args.length() == 1) {
+                switch (args.get(0)) {
+                    default:
+                        LOGGER.info("Available operations: cs, whitelist, cquests, achievements, houses, config");
+                        break;
+                    case "cs":
+                        CashShop.CashItemFactory.loadCommodities();
+                        LOGGER.info("Cash Shop commodities reloaded");
+                        break;
+                    case "whitelist":
+                        try {
+                            final int bCount = Whitelist.getAccounts().size();
+                            Whitelist.loadAccounts();
+                            final int aCount = Whitelist.getAccounts().size();
+                            LOGGER.info("Whitelist reloaded. Previously had {} accounts, now {}", bCount, aCount);
+                        } catch (IOException | URISyntaxException e) {
+                            e.printStackTrace();
+                        }
+                        break;
+                    case "cquests":
+                        CQuestBuilder.loadAllQuests();
+                        break;
+                    case "achievements": {
+                        int count = Achievements.loadAchievements();
+                        LOGGER.info("Reloaded {} achievements", count);
+                        break;
+                    }
+                    case "houses": {
+                        int count = HouseManager.loadHouses();
+                        LOGGER.info("Reloaded {} houses", count);
+                        break;
+                    }
+                    case "config": {
+                        Server.getInstance().getConfig().clearCaches();
+                        LOGGER.info("Server configuration cache cleared!");
+                        break;
+                    }
+                }
+            } else {
+                LOGGER.info("Available operations: cs, whitelist, cquests, achievements, houses, config");
+            }
         } else if (command.equals("online")) {
-            LOGGER.info("Managed Sessions: " + Server.getInstance().getAcceptor().getManagedSessionCount());
+            LOGGER.info("Managed LOGIN Sessions: " + Server.getInstance().getAcceptor().getManagedSessionCount());
             if (Server.getInstance().isOnline()) {
                 for (World worlds : Server.getInstance().getWorlds()) {
                     LOGGER.info("World {}:", (worlds.getId() + 1));
@@ -106,19 +146,6 @@ public class ConsoleCommands {
             } else {
                 LOGGER.error("The server is not online!");
             }
-        } else if (command.equals("reloadwhitelist")) {
-            try {
-                final int bCount = Whitelist.getAccounts().size();
-                Whitelist.loadAccounts();
-                final int aCount = Whitelist.getAccounts().size();
-                LOGGER.info("Whitelist reloaded. Previously had {} accounts, now has {}", bCount, aCount);
-            } catch (IOException | URISyntaxException e) {
-                e.printStackTrace();
-            }
-        } else if (command.equals("reloadcquests")) {
-            CQuestBuilder.loadAllQuests();
-        } else if (command.equals("reloadachievements")) {
-            Achievements.initialize();
         } else if (command.equals("gc")) {
             TaskExecutor.purge();
             LOGGER.info("Tasks purged");
@@ -155,13 +182,11 @@ public class ConsoleCommands {
             }
         } else if (command.equals("help", "commands")) {
             LOGGER.info("gc - Requests JVM garbage collection");
-            LOGGER.info("cls - Clear the buffer");
+            LOGGER.info("cls <count> - \"Clear\" the buffer");
             LOGGER.info("exit - Safely stop and close the server");
-            LOGGER.info("online - View current online players");
-            LOGGER.info("reloadcquests - Reload custom quest files");
-            LOGGER.info("reloadwhitelist - Reload server white-list");
             LOGGER.info("crash <username> - Crash an in-game character");
-            LOGGER.info("reloadachievements - Clear and re-load stored achievement scripts");
+            LOGGER.info("online - View current online players");
+            LOGGER.info("reload <operation> - Reload/clear the cache of specified feature");
         }
     }
 }

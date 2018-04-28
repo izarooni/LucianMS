@@ -40,11 +40,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import scheduler.TaskExecutor;
 import scripting.event.EventScriptManager;
+import server.FieldBuilder;
 import server.events.gm.MapleEvent;
 import server.expeditions.MapleExpedition;
 import server.maps.HiredMerchant;
 import server.maps.MapleMap;
 import server.maps.MapleMapFactory;
+import server.maps.MapleMapObject;
 import server.partyquest.carnival.MCarnivalLobbyManager;
 import tools.MaplePacketCreator;
 
@@ -52,6 +54,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock.WriteLock;
 
@@ -64,6 +67,7 @@ public final class Channel {
     private IoAcceptor acceptor;
     private String ip, serverMessage;
     private MapleMapFactory mapFactory;
+    private ConcurrentHashMap<Integer, MapleMap> maps = new ConcurrentHashMap<>(100);
     private EventScriptManager eventScriptManager;
     private Map<Integer, HiredMerchant> hiredMerchants = new HashMap<>();
     private final Map<Integer, Integer> storedVars = new HashMap<>();
@@ -117,7 +121,7 @@ public final class Channel {
                 }
             }
         }
-        this.eventScriptManager.init();
+        eventScriptManager.init();
     }
 
     public final void shutdown() {
@@ -153,6 +157,34 @@ public final class Channel {
 
     public MapleMapFactory getMapFactory() {
         return mapFactory;
+    }
+
+    public boolean isMapLoaded(int mapID) {
+        return maps.containsKey(mapID);
+    }
+
+    public MapleMap getMap(int mapID) {
+        return maps.computeIfAbsent(mapID, id -> new FieldBuilder(world, channel, mapID).loadAll().build());
+    }
+
+    public MapleMap removeMap(int mapID) {
+        return maps.remove(mapID);
+    }
+
+    public void reloadMap(int mapID) {
+        MapleMap fOld, fNew;
+        if ((fOld = maps.get(mapID)) != null) {
+            maps.remove(mapID);
+            fNew = getMap(mapID);
+            for (MapleMapObject object : fOld.getMapObjects()) {
+                if (object instanceof MapleCharacter) {
+                    MapleCharacter player = (MapleCharacter) object;
+                    fOld.removeMapObject(player);
+                    player.changeMap(fNew);
+                }
+            }
+            maps.put(mapID, fNew);
+        }
     }
 
     public int getWorld() {

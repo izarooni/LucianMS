@@ -64,7 +64,7 @@ public class AdministratorCommands {
             CQuestBuilder.loadAllQuests();
             player.dropMessage("Quests reloaded");
         } else if (command.equals("reloadachievements")) {
-            Achievements.initialize();
+            Achievements.loadAchievements();
             player.dropMessage("Achievements reloaded");
         } else if (command.equals("fae")) { // force auto event
             GAutoEventManager[] manager = GAutoEventManager.values();

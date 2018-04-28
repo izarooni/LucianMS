@@ -1,0 +1,30 @@
+<imgdir name="Your Regalia">
+    <imgdir name="info">
+        <int name="questId" value="35"/>
+		<int name="preQuest" value="-1"/>
+		<int name="daily" value="1"/>
+    </imgdir>
+
+    <imgdir name="toKill">
+
+        <imgdir name="0">
+            <int name="monsterId" value="9895244"/>
+            <int name="amount" value="500"/>
+        </imgdir>
+    </imgdir>
+
+    <imgdir name="toCollect">
+        <imgdir name="0">
+            <int name="monsterId" value="9895244"/>
+            <int name="itemId" value="4000144"/>
+            <int name="quantity" value="100"/>
+            <int name="chance" value="33"/>
+            <int name="minDrop" value="1"/>
+            <int name="maxDrop" value="1"/>
+        </imgdir>
+    </imgdir>
+    <imgdir name="rewards">
+        <int name="meso" value="100000"/>
+        <int name="exp" value="1718500"/>
+    </imgdir>
+</imgdir>

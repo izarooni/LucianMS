@@ -182,8 +182,6 @@ public class PlayerBattle extends GenericEvent {
 
     /**
      * Calculate necessary attack data between the player and nearby targets via weapon, skill and stats
-     * <p>
-     * todo convert ranges to JSON data for easier customization
      *
      * @param attackInfo attack data
      */

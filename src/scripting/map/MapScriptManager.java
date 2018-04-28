@@ -26,7 +26,9 @@ import tools.FilePrinter;
 
 import javax.script.*;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -76,8 +78,8 @@ public class MapScriptManager {
             final Invocable script = ((Invocable) portal);
             scripts.put(scriptName, script);
             script.invokeFunction("start", new MapScriptMethods(c));
-        } catch (final Exception e) {
-            FilePrinter.printError(FilePrinter.MAP_SCRIPT + type + scriptName + ".txt", e);
+        } catch (NoSuchMethodException | ScriptException | IOException e) {
+            e.printStackTrace();
         }
     }
 }

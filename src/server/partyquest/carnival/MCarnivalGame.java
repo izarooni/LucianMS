@@ -50,7 +50,7 @@ public class MCarnivalGame extends GenericEvent {
 
     @Override
     public void onPlayerDeath(MapleCharacter player) {
-        MapleMap map = player.getClient().getChannelServer().getMapFactory().getMap(lobby.getBattlefieldMapId());
+        MapleMap map = player.getClient().getChannelServer().getMap(lobby.getBattlefieldMapId());
         map.broadcastMessage(MaplePacketCreator.getMonsterCarnivalPlayerDeath(player));
     }
 
@@ -66,7 +66,7 @@ public class MCarnivalGame extends GenericEvent {
     }
 
     public void dispose() {
-        MapleMap map = lobby.getChannel().getMapFactory().remove(lobby.getBattlefieldMapId());
+        MapleMap map = lobby.getChannel().removeMap(lobby.getBattlefieldMapId());
         map.killAllMonsters();
         map.clearDrops();
         lobby.setState(MCarnivalLobby.State.Available);

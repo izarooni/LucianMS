@@ -21,9 +21,10 @@
  */
 package net.server.channel.handlers;
 
-import java.util.Arrays;
-import java.util.List;
-
+import client.MapleCharacter;
+import client.MapleClient;
+import client.inventory.MapleInventory;
+import client.inventory.MapleInventoryType;
 import net.AbstractMaplePacketHandler;
 import server.MapleInventoryManipulator;
 import server.MapleItemInformationProvider;
@@ -35,10 +36,10 @@ import server.quest.MapleQuest;
 import tools.MaplePacketCreator;
 import tools.Randomizer;
 import tools.data.input.SeekableLittleEndianAccessor;
-import client.MapleCharacter;
-import client.MapleClient;
-import client.inventory.MapleInventory;
-import client.inventory.MapleInventoryType;
+
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 
 public final class AdminCommandHandler extends AbstractMaplePacketHandler {
 
@@ -76,10 +77,10 @@ public final class AdminCommandHandler extends AbstractMaplePacketHandler {
                 c.getPlayer().setExp(slea.readInt());
                 break;
             case 0x03: // /ban <name>
-            	c.getPlayer().yellowMessage("Please use !ban <IGN> <Reason>");
-            	break;
+                c.getPlayer().yellowMessage("Please use !ban <IGN> <Reason>");
+                break;
             case 0x04: // /block <name> <duration (in days)> <HACK/BOT/AD/HARASS/CURSE/SCAM/MISCONDUCT/SELL/ICASH/TEMP/GM/IPROGRAM/MEGAPHONE>
-            	victim = slea.readMapleAsciiString();
+                victim = slea.readMapleAsciiString();
                 int type = slea.readByte(); //reason
                 int duration = slea.readInt();
                 String description = slea.readMapleAsciiString();
@@ -122,12 +123,15 @@ public final class AdminCommandHandler extends AbstractMaplePacketHandler {
             case 0x12: // Send
                 victim = slea.readMapleAsciiString();
                 int mapId = slea.readInt();
-                c.getChannelServer().getPlayerStorage().getCharacterByName(victim).changeMap(c.getChannelServer().getMapFactory().getMap(mapId));
+                MapleCharacter p = c.getChannelServer().getPlayerStorage().getCharacterByName(victim);
+                if (p != null) {
+                    p.changeMap(c.getChannelServer().getMap(mapId));
+                }
                 break;
             case 0x15: // Kill
                 int mobToKill = slea.readInt();
                 int amount = slea.readInt();
-                List<MapleMapObject> monsterx = c.getPlayer().getMap().getMapObjectsInRange(c.getPlayer().getPosition(), Double.POSITIVE_INFINITY, Arrays.asList(MapleMapObjectType.MONSTER));
+                List<MapleMapObject> monsterx = c.getPlayer().getMap().getMapObjectsInRange(c.getPlayer().getPosition(), Double.POSITIVE_INFINITY, Collections.singletonList(MapleMapObjectType.MONSTER));
                 for (int x = 0; x < amount; x++) {
                     MapleMonster monster = (MapleMonster) monsterx.get(x);
                     if (monster.getId() == mobToKill) {
@@ -149,7 +153,7 @@ public final class AdminCommandHandler extends AbstractMaplePacketHandler {
             case 0x18: // Maple & Mobhp
                 int mobHp = slea.readInt();
                 c.getPlayer().dropMessage("Monsters HP");
-                List<MapleMapObject> monsters = c.getPlayer().getMap().getMapObjectsInRange(c.getPlayer().getPosition(), Double.POSITIVE_INFINITY, Arrays.asList(MapleMapObjectType.MONSTER));
+                List<MapleMapObject> monsters = c.getPlayer().getMap().getMapObjectsInRange(c.getPlayer().getPosition(), Double.POSITIVE_INFINITY, Collections.singletonList(MapleMapObjectType.MONSTER));
                 for (MapleMapObject mobs : monsters) {
                     MapleMonster monster = (MapleMonster) mobs;
                     if (monster.getId() == mobHp) {

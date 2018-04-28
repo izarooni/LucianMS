@@ -25,11 +25,17 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.xml.sax.SAXException;
 import provider.MapleData;
 import provider.MapleDataDirectoryEntry;
 import provider.MapleDataProvider;
 
 public class XMLWZFile implements MapleDataProvider {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(XMLWZFile.class);
     private File root;
     private WZDirectoryEntry rootForNavigation;
 
@@ -57,7 +63,7 @@ public class XMLWZFile implements MapleDataProvider {
         File dataFile = new File(root, path + ".xml");
         File imageDataDir = new File(root, path);
         if (!dataFile.exists()) {
-            return null;//bitches
+            return null;
         }
         try (FileInputStream fis = new FileInputStream(dataFile)){
             return new XMLDomMapleData(fis, imageDataDir.getParentFile());
@@ -65,6 +71,8 @@ public class XMLWZFile implements MapleDataProvider {
             throw new RuntimeException("Datafile " + path + " does not exist in " + root.getAbsolutePath());
         } catch (IOException e) {
             e.printStackTrace();
+        } catch (SAXException e) {
+            LOGGER.error("Unable to parse file '{}'", imageDataDir.getAbsolutePath(), e);
         }
         return null;
     }

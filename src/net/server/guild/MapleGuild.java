@@ -37,7 +37,6 @@ import java.util.Set;
 
 import net.server.Server;
 import net.server.channel.Channel;
-import tools.LogHelper;
 import tools.DatabaseConnection;
 import tools.MaplePacketCreator;
 

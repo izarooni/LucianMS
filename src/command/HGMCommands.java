@@ -156,9 +156,9 @@ public class HGMCommands {
                 player.getMap().broadcastMessage(MaplePacketCreator.spawnNPC(npc));
                 if (permanent) {
                     for (Channel channel : player.getClient().getWorldServer().getChannels()) {
-                        if (channel.getMapFactory().isMapLoaded(player.getMapId())) {
-                            channel.getMapFactory().getMap(player.getMapId()).addMapObject(npc);
-                            channel.getMapFactory().getMap(player.getMapId()).broadcastMessage(MaplePacketCreator.spawnNPC(npc));
+                        if (channel.isMapLoaded(player.getMapId())) {
+                            channel.getMap(player.getMapId()).addMapObject(npc);
+                            channel.getMap(player.getMapId()).broadcastMessage(MaplePacketCreator.spawnNPC(npc));
                         }
                     }
                     try (PreparedStatement ps = DatabaseConnection.getConnection().prepareStatement("INSERT INTO spawns (idd, f, fh, cy, rx0, rx1, type , x, y, mid, mobtime, script) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)")) {

@@ -198,8 +198,8 @@ public abstract class AbstractDealDamageHandler extends PacketHandler {
                     }
 
                     if (attack.skill == Hero.BRANDISH || attack.skill == DragonKnight.SPEAR_CRUSHER || attack.skill == DragonKnight.POLE_ARM_CRUSHER) {
+                        distanceToDetect += 40000;
                     }
-                    distanceToDetect += 40000;
 
                     if (attack.skill == DragonKnight.DRAGON_ROAR || attack.skill == SuperGM.SUPER_DRAGON_ROAR) {
                         distanceToDetect += 250000;
@@ -234,12 +234,7 @@ public abstract class AbstractDealDamageHandler extends PacketHandler {
                                     eachdf = eachd;
                                 }
 
-                                TaskExecutor.createTask(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        player.getMap().spawnMesoDrop(Math.min((int) Math.max(((double) eachdf / (double) 20000) * (double) maxmeso, (double) 1), maxmeso), new Point((int) (monster.getPosition().getX() + Randomizer.nextInt(100) - 50), (int) (monster.getPosition().getY())), monster, player, true, (byte) 2);
-                                    }
-                                }, delay);
+                                TaskExecutor.createTask(() -> player.getMap().spawnMesoDrop(Math.min((int) Math.max(((double) eachdf / (double) 20000) * (double) maxmeso, (double) 1), maxmeso), new Point((int) (monster.getPosition().getX() + Randomizer.nextInt(100) - 50), (int) (monster.getPosition().getY())), monster, player, true, (byte) 2), delay);
                                 delay += 100;
                             }
                         }
@@ -307,14 +302,8 @@ public abstract class AbstractDealDamageHandler extends PacketHandler {
                             Skill chargeSkill = SkillFactory.getSkill(charge);
                             if (player.isBuffFrom(MapleBuffStat.WK_CHARGE, chargeSkill)) {
                                 if (totDamageToOneMonster > 0) {
-                                    if (charge == WhiteKnight.BLIZZARD_CHARGE_BW || charge == WhiteKnight.ICE_CHARGE_SWORD) {
-                                        monster.setTempEffectiveness(Element.ICE, ElementalEffectiveness.WEAK, chargeSkill.getEffect(player.getSkillLevel(chargeSkill)).getY() * 1000);
-                                        break;
-                                    }
-                                    if (charge == WhiteKnight.FLAME_CHARGE_BW || charge == WhiteKnight.FIRE_CHARGE_SWORD) {
-                                        monster.setTempEffectiveness(Element.FIRE, ElementalEffectiveness.WEAK, chargeSkill.getEffect(player.getSkillLevel(chargeSkill)).getY() * 1000);
-                                        break;
-                                    }
+                                    monster.setTempEffectiveness(Element.ICE, ElementalEffectiveness.WEAK, chargeSkill.getEffect(player.getSkillLevel(chargeSkill)).getY() * 1000);
+                                    break;
                                 }
                             }
                         }
@@ -394,7 +383,6 @@ public abstract class AbstractDealDamageHandler extends PacketHandler {
                         map.damageMonster(player, monster, (int) (Math.floor(Math.random() * (TmpDmg / 5) + TmpDmg * .8)));
                     } else {
                         map.damageMonster(player, monster, totDamageToOneMonster);
-
                     }
                     if (monster.isBuffed(MonsterStatus.WEAPON_REFLECT)) {
                         for (int i = 0; i < monster.getSkills().size(); i++) {
@@ -412,6 +400,10 @@ public abstract class AbstractDealDamageHandler extends PacketHandler {
                                 player.addMP(-toUse.getY());
                             }
                         }
+                    }
+                    Equip weapon = (Equip) player.getInventory(MapleInventoryType.EQUIPPED).getItem((short) -11);
+                    if (weapon != null && weapon.isRegalia() && !monster.isDamagedOvertime()) {
+                        monster.applyDamageOvertime(player, 5 * 1000);
                     }
                 }
             }
@@ -614,7 +606,6 @@ public abstract class AbstractDealDamageHandler extends PacketHandler {
         if (player.getBuffEffect(MapleBuffStat.SHADOWPARTNER) != null) {
             shadowPartner = true;
         }
-
 
         if (ret.skill != 0) {
             int fixed = ret.getAttackEffect(player, SkillFactory.getSkill(ret.skill)).getFixDamage();

@@ -44,6 +44,6 @@ function start() {
     if (cm.isQuestStarted(2054))
         cm.gainItem(4031028,30);
     else cm.gainItem(prizes[choice],1);
-    cm.sendOk("You have gained a random #bvNX item#k!");
+    cm.sendOk("You have gained a random #bNX item#k!");
     cm.dispose();
 }

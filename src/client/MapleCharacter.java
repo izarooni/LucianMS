@@ -53,7 +53,6 @@ import server.*;
 import server.events.MapleEvents;
 import server.events.RescueGaga;
 import server.events.custom.GenericEvent;
-import server.events.custom.House;
 import server.events.custom.ManualPlayerEvent;
 import server.events.custom.PlayerTitles;
 import server.events.custom.controllers.JumpQuestController;
@@ -249,7 +248,6 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
     private PartyQuest partyQuest = null;
     private MonsterBook monsterbook;
 
-    private House house = null;
     private Arcade arcade = null;
     private ChatType chatType = ChatType.NORMAL;
     private Timestamp daily = null;
@@ -408,8 +406,6 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
 
         MapleCharacter.deleteWhereCharacterId(con, "DELETE FROM famelog WHERE characterid_to = ?", playerid);
         System.out.println("\tDeleted fame logs");
-        MapleCharacter.deleteWhereCharacterId(con, "DELETE FROM gmlog WHERE cid = ?", playerid);
-        System.out.println("\tDeleted GM command logs");
         MapleCharacter.deleteWhereCharacterId(con, "DELETE FROM inventoryitems WHERE characterid = ?", playerid);
         System.out.println("\tDeleted inventory itemes");
         MapleCharacter.deleteWhereCharacterId(con, "DELETE FROM jailtimes WHERE playerId = ?", playerid);
@@ -625,8 +621,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
                 }
             }
             if (channelserver) {
-                MapleMapFactory mapFactory = client.getChannelServer().getMapFactory();
-                ret.map = mapFactory.getMap(ret.mapid);
+                ret.map = client.getChannelServer().getMap(ret.mapid);
                 MaplePortal portal = ret.map.getPortal(ret.initialSpawnPoint);
                 if (portal == null) {
                     portal = ret.map.getPortal(0);
@@ -1243,7 +1238,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
         client.setAccountName(this.client.getAccountName());
         this.client = client;
 
-        map = this.client.getChannelServer().getMapFactory().getMap(getMapId());
+        map = this.client.getChannelServer().getMap(getMapId());
         MaplePortal portal = map.findClosestSpawnpoint(getPosition());
         if (portal == null) {
             portal = map.getPortal(0);
@@ -1582,7 +1577,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
             warpMap = getEventInstance().getMapInstance(map);
             LOGGER.info("Player '{}' transfering to even map instance {}", getName(), map);
         } else {
-            warpMap = client.getChannelServer().getMapFactory().getMap(map);
+            warpMap = client.getChannelServer().getMap(map);
         }
 
         changeMap(warpMap, warpMap.getPortal(portal));
@@ -1594,7 +1589,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
             warpMap = getEventInstance().getMapInstance(map);
             LOGGER.info("Player '{}' transfering to even map instance {}", getName(), map);
         } else {
-            warpMap = client.getChannelServer().getMapFactory().getMap(map);
+            warpMap = client.getChannelServer().getMap(map);
         }
 
         changeMap(warpMap, warpMap.getPortal(portal));
@@ -1606,7 +1601,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
             warpMap = getEventInstance().getMapInstance(map);
             LOGGER.info("Player '{}' transfering to even map instance {}", getName(), map);
         } else {
-            warpMap = client.getChannelServer().getMapFactory().getMap(map);
+            warpMap = client.getChannelServer().getMap(map);
         }
 
         changeMap(warpMap, portal);
@@ -1632,7 +1627,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
             }
         }
         dropMessage(5, msg);
-        MapleMap map_ = client.getChannelServer().getMapFactory().getMap(mapid);
+        MapleMap map_ = client.getChannelServer().getMap(mapid);
         changeMap(map_, map_.getPortal(portal));
     }
 
@@ -3560,10 +3555,8 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
         } else if (id == 1140100 || id == 1140130) {
             mobKilled(9101002);
         }
-        int lastQuestProcessed = 0;
-        try {
-            for (MapleQuestStatus q : quests.values()) {
-                lastQuestProcessed = q.getQuest().getId();
+        for (MapleQuestStatus q : quests.values()) {
+            try {
                 if (q.getStatus() == MapleQuestStatus.Status.COMPLETED || q.getQuest().canComplete(this, null)) {
                     continue;
                 }
@@ -3574,9 +3567,9 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
                 if (q.progress(id)) {
                     client.announce(MaplePacketCreator.updateQuest(q, false));
                 }
+            } catch (Exception e) {
+                LOGGER.info("Error while processing quest {}", q.getQuestID(), e);
             }
-        } catch (Exception e) {
-            FilePrinter.printError(FilePrinter.EXCEPTION_CAUGHT, e, "MapleCharacter.mobKilled. CID: " + this.id + " last Quest Processed: " + lastQuestProcessed);
         }
     }
 
@@ -3628,7 +3621,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
                         if (rs.next()) {
                             PlayerNPC playerNPC = new PlayerNPC(rs);
                             for (Channel channel : Server.getInstance().getChannelsFromWorld(world)) {
-                                MapleMap m = channel.getMapFactory().getMap(getMapId());
+                                MapleMap m = channel.getMap(getMapId());
                                 m.broadcastMessage(MaplePacketCreator.spawnPlayerNPC(playerNPC));
                                 m.broadcastMessage(MaplePacketCreator.getPlayerNPC(playerNPC));
                                 m.addMapObject(playerNPC);
@@ -4111,7 +4104,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
             int updateRows = ps.executeUpdate();
             if (updateRows < 1) {
                 ps.close();
-                FilePrinter.printError(FilePrinter.INSERT_CHAR, "Error trying to insert " + name);
+                LOGGER.error("No data received from new character data insert");
                 return false;
             }
             ResultSet rs = ps.getGeneratedKeys();
@@ -4122,7 +4115,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
             } else {
                 rs.close();
                 ps.close();
-                FilePrinter.printError(FilePrinter.INSERT_CHAR, "Inserting char failed " + name);
+                LOGGER.info("No generaeted key received from character data insert");
                 return false;
             }
 
@@ -4148,11 +4141,11 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
             con.commit();
             return true;
         } catch (Throwable t) {
-            FilePrinter.printError(FilePrinter.INSERT_CHAR, t, "Error creating " + name + " Level: " + level + " Job: " + job.getId());
+            LOGGER.info("Error while creating character", t);
             try {
                 con.rollback();
             } catch (SQLException se) {
-                FilePrinter.printError(FilePrinter.INSERT_CHAR, se, "Error trying to rollback " + name);
+                LOGGER.info("Unable to rollback database connection", se);
             }
             return false;
         } finally {
@@ -4483,11 +4476,11 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
                 storage.saveToDB(con);
             }
         } catch (SQLException | RuntimeException t) {
-            FilePrinter.printError(FilePrinter.SAVE_CHAR, t, "Error saving " + name + " Level: " + level + " Job: " + job.getId());
+            LOGGER.error("Error while saving player '{}'", name, t);
             try {
                 con.rollback();
             } catch (SQLException se) {
-                FilePrinter.printError(FilePrinter.SAVE_CHAR, se, "Error trying to rollback " + name);
+                LOGGER.error("Unable to rollback database connection", se);
             }
         } finally {
             try {
@@ -4759,7 +4752,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
             @Override
             public void run() {
                 if (rightMap) {
-                    client.getPlayer().changeMap(client.getChannelServer().getMapFactory().getMap(925020000));
+                    client.getPlayer().changeMap(client.getChannelServer().getMap(925020000));
                 }
             }
         }, time * 1000 + 3000); // let the TIMES UP display for 3 seconds, then
@@ -5422,13 +5415,6 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
 
     public void setMuted(boolean muted) {
         this.muted = muted;
-    }
-
-    public House getHouse() {
-        if (house == null) {
-            house = new House(this);
-        }
-        return house;
     }
 
     public int getFishingPoints() {

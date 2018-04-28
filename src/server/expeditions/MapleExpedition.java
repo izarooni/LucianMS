@@ -26,14 +26,10 @@ import client.MapleCharacter;
 import net.server.Server;
 import scheduler.Task;
 import scheduler.TaskExecutor;
-import server.life.MapleMonster;
 import server.maps.MapleMap;
-import tools.LogHelper;
 import tools.MaplePacketCreator;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -77,7 +73,6 @@ public class MapleExpedition {
     private MapleExpeditionType type;
     private boolean registering;
     private MapleMap startMap;
-    private ArrayList<String> bossLogs;
     private Task task;
     private List<MapleCharacter> members = new ArrayList<>();
     private List<MapleCharacter> banned = new ArrayList<>();
@@ -88,7 +83,6 @@ public class MapleExpedition {
         members.add(leader);
         startMap = player.getMap();
         type = met;
-        bossLogs = new ArrayList<>();
         beginRegistration();
     }
 
@@ -108,18 +102,15 @@ public class MapleExpedition {
                     leader.getClient().getChannelServer().getExpeditions().remove(exped);
                     startMap.broadcastMessage(MaplePacketCreator.serverNotice(6, "Time limit has been reached. Expedition has been disbanded."));
                 }
-                dispose(false);
+                dispose();
             }
         }, type.getRegistrationTime() * 60 * 1000);
     }
 
-    public void dispose(boolean log) {
+    public void dispose() {
         if (task != null) {
             task.cancel();
             task = null;
-        }
-        if (log && !registering) {
-            LogHelper.logExpedition(this);
         }
     }
 
@@ -200,19 +191,5 @@ public class MapleExpedition {
 
     public long getStartTime() {
         return startTime;
-    }
-
-    public ArrayList<String> getBossLogs() {
-        return bossLogs;
-    }
-
-    public void monsterKilled(MapleCharacter chr, MapleMonster mob) {
-        for (int EXPEDITION_BOSS : EXPEDITION_BOSSES) {
-            if (mob.getId() == EXPEDITION_BOSS) { //If the monster killed was a boss
-                String timeStamp = new SimpleDateFormat("HH:mm:ss").format(new Date());
-                bossLogs.add(">" + mob.getName() + " was killed after " + LogHelper.getTimeString(startTime) + " - " + timeStamp + "\r\n");
-                return;
-            }
-        }
     }
 }

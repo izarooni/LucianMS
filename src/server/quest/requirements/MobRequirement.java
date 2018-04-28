@@ -24,6 +24,8 @@ package server.quest.requirements;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import provider.MapleData;
 import provider.MapleDataTool;
 import server.quest.MapleQuest;
@@ -37,7 +39,9 @@ import client.MapleQuestStatus;
  * @author Tyler (Twdtwd)
  */
 public class MobRequirement extends MapleQuestRequirement {
-	Map<Integer, Integer> mobs = new HashMap<>();
+
+	private static final Logger LOGGER = LoggerFactory.getLogger(MobRequirement.class);
+	private Map<Integer, Integer> mobs = new HashMap<>();
 	private int questID;
 	
 	public MobRequirement(MapleQuest quest, MapleData data) {
@@ -46,10 +50,6 @@ public class MobRequirement extends MapleQuestRequirement {
 		questID = quest.getId();
 	}
 	
-	/**
-	 * 
-	 * @param data 
-	 */
 	@Override
 	public void processData(MapleData data) {
 		for (MapleData questEntry : data.getChildren()) {
@@ -70,7 +70,7 @@ public class MobRequirement extends MapleQuestRequirement {
 			try {
 				progress = Integer.parseInt(status.getProgress(mobID));
 			} catch (NumberFormatException ex) {
-				FilePrinter.printError(FilePrinter.EXCEPTION_CAUGHT, ex, "Mob: " + mobID + " Quest: " + questID + "CID: " + chr.getId() + " Progress: " + status.getProgress(mobID));
+				LOGGER.warn("Invalid progress value({}) for quest {} monster {}", status.getProgress(mobID), questID, mobID, ex);
 				return false;
 			}
 			

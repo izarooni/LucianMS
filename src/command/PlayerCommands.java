@@ -15,6 +15,7 @@ import server.events.custom.auto.GAutoEvent;
 import server.events.custom.auto.GAutoEventManager;
 import server.events.pvp.PlayerBattle;
 import server.maps.MapleMap;
+import server.maps.SavedLocationType;
 import tools.MaplePacketCreator;
 import tools.Pair;
 import tools.StringUtil;
@@ -70,9 +71,13 @@ public class PlayerCommands {
             commands.add("@afk <ign> - Check if someone is AFK");
             commands.add("@uptime - Display how long the server has been live");
             commands.add("@time - Display the current server time");
+            commands.add("@house - Display the house manager NPC");
+            commands.add("@jobs - Display a list of job modifications");
             Collections.sort(commands);
             commands.forEach(player::dropMessage);
             commands.clear();
+        } else if (command.equals("house")) {
+            NPCScriptManager.start(client, 2007, "f_house_manager");
         } else if (command.equals("time")) {
             player.sendMessage("Server time is: {}", Calendar.getInstance().getTime().toString());
         } else if (command.equals("uptime")) {
@@ -149,10 +154,10 @@ public class PlayerCommands {
             player.updateSingleStat(MapleStat.AVAILABLEAP, player.getRemainingAp());
             player.announce(MaplePacketCreator.updatePlayerStats(statChange, player));
             player.dropMessage(6, "Done!");
-        } else if(command.equals("afk", "away")) {
-            if(args.length() >= 1) {
+        } else if (command.equals("afk", "away")) {
+            if (args.length() >= 1) {
                 MapleCharacter target = ch.getPlayerStorage().getCharacterByName(args.get(0));
-                if(target != null) {
+                if (target != null) {
                     player.dropMessage(String.format("%s is currently %s", target.getName(), (target.getClient().getSession().isBothIdle() ? "AFK" : "not AFK")));
                 } else {
                     player.dropMessage("The player you tried to check is not online, or does not exist.");
@@ -235,8 +240,8 @@ public class PlayerCommands {
             player.dropMessage(6, "EXP rate: " + player.getExpRate());
             player.dropMessage(6, "Drop rate: " + player.getDropRate());
             player.dropMessage(6, "Meso rate: " + player.getMesoRate());
-        } else if (command.equals("job")) {
-            NPCScriptManager.start(client, 9201095, null);
+        } else if (command.equals("job", "jobs")) {
+            NPCScriptManager.start(client, command.equals("job") ? 9201095 : 9900000, null);
         } else if (command.equals("joinevent", "leaveevent")) {
             boolean join = command.equals("joinevent");
             ManualPlayerEvent playerEvent = client.getWorldServer().getPlayerEvent();
@@ -289,6 +294,7 @@ public class PlayerCommands {
         } else if (command.equals("achievements")) {
             NPCScriptManager.start(client, 2007, "f_achievements");
         } else if (command.equals("home")) {
+            player.saveLocation(SavedLocationType.FREE_MARKET.name());
             player.changeMap(ServerConstants.HOME_MAP);
         } else if (command.equals("online")) {
             for (Channel channel : client.getWorldServer().getChannels()) {
@@ -323,11 +329,12 @@ public class PlayerCommands {
             maps.put("ariant",     260000000);
             maps.put("timetemple", 270000000);
             maps.put("ellin",      300000000);
+            maps.put("arcade",     978);
             // @formatter:on
             if (args.length() == 1) {
                 String name = args.get(0).toLowerCase(Locale.ROOT);
                 if (maps.containsKey(name)) {
-                    MapleMap map = ch.getMapFactory().getMap(maps.get(name));
+                    MapleMap map = ch.getMap(maps.get(name));
                     if (map != null) {
                         if (player.getJQController() != null) {
                             player.setJQController(null);

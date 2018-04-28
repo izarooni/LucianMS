@@ -50,16 +50,6 @@ public class MapleGenericPortal implements MaplePortal {
         return id;
     }
 
-    @Override
-    public boolean isDisabled() {
-        return disabled;
-    }
-
-    @Override
-    public void setDisabled(boolean disabled) {
-        this.disabled = disabled;
-    }
-
     public void setId(int id) {
         this.id = id;
     }
@@ -131,7 +121,7 @@ public class MapleGenericPortal implements MaplePortal {
         if (getScriptName() != null) {
             changed = PortalScriptManager.executePortalScript(c, this);
         } else if (getTargetMapId() != 999999999 && !disabled) {
-            MapleMap to = c.getPlayer().getEventInstance() == null ? c.getChannelServer().getMapFactory().getMap(getTargetMapId()) : c.getPlayer().getEventInstance().getMapInstance(getTargetMapId());
+            MapleMap to = c.getPlayer().getEventInstance() == null ? c.getChannelServer().getMap(getTargetMapId()) : c.getPlayer().getEventInstance().getMapInstance(getTargetMapId());
             MaplePortal pto = to.getPortal(getTarget());
             if (pto == null) {// fallback for missing portals - no real life case anymore - intresting for not implemented areas
                 pto = to.getPortal(0);
@@ -142,15 +132,5 @@ public class MapleGenericPortal implements MaplePortal {
         if (!changed) {
             c.announce(MaplePacketCreator.enableActions());
         }
-    }
-
-    @Override
-    public void setPortalState(boolean state) {
-        this.portalState = state;
-    }
-
-    @Override
-    public boolean getPortalState() {
-        return portalState;
     }
 }

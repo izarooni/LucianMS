@@ -12,6 +12,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 
 /**
  * Could be a a bad implementation of this feature
@@ -23,6 +24,7 @@ public class Achievements {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(Achievements.class);
     private static ArrayList<Pair<String, Invocable>> invocables = null;
+    private static HashMap<String, ArrayList<String>> rewards = new HashMap<>();
 
     private Achievements() {
     }
@@ -36,13 +38,14 @@ public class Achievements {
     /**
      * List all achievement scripts, execute them and store their invocable objects for later use
      */
-    public static void initialize() {
+    public static int loadAchievements() {
         if (invocables != null) {
-            invocables.clear();
-            invocables = null;
+            invocables = new ArrayList<>(invocables.size());
+            rewards = new HashMap<>(rewards.size());
             System.gc();
         }
         try {
+            final long start = System.currentTimeMillis();
             File dir = new File("scripts/achievements");
             if (dir.mkdirs()) {
                 LOGGER.info("Achievements script directory created");
@@ -54,16 +57,27 @@ public class Achievements {
                     Invocable iv = ScriptUtil.eval(null, "achievements/" + file.getName(), Collections.emptyList());
                     try {
                         String name = (String) iv.invokeFunction("getName");
+                        ArrayList<String> rr = new ArrayList<>();
+                        iv.invokeFunction("readableRewards", rr);
                         invocables.add(new Pair<>(name, iv));
-                    } catch (NoSuchMethodException e) {
-                        LOGGER.warn("Unable to set achievement name for script {}", file.getName());
+                        rewards.put(name, rr);
+                    } catch (Exception e) {
+                        LOGGER.error("Unable to cache achievement '{}'", file.getName(), e);
                     }
                 }
-                LOGGER.info("{} achievement scripts loaded", invocables.size());
+                LOGGER.info("{} achievement scripts loaded in {}s", invocables.size(), ((System.currentTimeMillis() - start) / 1000d));
             }
         } catch (IOException | ScriptException e) {
             e.printStackTrace();
         }
+        return invocables.size();
+    }
+
+    public static ArrayList<String> getRewards(String achievement) {
+        if (invocables != null) {
+            return rewards.get(achievement);
+        }
+        return null;
     }
 
     /**
@@ -82,9 +96,7 @@ public class Achievements {
                             player.announce(MaplePacketCreator.showEffect("PSO2/stuff/2"));
                             try {
                                 if (reward(iv, player)) {
-                                    player.dropMessage("You completed the achievement '" + pair.getLeft() + "'!");
-                                } else {
-                                    player.dropMessage("You were unable to claim reward for completing the achievement.");
+                                    player.sendMessage("You completed the '{}' achievement!", pair.getLeft());
                                 }
                             } catch (NoSuchMethodException e) {
                                 LOGGER.warn("Achievement script {} contains no reward function", pair.getLeft());

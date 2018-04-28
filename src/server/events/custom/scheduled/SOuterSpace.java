@@ -75,7 +75,7 @@ public class SOuterSpace extends SAutoEvent {
     public void run() {
         setOpen(true);
         for (Channel channel : world.getChannels()) {
-            MapleMap eventMap = channel.getMapFactory().getMap(MapId);
+            MapleMap eventMap = channel.getMap(MapId);
             eventMap.killAllMonsters();
             eventMap.clearDrops();
 
@@ -89,8 +89,11 @@ public class SOuterSpace extends SAutoEvent {
                     @Override
                     public void monsterKilled(int aniTime) {
                         finished[channel.getId() - 1] = true;
-                        channel.broadcastPacket(MaplePacketCreator.serverNotice(0, "The Space Slime has been defeated!"));
-                        eventMap.broadcastMessage(MaplePacketCreator.serverNotice(6, "You will be warped momentarily"));
+                        if (monster.getHp() < monster.getMaxHp()) {
+                            // damaged -- also invoked by MapleMap#killAllMonsters
+                            channel.broadcastPacket(MaplePacketCreator.serverNotice(0, "The Space Slime has been defeated!"));
+                            eventMap.broadcastMessage(MaplePacketCreator.serverNotice(6, "You will be warped momentarily"));
+                        }
                         TaskExecutor.createTask(() -> eventMap.getCharacters().forEach(SOuterSpace.this::unregisterPlayer), 8000);
                     }
                 });

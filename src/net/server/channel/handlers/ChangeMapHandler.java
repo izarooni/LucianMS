@@ -95,7 +95,7 @@ public class ChangeMapHandler extends PacketHandler {
                             if (to == null) {
                                 LOGGER.info("Player '{}' unable to return to map {}", player.getName(), player.getMap().getReturnMapId());
                                 player.sendMessage("The return map is obstructed");
-                                to = getClient().getChannelServer().getMapFactory().getMap(ServerConstants.HOME_MAP);
+                                to = getClient().getChannelServer().getMap(ServerConstants.HOME_MAP);
                             }
                             player.setStance(0);
                         }
@@ -103,7 +103,7 @@ public class ChangeMapHandler extends PacketHandler {
                         player.changeMap(to, to.getPortal(0));
                     }
                 } else if (targetMapId != -1 && player.isGM()) {
-                    MapleMap to = getClient().getChannelServer().getMapFactory().getMap(targetMapId);
+                    MapleMap to = getClient().getChannelServer().getMap(targetMapId);
                     if (to != null) {
                         player.changeMap(to);
                     }
@@ -138,7 +138,7 @@ public class ChangeMapHandler extends PacketHandler {
                         }
                     }
                     if (warp) {
-                        final MapleMap to = getClient().getChannelServer().getMapFactory().getMap(targetMapId);
+                        final MapleMap to = getClient().getChannelServer().getMap(targetMapId);
                         player.changeMap(to, to.getPortal(0));
                     }
                 }

@@ -50,8 +50,9 @@ public class Equip extends Item {
     private short str, dex, _int, luk, hp, mp, watk, matk, wdef, mdef, acc, avoid, hands, speed, jump, vicious;
     private float itemExp;
     private int ringid = -1;
+    private int eliminations;
     private boolean wear = false;
-    private int regalia = 0;
+    private boolean regalia = false;
 
     public Equip(int id, short position) {
         super(id, position, (short) 1);
@@ -426,7 +427,23 @@ public class Equip extends Item {
         wear = yes;
     }
 
+    public boolean isRegalia() {
+        return regalia;
+    }
+
+    public void setRegalia(boolean regalia) {
+        this.regalia = regalia;
+    }
+
     public byte getItemLevel() {
         return itemLevel;
+    }
+
+    public int getEliminations() {
+        return eliminations;
+    }
+
+    public void setEliminations(int eliminations) {
+        this.eliminations = eliminations;
     }
 }

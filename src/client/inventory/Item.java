@@ -129,7 +129,7 @@ public class Item implements Comparable<Item> {
 
     @Override
     public String toString() {
-        return "Item: " + id + " quantity: " + quantity;
+        return String.format("Position: %d, Item: %d, Quantity: %s", position, id, quantity);
     }
 
     public List<String> getLog() {

@@ -55,7 +55,7 @@ public class MobRush extends Arcade {
 
             player.getMap().getAllPlayer().forEach((target) -> target.changeMap(this.mapId));
 
-            player.getMap().getPortals().forEach((portal) -> portal.setDisabled(true));
+            player.getMap().getPortals().forEach((portal) -> portal.setPortalStatus(false));
             player.getMap().setMobInterval((short) 5);
 
             // disable drops

@@ -4,6 +4,7 @@ import client.MapleCharacter;
 import lang.DuplicateEntryException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.xml.sax.SAXException;
 import provider.MapleData;
 import provider.MapleDataTool;
 import provider.wz.MapleDataType;
@@ -53,7 +54,7 @@ public class CQuestBuilder {
                         }
                         quests.put(qData.getId(), qData);
                     }
-                } catch (IOException e) {
+                } catch (IOException | SAXException e) {
                     e.printStackTrace();
                 }
             }
@@ -86,7 +87,7 @@ public class CQuestBuilder {
         return quests.get(questId).getMetaData();
     }
 
-    private static CQuestData parseFile(File file) throws IOException {
+    private static CQuestData parseFile(File file) throws IOException, SAXException {
         try (FileInputStream fis = new FileInputStream(file)) {
             XMLDomMapleData xml = new XMLDomMapleData(fis, file);
             int questId = MapleDataTool.getInt(xml.getChildByPath("info/questId"));

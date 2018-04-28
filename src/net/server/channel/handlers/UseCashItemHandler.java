@@ -384,8 +384,8 @@ public final class UseCashItemHandler extends AbstractMaplePacketHandler {
             remove(c, itemId);
             if (!vip) {
                 int mapId = slea.readInt();
-                if (c.getChannelServer().getMapFactory().getMap(mapId).getForcedReturnId() == 999999999) {
-                    player.changeMap(c.getChannelServer().getMapFactory().getMap(mapId));
+                if (c.getChannelServer().getMap(mapId).getForcedReturnId() == 999999999) {
+                    player.changeMap(c.getChannelServer().getMap(mapId));
                 } else {
                     MapleInventoryManipulator.addById(c, itemId, (short) 1);
                     c.getPlayer().dropMessage(1, error1);
@@ -397,7 +397,7 @@ public final class UseCashItemHandler extends AbstractMaplePacketHandler {
                 boolean success = false;
                 if (victim != null) {
                     MapleMap target = victim.getMap();
-                    if (c.getChannelServer().getMapFactory().getMap(victim.getMapId()).getForcedReturnId() == 999999999 || victim.getMapId() < 100000000) {
+                    if (c.getChannelServer().getMap(victim.getMapId()).getForcedReturnId() == 999999999 || victim.getMapId() < 100000000) {
                         if (victim.gmLevel() <= player.gmLevel()) {
                             if (itemId == 5041000 || victim.getMapId() / player.getMapId() == 1) { //viprock & same continent
                                 player.changeMap(target, target.findClosestSpawnpoint(victim.getPosition()));

@@ -45,6 +45,7 @@ import org.json.JSONObject;
 import org.json.JSONTokener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.slf4j.helpers.MessageFormatter;
 import scheduler.Task;
 import scheduler.TaskExecutor;
 import scripting.Achievements;
@@ -54,6 +55,7 @@ import server.Whitelist;
 import server.events.custom.scheduled.SOuterSpace;
 import server.quest.MapleQuest;
 import server.quest.custom.CQuestBuilder;
+import server.world.HouseManager;
 import tools.DatabaseConnection;
 import tools.Pair;
 import tools.StringUtil;
@@ -65,6 +67,7 @@ import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.URISyntaxException;
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
@@ -93,6 +96,16 @@ public class Server implements Runnable {
             instance = new Server();
         }
         return instance;
+    }
+
+    public static void insertLog(String author, String description, Object... args) {
+        try (PreparedStatement ps = DatabaseConnection.getConnection().prepareStatement("insert into loggers (author, description) values (?, ?)")) {
+            ps.setString(1, author);
+            ps.setString(2, MessageFormatter.arrayFormat(description, args).getMessage());
+            ps.executeUpdate();
+        } catch (SQLException e) {
+            LOGGER.info("Unable to insert log from '{}': {}", author, description, e);
+        }
     }
 
     public static void main(String args[]) {
@@ -192,6 +205,7 @@ public class Server implements Runnable {
             return;
         }
 
+        DatabaseConnection.useConfig(config);
         Connection con = DatabaseConnection.getConnection();
         LOGGER.info("Database connection established");
         try {
@@ -228,9 +242,11 @@ public class Server implements Runnable {
         CashItemFactory.loadCommodities();
         LOGGER.info("Cash shop commodities loaded in {}s", ((System.currentTimeMillis() - timeToTake) / 1000d));
 
+        Achievements.loadAchievements();
+
         timeToTake = System.currentTimeMillis();
-        Achievements.initialize();
-        LOGGER.info("Achievement scripts loaded in {}s", ((System.currentTimeMillis() - timeToTake) / 1000d));
+        int count = HouseManager.loadHouses();
+        LOGGER.info("{} houses loaded in {}s", count, ((System.currentTimeMillis() - timeToTake) / 1000d));
 
         try {
             timeToTake = System.currentTimeMillis();
@@ -378,7 +394,7 @@ public class Server implements Runnable {
         byte highest = 0;
         for (Iterator<Integer> it = channels.get(0).keySet().iterator(); it.hasNext(); ) {
             Integer channel = it.next();
-            if (channel != null && channel.intValue() > highest) {
+            if (channel != null && channel > highest) {
                 highest = channel.byteValue();
             }
         }

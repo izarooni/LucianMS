@@ -229,11 +229,15 @@ public class MapleMap {
     }
 
     public MapleMap getReturnMap() {
-        return Server.getInstance().getWorld(world).getChannel(channel).getMapFactory().getMap(returnMapId);
+        return Server.getInstance().getWorld(world).getChannel(channel).getMap(returnMapId);
     }
 
     public int getReturnMapId() {
         return returnMapId;
+    }
+
+    public void setReturnMapId(int returnMapId) {
+        this.returnMapId = returnMapId;
     }
 
     public void setReactorState() {
@@ -257,7 +261,7 @@ public class MapleMap {
     }
 
     public MapleMap getForcedReturnMap() {
-        return Server.getInstance().getWorld(world).getChannel(channel).getMapFactory().getMap(forcedReturnMap);
+        return Server.getInstance().getWorld(world).getChannel(channel).getMap(forcedReturnMap);
     }
 
     public void setForcedReturnMap(int map) {
@@ -352,7 +356,7 @@ public class MapleMap {
         removeMapObject(obj.getObjectId());
     }
 
-    Point calcPointBelow(Point initial) {
+    public Point calcPointBelow(Point initial) {
         MapleFoothold fh = footholds.findBelow(initial);
         if (fh == null) {
             return null;
@@ -716,6 +720,10 @@ public class MapleMap {
                         }
                     }
                 }
+            }
+            Equip weapon = (Equip) chr.getInventory(MapleInventoryType.EQUIPPED).getItem((short) -11);
+            if (weapon != null) {
+                weapon.setEliminations(weapon.getEliminations() + 1);
             }
         }
         if (monster.getStats().getLevel() >= chr.getLevel() + 30 && !chr.isGM()) {
@@ -1150,7 +1158,7 @@ public class MapleMap {
             } else if (monster.getId() == 9300061) {
                 monsterItemDrop(monster, new Item(4001101, (short) 0, (short) 1), monster.getDropPeriodTime() / 3);
             } else {
-                FilePrinter.printError(FilePrinter.UNHANDLED_EVENT, "UNCODED TIMED MOB DETECTED: " + monster.getId());
+                LOGGER.warn("Unhandled timed monster", monster.getId());
             }
         }
         spawnedMonstersOnMap.incrementAndGet();
@@ -1644,11 +1652,22 @@ public class MapleMap {
             chr.announce(MaplePacketCreator.rollSnowBall(true, 0, null, null));
         }
 
+        //region emergency attack
         // empty map or contains only party members
         if (characters.size() == 1
                 || (chr.getPartyId() > 0 && characters.stream().allMatch(p -> p.getPartyId() == chr.getPartyId()))) {
-            // must be a map that contains monster spawnpoints and is a hutning field
-            if (!isTown() && !spawnPoints.isEmpty()) {
+            /*
+            May only activate under the following conditions:
+            Contains monster spawn points,
+            Contains no boss-type monsters,
+            Map is a non-town type,
+            Is not explicity excluded via server configuration
+             */
+            // must be a map that contains monster spawnpoints, contains no boss entity and is a hutning field
+            if (!isTown()
+                    && spawnPoints.stream().noneMatch(sp -> sp.getMonster().isBoss())
+                    && !spawnPoints.isEmpty()
+                    && Arrays.binarySearch(Server.getInstance().getConfig().getIntArray("EmergencyExcludes"), getId()) < 0) {
                 // 1/25 chance to trigger emergency
                 if (((chr.isGM() && chr.isDebug()) || (System.currentTimeMillis() > nextEmergency))
                         && Randomizer.nextInt(25) == 1
@@ -1670,6 +1689,7 @@ public class MapleMap {
                 }
             }
         }
+        //endregion
 
         Optional<GenericEvent> op = chr.getGenericEvents().stream().filter(o -> o instanceof MCarnivalGame).findFirst();
         MCarnivalGame carnivalGame = null;
@@ -2514,6 +2534,14 @@ public class MapleMap {
 
     public void setMobInterval(short interval) {
         this.mobInterval = interval;
+    }
+
+    public byte getMonsterRate() {
+        return monsterRate;
+    }
+
+    public void setMonsterRate(byte monsterRate) {
+        this.monsterRate = monsterRate;
     }
 
     public Point getAutoKillPosition() {

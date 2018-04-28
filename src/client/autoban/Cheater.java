@@ -1,8 +1,10 @@
 package client.autoban;
 
-import java.util.HashMap;
-
 import client.MapleClient;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.util.HashMap;
 
 /**
  * @author izarooni
@@ -28,22 +30,14 @@ public class Cheater {
             if (System.currentTimeMillis() - latestAnnouncement < cooldown) {
                 return;
             }
-            /*if (!client.getPlayer().isGM()) {
-                try {
-                    String channel = Discord.getConfig().getString("cheaterChannel");
-                    if (channel != null) {
-                        new MessageBuilder(Discord.getBot().getClient()).withChannel(channel).appendContent(message).build();
-                    } else {
-                        System.err.println("No discord channel set to send cheater messages! Edit Discord config file ASAP");
-                    }
-                } catch (RateLimitException | MissingPermissionsException | DiscordException e) {
-                    System.err.println(String.format("Unable to send %s's cheater message ('%s') due to error: %s", client.getPlayer().getName(), message, e.getMessage()));
-                }
-            }*/
+            LOGGER.error(message);
+//            if (!client.getPlayer().isGM()) {
+//            }
             latestAnnouncement = System.currentTimeMillis();
         }
     }
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(Cheater.class);
     private HashMap<Cheats, CheatEntry> convicts = new HashMap<>();
 
     public Cheater() {

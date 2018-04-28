@@ -6,14 +6,14 @@ function getName() {
 }
 
 function testForPlayer(player) {
-    var ps = Database.getConnection().prepareStatement("select createdate from characters where id = ?");
+    let ps = Database.getConnection().prepareStatement("select createdate from characters where id = ?");
     ps.setInt(1, player.getId());
-    var rs = ps.executeQuery();
+    let rs = ps.executeQuery();
     if (rs.next()) {
-        var timestamp = rs.getTimestamp("createdate").getTime();
+        let timestamp = rs.getTimestamp("createdate").getTime();
         timestamp = parseInt(timestamp);
-        var diff = Date.now() - timestamp;
-        var days = ((diff / (1000 * 60 * 60 * 24) % 30));
+        let diff = Date.now() - timestamp;
+        let days = (diff / (1000 * 60 * 60 * 24));
         if (days >= 30) {
             return true;
         }
@@ -22,7 +22,10 @@ function testForPlayer(player) {
 }
 
 function reward(player) {
-    var achieve = player.getAchievement(getName());
+    let achieve = player.getAchievement(getName());
     achieve.setCompleted(true);
     return true;
+}
+
+function readableRewards(rr) {
 }

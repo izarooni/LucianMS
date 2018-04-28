@@ -54,7 +54,7 @@ public class PortalFactory {
         int y = MapleDataTool.getInt(portal.getChildByPath("y"));
         myPortal.setPosition(new Point(x, y));
         String script = MapleDataTool.getString("script", portal, null);
-        if (script != null && script.equals("")) {
+        if (script != null && script.isEmpty()) {
             script = null;
         }
         myPortal.setScriptName(script);

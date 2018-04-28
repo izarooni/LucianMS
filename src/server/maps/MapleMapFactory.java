@@ -45,6 +45,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
+@Deprecated
 public class MapleMapFactory {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MapleMapFactory.class);
@@ -327,7 +328,7 @@ public class MapleMapFactory {
             builder.append("maple");
         } else if (mapid < 200000000) {
             builder.append("victoria");
-        } else if (mapid >= 200000000 && mapid < 300000000) {
+        } else if (mapid < 300000000) {
             builder.append("ossyria");
         } else if (mapid >= 540000000 && mapid < 551030200) {
             builder.append("singapore");
@@ -363,7 +364,7 @@ public class MapleMapFactory {
         return new ArrayList<>(maps.values());
     }
 
-    public synchronized void clear() {
+    public void clear() {
         maps.clear();
         maps = null;
 
