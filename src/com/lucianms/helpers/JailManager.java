@@ -63,7 +63,7 @@ public class JailManager {
         if (reason == null || reason.isEmpty()) {
             throw new InvalidParameterException("Reason must be specified");
         }
-        try (PreparedStatement ps = DatabaseConnection.getConnection().prepareStatement("insert into jails (playerid, reason, accuserid) values (?, ?, ?)")) {
+        try (PreparedStatement ps = DatabaseConnection.getConnection().prepareStatement("insert into jails (playerid, reason, accuser) values (?, ?, ?)")) {
             ps.setInt(1, target);
             ps.setString(2, reason);
             ps.setInt(3, accuser);
