@@ -92,6 +92,7 @@ public class GameMasterCommands {
             commands.add("!ap <amount> - Give yourself or another player AP");
             commands.add("!sp <amount> - Give yourself or another player SP");
             commands.add("!setall <number> [username] - Set all stats for yourself or a player");
+            commands.add("!gender <username> <male/female/uni> - Change the gender of a specified player");
             commands.sort(String::compareTo);
             commands.forEach(player::dropMessage);
             commands.clear();
@@ -927,6 +928,34 @@ public class GameMasterCommands {
                 }
             } else {
                 player.gainMeso(Integer.MAX_VALUE - player.getMeso(), true);
+            }
+        } else if (command.equals("gender")) {
+            if (args.length() == 2) {
+                MapleCharacter target = ch.getPlayerStorage().getCharacterByName(args.get(0));
+                int gender = -1;
+                switch (args.get(1)) {
+                    case "male":
+                        gender = 0;
+                        break;
+                    case "female":
+                        gender = 1;
+                        break;
+                    case "uni":
+                        gender = 2;
+                        break;
+                    default:
+                        player.sendMessage("Invalid gender type '{}'", args.get(1));
+                        return;
+                }
+                if (target != null) {
+                    target.setGender(gender);
+                    target.sendMessage("Your gender has changed to {}", args.get(1));
+                    player.dropMessage("Success!");
+                } else {
+                    player.sendMessage("Unable to find any player named '{}'", args.get(0));
+                }
+            } else {
+                player.dropMessage(5, "Syntax: !gender <username> [male/female/uni]");
             }
         } else if (command.equals("setall")) {
             if (args.length() > 0) {
