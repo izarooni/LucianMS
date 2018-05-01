@@ -55,28 +55,27 @@ public class MaplePet extends Item {
     }
 
     public static MaplePet loadFromDb(int itemid, short position, int petid) {
-        try {
-            MaplePet ret = new MaplePet(itemid, position, petid);
-            PreparedStatement ps = DatabaseConnection.getConnection().prepareStatement("SELECT name, level, closeness, fullness, summoned FROM pets WHERE petid = ?"); // Get pet details..
+        MaplePet ret = new MaplePet(itemid, position, petid);
+        try (PreparedStatement ps = DatabaseConnection.getConnection().prepareStatement("SELECT name, level, closeness, fullness, summoned FROM pets WHERE petid = ?")) {
             ps.setInt(1, petid);
-            ResultSet rs = ps.executeQuery();
-            rs.next();
-            ret.setName(rs.getString("name"));
-            ret.setCloseness(Math.min(rs.getInt("closeness"), 30000));
-            ret.setLevel((byte) Math.min(rs.getByte("level"), 30));
-            ret.setFullness(Math.min(rs.getInt("fullness"), 100));
-            ret.setSummoned(rs.getInt("summoned") == 1);
-            rs.close();
-            ps.close();
-            return ret;
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    ret.setName(rs.getString("name"));
+                    ret.setCloseness(Math.min(rs.getInt("closeness"), 30000));
+                    ret.setLevel((byte) Math.min(rs.getByte("level"), 30));
+                    ret.setFullness(Math.min(rs.getInt("fullness"), 100));
+                    ret.setSummoned(rs.getInt("summoned") == 1);
+                    return ret;
+                }
+            }
         } catch (SQLException e) {
-            return null;
+            e.printStackTrace();
         }
+        return null;
     }
 
     public void saveToDb() {
-        try {
-            PreparedStatement ps = DatabaseConnection.getConnection().prepareStatement("UPDATE pets SET name = ?, level = ?, closeness = ?, fullness = ?, summoned = ? WHERE petid = ?");
+        try (PreparedStatement ps = DatabaseConnection.getConnection().prepareStatement("UPDATE pets SET name = ?, level = ?, closeness = ?, fullness = ?, summoned = ? WHERE petid = ?")) {
             ps.setString(1, getName());
             ps.setInt(2, getLevel());
             ps.setInt(3, getCloseness());
@@ -84,45 +83,45 @@ public class MaplePet extends Item {
             ps.setInt(5, isSummoned() ? 1 : 0);
             ps.setInt(6, getUniqueId());
             ps.executeUpdate();
-            ps.close();
         } catch (SQLException e) {
+            e.printStackTrace();
         }
     }
 
     public static int createPet(int itemid) {
-        try {
-            PreparedStatement ps = DatabaseConnection.getConnection().prepareStatement("INSERT INTO pets (name, level, closeness, fullness, summoned) VALUES (?, 1, 0, 100, 0)", Statement.RETURN_GENERATED_KEYS);
-            ps.setString(1, MapleItemInformationProvider.getInstance().getName(itemid));
-            ps.executeUpdate();
-            ResultSet rs = ps.getGeneratedKeys();
-            int ret = -1;
-            if (rs.next()) {
-                ret = rs.getInt(1);
+        try (PreparedStatement ps = DatabaseConnection.getConnection().prepareStatement("INSERT INTO pets (name, level, closeness, fullness, summoned) VALUES (?, 1, 0, 100, 0)", Statement.RETURN_GENERATED_KEYS)) {
+            String petName = MapleItemInformationProvider.getInstance().getName(itemid);
+            if (petName == null) {
+                petName = "MISSINGNO";
             }
-            rs.close();
-            ps.close();
-            return ret;
+            ps.setString(1, petName);
+            ps.executeUpdate();
+            try (ResultSet rs = ps.getGeneratedKeys()) {
+                int ret = -1;
+                if (rs.next()) {
+                    ret = rs.getInt(1);
+                }
+                return ret;
+            }
         } catch (SQLException e) {
             return -1;
         }
     }
 
     public static int createPet(int itemid, byte level, int closeness, int fullness) {
-        try {
-            PreparedStatement ps = DatabaseConnection.getConnection().prepareStatement("INSERT INTO pets (name, level, closeness, fullness, summoned) VALUES (?, ?, ?, ?, 0)", Statement.RETURN_GENERATED_KEYS);
+        try (PreparedStatement ps = DatabaseConnection.getConnection().prepareStatement("INSERT INTO pets (name, level, closeness, fullness, summoned) VALUES (?, ?, ?, ?, 0)", Statement.RETURN_GENERATED_KEYS)) {
             ps.setString(1, MapleItemInformationProvider.getInstance().getName(itemid));
             ps.setByte(2, level);
             ps.setInt(3, closeness);
             ps.setInt(4, fullness);
             ps.executeUpdate();
-            ResultSet rs = ps.getGeneratedKeys();
-            int ret = -1;
-            if (rs.next()) {
-                ret = rs.getInt(1);
-                rs.close();
-                ps.close();
+            try (ResultSet rs = ps.getGeneratedKeys()) {
+                int ret = -1;
+                if (rs.next()) {
+                    ret = rs.getInt(1);
+                }
+                return ret;
             }
-            return ret;
         } catch (SQLException e) {
             return -1;
         }
