@@ -748,13 +748,14 @@ public class GameMasterCommands {
                 BiPredicate<String, String> check = new BiPredicate<>() {
                     @Override
                     public boolean test(String query, String item) {
-                        String[] sp = query.split(" ");
-                        for (String s : sp) {
-                            if (item.contains(s)) {
-                                return true;
+                        String[] keywords = query.split(" ");
+                        int matches = 0;
+                        for (String words : keywords) {
+                            if (item.toLowerCase().contains(words)) {
+                                matches++;
                             }
                         }
-                        return false;
+                        return matches == keywords.length;
                     }
                 };
 
