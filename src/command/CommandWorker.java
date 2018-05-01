@@ -197,7 +197,7 @@ public class CommandWorker {
         }
 
         public <T extends Number> T parseNumber(int index, Class<? extends Number> t) {
-            if (index == -1) {
+            if (index < 0) {
                 return null;
             }
             try {
@@ -211,6 +211,10 @@ public class CommandWorker {
                     ret = Integer.parseInt(arg);
                 } else if (t == long.class) {
                     ret = Long.parseLong(arg);
+                } else if (t == float.class) {
+                    ret = Float.parseFloat(arg);
+                } else if (t == double.class) {
+                    ret = Double.parseDouble(arg);
                 }
                 return (T) ret;
             } catch (NumberFormatException e) {

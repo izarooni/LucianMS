@@ -82,7 +82,7 @@ public class MapleMonsterStats {
         this.level = level;
     }
 
-    public int removeAfter() {
+    public int getRemoveAfter() {
         return removeAfter;
     }
 

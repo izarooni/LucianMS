@@ -678,7 +678,6 @@ public class MapleMap {
 
     public List<MapleMonster> getMonsters() {
         return getMapObjects().stream().filter(o -> (o instanceof MapleMonster)).map(o -> (MapleMonster) o).collect(Collectors.toList());
-
     }
 
     public void killMonster(final MapleMonster monster, final MapleCharacter chr, final boolean withDrops) {
@@ -1162,21 +1161,21 @@ public class MapleMap {
         }
         spawnedMonstersOnMap.incrementAndGet();
         final SelfDestruction selfDestruction = monster.getStats().getSelfDestruction();
-        if (monster.getStats().removeAfter() > 0 || selfDestruction != null && selfDestruction.getHp() < 0) {
+        if (monster.getStats().getRemoveAfter() > 0 || selfDestruction != null && selfDestruction.getHp() < 0) {
             if (selfDestruction == null) {
                 TaskExecutor.createTask(new Runnable() {
                     @Override
                     public void run() {
                         killMonster(monster, null, false);
                     }
-                }, monster.getStats().removeAfter() * 1000);
+                }, monster.getStats().getRemoveAfter());
             } else {
                 TaskExecutor.createTask(new Runnable() {
                     @Override
                     public void run() {
                         killMonster(monster, null, false, false, selfDestruction.getAction());
                     }
-                }, selfDestruction.removeAfter() * 1000);
+                }, selfDestruction.getRemoveAfter());
             }
         }
     }

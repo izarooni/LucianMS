@@ -21,12 +21,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package server.life;
 
-import java.io.File;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
 import provider.MapleData;
 import provider.MapleDataProvider;
 import provider.MapleDataProviderFactory;
@@ -34,6 +28,9 @@ import provider.MapleDataTool;
 import provider.wz.MapleDataType;
 import tools.Pair;
 import tools.StringUtil;
+
+import java.io.File;
+import java.util.*;
 
 public class MapleLifeFactory {
 
@@ -73,11 +70,11 @@ public class MapleLifeFactory {
             stats.setPADamage(MapleDataTool.getIntConvert("PADamage", monsterInfoData));
             stats.setPDDamage(MapleDataTool.getIntConvert("PDDamage", monsterInfoData));
             stats.setMADamage(MapleDataTool.getIntConvert("MADamage", monsterInfoData));
-            stats.setMDDamage(MapleDataTool.getIntConvert("MDDamage", monsterInfoData));  
+            stats.setMDDamage(MapleDataTool.getIntConvert("MDDamage", monsterInfoData));
             stats.setMp(MapleDataTool.getIntConvert("maxMP", monsterInfoData, 0));
             stats.setExp(MapleDataTool.getIntConvert("exp", monsterInfoData, 0));
             stats.setLevel(MapleDataTool.getIntConvert("level", monsterInfoData));
-			stats.setRemoveAfter(MapleDataTool.getIntConvert("removeAfter", monsterInfoData, 0));
+            stats.setRemoveAfter(MapleDataTool.getIntConvert("removeAfter", monsterInfoData, 0) * 1000);
             stats.setBoss(MapleDataTool.getIntConvert("boss", monsterInfoData, 0) > 0);
             stats.setExplosiveReward(MapleDataTool.getIntConvert("explosiveReward", monsterInfoData, 0) > 0);
             stats.setFfaLoot(MapleDataTool.getIntConvert("publicReward", monsterInfoData, 0) > 0);
@@ -101,7 +98,12 @@ public class MapleLifeFactory {
             }
             special = monsterInfoData.getChildByPath("selfDestruction");
             if (special != null) {
-                stats.setSelfDestruction(new SelfDestruction((byte) MapleDataTool.getInt(special.getChildByPath("action")), MapleDataTool.getIntConvert("removeAfter", special, -1), MapleDataTool.getIntConvert("hp", special, -1)));
+                SelfDestruction destruction = new SelfDestruction((byte) MapleDataTool.getInt(special.getChildByPath("action")), MapleDataTool.getIntConvert("removeAfter", special, -1), MapleDataTool.getIntConvert("hp", special, -1));
+                if (destruction.getRemoveAfter() > 0) {
+                    destruction.setRemoveAfter(destruction.getRemoveAfter() * 1000);
+                }
+                stats.setSelfDestruction(destruction);
+
             }
             MapleData firstAttackData = monsterInfoData.getChildByPath("firstAttack");
             int firstAttack = 0;
@@ -114,7 +116,7 @@ public class MapleLifeFactory {
             }
             stats.setFirstAttack(firstAttack > 0);
             stats.setDropPeriod(MapleDataTool.getIntConvert("dropItemPeriod", monsterInfoData, 0) * 10000);
-            
+
             stats.setTagColor(MapleDataTool.getIntConvert("hpTagColor", monsterInfoData, 0));
             stats.setTagBgColor(MapleDataTool.getIntConvert("hpTagBgcolor", monsterInfoData, 0));
 
@@ -228,15 +230,17 @@ public class MapleLifeFactory {
         public int getHp() {
             return hp;
         }
-        
+
         public byte getAction() {
             return action;
         }
 
-        public int removeAfter() {
+        public int getRemoveAfter() {
             return removeAfter;
         }
 
-        public void setRemoveAfter(int removeAfter) { this.removeAfter = removeAfter; }
+        public void setRemoveAfter(int removeAfter) {
+            this.removeAfter = removeAfter;
+        }
     }
 }

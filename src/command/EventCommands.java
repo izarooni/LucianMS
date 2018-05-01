@@ -374,52 +374,53 @@ public class EventCommands {
         } else if (command.equals("bomb", "bombmap", "bombm")) {
             if (command.equals("bombmap", "bombm")) {
                 for (MapleCharacter players : player.getMap().getCharacters()) {
-                    MapleMonster bomb = MapleLifeFactory.getMonster(9300166);
-                    if (bomb == null) {
-                        player.dropMessage(5, "An error occured");
-                        return true;
-                    }
                     for (int i = -5; i < 5; i++) {
+                        MapleMonster bomb = MapleLifeFactory.getMonster(9300166);
+                        if (bomb == null) {
+                            player.dropMessage(5, "An error occurred");
+                            return false;
+                        }
                         Point pos = players.getPosition().getLocation();
                         pos.x += (i * 30);
                         player.getMap().spawnMonsterOnGroudBelow(bomb, pos);
                     }
                 }
-            } else {
-                MapleMonster bomb = MapleLifeFactory.getMonster(9300166);
-                if (bomb == null) {
-                    player.dropMessage(5, "An error occured");
-                    return true;
+            } else  {
+                final int timeIndex = args.findArg("-time");
+                Float time = args.parseNumber(timeIndex, 1.5f, float.class);
+                String error = args.getFirstError();
+                if (error != null) {
+                    player.dropMessage(5, error);
+                    return false;
+                } else if (timeIndex > 0) {
+                    time = Math.max(0, time);
+                    player.sendMessage("Bomb timer set to {}s", time);
                 }
-                int time = 2;
-                MapleCharacter target;
-                if (args.length() > 0) {
-                    int timeArg;
-                    String username = args.get(0);
-                    target = ch.getPlayerStorage().getCharacterByName(username);
-                    if (target != null) {
-                        target.getMap().spawnMonsterOnGroudBelow(bomb, player.getPosition());
-                    } else {
-                        player.dropMessage(5, String.format("Could not find any player named '%s'", username));
-                        return true;
+                if (args.length() == 0 || (args.length() == 2  && timeIndex > 0)) {
+                    MapleMonster bomb = MapleLifeFactory.getMonster(9300166);
+                    if (bomb == null) {
+                        player.dropMessage(5, "An error occurred");
+                        return false;
                     }
-                    if ((timeArg = args.findArg("-t")) > -1) {
-                        Integer temp = args.parseNumber(timeArg, int.class);
-                        String error = args.getFirstError();
-                        if (error != null) {
-                            player.dropMessage(5, error);
-                            return true;
-                        }
-                        time = temp;
-                    }
+                    bomb.getStats().getSelfDestruction().setRemoveAfter((int) (time * 1000f));
+                    player.getMap().spawnMonsterOnGroudBelow(bomb, player.getPosition());
                 } else {
-                    target = player;
+                    for (int i = 0; i < args.length(); i++) {
+                        MapleMonster bomb = MapleLifeFactory.getMonster(9300166);
+                        if (bomb == null) {
+                            player.dropMessage(5, "An error occurred");
+                            return false;
+                        }
+                        String username = args.get(i);
+                        MapleCharacter target = player.getMap().getCharacterByName(username);
+                        if (target != null) {
+                            bomb.getStats().getSelfDestruction().setRemoveAfter((int) (time * 1000f));
+                            target.getMap().spawnMonsterOnGroudBelow(bomb, target.getPosition());
+                        } else {
+                            player.sendMessage(5, "Unable to find any player named '{}'", username);
+                        }
+                    }
                 }
-                if (time < 0) {
-                    time = 0;
-                }
-                bomb.getStats().getSelfDestruction().setRemoveAfter(time * 1000);
-                target.getMap().spawnMonsterOnGroudBelow(bomb, target.getPosition());
             }
             return true;
         }
