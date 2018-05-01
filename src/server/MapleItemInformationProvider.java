@@ -721,9 +721,14 @@ public class MapleItemInformationProvider {
         if (nameCache.containsKey(itemId)) {
             return nameCache.get(itemId);
         }
-        MapleData strings = getStringData(itemId);
-        if (strings == null) {
-            return null;
+        MapleData strings = null;
+        try {
+            strings = getStringData(itemId);
+            if (strings == null) {
+                return null;
+            }
+        } catch (NullPointerException e) {
+            LOGGER.error("Unable to retrieve string value of item {}", itemId, e);
         }
         String ret = MapleDataTool.getString("name", strings, null);
         nameCache.put(itemId, ret);

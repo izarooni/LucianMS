@@ -32,6 +32,7 @@ import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.function.BiPredicate;
 
 /**
  * @author izarooni, lucasdieswagger
@@ -742,7 +743,21 @@ public class GameMasterCommands {
                 String search = args.concatFrom(1).toLowerCase().trim();
                 MapleData data;
                 MapleDataProvider dataProvider = MapleDataProviderFactory.getDataProvider(new File(System.getProperty("wzpath") + "/" + "String.wz"));
-                player.message("<<Type: " + type + " | Search: " + search + " >>");
+                player.message("<<Type: " + type + " | Search: \"" + search + "\">>");
+
+                BiPredicate<String, String> check = new BiPredicate<>() {
+                    @Override
+                    public boolean test(String query, String item) {
+                        String[] sp = query.split(" ");
+                        for (String s : sp) {
+                            if (item.contains(s)) {
+                                return true;
+                            }
+                        }
+                        return false;
+                    }
+                };
+
                 if (type.equalsIgnoreCase("NPC") || type.equalsIgnoreCase("NPCS")) {
                     List<String> retNpcs = new ArrayList<>();
                     data = dataProvider.getData("Npc.img");
@@ -753,7 +768,7 @@ public class GameMasterCommands {
                         npcPairList.add(new Pair<>(npcIdFromData, npcNameFromData));
                     }
                     for (Pair<Integer, String> npcPair : npcPairList) {
-                        if (npcPair.getRight().toLowerCase().contains(search)) {
+                        if (check.test(search, npcPair.getRight())) {
                             retNpcs.add(npcPair.getLeft() + " - " + npcPair.getRight());
                         }
                     }
@@ -782,7 +797,7 @@ public class GameMasterCommands {
                         }
                     }
                     for (Pair<Integer, String> mapPair : mapPairList) {
-                        if (mapPair.getRight().toLowerCase().contains(search)) {
+                        if (check.test(search, mapPair.getRight())) {
                             retMaps.add(mapPair.getLeft() + " - " + mapPair.getRight());
                         }
                     }
@@ -805,7 +820,7 @@ public class GameMasterCommands {
                         mobPairList.add(new Pair<>(mobIdFromData, mobNameFromData));
                     }
                     for (Pair<Integer, String> mobPair : mobPairList) {
-                        if (mobPair.getRight().toLowerCase().contains(search)) {
+                        if (check.test(search, mobPair.getRight())) {
                             retMobs.add(mobPair.getLeft() + " - " + mobPair.getRight());
                         }
                     }
@@ -821,7 +836,7 @@ public class GameMasterCommands {
                 } else if (type.equalsIgnoreCase("ITEM") || type.equalsIgnoreCase("ITEMS")) {
                     List<String> retItems = new ArrayList<>();
                     for (Pair<Integer, String> itemPair : MapleItemInformationProvider.getInstance().getAllItems()) {
-                        if (itemPair.getRight().toLowerCase().contains(search)) {
+                        if (check.test(search, itemPair.getRight())) {
                             retItems.add(itemPair.getLeft() + " - " + itemPair.getRight());
                         }
                     }
