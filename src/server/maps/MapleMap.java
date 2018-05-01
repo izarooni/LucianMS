@@ -58,7 +58,6 @@ import server.partyquest.carnival.MCarnivalTeam;
 import server.quest.custom.CQuestData;
 import server.quest.custom.requirement.CQuestItemRequirement;
 import server.quest.custom.requirement.CQuestKillRequirement;
-import tools.FilePrinter;
 import tools.MaplePacketCreator;
 import tools.Pair;
 import tools.Randomizer;
@@ -1137,7 +1136,7 @@ public class MapleMap {
 
     public void spawnMonster(final MapleMonster monster) {
         if (mobCapacity != -1 && mobCapacity == spawnedMonstersOnMap.get()) {
-            LOGGER.info("Unable to spawn monster due to mob capacity {}", mobCapacity);
+            LOGGER.info("Unable to spawn monster due to mob capacity {} in map {}", mobCapacity, getId());
             return;
         }
         monster.setMap(this);
