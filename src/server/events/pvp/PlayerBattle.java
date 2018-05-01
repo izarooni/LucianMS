@@ -372,6 +372,7 @@ public class PlayerBattle extends GenericEvent {
         int eDamage = Randomizer.rand(min, max);
         this.damage = eDamage;
         if (attacker.isGM()) {
+            System.out.println();
             LOGGER.info("Distance calculated: [c: {}, f: {}]", cAttackRange, fAttackRange);
             LOGGER.info("Weapon attack damage calculation: {}", damage);
             LOGGER.info("Extra damage randomizer: {}", eDamage);

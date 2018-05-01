@@ -134,6 +134,7 @@ public class MapleItemInformationProvider {
         itemsData = stringData.getData("Eqp.img").getChildByPath("Eqp");
         for (MapleData eqpType : itemsData.getChildren()) {
             for (MapleData itemFolder : eqpType.getChildren()) {
+//                LOGGER.info("[{}] {} - {}", eqpType.getName(), itemFolder.getName(), MapleDataTool.getString("name", itemFolder, "NO-NAME"));
                 itemPairs.add(new Pair<>(Integer.parseInt(itemFolder.getName()), MapleDataTool.getString("name", itemFolder, "NO-NAME")));
             }
         }

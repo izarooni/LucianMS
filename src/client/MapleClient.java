@@ -847,6 +847,7 @@ public class MapleClient {
             } catch (final Exception e) {
                 e.printStackTrace();
             } finally {
+                LOGGER.info("Player {} logged-out", player.getName());
                 getChannelServer().removePlayer(player);
                 if (!this.serverTransition) {
                     worlda.removePlayer(player);

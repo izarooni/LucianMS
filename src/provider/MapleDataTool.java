@@ -49,7 +49,7 @@ public class MapleDataTool {
     }
 
     public static String getString(String path, MapleData data, String def) {
-        if (data == null || data.getData() == null) {
+        if (data == null) {
             return def;
         }
         return getString(data.getChildByPath(path), def);
