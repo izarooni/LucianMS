@@ -6,7 +6,7 @@ let options = {
     "Vote point trader":   {npc:9901754,script:null},
     "Event point trader":  {npc:9901752,script:null},
     "Donor point trader":  {npc:9901755,script:null},
-    "Eye Ccanner trader":  {npc:9901753,script:null},
+    "Eye Scanner trader":  {npc:9901753,script:null},
     "Monster Coin trader": {npc:2007,   script:"shop_monster_coin"},
     "Overwatch lootbox":   {npc:9270043,script:null},
     get: function(idx) {
