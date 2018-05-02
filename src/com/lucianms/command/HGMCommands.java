@@ -69,7 +69,7 @@ public class HGMCommands {
         } else if (command.equals("item", "drop")) {
             if (args.length() > 0) {
                 Integer id = args.parseNumber(0, int.class);
-                Short quantity = args.parseNumber(1, short.class);
+                Short quantity = args.parseNumber(1, (short) 1, short.class);
                 String error = args.getFirstError();
                 if (error != null) {
                     player.dropMessage(5, error);

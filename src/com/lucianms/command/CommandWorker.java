@@ -197,7 +197,7 @@ public class CommandWorker {
         }
 
         public <T extends Number> T parseNumber(int index, Class<? extends Number> t) {
-            if (index < 0) {
+            if (index < 0 || index >= args.length) {
                 return null;
             }
             try {
@@ -221,6 +221,7 @@ public class CommandWorker {
                 errors[index] = String.format("'%s' is not a number", args[index]);
                 return null;
             } catch (IndexOutOfBoundsException e) {
+                errors[index] = "Insufficient arguments";
                 return null;
             }
         }
