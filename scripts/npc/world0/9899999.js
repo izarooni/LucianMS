@@ -1,6 +1,6 @@
 load("nashorn:mozilla_compat.js");
 load("scripts/util_imports.js");
-var cqb = Java.type("server.quest.custom.CQuestBuilder");
+var cqb = Java.type("com.lucianms.cquest.CQuestBuilder");
 
 importPackage(Packages.server.quest.custom.reward);
 

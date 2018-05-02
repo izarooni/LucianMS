@@ -1,16 +1,16 @@
 load("scripts/util_imports.js");
 load("scripts/util_cquests.js");
-var CQuests = Java.type("server.quest.custom.CQuestBuilder");
+const CQuests = Java.type("com.lucianms.cquest.CQuestBuilder");
 /* izarooni */
-var status = 0;
-var quests = [2, [3, 20]];
+let status = 0;
+let quests = [2, [3, 20]];
 
-var available = [];
-var in_progress = [];
-var completed = [];
+let available = [];
+let in_progress = [];
+let completed = [];
 
-for (var i = 0; i < quests.length; i++) {
-    var obj = quests[i];
+for (let i = 0; i < quests.length; i++) {
+    let obj = quests[i];
     if (obj instanceof Array) {
         for (var a = obj[0]; a <= obj[1]; a++) {
             appendQuest(a);
@@ -21,10 +21,11 @@ for (var i = 0; i < quests.length; i++) {
 }
 
 function appendQuest(questId) {
-    var quest = player.getCustomQuest(questId);
+    let quest = player.getCustomQuest(questId);
     if (quest == null) {
+        let meta = CQuests.getMetaData(questId);
         // check if the player has the pre-quest completed
-        var pQuestId = CQuests.getPreQuest(questId);
+        let pQuestId = meta.getPreQuestId();
         if (pQuestId == -1) {
             available.push(questId);
         } else {
@@ -51,16 +52,19 @@ function action(mode, type, selection) {
     }
     if (status == 1) {
         var text = "Got some free time? I have some things I need completed\r\n#b";
-        for (var i = 0; i < in_progress.length; i++) {
-            text += "\r\n#L" + in_progress[i] + "# #FUI/UIWindow/Quest/icon4#  " + CQuests.getName(in_progress[i]) + "#l";
+        for (let i = 0; i < in_progress.length; i++) {
+            let meta = CQuests.getMetaData(in_progress[i]);
+            text += "\r\n#L" + in_progress[i] + "# #FUI/UIWindow/Quest/icon4#  " + meta.getName() + "#l";
         }
         text += "\r\n";
-        for (var i = 0; i < available.length; i++) {
-            text += "\r\n#L" + available[i] + "# #FUI/UIWindow/Quest/icon0#  " + CQuests.getName(available[i]) + "#l";
+        for (let i = 0; i < available.length; i++) {
+            let meta = CQuests.getMetaData(available[i]);
+            text += "\r\n#L" + available[i] + "# #FUI/UIWindow/Quest/icon0#  " + meta.getName() + "#l";
         }
         text += "\r\n";
-        for (var i = 0; i < completed.length; i++) {
-            text += "\r\n#L" + completed[i] + "# #FUI/UIWindow/Quest/icon1#  " + CQuests.getName(completed[i]) + "#l";
+        for (let i = 0; i < completed.length; i++) {
+            let meta = CQuests.getMetaData(completed[i]);
+            text += "\r\n#L" + completed[i] + "# #FUI/UIWindow/Quest/icon1#  " + meta.getName() + "#l";
         }
         cm.sendSimple(text);
     } else {
@@ -71,7 +75,7 @@ function action(mode, type, selection) {
 
 function RedirectQuest(questId) {
     if (in_progress.indexOf(questId) > -1) {
-        var quest = player.getCustomQuest(questId);
+        let quest = player.getCustomQuest(questId);
         if (quest.checkRequirements()) {
             if (quest.complete(player)) {
                 cm.sendOk("You did it #b#h ##k! Thanks for all your hard work!");
@@ -92,10 +96,11 @@ function RedirectQuest(questId) {
 }
 
 function Available(questId) {
+    let meta = CQuests.getMetaData(this.questId);
     if (status >= 2 && status <= 4) {
-        var text = "#FUI/UIWindow/Quest/summary#\r\n";
+        let text = "#FUI/UIWindow/Quest/summary#\r\n";
         if (status == 2) {
-            var res = CQuestKills(CQuests.getToKill(this.questId));
+            var res = CQuestKills(meta.getToKill());
             if (res != null) {
                 text += res;
             } else {
@@ -103,7 +108,7 @@ function Available(questId) {
                 return;
             }
         } else if (status == 3) {
-            var res = CQuestCollect(CQuests.getToCollect(this.questId));
+            var res = CQuestCollect(meta.getToCollect());
             if (res != null) {
                 text += res;
             } else {
@@ -111,7 +116,7 @@ function Available(questId) {
                 return;
             }
         } else if (status == 4) {
-            var res = CQuestRewards(CQuests.getRewards(this.questId));
+            var res = CQuestRewards(meta.getRewards());
             if (res != null) {
                 text = res;
             } else {

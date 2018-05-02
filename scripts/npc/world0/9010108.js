@@ -1,6 +1,6 @@
 load("scripts/util_imports.js");
 load("scripts/util_cquests.js");
-var CQuests = Java.type("server.quest.custom.CQuestBuilder");
+var CQuests = Java.type("com.lucianms.cquest.CQuestBuilder");
 /* izarooni */
 var status = 0;
 var quests = [

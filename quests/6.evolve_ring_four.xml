@@ -1,4 +1,4 @@
-<imgdir name="Evolving Ring">
+<imgdir name="Evolving Ring 4">
     <imgdir name="info">
         <int name="questId" value="6"/>
 		<int name="preQuest" value="5"/>
@@ -14,7 +14,7 @@
     </imgdir>
 
     <imgdir name="toCollect">
-        
+
         <imgdir name="0">
             <int name="itemId" value="1112616"/>
             <int name="quantity" value="1"/>

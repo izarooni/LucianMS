@@ -1,4 +1,5 @@
 const MapleInventoryType = Java.type("client.inventory.MapleInventoryType");
+const StringUtil = Java.type("tools.StringUtil");
 /* izarooni */
 let status = 0;
 let inventory = player.getInventory(MapleInventoryType.EQUIP);
@@ -11,7 +12,13 @@ function action(mode, type, selection) {
         status++;
     }
     if (status == 1) {
+        let totalWatk = player.getTotalWatk();
+        let maxDamage = player.calculateMaxBaseDamage(totalWatk);
         let content = "What weapon would you like to use for a Regalia?\r\n";
+        content = "With your total weapon attack (#b"
+        + StringUtil.formatNumber(totalWatk) + "#k) and equipped weapon, your Regalia will deal #b"
+        + StringUtil.formatNumber(maxDamage)
+        + "#k fixed damage to monsters you attack.\r\n\r\n" + content;
         let selections = "";
         inventory.list().forEach(function(item) {
             if (item.getItemId() >= 1302000 && item.getItemId() <= 1492044) {

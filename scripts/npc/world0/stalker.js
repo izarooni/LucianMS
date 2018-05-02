@@ -91,12 +91,13 @@ function action(mode, type, selection) {
                         }
                         cm.sendPrev(
                                 "#e" + this.stalk.name + "'s stats#n\r\n"
-                                + "\r\nAccount Name: " + t.getClient().getName()
-                                + "\r\nAccount Id: " + t.getAccountId()
+                                + "\r\nAccount Name: " + t.getClient().getAccountName()
+                                + "\r\nAccount Id: " + t.getAccountID()
                                 + "\r\nCharacter Id: " + t.getId()
+                                + "\r\nTotal Weapon Attack: " + t.getTotalWatk()
                                 + "\r\nOther characters: \r\n" + otherChars
                                 + "\r\n\r\nRemote address: " + t.getClient().getSession().getRemoteAddress().toString().substring(1).split(":")[0]
-                                + "\r\n\r\nMACs: " + java.util.Arrays.toString(t.getClient().getMacs())
+                                + "\r\n\r\nMACs: " + t.getClient().getMacs()
                                 + "\r\nHWID: " + t.getClient().getHWID()
                                 );
                     } else {
@@ -154,6 +155,7 @@ function action(mode, type, selection) {
             } else {
                 text += "\r\n#L12#QUANTITY: " + this.item.getQuantity() + "#l";
             }
+            text += "\r\nPet ID: " + this.item.getPetId();
             text += "\r\n#L13#OWNER: " + this.item.getOwner() + "#l";
             text += "\r\n#L14#Remove#l";
             cm.sendSimple(text);
