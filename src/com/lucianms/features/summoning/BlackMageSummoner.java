@@ -1,8 +1,8 @@
 package com.lucianms.features.summoning;
 
 import client.MapleCharacter;
-import net.server.channel.handlers.ItemMoveHandler;
-import net.server.channel.handlers.ItemPickupHandler;
+import com.lucianms.server.events.channel.ItemMoveEvent;
+import com.lucianms.server.events.channel.ItemPickupEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.lucianms.scheduler.TaskExecutor;
@@ -48,7 +48,7 @@ public class BlackMageSummoner extends GenericEvent {
     }
 
     @PacketWorker
-    public void onItemMove(ItemMoveHandler event) {
+    public void onItemMove(ItemMoveEvent event) {
         event.setCanceled(true);
         if (summoning) {
             return;
@@ -84,7 +84,7 @@ public class BlackMageSummoner extends GenericEvent {
     }
 
     @PacketWorker
-    public void onItemPickup(ItemPickupHandler event) {
+    public void onItemPickup(ItemPickupEvent event) {
         MapleCharacter player = event.getClient().getPlayer();
         MapleMapObject object = player.getMap().getMapObject(event.getObjectId());
         if (object instanceof MapleMapItem) {

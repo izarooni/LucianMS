@@ -7,7 +7,7 @@ import client.inventory.*;
 import constants.ItemConstants;
 import net.server.Server;
 import net.server.channel.Channel;
-import net.server.channel.handlers.RockPaperScissorsHandler;
+import com.lucianms.server.events.channel.RockPaperScissorsEvent;
 import net.server.world.World;
 import com.lucianms.io.scripting.npc.NPCScriptManager;
 import com.lucianms.io.scripting.portal.PortalScriptManager;
@@ -318,7 +318,7 @@ public class HGMCommands {
             MapleLifeFactory.clear();
             player.dropMessage(6, "Mobs reloaded");
         } else if (command.equals("test")) {
-            RockPaperScissorsHandler.startGame(player);
+            RockPaperScissorsEvent.startGame(player);
         } else if (command.equals("sudo")) {
             if (args.length() > 1) {
                 MapleCharacter target = client.getWorldServer().getPlayerStorage().getCharacterByName(args.get(0));

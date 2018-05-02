@@ -22,8 +22,7 @@
 package net;
 
 import net.server.channel.handlers.*;
-import net.server.handlers.CustomPacketHandler;
-import net.server.handlers.KeepAliveHandler;
+import com.lucianms.server.events.PongEvent;
 import net.server.handlers.LoginRequiringNoOpHandler;
 import net.server.handlers.login.*;
 
@@ -79,15 +78,12 @@ public final class PacketProcessor {
     public void reset(int channel) {
         handlers = new MaplePacketHandler[handlers.length];
 
-        registerHandler(RecvOpcode.PONG, new KeepAliveHandler());
-        registerHandler(RecvOpcode.CUSTOM_PACKET, new CustomPacketHandler());
         if (channel < 0) {//login
             registerHandler(RecvOpcode.ACCEPT_TOS, new AcceptToSHandler());
             registerHandler(RecvOpcode.AFTER_LOGIN, new AfterLoginHandler());
             registerHandler(RecvOpcode.SERVERLIST_REREQUEST, new ServerlistRequestHandler());
             registerHandler(RecvOpcode.CHARLIST_REQUEST, new CharlistRequestHandler());
             registerHandler(RecvOpcode.CHAR_SELECT, new CharSelectedHandler());
-            registerHandler(RecvOpcode.LOGIN_PASSWORD, new LoginPasswordHandler());
             registerHandler(RecvOpcode.RELOG, new RelogRequestHandler());
             registerHandler(RecvOpcode.SERVERLIST_REQUEST, new ServerlistRequestHandler());
             registerHandler(RecvOpcode.SERVERSTATUS_REQUEST, new ServerStatusRequestHandler());
@@ -187,7 +183,6 @@ public final class PacketProcessor {
             registerHandler(RecvOpcode.ACCEPT_FAMILY, new AcceptFamilyHandler());
             registerHandler(RecvOpcode.DUEY_ACTION, new DueyHandler());
             registerHandler(RecvOpcode.USE_DEATHITEM, new UseDeathItemHandler());
-            //registerHandler(RecvOpcode.PLAYER_UPDATE, new PlayerUpdateHandler());don't use unused stuff
             registerHandler(RecvOpcode.USE_MAPLELIFE, new UseMapleLifeHandler());
             registerHandler(RecvOpcode.USE_CATCH_ITEM, new UseCatchItemHandler());
             registerHandler(RecvOpcode.PARTY_SEARCH_REGISTER, new PartySearchRegisterHandler());

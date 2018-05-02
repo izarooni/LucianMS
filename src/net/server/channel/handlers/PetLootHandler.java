@@ -24,6 +24,7 @@ package net.server.channel.handlers;
 import client.MapleCharacter;
 import client.MapleClient;
 import client.inventory.MaplePet;
+import com.lucianms.server.events.channel.ItemPickupEvent;
 import net.AbstractMaplePacketHandler;
 import server.MapleInventoryManipulator;
 import server.maps.MapleMapItem;
@@ -100,7 +101,7 @@ public final class PetLootHandler extends AbstractMaplePacketHandler {
                         c.announce(MaplePacketCreator.enableActions());
                         return;
                     }
-                } else if (ItemPickupHandler.useItem(c, mapitem.getItem().getItemId())) {
+                } else if (ItemPickupEvent.useItem(c, mapitem.getItem().getItemId())) {
                     if (mapitem.getItem().getItemId() / 10000 == 238) {
                         chr.getMonsterBook().addCard(c, mapitem.getItem().getItemId());
                     }

@@ -11,7 +11,7 @@ import org.slf4j.LoggerFactory;
 import com.lucianms.scheduler.TaskExecutor;
 import com.lucianms.io.scripting.Achievements;
 import server.CashShop;
-import server.Whitelist;
+import com.lucianms.server.Whitelist;
 import com.lucianms.cquest.CQuestBuilder;
 import com.lucianms.helpers.HouseManager;
 import tools.data.output.MaplePacketLittleEndianWriter;

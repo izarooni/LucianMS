@@ -1,7 +1,7 @@
 package com.lucianms.features;
 
 import client.MapleCharacter;
-import net.PacketHandler;
+import net.PacketEvent;
 import com.lucianms.lang.annotation.PacketWorker;
 
 import java.lang.reflect.InvocationTargetException;
@@ -29,7 +29,7 @@ public abstract class GenericEvent {
                 Class<?>[] pTypes = method.getParameterTypes();
                 // only add methods which parameters meet specifications
                 // in this case, there is 1 parameter and it is a child of the PacketEvent
-                if (PacketHandler.class.isAssignableFrom(pTypes[0])) {
+                if (PacketEvent.class.isAssignableFrom(pTypes[0])) {
                     methods.putIfAbsent(pTypes[0], new ArrayList<>());
                     methods.get(pTypes[0]).add(method);
                 }
@@ -45,7 +45,7 @@ public abstract class GenericEvent {
      *
      * @param event a packet event
      */
-    public final void onPacketEvent(PacketHandler event) {
+    public final void onPacketEvent(PacketEvent event) {
         if (methods.get(event.getClass()) != null) {
             methods.get(event.getClass()).forEach(method -> {
                 try {

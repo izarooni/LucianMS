@@ -1,6 +1,8 @@
 package net;
 
-import net.server.channel.handlers.*;
+import com.lucianms.server.events.channel.*;
+import com.lucianms.server.events.login.AccountLoginEvent;
+import com.lucianms.server.events.PongEvent;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -10,14 +12,14 @@ import java.util.List;
  * Store packet handler classes that can be indexed in constant time
  * <p>
  * Instead of storing {@code PacketHandler} objects, classes need to tbe stored for data
- * to be used outside of server handlers. See {@link PacketHandler}
+ * to be used outside of server handlers. See {@link PacketEvent}
  * </p>
  *
  * @author izarooni
  */
 public final class PacketManager {
 
-    private static List<Class<? extends PacketHandler>> handlers;
+    private static List<Class<? extends PacketEvent>> handlers;
 
     static {
         int pLargest = 0;
@@ -31,55 +33,58 @@ public final class PacketManager {
         addPacketHandlers();
     }
 
-    public static Class<? extends PacketHandler> getHandler(int op) {
+    public static Class<? extends PacketEvent> getHandler(int op) {
         return handlers.get(op);
     }
 
     private static void addPacketHandlers() {
-        handlers.set(RecvOpcode.CHANGE_MAP.getValue(), ChangeMapHandler.class);
-        handlers.set(RecvOpcode.CHANGE_MAP_SPECIAL.getValue(), ChangeMapSpecialHandler.class);
+        handlers.set(RecvOpcode.PONG.getValue(), PongEvent.class);
+        handlers.set(RecvOpcode.LOGIN_PASSWORD.getValue(), AccountLoginEvent.class);
 
-        handlers.set(RecvOpcode.CHAR_INFO_REQUEST.getValue(), ViewCharacterInfoHandler.class);
+        handlers.set(RecvOpcode.CHANGE_MAP.getValue(), ChangeMapEvent.class);
+        handlers.set(RecvOpcode.CHANGE_MAP_SPECIAL.getValue(), ChangeMapSpecialEvent.class);
 
-        handlers.set(RecvOpcode.NPC_TALK.getValue(), NPCTalkHandler.class);
+        handlers.set(RecvOpcode.CHAR_INFO_REQUEST.getValue(), ViewCharacterInfoEvent.class);
 
-        handlers.set(RecvOpcode.MONSTER_CARNIVAL.getValue(), MonsterCarnivalHandler.class);
+        handlers.set(RecvOpcode.NPC_TALK.getValue(), NPCTalkEvent.class);
 
-        handlers.set(RecvOpcode.DISTRIBUTE_AP.getValue(), DistributeAPHandler.class);
+        handlers.set(RecvOpcode.MONSTER_CARNIVAL.getValue(), MonsterCarnivalEvent.class);
 
-        handlers.set(RecvOpcode.RPS_ACTION.getValue(), RockPaperScissorsHandler.class);
+        handlers.set(RecvOpcode.DISTRIBUTE_AP.getValue(), DistributeAPEvent.class);
+
+        handlers.set(RecvOpcode.RPS_ACTION.getValue(), RockPaperScissorsEvent.class);
 
         //region movement handlers
-        handlers.set(RecvOpcode.MOVE_PLAYER.getValue(), PlayerMoveHandler.class);
-        handlers.set(RecvOpcode.MOVE_LIFE.getValue(), MoveLifeHandler.class);
-        handlers.set(RecvOpcode.MOVE_SUMMON.getValue(), MoveSummonHandler.class);
-        handlers.set(RecvOpcode.MOVE_PET.getValue(), MovePetHandler.class);
-        handlers.set(RecvOpcode.MOVE_DRAGON.getValue(), MoveDragonHandler.class);
+        handlers.set(RecvOpcode.MOVE_PLAYER.getValue(), PlayerMoveEvent.class);
+        handlers.set(RecvOpcode.MOVE_LIFE.getValue(), MoveLifeEvent.class);
+        handlers.set(RecvOpcode.MOVE_SUMMON.getValue(), MoveSummonEvent.class);
+        handlers.set(RecvOpcode.MOVE_PET.getValue(), MovePetEvent.class);
+        handlers.set(RecvOpcode.MOVE_DRAGON.getValue(), MoveDragonEvent.class);
         //endregion
 
         //region attack & damage handlers
-        handlers.set(RecvOpcode.CLOSE_RANGE_ATTACK.getValue(), CloseRangeDamageHandler.class);
-        handlers.set(RecvOpcode.RANGED_ATTACK.getValue(), RangedAttackHandler.class);
-        handlers.set(RecvOpcode.MAGIC_ATTACK.getValue(), MagicDamageHandler.class);
-        handlers.set(RecvOpcode.TOUCH_MONSTER_ATTACK.getValue(), TouchMonsterDamageHandler.class);
-        handlers.set(RecvOpcode.TAKE_DAMAGE.getValue(), TakeDamageHandler.class);
-        handlers.set(RecvOpcode.MOB_DAMAGE_MOB_FRIENDLY.getValue(), MobDamageMobFriendlyHandler.class);
+        handlers.set(RecvOpcode.CLOSE_RANGE_ATTACK.getValue(), CloseRangeDamageEvent.class);
+        handlers.set(RecvOpcode.RANGED_ATTACK.getValue(), RangedAttackEvent.class);
+        handlers.set(RecvOpcode.MAGIC_ATTACK.getValue(), MagicDamageEvent.class);
+        handlers.set(RecvOpcode.TOUCH_MONSTER_ATTACK.getValue(), TouchMonsterDamageEvent.class);
+        handlers.set(RecvOpcode.TAKE_DAMAGE.getValue(), TakeDamageEvent.class);
+        handlers.set(RecvOpcode.MOB_DAMAGE_MOB_FRIENDLY.getValue(), MobDamageMobFriendlyEvent.class);
 
-        handlers.set(RecvOpcode.DAMAGE_REACTOR.getValue(), ReactorHitHandler.class);
-        handlers.set(RecvOpcode.TOUCHING_REACTOR.getValue(), TouchReactorHandler.class);
+        handlers.set(RecvOpcode.DAMAGE_REACTOR.getValue(), ReactorHitEvent.class);
+        handlers.set(RecvOpcode.TOUCHING_REACTOR.getValue(), TouchReactorEvent.class);
         //endregion
 
         //region item mod handlers
-        handlers.set(RecvOpcode.USE_ITEM.getValue(), UseItemHandler.class);
-        handlers.set(RecvOpcode.USE_RETURN_SCROLL.getValue(), UseItemHandler.class);
-        handlers.set(RecvOpcode.USE_UPGRADE_SCROLL.getValue(), ScrollHandler.class);
-        handlers.set(RecvOpcode.USE_ITEM_REWARD.getValue(), ItemRewardHandler.class);
+        handlers.set(RecvOpcode.USE_ITEM.getValue(), UseItemEvent.class);
+        handlers.set(RecvOpcode.USE_RETURN_SCROLL.getValue(), UseItemEvent.class);
+        handlers.set(RecvOpcode.USE_UPGRADE_SCROLL.getValue(), ScrollEvent.class);
+        handlers.set(RecvOpcode.USE_ITEM_REWARD.getValue(), ItemRewardEvent.class);
         //endregion
 
         //region inventory handlers
-        handlers.set(RecvOpcode.ITEM_SORT.getValue(), ItemSortHandler.class);
-        handlers.set(RecvOpcode.ITEM_MOVE.getValue(), ItemMoveHandler.class);
-        handlers.set(RecvOpcode.ITEM_PICKUP.getValue(), ItemPickupHandler.class);
+        handlers.set(RecvOpcode.ITEM_SORT.getValue(), ItemSortEvent.class);
+        handlers.set(RecvOpcode.ITEM_MOVE.getValue(), ItemMoveEvent.class);
+        handlers.set(RecvOpcode.ITEM_PICKUP.getValue(), ItemPickupEvent.class);
         //endregion
     }
 }

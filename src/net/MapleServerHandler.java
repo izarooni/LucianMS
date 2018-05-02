@@ -37,6 +37,7 @@ import tools.data.input.GenericSeekableLittleEndianAccessor;
 import tools.data.input.SeekableLittleEndianAccessor;
 
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 import java.util.Random;
 
 public class MapleServerHandler extends IoHandlerAdapter {
@@ -147,15 +148,17 @@ public class MapleServerHandler extends IoHandlerAdapter {
             {
                 MapleCharacter player = client.getPlayer();
                 // isolate the variables until removing deprecated packet handlers, even though there's no need to... dw about it
-                Class<? extends PacketHandler> clazz = PacketManager.getHandler(packetId);
+                Class<? extends PacketEvent> clazz = PacketManager.getHandler(packetId);
                 if (clazz != null) {
                     try {
-                        PacketHandler handler = clazz.newInstance();
+                        PacketEvent handler = clazz.getDeclaredConstructor().newInstance();
                         handler.setClient(client);
                         if (handler.inValidState()) {
                             handler.process(slea);
-                            try {
+                            if (player != null) {
                                 player.getGenericEvents().forEach(e -> e.onPacketEvent(handler));
+                            }
+                            try {
                                 if (!handler.isCanceled()) {
                                     handler.onPacket();
                                     handler.post();
@@ -164,7 +167,7 @@ public class MapleServerHandler extends IoHandlerAdapter {
                                 handler.exceptionCaught(t);
                             }
                         }
-                    } catch (InstantiationException | IllegalAccessException e) {
+                    } catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
                         e.printStackTrace();
                     }
                 }

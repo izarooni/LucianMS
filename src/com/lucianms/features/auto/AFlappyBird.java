@@ -1,7 +1,7 @@
 package com.lucianms.features.auto;
 
 import client.MapleCharacter;
-import net.server.channel.handlers.PlayerMoveHandler;
+import com.lucianms.server.events.channel.PlayerMoveEvent;
 import net.server.world.World;
 import server.movement.AbsoluteLifeMovement;
 import server.movement.LifeMovementFragment;
@@ -39,7 +39,7 @@ public class AFlappyBird extends GAutoEvent {
     }
 
     @PacketWorker
-    public void onPlayerMove(PlayerMoveHandler event) {
+    public void onPlayerMove(PlayerMoveEvent event) {
         // attempting to check player movement action, stance or position
         MapleCharacter player = event.getClient().getPlayer();
         for (LifeMovementFragment frags : event.getMovements()) {

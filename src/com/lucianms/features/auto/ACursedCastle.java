@@ -1,7 +1,7 @@
 package com.lucianms.features.auto;
 
 import client.MapleCharacter;
-import net.server.channel.handlers.*;
+import com.lucianms.server.events.channel.*;
 import net.server.world.World;
 import com.lucianms.scheduler.TaskExecutor;
 import server.life.MapleLifeFactory;
@@ -85,25 +85,25 @@ public class ACursedCastle extends GAutoEvent {
     }
 
     @PacketWorker
-    public void onCloseRangeAttack(CloseRangeDamageHandler event) {
+    public void onCloseRangeAttack(CloseRangeDamageEvent event) {
         onMonsterAttacked(event.getClient().getPlayer(), event.getAttackInfo());
         event.setCanceled(true);
     }
 
     @PacketWorker
-    public void onRangedAttack(RangedAttackHandler event) {
+    public void onRangedAttack(RangedAttackEvent event) {
         onMonsterAttacked(event.getClient().getPlayer(), event.getAttackInfo());
         event.setCanceled(true);
     }
 
     @PacketWorker
-    public void onMagicAttack(MagicDamageHandler event) {
+    public void onMagicAttack(MagicDamageEvent event) {
         onMonsterAttacked(event.getClient().getPlayer(), event.getAttackInfo());
         event.setCanceled(true);
     }
 
     @PacketWorker
-    public void onPlayerTakeDamage(TakeDamageHandler event) {
+    public void onPlayerTakeDamage(TakeDamageEvent event) {
         MapleCharacter player = event.getClient().getPlayer();
         unregisterPlayer(player);
         hits.put(player.getId(), System.currentTimeMillis()); // timestamp when the player got hit
@@ -144,7 +144,7 @@ public class ACursedCastle extends GAutoEvent {
      * @param player     the player attack a monster
      * @param attackInfo the attack information
      */
-    private void onMonsterAttacked(MapleCharacter player, AbstractDealDamageHandler.AttackInfo attackInfo) {
+    private void onMonsterAttacked(MapleCharacter player, AbstractDealDamageEvent.AttackInfo attackInfo) {
         MapleMap eventMap = getMapInstance(EventMap);
         for (Map.Entry<Integer, List<Integer>> entry : attackInfo.allDamage.entrySet()) {
             MapleMapObject object = eventMap.getMapObject(entry.getKey());

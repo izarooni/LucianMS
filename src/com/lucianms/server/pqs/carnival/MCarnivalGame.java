@@ -2,7 +2,7 @@ package com.lucianms.server.pqs.carnival;
 
 import client.MapleCharacter;
 import client.MapleStat;
-import net.server.channel.handlers.ChangeMapHandler;
+import com.lucianms.server.events.channel.ChangeMapEvent;
 import com.lucianms.features.GenericEvent;
 import server.maps.MapleMap;
 import tools.MaplePacketCreator;
@@ -52,7 +52,7 @@ public class MCarnivalGame extends GenericEvent {
     }
 
     @PacketWorker
-    public void onFieldChange(ChangeMapHandler event) {
+    public void onFieldChange(ChangeMapEvent event) {
         MapleCharacter player = event.getClient().getPlayer();
         if (event.getTargetMapId() != -1 && !player.isAlive()) {
             player.changeMap(lobby.getBattlefieldMapId() + 1);

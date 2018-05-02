@@ -51,7 +51,7 @@ import com.lucianms.scheduler.TaskExecutor;
 import com.lucianms.io.scripting.Achievements;
 import server.CashShop.CashItemFactory;
 import server.MapleItemInformationProvider;
-import server.Whitelist;
+import com.lucianms.server.Whitelist;
 import com.lucianms.features.scheduled.SOuterSpace;
 import server.quest.MapleQuest;
 import com.lucianms.cquest.CQuestBuilder;

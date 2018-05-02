@@ -26,6 +26,7 @@ import client.inventory.Equip;
 import client.inventory.Item;
 import client.inventory.MapleInventoryType;
 import client.inventory.MaplePet;
+import com.lucianms.server.events.channel.DistributeAPEvent;
 import constants.ExpTable;
 import constants.ItemConstants;
 import net.AbstractMaplePacketHandler;
@@ -196,7 +197,7 @@ public final class UseCashItemHandler extends AbstractMaplePacketHandler {
                         c.announce(MaplePacketCreator.updatePlayerStats(MaplePacketCreator.EMPTY_STATUPDATE, true, c.getPlayer()));
                         return;
                 }
-                DistributeAPHandler.addStat(player, APTo);
+                DistributeAPEvent.addStat(player, APTo);
                 c.announce(MaplePacketCreator.updatePlayerStats(statupdate, true, player));
             }
             remove(c, itemId);

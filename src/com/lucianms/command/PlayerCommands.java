@@ -6,7 +6,7 @@ import client.meta.Occupation;
 import constants.ServerConstants;
 import net.server.Server;
 import net.server.channel.Channel;
-import net.server.channel.handlers.RockPaperScissorsHandler;
+import com.lucianms.server.events.channel.RockPaperScissorsEvent;
 import com.lucianms.io.scripting.npc.NPCScriptManager;
 import server.MapleInventoryManipulator;
 import com.lucianms.features.GenericEvent;
@@ -439,7 +439,7 @@ public class PlayerCommands {
                 }
             }
         } else if (command.equals("rps")) {
-            RockPaperScissorsHandler.startGame(player);
+            RockPaperScissorsEvent.startGame(player);
             player.dropMessage(6, "Let's play some rock paper scissors!");
         } else if (command.equals("arcade")) {
             player.changeMap(978);

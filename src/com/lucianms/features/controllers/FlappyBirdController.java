@@ -2,7 +2,7 @@ package com.lucianms.features.controllers;
 
 import client.MapleCharacter;
 import net.SendOpcode;
-import net.server.channel.handlers.UseItemHandler;
+import com.lucianms.server.events.channel.UseItemEvent;
 import com.lucianms.scheduler.Task;
 import com.lucianms.scheduler.TaskExecutor;
 import com.lucianms.features.GenericEvent;
@@ -72,7 +72,7 @@ public class FlappyBirdController extends GenericEvent {
     }
 
     @PacketWorker
-    public void onItemUse(UseItemHandler event) {
+    public void onItemUse(UseItemEvent event) {
         int itemId = event.getItemId();
         if (itemId == 2002001) { // jump
             velocity.y = -JSpeed;

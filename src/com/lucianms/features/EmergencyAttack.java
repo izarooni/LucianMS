@@ -1,7 +1,7 @@
 package com.lucianms.features;
 
 import client.MapleCharacter;
-import net.server.channel.handlers.ChangeMapHandler;
+import com.lucianms.server.events.channel.ChangeMapEvent;
 import net.server.world.MapleParty;
 import net.server.world.MaplePartyCharacter;
 import net.server.world.World;
@@ -41,7 +41,7 @@ public class EmergencyAttack extends GenericEvent {
     }
 
     @PacketWorker
-    public void onMapChange(ChangeMapHandler event) {
+    public void onMapChange(ChangeMapEvent event) {
         task.cancel();
         new Timeout(false).run();
         unregisterPlayers(event.getClient().getWorldServer());

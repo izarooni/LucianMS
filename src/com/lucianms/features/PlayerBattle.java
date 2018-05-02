@@ -4,10 +4,10 @@ import client.MapleCharacter;
 import client.inventory.Equip;
 import client.inventory.MapleInventoryType;
 import client.inventory.MapleWeaponType;
-import net.server.channel.handlers.AbstractDealDamageHandler;
-import net.server.channel.handlers.CloseRangeDamageHandler;
-import net.server.channel.handlers.MagicDamageHandler;
-import net.server.channel.handlers.RangedAttackHandler;
+import com.lucianms.server.events.channel.AbstractDealDamageEvent;
+import com.lucianms.server.events.channel.CloseRangeDamageEvent;
+import com.lucianms.server.events.channel.MagicDamageEvent;
+import com.lucianms.server.events.channel.RangedAttackEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import server.life.MapleLifeFactory;
@@ -65,13 +65,13 @@ public class PlayerBattle extends GenericEvent {
     }
 
     @PacketWorker
-    public void onCloseRangeAttack(CloseRangeDamageHandler event) {
+    public void onCloseRangeAttack(CloseRangeDamageEvent event) {
         lock.lock();
         try {
             // set attack type
             fAttackRange = -1;
             cAttackRange = 0;
-            AbstractDealDamageHandler.AttackInfo attackInfo = event.getAttackInfo();
+            AbstractDealDamageEvent.AttackInfo attackInfo = event.getAttackInfo();
             collectTargets();
             calculateAttack(attackInfo);
             attackNeighbors();
@@ -81,13 +81,13 @@ public class PlayerBattle extends GenericEvent {
     }
 
     @PacketWorker
-    public void onFarRangeAttack(RangedAttackHandler event) {
+    public void onFarRangeAttack(RangedAttackEvent event) {
         lock.lock();
         try {
             // set attack type
             fAttackRange = 0;
             cAttackRange = -1;
-            AbstractDealDamageHandler.AttackInfo attackInfo = event.getAttackInfo();
+            AbstractDealDamageEvent.AttackInfo attackInfo = event.getAttackInfo();
             collectTargets();
             calculateAttack(attackInfo);
             attackNeighbors();
@@ -105,13 +105,13 @@ public class PlayerBattle extends GenericEvent {
      * @param event the magic attack packet event
      */
     @PacketWorker
-    public void onMagicAttack(MagicDamageHandler event) {
+    public void onMagicAttack(MagicDamageEvent event) {
         lock.lock();
         try {
             // set attack type
             fAttackRange = -1;
             cAttackRange = -1;
-            AbstractDealDamageHandler.AttackInfo attackInfo = event.getAttackInfo();
+            AbstractDealDamageEvent.AttackInfo attackInfo = event.getAttackInfo();
             collectTargets();
             calculateAttack(attackInfo);
             attackNeighbors();
@@ -184,7 +184,7 @@ public class PlayerBattle extends GenericEvent {
      *
      * @param attackInfo attack data
      */
-    private void calculateAttack(AbstractDealDamageHandler.AttackInfo attackInfo) {
+    private void calculateAttack(AbstractDealDamageEvent.AttackInfo attackInfo) {
 
         // reset previous calculations
         global = false;

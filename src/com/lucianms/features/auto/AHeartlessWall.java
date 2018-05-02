@@ -1,10 +1,10 @@
 package com.lucianms.features.auto;
 
 import client.MapleCharacter;
-import net.server.channel.handlers.AbstractDealDamageHandler;
-import net.server.channel.handlers.CloseRangeDamageHandler;
-import net.server.channel.handlers.MagicDamageHandler;
-import net.server.channel.handlers.RangedAttackHandler;
+import com.lucianms.server.events.channel.AbstractDealDamageEvent;
+import com.lucianms.server.events.channel.CloseRangeDamageEvent;
+import com.lucianms.server.events.channel.MagicDamageEvent;
+import com.lucianms.server.events.channel.RangedAttackEvent;
 import net.server.world.World;
 import com.lucianms.scheduler.Task;
 import com.lucianms.scheduler.TaskExecutor;
@@ -94,21 +94,21 @@ public class AHeartlessWall extends GAutoEvent {
     }
 
     @PacketWorker
-    public void onCloseRangeAttack(CloseRangeDamageHandler event) {
+    public void onCloseRangeAttack(CloseRangeDamageEvent event) {
         onMonsterAttacked(event.getClient().getPlayer(), event.getAttackInfo());
     }
 
     @PacketWorker
-    public void onRangedAttack(RangedAttackHandler event) {
+    public void onRangedAttack(RangedAttackEvent event) {
         onMonsterAttacked(event.getClient().getPlayer(), event.getAttackInfo());
     }
 
     @PacketWorker
-    public void onMagicAttack(MagicDamageHandler event) {
+    public void onMagicAttack(MagicDamageEvent event) {
         onMonsterAttacked(event.getClient().getPlayer(), event.getAttackInfo());
     }
 
-    private void onMonsterAttacked(MapleCharacter player, AbstractDealDamageHandler.AttackInfo attackInfo) {
+    private void onMonsterAttacked(MapleCharacter player, AbstractDealDamageEvent.AttackInfo attackInfo) {
         if (objectId != -1) {
             MapleMap eventMap = getMapInstance(EventMap);
             MapleMapObject object = eventMap.getMapObject(objectId);
