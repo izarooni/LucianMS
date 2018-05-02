@@ -26,7 +26,7 @@ import client.MapleClient;
 import client.inventory.Item;
 import net.PacketHandler;
 import net.server.world.MaplePartyCharacter;
-import scripting.item.ItemScriptManager;
+import com.lucianms.scripting.item.ItemScriptManager;
 import server.MapleInventoryManipulator;
 import server.MapleItemInformationProvider;
 import server.MapleItemInformationProvider.scriptedItem;

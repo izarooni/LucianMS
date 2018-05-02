@@ -26,15 +26,14 @@ import client.MapleCharacter.CancelCooldownAction;
 import constants.GameConstants;
 import constants.skills.*;
 import net.AbstractMaplePacketHandler;
-import scheduler.Task;
-import scheduler.TaskExecutor;
+import com.lucianms.scheduler.Task;
+import com.lucianms.scheduler.TaskExecutor;
 import server.MapleStatEffect;
 import server.life.MapleMonster;
 import tools.MaplePacketCreator;
 import tools.data.input.SeekableLittleEndianAccessor;
 
 import java.awt.*;
-import java.util.concurrent.ScheduledFuture;
 
 
 public class SpecialMoveHandler extends AbstractMaplePacketHandler {

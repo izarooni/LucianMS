@@ -1,8 +1,8 @@
 package client.arcade;
 
 import client.MapleCharacter;
-import scheduler.Task;
-import scheduler.TaskExecutor;
+import com.lucianms.scheduler.Task;
+import com.lucianms.scheduler.TaskExecutor;
 import server.life.MapleLifeFactory;
 import server.life.MapleMonster;
 import server.maps.MapleMap;

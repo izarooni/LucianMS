@@ -23,10 +23,10 @@ package net.server.channel.handlers;
 
 import client.MapleCharacter;
 import client.MapleClient;
-import command.CommandWorker;
-import net.discord.DiscordSession;
-import net.discord.Headers;
-import net.discord.handlers.BindRequest;
+import com.lucianms.command.CommandWorker;
+import com.lucianms.discord.DiscordSession;
+import com.lucianms.discord.Headers;
+import com.lucianms.discord.handlers.BindRequest;
 import tools.DatabaseConnection;
 import tools.MaplePacketCreator;
 import tools.data.input.SeekableLittleEndianAccessor;

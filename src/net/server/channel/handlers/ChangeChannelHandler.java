@@ -26,7 +26,6 @@ import client.MapleClient;
 import client.autoban.Cheater;
 import client.autoban.Cheats;
 import net.AbstractMaplePacketHandler;
-import server.events.custom.scheduled.SOuterSpace;
 import tools.MaplePacketCreator;
 import tools.data.input.SeekableLittleEndianAccessor;
 

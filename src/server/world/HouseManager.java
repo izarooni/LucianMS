@@ -2,7 +2,7 @@ package server.world;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import server.events.custom.House;
+import com.lucianms.features.House;
 import tools.DatabaseConnection;
 
 import java.sql.PreparedStatement;

@@ -35,7 +35,7 @@ import java.util.List;
 import constants.ServerConstants;
 import net.AbstractMaplePacketHandler;
 import net.server.Server;
-import scripting.npc.NPCScriptManager;
+import com.lucianms.scripting.npc.NPCScriptManager;
 import server.MTSItemInfo;
 import tools.DatabaseConnection;
 import tools.MaplePacketCreator;

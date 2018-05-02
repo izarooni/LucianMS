@@ -3,8 +3,8 @@ package server.partyquest.carnival;
 import net.server.channel.Channel;
 import net.server.world.MapleParty;
 import net.server.world.MaplePartyCharacter;
-import scheduler.Task;
-import scheduler.TaskExecutor;
+import com.lucianms.scheduler.Task;
+import com.lucianms.scheduler.TaskExecutor;
 import tools.MaplePacketCreator;
 import tools.Randomizer;
 

@@ -7,7 +7,7 @@ import client.inventory.Item;
 import client.inventory.MapleInventoryType;
 import constants.ExpTable;
 import net.PacketHandler;
-import scripting.npc.NPCScriptManager;
+import com.lucianms.scripting.npc.NPCScriptManager;
 import server.MapleInventoryManipulator;
 import server.MapleItemInformationProvider;
 import tools.MaplePacketCreator;

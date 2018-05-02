@@ -32,7 +32,7 @@ import tools.MaplePacketCreator;
 import tools.data.input.SeekableLittleEndianAccessor;
 import client.inventory.MapleInventoryType;
 import net.server.world.MaplePartyCharacter;
-import scripting.item.ItemScriptManager;
+import com.lucianms.scripting.item.ItemScriptManager;
 import server.MapleItemInformationProvider;
 import server.MapleItemInformationProvider.scriptedItem;
 

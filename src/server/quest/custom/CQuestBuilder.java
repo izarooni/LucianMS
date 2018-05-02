@@ -1,7 +1,7 @@
 package server.quest.custom;
 
 import client.MapleCharacter;
-import lang.DuplicateEntryException;
+import com.lucianms.lang.DuplicateEntryException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xml.sax.SAXException;

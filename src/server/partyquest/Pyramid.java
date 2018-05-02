@@ -24,8 +24,8 @@ package server.partyquest;
 
 import client.MapleCharacter;
 import net.server.world.MapleParty;
-import scheduler.Task;
-import scheduler.TaskExecutor;
+import com.lucianms.scheduler.Task;
+import com.lucianms.scheduler.TaskExecutor;
 import server.MapleItemInformationProvider;
 import tools.MaplePacketCreator;
 import tools.Pair;

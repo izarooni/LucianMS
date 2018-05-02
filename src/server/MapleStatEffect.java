@@ -32,8 +32,8 @@ import constants.skills.*;
 import net.server.world.MaplePartyCharacter;
 import provider.MapleData;
 import provider.MapleDataTool;
-import scheduler.Task;
-import scheduler.TaskExecutor;
+import com.lucianms.scheduler.Task;
+import com.lucianms.scheduler.TaskExecutor;
 import server.life.MapleMonster;
 import server.maps.*;
 import tools.ArrayMap;
@@ -46,7 +46,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ScheduledFuture;
 
 /**
  * @author Matze

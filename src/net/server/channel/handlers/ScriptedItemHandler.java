@@ -24,7 +24,7 @@ package net.server.channel.handlers;
 import client.MapleClient;
 import client.inventory.Item;
 import net.AbstractMaplePacketHandler;
-import scripting.item.ItemScriptManager;
+import com.lucianms.scripting.item.ItemScriptManager;
 import server.MapleItemInformationProvider;
 import server.MapleItemInformationProvider.scriptedItem;
 import tools.MaplePacketCreator;

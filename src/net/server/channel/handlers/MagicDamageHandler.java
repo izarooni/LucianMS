@@ -29,7 +29,7 @@ import constants.skills.Bishop;
 import constants.skills.Evan;
 import constants.skills.FPArchMage;
 import constants.skills.ILArchMage;
-import scheduler.TaskExecutor;
+import com.lucianms.scheduler.TaskExecutor;
 import server.MapleStatEffect;
 import server.life.FakePlayer;
 import tools.MaplePacketCreator;

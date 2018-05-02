@@ -3,7 +3,7 @@ package net.server.channel.handlers;
 import client.MapleCharacter;
 import client.MapleStat;
 import net.PacketHandler;
-import scheduler.TaskExecutor;
+import com.lucianms.scheduler.TaskExecutor;
 import server.life.FakePlayer;
 import server.movement.LifeMovementFragment;
 import server.movement.MovementPacketHelper;

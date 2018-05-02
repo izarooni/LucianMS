@@ -1,7 +1,7 @@
 package tools;
 
-import io.Config;
-import io.defaults.Defaults;
+import com.lucianms.io.Config;
+import com.lucianms.io.defaults.Defaults;
 import org.json.JSONObject;
 import org.json.JSONTokener;
 import org.slf4j.Logger;

@@ -25,7 +25,7 @@ import client.MapleCharacter;
 import provider.MapleDataProvider;
 import provider.MapleDataProviderFactory;
 import provider.MapleDataTool;
-import scheduler.TaskExecutor;
+import com.lucianms.scheduler.TaskExecutor;
 import server.maps.MapleMap;
 import tools.MaplePacketCreator;
 import tools.Randomizer;

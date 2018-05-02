@@ -24,8 +24,8 @@ package server.expeditions;
 
 import client.MapleCharacter;
 import net.server.Server;
-import scheduler.Task;
-import scheduler.TaskExecutor;
+import com.lucianms.scheduler.Task;
+import com.lucianms.scheduler.TaskExecutor;
 import server.maps.MapleMap;
 import tools.MaplePacketCreator;
 

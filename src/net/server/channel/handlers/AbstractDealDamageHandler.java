@@ -34,7 +34,7 @@ import constants.GameConstants;
 import constants.ItemConstants;
 import constants.skills.*;
 import net.PacketHandler;
-import scheduler.TaskExecutor;
+import com.lucianms.scheduler.TaskExecutor;
 import server.MapleItemInformationProvider;
 import server.MapleStatEffect;
 import server.life.*;

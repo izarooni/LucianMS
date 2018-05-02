@@ -5,7 +5,7 @@ import client.status.MonsterStatus;
 import net.PacketHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import server.events.custom.GenericEvent;
+import com.lucianms.features.GenericEvent;
 import server.life.MapleLifeFactory;
 import server.life.MapleMonster;
 import server.life.MobSkillFactory;

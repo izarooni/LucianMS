@@ -23,7 +23,7 @@ package server.maps;
 
 import client.MapleCharacter;
 import net.server.Server;
-import scheduler.TaskExecutor;
+import com.lucianms.scheduler.TaskExecutor;
 import tools.MaplePacketCreator;
 
 import java.util.ArrayList;

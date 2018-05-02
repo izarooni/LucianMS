@@ -24,7 +24,7 @@ package net.server.handlers.login;
 
 import client.MapleClient;
 import net.AbstractMaplePacketHandler;
-import scheduler.TaskExecutor;
+import com.lucianms.scheduler.TaskExecutor;
 import tools.MaplePacketCreator;
 import tools.data.input.SeekableLittleEndianAccessor;
 

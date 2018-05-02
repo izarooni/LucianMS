@@ -21,8 +21,8 @@
 */
 package client;
 
-import scheduler.Task;
-import scheduler.TaskExecutor;
+import com.lucianms.scheduler.Task;
+import com.lucianms.scheduler.TaskExecutor;
 import tools.MaplePacketCreator;
 
 /**

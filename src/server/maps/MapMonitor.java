@@ -1,7 +1,7 @@
 package server.maps;
 
-import scheduler.Task;
-import scheduler.TaskExecutor;
+import com.lucianms.scheduler.Task;
+import com.lucianms.scheduler.TaskExecutor;
 import server.MaplePortal;
 
 public class MapMonitor {

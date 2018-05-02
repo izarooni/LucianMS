@@ -1,6 +1,6 @@
 package server;
 
-import io.defaults.Defaults;
+import com.lucianms.io.defaults.Defaults;
 import org.json.JSONObject;
 import org.json.JSONTokener;
 

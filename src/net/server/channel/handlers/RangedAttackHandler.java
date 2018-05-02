@@ -30,7 +30,7 @@ import client.inventory.MapleInventoryType;
 import client.inventory.MapleWeaponType;
 import constants.ItemConstants;
 import constants.skills.*;
-import scheduler.TaskExecutor;
+import com.lucianms.scheduler.TaskExecutor;
 import server.MapleInventoryManipulator;
 import server.MapleItemInformationProvider;
 import server.MapleStatEffect;

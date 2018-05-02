@@ -22,7 +22,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 package client.status;
 
 import client.Skill;
-import scheduler.Task;
+import com.lucianms.scheduler.Task;
 import server.life.MobSkill;
 import tools.ArrayMap;
 
