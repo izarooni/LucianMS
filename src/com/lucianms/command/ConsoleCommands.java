@@ -9,11 +9,11 @@ import net.server.world.World;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.lucianms.scheduler.TaskExecutor;
-import com.lucianms.scripting.Achievements;
+import com.lucianms.io.scripting.Achievements;
 import server.CashShop;
 import server.Whitelist;
-import server.quest.custom.CQuestBuilder;
-import server.world.HouseManager;
+import com.lucianms.cquest.CQuestBuilder;
+import com.lucianms.helpers.HouseManager;
 import tools.data.output.MaplePacketLittleEndianWriter;
 
 import java.io.IOException;

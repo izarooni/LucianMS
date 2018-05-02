@@ -8,7 +8,7 @@ import com.lucianms.scheduler.TaskExecutor;
 import com.lucianms.features.GenericEvent;
 import server.life.MapleLifeFactory;
 import server.life.MapleNPC;
-import tools.annotation.PacketWorker;
+import com.lucianms.lang.annotation.PacketWorker;
 import tools.data.output.MaplePacketLittleEndianWriter;
 
 import java.awt.*;

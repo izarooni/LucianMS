@@ -12,8 +12,8 @@ import server.life.MobSkillFactory;
 import server.maps.MapleMap;
 import server.maps.MapleReactor;
 import server.maps.MapleReactorFactory;
-import server.partyquest.carnival.MCarnivalGame;
-import server.partyquest.carnival.MCarnivalTeam;
+import com.lucianms.server.pqs.carnival.MCarnivalGame;
+import com.lucianms.server.pqs.carnival.MCarnivalTeam;
 import tools.MaplePacketCreator;
 import tools.data.input.SeekableLittleEndianAccessor;
 

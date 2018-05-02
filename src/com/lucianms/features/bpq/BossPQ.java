@@ -12,7 +12,7 @@ import server.maps.MapleMap;
 import server.maps.MapleMapFactory;
 import tools.MaplePacketCreator;
 import tools.StringUtil;
-import tools.annotation.PacketWorker;
+import com.lucianms.lang.annotation.PacketWorker;
 
 import java.awt.*;
 

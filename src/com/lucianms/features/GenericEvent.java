@@ -2,7 +2,7 @@ package com.lucianms.features;
 
 import client.MapleCharacter;
 import net.PacketHandler;
-import tools.annotation.PacketWorker;
+import com.lucianms.lang.annotation.PacketWorker;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;

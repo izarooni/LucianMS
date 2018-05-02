@@ -39,7 +39,7 @@ import org.apache.mina.transport.socket.nio.NioSocketAcceptor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.lucianms.scheduler.TaskExecutor;
-import com.lucianms.scripting.event.EventScriptManager;
+import com.lucianms.io.scripting.event.EventScriptManager;
 import server.FieldBuilder;
 import server.events.gm.MapleEvent;
 import server.expeditions.MapleExpedition;
@@ -47,7 +47,7 @@ import server.maps.HiredMerchant;
 import server.maps.MapleMap;
 import server.maps.MapleMapFactory;
 import server.maps.MapleMapObject;
-import server.partyquest.carnival.MCarnivalLobbyManager;
+import com.lucianms.server.pqs.carnival.MCarnivalLobbyManager;
 import tools.MaplePacketCreator;
 
 import java.io.File;

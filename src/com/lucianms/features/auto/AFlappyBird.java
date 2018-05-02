@@ -5,7 +5,7 @@ import net.server.channel.handlers.PlayerMoveHandler;
 import net.server.world.World;
 import server.movement.AbsoluteLifeMovement;
 import server.movement.LifeMovementFragment;
-import tools.annotation.PacketWorker;
+import com.lucianms.lang.annotation.PacketWorker;
 
 import java.util.HashMap;
 

@@ -31,7 +31,7 @@ import constants.ItemConstants;
 import net.AbstractMaplePacketHandler;
 import net.server.Server;
 import com.lucianms.scheduler.TaskExecutor;
-import com.lucianms.scripting.npc.NPCScriptManager;
+import com.lucianms.io.scripting.npc.NPCScriptManager;
 import server.MapleInventoryManipulator;
 import server.MapleItemInformationProvider;
 import server.MapleShop;

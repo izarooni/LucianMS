@@ -12,7 +12,7 @@ import server.maps.MapleMapObject;
 import tools.MaplePacketCreator;
 import tools.Randomizer;
 import tools.StringUtil;
-import tools.annotation.PacketWorker;
+import com.lucianms.lang.annotation.PacketWorker;
 
 import java.awt.*;
 import java.util.HashMap;

@@ -2,7 +2,7 @@ package net.server.channel.handlers;
 
 import client.MapleCharacter;
 import net.PacketHandler;
-import com.lucianms.scripting.event.EventInstanceManager;
+import com.lucianms.io.scripting.event.EventInstanceManager;
 import server.life.MapleMonster;
 import tools.MaplePacketCreator;
 import tools.Randomizer;

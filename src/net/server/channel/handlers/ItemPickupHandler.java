@@ -26,14 +26,14 @@ import client.MapleClient;
 import client.inventory.Item;
 import net.PacketHandler;
 import net.server.world.MaplePartyCharacter;
-import com.lucianms.scripting.item.ItemScriptManager;
+import com.lucianms.io.scripting.item.ItemScriptManager;
 import server.MapleInventoryManipulator;
 import server.MapleItemInformationProvider;
 import server.MapleItemInformationProvider.scriptedItem;
 import server.maps.MapleMapItem;
 import server.maps.MapleMapObject;
-import server.quest.custom.CQuestData;
-import server.quest.custom.requirement.CQuestItemRequirement;
+import com.lucianms.cquest.CQuestData;
+import com.lucianms.cquest.requirement.CQuestItemRequirement;
 import tools.MaplePacketCreator;
 import tools.data.input.SeekableLittleEndianAccessor;
 

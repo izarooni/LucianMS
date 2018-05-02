@@ -55,8 +55,8 @@ import server.life.MapleNPC;
 import server.life.MobSkill;
 import server.maps.*;
 import server.movement.LifeMovementFragment;
-import server.partyquest.carnival.MCarnivalGame;
-import server.partyquest.carnival.MCarnivalTeam;
+import com.lucianms.server.pqs.carnival.MCarnivalGame;
+import com.lucianms.server.pqs.carnival.MCarnivalTeam;
 import tools.data.output.LittleEndianWriter;
 import tools.data.output.MaplePacketLittleEndianWriter;
 

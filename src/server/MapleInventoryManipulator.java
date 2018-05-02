@@ -29,8 +29,8 @@ import constants.ItemConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import server.maps.MapleMapItem;
-import server.quest.custom.CQuestData;
-import server.quest.custom.requirement.CQuestItemRequirement;
+import com.lucianms.cquest.CQuestData;
+import com.lucianms.cquest.requirement.CQuestItemRequirement;
 import tools.MaplePacketCreator;
 
 import java.awt.*;

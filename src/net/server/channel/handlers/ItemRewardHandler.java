@@ -6,7 +6,7 @@ import client.inventory.MapleInventoryType;
 import constants.ItemConstants;
 import net.PacketHandler;
 import net.server.Server;
-import com.lucianms.scripting.npc.NPCScriptManager;
+import com.lucianms.io.scripting.npc.NPCScriptManager;
 import server.MapleInventoryManipulator;
 import server.MapleItemInformationProvider;
 import server.MapleItemInformationProvider.RewardItem;

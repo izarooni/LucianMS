@@ -6,7 +6,7 @@ import com.lucianms.features.GenericEvent;
 import com.lucianms.features.PlayerBattle;
 import server.life.FakePlayer;
 import tools.MaplePacketCreator;
-import tools.annotation.PacketWorker;
+import com.lucianms.lang.annotation.PacketWorker;
 
 import java.util.Optional;
 

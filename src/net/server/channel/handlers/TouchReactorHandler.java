@@ -2,7 +2,7 @@ package net.server.channel.handlers;
 
 import client.MapleCharacter;
 import net.PacketHandler;
-import com.lucianms.scripting.reactor.ReactorScriptManager;
+import com.lucianms.io.scripting.reactor.ReactorScriptManager;
 import server.maps.MapleReactor;
 import tools.data.input.SeekableLittleEndianAccessor;
 

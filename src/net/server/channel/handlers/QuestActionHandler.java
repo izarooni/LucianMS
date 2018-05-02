@@ -24,7 +24,7 @@ package net.server.channel.handlers;
 import client.MapleCharacter;
 import client.MapleClient;
 import net.AbstractMaplePacketHandler;
-import com.lucianms.scripting.quest.QuestScriptManager;
+import com.lucianms.io.scripting.quest.QuestScriptManager;
 import server.quest.MapleQuest;
 import tools.data.input.SeekableLittleEndianAccessor;
 

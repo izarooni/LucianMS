@@ -4,7 +4,7 @@ import client.MapleCharacter;
 import net.PacketHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import com.lucianms.scripting.npc.NPCScriptManager;
+import com.lucianms.io.scripting.npc.NPCScriptManager;
 import server.life.MapleNPC;
 import server.maps.MapleMapObject;
 import server.maps.PlayerNPC;

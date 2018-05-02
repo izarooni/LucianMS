@@ -7,7 +7,7 @@ import constants.ServerConstants;
 import net.server.Server;
 import net.server.channel.Channel;
 import net.server.channel.handlers.RockPaperScissorsHandler;
-import com.lucianms.scripting.npc.NPCScriptManager;
+import com.lucianms.io.scripting.npc.NPCScriptManager;
 import server.MapleInventoryManipulator;
 import com.lucianms.features.GenericEvent;
 import com.lucianms.features.ManualPlayerEvent;

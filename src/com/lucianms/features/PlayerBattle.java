@@ -15,7 +15,7 @@ import server.life.MapleMonster;
 import server.maps.MapleMap;
 import tools.MaplePacketCreator;
 import tools.Randomizer;
-import tools.annotation.PacketWorker;
+import com.lucianms.lang.annotation.PacketWorker;
 
 import java.awt.*;
 import java.util.HashMap;

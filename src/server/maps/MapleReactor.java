@@ -27,7 +27,7 @@ import client.status.MonsterStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.lucianms.scheduler.TaskExecutor;
-import com.lucianms.scripting.reactor.ReactorScriptManager;
+import com.lucianms.io.scripting.reactor.ReactorScriptManager;
 import server.life.MapleLifeFactory;
 import server.life.MapleMonster;
 import server.life.MobSkill;

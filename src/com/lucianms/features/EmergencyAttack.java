@@ -15,7 +15,7 @@ import server.life.SpawnPoint;
 import server.maps.MapleMap;
 import tools.MaplePacketCreator;
 import tools.Randomizer;
-import tools.annotation.PacketWorker;
+import com.lucianms.lang.annotation.PacketWorker;
 
 import java.util.ArrayList;
 import java.util.Collection;

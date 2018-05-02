@@ -23,7 +23,7 @@ package net.server.channel.handlers;
 
 import client.MapleClient;
 import net.AbstractMaplePacketHandler;
-import com.lucianms.scripting.npc.NPCScriptManager;
+import com.lucianms.io.scripting.npc.NPCScriptManager;
 import server.MapleItemInformationProvider;
 import tools.data.input.SeekableLittleEndianAccessor;
 
