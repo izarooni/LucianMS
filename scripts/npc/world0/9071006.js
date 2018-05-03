@@ -1,6 +1,6 @@
 /* izarooni */
 // npc: 9071000
-var MonsterPark = Java.type("server.events.custom.MonsterPark");
+var MonsterPark = Java.type("com.lucianms.features.MonsterPark");
 var status = 0;
 
 function action(mode, type, selection) {

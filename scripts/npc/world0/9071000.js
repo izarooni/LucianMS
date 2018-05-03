@@ -1,7 +1,7 @@
 /* izarooni */
 // npc: 9071000
 // map: 951000000
-var MonsterPark = Java.type("server.events.custom.MonsterPark");
+var MonsterPark = Java.type("com.lucianms.features.MonsterPark");
 var status = 0;
 var minParticpants = 2;
 

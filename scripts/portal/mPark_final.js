@@ -1,4 +1,4 @@
-const MonsterPark = Java.type("server.events.custom.MonsterPark");
+const MonsterPark = Java.type("com.lucianms.features.MonsterPark");
 
 function enter(ms) {
 

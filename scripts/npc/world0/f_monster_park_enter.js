@@ -1,7 +1,7 @@
 /* izarooni */
 // npc: 9071000
 // map: 951000000
-const MonsterPark = Java.type("server.events.custom.MonsterPark");
+const MonsterPark = Java.type("com.lucianms.features.MonsterPark");
 const EntryLimits = Java.type("tools.EntryLimits");
 const ENTRY_TYPE = "m_park";
 var status = 0;

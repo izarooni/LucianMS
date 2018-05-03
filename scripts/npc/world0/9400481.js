@@ -1,5 +1,5 @@
 load("nashorn:mozilla_compat.js");
-importPackage(Packages.server.events.custom.bpq);
+importPackage(Packages.com.lucianms.features.bpq);
 var b = 3994115;
 /* izarooni */
 var status = 0;
