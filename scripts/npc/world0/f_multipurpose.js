@@ -1,4 +1,4 @@
-const MonsterPark = Java.type("server.events.custom.MonsterPark");
+const MonsterPark = Java.type("com.lucianms.features.MonsterPark");
 
 /* izarooni */
 let status = 0;
@@ -9,6 +9,7 @@ let options = {
     "Eye Scanner trader":  {npc:9901753,script:null},
     "Monster Coin trader": {npc:2007,   script:"shop_monster_coin"},
     "Overwatch lootbox":   {npc:9270043,script:null},
+    "Styler":              {npc:9900001,script:null},
     get: function(idx) {
         let cidx = 0;
         for (let o in options) {
