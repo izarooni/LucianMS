@@ -45,8 +45,8 @@ public class PlayerCommands {
             commands.add("@help - to see what commands there are");
             commands.add("@commands - another way to see the commands");
             commands.add("@rates - show the server rates");
-            commands.add("@joinevent - join the event");
-            commands.add("@leaveevent - leave the event");
+            commands.add("@joinevent - join the GM event");
+            commands.add("@leaveevent - leave the GM event");
             commands.add("@jautoevent - join the auto event");
             commands.add("@lautoevent - leave the auto event");
             commands.add("@dispose - Dispose yourself (if you can't interact with npcs, etc) ");
@@ -59,12 +59,11 @@ public class PlayerCommands {
             commands.add("@callgm <player> <reason> - report a player, insert your own name if it is for another reason.");
             commands.add("@report <bug> - report a bug, give as much detail as possible.");
             commands.add("@rps - Start a game of rock paper scissors vs a bot");
-            commands.add("@summer - Warp to the summer map");
             commands.add("@arcade - Warp to the arcade map");
             commands.add("@reset<str/dex/int/luk/stats> - Reset assigned AP");
             commands.add("@<str/dex/int/luk> - Assign any available AP to a specified stat");
-            commands.add("@checkme - Check your player's stats");
-            commands.add("@spy <player> - See the stats of a player");
+            commands.add("@checkme - Check your stats");
+            commands.add("@spy <player> - Check another player's stats");
             commands.add("@fixexp - Reset EXP");
             commands.add("@shenron - Warp to the Shenron summoning map");
             commands.add("@quests - List your quests currently in-progress");
@@ -73,7 +72,7 @@ public class PlayerCommands {
             commands.add("@time - Display the current server time");
             commands.add("@house - Display the house manager NPC");
             commands.add("@jobs - Display a list of job modifications");
-            Collections.sort(commands);
+            commands.sort(String::compareTo);
             commands.forEach(player::dropMessage);
             commands.clear();
         } else if (command.equals("house")) {
@@ -441,24 +440,10 @@ public class PlayerCommands {
         } else if (command.equals("rps")) {
             RockPaperScissorsEvent.startGame(player);
             player.dropMessage(6, "Let's play some rock paper scissors!");
-        } else if (command.equals("arcade")) {
-            player.changeMap(978);
         } else if (command.equals("shenron")) {
             player.changeMap(908);
         } else if (command.equals("quests")) {
             NPCScriptManager.start(client, 2007, "f_quests");
-        } else if (command.equals("crystal")) {
-            if (player.getMeso() >= 500000000) {
-                if (MapleInventoryManipulator.checkSpace(client, ServerConstants.CURRENCY, 1, "")) {
-                    MapleInventoryManipulator.addById(client, ServerConstants.CURRENCY, (short) 1);
-                    player.gainMeso(-500000000, true);
-                    player.dropMessage("You now have " + player.getItemQuantity(ServerConstants.CURRENCY, false) + " crystals");
-                } else {
-                    player.dropMessage("You don't have enough inventory space for this exchange");
-                }
-            } else {
-                player.dropMessage("You need 500M mesos to exchange for a crystal");
-            }
         } else if (command.equals("fixexp", "expfix")) {
             player.setExp(0);
             player.updateSingleStat(MapleStat.EXP, 0);
