@@ -117,7 +117,7 @@ public class EmergencyAttack extends GenericEvent {
         int remaining = summoned.decrementAndGet();
         if (remaining == 0) {
             task.cancel();
-            totalExp *= 1.25;
+            totalExp *= 1.50;
             unregisterPlayers(world);
             map.setRespawnEnabled(true);
             map.broadcastMessage(MaplePacketCreator.removeClock());
