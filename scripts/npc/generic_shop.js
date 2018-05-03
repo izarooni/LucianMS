@@ -52,7 +52,7 @@ function action(mode, type, selection) {
         if (this.sub == null) {
             this.sub = items.get(selection, true);
         }
-        if (this.sub != null) {
+        if (this.sub != null && this.sub.length > 0) {
             var subName = items.get(selection, false);
             var text = "Absolutely, what item interests you?\r\n#b";
             for (var i = 0; i < this.sub.length; i++) {
@@ -66,6 +66,10 @@ function action(mode, type, selection) {
                 }
             }
             cm.sendSimple(text);
+        } else if (this.sub.length == 0) {
+            cm.sendNext("Sorry this part of the shop is empty!");
+            this.sub = null;
+            status = 0;
         } else {
             cm.sendOk("Error(" + selection + ")!");
             cm.dispose();

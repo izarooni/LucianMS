@@ -1,4 +1,4 @@
-var StringUtil = Java.type("tools.StringUtil");
+let StringUtil = Java.type("tools.StringUtil");
 /* izarooni */
 // get a list of monsters to kill, and the kill progression
 function CQuestPKills(map) {
