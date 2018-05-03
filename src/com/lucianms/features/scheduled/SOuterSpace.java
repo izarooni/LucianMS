@@ -1,11 +1,12 @@
 package com.lucianms.features.scheduled;
 
 import client.MapleCharacter;
+import com.lucianms.scheduler.Task;
+import com.lucianms.scheduler.TaskExecutor;
 import net.server.channel.Channel;
 import net.server.world.World;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import com.lucianms.scheduler.TaskExecutor;
 import server.life.MapleLifeFactory;
 import server.life.MapleMonster;
 import server.life.MonsterListener;
@@ -32,6 +33,8 @@ public class SOuterSpace extends SAutoEvent {
 
     private final World world;
     private final boolean[] finished;
+    private Task timeoutTask = null;
+    private long start;
     private boolean open = false;
 
     public SOuterSpace(World world) {
@@ -67,8 +70,7 @@ public class SOuterSpace extends SAutoEvent {
 
     @Override
     public long getInterval() {
-        // 2 hours
-        return 1000 * 60 * 60 * 2;
+        return 1000 * 60 * 60 * 3;
     }
 
     @Override
@@ -85,22 +87,35 @@ public class SOuterSpace extends SAutoEvent {
             MapleMonster monster = MapleLifeFactory.getMonster(MonsterId);
 
             if (monster != null) {
-                monster.addListener(new MonsterListener() {
+                MonsterListener DeathListener = new MonsterListener() {
                     @Override
                     public void monsterKilled(int aniTime) {
+                        if (timeoutTask != null) {
+                            timeoutTask.cancel();
+                            timeoutTask = null;
+                        }
                         finished[channel.getId() - 1] = true;
-                        if (monster.getHp() < monster.getMaxHp()) {
-                            // damaged -- also invoked by MapleMap#killAllMonsters
+                        if (monster.getController() != null) {
+                            // damaged -- because this is also invoked by MapleMap#killAllMonsters
                             channel.broadcastPacket(MaplePacketCreator.serverNotice(0, "The Space Slime has been defeated!"));
                             eventMap.broadcastMessage(MaplePacketCreator.serverNotice(6, "You will be warped momentarily"));
                         }
                         TaskExecutor.createTask(() -> eventMap.getCharacters().forEach(SOuterSpace.this::unregisterPlayer), 8000);
                     }
-                });
+                };
+                start = System.currentTimeMillis();
+                monster.addListener(DeathListener);
                 finished[channel.getId() - 1] = false;
                 eventMap.spawnMonsterOnGroudBelow(monster, pos);
                 channel.broadcastPacket(MaplePacketCreator.serverNotice(0, "The Space Slime has spawned in the Outer Space, Planet Lucian"));
                 LOGGER.info("spawned at {} in channel {}", Arrays.toString(ipos), channel.getId());
+
+                timeoutTask = TaskExecutor.createTask(new Runnable() {
+                    @Override
+                    public void run() {
+                        eventMap.killMonster(monster.getId());
+                    }
+                }, 1000 * 60 * 5);
             } else {
                 LOGGER.warn("Scheduled event 'Outer Space' was unable to spawn the monster " + MonsterId);
             }
@@ -117,6 +132,13 @@ public class SOuterSpace extends SAutoEvent {
         player.saveLocation("OTHER");
         player.changeMap(98);
         player.announce(MaplePacketCreator.showEffect("event/space/boss"));
+        long endTime = start + (1000 * 60 * 5);
+        long remainingTime = (long) ((endTime - System.currentTimeMillis()) / 1000d);
+        if (remainingTime > 0) {
+            player.announce(MaplePacketCreator.getClock((int) remainingTime));
+        } else {
+            LOGGER.info("Player '{}' entering Outer Space when it has ended", player.getName());
+        }
     }
 
     @Override
