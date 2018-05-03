@@ -1,14 +1,14 @@
 /* izarooni */
 var status = 0;
-// [0, 1, 2, 3, 4, 5, 9, 10, 11];
+
 var broken = null;
-var skins = [10, 3, 0, 11, 1, 2, 5, 4, 9];
-var hairs = {
+let skins = [];
+let hairs = {
     male: [],
     female: [],
     colors: []
 };
-var faces = {
+let faces = {
     male: [],
     female: [],
     colors: []
@@ -18,6 +18,8 @@ try {
     var file = new java.io.File("resources/data-styler.json");
     var content = Packages.org.apache.commons.io.FileUtils.readFileToString(file);
     var json = JSON.parse(content);
+
+    skins = json.skins.split(", ");
 
     hairs.male = json.mHairs.split(", ");
     hairs.female = json.fHairs.split(", ");
@@ -62,7 +64,12 @@ function action(mode, type, selection) {
         if (this.sect == null)
             this.sect = selection;
         if (this.sect == 0) {
-            cm.sendStyle("", skins);
+            if (skins.length == 0) {
+                cm.sendOk("Sorry but there are no skins available to pick from right now!");
+                cm.dispose();
+            } else {
+                cm.sendStyle("", skins);
+            }
         } else if (this.sect == 1 || this.sect == 3) {
             var text = "";
 
@@ -100,7 +107,7 @@ function action(mode, type, selection) {
              Hair colors defined by (base + n)
              base being the black (or first color) of the hair
              'n' being the incrementing value from iteration
-             
+
              Face colors are defined by (base + (n * 100))
              base being the black (or first color) of the face
              'n' being the incrementing value from iteration
