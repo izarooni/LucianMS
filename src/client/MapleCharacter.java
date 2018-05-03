@@ -1335,7 +1335,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
         if (isGM()) {
             this.hidden = hidden;
             announce(MaplePacketCreator.getGMEffect(0x10, (byte) (hidden ? 1 : 0)));
-            if (!hidden & isHidden()) {
+            if (!hidden) {
                 List<MapleBuffStat> dsstat = Collections.singletonList(MapleBuffStat.DARKSIGHT);
                 getMap().broadcastGMMessage(this, MaplePacketCreator.cancelForeignBuff(id, dsstat), false);
                 getMap().broadcastMessage(this, MaplePacketCreator.spawnPlayerMapobject(this), false);
@@ -1344,7 +1344,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
                 if (getFakePlayer() != null) {
                     getMap().addFakePlayer(getFakePlayer());
                 }
-            } else if (hidden && !isHidden()) {
+            } else if (hidden) {
                 if (!login) {
                     getMap().broadcastMessage(this, MaplePacketCreator.removePlayerFromMap(getId()), false);
                 }
