@@ -17,8 +17,8 @@ public class BHellMode extends BossPQ {
     public BHellMode(int channel) {
         super(channel, 803, bosses);
         setCashWinnings(20 * bosses.length);
-        setDamageMultiplier(10);
-        setHealthMultiplier(10);
+        setDamageMultiplier(4.2f);
+        setHealthMultiplier(4.2f);
         setPoints(75);
     }
 

@@ -29,9 +29,9 @@ public abstract class BossPQ extends GenericEvent {
     private int round = 0;
     private int points = 0;
     private int nCashWinnings = 0; // how much NX is gained per round
-    private int nCashMultiplier = 1; // multiply winnings with this
-    private int mHealthMultiplier = 1; // multiply each boss health with this
-    private int mDamageMultiplier = 1; // multiply damage taken with this
+    private float nCashMultiplier = 1.0f; // multiply winnings with this
+    private float mHealthMultiplier = 1.0f; // multiply each boss health with this
+    private float mDamageMultiplier = 1.0f; // multiply damage taken with this
 
     public BossPQ(int channel, int mapId, int[] bosses) {
         this.mapId = mapId;
@@ -109,8 +109,8 @@ public abstract class BossPQ extends GenericEvent {
                         MapleMap map = getMapInstance(mapId);
                         if (map != null) {
                             MapleMonsterStats stats = new MapleMonsterStats();
-                            int newHp = monster.getHp() * getHealthMultiplier();
-                            int newMp = monster.getMp() * getHealthMultiplier();
+                            int newHp = (int) (monster.getHp() * getHealthMultiplier());
+                            int newMp = (int) (monster.getMp() * getHealthMultiplier());
                             if (newHp < 1) {
                                 // number overflow
                                 newHp = Integer.MAX_VALUE;
@@ -157,7 +157,7 @@ public abstract class BossPQ extends GenericEvent {
     public void onPlayerHurt(TakeDamageEvent event) {
         // it's probably a bad idea to have monsters that 1-hit the player and is unavoidable
         // so if that total damage exceeds the player's health, just set the damage amount to (current_hp - 1)
-        int nDamage = Math.min(event.getClient().getPlayer().getHp() - 1, (event.getDamage() * getDamageMultiplier()));
+        int nDamage = Math.min(event.getClient().getPlayer().getHp() - 1, (int) (event.getDamage() * getDamageMultiplier()));
 
         if (mapId == 803 && bosses[round] == 9895253) { // hell mode and last boss (black mage)
             nDamage -= (nDamage * 0.25);
@@ -202,27 +202,27 @@ public abstract class BossPQ extends GenericEvent {
         this.nCashWinnings = nCashWinnings;
     }
 
-    public int getCashMultiplier() {
+    public float getCashMultiplier() {
         return nCashMultiplier;
     }
 
-    public void setCashMultiplier(int nCashMultiplier) {
+    public void setCashMultiplier(float nCashMultiplier) {
         this.nCashMultiplier = nCashMultiplier;
     }
 
-    public int getHealthMultiplier() {
+    public float getHealthMultiplier() {
         return mHealthMultiplier;
     }
 
-    public void setHealthMultiplier(int mHealthMultiplier) {
+    public void setHealthMultiplier(float mHealthMultiplier) {
         this.mHealthMultiplier = mHealthMultiplier;
     }
 
-    public int getDamageMultiplier() {
+    public float getDamageMultiplier() {
         return mDamageMultiplier;
     }
 
-    public void setDamageMultiplier(int mDamageMultiplier) {
+    public void setDamageMultiplier(float mDamageMultiplier) {
         this.mDamageMultiplier = mDamageMultiplier;
     }
 }

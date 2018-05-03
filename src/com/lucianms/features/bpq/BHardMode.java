@@ -17,8 +17,8 @@ public class BHardMode extends BossPQ {
     public BHardMode(int channel) {
         super(channel, 802, bosses);
         setCashWinnings(12 * bosses.length);
-        setDamageMultiplier(4);
-        setHealthMultiplier(4);
+        setDamageMultiplier(2.2f);
+        setHealthMultiplier(2.2f);
         setPoints(25);
     }
 
