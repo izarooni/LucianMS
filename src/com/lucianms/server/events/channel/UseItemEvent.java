@@ -44,14 +44,14 @@ public class UseItemEvent extends PacketEvent {
                 int needed = ExpTable.getExpNeededForLevel(player.getLevel());
                 double scale = (needed / 100d);
                 double gain;
-                if (player.getLevel() <= 30) { // 18% gain
-                    gain = scale * 18d;
-                } else if (player.getLevel() <= 60) { // 12% gain
-                    gain = scale * 12d;
-                } else if (player.getLevel() <= 90) { // 8% gain
-                    gain = scale * 8d;
+                if (player.getLevel() <= 30) { // 23% gain
+                    gain = scale * 23d;
+                } else if (player.getLevel() <= 60) { // 17% gain
+                    gain = scale * 17d;
+                } else if (player.getLevel() <= 90) { // 13% gain
+                    gain = scale * 13d;
                 } else { // 5% gain
-                    gain = scale * 5d;
+                    gain = scale * 10d;
                 }
                 player.gainExp((int) Math.floor(gain), true, true);
             } else if (itemId == 2022178 || itemId == 2022433 || itemId == 2050004) {
