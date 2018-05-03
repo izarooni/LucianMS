@@ -54,7 +54,7 @@ public class MonsterPark extends GenericEvent {
                         MapleMonsterStats stats = new MapleMonsterStats();
                         stats.setHp(monster.getHp());
                         stats.setMp(monster.getMp());
-                        stats.setExp((int) (ExpTable.getExpNeededForLevel(baseLevel) * (Math.random() * 0.006) + 0.01));
+                        stats.setExp((int) (ExpTable.getExpNeededForLevel(baseLevel) * (Math.random() * 0.01) + 0.01));
                         monster.setOverrideStats(stats);
                         monster.addListener(new MonsterListener() {
                                 @Override
