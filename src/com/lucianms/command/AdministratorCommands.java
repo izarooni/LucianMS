@@ -2,22 +2,22 @@ package com.lucianms.command;
 
 import client.MapleCharacter;
 import client.MapleClient;
-import net.server.Server;
-import net.server.channel.Channel;
-import net.server.world.World;
+import com.lucianms.cquest.CQuestBuilder;
+import com.lucianms.features.auto.GAutoEvent;
+import com.lucianms.features.auto.GAutoEventManager;
 import com.lucianms.io.scripting.Achievements;
 import com.lucianms.io.scripting.event.EventInstanceManager;
 import com.lucianms.io.scripting.event.EventManager;
 import com.lucianms.io.scripting.map.MapScriptManager;
-import com.lucianms.features.auto.GAutoEvent;
-import com.lucianms.features.auto.GAutoEventManager;
+import net.server.Server;
+import net.server.channel.Channel;
+import net.server.world.World;
 import server.life.MapleMonster;
 import server.life.MapleMonsterInformationProvider;
 import server.life.MapleNPC;
 import server.maps.MapleMapObject;
 import server.maps.MapleReactor;
 import server.maps.PlayerNPC;
-import com.lucianms.cquest.CQuestBuilder;
 
 import javax.script.ScriptException;
 import java.awt.*;
@@ -35,6 +35,7 @@ public class AdministratorCommands {
 
         MapleCharacter player = client.getPlayer();
         World world = client.getWorldServer();
+        Channel ch = client.getChannelServer();
 
         if (command.equals("admincommands")) {
             ArrayList<String> commands = new ArrayList<>();
@@ -86,7 +87,7 @@ public class AdministratorCommands {
                     GAutoEvent gEvent = event.getClazz().getDeclaredConstructor(World.class).newInstance(client.getWorldServer());
                     gEvent.start();
                     GAutoEventManager.setCurrentEvent(gEvent);
-                    player.dropMessage("Succses!");
+                    player.dropMessage("Success!");
                 } catch (InstantiationException | NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
                     player.dropMessage("An error occurred: " + e.getMessage());
                     e.printStackTrace();
@@ -176,6 +177,20 @@ public class AdministratorCommands {
         } else if (command.equals("debug")) {
             player.setDebug(!player.isDebug());
             player.sendMessage("Your debug mode is now {}", (player.isDebug() ? "enabled" : "disabled"));
+        } else if (command.equals("setgmlevel")) {
+            if (args.length() == 2) {
+                int GMLevel = args.parseNumber(1, int.class);
+                MapleCharacter target = ch.getPlayerStorage().getCharacterByName(args.get(0));
+                if (target != null) {
+                    target.setGM(GMLevel);
+                    target.sendMessage(6, "Your GM level has been updated");
+                    player.sendMessage(6, "Success!");
+                } else {
+                    player.sendMessage(5, "Unable to find any player named '{}'", args.get(0));
+                }
+            } else {
+                player.sendMessage(5, "usage: !setgmlevel <username> <gm_level>");
+            }
         }
     }
 }
