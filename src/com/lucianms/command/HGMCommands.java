@@ -4,14 +4,14 @@ import client.MapleCharacter;
 import client.MapleClient;
 import client.SkillFactory;
 import client.inventory.*;
-import constants.ItemConstants;
-import net.server.Server;
-import net.server.channel.Channel;
-import com.lucianms.server.events.channel.RockPaperScissorsEvent;
-import net.server.world.World;
 import com.lucianms.io.scripting.npc.NPCScriptManager;
 import com.lucianms.io.scripting.portal.PortalScriptManager;
 import com.lucianms.io.scripting.reactor.ReactorScriptManager;
+import com.lucianms.server.events.channel.RockPaperScissorsEvent;
+import constants.ItemConstants;
+import net.server.Server;
+import net.server.channel.Channel;
+import net.server.world.World;
 import server.MapleInventoryManipulator;
 import server.MapleItemInformationProvider;
 import server.MapleShop;
@@ -112,6 +112,7 @@ public class HGMCommands {
                 Integer monsterId = args.parseNumber(0, int.class);
                 Integer amount = args.parseNumber(1, 1, int.class);
                 Integer hp = args.parseNumber(args.findArg("hp"), int.class);
+                Integer exp = args.parseNumber(args.findArg("exp"), int.class);
                 String error = args.getFirstError();
                 if (error != null) {
                     player.dropMessage(5, error);
@@ -123,9 +124,10 @@ public class HGMCommands {
                         player.dropMessage(5, String.format("'%d' is not a valid monster", monsterId));
                         return;
                     }
-                    if (hp != null) {
+                    if (args.length() > 3) {
                         MapleMonsterStats stats = new MapleMonsterStats();
-                        stats.setHp(hp);
+                        stats.setHp(hp == null ? monster.getHp() : hp);
+                        stats.setExp(exp == null ? monster.getExp() : exp);
                         monster.setOverrideStats(stats);
                     }
                     player.getMap().spawnMonsterOnGroudBelow(monster, player.getPosition());

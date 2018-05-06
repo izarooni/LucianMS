@@ -179,7 +179,11 @@ public class AdministratorCommands {
             player.sendMessage("Your debug mode is now {}", (player.isDebug() ? "enabled" : "disabled"));
         } else if (command.equals("setgmlevel")) {
             if (args.length() == 2) {
-                int GMLevel = args.parseNumber(1, int.class);
+                Integer GMLevel = args.parseNumber(1, int.class);
+                if (GMLevel == null) {
+                    player.sendMessage(5, args.getFirstError());
+                    return;
+                }
                 MapleCharacter target = ch.getPlayerStorage().getCharacterByName(args.get(0));
                 if (target != null) {
                     target.setGM(GMLevel);
