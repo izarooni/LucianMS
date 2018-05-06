@@ -286,7 +286,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
     public static MapleCharacter getDefault(MapleClient c) {
         MapleCharacter ret = new MapleCharacter();
         ret.client = c;
-        ret.gmLevel = 0;
+        ret.gmLevel = c.getGMLevel();
         ret.hp = 50;
         ret.maxhp = 50;
         ret.mp = 5;
