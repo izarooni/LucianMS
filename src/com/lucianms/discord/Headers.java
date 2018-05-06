@@ -12,7 +12,8 @@ public enum Headers {
     Online     ((byte) 0x3),
     Bind       ((byte) 0x4),
     Search     ((byte) 0x5),
-    Disconnect ((byte) 0x6);
+    Disconnect ((byte) 0x6),
+    ReloadCS   ((byte) 0x7);
     // @formatter:on
     public final byte value;
 

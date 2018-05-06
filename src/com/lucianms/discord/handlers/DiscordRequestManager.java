@@ -19,6 +19,7 @@ public class DiscordRequestManager {
         requests[Headers.Bind.value] = new BindRequest();
         requests[Headers.Search.value] = new SearchRequest();
         requests[Headers.Disconnect.value] = new DisconnectRequest();
+        requests[Headers.ReloadCS.value] = new ReloadCSRequest();
     }
 
     private DiscordRequestManager() {
