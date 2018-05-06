@@ -47,18 +47,24 @@ public class CashShop {
 
     public static class CashItem {
 
+        private String imgdir;
         private int sn, itemId, price;
         private long period;
         private short count;
         private boolean onSale;
 
-        private CashItem(int sn, int itemId, int price, long period, short count, boolean onSale) {
+        private CashItem(String imgdir, int sn, int itemId, int price, long period, short count, boolean onSale) {
+            this.imgdir = imgdir;
             this.sn = sn;
             this.itemId = itemId;
             this.price = price;
             this.period = (period == 0 ? 90 : period);
             this.count = count;
             this.onSale = onSale;
+        }
+
+        public String getImgdir() {
+            return imgdir;
         }
 
         public int getSN() {
@@ -147,15 +153,15 @@ public class CashShop {
             MapleDataProvider etc = MapleDataProviderFactory.getDataProvider(new File("wz/Etc.wz"));
 
             for (MapleData item : etc.getData("Commodity.img").getChildren()) {
+                String imgdir = item.getName();
                 int sn = MapleDataTool.getIntConvert("SN", item);
                 int itemId = MapleDataTool.getIntConvert("ItemId", item);
                 int price = MapleDataTool.getIntConvert("Price", item, 0);
                 long period = MapleDataTool.getIntConvert("Period", item, 1);
                 short count = (short) MapleDataTool.getIntConvert("Count", item, 1);
                 boolean onSale = MapleDataTool.getIntConvert("OnSale", item, 0) == 1;
-                items.put(sn, new CashItem(sn, itemId, price, period, count, onSale));
+                items.put(sn, new CashItem(imgdir, sn, itemId, price, period, count, onSale));
             }
-
             for (MapleData cashPackage : etc.getData("CashPackage.img").getChildren()) {
                 List<Integer> cPackage = new ArrayList<>();
 

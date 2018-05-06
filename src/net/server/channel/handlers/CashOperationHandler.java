@@ -64,6 +64,7 @@ public final class CashOperationHandler extends AbstractMaplePacketHandler {
             if (action == 0x03) { // Item
                 if (player.isDebug()) {
                     String content = "[Debug]";
+                    content += "\r\nImgdir: " + cItem.getImgdir();
                     content += "\r\nItem ID: " + cItem.getItemId();
                     content += "\r\nSN: " + snCS;
                     c.announce(MaplePacketCreator.serverNotice(1, content));
@@ -240,7 +241,7 @@ public final class CashOperationHandler extends AbstractMaplePacketHandler {
                     } catch (SQLException ex) {
                     }
                     partner.showNote();
-            }
+                }
             }
             c.announce(MaplePacketCreator.showCash(player));
         } else if (action == 0x20) { // everything is 1 meso...
