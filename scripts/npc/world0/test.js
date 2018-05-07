@@ -10,6 +10,7 @@ const features = [
     ListEquips,
     NewEquip,
     CreateRing,
+    EquipRing,
     null,
     ListPortals,
     SpawnPoints,
@@ -131,6 +132,39 @@ function CreateRing(selection) {
             cm.sendOk("The player could not be found.");
             cm.dispose();
         }
+    }
+}
+
+function EquipRing(selection) {
+    let equip =  player.getInventory(MapleInventoryType.EQUIP);
+    let equipped = player.getInventory(MapleInventoryType.EQUIPPED);
+    if (status === 1) {
+        let content = "";
+        equip.list().forEach((e) => {
+            let itemID = e.getItemId();
+            if (itemID >= 1112000 && itemID < 1113000) {
+                content += "#L" + e.getPosition() + "##v" + e.getItemId() + "##l\t";
+            }
+        });
+        if (content.length > 0) {
+            cm.sendSimple(content);
+        } else {
+            cm.sendOk("You have no rings to equip!");
+            cm.dispose();
+        }
+    } else if (status === 2) {
+        this.ring = equip.getItem(selection);
+        let text = "Which slot would you like to place this ring in?\r\n";
+        [[-12, "bottom-left (1)"], [-112, "bottom-left (2)"], [-113, "bottom-right"], [-115, "top-left"], [-116, "top-right"]].forEach((n) => {
+            if (equipped.getItem(n[0]) == null) {
+                text += "\r\n#L" + n[0] + "#" + n[1] + "#l";
+            }
+        });
+        cm.sendSimple(text);
+    } else if (status === 3) {
+        MapleInventoryManipulator.equip(client, this.ring.getPosition(), selection);
+        cm.sendOk("Success!");
+        cm.dispose();
     }
 }
 

@@ -22,10 +22,16 @@
 package net;
 
 import client.MapleClient;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import tools.data.input.SeekableLittleEndianAccessor;
 
 @Deprecated
 public interface MaplePacketHandler {
+
+    default Logger logger() {
+        return LoggerFactory.getLogger(getClass());
+    }
 
     void handlePacket(SeekableLittleEndianAccessor slea, MapleClient c);
 

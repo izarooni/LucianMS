@@ -97,8 +97,11 @@ public class CashShop {
                 petid = MaplePet.createPet(itemId);
             }
 
-            if (ii.getInventoryType(itemId).equals(MapleInventoryType.EQUIP)) {
+            if (ii.getInventoryType(itemId) == MapleInventoryType.EQUIP) {
                 item = ii.getEquipById(itemId);
+                if (item == null) {
+                    return null;
+                }
             } else {
                 item = new Item(itemId, (byte) 0, count, petid);
             }

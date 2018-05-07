@@ -609,7 +609,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
                             }
                             if (ring.getItemId() >= 1112803 && ring.getItemId() <= 1112809) {
                                 ret.setMarriageRing(ring);
-                            } else if (ring.getItemId() > 1112012) {
+                            } else if (ring.getItemId() > 1112015) {
                                 ret.addFriendshipRing(ring);
                             } else {
                                 ret.addCrushRing(ring);

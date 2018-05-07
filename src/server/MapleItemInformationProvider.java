@@ -597,19 +597,15 @@ public class MapleItemInformationProvider {
         return equip;
     }
 
-    public Item getEquipById(int equipId) {
-        return getEquipById(equipId, -1);
-    }
-
-    private Item getEquipById(int equipId, int ringId) {
+    public Equip getEquipById(int equipId) {
         if (equipCache.containsKey(equipId)) {
-            return equipCache.get(equipId).copy();
+            return (Equip) equipCache.get(equipId).copy();
         }
         Map<String, Integer> stats = this.getEquipStats(equipId);
         if (ItemConstants.getInventoryType(equipId) != MapleInventoryType.EQUIP || stats == null) {
             return null;
         }
-        Equip nEquip = new Equip(equipId, (byte) 0, ringId);
+        Equip nEquip = new Equip(equipId, (byte) 0, -1);
         nEquip.setQuantity((short) 1);
         for (Entry<String, Integer> stat : stats.entrySet()) {
             if (stat.getKey().equals("STR")) {
@@ -653,7 +649,7 @@ public class MapleItemInformationProvider {
             }
             equipCache.put(equipId, nEquip);
         }
-        return nEquip.copy();
+        return (Equip) nEquip.copy();
     }
 
     private static short getRandStat(short defaultValue, int maxRange) {
