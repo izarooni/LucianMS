@@ -2,7 +2,6 @@ package net.server.channel.handlers;
 
 import client.MapleCharacter;
 import client.MapleClient;
-import client.MapleRing;
 import client.Relationship;
 import client.inventory.Item;
 import client.inventory.MapleInventoryType;
@@ -25,14 +24,14 @@ import java.util.HashMap;
  */
 public class RingActionHandler extends AbstractMaplePacketHandler {
 
-    private static final HashMap<Integer, Triple<Integer, Integer, Integer>> boxes = new HashMap<>();
+    private static final HashMap<Integer, Triple<Integer, Integer, Integer>> Boxes = new HashMap<>();
 
     static {
         // format: engagement box, Pair(empty engagement box, engagement ring, wedding ring)
-        boxes.put(2240000, new Triple<>(4031357, 4031358, 1112803)); // moonstone
-        boxes.put(2240001, new Triple<>(4031359, 4031370, 1112806)); // star gem
-        boxes.put(2240002, new Triple<>(4031361, 4031362, 1112807)); // golden heart
-        boxes.put(2240003, new Triple<>(4031363, 4031364, 1112809)); // silver swan
+        Boxes.put(2240000, new Triple<>(4031357, 4031358, 1112803)); // moonstone
+        Boxes.put(2240001, new Triple<>(4031359, 4031370, 1112806)); // star gem
+        Boxes.put(2240002, new Triple<>(4031361, 4031362, 1112807)); // golden heart
+        Boxes.put(2240003, new Triple<>(4031363, 4031364, 1112809)); // silver swan
     }
 
     @Override
@@ -52,8 +51,6 @@ public class RingActionHandler extends AbstractMaplePacketHandler {
             }
         }
 
-        System.out.println(String.format("[%s (%s)] %s", getClass().getSimpleName(), client.getAccountName(), slea.toString()));
-
         byte action = slea.readByte();
         switch (action) {
             case 0: { // proposal
@@ -66,11 +63,11 @@ public class RingActionHandler extends AbstractMaplePacketHandler {
                 } else if (rltn.getStatus() == Relationship.Status.Single && rltn.getBrideId() > 0) {
                     client.announce(getEngagementResult((byte) 0x1b));
                 } else {
-                    if (!boxes.containsKey(itemId)) {
-                        System.err.println(String.format("[%s] %s attempting to propose with a non-engagement box item (%d)", getClass().getSimpleName(), player.getName(), itemId));
+                    if (!Boxes.containsKey(itemId)) {
+                        logger().warn("'{}' attempting to propose with a non-engagement box item ({})", player.getName(), itemId);
                         return;
                     } else if (player.getInventory(MapleInventoryType.USE).findById(itemId) == null) {
-                        System.err.println(String.format("[%s] %s attempting to propose with an invalid item (%d)", getClass().getSimpleName(), player.getName(), itemId));
+                        logger().warn("'{}' attempting to propose with an invalid item ({})", player.getName(), itemId);
                         return;
                     }
                     pplayer = ch.getPlayerStorage().getCharacterByName(tUsername);
@@ -136,7 +133,7 @@ public class RingActionHandler extends AbstractMaplePacketHandler {
                 }
                 if (groomId != rltn.getGroomId()) {
                     // attempting to engage with someone else
-                    System.err.println(String.format("[%s] %s attempting to become engaged with somebody else (%s : %d) other than proposed person (%s)", getClass().getSimpleName(), player.getName(), tUsername, groomId, MapleCharacter.getNameById(rltn.getBrideId())));
+                    logger().warn("'{}' attempting to become engaged with somebody else ('{}': {}) other than proposed person ('{}')", player.getName(), tUsername, groomId, MapleCharacter.getNameById(rltn.getBrideId()));
                     return;
                 }
                 if (pplayer != null && pplayer.getRelationship().getStatus() == Relationship.Status.Single) {
@@ -160,7 +157,7 @@ public class RingActionHandler extends AbstractMaplePacketHandler {
                             try {
                                 rltn.save();
                             } catch (SQLException e) {
-                                System.err.println(String.format("[%s] Unable to save relationship data for player %s: %s", getClass().getSimpleName(), player.getName(), e.getMessage()));
+                                logger().warn("Unable to save relationship data for player '{}': {}", player.getName(), e.getMessage());
                             }
                         }
                     } else {
@@ -175,12 +172,12 @@ public class RingActionHandler extends AbstractMaplePacketHandler {
             case 3: { // drop ring / engagement box
                 int itemId = slea.readInt();
                 if (player.getInventory(MapleInventoryType.ETC).findById(itemId) == null) {
-                    System.err.println(String.format("[%s] Attempting to drop null item (%d)", getClass().getSimpleName(), itemId));
+                    logger().warn("Attempting to drop null item ({})", itemId);
                     return;
                 }
-                Triple<Integer, Integer, Integer> box = boxes.get(rltn.getEngagementBoxId());
-                if (itemId != box.getLeft() && itemId != box.getMiddle()) {
-                    System.err.println(String.format("[%s] %s dropped invalid ring/box (%d)", getClass().getSimpleName(), player.getName(), itemId));
+                Triple<Integer, Integer, Integer> box = Boxes.get(rltn.getEngagementBoxId());
+                if (box == null || itemId != box.getLeft() && itemId != box.getMiddle()) {
+                    logger().warn("'{}' dropped an invalid ring/box ({})", player.getName(), itemId);
                     return;
                 }
                 client.announce(getEngagementResult((byte) 0xd));
@@ -214,23 +211,23 @@ public class RingActionHandler extends AbstractMaplePacketHandler {
                 break;
             }
             default: {
-                System.out.println("Unhandled ring action " + slea.toString());
+                logger().warn("Unhandled ring action {}", slea.toString());
                 break;
             }
         }
     }
 
     public static Pair<Integer, Integer> getEngagementItems(int engagementBox) {
-        if (boxes.containsKey(engagementBox)) {
-            Triple<Integer, Integer, Integer> t = boxes.get(engagementBox);
+        if (Boxes.containsKey(engagementBox)) {
+            Triple<Integer, Integer, Integer> t = Boxes.get(engagementBox);
             return new Pair<>(t.getLeft(), t.getMiddle());
         }
         return null;
     }
 
     public static int getWeddingRingForEngagementBox(int engagementBox) {
-        if (boxes.containsKey(engagementBox)) {
-            return boxes.get(engagementBox).getRight();
+        if (Boxes.containsKey(engagementBox)) {
+            return Boxes.get(engagementBox).getRight();
         }
         return -1;
     }
@@ -259,8 +256,8 @@ public class RingActionHandler extends AbstractMaplePacketHandler {
         mplew.writeInt(groom.getId());
         mplew.writeInt(bride.getId());
         mplew.writeShort(1); // ?
-        mplew.writeInt(boxes.get(rltn.getEngagementBoxId()).getRight()); // wedding ring
-        mplew.writeInt(boxes.get(rltn.getEngagementBoxId()).getRight()); // wedding ring
+        mplew.writeInt(Boxes.get(rltn.getEngagementBoxId()).getRight()); // wedding ring
+        mplew.writeInt(Boxes.get(rltn.getEngagementBoxId()).getRight()); // wedding ring
         mplew.writeAsciiString(StringUtil.getRightPaddedStr(groom.getName(), '\0', 13));
         mplew.writeAsciiString(StringUtil.getRightPaddedStr(bride.getName(), '\0', 13));
         return mplew.getPacket();

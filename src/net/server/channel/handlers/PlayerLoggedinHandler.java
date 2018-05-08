@@ -140,9 +140,6 @@ public final class PlayerLoggedinHandler extends AbstractMaplePacketHandler {
             e.printStackTrace();
         }
         c.announce(MaplePacketCreator.getCharInfo(player));
-        if (!player.isHidden()) {
-            player.setHidden(true, true);
-        }
         player.sendKeymap();
         player.sendMacros();
 

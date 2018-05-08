@@ -24,13 +24,14 @@ package server;
 import client.MapleBuffStat;
 import client.MapleCharacter;
 import client.MapleClient;
+import client.MapleRing;
 import client.inventory.*;
+import com.lucianms.cquest.CQuestData;
+import com.lucianms.cquest.requirement.CQuestItemRequirement;
 import constants.ItemConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import server.maps.MapleMapItem;
-import com.lucianms.cquest.CQuestData;
-import com.lucianms.cquest.requirement.CQuestItemRequirement;
 import tools.MaplePacketCreator;
 
 import java.awt.*;
@@ -375,7 +376,10 @@ public class MapleInventoryManipulator {
             itemChanged = true;
         }
         if (source.getRingId() > -1) {
-            player.getRingById(source.getRingId()).equip();
+            MapleRing ring = player.getRingById(source.getRingId());
+            if (ring != null) {
+                ring.equip();
+            }
         }
         if (dst == -6) { // unequip the overall
             Item top = player.getInventory(MapleInventoryType.EQUIPPED).getItem((short) -5);
@@ -496,7 +500,11 @@ public class MapleInventoryManipulator {
             c.getPlayer().unequipPendantOfSpirit();
         }
         if (source.getRingId() > -1) {
-            c.getPlayer().getRingById(source.getRingId()).unequip();
+            MapleRing ring = c.getPlayer().getRingById(source.getRingId());
+            if (ring != null) {
+                // could have been deleted manually
+                ring.unequip();
+            }
         }
         c.getPlayer().getInventory(MapleInventoryType.EQUIPPED).removeSlot(src);
         if (target != null) {

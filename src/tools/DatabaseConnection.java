@@ -46,6 +46,10 @@ public class DatabaseConnection {
 
         Connection c = lConnection.get();
         try {
+            if (c.isClosed()) {
+                lConnection.remove();
+                return getConnection();
+            }
             c.getMetaData();
         } catch (SQLException e) { // connection is dead, therefore discard old object 5ever
             lConnection.remove();

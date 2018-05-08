@@ -30,10 +30,10 @@ public class SpouseChatHandler extends AbstractMaplePacketHandler {
                 client.announce(MaplePacketCreator.sendSpouseChat(target, message, false));
                 target.announce(MaplePacketCreator.sendSpouseChat(player, message, true));
             } else {
-                player.dropMessage(5, "You are either not married or your spouse is currently offline.");
+                player.dropMessage(5, "Your spouse is currently offline.");
             }
         } else {
-            player.dropMessage(5, "You are either not married or your spouse is currently offline.");
+            player.dropMessage(5, "You are either not married.");
         }
     }
 }

@@ -37,7 +37,7 @@ public final class AccountLoginEvent extends PacketEvent {
         int loginResult = getClient().login(username, password);
         if (Server.getInstance().getConfig().getBoolean("WhitelistEnabled")) {
             if (!Whitelist.hasAccount(getClient().getAccID())) {
-                LOGGER.warn("Attempted non-whitelist account login username: {} , accountID: {}", username, getClient().getAccID());
+                LOGGER.warn("Attempted non-whitelist account login username: '{}' , accountID: '{}'", username, getClient().getAccID());
                 getClient().announce(MaplePacketCreator.getLoginFailed(5));
                 getClient().announce(MaplePacketCreator.serverNotice(1, "The server is unavailable for regular players at this time\r\nPlease contact an administrator if this is a mistake"));
                 return null;

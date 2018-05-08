@@ -26,6 +26,8 @@ import client.inventory.*;
 import client.inventory.Equip.ScrollResult;
 import client.status.MonsterStatus;
 import client.status.MonsterStatusEffect;
+import com.lucianms.server.pqs.carnival.MCarnivalGame;
+import com.lucianms.server.pqs.carnival.MCarnivalTeam;
 import constants.GameConstants;
 import constants.ItemConstants;
 import constants.ServerConstants;
@@ -55,8 +57,6 @@ import server.life.MapleNPC;
 import server.life.MobSkill;
 import server.maps.*;
 import server.movement.LifeMovementFragment;
-import com.lucianms.server.pqs.carnival.MCarnivalGame;
-import com.lucianms.server.pqs.carnival.MCarnivalTeam;
 import tools.data.output.LittleEndianWriter;
 import tools.data.output.MaplePacketLittleEndianWriter;
 
@@ -1861,7 +1861,6 @@ public class MaplePacketCreator {
             mplew.write(0);
             return;
         }
-        Relationship rltn = player.getRelationship();
         mplew.write(1);
         mplew.writeInt(player.getId());
         mplew.writeInt(ring.getPartnerChrId());
@@ -6287,7 +6286,6 @@ public class MaplePacketCreator {
             mplew.writeInt(mPartnerId);
             mplew.writeInt(fPartnerId);
             mplew.writeShort(3); // married ? 3 : 1
-            // if marriage, wedding rings -- otherwise engagement box & ring
             mplew.writeInt(ring.getItemId());
             mplew.writeInt(ring.getItemId());
             mplew.writeAsciiString(StringUtil.getRightPaddedStr(MapleCharacter.getNameById(mPartnerId), '\0', 13));

@@ -153,28 +153,28 @@ function action(mode, type, selection) {
                 text += "\r\n#L9#MP: " + this.item.getMp() + "#l";
                 text += "\r\n#L10#SPEED: " + this.item.getSpeed() + "#l";
                 text += "\r\n#L11#JUMP: " + this.item.getJump() + "#l";
-                text += "\r\n#L15#Ring ID: " + this.item.getRingId() + "#l";
+                text += "\r\n#L12#Ring ID: " + this.item.getRingId() + "#l";
             } else {
-                text += "\r\n#L12#QUANTITY: " + this.item.getQuantity() + "#l";
+                text += "\r\n#L13#QUANTITY: " + this.item.getQuantity() + "#l";
             }
-            text += "\r\n#L16#EXPIRATION: " + this.item.getExpiration() + "#l";
-            text += "\r\n#L13#OWNER: " + this.item.getOwner() + "#l";
-            text += "\r\n#L14#Remove#l";
+            text += "\r\n#L14#EXPIRATION: " + this.item.getExpiration() + "#l";
+            text += "\r\n#L15#OWNER: " + this.item.getOwner() + "#l";
+            text += "\r\n#L16#Remove#l";
             cm.sendSimple(text);
         } else { // giving item
             cm.sendOk(cm.getText());
             cm.dispose();
         }
     } else if (status === 5) {
-        if (selection == 14) {
-            InventoryManipulator.removeFromSlot(c, this.inventory.getType(), this.item.getPosition(), this.item.getQuantity(), false);
+        if (selection === 16) {
+            InventoryManipulator.removeFromSlot(getPlayer(this.stalk.id).getClient(), this.inventory.getType(), this.item.getPosition(), this.item.getQuantity(), false);
             status = 2;
             action(1, 0, 0);
         } else {
             if (this.changeStat == null) { // first time changing item stat
                 this.changeStat = selection;
             }
-            var text = "What do you want to set the #b" + getUpdateName(this.changeStat).toUpperCase() + "#k stat to?";
+            let text = "What do you want to set the #b" + getUpdateName(this.changeStat).toUpperCase() + "#k stat to?";
             if (this.error != null) {
                 text = this.error + text;
             }
@@ -185,7 +185,7 @@ function action(mode, type, selection) {
             updateItem(getPlayer(this.stalk.id), this.item, this.changeStat, cm.getText());
             status -= 3; // go back to item information
         } else {
-            var newval = parseInt(cm.getText()); // the new value for the item stat
+            let newval = parseInt(cm.getText()); // the new value for the item stat
             this.error = null; // reset error message
             if (isNaN(newval) || ((newval < 0 || newval > 32767) && this.changeStat != 16)) {
                 this.error = "#r'" + cm.getText() + "' is an invalid number#k\r\n"; // set error message
@@ -202,9 +202,9 @@ function action(mode, type, selection) {
 
 /* ********** functions ********** */
 function getPlayer(playerId) {
-    for (var i = 0; i < client.getWorldServer().getChannels().size(); i++) {
-        var ch = client.getWorldServer().getChannel(i + 1);
-        var chr = ch.getPlayerStorage().getCharacterById(playerId);
+    for (let i = 0; i < client.getWorldServer().getChannels().size(); i++) {
+        let ch = client.getWorldServer().getChannel(i + 1);
+        let chr = ch.getPlayerStorage().getCharacterById(playerId);
         if (chr != null) {
             return chr;
         }
@@ -215,18 +215,18 @@ function getPlayer(playerId) {
 // Get all online players in the player's world server
 // and return them as an array of Player object
 function onlinePlayers(filter) {
-    var ret = [];
-    for (var i = 0; i < client.getWorldServer().getChannels().size(); i++) {
-        var ch = client.getWorldServer().getChannel(i + 1);
-        var iter = ch.getPlayerStorage().getAllCharacters().iterator();
+    let ret = [];
+    for (let i = 0; i < client.getWorldServer().getChannels().size(); i++) {
+        let ch = client.getWorldServer().getChannel(i + 1);
+        let iter = ch.getPlayerStorage().getAllCharacters().iterator();
         while (iter.hasNext()) {
-            var p = iter.next();
+            let p = iter.next();
             if (filter != null) {
                 if (!p.getName().contains(filter)) {
                     continue;
                 }
             }
-            var chr = new Player(p.getId(), p.getName());
+            let chr = new Player(p.getId(), p.getName());
             ret.push(chr);
         }
     }
@@ -238,7 +238,7 @@ function getPlayerById(id) {
     if (players == null) {
         return null;
     }
-    for (var i = players.length - 1; i >= 0; i--) {
+    for (let i = players.length - 1; i >= 0; i--) {
         if (players[i].id === id) {
             return players[i];
         }
@@ -249,18 +249,12 @@ function getPlayerById(id) {
 // Used to get inventory type by selection value
 function getInventoryType(i) {
     switch (i) {
-        case 0:
-            return InventoryType.EQUIPPED;
-        case 1:
-            return InventoryType.EQUIP;
-        case 2:
-            return InventoryType.USE;
-        case 3:
-            return InventoryType.SETUP;
-        case 4:
-            return InventoryType.ETC;
-        case 5:
-            return InventoryType.CASH;
+        case 0: return InventoryType.EQUIPPED;
+        case 1: return InventoryType.EQUIP;
+        case 2: return InventoryType.USE;
+        case 3: return InventoryType.SETUP;
+        case 4: return InventoryType.ETC;
+        case 5: return InventoryType.CASH;
     }
     return null;
 }
@@ -280,9 +274,10 @@ function getUpdateName(stat) {
         case 9: return "mp";
         case 10: return "speed";
         case 11: return "jump";
-        case 12: return "quantity";
-        case 13: return "owner";
-        case 16: return "expiration";
+        case 12: return "ring id";
+        case 13: return "quantity";
+        case 14: return "expiration";
+        case 15: return "owner";
     }
 }
 
@@ -305,9 +300,10 @@ function updateItem(player, item, stat, newval) {
     else if (stat === 9) item.setMp(newval);
     else if (stat === 10) item.setSpeed(newval);
     else if (stat === 11) item.setJump(newval);
-    else if (stat === 12) item.setQuantity(newval);
-    else if (stat === 13) item.setOwner(newval);
-    else if (stat == 16) item.setExpiration(newval);
+    else if (stat === 12) item.setRingId(newval);
+    else if (stat === 13) item.setQuantity(newval);
+    else if (stat === 15) item.setExpiration(newval);
+    else if (stat === 15) item.setOwner(newval);
     player.forceUpdateItem(item);
 }
 
