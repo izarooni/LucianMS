@@ -43,6 +43,7 @@ public abstract class Arcade {
 
     public synchronized void start() {
         MapleMapFactory factory = new MapleMapFactory(player.getWorld(), player.getClient().getChannel());
+        TaskExecutor.createTask(() -> factory.getMaps().forEach(MapleMap::respawn), 5000);
         player.changeMap(factory.getMap(mapId), factory.getMap(mapId).getPortal(0));
 
         // disable portals, we do not want them to leave the map. TODO: disable commands
@@ -53,7 +54,7 @@ public abstract class Arcade {
         respawnTask = TaskExecutor.createRepeatingTask(() -> factory.getMaps().forEach(MapleMap::respawn), 10000, 1000);
 
         player.getMap().toggleDrops();
-        if(player.getArcade().arcadeId == 0) {
+        if (player.getArcade().arcadeId == 0) {
             player.getMap().toggleDrops(); // drops should be enabled in loot-a-holic
         } else if (player.getArcade().arcadeId == 2) {
             MapleMonster toSpawn = MapleLifeFactory.getMonster(9500365);
@@ -73,11 +74,10 @@ public abstract class Arcade {
                 player.getMap().broadcastMessage(MaplePacketCreator.showEffect("killing/first/stage"));
             }, 2000);
 
-            TaskExecutor.createTask(() ->  player.getMap().broadcastMessage(MaplePacketCreator.showEffect("killing/first/number/1")), 2000);
+            TaskExecutor.createTask(() -> player.getMap().broadcastMessage(MaplePacketCreator.showEffect("killing/first/number/1")), 2000);
         }
 
     }
-
 
 
     public boolean saveData(int score) {
