@@ -13,9 +13,7 @@ var maps = [
     [610050000, "#bBlackGate City#k"],
     [211060010, "#bLion King Castle"],
     [219000000, "#dCokeTown#k"],
-    [951000000, "#rMonster Park#k"],
-    [910000025, "#bSmash The Wall#k"],
-    [910001000, "#dHarvesting Area#k"]
+    [951000000, "#rMonster Park#k"]
 ];
 
 function action(mode, type, selection) {

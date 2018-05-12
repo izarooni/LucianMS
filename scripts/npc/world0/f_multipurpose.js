@@ -3,6 +3,7 @@ const MonsterPark = Java.type("com.lucianms.features.MonsterPark");
 /* izarooni */
 let status = 0;
 let options = {
+    "Job advancement":     {npc:9201433, script:null},
     "Vote point trader":   {npc:9901754,script:null},
     "Event point trader":  {npc:9901752,script:null},
     "Donor point trader":  {npc:9901755,script:null},
@@ -46,10 +47,10 @@ function action(mode, type, selection) {
         let option = options.get(selection);
         if (option != null) {
             let obj = options[option];
-            
+
             /*
             1: if player npc, null the npc ID
-            2: if true, use npc ID as script name instead and 
+            2: if true, use npc ID as script name instead and
             use Maple Administrator as NPC speaker to prevent
             user crashing from attempting to view non-existing
             player NPC object

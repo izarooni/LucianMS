@@ -302,7 +302,7 @@ function updateItem(player, item, stat, newval) {
     else if (stat === 11) item.setJump(newval);
     else if (stat === 12) item.setRingId(newval);
     else if (stat === 13) item.setQuantity(newval);
-    else if (stat === 15) item.setExpiration(newval);
+    else if (stat === 14) item.setExpiration(newval);
     else if (stat === 15) item.setOwner(newval);
     player.forceUpdateItem(item);
 }
