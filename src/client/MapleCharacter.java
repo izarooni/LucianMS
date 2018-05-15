@@ -1637,7 +1637,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
         }
         // yeet
         if (getArcade() != null && to.getId() != getArcade().getMapId()) {
-            setArcade(null);
+            getArcade().fail(); // fail upon changing the map.
         }
         ManualPlayerEvent playerEvent = client.getWorldServer().getPlayerEvent();
         if (playerEvent != null) {

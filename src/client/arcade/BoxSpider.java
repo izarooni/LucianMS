@@ -13,7 +13,7 @@ public class BoxSpider extends Arcade {
 
     private int[] platform;
 
-    int xStart = -2723, xEnd = -1788;
+    int xStart = -2684, xEnd = -1803;
 
 
     private int highscore = 0;
@@ -72,8 +72,8 @@ public class BoxSpider extends Arcade {
             toSpawn = MapleLifeFactory.getMonster(9500365);
         }
 
-        int spawnX = Randomizer.nextInt(2621 - 619) + 619;
-        spawnX = (spawnX >= 619) ? spawnX : 619;
+        int spawnX = Randomizer.nextInt( 1803 - 2684) + 2684;
+        spawnX = (spawnX >= xStart && spawnX <= xEnd) ? spawnX : 619;
         int spawnY = Randomizer.nextInt(platform.length);
 
         toSpawn.setHp(4);

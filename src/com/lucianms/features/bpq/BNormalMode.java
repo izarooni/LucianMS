@@ -18,8 +18,8 @@ public class BNormalMode extends BossPQ {
         super(channel, 801, bosses);
         setCashWinnings(7 * bosses.length);
         setPoints(25);
-        setDamageMultiplier(1.3f);
-        setHealthMultiplier(1.3f);
+        setDamageMultiplier(1.0f);
+        setHealthMultiplier(1.0f);
     }
 
     @Override
