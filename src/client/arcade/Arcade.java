@@ -43,7 +43,7 @@ public abstract class Arcade {
 
     public synchronized void start() {
         MapleMapFactory factory = new MapleMapFactory(player.getWorld(), player.getClient().getChannel());
-        TaskExecutor.createTask(() -> factory.getMaps().forEach(MapleMap::respawn), 5000);
+        TaskExecutor.createTask(() -> factory.getMaps().forEach(MapleMap::respawn), 2000);
         player.changeMap(factory.getMap(mapId), factory.getMap(mapId).getPortal(0));
 
         // disable portals, we do not want them to leave the map. TODO: disable commands
@@ -51,7 +51,8 @@ public abstract class Arcade {
 
         player.getMap().setMobInterval((short) 5);
 
-        respawnTask = TaskExecutor.createRepeatingTask(() -> factory.getMaps().forEach(MapleMap::respawn), 10000, 1000);
+        // actually we've already got this ian :thonkang:
+//        respawnTask = TaskExecutor.createRepeatingTask(() -> factory.getMaps().forEach(MapleMap::respawn), 10000, 1000);
 
         player.getMap().toggleDrops();
         if (player.getArcade().arcadeId == 0) {
