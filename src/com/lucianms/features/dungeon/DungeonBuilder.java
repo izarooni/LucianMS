@@ -10,11 +10,13 @@ import server.life.MapleLifeFactory;
 import server.life.MapleMonster;
 import server.maps.MapleMap;
 import server.maps.MapleMapFactory;
+import tools.MaplePacketCreator;
 import tools.Randomizer;
 
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Random;
 
 
 /**
@@ -47,9 +49,13 @@ public class DungeonBuilder {
 
     private int monstersPerPoint = 1;
 
-    private int minX = 0, maxY = 0;
+    private int minX = 0, maxX = 0;
 
-    public DungeonBuilder(MapleCharacter player, int mapId) {
+    private int[] platforms;
+
+    private int maxMonsterAmount;
+
+    private DungeonBuilder(MapleCharacter player, int mapId) {
         this.player = player;
         this.mapId = mapId;
     }
@@ -63,7 +69,7 @@ public class DungeonBuilder {
     /**
      * Attach item requirements to enter.
      *
-     * @param items
+     * @param items all the required items
      * @return DungeonBuilder
      */
     public DungeonBuilder attachRequirements(Integer... items) {
@@ -79,6 +85,7 @@ public class DungeonBuilder {
      */
     public DungeonBuilder attachSpawns(Integer... monsters) {
         if (scaleEXP) {
+            System.out.println("[Dungeon Builder] Scaling EXP for monsters");
             Arrays.asList(monsters).forEach((integer) -> {
                 MapleMonster monster = MapleLifeFactory.getMonster(integer);
                 if (monster != null) {
@@ -91,11 +98,15 @@ public class DungeonBuilder {
                         }
                     }
                     monster.getStats().setExp(ExpTable.getExpNeededForLevel(expCalc.getLevel()) / scaleFromTotal);
-                    monster.getStats().setHp(monster.getStats().getHp() * ((expCalc.getLevel() / 20) * 5));
+                    monster.getStats().setHp(expCalc.getHp() * 2);
+                    monster.setLevel(expCalc.getLevel());
+                    System.out.println(String.format("[Dungeon Builder] EXP for monster: %d, EXP %d", monster.getMaxHp(), monster.getStats().getExp()));
                     spawns.add(monster);
                 }
             });
+            System.out.println("[Dungeon Builder] Scaling complete.");
         } else {
+            System.out.println("[Dungeon Builder] Scaling is not enabled.");
             Arrays.asList(monsters).forEach((integer) -> {
                 MapleMonster monster = MapleLifeFactory.getMonster(integer);
                 if (monster != null) {
@@ -114,11 +125,6 @@ public class DungeonBuilder {
         MapleMap map = factory.getMap(this.mapId);
         if(map != null) {
 
-            spawns.forEach((monster) -> {
-                monster.setPosition(map.getGroundBelow(new Point(Randomizer.nextInt(minX - maxY) + minX, Randomizer.nextInt(maxY))));
-                map.addMonsterSpawn(monster, 3000, -1);
-            });
-
             // Don't want em staying there OwO
             map.setReturnMapId(ServerConstants.HOME_MAP);
             map.setForcedReturnMap(ServerConstants.HOME_MAP);
@@ -135,16 +141,27 @@ public class DungeonBuilder {
                 player.changeMap(map);
             }
 
+            map.setRespawnEnabled(false);
+
             // A respawning task that'll end the dungeon if everyone is gone
             respawnTask = TaskExecutor.createRepeatingTask(() -> {
                 if(map.getAllPlayer().size() < 1) {
                     endTask.cancel();
                     respawnTask.cancel();
                 } else {
-                    map.respawn();
+                    spawns.forEach((monster) -> {
+                        // TODO fix ghost monsters :thinking:
+                        int randomPlatform = this.platforms[Randomizer.nextInt(this.platforms.length)];
+                        monster.setPosition(map.getGroundBelow(new Point(Randomizer.nextInt(maxX + minX) - minX, randomPlatform)));
+                        monster.setTeam(-1);
+                        if(map.getMonsters().size() + this.getMonstersPerPoint() < this.maxMonsterAmount)
+                        for(int i = 0; i < this.getMonstersPerPoint(); i++) {
+                            map.spawnMonster(monster);
+                        }
+                    });
                 }
-            }, 3000);
-
+            }, 8000);
+            map.broadcastMessage(MaplePacketCreator.getClock(timeLimit));
             // get these people out of here!!
             endTask = TaskExecutor.createTask(() -> {
                 map.getAllPlayer().forEach((move) -> move.changeMap(this.returnMap));
@@ -240,6 +257,11 @@ public class DungeonBuilder {
         return this;
     }
 
+    public DungeonBuilder setMaxMonsterAmount(int amount) {
+        this.maxMonsterAmount = amount;
+        return this;
+    }
+
     public int getMapId() {
         return mapId;
     }
@@ -296,9 +318,10 @@ public class DungeonBuilder {
         return spawns;
     }
 
-    public DungeonBuilder setDimensions(int minX, int maxY) {
+    public DungeonBuilder setDimensions(int minX, int maxX, int[] plats) {
         this.minX = minX;
-        this.maxY = maxY;
+        this.maxX = maxX;
+        this.platforms = plats;
         return this;
     }
 
