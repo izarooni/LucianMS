@@ -1,0 +1,6 @@
+Manifest-Version: 1.0
+Class-Path: slf4j-simple-1.7.25.jar slf4j-api-1.7.25.jar mina-core-2.0
+ .16.jar commons-net-3.6.jar mysql-connector-java-bin.jar commons-io-2
+ .4.jar
+Main-Class: net.server.Server
+

@@ -1,11 +1,14 @@
 package com.lucianms.features.dungeon;
 
 import client.MapleCharacter;
+import client.inventory.MapleInventoryType;
 import com.lucianms.scheduler.Task;
 import com.lucianms.scheduler.TaskExecutor;
 import constants.ExpTable;
 import constants.ServerConstants;
+import net.server.world.MapleParty;
 import net.server.world.MaplePartyCharacter;
+import server.MapleInventoryManipulator;
 import server.life.MapleLifeFactory;
 import server.life.MapleMonster;
 import server.maps.MapleMap;
@@ -55,6 +58,12 @@ public class DungeonBuilder {
 
     private int maxMonsterAmount;
 
+    private int respawnTime = 4;
+
+    private String areLacking = "";
+
+    private boolean disableDrops = true;
+
     private DungeonBuilder(MapleCharacter player, int mapId) {
         this.player = player;
         this.mapId = mapId;
@@ -97,7 +106,7 @@ public class DungeonBuilder {
                             }
                         }
                     }
-                    monster.getStats().setExp(ExpTable.getExpNeededForLevel(expCalc.getLevel()) / scaleFromTotal);
+                    monster.getStats().setExp(ExpTable.getExpNeededForLevel(expCalc.getLevel()) / getScaleFromTotal());
                     monster.getStats().setHp(expCalc.getHp() * 2);
                     monster.setLevel(expCalc.getLevel());
                     System.out.println(String.format("[Dungeon Builder] EXP for monster: %d, EXP %d", monster.getMaxHp(), monster.getStats().getExp()));
@@ -110,7 +119,7 @@ public class DungeonBuilder {
             Arrays.asList(monsters).forEach((integer) -> {
                 MapleMonster monster = MapleLifeFactory.getMonster(integer);
                 if (monster != null) {
-                    monster.getStats().setExp(this.monsterExp);
+                    monster.getStats().setExp(getMonsterExp());
                     spawns.add(monster);
                 }
             });
@@ -121,65 +130,139 @@ public class DungeonBuilder {
 
     // TODO item requirements
     private boolean buildDungeon(boolean isPartyPlay) {
-        MapleMapFactory factory = new MapleMapFactory(player.getWorld(), player.getClient().getChannel());
-        MapleMap map = factory.getMap(this.mapId);
-        if(map != null) {
+        if(allowEntrance()) {
+            MapleMapFactory factory = new MapleMapFactory(player.getWorld(), player.getClient().getChannel());
+            MapleMap map = factory.getMap(this.mapId);
+            if (map != null) {
 
-            // Don't want em staying there OwO
-            map.setReturnMapId(ServerConstants.HOME_MAP);
-            map.setForcedReturnMap(ServerConstants.HOME_MAP);
-            // don't want portals to work nor scripts
-            map.getPortals().forEach((portal) -> { portal.setPortalStatus(false); portal.setScriptName(null); });
+                // Don't want em staying there OwO
+                map.setReturnMapId(ServerConstants.HOME_MAP);
+                map.setForcedReturnMap(ServerConstants.HOME_MAP);
+                // don't want portals to work nor scripts
+                map.getPortals().forEach((portal) -> {
+                    portal.setPortalStatus(false);
+                    portal.setScriptName(null);
+                });
 
-            if(isPartyPlay) {
-                if(player.getParty() != null) {
-                    player.getParty().getMembers().forEach((member) -> member.getPlayer().changeMap(map));
+                if(isDisableDrops()) {
+                    map.toggleDrops();
+                }
+
+                if (isPartyPlay) {
+                    if (player.getParty() != null) {
+                        player.getParty().getMembers().forEach((member) -> member.getPlayer().changeMap(map));
+                    } else {
+                        player.changeMap(map);
+                    }
                 } else {
                     player.changeMap(map);
                 }
-            } else {
-                player.changeMap(map);
+
+                // A respawning task that'll end the dungeon if everyone is gone
+                respawnTask = TaskExecutor.createRepeatingTask(() -> {
+                    if (map.getAllPlayer().size() < 1) {
+                        endTask.cancel();
+                        respawnTask.cancel();
+                    } else {
+                        spawns.forEach((monster) -> {
+                            int randomPlatform = this.platforms[Randomizer.nextInt(this.platforms.length)];
+                            monster.setPosition(map.getGroundBelow(new Point(Randomizer.nextInt(maxX + minX) - minX, randomPlatform)));
+                            if (map.getMonsters().size() + this.getMonstersPerPoint() < this.maxMonsterAmount)
+                                for (int i = 0; i < this.getMonstersPerPoint(); i++) {
+                                    MapleMonster nMonster = MapleLifeFactory.getMonster(monster.getId());
+                                    nMonster.getStats().setExp(monster.getStats().getExp());
+                                    nMonster.setHp(monster.getMaxHp());
+                                    nMonster.setLevel(monster.getLevel());
+                                    map.spawnMonsterOnGroundBelow(nMonster, monster.getPosition());
+                                }
+                        });
+                    }
+                }, getRespawnTime() * 1000);
+                map.broadcastMessage(MaplePacketCreator.getClock(getTimeLimit()));
+                // get these people out of here!!
+                endTask = TaskExecutor.createTask(() -> {
+                    map.getAllPlayer().forEach((move) -> move.changeMap(this.returnMap));
+                    if (!respawnTask.isCanceled()) {
+                        respawnTask.cancel();
+                    }
+                }, getTimeLimit() * 1000);
+
+                return true;
             }
-
-            map.setRespawnEnabled(false);
-
-            // A respawning task that'll end the dungeon if everyone is gone
-            respawnTask = TaskExecutor.createRepeatingTask(() -> {
-                if(map.getAllPlayer().size() < 1) {
-                    endTask.cancel();
-                    respawnTask.cancel();
-                } else {
-                    spawns.forEach((monster) -> {
-                        // TODO fix ghost monsters :thinking:
-                        int randomPlatform = this.platforms[Randomizer.nextInt(this.platforms.length)];
-                        monster.setPosition(map.getGroundBelow(new Point(Randomizer.nextInt(maxX + minX) - minX, randomPlatform)));
-                        monster.setTeam(-1);
-                        if(map.getMonsters().size() + this.getMonstersPerPoint() < this.maxMonsterAmount)
-                        for(int i = 0; i < this.getMonstersPerPoint(); i++) {
-                            map.spawnMonster(monster);
-                        }
-                    });
-                }
-            }, 8000);
-            map.broadcastMessage(MaplePacketCreator.getClock(timeLimit));
-            // get these people out of here!!
-            endTask = TaskExecutor.createTask(() -> {
-                map.getAllPlayer().forEach((move) -> move.changeMap(this.returnMap));
-                if(!respawnTask.isCanceled()) {
-                    respawnTask.cancel();
-                }
-            }, timeLimit * 1000);
-
-            return true;
         }
         return false;
     }
 
+    private boolean allowEntrance() {
+        if(player.getParty() != null) {
+            for(MaplePartyCharacter pcharacter : player.getParty().getMembers()) {
+                MapleCharacter character = pcharacter.getPlayer();
+                if(!(character.getLevel() >= getMinLevel() && character.getLevel() <= getMaxLevel())) {
+                    areLacking += String.format("%s does not fullfill the level requirements\r\n", character.getName());
+                    return false;
+                }
+                if(isEveryoneNeedsItemRequirements()) {
+                    boolean allHave = true;
+                    for (Integer integer : getItemRequirements()) {
+                        if (!(character.getItemQuantity(integer, false) >= 1)) {
+                            allHave = false;
+                        }
+
+                        if (!allHave) {
+                            areLacking += String.format("%s does not fullfill the item requirements\r\n", character.getName());
+                            return false;
+                        }
+                    }
+                } else {
+                    for(Integer integer : getItemRequirements()) {
+                        if(!(player.getItemQuantity(integer, false) >= 1)) {
+                            areLacking += String.format("%s does not fullfill the item requirements\r\n", player.getName());
+                            return false;
+                        }
+                    }
+                }
+            }
+        } else {
+            if(!(player.getLevel() >= getMinLevel() && player.getLevel() <= getMaxLevel())) {
+                areLacking += String.format("%s does not fullfill the level requirements\r\n", player.getName());
+                return false;
+            }
+            for(Integer integer : getItemRequirements()) {
+                if(!(player.getItemQuantity(integer, false) >= 1)) {
+                    areLacking += String.format("%s does not fullfill the item requirements\r\n", player.getName());
+                    return false;
+                }
+            }
+
+        }
+
+        if(player.getParty() != null) {
+            if(isEveryoneNeedsItemRequirements()) {
+                for (MaplePartyCharacter pchar : player.getParty().getMembers()) {
+                    MapleCharacter character = pchar.getPlayer();
+                    for (Integer integer : getItemRequirements()) {
+                        MapleInventoryManipulator.removeById(character.getClient(), MapleInventoryType.ETC, integer, 1, false, false);
+                    }
+                }
+            } else {
+                for(Integer integer : getItemRequirements()) {
+                    MapleInventoryManipulator.removeById(player.getClient(), MapleInventoryType.ETC, integer, 1, false, false);
+                }
+            }
+        } else {
+            for(Integer integer : getItemRequirements()) {
+                MapleInventoryManipulator.removeById(player.getClient(), MapleInventoryType.ETC, integer, 1, false, false);
+            }
+        }
+
+        return true;
+    }
+
     public boolean enter() {
         if (this.allowParty) {
-            if (!(spawns.isEmpty() && itemRequirements.isEmpty())) {
+            if (!(spawns.isEmpty() && getItemRequirements().isEmpty())) {
                 if (player.getParty() != null) {
-                    if (player.getParty().getMembers().size() <= maxPartySize) {
+                    if (player.getParty().getMembers().size() <= getMaxPartySize()) {
                         return this.buildDungeon(true);
                     }
                 }
@@ -262,6 +345,23 @@ public class DungeonBuilder {
         return this;
     }
 
+    public DungeonBuilder setDimensions(int minX, int maxX, int[] plats) {
+        this.minX = minX;
+        this.maxX = maxX;
+        this.platforms = plats;
+        return this;
+    }
+
+    public DungeonBuilder setDisableDrops(boolean disableDrops) {
+        this.disableDrops = disableDrops;
+        return this;
+    }
+
+    public DungeonBuilder setRespawnTime(int respawnTime) {
+        this.respawnTime = respawnTime;
+        return this;
+    }
+
     public int getMapId() {
         return mapId;
     }
@@ -318,14 +418,19 @@ public class DungeonBuilder {
         return spawns;
     }
 
-    public DungeonBuilder setDimensions(int minX, int maxX, int[] plats) {
-        this.minX = minX;
-        this.maxX = maxX;
-        this.platforms = plats;
-        return this;
-    }
-
     public boolean isEveryoneNeedsItemRequirements() {
         return everyoneNeedsItemRequirements;
+    }
+
+    public String getAreLacking() {
+        return areLacking;
+    }
+
+    public int getRespawnTime() {
+        return respawnTime;
+    }
+
+    public boolean isDisableDrops() {
+        return disableDrops;
     }
 }
