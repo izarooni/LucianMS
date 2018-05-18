@@ -26,6 +26,8 @@ import client.inventory.*;
 import client.inventory.Equip.ScrollResult;
 import client.status.MonsterStatus;
 import client.status.MonsterStatusEffect;
+import com.lucianms.server.pqs.carnival.MCarnivalGame;
+import com.lucianms.server.pqs.carnival.MCarnivalTeam;
 import constants.GameConstants;
 import constants.ItemConstants;
 import constants.ServerConstants;
@@ -55,8 +57,6 @@ import server.life.MapleNPC;
 import server.life.MobSkill;
 import server.maps.*;
 import server.movement.LifeMovementFragment;
-import com.lucianms.server.pqs.carnival.MCarnivalGame;
-import com.lucianms.server.pqs.carnival.MCarnivalTeam;
 import tools.data.output.LittleEndianWriter;
 import tools.data.output.MaplePacketLittleEndianWriter;
 
@@ -174,23 +174,6 @@ public class MaplePacketCreator {
 
     private static void addNewYearInfo(final MaplePacketLittleEndianWriter mplew, MapleCharacter chr) {
         mplew.writeShort(0);
-        /*
-         *(_DWORD *)this = CInPacket::Decode4(a2);
-		 *((_DWORD *)v2 + 1) = CInPacket::Decode4(a2);
-         CInPacket::DecodeStr(&v7);
-         v9 = 0;
-         (*(void (__stdcall **)(char *, int))((char *)&loc_B1410B + 1))((char *)v2 + 8, v7);
-		 *(_DWORD *)((char *)v2 + 21) = (unsigned __int8)CInPacket::Decode1(a2);
-         CInPacket::DecodeBuffer((char *)v2 + 25, 8);
-		 *(_DWORD *)((char *)v2 + 33) = CInPacket::Decode4(a2);
-         CInPacket::DecodeStr(&v6);
-         LOBYTE(v8) = 1;
-         (*(void (__stdcall **)(char *, int))((char *)&loc_B1410B + 1))((char *)v2 + 37, v6);
-		 *(_DWORD *)((char *)v2 + 50) = (unsigned __int8)CInPacket::Decode1(a2);
-		 *(_DWORD *)((char *)v2 + 54) = (unsigned __int8)CInPacket::Decode1(a2);
-         CInPacket::DecodeBuffer((char *)v2 + 58, 8);
-         CInPacket::DecodeStr(&v9);
-		 */
     }
 
     private static void addTeleportInfo(final MaplePacketLittleEndianWriter mplew, MapleCharacter chr) {
@@ -406,9 +389,9 @@ public class MaplePacketCreator {
         List<Item> equippedCash = new ArrayList<>(equippedC.size());
         for (Item item : equippedC) {
             if (item.getPosition() <= -100) {
-                equippedCash.add((Item) item);
+                equippedCash.add(item);
             } else {
-                equipped.add((Item) item);
+                equipped.add(item);
             }
         }
         Collections.sort(equipped);
@@ -420,10 +403,13 @@ public class MaplePacketCreator {
             addItemInfo(mplew, item);
         }
         mplew.writeShort(0); // start of equip inventory
-        for (Item item : chr.getInventory(MapleInventoryType.EQUIP).list()) {
+        Collection<Item> equips = chr.getInventory(MapleInventoryType.EQUIP).list();
+        for (Item item : equips) {
             addItemInfo(mplew, item);
         }
-        mplew.writeInt(0);
+        mplew.writeShort(0);
+        equips.stream().filter(i -> i.getPosition() <= -1000 && i.getPosition() > -1100).forEach(i -> addItemInfo(mplew, i));
+        mplew.writeShort(0);
         for (Item item : chr.getInventory(MapleInventoryType.USE).list()) {
             addItemInfo(mplew, item);
         }
@@ -446,15 +432,13 @@ public class MaplePacketCreator {
         Map<Skill, MapleCharacter.SkillEntry> skills = chr.getSkills();
         int skillsSize = skills.size();
         // We don't want to include any hidden skill in this, so subtract them from the size list and ignore them.
-        for (Iterator<Entry<Skill, SkillEntry>> it = skills.entrySet().iterator(); it.hasNext(); ) {
-            Entry<Skill, MapleCharacter.SkillEntry> skill = it.next();
+        for (Entry<Skill, SkillEntry> skill : skills.entrySet()) {
             if (GameConstants.isHiddenSkills(skill.getKey().getId())) {
                 skillsSize--;
             }
         }
         mplew.writeShort(skillsSize);
-        for (Iterator<Entry<Skill, SkillEntry>> it = skills.entrySet().iterator(); it.hasNext(); ) {
-            Entry<Skill, MapleCharacter.SkillEntry> skill = it.next();
+        for (Entry<Skill, SkillEntry> skill : skills.entrySet()) {
             if (GameConstants.isHiddenSkills(skill.getKey().getId())) {
                 continue;
             }
@@ -928,19 +912,11 @@ public class MaplePacketCreator {
         for (Pair<MapleStat, Integer> statupdate : stats) {
             updateMask |= statupdate.getLeft().getValue();
         }
-        List<Pair<MapleStat, Integer>> mystats = stats;
-        if (mystats.size() > 1) {
-            Collections.sort(mystats, new Comparator<Pair<MapleStat, Integer>>() {
-                @Override
-                public int compare(Pair<MapleStat, Integer> o1, Pair<MapleStat, Integer> o2) {
-                    int val1 = o1.getLeft().getValue();
-                    int val2 = o2.getLeft().getValue();
-                    return (val1 < val2 ? -1 : (val1 == val2 ? 0 : 1));
-                }
-            });
+        if (stats.size() > 1) {
+            stats.sort((o1, o2) -> (Integer.compare(o1.getLeft().getValue(), o2.getLeft().getValue())));
         }
         mplew.writeInt(updateMask);
-        for (Pair<MapleStat, Integer> statupdate : mystats) {
+        for (Pair<MapleStat, Integer> statupdate : stats) {
             if (statupdate.getLeft().getValue() >= 1) {
                 if (statupdate.getLeft().getValue() == 0x1) {
                     mplew.writeShort(statupdate.getRight().shortValue());
@@ -948,14 +924,12 @@ public class MaplePacketCreator {
                     mplew.writeInt(statupdate.getRight());
                 } else if (statupdate.getLeft().getValue() < 0x20) {
                     mplew.write(statupdate.getRight().shortValue());
-                } else if (statupdate.getLeft().getValue() == 0x8000) {
+                } else if (statupdate.getLeft().getValue() == MapleStat.AVAILABLESP.getValue()) {
                     if (GameConstants.hasSPTable(chr.getJob())) {
                         mplew.write(chr.getRemainingSpSize());
                         for (int i = 0; i < chr.getRemainingSps().length; i++) {
-                            if (chr.getRemainingSpBySkill(i) > 0) {
-                                mplew.write(i + 1);
-                                mplew.write(chr.getRemainingSpBySkill(i));
-                            }
+                            mplew.write(i + 1);
+                            mplew.write(chr.getRemainingSpBySkill(i));
                         }
                     } else {
                         mplew.writeShort(statupdate.getRight().shortValue());
@@ -2263,8 +2237,7 @@ public class MaplePacketCreator {
         final MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
         mplew.writeShort(SendOpcode.RECOMMENDED_WORLD_MESSAGE.getValue());
         mplew.write(worlds.size());//size
-        for (Iterator<Pair<Integer, String>> it = worlds.iterator(); it.hasNext(); ) {
-            Pair<Integer, String> world = it.next();
+        for (Pair<Integer, String> world : worlds) {
             mplew.writeInt(world.getLeft());
             mplew.writeMapleAsciiString(world.getRight() == null ? "" : world.getRight());
         }
@@ -2799,8 +2772,8 @@ public class MaplePacketCreator {
         mplew.write(0); //speaker
         mplew.writeMapleAsciiString(talk);
         mplew.write(styles.length);
-        for (int i = 0; i < styles.length; i++) {
-            mplew.writeInt(styles[i]);
+        for (int style : styles) {
+            mplew.writeInt(style);
         }
         return mplew.getPacket();
     }
@@ -4674,8 +4647,8 @@ public class MaplePacketCreator {
             List<Pair<Item, MapleInventoryType>> items = ItemFactory.MERCHANT.loadItems(chr.getId(), false);
             mplew.write(items.size());
 
-            for (int i = 0; i < items.size(); i++) {
-                addItemInfo(mplew, items.get(i).getLeft(), true);
+            for (Pair<Item, MapleInventoryType> item : items) {
+                addItemInfo(mplew, item.getLeft(), true);
             }
         } catch (SQLException e) {
         }
@@ -5010,8 +4983,7 @@ public class MaplePacketCreator {
         mplew.writeInt(page);
         mplew.write(1);
         mplew.write(1);
-        for (int i = 0; i < items.size(); i++) {
-            MTSItemInfo item = items.get(i);
+        for (MTSItemInfo item : items) {
             addItemInfo(mplew, item.getItem(), true);
             mplew.writeInt(item.getID()); //id
             mplew.writeInt(item.getTaxes()); //this + below = price
@@ -6834,13 +6806,10 @@ public class MaplePacketCreator {
         final MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
         mplew.writeShort(SendOpcode.SPAWN_DRAGON.getValue());
         mplew.writeInt(dragon.getOwner().getId());//objectid = owner id
-        mplew.writeShort(dragon.getPosition().x);
-        mplew.writeShort(0);
-        mplew.writeShort(dragon.getPosition().y);
-        mplew.writeShort(0);
+        mplew.writeInt(dragon.getPosition().x);
+        mplew.writeInt(dragon.getPosition().y);
         mplew.write(dragon.getStance());
-        mplew.write(0);
-        mplew.writeShort(dragon.getOwner().getJob().getId());
+        mplew.writeShort(0);
         return mplew.getPacket();
     }
 

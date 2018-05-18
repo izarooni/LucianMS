@@ -875,7 +875,7 @@ public class GameMasterCommands {
         } else if (command.equals("ap", "sp")) {
             boolean ap = command.equals("ap");
             if (args.length() > 0) {
-                Short amount = args.parseNumber(0, int.class);
+                Short amount = args.parseNumber(0, short.class);
                 String error = args.getFirstError();
                 if (error != null) {
                     player.dropMessage(5, error);

@@ -227,9 +227,6 @@ public final class PlayerLoggedinHandler extends AbstractMaplePacketHandler {
         player.checkBerserk();
         player.expirationTask();
         player.setRates();
-        if (GameConstants.hasSPTable(player.getJob()) && player.getJob().getId() != 2001) {
-            player.createDragon();
-        }
         if (newcomer && !c.hasVotedAlready()) {
             player.announce(MaplePacketCreator.earnTitleMessage("You can vote now! Vote and earn a vote point!"));
         }

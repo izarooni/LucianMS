@@ -32,6 +32,19 @@ import client.inventory.MapleInventoryType;
 import client.inventory.MaplePet;
 import client.status.MonsterStatus;
 import client.status.MonsterStatusEffect;
+import com.lucianms.cquest.CQuestData;
+import com.lucianms.cquest.requirement.CQuestItemRequirement;
+import com.lucianms.cquest.requirement.CQuestKillRequirement;
+import com.lucianms.features.EmergencyAttack;
+import com.lucianms.features.GenericEvent;
+import com.lucianms.features.summoning.BlackMageSummoner;
+import com.lucianms.features.summoning.ShenronSummoner;
+import com.lucianms.io.scripting.map.MapScriptManager;
+import com.lucianms.scheduler.Task;
+import com.lucianms.scheduler.TaskExecutor;
+import com.lucianms.server.pqs.carnival.MCarnivalGame;
+import com.lucianms.server.pqs.carnival.MCarnivalTeam;
+import constants.GameConstants;
 import constants.ItemConstants;
 import constants.ServerConstants;
 import net.server.Server;
@@ -39,25 +52,13 @@ import net.server.channel.Channel;
 import net.server.world.MaplePartyCharacter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import com.lucianms.scheduler.Task;
-import com.lucianms.scheduler.TaskExecutor;
-import com.lucianms.io.scripting.map.MapScriptManager;
 import server.MapleItemInformationProvider;
 import server.MaplePortal;
 import server.MapleStatEffect;
-import com.lucianms.features.EmergencyAttack;
-import com.lucianms.features.GenericEvent;
-import com.lucianms.features.summoning.BlackMageSummoner;
-import com.lucianms.features.summoning.ShenronSummoner;
 import server.events.gm.*;
 import server.life.*;
 import server.life.MapleLifeFactory.SelfDestruction;
 import server.partyquest.Pyramid;
-import com.lucianms.server.pqs.carnival.MCarnivalGame;
-import com.lucianms.server.pqs.carnival.MCarnivalTeam;
-import com.lucianms.cquest.CQuestData;
-import com.lucianms.cquest.requirement.CQuestItemRequirement;
-import com.lucianms.cquest.requirement.CQuestKillRequirement;
 import tools.MaplePacketCreator;
 import tools.Pair;
 import tools.Randomizer;
@@ -1709,6 +1710,10 @@ public class MapleMap {
             chr.getClient().announce(MaplePacketCreator.boatPacket(false));
         }
         chr.receivePartyMemberHP();
+        if (chr.getDragon() == null && GameConstants.hasSPTable(chr.getJob())) {
+            chr.createDragon();
+            broadcastMessage(MaplePacketCreator.spawnDragon(chr.getDragon()));
+        }
     }
 
     public MaplePortal findClosestPortal(Point from) {

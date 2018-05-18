@@ -107,9 +107,12 @@ public class SkillFactory {
             isBuff |= action_ != null && MapleDataTool.getString("0", action_, "").equals("alert2");
             switch (id) {
                 case Hero.RUSH:
+                case Hero.MONSTER_MAGNET:
                 case Paladin.RUSH:
-                case DarkKnight.RUSH:
+                case Paladin.MONSTER_MAGNET:
                 case DragonKnight.SACRIFICE:
+                case DarkKnight.RUSH:
+                case DarkKnight.MONSTER_MAGNET:
                 case FPMage.EXPLOSION:
                 case FPMage.POISON_MIST:
                 case Cleric.HEAL:
@@ -120,11 +123,9 @@ public class SkillFactory {
                 case Bandit.STEAL:
                 case Shadower.SMOKESCREEN:
                 case SuperGM.HEAL_PLUS_DISPEL:
-                case Hero.MONSTER_MAGNET:
-                case Paladin.MONSTER_MAGNET:
-                case DarkKnight.MONSTER_MAGNET:
                 case Evan.ICE_BREATH:
                 case Evan.FIRE_BREATH:
+                case Evan.RECOVERY_AURA:
                 case Gunslinger.RECOIL_SHOT:
                 case Marauder.ENERGY_DRAIN:
                 case BlazeWizard.FLAME_GEAR:
@@ -132,7 +133,6 @@ public class SkillFactory {
                 case NightWalker.POISON_BOMB:
                 case NightWalker.VAMPIRE:
                 case ChiefBandit.CHAKRA:
-                case Evan.RECOVERY_AURA:
                     isBuff = false;
                     break;
                 case Beginner.RECOVERY:
