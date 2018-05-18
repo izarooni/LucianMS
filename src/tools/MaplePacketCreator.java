@@ -108,7 +108,8 @@ public class MaplePacketCreator {
         }
 
         mplew.write(chr.getLevel()); // level
-        mplew.writeShort(chr.getJob().getId()); // job
+        final MapleJob job = chr.getJob();
+        mplew.writeShort(job.getId()); // job
         mplew.writeShort(chr.getStr()); // str
         mplew.writeShort(chr.getDex()); // dex
         mplew.writeShort(chr.getInt()); // int
@@ -118,13 +119,18 @@ public class MaplePacketCreator {
         mplew.writeShort(chr.getMp()); // mp (?)
         mplew.writeShort(chr.getMaxMp()); // maxmp
         mplew.writeShort(chr.getRemainingAp()); // remaining ap
-        if (GameConstants.hasSPTable(chr.getJob())) {
-            mplew.write(chr.getRemainingSpSize());
-            for (int i = 0; i < chr.getRemainingSps().length; i++) {
-                if (chr.getRemainingSpBySkill(i) > 0) {
-                    mplew.write(i + 1);
-                    mplew.write(chr.getRemainingSpBySkill(i));
-                }
+        if (GameConstants.hasSPTable(job)) {
+            byte pages = (byte) (job.getId() % 10);
+            if (job.getId() >= MapleJob.EVAN1.getId()) {
+                pages++;
+            }
+            if (job.getId() >= MapleJob.EVAN2.getId()) {
+                pages++;
+            }
+            mplew.write(pages);
+            for (int i = 1; i <= pages; i++) {
+                mplew.write(i);
+                mplew.write(chr.getRemainingSpBySkill(i - 1));
             }
         } else {
             mplew.writeShort(chr.getRemainingSp()); // remaining sp

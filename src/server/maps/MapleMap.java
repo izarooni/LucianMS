@@ -1614,12 +1614,15 @@ public class MapleMap {
         final MapleDragon dragon = chr.getDragon();
         if (dragon != null) {
             dragon.setPosition(chr.getPosition());
-            this.addMapObject(dragon);
+            addMapObject(dragon);
             if (chr.isHidden()) {
-                this.broadcastGMMessage(chr, MaplePacketCreator.spawnDragon(dragon));
+                broadcastGMMessage(chr, MaplePacketCreator.spawnDragon(dragon));
             } else {
-                this.broadcastMessage(chr, MaplePacketCreator.spawnDragon(dragon));
+                broadcastMessage(chr, MaplePacketCreator.spawnDragon(dragon));
             }
+        } else if (GameConstants.hasSPTable(chr.getJob())) {
+            chr.createDragon();
+            broadcastMessage(MaplePacketCreator.spawnDragon(chr.getDragon()));
         }
 
         MapleStatEffect summonStat = chr.getStatForBuff(MapleBuffStat.SUMMON);
