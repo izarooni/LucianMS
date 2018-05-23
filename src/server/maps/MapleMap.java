@@ -1772,11 +1772,12 @@ public class MapleMap {
             }
         }
         if (chr.getDragon() != null) {
+            chr.setDragon(null);
             removeMapObject(chr.getDragon());
             if (chr.isHidden()) {
-                this.broadcastGMMessage(chr, MaplePacketCreator.removeDragon(chr.getId()));
+                broadcastGMMessage(chr, MaplePacketCreator.removeDragon(chr.getId()));
             } else {
-                this.broadcastMessage(chr, MaplePacketCreator.removeDragon(chr.getId()));
+                broadcastMessage(chr, MaplePacketCreator.removeDragon(chr.getId()));
             }
         }
     }

@@ -22,6 +22,7 @@
 package client;
 
 public enum MapleBuffStat {
+
     MORPH(0x2),
     RECOVERY(0x4),
     MAPLE_WARRIOR(0x8),
@@ -35,9 +36,9 @@ public enum MapleBuffStat {
     HAMSTRING(0x800),
     BLIND(0x1000),
     CONCENTRATE(0x2000),
-     //4000
+    EVAN_SLOW(0x4000),
     ECHO_OF_HERO(0x8000),
-    //10000
+    MAGIC_RESIST(0x10000),
     GHOST_MORPH(0x20000),
     AURA(0x40000),
     CONFUSE(0x80000),
@@ -89,15 +90,15 @@ public enum MapleBuffStat {
     //0x2000000000000000L
     WEAKEN(0x4000000000000000L),
     //THAT GAP
-    
+
     //all incorrect buffstats
-    SLOW(0x200000000L, true), 
-    ELEMENTAL_RESET(0x200000000L, true), 
-    MAGIC_SHIELD(0x400000000L, true), 
-    MAGIC_RESISTANCE(0x800000000L, true), 
+    SLOW(0x200000000L, true),
+    ELEMENTAL_RESET(0x200000000L, true),
+    MAGIC_SHIELD(0x400000000L, true),
+    MAGIC_RESISTANCE(0x800000000L, true),
     // needs Soul Stone
     //end incorrect buffstats
-    
+
     ARAN_COMBO(0x1000000000L, true),
     COMBO_DRAIN(0x2000000000L, true),
     COMBO_BARRIER(0x4000000000L, true),
@@ -105,21 +106,21 @@ public enum MapleBuffStat {
     SMART_KNOCKBACK(0x10000000000L, true),
     PYRAMID_PQ(0x20000000000L, true),
     ENERGY_CHARGE(0x4000000000000L, true),
-	DASH2(0x8000000000000L, true), // correct (speed)
+    DASH2(0x8000000000000L, true), // correct (speed)
     DASH(0x10000000000000L, true), // correct (jump)
-    MONSTER_RIDING(0x20000000000000L, true),    
+    MONSTER_RIDING(0x20000000000000L, true),
     SPEED_INFUSION(0x40000000000000L, true),
     HOMING_BEACON(0x80000000000000L, true);
 
     private final long i;
     private final boolean isFirst;
 
-    private MapleBuffStat(long i, boolean isFirst) {
+    MapleBuffStat(long i, boolean isFirst) {
         this.i = i;
         this.isFirst = isFirst;
     }
 
-    private MapleBuffStat(long i) {
+    MapleBuffStat(long i) {
         this.i = i;
         this.isFirst = false;
     }

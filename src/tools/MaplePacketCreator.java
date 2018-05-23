@@ -119,19 +119,8 @@ public class MaplePacketCreator {
         mplew.writeShort(chr.getMp()); // mp (?)
         mplew.writeShort(chr.getMaxMp()); // maxmp
         mplew.writeShort(chr.getRemainingAp()); // remaining ap
-        if (GameConstants.hasSPTable(job)) {
-            byte pages = (byte) (job.getId() % 10);
-            if (job.getId() >= MapleJob.EVAN1.getId()) {
-                pages++;
-            }
-            if (job.getId() >= MapleJob.EVAN2.getId()) {
-                pages++;
-            }
-            mplew.write(pages);
-            for (int i = 1; i <= pages; i++) {
-                mplew.write(i);
-                mplew.write(chr.getRemainingSpBySkill(i - 1));
-            }
+        if (job.isEvan()) {
+            encodeEvanSkillPoints(mplew, job.getId());
         } else {
             mplew.writeShort(chr.getRemainingSp()); // remaining sp
         }
@@ -863,6 +852,22 @@ public class MaplePacketCreator {
         return mplew.getPacket();
     }
 
+    private static void encodeEvanSkillPoints(MaplePacketLittleEndianWriter mplew, int jobID) {
+        int nJobLevel = 0;
+        if (jobID >= 2200) {
+            nJobLevel++;
+        }
+        if (jobID >= 2210) {
+            nJobLevel++;
+        }
+        nJobLevel += (jobID % 10);
+        mplew.write(nJobLevel);
+        for (int i = 1; i <= nJobLevel; i++) {
+            mplew.write(i);
+            mplew.write(0);
+        }
+    }
+
     /**
      * Gets character info for a character.
      *
@@ -931,12 +936,8 @@ public class MaplePacketCreator {
                 } else if (statupdate.getLeft().getValue() < 0x20) {
                     mplew.write(statupdate.getRight().shortValue());
                 } else if (statupdate.getLeft().getValue() == MapleStat.AVAILABLESP.getValue()) {
-                    if (GameConstants.hasSPTable(chr.getJob())) {
-                        mplew.write(chr.getRemainingSpSize());
-                        for (int i = 0; i < chr.getRemainingSps().length; i++) {
-                            mplew.write(i + 1);
-                            mplew.write(chr.getRemainingSpBySkill(i));
-                        }
+                    if (chr.getJob().isEvan()) {
+                        encodeEvanSkillPoints(mplew, chr.getJob().getId());
                     } else {
                         mplew.writeShort(statupdate.getRight().shortValue());
                     }
