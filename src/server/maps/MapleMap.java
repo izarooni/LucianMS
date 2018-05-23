@@ -1772,8 +1772,8 @@ public class MapleMap {
             }
         }
         if (chr.getDragon() != null) {
-            chr.setDragon(null);
             removeMapObject(chr.getDragon());
+            chr.setDragon(null);
             if (chr.isHidden()) {
                 broadcastGMMessage(chr, MaplePacketCreator.removeDragon(chr.getId()));
             } else {
