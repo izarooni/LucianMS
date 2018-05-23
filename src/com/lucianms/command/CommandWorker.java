@@ -2,6 +2,7 @@ package com.lucianms.command;
 
 import client.MapleCharacter;
 import client.MapleClient;
+import com.lucianms.command.executors.*;
 
 import java.util.regex.Pattern;
 
@@ -54,19 +55,24 @@ public class CommandWorker {
         CommandArgs args = new CommandArgs(sp);
 
         if (h == '!' && (player.isGM() || noCheck)) {
-            if (!EventCommands.execute(client, command, args)) {
-                if (player.gmLevel() >= 6) {
-                    AdministratorCommands.execute(client, command, args);
+            try {
+                if (!EventCommands.execute(client, command, args)) {
+                    if (player.gmLevel() >= 6) {
+                        AdministratorCommands.execute(client, command, args);
+                    }
+                    if (player.gmLevel() >= 3) {
+                        HGMCommands.execute(client, command, args);
+                    }
+                    if (player.gmLevel() >= 2) {
+                        GameMasterCommands.execute(client, command, args);
+                    }
+                    if (player.gmLevel() >= 1) {
+                        EventCommands.execute(client, command, args);
+                    }
                 }
-                if (player.gmLevel() >= 3) {
-                    HGMCommands.execute(client, command, args);
-                }
-                if (player.gmLevel() >= 2) {
-                    GameMasterCommands.execute(client, command, args);
-                }
-                if (player.gmLevel() >= 1) {
-                    EventCommands.execute(client, command, args);
-                }
+            } catch (Exception e) {
+                e.printStackTrace();
+                player.sendMessage(5, "An error occurred in this command.");
             }
             return true;
         } else if (h == '@') {
@@ -83,11 +89,11 @@ public class CommandWorker {
     /**
      * Helper class that manages uses with the command name
      */
-    static class Command {
+    public static class Command {
 
         private final String name;
 
-        Command(String name) {
+        public Command(String name) {
             this.name = name;
         }
 

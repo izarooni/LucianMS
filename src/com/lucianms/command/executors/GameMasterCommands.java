@@ -1,10 +1,11 @@
-package com.lucianms.command;
+package com.lucianms.command.executors;
 
 import client.*;
 import client.inventory.Equip;
 import client.inventory.Item;
 import client.inventory.MapleInventory;
 import client.inventory.MapleInventoryType;
+import com.lucianms.command.CommandWorker;
 import com.lucianms.helpers.JailManager;
 import constants.ItemConstants;
 import constants.ServerConstants;
@@ -396,6 +397,7 @@ public class GameMasterCommands {
                     player.dropMessage(5, error);
                     return;
                 }
+                TagRange = range;
                 player.dropMessage(6, "Tag ranged changed to " + range);
             }
         } else if (command.equals("tag")) {

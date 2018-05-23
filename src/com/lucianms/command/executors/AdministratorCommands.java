@@ -1,10 +1,11 @@
-package com.lucianms.command;
+package com.lucianms.command.executors;
 
 import client.MapleCharacter;
 import client.MapleClient;
 import client.MapleRing;
 import client.Relationship;
 import client.inventory.Equip;
+import com.lucianms.command.CommandWorker;
 import com.lucianms.cquest.CQuestBuilder;
 import com.lucianms.features.auto.GAutoEvent;
 import com.lucianms.features.auto.GAutoEventManager;

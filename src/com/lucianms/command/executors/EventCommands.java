@@ -1,8 +1,9 @@
-package com.lucianms.command;
+package com.lucianms.command.executors;
 
 import client.MapleCharacter;
 import client.MapleClient;
 import client.MapleDisease;
+import com.lucianms.command.CommandWorker;
 import net.server.channel.Channel;
 import net.server.world.MapleParty;
 import net.server.world.MaplePartyCharacter;

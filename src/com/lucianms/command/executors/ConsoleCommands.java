@@ -1,6 +1,7 @@
-package com.lucianms.command;
+package com.lucianms.command.executors;
 
 import client.MapleCharacter;
+import com.lucianms.command.CommandWorker;
 import com.lucianms.discord.DiscordSession;
 import com.lucianms.discord.Headers;
 import net.server.Server;

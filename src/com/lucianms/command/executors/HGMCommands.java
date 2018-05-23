@@ -1,9 +1,10 @@
-package com.lucianms.command;
+package com.lucianms.command.executors;
 
 import client.MapleCharacter;
 import client.MapleClient;
 import client.SkillFactory;
 import client.inventory.*;
+import com.lucianms.command.CommandWorker;
 import com.lucianms.io.scripting.npc.NPCScriptManager;
 import com.lucianms.io.scripting.portal.PortalScriptManager;
 import com.lucianms.io.scripting.reactor.ReactorScriptManager;

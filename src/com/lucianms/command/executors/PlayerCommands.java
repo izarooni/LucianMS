@@ -1,8 +1,11 @@
-package com.lucianms.command;
+package com.lucianms.command.executors;
 
-import client.*;
-import client.Relationship.Status;
+import client.MapleCharacter;
+import client.MapleClient;
+import client.MapleStat;
+import client.SpamTracker;
 import client.meta.Occupation;
+import com.lucianms.command.CommandWorker;
 import com.lucianms.features.GenericEvent;
 import com.lucianms.features.ManualPlayerEvent;
 import com.lucianms.features.PlayerBattle;

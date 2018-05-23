@@ -23,7 +23,7 @@ package net.server;
 
 import client.MapleCharacter;
 import client.SkillFactory;
-import com.lucianms.command.ConsoleCommands;
+import com.lucianms.command.executors.ConsoleCommands;
 import constants.ServerConstants;
 import com.lucianms.io.Config;
 import com.lucianms.io.defaults.Defaults;
