@@ -20,17 +20,18 @@ import server.MapleItemInformationProvider;
 import server.maps.MapleMap;
 import server.maps.MapleMapItem;
 import server.maps.MapleMapObject;
+import server.maps.MapleMapObjectType;
 import tools.DatabaseConnection;
 import tools.MaplePacketCreator;
 import tools.Pair;
 
-import java.awt.*;
 import java.io.File;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.DateFormat;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.function.BiPredicate;
@@ -41,7 +42,7 @@ import java.util.function.BiPredicate;
 public class GameMasterCommands {
 
 
-    private static int TagRange = 5000;
+    private static int TagRange = 20000;
 
     public static void execute(MapleClient client, CommandWorker.Command command, CommandWorker.CommandArgs args) {
         MapleCharacter player = client.getPlayer();
@@ -401,14 +402,13 @@ public class GameMasterCommands {
                 player.dropMessage(6, "Tag ranged changed to " + range);
             }
         } else if (command.equals("tag")) {
-            ArrayList<MapleCharacter> players = new ArrayList<>(player.getMap().getCharacters());
-            for (MapleCharacter chrs : player.getMap().getPlayersInRange(new Rectangle(TagRange / 100, TagRange / 100), players)) {
+            for (MapleMapObject obj : player.getMap().getMapObjectsInRange(player.getPosition(), TagRange, Collections.singletonList(MapleMapObjectType.PLAYER))) {
+                MapleCharacter chrs = (MapleCharacter) obj;
                 if (chrs != player && !chrs.isGM()) {
                     chrs.setHpMp(0);
                     chrs.dropMessage(6, "You have been tagged!");
                 }
             }
-            players.clear();
         } else if (command.equals("maxskills")) {
             player.maxSkills();
             player.dropMessage(6, "Your skills are now maxed!");
