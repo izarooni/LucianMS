@@ -120,6 +120,7 @@ public class EmergencyAttack extends GenericEvent {
             totalExp *= 1.50;
             unregisterPlayers(world);
             map.setRespawnEnabled(true);
+            map.respawn();
             map.broadcastMessage(MaplePacketCreator.removeClock());
             map.broadcastMessage(MaplePacketCreator.showEffect("PSO2/stuff/5"));
             map.broadcastMessage(MaplePacketCreator.playSound("PSO2/Completed"));

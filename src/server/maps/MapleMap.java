@@ -1671,7 +1671,7 @@ public class MapleMap {
                     && !spawnPoints.isEmpty()
                     && Arrays.binarySearch(Server.getInstance().getConfig().getIntArray("EmergencyExcludes"), getId()) < 0) {
                 // 1/25 chance to trigger emergency
-                if (((chr.isGM() && chr.isDebug()) || (System.currentTimeMillis() > nextEmergency))
+                if ((chr.isGM() && chr.isDebug()) || ((System.currentTimeMillis() > nextEmergency))
                         && Randomizer.nextInt(25) == 1
                         && chr.getGenericEvents().isEmpty()
                         && chr.getEventInstance() == null
