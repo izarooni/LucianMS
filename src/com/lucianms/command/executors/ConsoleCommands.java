@@ -2,19 +2,19 @@ package com.lucianms.command.executors;
 
 import client.MapleCharacter;
 import com.lucianms.command.CommandWorker;
+import com.lucianms.cquest.CQuestBuilder;
 import com.lucianms.discord.DiscordSession;
 import com.lucianms.discord.Headers;
+import com.lucianms.helpers.HouseManager;
+import com.lucianms.io.scripting.Achievements;
+import com.lucianms.scheduler.TaskExecutor;
+import com.lucianms.server.Whitelist;
 import net.server.Server;
 import net.server.channel.Channel;
 import net.server.world.World;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import com.lucianms.scheduler.TaskExecutor;
-import com.lucianms.io.scripting.Achievements;
 import server.CashShop;
-import com.lucianms.server.Whitelist;
-import com.lucianms.cquest.CQuestBuilder;
-import com.lucianms.helpers.HouseManager;
 import tools.data.output.MaplePacketLittleEndianWriter;
 
 import java.io.IOException;
@@ -84,6 +84,21 @@ public class ConsoleCommands {
 
             reading = false;
             System.exit(0);
+        } else if (command.equals("reloadmap")) {
+            if (args.length() == 1) {
+                Integer mapID = args.parseNumber(0, int.class);
+                String error = args.getFirstError();
+                if (error != null) {
+                    LOGGER.warn(error);
+                    return;
+                }
+                for (World world : Server.getInstance().getWorlds()) {
+                    for (Channel channel : world.getChannels()) {
+                        channel.reloadMap(mapID);
+                        LOGGER.info("Reloading map {} in world {} channel {}", mapID, (world.getId() + 1), channel.getId());
+                    }
+                }
+            }
         } else if (command.equals("reload")) {
             if (args.length() == 1) {
                 switch (args.get(0)) {
@@ -187,6 +202,7 @@ public class ConsoleCommands {
             LOGGER.info("exit - Safely stop and close the server");
             LOGGER.info("crash <username> - Crash an in-game character");
             LOGGER.info("online - View current online players");
+            LOGGER.info("reloadmap <map_id> - Reload an in-game map");
             LOGGER.info("reload <operation> - Reload/clear the cache of specified feature");
         }
     }
