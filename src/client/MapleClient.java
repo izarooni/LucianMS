@@ -813,7 +813,7 @@ public class MapleClient {
                                         lchr = pchr;
                                     }
                                 }
-                                if (lchr != null) {
+                                if (lchr != null && lchr.getId() != player.getId()) {
                                     worlda.updateParty(party.getId(), PartyOperation.CHANGE_LEADER, lchr);
                                 }
                             }
@@ -834,7 +834,7 @@ public class MapleClient {
                                         lchr = pchr;
                                     }
                                 }
-                                if (lchr != null) {
+                                if (lchr != null && lchr.getId() != player.getId()) {
                                     worlda.updateParty(party.getId(), PartyOperation.CHANGE_LEADER, lchr);
                                 }
                             }

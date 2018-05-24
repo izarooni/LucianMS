@@ -331,7 +331,7 @@ public class AbstractPlayerInteraction {
     }
 
     public boolean isLeader() {
-        return getParty() != null && getParty().getLeader().equals(getPlayer().getMPC());
+        return getParty() != null && getParty().getLeader().getId() == getPlayer().getMPC().getId();
 
     }
 

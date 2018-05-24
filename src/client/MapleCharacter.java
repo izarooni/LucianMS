@@ -27,6 +27,17 @@ import client.autoban.Cheater;
 import client.inventory.*;
 import client.meta.Achievement;
 import client.meta.Occupation;
+import com.lucianms.cquest.CQuestBuilder;
+import com.lucianms.cquest.CQuestData;
+import com.lucianms.features.GenericEvent;
+import com.lucianms.features.ManualPlayerEvent;
+import com.lucianms.features.PlayerTitles;
+import com.lucianms.features.controllers.JumpQuestController;
+import com.lucianms.features.summoning.ShenronSummoner;
+import com.lucianms.io.scripting.Achievements;
+import com.lucianms.io.scripting.event.EventInstanceManager;
+import com.lucianms.scheduler.Task;
+import com.lucianms.scheduler.TaskExecutor;
 import constants.ExpTable;
 import constants.GameConstants;
 import constants.ItemConstants;
@@ -45,18 +56,9 @@ import org.slf4j.LoggerFactory;
 import org.slf4j.helpers.MessageFormatter;
 import provider.MapleData;
 import provider.MapleDataProviderFactory;
-import com.lucianms.scheduler.Task;
-import com.lucianms.scheduler.TaskExecutor;
-import com.lucianms.io.scripting.Achievements;
-import com.lucianms.io.scripting.event.EventInstanceManager;
 import server.*;
 import server.events.MapleEvents;
 import server.events.RescueGaga;
-import com.lucianms.features.GenericEvent;
-import com.lucianms.features.ManualPlayerEvent;
-import com.lucianms.features.PlayerTitles;
-import com.lucianms.features.controllers.JumpQuestController;
-import com.lucianms.features.summoning.ShenronSummoner;
 import server.events.gm.MapleFitness;
 import server.events.gm.MapleOla;
 import server.life.FakePlayer;
@@ -67,8 +69,6 @@ import server.partyquest.MonsterCarnival;
 import server.partyquest.MonsterCarnivalParty;
 import server.partyquest.PartyQuest;
 import server.quest.MapleQuest;
-import com.lucianms.cquest.CQuestBuilder;
-import com.lucianms.cquest.CQuestData;
 import tools.*;
 
 import java.awt.*;
@@ -634,7 +634,10 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
                     ret.mpc = party.getMemberById(ret.id);
                     if (ret.mpc != null) {
                         ret.party = party;
+                    } else {
+                        ret.mpc = new MaplePartyCharacter(ret);
                     }
+                    ret.party.setLeader(ret.mpc);
                 }
                 int messengerid = rs.getInt("messengerid");
                 int position = rs.getInt("messengerposition");
