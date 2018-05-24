@@ -630,7 +630,6 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
                 ret.setPosition(portal.getPosition());
                 int partyid = rs.getInt("party");
                 MapleParty party = Server.getInstance().getWorld(ret.world).getParty(partyid);
-                LOGGER.info("Party ID : {}", partyid);
                 if (party != null) {
                     ret.mpc = new MaplePartyCharacter(ret);
                     party.updateMember(ret.mpc);

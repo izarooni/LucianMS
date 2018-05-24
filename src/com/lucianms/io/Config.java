@@ -46,10 +46,10 @@ public class Config {
 
     public int[] getIntArray(String key) {
         int[] array = iaCache.getOrDefault(key, null);
-        if (array != null) {
-            return array;
-        }
         String string = getString(key);
+        if (array != null || string.isEmpty()) {
+            return new int[0];
+        }
         String[] split = string.split(",");
         array = new int[split.length];
         for (int i = 0; i < split.length; i++) {
