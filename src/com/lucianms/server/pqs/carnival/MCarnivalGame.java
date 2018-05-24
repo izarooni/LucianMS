@@ -29,8 +29,8 @@ public class MCarnivalGame extends GenericEvent {
         if (startTimestamp == -1) {
             startTimestamp = System.currentTimeMillis();
         }
-        player.changeMap(lobby.getBattlefieldMapId());
         player.addGenericEvent(this);
+        player.changeMap(lobby.getBattlefieldMapId());
     }
 
     @Override
@@ -62,10 +62,21 @@ public class MCarnivalGame extends GenericEvent {
         event.setCanceled(true);
     }
 
+    public void broadcastMessage(MCarnivalTeam team, String content, Object... args) {
+        if (team == null || team.getId() == 0) {
+            teamRed.getParty().getMembers().forEach(m -> m.getPlayer().sendMessage(5, content, args));
+        }
+        if (team == null || team.getId() == 1) {
+            teamBlue.getParty().getMembers().forEach(m -> m.getPlayer().sendMessage(5, content, args));
+        }
+    }
+
     public void dispose() {
         MapleMap map = lobby.getChannel().removeMap(lobby.getBattlefieldMapId());
-        map.killAllMonsters();
-        map.clearDrops();
+        if (map != null) {
+            map.killAllMonsters();
+            map.clearDrops();
+        }
         lobby.setState(MCarnivalLobby.State.Available);
     }
 
@@ -98,6 +109,7 @@ public class MCarnivalGame extends GenericEvent {
     public void setTeamRed(MCarnivalTeam teamRed) {
         this.teamRed = teamRed;
         this.teamRed.getParty().getMembers().forEach(p -> p.getPlayer().setTeam(0));
+        broadcastMessage(teamRed, "You are team [Maple Red]");
     }
 
     public MCarnivalTeam getTeamBlue() {
@@ -106,6 +118,7 @@ public class MCarnivalGame extends GenericEvent {
 
     public void setTeamBlue(MCarnivalTeam teamBlue) {
         this.teamBlue = teamBlue;
-        this.teamRed.getParty().getMembers().forEach(p -> p.getPlayer().setTeam(1));
+        this.teamBlue.getParty().getMembers().forEach(p -> p.getPlayer().setTeam(1));
+        broadcastMessage(teamBlue, "You are team [Maple Blue]");
     }
 }
