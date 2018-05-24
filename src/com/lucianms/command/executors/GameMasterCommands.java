@@ -258,7 +258,7 @@ public class GameMasterCommands {
                     return;
                 }
                 if (args.length() > 1) {
-                    for (int i = 2; i < args.length(); i++) {
+                    for (int i = 1; i < args.length(); i++) {
                         String username = args.get(i);
                         MapleCharacter target = ch.getPlayerStorage().getCharacterByName(username);
                         if (target != null) {
