@@ -415,8 +415,8 @@ public class GameMasterCommands {
         } else if (command.equals("heal", "healmap")) {
             if (command.equals("healmap")) {
                 for (MapleCharacter players : player.getMap().getCharacters()) {
-                    players.setHp(players.getMaxHp());
-                    players.setMp(players.getMaxMp());
+                    players.setHp(Math.max(players.getMaxHp(), players.getCurrentMaxHp()));
+                    players.setMp(Math.max(players.getMaxMp(), players.getCurrentMaxMp()));
                     players.updateSingleStat(MapleStat.HP, players.getHp());
                     players.updateSingleStat(MapleStat.MP, players.getMp());
                 }
