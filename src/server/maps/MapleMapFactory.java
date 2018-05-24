@@ -177,7 +177,7 @@ public class MapleMapFactory {
                         } else if (type.equals("m")) {
                             MapleMonster monster = ((MapleMonster) myLife);
                             if (skipMonsters) {
-                                map.addMonsterSpawnPoint(new SpawnPoint(monster, monster.getPosition(), !monster.isMobile(), 0, 5000, -1));
+                                map.addMonsterSpawnPoint(new SpawnPoint(map, monster, !monster.isMobile(), mobTime, -1));
                             } else {
                                 map.addMonsterSpawn((MapleMonster) myLife, mobTime, -1);
                             }
@@ -213,7 +213,7 @@ public class MapleMapFactory {
                                 map.spawnMonster(monster);
                             } else {
                                 if (skipMonsters) {
-                                    SpawnPoint spawnPoint = new SpawnPoint(monster, map.calcPointBelow(monster.getPosition()), !monster.isMobile(), mobTime, 5000, team);
+                                    SpawnPoint spawnPoint = new SpawnPoint(map, monster, !monster.isMobile(), mobTime, team);
                                     map.addMonsterSpawnPoint(spawnPoint);
                                 } else {
                                     map.addMonsterSpawn(monster, mobTime, team);

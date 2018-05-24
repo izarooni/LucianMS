@@ -30,11 +30,11 @@ import client.inventory.MapleInventoryType;
 import client.meta.Occupation;
 import client.status.MonsterStatus;
 import client.status.MonsterStatusEffect;
+import com.lucianms.scheduler.TaskExecutor;
 import constants.GameConstants;
 import constants.ItemConstants;
 import constants.skills.*;
 import net.PacketEvent;
-import com.lucianms.scheduler.TaskExecutor;
 import server.MapleItemInformationProvider;
 import server.MapleStatEffect;
 import server.life.*;
@@ -106,7 +106,7 @@ public abstract class AbstractDealDamageEvent extends PacketEvent {
                 if (player.getMp() < attackEffect.getMpCon()) {
                     Cheater.CheatEntry entry = player.getCheater().getCheatEntry(Cheats.InsufficientMana);
                     entry.incrementCheatCount();
-                    entry.announce(player.getClient(), String.format("[%d] %s insufficient MP to use skill %d", entry.cheatCount, player.getName(), attack.skill), 5000);
+                    entry.announce(player.getClient(), 5000, "[{}] {} insufficient MP to use skill {}", entry.cheatCount, player.getName(), attack.skill);
                 }
 
                 if (attack.skill != Cleric.HEAL) {
@@ -133,7 +133,7 @@ public abstract class AbstractDealDamageEvent extends PacketEvent {
                 if (attack.numAttacked > mobCount) {
                     Cheater.CheatEntry entry = player.getCheater().getCheatEntry(Cheats.ConcurrentAttacks);
                     entry.incrementCheatCount();
-                    entry.announce(player.getClient(), String.format("[%d] %s attacking too many monsters at once (%d monsters, should be %d)", entry.cheatCount, player.getName(), attack.numAttacked, attackEffect.getMobCount()), 5000);
+                    entry.announce(player.getClient(), 500, "[{}] {} attacking too many monsters at once ({} monsters, should be {}) skill: {}", entry.cheatCount, player.getName(), attack.numAttacked, attackEffect.getMobCount(), attack.skill);
                 }
             }
             if (!player.isAlive()) {

@@ -1,11 +1,11 @@
 package com.lucianms.features;
 
 import client.MapleCharacter;
+import com.lucianms.scheduler.Task;
+import com.lucianms.scheduler.TaskExecutor;
 import constants.ExpTable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import com.lucianms.scheduler.Task;
-import com.lucianms.scheduler.TaskExecutor;
 import server.MaplePortal;
 import server.life.*;
 import server.maps.MapleMap;
@@ -49,15 +49,12 @@ public class MonsterPark extends GenericEvent {
                     }
                 }
                 for (SpawnPoint spawnPoint : instanceMap.getMonsterSpawnPoints()) {
-                    MapleMonster monster = MapleLifeFactory.getMonster(spawnPoint.getMonster().getId());
+                    MapleMonster monster = spawnPoint.getMonster();
                     if (monster != null) {
-                        MapleMonsterStats stats = new MapleMonsterStats();
-                        stats.setHp(monster.getHp());
-                        stats.setMp(monster.getMp());
-                        stats.setExp((int) (ExpTable.getExpNeededForLevel(baseLevel) * (Math.random() * 0.01) + 0.01));
-                        monster.setOverrideStats(stats);
+                        MapleMonsterStats overrides = spawnPoint.createOverrides();
+                        overrides.setExp((int) (ExpTable.getExpNeededForLevel(baseLevel) * (Math.random() * 0.01) + 0.01));
                         monster.addListener(new MonsterListener() {
-                                @Override
+                            @Override
                             public void monsterKilled(int aniTime) {
                                 totalExp.addAndGet(monster.getExp());
                                 if (instanceMap.getMonsters().isEmpty()) {
@@ -82,9 +79,10 @@ public class MonsterPark extends GenericEvent {
                                 }
                             }
                         });
+                        spawnPoint.summonMonster();
                         instanceMap.spawnMonsterOnGroudBelow(monster, spawnPoint.getPosition());
                     } else {
-                        LOGGER.warn("Invalid monster {} for map {}", spawnPoint.getMonster().getId(), mapId);
+                        LOGGER.warn("Invalid monster {} for map {}", spawnPoint.getMonsterID(), mapId);
                     }
                 }
             } else {

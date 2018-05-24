@@ -3,6 +3,8 @@ package com.lucianms.features;
 import client.MapleCharacter;
 import net.PacketEvent;
 import com.lucianms.lang.annotation.PacketWorker;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -15,6 +17,7 @@ import java.util.HashMap;
 public abstract class GenericEvent {
 
     private HashMap<Class<?>, ArrayList<Method>> methods = new HashMap<>();
+    private Logger LOGGER = LoggerFactory.getLogger(getClass());
 
     /**
      * Iterates through methods of the specified object class and stores
@@ -35,6 +38,10 @@ public abstract class GenericEvent {
                 }
             }
         }
+    }
+
+    public final Logger logger() {
+        return LOGGER;
     }
 
     /**

@@ -77,6 +77,7 @@ function Queue(selection) {
                         // available lobby
                         game.setState(LobbyState.Waiting);
                     }
+
                     // warp present party members to the lobby
                     cm.getPartyMembers().forEach(function(chr) {
                         if (chr.getMapId() == M_Office) {

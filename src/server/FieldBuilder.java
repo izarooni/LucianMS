@@ -230,7 +230,7 @@ public class FieldBuilder {
                         MapleMonster monster = ((MapleMonster) life);
                         if (!monsters) {
                             // always add spawn points
-                            map.addMonsterSpawnPoint(new SpawnPoint(monster, monster.getPosition(), !monster.isMobile(), 0, 5000, -1));
+                            map.addMonsterSpawnPoint(new SpawnPoint(map, monster, !monster.isMobile(), 0, -1));
                         } else {
                             map.addMonsterSpawn((MapleMonster) life, mobTime, -1);
                         }
@@ -274,7 +274,7 @@ public class FieldBuilder {
                         map.spawnMonster(monster);
                     } else {
                         if (!monsters) {
-                            SpawnPoint spawnPoint = new SpawnPoint(monster, map.calcPointBelow(monster.getPosition()), !monster.isMobile(), mobTime, 5000, team);
+                            SpawnPoint spawnPoint = new SpawnPoint(map, monster, !monster.isMobile(), mobTime, team);
                             map.addMonsterSpawnPoint(spawnPoint);
                         } else {
                             map.addMonsterSpawn(monster, mobTime, team);

@@ -2,11 +2,11 @@ package com.lucianms.server.pqs.carnival;
 
 import client.MapleCharacter;
 import client.MapleStat;
-import com.lucianms.server.events.channel.ChangeMapEvent;
 import com.lucianms.features.GenericEvent;
+import com.lucianms.lang.annotation.PacketWorker;
+import com.lucianms.server.events.channel.ChangeMapEvent;
 import server.maps.MapleMap;
 import tools.MaplePacketCreator;
-import com.lucianms.lang.annotation.PacketWorker;
 
 /**
  * @author izarooni
@@ -29,8 +29,8 @@ public class MCarnivalGame extends GenericEvent {
         if (startTimestamp == -1) {
             startTimestamp = System.currentTimeMillis();
         }
-        player.addGenericEvent(this);
         player.changeMap(lobby.getBattlefieldMapId());
+        player.addGenericEvent(this);
     }
 
     @Override

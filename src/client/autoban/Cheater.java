@@ -26,11 +26,11 @@ public class Cheater {
             latestCheatTimestamp = System.currentTimeMillis();
         }
 
-        public void announce(final MapleClient client, String message, int cooldown) {
+        public void announce(final MapleClient client, int cooldown, String message, Object... args) {
             if (System.currentTimeMillis() - latestAnnouncement < cooldown) {
                 return;
             }
-            LOGGER.error(message);
+            LOGGER.error(message, args);
 //            if (!client.getPlayer().isGM()) {
 //            }
             latestAnnouncement = System.currentTimeMillis();

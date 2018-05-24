@@ -1037,7 +1037,7 @@ public class MapleItemInformationProvider {
             equip.wear(false);
             Cheater.CheatEntry entry = chr.getCheater().getCheatEntry(Cheats.ForcedEquip);
             entry.incrementCheatCount();
-            entry.announce(chr.getClient(), String.format("[%s] %s attempted to force equip item %d", getClass().getSimpleName(), chr.getName(), id), 3000);
+            entry.announce(chr.getClient(), 3000, "[{}] {} attempted to force equip item {}", getClass().getSimpleName(), chr.getName(), id);
             return false;
         }
 

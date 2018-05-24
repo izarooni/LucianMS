@@ -1,10 +1,10 @@
 package com.lucianms.server.pqs.carnival;
 
+import com.lucianms.scheduler.Task;
+import com.lucianms.scheduler.TaskExecutor;
 import net.server.channel.Channel;
 import net.server.world.MapleParty;
 import net.server.world.MaplePartyCharacter;
-import com.lucianms.scheduler.Task;
-import com.lucianms.scheduler.TaskExecutor;
 import tools.MaplePacketCreator;
 import tools.Randomizer;
 
@@ -58,6 +58,10 @@ public class MCarnivalLobby {
 
     public void setWaitingTask(Task waitingTask) {
         this.waitingTask = waitingTask;
+    }
+
+    public MCarnivalGame getGame() {
+        return carnivalGame;
     }
 
     public State getState() {

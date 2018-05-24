@@ -21,34 +21,82 @@
 */
 package server.life;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
 import server.life.MapleLifeFactory.BanishInfo;
 import server.life.MapleLifeFactory.LoseItem;
 import server.life.MapleLifeFactory.SelfDestruction;
 import tools.Pair;
 
+import java.util.*;
+
 /**
  * @author Frz
  */
 public class MapleMonsterStats {
+
     private int exp, hp, mp, level, PADamage, PDDamage, MADamage, MDDamage, dropPeriod, cp, buffToGive, removeAfter;
     private boolean boss, undead, ffaLoot, isExplosiveReward, firstAttack, removeOnMiss;
     private String name;
     private Map<String, Integer> animationTimes = new HashMap<>();
     private Map<Element, ElementalEffectiveness> resistance = new HashMap<>();
+    private List<Pair<Integer, Integer>> skills = new ArrayList<>();
+    private List<LoseItem> loseItem = null;
     private List<Integer> revives = Collections.emptyList();
     private byte tagColor, tagBgColor;
-    private List<Pair<Integer, Integer>> skills = new ArrayList<>();
     private Pair<Integer, Integer> cool = null;
     private BanishInfo banish = null;
-    private List<LoseItem> loseItem = null;
     private SelfDestruction selfDestruction = null;
     private boolean friendly;
+
+    public MapleMonsterStats() {
+    }
+
+    /**
+     * Create a copy of a monster's stats
+     *
+     * @param stats the stats to copy
+     */
+    public MapleMonsterStats(MapleMonsterStats stats) {
+        name = stats.name;
+        tagColor = stats.tagColor;
+        tagBgColor = stats.tagBgColor;
+
+        //region ints
+        exp = stats.exp;
+        hp = stats.hp;
+        mp = stats.mp;
+        level = stats.level;
+        PADamage = stats.PADamage;
+        PDDamage = stats.PDDamage;
+        MADamage = stats.MADamage;
+        MDDamage = stats.MDDamage;
+        dropPeriod = stats.dropPeriod;
+        cp = stats.cp;
+        buffToGive = stats.buffToGive;
+        removeAfter = stats.removeAfter;
+        //endregion
+        //region booleans
+        boss = stats.boss;
+        undead = stats.undead;
+        ffaLoot = stats.ffaLoot;
+        isExplosiveReward = stats.isExplosiveReward;
+        firstAttack = stats.firstAttack;
+        removeOnMiss = stats.removeOnMiss;
+        //endregion
+        //region collections
+        animationTimes.putAll(stats.animationTimes);
+        resistance.putAll(stats.resistance);
+        skills.addAll(stats.skills);
+        revives.addAll(stats.revives);
+        if (stats.loseItem != null) {
+            loseItem.addAll(stats.loseItem);
+        }
+        //endregion
+
+        cool = stats.cool;
+        banish = stats.banish;
+        selfDestruction = stats.selfDestruction;
+        friendly = stats.friendly;
+    }
 
     public int getExp() {
         return exp;
@@ -268,7 +316,7 @@ public class MapleMonsterStats {
     public void setSelfDestruction(SelfDestruction sd) {
         this.selfDestruction = sd;
     }
-    
+
     public void setExplosiveReward(boolean isExplosiveReward) {
         this.isExplosiveReward = isExplosiveReward;
     }
@@ -292,36 +340,36 @@ public class MapleMonsterStats {
     public Pair<Integer, Integer> getCool() {
         return cool;
     }
-    
+
     public int getPDDamage() {
         return PDDamage;
     }
-    
+
     public int getMADamage() {
         return MADamage;
     }
-    
+
     public int getMDDamage() {
         return MDDamage;
     }
-    
+
     public boolean isFriendly() {
         return friendly;
     }
-    
+
     public void setFriendly(boolean value) {
         this.friendly = value;
     }
-    
+
     public void setPDDamage(int PDDamage) {
         this.PDDamage = PDDamage;
     }
-    
+
     public void setMADamage(int MADamage) {
         this.MADamage = MADamage;
     }
-    
+
     public void setMDDamage(int MDDamage) {
         this.MDDamage = MDDamage;
-    } 
+    }
 }

@@ -80,7 +80,7 @@ public final class Channel {
         this.world = world;
         this.channel = channel;
         this.mapFactory = new MapleMapFactory(world, channel);
-        TaskExecutor.createRepeatingTask(() -> mapFactory.getMaps().forEach(MapleMap::respawn), 10000, 10000);
+//        TaskExecutor.createRepeatingTask(() -> mapFactory.getMaps().forEach(MapleMap::respawn), 10000, 10000);
         reloadEventScriptManager();
         carnivalLobbyManager = new MCarnivalLobbyManager(this);
         final int port = (7575 + (this.channel - 1)) + (world * 100);
@@ -173,8 +173,7 @@ public final class Channel {
 
     public void reloadMap(int mapID) {
         MapleMap fOld, fNew;
-        if ((fOld = maps.get(mapID)) != null) {
-            maps.remove(mapID);
+        if ((fOld = maps.remove(mapID)) != null) {
             fNew = getMap(mapID);
             for (MapleMapObject object : fOld.getMapObjects()) {
                 if (object instanceof MapleCharacter) {

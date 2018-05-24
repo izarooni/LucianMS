@@ -728,7 +728,7 @@ public class MapleMap {
         if (monster.getStats().getLevel() >= chr.getLevel() + 30 && !chr.isGM()) {
             Cheater.CheatEntry entry = chr.getCheater().getCheatEntry(Cheats.UnderLevelAttack);
             entry.incrementCheatCount();
-            entry.announce(chr.getClient(), String.format("[%d] %s (level %d) attacked a monster (%d) too high of level (level %d)", entry.cheatCount, chr.getName(), chr.getLevel(), monster.getId(), monster.getStats().getLevel()), 2500);
+            entry.announce(chr.getClient(), 2500, "[{}] {} (level {}) attacked a monster ({}) too high of level (level {})", entry.cheatCount, chr.getName(), chr.getLevel(), monster.getId(), monster.getStats().getLevel());
         }
         int buff = monster.getBuffToGive();
         if (buff > -1) {
@@ -1054,11 +1054,9 @@ public class MapleMap {
         nPosition.translate(0, -1);
         nPosition = calcPointBelow(nPosition);
         monster.setPosition(nPosition);
-        SpawnPoint spawnPoint = new SpawnPoint(monster, nPosition, false, 0, 0, team.getId());
+        SpawnPoint spawnPoint = new SpawnPoint(this, monster, false, 0, team.getId());
         addMonsterSpawnPoint(spawnPoint);
-        if (spawnPoint.shouldSpawn()) {
-            spawnMonster(spawnPoint.getMonster());
-        }
+        spawnMonster(spawnPoint.getMonster());
     }
 
     public MapleMonster spawnMonsterOnGroudBelow(int id, int x, int y) {
@@ -1978,16 +1976,17 @@ public class MapleMap {
             return;
         }
         newpos.y -= 1;
-        SpawnPoint sp = new SpawnPoint(monster, newpos, !monster.isMobile(), mobTime, mobInterval, team);
+        monster.setPosition(newpos);
+        SpawnPoint sp = new SpawnPoint(this, monster, !monster.isMobile(), mobTime, team);
         spawnPoints.add(sp);
-        if (sp.shouldSpawn() || mobTime == -1) { // -1 does not respawn and should not either but force ONE spawn
-            MapleMonster summon = sp.getMonster();
-            if (summon != null) {
-                spawnMonster(summon);
-            } else {
-                LOGGER.info("SpawnPoint unable to summon monster {} in map {}: null", monster.getId(), getId());
-            }
+//        if (sp.shouldSpawn() || mobTime == -1) { // -1 does not respawn and should not either but force ONE spawn
+        MapleMonster summon = sp.getMonster();
+        if (summon != null) {
+            spawnMonster(summon);
+        } else {
+            LOGGER.info("SpawnPoint unable to summon monster {} in map {}: null", monster.getId(), getId());
         }
+//        }
     }
 
     public void addMonsterSpawnPoint(SpawnPoint spawnPoint) {
@@ -2195,7 +2194,6 @@ public class MapleMap {
         if (!isRespawnEnabled()) {
             return;
         } else if (characters.isEmpty()) {
-//            killAllMonsters();
             return;
         }
         short numShouldSpawn = (short) ((spawnPoints.size() - spawnedMonstersOnMap.get()));
@@ -2205,7 +2203,8 @@ public class MapleMap {
             short spawned = 0;
             for (SpawnPoint spawnPoint : randomSpawn) {
                 if (spawnPoint.shouldSpawn()) {
-                    spawnMonster(spawnPoint.getMonster());
+                    spawnPoint.summonMonster();
+//                    spawnMonster(spawnPoint.getMonster());
                     spawned++;
                 }
                 if (spawned >= numShouldSpawn) {

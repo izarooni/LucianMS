@@ -26,7 +26,6 @@ import client.MapleClient;
 import client.autoban.Cheater;
 import client.autoban.Cheats;
 import net.AbstractMaplePacketHandler;
-import tools.MaplePacketCreator;
 import tools.data.input.SeekableLittleEndianAccessor;
 
 public class HealOvertimeHandler extends AbstractMaplePacketHandler {
@@ -57,7 +56,7 @@ public class HealOvertimeHandler extends AbstractMaplePacketHandler {
             if (healHP > abHeal) {
                 entry.cheatCount++;
                 entry.latestCheatTimestamp = System.currentTimeMillis();
-                entry.announce(c, String.format("%s now has %d cheat points for fast healing", player.getName(), entry.cheatCount), 5000);
+                entry.announce(c, 5000, "{} now has {} cheat points for fast healing", player.getName(), entry.cheatCount);
             }
             player.addHP(healHP);
             player.checkBerserk();

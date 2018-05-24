@@ -169,7 +169,7 @@ public final class TakeDamageEvent extends PacketEvent {
             entry.spamCount++;
             if (entry.spamCount % 15 == 0) {
                 entry.incrementCheatCount();
-                entry.announce(player.getClient(), String.format("[%d] %s has %d consecutive misses (possible god mode)", entry.cheatCount, player.getName(), entry.spamCount), 10000);
+                entry.announce(player.getClient(), 10000, "[{}] {} has {} consecutive misses (possible god mode)", entry.cheatCount, player.getName(), entry.spamCount);
             }
             entry.latestOperationTimestamp = System.currentTimeMillis();
         } else {

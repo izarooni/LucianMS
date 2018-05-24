@@ -1,98 +1,122 @@
-/*
- This file is part of the OdinMS Maple Story Server
- Copyright (C) 2008 Patrick Huy <patrick.huy@frz.cc>
- Matthias Butz <matze@odinms.de>
- Jan Christian Meyer <vimes@odinms.de>
-
- This program is free software: you can redistribute it and/or modify
- it under the terms of the GNU Affero General Public License as
- published by the Free Software Foundation version 3 as published by
- the Free Software Foundation. You may not use, modify or distribute
- this program under any other version of the GNU Affero General Public
- License.
-
- This program is distributed in the hope that it will be useful,
- but WITHOUT ANY WARRANTY; without even the implied warranty of
- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- GNU Affero General Public License for more details.
-
- You should have received a copy of the GNU Affero General Public License
- along with this program.  If not, see <http://www.gnu.org/licenses/>.
- */
 package server.life;
 
+import com.lucianms.scheduler.TaskExecutor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import server.maps.MapleMap;
 
 import java.awt.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
-public class SpawnPoint {
+public final class SpawnPoint {
+
+    public interface Summon {
+        void summon();
+    }
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SpawnPoint.class);
 
-    private int monster, mobTime, team, fh, f;
+    private final AtomicInteger spawnedMonsters = new AtomicInteger(0);
+    private final MapleMap map;
+    private final MapleMonsterStats stats;
+    private final int monsterID;
+    private final int mobTime, team, fh, f;
+
+    private MapleMonster monster = null;
+    private MapleMonsterStats overrides = null;
     private Point pos;
     private long nextPossibleSpawn;
-    private int mobInterval = 5000;
-    private AtomicInteger spawnedMonsters = new AtomicInteger(0);
     private boolean immobile;
 
     /**
-     *
-     * @param monster the monster associated with a SpawnPoint
-     * @param pos position the specified monster will be summoned
+     * @param monster  the monster associated with a SpawnPoint
      * @param immobile ?
-     * @param mobTime additional delay time before the next summon
-     * @param mobInterval the delay between each summon
-     * @param team a belonging team
+     * @param mobTime  additional delay time before the next summon
+     * @param team     a belonging team
      */
-    public SpawnPoint(final MapleMonster monster, Point pos, boolean immobile, int mobTime, int mobInterval, int team) {
-        this.monster = monster.getId();
-        this.fh = monster.getFh();
-        this.f = monster.getF();
-
-        this.pos = (pos == null) ? monster.getPosition() : pos.getLocation();
-        this.immobile = immobile;
-        this.mobTime = mobTime;
-        this.mobInterval = mobInterval;
+    public SpawnPoint(MapleMap map, MapleMonster monster, boolean immobile, int mobTime, int team) {
+        this.map = map;
+        this.stats = monster.getStats();
+        this.monsterID = monster.getId();
+        Point nPos = map.calcPointBelow(monster.getPosition());
+        this.pos = (nPos == null) ? monster.getPosition() : nPos.getLocation();
+        this.mobTime = (mobTime <= 0) ? 5 : mobTime;
         this.team = team;
+        this.f = monster.getF();
+        this.fh = monster.getFh();
         this.nextPossibleSpawn = System.currentTimeMillis();
+        this.immobile = immobile;
+    }
+
+    public MapleMonsterStats createOverrides() {
+        return overrides = new MapleMonsterStats(stats);
     }
 
     public boolean shouldSpawn() {
-        return mobTime >= 0 && ((mobTime == 0 && !immobile) || spawnedMonsters.get() <= 0) && spawnedMonsters.get() <= 2 && nextPossibleSpawn <= System.currentTimeMillis();
-
+        return ((mobTime == 0 && !immobile) // instant spawn must be a monster capable of movement
+                || spawnedMonsters.get() < 0) // otherwise make sure no monsters have already been spawned
+                && (spawnedMonsters.get() <= 2 && nextPossibleSpawn <= System.currentTimeMillis());
     }
 
+    /**
+     * <p>Create and apply data to a newly created monster</p>
+     * <p>This is to allow manual spawning of the monster and/or manually applying specific data to the monster before spawning</p>
+     *
+     * @return the instantiated monster
+     */
     public MapleMonster getMonster() {
-        MapleMonster mob = MapleLifeFactory.getMonster(monster);
-        if (mob == null) {
+        monster = MapleLifeFactory.getMonster(monsterID);
+        if (monster == null) {
+            LOGGER.error("Unable to spawn monster (non-existing) {}", monsterID);
             return null;
         }
-        mob.setPosition(pos.getLocation());
-        mob.setTeam(team);
-        mob.setFh(fh);
-        mob.setF(f);
-        spawnedMonsters.incrementAndGet();
-        mob.addListener(new MonsterListener() {
+        monster.setPosition(pos.getLocation());
+        monster.setTeam(team);
+        monster.setFh(fh);
+        monster.setF(f);
+        if (overrides != null) {
+            monster.setOverrideStats(overrides);
+        }
+        monster.addListener(new MonsterListener() {
             @Override
             public void monsterKilled(int aniTime) {
+                if (spawnedMonsters.get() > 0) {
+                    spawnedMonsters.decrementAndGet();
+                }
                 nextPossibleSpawn = System.currentTimeMillis();
                 if (mobTime > 0) {
                     nextPossibleSpawn += mobTime * 1000;
                 } else {
                     nextPossibleSpawn += aniTime;
                 }
-                if (spawnedMonsters.get() > 0) {
-                    spawnedMonsters.decrementAndGet();
-                }
+
+                long delay = Math.max(0, (nextPossibleSpawn - System.currentTimeMillis()));
+                TaskExecutor.createTask(new Runnable() {
+                    @Override
+                    public void run() {
+                        getMonster();
+                        summonMonster();
+                    }
+                }, delay);
+                LOGGER.info("Summon monster {} in {}ms", getMonsterID(), delay);
             }
         });
-        if (mobTime == 0) {
-            nextPossibleSpawn = System.currentTimeMillis() + mobInterval;
+
+        return monster;
+    }
+
+    public void summonMonster() {
+        if (monster == null) {
+            LOGGER.error("Can't spawn monster (was never created)", getMonsterID());
+            return;
         }
-        return mob;
+        spawnedMonsters.incrementAndGet();
+        map.spawnMonsterOnGroudBelow(monster, monster.getPosition());
+        monster = null;
+    }
+
+    public int getMonsterID() {
+        return monsterID;
     }
 
     public Point getPosition() {
