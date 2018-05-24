@@ -19,14 +19,15 @@ public final class SpawnPoint {
     private final AtomicInteger spawnedMonsters = new AtomicInteger(0);
     private final MapleMap map;
     private final MapleMonsterStats stats;
+    private final Point pos;
     private final int monsterID;
     private final int mobTime, team, fh, f;
+    private final boolean immobile;
 
+    private int maximumSpawns = 1;
     private MapleMonster monster = null;
     private MapleMonsterStats overrides = null;
-    private Point pos;
     private long nextPossibleSpawn;
-    private boolean immobile;
 
     /**
      * @param monster  the monster associated with a SpawnPoint
@@ -40,7 +41,7 @@ public final class SpawnPoint {
         this.monsterID = monster.getId();
         Point nPos = map.calcPointBelow(monster.getPosition());
         this.pos = (nPos == null) ? monster.getPosition() : nPos.getLocation();
-        this.mobTime = (mobTime <= 0) ? 5 : mobTime;
+        this.mobTime = (mobTime <= 0) ? 10 : mobTime;
         this.team = team;
         this.f = monster.getF();
         this.fh = monster.getFh();
@@ -52,10 +53,10 @@ public final class SpawnPoint {
         return overrides = new MapleMonsterStats(stats);
     }
 
-    public boolean shouldSpawn() {
-        return ((mobTime == 0 && !immobile) // instant spawn must be a monster capable of movement
-                || spawnedMonsters.get() < 0) // otherwise make sure no monsters have already been spawned
-                && (spawnedMonsters.get() <= 2 && nextPossibleSpawn <= System.currentTimeMillis());
+    public boolean canSpawn(boolean force) {
+        return map.isRespawnEnabled()
+                && (!immobile || spawnedMonsters.get() == 0)
+                && (spawnedMonsters.get() < maximumSpawns && (nextPossibleSpawn <= System.currentTimeMillis() || force));
     }
 
     /**
@@ -79,29 +80,25 @@ public final class SpawnPoint {
         }
         monster.addListener(new MonsterListener() {
             @Override
-            public void monsterKilled(int aniTime) {
+            public void monsterKilled(int animationTime) {
                 if (spawnedMonsters.get() > 0) {
                     spawnedMonsters.decrementAndGet();
                 }
                 nextPossibleSpawn = System.currentTimeMillis();
-                if (mobTime > 0) {
-                    nextPossibleSpawn += mobTime * 1000;
-                } else {
-                    nextPossibleSpawn += aniTime;
-                }
+                nextPossibleSpawn += (mobTime > 0) ? (mobTime * 1000) : animationTime;
 
-                long delay = Math.max(0, (nextPossibleSpawn - System.currentTimeMillis()));
+                long delay = Math.max(3000, (nextPossibleSpawn - System.currentTimeMillis()));
                 TaskExecutor.createTask(new Runnable() {
                     @Override
                     public void run() {
-                        getMonster();
-                        summonMonster();
+                        if (canSpawn(false)) {
+                            getMonster();
+                            summonMonster();
+                        }
                     }
                 }, delay);
-                LOGGER.info("Summon monster {} in {}ms", getMonsterID(), delay);
             }
         });
-
         return monster;
     }
 
@@ -113,6 +110,14 @@ public final class SpawnPoint {
         spawnedMonsters.incrementAndGet();
         map.spawnMonsterOnGroudBelow(monster, monster.getPosition());
         monster = null;
+    }
+
+    public int getMaximumSpawns() {
+        return maximumSpawns;
+    }
+
+    public void setMaximumSpawns(int maximumSpawns) {
+        this.maximumSpawns = maximumSpawns;
     }
 
     public int getMonsterID() {

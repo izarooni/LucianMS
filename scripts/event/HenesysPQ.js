@@ -41,13 +41,13 @@ function setup() {
     return eim;
 }
 
-function respawn(eim) {
-	var map = eim.getMapInstance(M_Stage);
-	if (map.getSummonState()) {
-		map.instanceMapRespawn();
-	}
-	eim.schedule("respawn", 10000);
-}
+// function respawn(eim) {
+// 	var map = eim.getMapInstance(M_Stage);
+// 	if (map.getSummonState()) {
+// 		map.instanceMapRespawn();
+// 	}
+// 	eim.schedule("respawn", 10000);
+// }
 
 function playerEntry(eim, player) {
     var map = eim.getMapInstance(M_Stage);

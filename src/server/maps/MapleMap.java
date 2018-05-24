@@ -1056,7 +1056,9 @@ public class MapleMap {
         monster.setPosition(nPosition);
         SpawnPoint spawnPoint = new SpawnPoint(this, monster, false, 0, team.getId());
         addMonsterSpawnPoint(spawnPoint);
-        spawnMonster(spawnPoint.getMonster());
+
+        spawnPoint.getMonster();
+        spawnPoint.summonMonster();
     }
 
     public MapleMonster spawnMonsterOnGroudBelow(int id, int x, int y) {
@@ -1133,7 +1135,7 @@ public class MapleMap {
     }
 
     public void spawnMonster(final MapleMonster monster) {
-        if (mobCapacity != -1 && mobCapacity == spawnedMonstersOnMap.get()) {
+        if (mobCapacity != -1 && mobCapacity <= spawnedMonstersOnMap.get()) {
             LOGGER.info("Unable to spawn monster due to mob capacity {} in map {}", mobCapacity, getId());
             return;
         }
@@ -1977,16 +1979,14 @@ public class MapleMap {
         }
         newpos.y -= 1;
         monster.setPosition(newpos);
-        SpawnPoint sp = new SpawnPoint(this, monster, !monster.isMobile(), mobTime, team);
-        spawnPoints.add(sp);
-//        if (sp.shouldSpawn() || mobTime == -1) { // -1 does not respawn and should not either but force ONE spawn
-        MapleMonster summon = sp.getMonster();
+        SpawnPoint spawnPoint = new SpawnPoint(this, monster, !monster.isMobile(), mobTime, team);
+        spawnPoints.add(spawnPoint);
+        MapleMonster summon = spawnPoint.getMonster();
         if (summon != null) {
-            spawnMonster(summon);
+            spawnPoint.summonMonster();
         } else {
-            LOGGER.info("SpawnPoint unable to summon monster {} in map {}: null", monster.getId(), getId());
+            LOGGER.info("Unable to summon invalid monster {} in map {} via SpawnPoint", monster.getId(), getId());
         }
-//        }
     }
 
     public void addMonsterSpawnPoint(SpawnPoint spawnPoint) {
@@ -2128,8 +2128,8 @@ public class MapleMap {
         this.everlast = everlast;
     }
 
-    public int getSpawnedMonstersOnMap() {
-        return spawnedMonstersOnMap.get();
+    public AtomicInteger getSpawnedMonstersOnMap() {
+        return spawnedMonstersOnMap;
     }
 
     public void setMobCapacity(int capacity) {
@@ -2196,19 +2196,13 @@ public class MapleMap {
         } else if (characters.isEmpty()) {
             return;
         }
-        short numShouldSpawn = (short) ((spawnPoints.size() - spawnedMonstersOnMap.get()));
-        if (numShouldSpawn > 0) {
-            List<SpawnPoint> randomSpawn = new ArrayList<>(spawnPoints);
-            Collections.shuffle(randomSpawn);
-            short spawned = 0;
-            for (SpawnPoint spawnPoint : randomSpawn) {
-                if (spawnPoint.shouldSpawn()) {
-                    spawnPoint.summonMonster();
-//                    spawnMonster(spawnPoint.getMonster());
-                    spawned++;
-                }
-                if (spawned >= numShouldSpawn) {
-                    break;
+        int respawns = (spawnPoints.size() - spawnedMonstersOnMap.get());
+        if (respawns > 0) {
+            List<SpawnPoint> spawns = spawnPoints.stream().filter(s -> s.canSpawn(true)).collect(Collectors.toList());
+            for (SpawnPoint spawn : spawns) {
+                if (spawn.canSpawn(true)) {
+                    spawn.getMonster();
+                    spawn.summonMonster();
                 }
             }
         }

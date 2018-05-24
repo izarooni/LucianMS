@@ -223,8 +223,7 @@ public class MapleMapFactory {
                             map.addMapObject(myLife);
                         }
                     } else {
-                        LOGGER.warn("Unable to load life {} type {} in map {}", id, type, mapid
-                        );
+                        LOGGER.warn("Unable to load life {} type {} in map {}", id, type, mapid);
                     }
                 }
                 if (mapData.getChildByPath("reactor") != null) {

@@ -105,9 +105,8 @@ public class HGMCommands {
             }
         } else if (command.equals("respawn")) {
             player.getMap().respawn();
-            player.sendMessage("Monsters respawned");
             player.getMap().resetReactors();
-            player.sendMessage("Reactors reset");
+            player.sendMessage("Monsters and reactors have respawned and reset");
         } else if (command.equals("spawn")) {
             if (args.length() > 0) {
                 Integer monsterId = args.parseNumber(0, int.class);

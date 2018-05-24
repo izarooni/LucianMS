@@ -52,17 +52,17 @@ function playerRevive(eim, player) { // player presses ok on the death pop up.
 }
 
 
-function respawn(eim) {
-	var map = eim.getMapInstance(103000800);
-	var map2 = eim.getMapInstance(103000805);
-	if (map.getSummonState()) {	//Map spawns are set to true by default
-		map.instanceMapRespawn();
-	}
-	if(map2.getSummonState()) {
-		map2.instanceMapRespawn();
-	}
-	eim.schedule("respawn", 10000);
-}
+// function respawn(eim) {
+// 	var map = eim.getMapInstance(103000800);
+// 	var map2 = eim.getMapInstance(103000805);
+// 	if (map.getSummonState()) {	//Map spawns are set to true by default
+// 		map.instanceMapRespawn();
+// 	}
+// 	if(map2.getSummonState()) {
+// 		map2.instanceMapRespawn();
+// 	}
+// 	eim.schedule("respawn", 10000);
+// }
 
 function playerDisconnected(eim, player) {
     var party = eim.getPlayers().toArray();

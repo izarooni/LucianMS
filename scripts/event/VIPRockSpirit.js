@@ -1,6 +1,6 @@
-/* 
+/*
  * This file is part of the OdinMS Maple Story Server
-    Copyright (C) 2008 Patrick Huy <patrick.huy@frz.cc> 
+    Copyright (C) 2008 Patrick Huy <patrick.huy@frz.cc>
                        Matthias Butz <matze@odinms.de>
                        Jan Christian Meyer <vimes@odinms.de>
 
@@ -34,7 +34,7 @@ function init() {
 function setup() {
     var eim = em.newInstance("VIPRockSpirit_" + em.getProperty("player"));
     respawn(eim);
-    eim.startEventTimer(timer);    
+    eim.startEventTimer(timer);
 	return eim;
 }
 
@@ -43,8 +43,8 @@ function respawn(eim) {
 	var map2 = eim.getMapInstance(otherMap.getId());
 	map.allowSummonState(true);
 	map2.allowSummonState(true);
-	map.instanceMapRespawn();
-	map2.instanceMapRespawn();
+	// map.instanceMapRespawn();
+	// map2.instanceMapRespawn();
 	eim.schedule("respawn", 10000);
 }
 
@@ -77,7 +77,7 @@ function playerDisconnected(eim, player) {
 	eim.dispose();
 }
 
-function monsterValue(eim,mobId) { 
+function monsterValue(eim,mobId) {
     return -1;
 }
 
