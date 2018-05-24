@@ -630,14 +630,11 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
                 ret.setPosition(portal.getPosition());
                 int partyid = rs.getInt("party");
                 MapleParty party = Server.getInstance().getWorld(ret.world).getParty(partyid);
+                LOGGER.info("Party ID : {}", partyid);
                 if (party != null) {
-                    ret.mpc = party.getMemberById(ret.id);
-                    if (ret.mpc != null) {
-                        ret.party = party;
-                    } else {
-                        ret.mpc = new MaplePartyCharacter(ret);
-                    }
-                    ret.party.setLeader(ret.mpc);
+                    ret.mpc = new MaplePartyCharacter(ret);
+                    party.updateMember(ret.mpc);
+                    ret.party = party;
                 }
                 int messengerid = rs.getInt("messengerid");
                 int position = rs.getInt("messengerposition");

@@ -68,6 +68,9 @@ public class MapleParty {
 
 
     public void updateMember(MaplePartyCharacter member) {
+        if (member.getId() == leader.getId()) {
+            leader = member;
+        }
         for (int i = 0; i < members.size(); i++) {
             if (members.get(i).getId() == member.getId()) {
                 members.set(i, member);
