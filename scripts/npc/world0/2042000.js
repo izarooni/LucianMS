@@ -1,6 +1,6 @@
 var MaplePacketCreator = Java.type("tools.MaplePacketCreator");
 var Lobby = client.getChannelServer().getCarnivalLobbyManager();
-var LobbyState = Java.type("server.partyquest.carnival.MCarnivalLobby.State");
+var LobbyState = Java.type("com.lucianms.server.pqs.carnival.MCarnivalLobby.State");
 /* izarooni */
 var status = 0;
 var M_Office = 980000000;
@@ -56,6 +56,11 @@ function Queue(selection) {
         }
     } else if (status == 2) {
         var game = Lobby.getLobby(selection);
+        if (player.isDebug()) {
+            game.getGame().dispose();
+            cm.sendOk("The game has been disposed.");
+            cm.dispose();
+        }
         var userCount = 0;
         cm.getPartyMembers().forEach(function(chr) {
             if (chr.getMapId() == M_Office) {
@@ -82,6 +87,7 @@ function Queue(selection) {
                         if (game.getState() == LobbyState.Waiting) {
                             chr.announce(MaplePacketCreator.getClock(300));
                         } else if (game.getState() == LobbyState.Starting) {
+                            // challenging party
                             chr.announce(MaplePacketCreator.getClock(10));
                         }
                     });

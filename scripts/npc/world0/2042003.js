@@ -1,7 +1,7 @@
 var MaplePacketCreator = Java.type("tools.MaplePacketCreator");
 var Lobby = client.getChannelServer().getCarnivalLobbyManager();
-var LobbyState = Java.type("server.partyquest.carnival.MCarnivalLobby.State");
-var MCarnival = Java.type("server.partyquest.carnival.MCarnivalLobby");
+var LobbyState = Java.type("com.lucianms.server.pqs.carnival.MCarnivalLobby.State");
+var MCarnival = Java.type("com.lucianms.server.pqs.carnival.MCarnivalLobby");
 /* izarooni */
 var status = 0;
 var M_Office = 980000000;
