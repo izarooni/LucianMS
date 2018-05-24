@@ -1693,11 +1693,7 @@ public class MapleMap {
         }
         //endregion
 
-        Optional<GenericEvent> op = chr.getGenericEvents().stream().filter(o -> o instanceof MCarnivalGame).findFirst();
-        MCarnivalGame carnivalGame = null;
-        if (op.isPresent()) {
-            carnivalGame = (MCarnivalGame) op.get();
-        }
+        MCarnivalGame carnivalGame = (MCarnivalGame) chr.getGenericEvents().stream().filter(o -> o instanceof MCarnivalGame).findFirst().orElse(null);
         if (carnivalGame != null && (mapid == 980000101 || mapid == 980000201 || mapid == 980000301 || mapid == 980000401 || mapid == 980000501 || mapid == 980000601)) {
             chr.announce(MaplePacketCreator.getClock((int) (carnivalGame.getTimeLeft() / 1000)));
             chr.announce(MaplePacketCreator.getMonsterCarnivalStart(chr, carnivalGame));

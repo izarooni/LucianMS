@@ -243,8 +243,8 @@ function CarnivalStart(selection) {
         let mplew = new Packages.tools.data.output.MaplePacketLittleEndianWriter(25);
         mplew.writeShort(Packages.net.SendOpcode.MONSTER_CARNIVAL_START.getValue());
         mplew.write(player.getTeam()); //team
-        mplew.writeShort(player.getCP()); //Obtained CP - Used CP
-        mplew.writeShort(player.getObtainedCP()); //Total Obtained CP
+        mplew.writeShort(0); //Obtained CP - Used CP
+        mplew.writeShort(0); //Total Obtained CP
 
         mplew.writeShort(0); //Obtained CP - Used CP of the team
         mplew.writeShort(0); //Total Obtained CP of the team

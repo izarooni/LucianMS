@@ -2,18 +2,18 @@ package com.lucianms.server.events.channel;
 
 import client.MapleCharacter;
 import client.status.MonsterStatus;
+import com.lucianms.features.GenericEvent;
+import com.lucianms.server.pqs.carnival.MCarnivalGame;
+import com.lucianms.server.pqs.carnival.MCarnivalTeam;
 import net.PacketEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import com.lucianms.features.GenericEvent;
 import server.life.MapleLifeFactory;
 import server.life.MapleMonster;
 import server.life.MobSkillFactory;
 import server.maps.MapleMap;
 import server.maps.MapleReactor;
 import server.maps.MapleReactorFactory;
-import com.lucianms.server.pqs.carnival.MCarnivalGame;
-import com.lucianms.server.pqs.carnival.MCarnivalTeam;
 import tools.MaplePacketCreator;
 import tools.data.input.SeekableLittleEndianAccessor;
 
@@ -67,15 +67,14 @@ public final class MonsterCarnivalEvent extends PacketEvent {
                             }
                             MapleMonster monster = MapleLifeFactory.getMonster(nMonster);
                             if (monster != null) {
-                                player.useCP(nPrice);
-                                friendly.setAvailableCarnivalPoints(friendly.getAvailableCarnivalPoints() - nPrice);
-
                                 monster.setPosition(new Point(1, 1));
                                 monster.setTeam(friendly.getId());
-                                map.getReactors().stream().filter(r -> r.getId() == (ID_Reactor + enemy.getId())).forEach(r -> r.getMonsterStatus().getRight().applyEffect(null, monster, true));
-
                                 map.addCarnivalMonster(monster, friendly);
                                 friendly.setSummonedMonsters(friendly.getSummonedMonsters() + 1);
+
+                                player.useCP(nPrice);
+                                friendly.setAvailableCarnivalPoints(friendly.getAvailableCarnivalPoints() - nPrice);
+                                map.getReactors().stream().filter(r -> r.getId() == (ID_Reactor + enemy.getId())).forEach(r -> r.getMonsterStatus().getRight().applyEffect(null, monster, true));
                                 map.broadcastMessage(MaplePacketCreator.getMonsterCarnivalPointsUpdateParty(friendly));
                             } else {
                                 LOGGER.error("Unable to summon monster '{}'", getMonster(value));
@@ -143,16 +142,16 @@ public final class MonsterCarnivalEvent extends PacketEvent {
         if (action == 0) {
             switch (n) {
                 // @formatter:off
-                case 1: return 7; // Brown Teddy
-                case 2: return 7; // Blocotpus
-                case 3: return 8; // Ratz
-                case 4: return 8; // Chronos
-                case 5: return 9; // Toy Trojan
-                case 6: return 9; // Tick-Tock
-                case 7: return 10; // Robo
-                case 8: return 11; // King Block Golem
-                case 9: return 12; // Master Chronos
-                case 10: return 30; // Rombots
+                case 0: return 7; // Brown Teddy
+                case 1: return 7; // Blocotpus
+                case 2: return 8; // Ratz
+                case 3: return 8; // Chronos
+                case 4: return 9; // Toy Trojan
+                case 5: return 9; // Tick-Tock
+                case 6: return 10; // Robo
+                case 7: return 11; // King Block Golem
+                case 8: return 12; // Master Chronos
+                case 9: return 30; // Rombots
                 // @formatter:on
             }
         } else if (action == 1) {

@@ -172,13 +172,9 @@ public class MCarnivalLobby {
 
     private MCarnivalGame createGame() {
         carnivalGame = new MCarnivalGame(this);
-        if (Randomizer.nextInt(1) == 0) {
-            carnivalGame.setTeamRed(new MCarnivalTeam(0, party1));
-            carnivalGame.setTeamBlue(new MCarnivalTeam(1, party2));
-        } else {
-            carnivalGame.setTeamRed(new MCarnivalTeam(0, party2));
-            carnivalGame.setTeamBlue(new MCarnivalTeam(1, party1));
-        }
+        boolean red = Randomizer.nextBoolean();
+        carnivalGame.setTeamRed(new MCarnivalTeam(0, red ? party1 : party2));
+        carnivalGame.setTeamBlue(new MCarnivalTeam(1, red ? party2 : party1));
         return carnivalGame;
     }
 }

@@ -328,6 +328,8 @@ public class HGMCommands {
                 if (target != null) {
                     String cmd = args.concatFrom(1);
                     CommandWorker.process(target.getClient(), cmd, true);
+                } else {
+                    player.sendMessage("Unable to find any player named '{}'", args.get(0));
                 }
             }
         } else if (command.equals("stalker")) {
