@@ -5,8 +5,8 @@ import client.MapleStat;
 import com.lucianms.features.GenericEvent;
 import com.lucianms.lang.annotation.PacketWorker;
 import com.lucianms.server.events.channel.ChangeMapEvent;
+import net.server.world.MaplePartyCharacter;
 import server.maps.MapleMap;
-import tools.MaplePacketCreator;
 
 /**
  * @author izarooni
@@ -37,7 +37,21 @@ public class MCarnivalGame extends GenericEvent {
     public void unregisterPlayer(MapleCharacter player) {
         player.removeGenericEvent(this);
         player.changeMap(M_Office);
-        player.announce(MaplePacketCreator.getMonsterCarnivalStop(player));
+
+
+        MCarnivalTeam team = getTeam(player.getTeam());
+        MaplePartyCharacter leader = team.getParty().getLeader();
+        boolean isLeader = (leader.getId() == player.getId());
+        MapleCharacter newLeader = null;
+        if (isLeader) {
+            newLeader = team.getParty().getMembers().stream().filter(m -> m.getId() != leader.getId()).map(MaplePartyCharacter::getPlayer).findAny().orElse(null);
+            if (newLeader == null) {
+                dispose();
+                return;
+            }
+        }
+
+        player.announce(MCarnivalPacket.getMonsterCarnivalStop((byte) team.getId(), isLeader, (isLeader) ? newLeader.getName() : player.getName()));
     }
 
     @Override
@@ -48,7 +62,7 @@ public class MCarnivalGame extends GenericEvent {
     @Override
     public void onPlayerDeath(MapleCharacter player) {
         MapleMap map = player.getClient().getChannelServer().getMap(lobby.getBattlefieldMapId());
-        map.broadcastMessage(MaplePacketCreator.getMonsterCarnivalPlayerDeath(player));
+        map.broadcastMessage(MCarnivalPacket.getMonsterCarnivalPlayerDeath(player));
     }
 
     @PacketWorker
@@ -90,14 +104,14 @@ public class MCarnivalGame extends GenericEvent {
 
     public MCarnivalTeam getTeam(int team) {
         if (team != 0 && team != 1) {
-            return null;
+            throw new IllegalArgumentException("Team can only be 0 or 1");
         }
         return team == 0 ? teamRed : teamBlue;
     }
 
     public MCarnivalTeam getTeamOpposite(int team) {
         if (team != 0 && team != 1) {
-            return null;
+            throw new IllegalArgumentException("Team can only be 0 or 1");
         }
         return team == 0 ? teamBlue : teamRed;
     }
@@ -109,7 +123,6 @@ public class MCarnivalGame extends GenericEvent {
     public void setTeamRed(MCarnivalTeam teamRed) {
         this.teamRed = teamRed;
         this.teamRed.getParty().getMembers().forEach(p -> p.getPlayer().setTeam(0));
-        broadcastMessage(teamRed, "You are team [Maple Red]");
     }
 
     public MCarnivalTeam getTeamBlue() {
@@ -119,6 +132,5 @@ public class MCarnivalGame extends GenericEvent {
     public void setTeamBlue(MCarnivalTeam teamBlue) {
         this.teamBlue = teamBlue;
         this.teamBlue.getParty().getMembers().forEach(p -> p.getPlayer().setTeam(1));
-        broadcastMessage(teamBlue, "You are team [Maple Blue]");
     }
 }

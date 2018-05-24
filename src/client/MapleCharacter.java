@@ -38,6 +38,7 @@ import com.lucianms.io.scripting.Achievements;
 import com.lucianms.io.scripting.event.EventInstanceManager;
 import com.lucianms.scheduler.Task;
 import com.lucianms.scheduler.TaskExecutor;
+import com.lucianms.server.pqs.carnival.MCarnivalPacket;
 import constants.ExpTable;
 import constants.GameConstants;
 import constants.ItemConstants;
@@ -65,8 +66,6 @@ import server.life.FakePlayer;
 import server.life.MapleMonster;
 import server.life.MobSkill;
 import server.maps.*;
-import server.partyquest.MonsterCarnival;
-import server.partyquest.MonsterCarnivalParty;
 import server.partyquest.PartyQuest;
 import server.quest.MapleQuest;
 import tools.*;
@@ -269,8 +268,6 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
     // Monster Carnival
     private int carnivalPoints = 0;
     private int obtainedcp = 0;
-    private MonsterCarnivalParty carnivalparty;
-    private MonsterCarnival carnival;
 
     public MapleCharacter() {
         setStance(0);
@@ -3659,7 +3656,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
         } else if (mapid > 925020000 && mapid < 925030000) {
             this.dojoStage = 0;
         } else if (mapid > 980000100 && mapid < 980000700) {
-            getMap().broadcastMessage(this, MaplePacketCreator.getMonsterCarnivalPlayerDeath(this));
+            getMap().broadcastMessage(this, MCarnivalPacket.getMonsterCarnivalPlayerDeath(this));
         } else if (getJob() != MapleJob.BEGINNER) {
             if (getOccupation() != null && getOccupation().getType() == Occupation.Type.Undead) {
                 return;
@@ -5173,14 +5170,6 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
         this.carnivalparty = party;
     }
 
-    public MonsterCarnival getCarnival() {
-        return carnival;
-    }
-
-    public void setCarnival(MonsterCarnival car) {
-        this.carnival = car;
-    }
-
     public int getCarnivalPoints() {
         return carnivalPoints;
     }
@@ -5211,15 +5200,9 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
     }
 
     public int getAndRemoveCP() {
-        int rCP = 10;
-        if (carnivalPoints < 9) {
-            rCP = carnivalPoints;
-            carnivalPoints = 0;
-        } else {
-            carnivalPoints -= 10;
-        }
-
-        return rCP;
+        int removed = Math.min(10, carnivalPoints);
+        carnivalPoints -= removed;
+        return removed;
     }
 
     public void scheduleSpiritPendant() {

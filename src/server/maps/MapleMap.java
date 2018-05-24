@@ -43,6 +43,7 @@ import com.lucianms.io.scripting.map.MapScriptManager;
 import com.lucianms.scheduler.Task;
 import com.lucianms.scheduler.TaskExecutor;
 import com.lucianms.server.pqs.carnival.MCarnivalGame;
+import com.lucianms.server.pqs.carnival.MCarnivalPacket;
 import com.lucianms.server.pqs.carnival.MCarnivalTeam;
 import constants.GameConstants;
 import constants.ItemConstants;
@@ -767,8 +768,8 @@ public class MapleMap {
         }
         if (monster.getCP() > 0 && carnivalGame != null) {
             carnivalGame.getTeam(chr.getTeam()).addCarnivalPoints(chr, monster.getCP());
-            chr.announce(MaplePacketCreator.getMonsterCarnivalPointsUpdate(chr.getCP(), chr.getObtainedCP()));
-            broadcastMessage(MaplePacketCreator.getMonsterCarnivalPointsUpdateParty(carnivalGame.getTeam(chr.getTeam())));
+            chr.announce(MCarnivalPacket.getMonsterCarnivalPointsUpdate(chr.getCP(), chr.getObtainedCP()));
+            broadcastMessage(MCarnivalPacket.getMonsterCarnivalPointsUpdateParty(carnivalGame.getTeam(chr.getTeam())));
             // they drop items too ):
         }
         if (monster.getId() >= 8800003 && monster.getId() <= 8800010) {
@@ -1696,7 +1697,7 @@ public class MapleMap {
         MCarnivalGame carnivalGame = (MCarnivalGame) chr.getGenericEvents().stream().filter(o -> o instanceof MCarnivalGame).findFirst().orElse(null);
         if (carnivalGame != null && (mapid == 980000101 || mapid == 980000201 || mapid == 980000301 || mapid == 980000401 || mapid == 980000501 || mapid == 980000601)) {
             chr.announce(MaplePacketCreator.getClock((int) (carnivalGame.getTimeLeft() / 1000)));
-            chr.announce(MaplePacketCreator.getMonsterCarnivalStart(chr, carnivalGame));
+            chr.announce(MCarnivalPacket.getMonsterCarnivalStart(chr, carnivalGame));
             chr.announce(MaplePacketCreator.showForcedEquip(chr.getTeam()));
         }
         if (hasClock()) {

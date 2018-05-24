@@ -241,27 +241,11 @@ function OuterSpace(selection) {
 function CarnivalStart(selection) {
     if (status === 1) {
         let mplew = new Packages.tools.data.output.MaplePacketLittleEndianWriter(25);
-        mplew.writeShort(Packages.net.SendOpcode.MONSTER_CARNIVAL_START.getValue());
-        mplew.write(player.getTeam()); //team
-        mplew.writeShort(0); //Obtained CP - Used CP
-        mplew.writeShort(0); //Total Obtained CP
-
-        mplew.writeShort(0); //Obtained CP - Used CP of the team
-        mplew.writeShort(0); //Total Obtained CP of the team
-        mplew.writeShort(0); //Obtained CP - Used CP of the team
-        mplew.writeShort(0); //Total Obtained CP of the team
-        mplew.writeShort(0); //Probably useless nexon shit
-        mplew.writeLong(0); //Probably useless nexon shit
+        mplew.writeShort(Packages.net.SendOpcode.MONSTER_CARNIVAL_DIED.getValue());
+        mplew.write(1); //  v1 = (unsigned __int8)CInPacket::Decode1(a1);
+        mplew.writeMapleAsciiString("izarooni"); //  CInPacket::DecodeStr(a1, (int)Args);
+        mplew.write(1); //  v2 = (unsigned __int8)CInPacket::Decode1(a1);
         player.announce(mplew.getPacket());
-        cm.sendNext("Enabled~\r\n\r\nWant to disable?");
-    } else if (status === 2) {
-        let mplew = new Packages.tools.data.output.MaplePacketLittleEndianWriter();
-        mplew.writeShort(Packages.net.SendOpcode.MONSTER_CARNIVAL_LEAVE.getValue());
-        mplew.write(0); //Something
-        mplew.write(player.getTeam()); //Team
-        mplew.writeMapleAsciiString(player.getName()); //Player name
-        player.announce(mplew.getPacket());
-        cm.sendOk("Disabled~");
         cm.dispose();
     }
 }
