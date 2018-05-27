@@ -38,6 +38,7 @@ import com.lucianms.io.scripting.Achievements;
 import com.lucianms.io.scripting.event.EventInstanceManager;
 import com.lucianms.scheduler.Task;
 import com.lucianms.scheduler.TaskExecutor;
+import com.lucianms.server.events.channel.ChangeMapEvent;
 import com.lucianms.server.pqs.carnival.MCarnivalPacket;
 import constants.ExpTable;
 import constants.GameConstants;
@@ -1644,9 +1645,15 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
             }
         }
         List<GenericEvent> gEvents = getGenericEvents();
-        if (gEvents.stream().anyMatch(g -> (g instanceof ShenronSummoner))) {
-            if (to.getId() != 908) {
-                gEvents.stream().filter(g -> (g instanceof ShenronSummoner)).forEach(event -> event.unregisterPlayer(this));
+        if (!gEvents.isEmpty()) {
+            for (GenericEvent gEvent : gEvents) {
+                if (gEvent instanceof ShenronSummoner) {
+                    gEvent.unregisterPlayer(this);
+                } else {
+                    if (!gEvent.onPlayerChangeMapInternal(this, to)) {
+                        return;
+                    }
+                }
             }
         }
         if (getFakePlayer() != null) {
@@ -5160,14 +5167,6 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
 
     public void setLastSnowballAttack(long time) {
         this.snowballattack = time;
-    }
-
-    public MonsterCarnivalParty getCarnivalParty() {
-        return carnivalparty;
-    }
-
-    public void setCarnivalParty(MonsterCarnivalParty party) {
-        this.carnivalparty = party;
     }
 
     public int getCarnivalPoints() {

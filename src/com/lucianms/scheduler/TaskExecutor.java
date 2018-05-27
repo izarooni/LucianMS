@@ -20,7 +20,7 @@ public final class TaskExecutor {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(TaskExecutor.class);
     private static final HashMap<Integer, Task> TASKS = new HashMap<>();
-    private static final ScheduledThreadPoolExecutor EXECUTOR = new ScheduledThreadPoolExecutor(12 , new ThreadFactory() {
+    private static final ScheduledThreadPoolExecutor EXECUTOR = new ScheduledThreadPoolExecutor(12, new ThreadFactory() {
         private int threadId = 0;
 
         @Override
@@ -109,6 +109,12 @@ public final class TaskExecutor {
         return setupTask(EXECUTOR.scheduleWithFixedDelay(r, t, t, TimeUnit.MILLISECONDS));
     }
 
+    public static Task cancelTask(Task task) {
+        if (task != null) {
+            cancelTask(task.getId());
+        }
+        return null;
+    }
 
     /**
      * Cancels the specified task

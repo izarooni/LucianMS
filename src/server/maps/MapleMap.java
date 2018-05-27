@@ -35,8 +35,10 @@ import client.status.MonsterStatusEffect;
 import com.lucianms.cquest.CQuestData;
 import com.lucianms.cquest.requirement.CQuestItemRequirement;
 import com.lucianms.cquest.requirement.CQuestKillRequirement;
-import com.lucianms.features.EmergencyAttack;
 import com.lucianms.features.GenericEvent;
+import com.lucianms.features.emergency.Emergency;
+import com.lucianms.features.emergency.EmergencyAttack;
+import com.lucianms.features.emergency.EmergencyDuel;
 import com.lucianms.features.summoning.BlackMageSummoner;
 import com.lucianms.features.summoning.ShenronSummoner;
 import com.lucianms.io.scripting.map.MapScriptManager;
@@ -1672,17 +1674,18 @@ public class MapleMap {
                     && !spawnPoints.isEmpty()
                     && Arrays.binarySearch(Server.getInstance().getConfig().getIntArray("EmergencyExcludes"), getId()) < 0) {
                 // 1/25 chance to trigger emergency
-                if ((chr.isGM() && chr.isDebug()) || ((System.currentTimeMillis() > nextEmergency))
-                        && Randomizer.nextInt(25) == 1
+                if ((chr.isGM() && chr.isDebug())
+                        || ((System.currentTimeMillis() > nextEmergency)
+                        && Randomizer.nextInt(25) == 0
                         && chr.getGenericEvents().isEmpty()
                         && chr.getEventInstance() == null
-                        && chr.getArcade() == null) {
-                    EmergencyAttack eAttack = new EmergencyAttack();
+                        && chr.getArcade() == null)) {
+                    Emergency event = Randomizer.nextBoolean() && chr.getLevel() >= 30 ? new EmergencyDuel(chr) : new EmergencyAttack(chr);
                     TaskExecutor.createTask(new Runnable() {
                         @Override
                         public void run() {
-                            eAttack.registerPlayer(chr);
-                            if (!eAttack.isCanceled()) {
+                            event.registerPlayer(chr);
+                            if (!event.isCanceled()) {
                                 nextEmergency = System.currentTimeMillis() + TimeUnit.MINUTES.toMillis(8);
                             }
                         }

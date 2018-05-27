@@ -26,6 +26,9 @@ public class Randomizer {
     }
 
     /**
+     * <p>
+     * Random value between 0 (inclusive) and the specified parameter (exclusive)
+     * </p>
      * Delegate method for {@link Random#nextInt(int)}
      */
     public static int nextInt(final int arg0) {

@@ -1,10 +1,11 @@
 package com.lucianms.features;
 
 import client.MapleCharacter;
-import net.PacketEvent;
 import com.lucianms.lang.annotation.PacketWorker;
+import net.PacketEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import server.maps.MapleMap;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -63,6 +64,17 @@ public abstract class GenericEvent {
                 }
             });
         }
+    }
+
+    /**
+     * When the player change's map via method call
+     *
+     * @param player      the player changing maps
+     * @param destination the destination map
+     * @return true if the player can continue transfer to new map, false otherwise
+     */
+    public boolean onPlayerChangeMapInternal(MapleCharacter player, MapleMap destination) {
+        return true;
     }
 
     /**

@@ -21,12 +21,32 @@ public class ChangeMapEvent extends PacketEvent {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ChangeMapEvent.class);
 
+    private boolean fake = false;
     private boolean eCashShop = false;
     private boolean wheelOfDestiny = false;
 
     private String startwp;
 
     private int targetMapId;
+
+    /**
+     * For packet event reflective instantiation
+     */
+    public ChangeMapEvent() {
+    }
+
+    /**
+     * Used for handling of {@link com.lucianms.features.GenericEvent}
+     */
+    public ChangeMapEvent(int targetMapId) {
+        this.targetMapId = targetMapId;
+
+        fake = true;
+        this.eCashShop = false;
+        this.wheelOfDestiny = false;
+        this.startwp = null;
+        this.targetMapId = -1;
+    }
 
     @Override
     public void process(SeekableLittleEndianAccessor slea) {
@@ -169,6 +189,10 @@ public class ChangeMapEvent extends PacketEvent {
             }
         }
         return null;
+    }
+
+    public boolean isFake() {
+        return fake;
     }
 
     public boolean iseCashShop() {

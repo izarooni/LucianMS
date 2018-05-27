@@ -111,8 +111,8 @@ public class HGMCommands {
             if (args.length() > 0) {
                 Integer monsterId = args.parseNumber(0, int.class);
                 Integer amount = args.parseNumber(1, 1, int.class);
-                Integer hp = args.parseNumber(args.findArg("hp"), int.class);
-                Integer exp = args.parseNumber(args.findArg("exp"), int.class);
+                Float hp = args.parseNumber(args.findArg("hp"), float.class);
+                Float exp = args.parseNumber(args.findArg("exp"), float.class);
                 String error = args.getFirstError();
                 if (error != null) {
                     player.dropMessage(5, error);
@@ -126,8 +126,11 @@ public class HGMCommands {
                     }
                     if (args.length() > 3) {
                         MapleMonsterStats stats = new MapleMonsterStats();
-                        stats.setHp(hp == null ? monster.getHp() : hp);
-                        stats.setExp(exp == null ? monster.getExp() : exp);
+                        stats.setHp(hp == null ? monster.getHp() : hp.intValue());
+                        if (exp != null && exp < 0) {
+                            exp = monster.getExp() * Math.abs(exp);
+                        }
+                        stats.setExp(exp == null ? monster.getExp() : exp.intValue());
                         monster.setOverrideStats(stats);
                     }
                     player.getMap().spawnMonsterOnGroudBelow(monster, player.getPosition());
