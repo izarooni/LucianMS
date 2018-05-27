@@ -56,10 +56,8 @@ public abstract class Emergency extends GenericEvent {
             cancelTimeout();
             new Timeout(false).run();
             unregisterPlayers();
-            logger().info("Unregistered party");
         } else {
             player.removeGenericEvent(this);
-            logger().info("unregister player");
         }
         return true;
     }
