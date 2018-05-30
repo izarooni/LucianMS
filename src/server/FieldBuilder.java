@@ -56,37 +56,37 @@ public class FieldBuilder {
     }
 
     public FieldBuilder loadPortals() {
-        portals = true;
+        portals = !portals;
         return this;
     }
 
     public FieldBuilder loadFootholds() {
-        footholds = true;
+        footholds = !footholds;
         return this;
     }
 
     public FieldBuilder loadReactors() {
-        reactors = true;
+        reactors = !reactors;
         return this;
     }
 
     public FieldBuilder loadMonsters() {
-        monsters = true;
+        monsters = !monsters;
         return this;
     }
 
     public FieldBuilder loadNPCs() {
-        NPCs = true;
+        NPCs = !NPCs;
         return this;
     }
 
     public FieldBuilder loadPlayerNPCs() {
-        playerNPCs = true;
+        playerNPCs = !playerNPCs;
         return this;
     }
 
     public FieldBuilder loadSQLSpawns() {
-        SQLSpawns = true;
+        SQLSpawns = !SQLSpawns;
         return this;
     }
     //endregion
