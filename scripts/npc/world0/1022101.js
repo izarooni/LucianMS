@@ -10,7 +10,6 @@ var maps = [
     [810, "#gCasino#k"],
     [271000000, "#dFuture Gate#k"],
     [273000000, "#rTwilight Perion#k"],
-    [610050000, "#bBlackGate City#k"],
     [211060010, "#bLion King Castle"],
     [219000000, "#dCokeTown#k"],
     [951000000, "#rMonster Park#k"]
