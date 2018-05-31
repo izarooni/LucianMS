@@ -13,19 +13,26 @@ import java.util.ArrayList;
  */
 public enum GAutoEventManager {
 
-    FlappyBird("Flappy Bird", AFlappyBird.class),
-    HeartlessWall("Heartless Wall", AHeartlessWall.class),
-    WhispyWoods("Whispy Woods", AWhispyWoods.class),
-    CursedCastle("Cursed Castle", ACursedCastle.class);
+    // @formatter:off
+    FlappyBird("Flappy Bird",             AFlappyBird.class, false, 0),
+    HeartlessWall("Heartless Wall",    AHeartlessWall.class, false, 0),
+    WhispyWoods("Whispy Woods",          AWhispyWoods.class, false, 0),
+    CursedCastle("Cursed Castle",       ACursedCastle.class, false, 0),
+    EmergencyTrial("Emergency Trial", AEmergencyTrial.class,  true, 3);
+    // @formatter:on
     private final String name;
     private final Class<? extends GAutoEvent> clazz;
+    private final boolean enabled;
     private long lastInstantiate = 0L;
+    public long interval = 3;
 
     private static GAutoEvent currentEvent;
 
-    GAutoEventManager(String name, Class<? extends GAutoEvent> clazz) {
+    GAutoEventManager(String name, Class<? extends GAutoEvent> clazz, boolean enabled, long interval) {
         this.name = name;
         this.clazz = clazz;
+        this.enabled = enabled;
+        this.interval = interval;
     }
 
     public String getName() {
@@ -42,6 +49,17 @@ public enum GAutoEventManager {
 
     public void setLastInstantiate(long lastInstantiate) {
         this.lastInstantiate = lastInstantiate;
+    }
+
+    public void startInstance(World world) {
+        try {
+            GAutoEvent gEvent = clazz.getDeclaredConstructor(World.class, boolean.class).newInstance(world, false);
+            gEvent.start();
+            setCurrentEvent(gEvent);
+            setLastInstantiate(System.currentTimeMillis());
+        } catch (InstantiationException | NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
+            e.printStackTrace();
+        }
     }
 
     public static GAutoEvent getCurrentEvent() {
@@ -66,12 +84,12 @@ public enum GAutoEventManager {
             // maybe implement a force cancel function
             getCurrentEvent().stop();
         }
-        final int interval = ((1000 * 60) * 60) * 2;
         GAutoEventManager[] events = GAutoEventManager.values();
         ArrayList<GAutoEventManager> available = new ArrayList<>();
 
         for (GAutoEventManager event : events) {
-            if (System.currentTimeMillis() - event.getLastInstantiate() >= interval) {
+            long interval = ((1000 * 60) * 60) * event.interval;
+            if (event.enabled && System.currentTimeMillis() - event.getLastInstantiate() >= interval) {
                 available.add(event);
             }
         }
