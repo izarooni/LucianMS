@@ -1,18 +1,15 @@
 package com.lucianms.features.auto;
 
 import client.MapleCharacter;
-import net.server.world.World;
+import com.lucianms.features.GenericEvent;
 import com.lucianms.scheduler.Task;
 import com.lucianms.scheduler.TaskExecutor;
-import com.lucianms.features.GenericEvent;
+import net.server.world.World;
+import server.FieldBuilder;
 import server.maps.MapleMap;
-import server.maps.MapleMapFactory;
 import tools.MaplePacketCreator;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -22,9 +19,10 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public abstract class GAutoEvent extends GenericEvent {
 
+    private static final int ChannelID = 1;
+
     private final World world;
-    private static final int Channel_ID = 1;
-    private MapleMapFactory mapleMapFactory = null;
+    private HashMap<Integer, MapleMap> maps = null;
     private Task respawnTask = null;
 
     // [f]irst time using this
@@ -33,7 +31,7 @@ public abstract class GAutoEvent extends GenericEvent {
     public GAutoEvent(World world, boolean nMapInstances) {
         this.world = world;
         if (nMapInstances) {
-            mapleMapFactory = new MapleMapFactory(world.getId(), Channel_ID);
+            maps = new HashMap<>(10);
         }
     }
 
@@ -45,22 +43,27 @@ public abstract class GAutoEvent extends GenericEvent {
     }
 
     public final void loadMapInstance(int mapId, boolean skipMonsters) {
-        if (mapleMapFactory == null) {
+        if (maps == null) {
             throw new NullPointerException("Can't load map instances when auto event is set to not need them");
         }
         // haha slowly turning this factory into a builder FUCK
-        mapleMapFactory.skipMonsters(skipMonsters).getMap(mapId);
+        FieldBuilder builder = new FieldBuilder(0, ChannelID, mapId).loadAll(); // toggle; load everything
+        if (skipMonsters) {
+            builder.loadMonsters(); // toggle; inverts the previous toggle thus becoming false
+        }
+        maps.put(mapId, builder.build());
     }
 
     public final MapleMap getMapInstance(int mapId) {
-        if (mapleMapFactory == null) {
+        if (maps == null) {
             throw new NullPointerException("Can't load map instances when auto event is set to not need them");
         }
-        return mapleMapFactory.getMap(mapId);
+        return maps.getOrDefault(mapId, new FieldBuilder(0, ChannelID, mapId).loadAll().build());
     }
 
+    @Deprecated
     public final Task registerRespawnTimer() {
-        return respawnTask = TaskExecutor.createRepeatingTask(() -> mapleMapFactory.getMaps().forEach(MapleMap::respawn), 1000, 1000);
+        return respawnTask = TaskExecutor.createRepeatingTask(() -> maps.values().forEach(MapleMap::respawn), 1000, 1000);
     }
 
     public final Task getRespawnTask() {
@@ -72,8 +75,7 @@ public abstract class GAutoEvent extends GenericEvent {
     }
 
     public final Collection<MapleCharacter> getPlayers() {
-        List<MapleCharacter> ret = new ArrayList<>();
-        ret.addAll(players.values());
+        List<MapleCharacter> ret = new ArrayList<>(players.values());
         return Collections.unmodifiableList(ret);
     }
 

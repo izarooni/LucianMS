@@ -6,12 +6,16 @@ import com.lucianms.scheduler.TaskExecutor;
 import constants.ExpTable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import server.FieldBuilder;
 import server.MaplePortal;
-import server.life.*;
+import server.life.MapleMonster;
+import server.life.MapleMonsterStats;
+import server.life.MonsterListener;
+import server.life.SpawnPoint;
 import server.maps.MapleMap;
-import server.maps.MapleMapFactory;
 import tools.MaplePacketCreator;
 
+import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -26,19 +30,18 @@ public class MonsterPark extends GenericEvent {
 
     private final AtomicInteger totalExp = new AtomicInteger(0);
     private final int mapId;
-    private final MapleMapFactory mapFactory;
+    private final HashMap<Integer, MapleMap> maps = new HashMap<>(5);
     private long timestampStart = 0;
     private Task timeout = null;
     private Hashtable<Integer, Integer> returnMaps = new Hashtable<>();
 
-    public MonsterPark(int world, int channel, int mapId, int baseLevel) {
-        this.mapId = mapId;
-        this.mapFactory = new MapleMapFactory(world, channel);
+    public MonsterPark(int worldID, int channelID, int mapID, int baseLevel) {
+        this.mapId = mapID;
 
-        for (int i = mapId; i < (mapId + (Stages * Increment)); i += Increment) {
-            MapleMap instanceMap = mapFactory.skipMonsters(true).getMap(i);
+        for (int i = mapID; i < (mapID + (Stages * Increment)); i += Increment) {
+            MapleMap instanceMap = new FieldBuilder(worldID, channelID, i).loadFootholds().loadPortals().build();
             if (instanceMap != null) {
-
+                maps.put(i, instanceMap);
                 final MaplePortal portal;
                 if (instanceMap.getPortal("next00") != null) {
                     (portal = instanceMap.getPortal("next00")).setPortalStatus(false);
@@ -64,9 +67,11 @@ public class MonsterPark extends GenericEvent {
                                         TaskExecutor.createTask(new Runnable() {
                                             @Override
                                             public void run() {
-                                                for (int i = mapId; i < (mapId + Stages); i++) {
-                                                    MapleMap instanceMap = mapFactory.getMap(i);
-                                                    instanceMap.getAllPlayer().forEach(MonsterPark.this::unregisterPlayer);
+                                                for (int i = mapID; i < (mapID + Stages); i++) {
+                                                    MapleMap instanceMap = maps.get(i);
+                                                    if (instanceMap != null) {
+                                                        instanceMap.getAllPlayer().forEach(MonsterPark.this::unregisterPlayer);
+                                                    }
                                                 }
                                             }
                                         }, 3500);
@@ -82,7 +87,7 @@ public class MonsterPark extends GenericEvent {
                         spawnPoint.summonMonster();
                         instanceMap.spawnMonsterOnGroudBelow(monster, spawnPoint.getPosition());
                     } else {
-                        LOGGER.warn("Invalid monster {} for map {}", spawnPoint.getMonsterID(), mapId);
+                        LOGGER.warn("Invalid monster {} for map {}", spawnPoint.getMonsterID(), mapID);
                     }
                 }
             } else {
@@ -98,7 +103,7 @@ public class MonsterPark extends GenericEvent {
             timestampStart = System.currentTimeMillis();
         }
         returnMaps.put(player.getId(), player.getMapId());
-        player.changeMap(mapFactory.getMap(mapId));
+        player.changeMap(maps.get(mapId));
         player.announce(MaplePacketCreator.getClock((60 * 20)));
         player.announce(MaplePacketCreator.showEffect("monsterPark/stageEff/stage"));
         TaskExecutor.createTask(() -> player.announce(MaplePacketCreator.showEffect("monsterPark/stageEff/number/1")), 2345);
@@ -131,7 +136,7 @@ public class MonsterPark extends GenericEvent {
 
             // player is still in the monster park area
             if (cMapId >= mapId && cMapId <= (mapId + (Stages * Increment))) {
-                player.changeMap(mapFactory.getMap(cMapId + Increment));
+                player.changeMap(maps.get(cMapId + Increment));
                 // (start timestamp + 20min) = timeout
                 // timeout - (current time) = elapsed time (aka: seconds left)
                 int sLeft = (int) (((timestampStart + (1000 * 60 * 20)) - System.currentTimeMillis()) / 1000);

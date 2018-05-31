@@ -24,11 +24,21 @@ package net.server;
 import client.MapleCharacter;
 import client.SkillFactory;
 import com.lucianms.command.executors.ConsoleCommands;
-import constants.ServerConstants;
+import com.lucianms.cquest.CQuestBuilder;
+import com.lucianms.discord.DiscordSession;
+import com.lucianms.features.auto.GAutoEventManager;
+import com.lucianms.features.scheduled.SOuterSpace;
+import com.lucianms.helpers.DailyWorker;
+import com.lucianms.helpers.HouseManager;
+import com.lucianms.helpers.RankingWorker;
 import com.lucianms.io.Config;
 import com.lucianms.io.defaults.Defaults;
+import com.lucianms.io.scripting.Achievements;
+import com.lucianms.scheduler.Task;
+import com.lucianms.scheduler.TaskExecutor;
+import com.lucianms.server.Whitelist;
+import constants.ServerConstants;
 import net.MapleServerHandler;
-import com.lucianms.discord.DiscordSession;
 import net.mina.MapleCodecFactory;
 import net.server.channel.Channel;
 import net.server.guild.MapleAlliance;
@@ -46,21 +56,12 @@ import org.json.JSONTokener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.helpers.MessageFormatter;
-import com.lucianms.scheduler.Task;
-import com.lucianms.scheduler.TaskExecutor;
-import com.lucianms.io.scripting.Achievements;
 import server.CashShop.CashItemFactory;
 import server.MapleItemInformationProvider;
-import com.lucianms.server.Whitelist;
-import com.lucianms.features.scheduled.SOuterSpace;
 import server.quest.MapleQuest;
-import com.lucianms.cquest.CQuestBuilder;
-import com.lucianms.helpers.HouseManager;
 import tools.DatabaseConnection;
 import tools.Pair;
 import tools.StringUtil;
-import com.lucianms.helpers.DailyWorker;
-import com.lucianms.helpers.RankingWorker;
 
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -271,8 +272,8 @@ public class Server implements Runnable {
                 }
                 world.setServerMessage(sMessage);
 
-                //                final long repeat = (1000 * 60 * 60) * 4;
-                //                TaskExecutor.createRepeatingTask(() -> GAutoEventManager.startRandomEvent(world), repeat);
+                final long repeat = (1000 * 60 * 60) * 4;
+                TaskExecutor.createRepeatingTask(() -> GAutoEventManager.startRandomEvent(world), repeat);
                 world.addScheduledEvent(new SOuterSpace(world));
                 LOGGER.info("World {} created in {}s", (world.getId() + 1), ((System.currentTimeMillis() - timeToTake) / 1000d));
             }

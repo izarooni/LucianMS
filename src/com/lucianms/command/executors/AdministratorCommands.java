@@ -62,6 +62,21 @@ public class AdministratorCommands {
             } finally {
                 commands.clear();
             }
+        } else if (command.equals("autoevent")) {
+            if (args.length() == 1) {
+                try {
+                    GAutoEventManager auto = GAutoEventManager.valueOf(args.get(0));
+                    auto.startInstance(world);
+                } catch (IllegalArgumentException e) {
+                    if (args.get(0).equals("stop")) {
+                        GAutoEventManager.getCurrentEvent().stop();
+                    } else {
+                        player.sendMessage(5, "Unable to find any auto event named '{}'", args.get(0));
+                    }
+                }
+            } else {
+                player.sendMessage(5, "Usage: !autoevent <event_name>");
+            }
         } else if (command.equals("reloaddrops")) {
             MapleMonsterInformationProvider.getInstance().reload();
             player.dropMessage("Drops reloaded");

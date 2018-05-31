@@ -1,20 +1,21 @@
 package com.lucianms.features.bpq;
 
 import client.MapleCharacter;
-import com.lucianms.server.events.channel.TakeDamageEvent;
-import com.lucianms.scheduler.TaskExecutor;
 import com.lucianms.features.GenericEvent;
+import com.lucianms.lang.annotation.PacketWorker;
+import com.lucianms.scheduler.TaskExecutor;
+import com.lucianms.server.events.channel.TakeDamageEvent;
+import server.FieldBuilder;
 import server.life.MapleLifeFactory;
 import server.life.MapleMonster;
 import server.life.MapleMonsterStats;
 import server.life.MonsterListener;
 import server.maps.MapleMap;
-import server.maps.MapleMapFactory;
 import tools.MaplePacketCreator;
 import tools.StringUtil;
-import com.lucianms.lang.annotation.PacketWorker;
 
 import java.awt.*;
+import java.util.HashMap;
 
 /**
  * @author izarooni
@@ -22,10 +23,11 @@ import java.awt.*;
  */
 public abstract class BossPQ extends GenericEvent {
 
+    private final int channelID;
     private final int mapId;
     private final int[] bosses;
 
-    private MapleMapFactory mapFactory;
+    private HashMap<Integer, MapleMap> maps = new HashMap<>(5);
     private int round = 0;
     private int points = 0;
     private int nCashWinnings = 0; // how much NX is gained per round
@@ -33,11 +35,10 @@ public abstract class BossPQ extends GenericEvent {
     private float mHealthMultiplier = 1.0f; // multiply each boss health with this
     private float mDamageMultiplier = 1.0f; // multiply damage taken with this
 
-    public BossPQ(int channel, int mapId, int[] bosses) {
+    public BossPQ(int channelID, int mapId, int[] bosses) {
+        this.channelID = channelID;
         this.mapId = mapId;
         this.bosses = bosses;
-
-        mapFactory = new MapleMapFactory(0, channel);
     }
 
     public abstract int getMinimumLevel();
@@ -47,7 +48,7 @@ public abstract class BossPQ extends GenericEvent {
     public abstract void giveRewards(MapleCharacter player);
 
     public MapleMap getMapInstance(int mapId) {
-        return mapFactory == null ? null : mapFactory.skipMonsters(true).getMap(mapId);
+        return maps.getOrDefault(mapId, new FieldBuilder(0, channelID, mapId).loadAll().loadMonsters().build());
     }
 
     private void broadcastPacket(byte[] packet) {
@@ -71,8 +72,8 @@ public abstract class BossPQ extends GenericEvent {
             ReturnMap = 240070101;
         }
         player.changeMap(ReturnMap);
-
-        mapFactory = null;
+        maps.clear();
+        maps = null;
     }
 
     public final void begin() {

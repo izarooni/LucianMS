@@ -346,10 +346,10 @@ public class MapleMap {
         return runningOid.get();
     }
 
-    public void removeMapObject(int num) {
+    public MapleMapObject removeMapObject(int num) {
         objectWLock.lock();
         try {
-            this.mapobjects.remove(num);
+            return mapobjects.remove(num);
         } finally {
             objectWLock.unlock();
         }

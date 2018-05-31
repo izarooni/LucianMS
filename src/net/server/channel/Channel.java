@@ -22,6 +22,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 package net.server.channel;
 
 import client.MapleCharacter;
+import com.lucianms.io.scripting.event.EventScriptManager;
+import com.lucianms.server.pqs.carnival.MCarnivalLobbyManager;
 import net.MapleServerHandler;
 import net.mina.MapleCodecFactory;
 import net.server.PlayerStorage;
@@ -38,16 +40,12 @@ import org.apache.mina.transport.socket.SocketSessionConfig;
 import org.apache.mina.transport.socket.nio.NioSocketAcceptor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import com.lucianms.scheduler.TaskExecutor;
-import com.lucianms.io.scripting.event.EventScriptManager;
 import server.FieldBuilder;
 import server.events.gm.MapleEvent;
 import server.expeditions.MapleExpedition;
 import server.maps.HiredMerchant;
 import server.maps.MapleMap;
-import server.maps.MapleMapFactory;
 import server.maps.MapleMapObject;
-import com.lucianms.server.pqs.carnival.MCarnivalLobbyManager;
 import tools.MaplePacketCreator;
 
 import java.io.File;
@@ -66,7 +64,6 @@ public final class Channel {
     private int world, channel;
     private IoAcceptor acceptor;
     private String ip, serverMessage;
-    private MapleMapFactory mapFactory;
     private ConcurrentHashMap<Integer, MapleMap> maps = new ConcurrentHashMap<>(100);
     private EventScriptManager eventScriptManager;
     private Map<Integer, HiredMerchant> hiredMerchants = new HashMap<>();
@@ -79,8 +76,6 @@ public final class Channel {
     public Channel(final int world, final int channel) {
         this.world = world;
         this.channel = channel;
-        this.mapFactory = new MapleMapFactory(world, channel);
-//        TaskExecutor.createRepeatingTask(() -> mapFactory.getMaps().forEach(MapleMap::respawn), 10000, 10000);
         reloadEventScriptManager();
         carnivalLobbyManager = new MCarnivalLobbyManager(this);
         final int port = (7575 + (this.channel - 1)) + (world * 100);
@@ -153,10 +148,6 @@ public final class Channel {
         } finally {
             wlock.unlock();
         }
-    }
-
-    public MapleMapFactory getMapFactory() {
-        return mapFactory;
     }
 
     public boolean isMapLoaded(int mapID) {
