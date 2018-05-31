@@ -33,13 +33,13 @@ var Genie_to_Ariant;
 var Ariant_docked;
 
 function init() {
-    Orbis_btf = em.getChannel().getMapFactory().getMap(200000152);
-    Ariant_btf = em.getChannel().getMapFactory().getMap(260000110);
-    Genie_to_Orbis = em.getChannel().getMapFactory().getMap(200090410);
-    Genie_to_Ariant = em.getChannel().getMapFactory().getMap(200090400);
-    Orbis_docked = em.getChannel().getMapFactory().getMap(200000151);
-    Ariant_docked = em.getChannel().getMapFactory().getMap(260000100);
-    Orbis_Station = em.getChannel().getMapFactory().getMap(200000100);
+    Orbis_btf = em.getChannel().getMap(200000152);
+    Ariant_btf = em.getChannel().getMap(260000110);
+    Genie_to_Orbis = em.getChannel().getMap(200090410);
+    Genie_to_Ariant = em.getChannel().getMap(200090400);
+    Orbis_docked = em.getChannel().getMap(200000151);
+    Ariant_docked = em.getChannel().getMap(260000100);
+    Orbis_Station = em.getChannel().getMap(200000100);
     scheduleNew();
 }
 

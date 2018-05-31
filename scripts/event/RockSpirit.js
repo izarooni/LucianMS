@@ -26,9 +26,9 @@ var fightTime = 60;
 var timer = 1000 * 60 * fightTime;
 
 function init() {
-	exitMap = em.getChannel().getMapFactory().getMap(103040400);
-	startMap = em.getChannel().getMapFactory().getMap(103040410);
-	otherMap = em.getChannel().getMapFactory().getMap(103040420);
+	exitMap = em.getChannel().getMap(103040400);
+	startMap = em.getChannel().getMap(103040410);
+	otherMap = em.getChannel().getMap(103040420);
 }
 
 function setup() {

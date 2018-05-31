@@ -10,12 +10,12 @@ var Subway_to_NLC;
 var NLC_docked;
 
 function init() {
-    KC_Waiting = em.getChannel().getMapFactory().getMap(600010004);
-    NLC_Waiting = em.getChannel().getMapFactory().getMap(600010002);
-    Subway_to_KC = em.getChannel().getMapFactory().getMap(600010003);
-    Subway_to_NLC = em.getChannel().getMapFactory().getMap(600010005);
-    KC_docked = em.getChannel().getMapFactory().getMap(103000100);
-    NLC_docked = em.getChannel().getMapFactory().getMap(600010001);
+    KC_Waiting = em.getChannel().getMap(600010004);
+    NLC_Waiting = em.getChannel().getMap(600010002);
+    Subway_to_KC = em.getChannel().getMap(600010003);
+    Subway_to_NLC = em.getChannel().getMap(600010005);
+    KC_docked = em.getChannel().getMap(103000100);
+    NLC_docked = em.getChannel().getMap(600010001);
     scheduleNew();
 }
 

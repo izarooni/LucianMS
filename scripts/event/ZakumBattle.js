@@ -36,8 +36,8 @@ var gate;
 
 function init() {
     em.setProperty("shuffleReactors","false");
-	exitMap = em.getChannel().getMapFactory().getMap(211042300);
-	altarMap = em.getChannel().getMapFactory().getMap(280030000);// Last Mission: Zakum's Altar
+	exitMap = em.getChannel().getMap(211042300);
+	altarMap = em.getChannel().getMap(280030000);// Last Mission: Zakum's Altar
 	gate = exitMap.getReactorByName("gate");
 	gate.setState(0);//Open gate
 }

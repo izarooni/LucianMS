@@ -40,7 +40,7 @@ function cancelSchedule() {
 }
 
 function start() {
-    var graysPrairie = em.getChannel().getMapFactory().getMap(221040301);
+    var graysPrairie = em.getChannel().getMap(221040301);
     var zeno = Packages.server.life.MapleLifeFactory.getMonster(6220001);
 	
 	if(graysPrairie.getMonsterById(6220001) != null) {

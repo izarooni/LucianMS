@@ -41,8 +41,8 @@ function monsterValue(eim, mobId) {
 }
 
 function setup() {
-    exitMap = em.getChannel().getMapFactory().getMap(809050017);
-    finishMap = em.getChannel().getMapFactory().getMap(809050016);
+    exitMap = em.getChannel().getMap(809050017);
+    finishMap = em.getChannel().getMap(809050016);
     var instanceName = "LudiMazePQ" + instanceId;
     var eim = em.newInstance(instanceName);
     var mf = eim.getMapFactory();

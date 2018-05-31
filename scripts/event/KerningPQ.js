@@ -12,7 +12,7 @@ var exitMap;
 var minPlayers = 3;
 
 function init() { // Initial loading.
-    exitMap = em.getChannel().getMapFactory().getMap(103000890);
+    exitMap = em.getChannel().getMap(103000890);
     em.setProperty("KPQOpen", "true"); // allows entrance.
     em.setProperty("shuffleReactors", "true");
     instanceId = 1;

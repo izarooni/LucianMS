@@ -53,14 +53,14 @@ var Orbis_docked;
 var Leafre_docked;
 
 function init() {
-    Orbis_btf = em.getChannel().getMapFactory().getMap(200000132);
-    Leafre_btf = em.getChannel().getMapFactory().getMap(240000111);
-    Cabin_to_Orbis = em.getChannel().getMapFactory().getMap(200090210);
-    Cabin_to_Leafre = em.getChannel().getMapFactory().getMap(200090200);
-    Orbis_docked = em.getChannel().getMapFactory().getMap(200000131);
-    Leafre_docked = em.getChannel().getMapFactory().getMap(240000110);
-    Orbis_Station = em.getChannel().getMapFactory().getMap(200000100);
-    Leafre_Station = em.getChannel().getMapFactory().getMap(240000100);
+    Orbis_btf = em.getChannel().getMap(200000132);
+    Leafre_btf = em.getChannel().getMap(240000111);
+    Cabin_to_Orbis = em.getChannel().getMap(200090210);
+    Cabin_to_Leafre = em.getChannel().getMap(200090200);
+    Orbis_docked = em.getChannel().getMap(200000131);
+    Leafre_docked = em.getChannel().getMap(240000110);
+    Orbis_Station = em.getChannel().getMap(200000100);
+    Leafre_Station = em.getChannel().getMap(240000100);
     scheduleNew();
 }
 

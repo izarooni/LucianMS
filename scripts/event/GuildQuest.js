@@ -52,7 +52,7 @@ function monsterValue(eim, mobId) { //should only trigger on ergoth
 
 
 function setup(eim) {
-    exitMap = em.getChannel().getMapFactory().getMap(990001100); //returning path
+    exitMap = em.getChannel().getMap(990001100); //returning path
         
     //shuffle reactors in two maps for stage 3
     eim.getMapInstance(990000501).shuffleReactors();

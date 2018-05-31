@@ -43,7 +43,7 @@ function cancelSchedule() {
 }
 
 function start() {
-    var territoryOfWanderingBear = em.getChannel().getMapFactory().getMap(250010304);
+    var territoryOfWanderingBear = em.getChannel().getMap(250010304);
     var taeRoon = Packages.server.life.MapleLifeFactory.getMonster(7220000);
 	
 	if(territoryOfWanderingBear.getMonsterById(7220000) != null) {

@@ -31,8 +31,8 @@ var fightTime = 60;
 
 function init() {
     em.setProperty("shuffleReactors","false");
-	exitMap = em.getChannel().getMapFactory().getMap(551030100);
-	battleMap = em.getChannel().getMapFactory().getMap(551030200);
+	exitMap = em.getChannel().getMap(551030100);
+	battleMap = em.getChannel().getMap(551030200);
 }
 
 function setup() {

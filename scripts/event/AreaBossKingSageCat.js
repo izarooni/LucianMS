@@ -43,7 +43,7 @@ function cancelSchedule() {
 }
 
 function start() {
-    var goblinForest2 = em.getChannel().getMapFactory().getMap(250010504);
+    var goblinForest2 = em.getChannel().getMap(250010504);
     var kingSageCat = Packages.server.life.MapleLifeFactory.getMonster(7220002);
 	
 	if(goblinForest2.getMonsterById(7220002) != null) {

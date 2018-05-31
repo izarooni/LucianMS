@@ -50,7 +50,7 @@ function monsterValue(eim, mobId) {
 
 function setup() {
     instanceId = em.getChannel().getInstanceId();
-    exitMap = em.getChannel().getMapFactory().getMap(920011200); //Teh exit map :) <---------t
+    exitMap = em.getChannel().getMap(920011200); //Teh exit map :) <---------t
     var instanceName = "OrbisPQ" + instanceId;
     var eim = em.newInstance(instanceName);
     var mf = eim.getMapFactory();

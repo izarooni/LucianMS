@@ -40,7 +40,7 @@ function cancelSchedule() {
 }
 
 function start() {
-    var royalCatthusDesert = em.getChannel().getMapFactory().getMap(260010201);
+    var royalCatthusDesert = em.getChannel().getMap(260010201);
     var deo = Packages.server.life.MapleLifeFactory.getMonster(3220001);
 
 	if(royalCatthusDesert.getMonsterById(3220001) != null) {

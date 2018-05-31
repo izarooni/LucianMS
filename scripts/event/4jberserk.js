@@ -32,7 +32,7 @@ function monsterValue(eim, mobId) {
 }
 
 function setup() {
-    exitMap = em.getChannel().getMapFactory().getMap(105090800); // <exit>
+    exitMap = em.getChannel().getMap(105090800); // <exit>
     var instanceName = "4jberserk" + instanceId;
 
     var eim = em.newInstance(instanceName);

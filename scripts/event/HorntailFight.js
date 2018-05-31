@@ -37,10 +37,10 @@ var exitMap;
 	
 function init() {
     em.setProperty("shuffleReactors","false");
-	trial1 = em.getChannel().getMapFactory().getMap(240060000); //Cave of Life - The Cave of Trial I
-	trial2 = em.getChannel().getMapFactory().getMap(240060100); // Cave of Life - The Cave of Trial II
-	fightMap = em.getChannel().getMapFactory().getMap(240060200); // Cave of Life - Horntail's Cave
-	exitMap = em.getChannel().getMapFactory().getMap(211042300);
+	trial1 = em.getChannel().getMap(240060000); //Cave of Life - The Cave of Trial I
+	trial2 = em.getChannel().getMap(240060100); // Cave of Life - The Cave of Trial II
+	fightMap = em.getChannel().getMap(240060200); // Cave of Life - Horntail's Cave
+	exitMap = em.getChannel().getMap(211042300);
 }
 
 

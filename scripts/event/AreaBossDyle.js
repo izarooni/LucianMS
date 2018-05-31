@@ -43,7 +43,7 @@ function cancelSchedule() {
 }
 
 function start() {
-    var dangeroudCroko1 = em.getChannel().getMapFactory().getMap(107000300);
+    var dangeroudCroko1 = em.getChannel().getMap(107000300);
 	if(dangeroudCroko1.getMonsterById(6220000) != null) {
 		setupTask = em.schedule("start", 3 * 60 *60 * 1000);
 		return;

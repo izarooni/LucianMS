@@ -15,14 +15,14 @@ var beginTime = 60 * 1000; //The time to begin the ride
 var rideTime = 60 * 1000; //The time that require move to destination
 
 function init() {
-    Orbis_btf = em.getChannel().getMapFactory().getMap(200000122);
-    Ludibrium_btf = em.getChannel().getMapFactory().getMap(220000111);
-    Train_to_Orbis = em.getChannel().getMapFactory().getMap(200090110);
-    Train_to_Ludibrium = em.getChannel().getMapFactory().getMap(200090100);
-    Orbis_docked = em.getChannel().getMapFactory().getMap(200000121);
-    Ludibrium_docked = em.getChannel().getMapFactory().getMap(220000110);
-    Orbis_Station = em.getChannel().getMapFactory().getMap(200000100);
-    Ludibrium_Station = em.getChannel().getMapFactory().getMap(220000100);
+    Orbis_btf = em.getChannel().getMap(200000122);
+    Ludibrium_btf = em.getChannel().getMap(220000111);
+    Train_to_Orbis = em.getChannel().getMap(200090110);
+    Train_to_Ludibrium = em.getChannel().getMap(200090100);
+    Orbis_docked = em.getChannel().getMap(200000121);
+    Ludibrium_docked = em.getChannel().getMap(220000110);
+    Orbis_Station = em.getChannel().getMap(200000100);
+    Ludibrium_Station = em.getChannel().getMap(220000100);
     scheduleNew();
 }
 

@@ -39,7 +39,7 @@ function monsterValue(eim, mobId) {
 }
 
 function setup() {
-    exitMap = em.getChannel().getMapFactory().getMap(105090700); // <exit>
+    exitMap = em.getChannel().getMap(105090700); // <exit>
     var instanceName = "4jrush" + instanceId;
     var eim = em.newInstance(instanceName);
     var mf = eim.getMapFactory();

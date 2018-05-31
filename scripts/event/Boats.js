@@ -16,15 +16,15 @@ var Ellinia_Boat_Cabin;
 var Ellinia_docked;
 
 function init() {
-    Orbis_btf = em.getChannel().getMapFactory().getMap(200000112);
-    Ellinia_btf = em.getChannel().getMapFactory().getMap(101000301);
-    Boat_to_Orbis = em.getChannel().getMapFactory().getMap(200090010);
-    Boat_to_Ellinia = em.getChannel().getMapFactory().getMap(200090000);
-    Orbis_Boat_Cabin = em.getChannel().getMapFactory().getMap(200090011);
-    Ellinia_Boat_Cabin = em.getChannel().getMapFactory().getMap(200090001);
-    Ellinia_docked = em.getChannel().getMapFactory().getMap(101000300);
-    Orbis_Station = em.getChannel().getMapFactory().getMap(200000100);
-    Orbis_docked = em.getChannel().getMapFactory().getMap(200000111);
+    Orbis_btf = em.getChannel().getMap(200000112);
+    Ellinia_btf = em.getChannel().getMap(101000301);
+    Boat_to_Orbis = em.getChannel().getMap(200090010);
+    Boat_to_Ellinia = em.getChannel().getMap(200090000);
+    Orbis_Boat_Cabin = em.getChannel().getMap(200090011);
+    Ellinia_Boat_Cabin = em.getChannel().getMap(200090001);
+    Ellinia_docked = em.getChannel().getMap(101000300);
+    Orbis_Station = em.getChannel().getMap(200000100);
+    Orbis_docked = em.getChannel().getMap(200000111);
     OBoatsetup();
     EBoatsetup();
     scheduleNew();
@@ -88,13 +88,13 @@ function invasion() {
 }
 
 function OBoatsetup() {
-    em.getChannel().getMapFactory().getMap(200090011).getPortal("out00").setScriptName("OBoat1");
-    em.getChannel().getMapFactory().getMap(200090011).getPortal("out01").setScriptName("OBoat2");
+    em.getChannel().getMap(200090011).getPortal("out00").setScriptName("OBoat1");
+    em.getChannel().getMap(200090011).getPortal("out01").setScriptName("OBoat2");
 }
 
 function EBoatsetup() {
-    em.getChannel().getMapFactory().getMap(200090001).getPortal("out00").setScriptName("EBoat1");
-    em.getChannel().getMapFactory().getMap(200090001).getPortal("out01").setScriptName("EBoat2");
+    em.getChannel().getMap(200090001).getPortal("out00").setScriptName("EBoat1");
+    em.getChannel().getMap(200090001).getPortal("out01").setScriptName("EBoat2");
 }
 
 function cancelSchedule() {

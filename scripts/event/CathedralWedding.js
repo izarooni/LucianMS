@@ -37,9 +37,9 @@ var instanceId;
 var minPlayers = 1;
 
 function init() {
-    exitMap = em.getChannel().getMapFactory().getMap(680000500); //Teh exit map :) <---------t
-    altarMap = em.getChannel().getMapFactory().getMap(680000210); //Teh altar map
-    cakeMap = em.getChannel().getMapFactory().getMap(680000300); //Teh cake
+    exitMap = em.getChannel().getMap(680000500); //Teh exit map :) <---------t
+    altarMap = em.getChannel().getMap(680000210); //Teh altar map
+    cakeMap = em.getChannel().getMap(680000300); //Teh cake
     instanceId = 1;
 }
 

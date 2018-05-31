@@ -37,30 +37,30 @@ function goDown() {
 }
 
 function goingUpNow() {
-	em.getChannel().getMapFactory().getMap(222020200).warpEveryone(222020111);
+	em.getChannel().getMap(222020200).warpEveryone(222020111);
     em.setProperty("goingUp", "true");
     em.schedule("isUpNow", 55000);
-    em.getChannel().getMapFactory().getMap(222020100).setReactorState();
+    em.getChannel().getMap(222020100).setReactorState();
 }
 
 
 
 function goingDownNow() {
-	em.getChannel().getMapFactory().getMap(222020210).warpEveryone(222020211);
+	em.getChannel().getMap(222020210).warpEveryone(222020211);
     em.setProperty("goingDown", "true");
     em.schedule("isDownNow", 55000);
-    em.getChannel().getMapFactory().getMap(222020200).setReactorState();
+    em.getChannel().getMap(222020200).setReactorState();
 }
 
 function isUpNow() {
-    em.getChannel().getMapFactory().getMap(222020100).resetReactors();
-    em.getChannel().getMapFactory().getMap(222020111).warpEveryone(222020200);
+    em.getChannel().getMap(222020100).resetReactors();
+    em.getChannel().getMap(222020111).warpEveryone(222020200);
     em.setProperty("goingUp", "false"); // clear
 }
 
 function isDownNow() {
-    em.getChannel().getMapFactory().getMap(222020200).resetReactors();
-    em.getChannel().getMapFactory().getMap(222020211).warpEveryone(222020100);
+    em.getChannel().getMap(222020200).resetReactors();
+    em.getChannel().getMap(222020211).warpEveryone(222020100);
     em.setProperty("goingDown", "false"); // clear
 }
 

@@ -70,7 +70,7 @@ function playerDead(eim, player) {
     var returnMapId = info[1];
     var monsterId = info[2];
     player.setHp(1);
-    var returnMap = em.getChannel().getMapFactory().getMap(returnMapId);
+    var returnMap = em.getChannel().getMap(returnMapId);
     player.changeMap(returnMap, returnMap.getPortal(0));
     eim.unregisterPlayer(player);
     eim.dispose();
@@ -84,7 +84,7 @@ function playerDisconnected(eim, player) {
     var monsterId = info[2];
     eim.unregisterPlayer(player);
     player.getMap().removePlayer(player);
-    var returnMap = em.getChannel().getMapFactory().getMap(returnMapId);
+    var returnMap = em.getChannel().getMap(returnMapId);
     player.setMap(returnMap);
     eim.dispose();
 }
@@ -96,7 +96,7 @@ function allMonstersDead(eim) {
     var mapId = info[0];
     var returnMapId = info[1];
     var monsterId = info[2];
-    var map = eim.getMapFactory().getMap(mapId);
+    var map = eim.getMap(mapId);
     map.spawnItemDrop(winner, winner, new Item(4031059, 0, 1), winner.getPosition(), true, false);
     eim.schedule("warpOut", 12 * 60 * 1000);
 	map.addMapTimer(12 * 60);
@@ -115,7 +115,7 @@ function warpOut(eim) {
         var mapId = info[0];
         var returnMapId = info[1];
         var monsterId = info[2];
-        var returnMap = em.getChannel().getMapFactory().getMap(returnMapId);
+        var returnMap = em.getChannel().getMap(returnMapId);
         player.changeMap(returnMap, returnMap.getPortal(0));
         eim.unregisterPlayer(player);
     }

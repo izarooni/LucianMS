@@ -38,7 +38,7 @@ function monsterValue(eim, mobId) {
 }
 
 function setup() {
-    exitMap = em.getChannel().getMapFactory().getMap(280090000); //room of tragedy
+    exitMap = em.getChannel().getMap(280090000); //room of tragedy
     var instanceName = "ZakumPQ" + instanceId;
 	
     //ZPQ maps, center area then 1-1 through 16-6 increasing gradually

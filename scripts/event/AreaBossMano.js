@@ -42,7 +42,7 @@ function cancelSchedule() {
 }
 
 function start() {
-    var thicketAroundTheBeach3 = em.getChannel().getMapFactory().getMap(104000400);
+    var thicketAroundTheBeach3 = em.getChannel().getMap(104000400);
     var mano = Packages.server.life.MapleLifeFactory.getMonster(2220000);
     if(thicketAroundTheBeach3.getMonsterById(2220000) != null) {
 		em.schedule("start", 3 * 60 *60 * 1000);

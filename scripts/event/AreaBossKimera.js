@@ -43,7 +43,7 @@ function cancelSchedule() {
 }
 
 function start() {
-    var labSecretBasementPath = em.getChannel().getMapFactory().getMap(261030000);
+    var labSecretBasementPath = em.getChannel().getMap(261030000);
     var chimera = Packages.server.life.MapleLifeFactory.getMonster(8220002);
 	
 	if(labSecretBasementPath.getMonsterById(8220002) != null) {

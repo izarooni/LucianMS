@@ -31,7 +31,7 @@
 importPackage(Packages.client);
 
 function init() {
-    if (em.getChannel().getMapFactory().getMap(220050200) == null) {
+    if (em.getChannel().getMap(220050200) == null) {
         print("Script AreaBossTimer3 can't initialize due to an invalid map");
     } else {
         scheduleNew();
@@ -48,7 +48,7 @@ function cancelSchedule() {
 }
 
 function start() {
-    var lostTime2 = em.getChannel().getMapFactory().getMap(220050200);
+    var lostTime2 = em.getChannel().getMap(220050200);
     var timer3 = Packages.server.life.MapleLifeFactory.getMonster(5220003);
 	
 	if(lostTime2.getMonsterById(5220003) != null) {

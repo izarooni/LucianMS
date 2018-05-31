@@ -32,7 +32,7 @@ importPackage(Packages.client);
 var hotSand;
 
 function init() {
-	hotSand = em.getChannel().getMapFactory().getMap(110040000);
+	hotSand = em.getChannel().getMap(110040000);
     scheduleNew();
 }
 

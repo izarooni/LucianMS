@@ -13,7 +13,7 @@ var pqTime = 3600;//60 Minutes
 
 function init() {
     instanceId = 1;
-	exitMap = em.getChannel().getMapFactory().getMap(922010000);
+	exitMap = em.getChannel().getMap(922010000);
     em.setProperty("LPQOpen", "true");
 }
 

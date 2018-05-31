@@ -12,12 +12,12 @@ var Plane_to_KC;
 var KC_docked;
 
 function init() {
-    KC_bfd = em.getChannel().getMapFactory().getMap(540010100);
-    CBD_bfd = em.getChannel().getMapFactory().getMap(540010001);
-    Plane_to_CBD = em.getChannel().getMapFactory().getMap(540010101);
-    Plane_to_KC = em.getChannel().getMapFactory().getMap(540010002);
-    CBD_docked = em.getChannel().getMapFactory().getMap(540010000);
-    KC_docked = em.getChannel().getMapFactory().getMap(103000000);
+    KC_bfd = em.getChannel().getMap(540010100);
+    CBD_bfd = em.getChannel().getMap(540010001);
+    Plane_to_CBD = em.getChannel().getMap(540010101);
+    Plane_to_KC = em.getChannel().getMap(540010002);
+    CBD_docked = em.getChannel().getMap(540010000);
+    KC_docked = em.getChannel().getMap(103000000);
     scheduleNew();
 }
 

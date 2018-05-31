@@ -43,7 +43,7 @@ function cancelSchedule() {
 }
 
 function start() {
-    var eastRockyMountain5 = em.getChannel().getMapFactory().getMap(101030404);
+    var eastRockyMountain5 = em.getChannel().getMap(101030404);
     var stumpy = Packages.server.life.MapleLifeFactory.getMonster(3220000);
 	
 	if(eastRockyMountain5.getMonsterById(3220000) != null) {

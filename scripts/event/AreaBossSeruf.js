@@ -31,7 +31,7 @@
 importPackage(Packages.client);
 
 function init() {
-    if (em.getChannel().getMapFactory().getMap(230020100) == null) {
+    if (em.getChannel().getMap(230020100) == null) {
         print("Script AreaBossSeruf can't initialize due to an invalid map");
     } else {
         scheduleNew();
@@ -48,7 +48,7 @@ function cancelSchedule() {
 }
 
 function start() {
-    var towerMap = em.getChannel().getMapFactory().getMap(230020100);
+    var towerMap = em.getChannel().getMap(230020100);
     var seruf = Packages.server.life.MapleLifeFactory.getMonster(4220001);
 
 	if(towerMap.getMonsterById(4220001) != null) {

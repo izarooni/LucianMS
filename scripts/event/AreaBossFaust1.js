@@ -43,7 +43,7 @@ function cancelSchedule() {
 }
 
 function start() {
-    var theForestOfEvil1 = em.getChannel().getMapFactory().getMap(100040105);
+    var theForestOfEvil1 = em.getChannel().getMap(100040105);
     var faust1 = Packages.server.life.MapleLifeFactory.getMonster(5220002);
 
 	if(theForestOfEvil1.getMonsterById(5220002) != null) {

@@ -45,7 +45,7 @@ function cancelSchedule() {
 }
 
 function start() {
-    var stairwayToTheSky2 = em.getChannel().getMapFactory().getMap(200010300);
+    var stairwayToTheSky2 = em.getChannel().getMap(200010300);
     var eliza = Packages.server.life.MapleLifeFactory.getMonster(8220000);
 
 	if(stairwayToTheSky2.getMonsterById(8220000) != null) {

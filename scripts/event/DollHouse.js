@@ -33,9 +33,9 @@ function init() {
 }
 
 function playerEntry(eim, player) {
-    returnMap = em.getChannel().getMapFactory().getMap(221024400);
+    returnMap = em.getChannel().getMap(221024400);
     eim = em.getInstance("DollHouse");
-    map = eim.getMapFactory().getMap(922000010);
+    map = eim.getMap(922000010);
     player.changeMap(map, map.getPortal(0));
     map.shuffleReactors();
     em.setProperty("noEntry","true");

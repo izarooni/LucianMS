@@ -43,7 +43,7 @@ function cancelSchedule() {
 }
 
 function start() {
-    var moonRidge = em.getChannel().getMapFactory().getMap(222010310);
+    var moonRidge = em.getChannel().getMap(222010310);
     var nineTailedFox = Packages.server.life.MapleLifeFactory.getMonster(7220001);
 	if(moonRidge.getMonsterById(7220001) != null) {
 		em.schedule("start", 3 * 60 *60 * 1000);

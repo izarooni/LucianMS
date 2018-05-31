@@ -24,9 +24,9 @@ function playerEntry(eim, player) {
 	} else {
 		myRide = 1;
 	}
-	docked = eim.getEm().getChannelServer().getMapFactory().getMap(rideTo[myRide]);
-    returnMap = eim.getMapFactory().getMap(returnTo[myRide]);
-    onRide = eim.getMapFactory().getMap(birdRide[myRide]);
+	docked = eim.getEm().getChannelServer().getMap(rideTo[myRide]);
+    returnMap = eim.getMap(returnTo[myRide]);
+    onRide = eim.getMap(birdRide[myRide]);
     player.changeMap(onRide, onRide.getPortal(0));
     player.getClient().getSession().write(MaplePacketCreator.getClock(timeOnRide));
     eim.schedule("timeOut", timeOnRide * 1000);
