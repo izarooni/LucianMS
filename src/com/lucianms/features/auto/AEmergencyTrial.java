@@ -1,7 +1,11 @@
 package com.lucianms.features.auto;
 
 import client.MapleCharacter;
+import com.lucianms.lang.annotation.PacketWorker;
 import com.lucianms.scheduler.TaskExecutor;
+import com.lucianms.server.events.channel.ChangeMapEvent;
+import constants.ExpTable;
+import constants.ServerConstants;
 import net.SendOpcode;
 import net.server.channel.Channel;
 import net.server.world.World;
@@ -24,17 +28,21 @@ import java.util.Map;
  */
 public class AEmergencyTrial extends GAutoEvent {
 
-    private static final int BossMapID = 240020600;
-    public static final int EndMapID = 240040611;
+    public static final int BossMapID = 993080000;
+    public static final int TransferMapID = 993060000;
+    public static final int WaitingMapID = 993070000;
+
     private static final int NpcID = 9010022;
-    private static final int BossID = 100100;
+    private static final int EndNpc = 9000025;
+    private static final int BossID = 8840000;
 
     private HashMap<Integer, Integer> spawnLocations = new HashMap<>();
     private HashMap<Integer, Integer> returnLocations = new HashMap<>();
 
-    private long startTimestamp;
+    private int bonusExperience = 0;
+    private long endTimestamp;
 
-    public static byte[] createNpc(MapleNPC life, Point location) {
+    private static byte[] createNpc(MapleNPC life, Point location) {
         final MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter(24);
         mplew.writeShort(SendOpcode.SPAWN_NPC.getValue());
         mplew.writeInt(life.getObjectId());
@@ -49,9 +57,24 @@ public class AEmergencyTrial extends GAutoEvent {
         return mplew.getPacket();
     }
 
-    public AEmergencyTrial(World world, boolean nMapInstances) {
-        super(world, nMapInstances);
+    public AEmergencyTrial(World world) {
+        super(world, false);
         registerAnnotationPacketEvents(this);
+    }
+
+    @PacketWorker
+    public void onFieldChange(ChangeMapEvent event) {
+        // for when players are transferring to boss from waiting room,
+        // send a timer that displays how much time is left before timeout
+        event.onPost(new Runnable() {
+            @Override
+            public void run() {
+                int left = (int) (getTimeLeft() / 1000);
+                if (left > 0) {
+                    event.getClient().announce(MaplePacketCreator.getClock(left));
+                }
+            }
+        });
     }
 
     @Override
@@ -77,10 +100,12 @@ public class AEmergencyTrial extends GAutoEvent {
             }
         }
 
-        startTimestamp = System.currentTimeMillis();
+        endTimestamp = System.currentTimeMillis() + (1000 * 30);
         TaskExecutor.createTask(new Runnable() {
             @Override
             public void run() {
+                endTimestamp = System.currentTimeMillis() + (1000 * 120);
+                getWorld().getChannels().forEach(ch -> ch.getMap(WaitingMapID).warpEveryone(TransferMapID));
                 despawnDoors();
                 summonBoss();
             }
@@ -90,59 +115,77 @@ public class AEmergencyTrial extends GAutoEvent {
     @Override
     public void stop() {
         despawnDoors();
-        returnPlayers();
+        getWorld().getChannels().forEach(this::returnPlayers);
     }
 
     @Override
     public void playerRegistered(MapleCharacter player) {
-        returnLocations.put(player.getId(), player.getMapId());
-        player.changeMap(BossMapID);
-        long left = ((startTimestamp + (1000 * 30)) - System.currentTimeMillis());
-        if (left > 0) {
-            player.announce(MaplePacketCreator.getClock((int) (left / 1000)));
+        if (player.addGenericEvent(this)) {
+            returnLocations.put(player.getId(), player.getMapId());
+            player.changeMap(WaitingMapID);
+            long left = getTimeLeft();
+            if (left > 0) {
+                player.announce(MaplePacketCreator.getClock((int) (left / 1000)));
+            }
         }
     }
 
     @Override
     public void playerUnregistered(MapleCharacter player) {
-        player.changeMap(EndMapID);
+        player.changeMap(returnLocations.remove(returnLocations.getOrDefault(player.getId(), ServerConstants.HOME_MAP)));
+        player.getGenericEvents().removeIf(g -> g instanceof AEmergencyTrial);
     }
 
-    private void returnPlayers() {
-        for (Channel channel : getWorld().getChannels()) {
-            MapleMap map = channel.getMap(BossMapID);
-            for (Integer playerID : new ArrayList<>(returnLocations.values())) {
-                MapleCharacter player = map.getCharacterById(playerID);
-                if (player != null) {
-                    playerUnregistered(player);
-                }
+    public Integer popLocation(int playerID) {
+        return returnLocations.remove(playerID);
+    }
+
+    public int getExpGain(int level) {
+        return (int) ((ExpTable.getExpNeededForLevel(level) * 0.35) + bonusExperience);
+    }
+
+    private void returnPlayers(Channel channel) {
+        MapleMap map = channel.getMap(BossMapID);
+        for (Integer playerID : new ArrayList<>(returnLocations.values())) {
+            MapleCharacter player = map.getCharacterById(playerID);
+            if (player != null) {
+                playerUnregistered(player);
             }
-            channel.removeMap(BossMapID);
         }
+        channel.removeMap(BossMapID);
     }
 
     private void summonBoss() {
-        TaskExecutor.createTask(new Runnable() {
-            @Override
-            public void run() {
-                returnPlayers();
-            }
-        }, 1000 * 120);
-
         for (Channel channel : getWorld().getChannels()) {
+            final MapleMap map = channel.getMap(BossMapID);
             MapleMonster monster = MapleLifeFactory.getMonster(BossID);
             if (monster != null) {
+                TaskExecutor.createTask(new Runnable() {
+                    @Override
+                    public void run() {
+                        monster.getListeners().clear();
+                        map.killAllMonsters();
+                        if (monster.isAlive()) {
+                            // 100% - HP loss as percentage
+                            int dealt = 100 - (((100 / monster.getMaxHp()) * monster.getHp()) / 100);
+                            // give exp based on damage done to boss
+                            bonusExperience = (monster.getExp() * dealt);
+                        }
+                        summonEndNPC(map);
+                    }
+                }, 1000 * 120);
+
                 monster.addListener(new MonsterListener() {
                     @Override
                     public void monsterKilled(int aniTime) {
-                        monster.getMap().broadcastMessage(MaplePacketCreator.showEffect("PSO2/stuff/5"));
-                        monster.getMap().broadcastMessage(MaplePacketCreator.playSound("PSO2/Completed"));
-                        TaskExecutor.createTask(() -> monster.getMap().warpEveryone(EndMapID), 2500);
+                        map.broadcastMessage(MaplePacketCreator.showEffect("PSO2/stuff/5"));
+                        map.broadcastMessage(MaplePacketCreator.playSound("PSO2/Completed"));
+                        summonEndNPC(map);
+                        bonusExperience += monster.getExp() * 1.35;
                     }
                 });
-                MapleMap map = channel.getMap(BossMapID);
                 map.broadcastMessage(MaplePacketCreator.getClock(120));
-                map.spawnMonsterOnGroudBelow(monster, new Point(-36, 452));
+                map.spawnMonsterOnGroudBelow(monster, new Point(528, 117));
             } else {
                 stop();
             }
@@ -161,7 +204,14 @@ public class AEmergencyTrial extends GAutoEvent {
         }
     }
 
-    public Integer popLocation(int playerID) {
-        return returnLocations.remove(playerID);
+    private void summonEndNPC(MapleMap map) {
+        MapleNPC npc = MapleLifeFactory.getNPC(EndNpc);
+        npc.setScript("f_emergency_trial_end");
+        map.addMapObject(npc);
+        map.broadcastMessage(createNpc(npc, new Point(125, 117)));
+    }
+
+    private long getTimeLeft() {
+        return endTimestamp - System.currentTimeMillis();
     }
 }

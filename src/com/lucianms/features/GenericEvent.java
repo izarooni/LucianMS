@@ -36,6 +36,7 @@ public abstract class GenericEvent {
                 if (PacketEvent.class.isAssignableFrom(pTypes[0])) {
                     methods.putIfAbsent(pTypes[0], new ArrayList<>());
                     methods.get(pTypes[0]).add(method);
+//                    LOGGER.info("Registered method {}", method.getName());
                 }
             }
         }
@@ -57,7 +58,7 @@ public abstract class GenericEvent {
         if (methods.get(event.getClass()) != null) {
             methods.get(event.getClass()).forEach(method -> {
                 try {
-                    //                    System.out.println(String.format("[DEBUG] PacketEvent method '%s(%s)' invoked", method.getName(), event.getClass().getSimpleName()));
+//                    LOGGER.info("PacketEvent method '{}({})' invoked", method.getName(), event.getClass().getSimpleName());
                     method.invoke(this, event);
                 } catch (IllegalAccessException | InvocationTargetException e) {
                     e.printStackTrace();

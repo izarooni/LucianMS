@@ -13,7 +13,6 @@ import tools.MaplePacketCreator;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Optional;
 
 /**
  * @author izarooni
@@ -68,8 +67,8 @@ public abstract class Emergency extends GenericEvent {
     }
 
     final boolean registerPlayers(MapleCharacter player) {
-        Optional<GenericEvent> first = player.getGenericEvents().stream().filter(g -> g instanceof Emergency).findFirst();
-        if (first.isPresent()) {
+        GenericEvent first = player.getGenericEvents().stream().filter(g -> g instanceof Emergency).findFirst().orElse(null);
+        if (first != null) {
             canceled = true;
             logger().info("Player '{}' triggered but already in existing emergency instance", player.getName());
             return false;

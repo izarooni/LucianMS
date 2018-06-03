@@ -1,12 +1,12 @@
 package com.lucianms.features.controllers;
 
 import client.MapleCharacter;
-import com.lucianms.server.events.channel.UseItemEvent;
 import com.lucianms.features.GenericEvent;
 import com.lucianms.features.PlayerBattle;
+import com.lucianms.lang.annotation.PacketWorker;
+import com.lucianms.server.events.channel.UseItemEvent;
 import server.life.FakePlayer;
 import tools.MaplePacketCreator;
-import com.lucianms.lang.annotation.PacketWorker;
 
 import java.util.Optional;
 
@@ -45,8 +45,9 @@ public class CloneController extends GenericEvent {
                 player.dropMessage("Clone is no longer PvPing");
             } else {
                 PlayerBattle battle = new PlayerBattle(fPlayer);
-                fPlayer.addGenericEvent(battle);
-                player.dropMessage("Clone is now PvPing");
+                if (fPlayer.addGenericEvent(battle)) {
+                    player.dropMessage("Clone is now PvPing");
+                }
             }
         } else if (event.getItemId() == 2002003) { // unregister
             player.removeGenericEvent(this);

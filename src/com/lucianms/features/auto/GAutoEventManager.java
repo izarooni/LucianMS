@@ -53,7 +53,7 @@ public enum GAutoEventManager {
 
     public void startInstance(World world) {
         try {
-            GAutoEvent gEvent = clazz.getDeclaredConstructor(World.class, boolean.class).newInstance(world, false);
+            GAutoEvent gEvent = clazz.getDeclaredConstructor(World.class).newInstance(world);
             gEvent.start();
             setCurrentEvent(gEvent);
             setLastInstantiate(System.currentTimeMillis());

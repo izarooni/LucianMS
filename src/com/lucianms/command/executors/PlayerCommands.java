@@ -394,8 +394,9 @@ public class PlayerCommands {
                 player.dropMessage("You are no longer PvPing");
             } else {
                 PlayerBattle battle = new PlayerBattle(player);
-                player.addGenericEvent(battle);
-                player.dropMessage("You are now PvPing");
+                if (player.addGenericEvent(battle)) {
+                    player.dropMessage("You are now PvPing");
+                }
             }
         } else if (command.equals("rps")) {
             RockPaperScissorsEvent.startGame(player);

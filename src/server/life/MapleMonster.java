@@ -24,14 +24,14 @@ package server.life;
 import client.*;
 import client.status.MonsterStatus;
 import client.status.MonsterStatusEffect;
+import com.lucianms.io.scripting.Achievements;
+import com.lucianms.io.scripting.event.EventInstanceManager;
+import com.lucianms.scheduler.Task;
+import com.lucianms.scheduler.TaskExecutor;
 import constants.ServerConstants;
 import constants.skills.*;
 import net.server.world.MapleParty;
 import net.server.world.MaplePartyCharacter;
-import com.lucianms.scheduler.Task;
-import com.lucianms.scheduler.TaskExecutor;
-import com.lucianms.io.scripting.Achievements;
-import com.lucianms.io.scripting.event.EventInstanceManager;
 import server.life.MapleLifeFactory.BanishInfo;
 import server.maps.MapleMap;
 import server.maps.MapleMapObject;
@@ -60,10 +60,10 @@ public class MapleMonster extends AbstractLoadedMapleLife {
     private MapleMonsterStats overrideStats = null;
     private WeakReference<MapleCharacter> controller = new WeakReference<>(null);
     private EventInstanceManager eventInstance = null;
-    private List<Integer> stolenItems = new ArrayList<>();
-    private List<Pair<Integer, Integer>> usedSkills = new ArrayList<>();
+    private ArrayList<Integer> stolenItems = new ArrayList<>();
+    private ArrayList<Pair<Integer, Integer>> usedSkills = new ArrayList<>();
     private ArrayList<MonsterStatus> alreadyBuffed = new ArrayList<>();
-    private Collection<MonsterListener> listeners = new LinkedList<>();
+    private ArrayList<MonsterListener> listeners = new ArrayList<>();
     private Map<Pair<Integer, Integer>, Integer> skillsUsed = new HashMap<>();
     private EnumMap<MonsterStatus, MonsterStatusEffect> stati = new EnumMap<>(MonsterStatus.class);
     private final HashMap<Integer, AtomicInteger> takenDamage = new HashMap<>();
@@ -499,13 +499,11 @@ public class MapleMonster extends AbstractLoadedMapleLife {
         setControllerKnowsAboutAggro(false);
     }
 
-    public void addListener(MonsterListener listener) {
-        listeners.add(listener);
+    public Collection<MonsterListener> getListeners() {
+        return listeners;
     }
 
-    public void removeListener(MonsterListener listener) {
-        listeners.remove(listener);
-    }
+    public void addListener(MonsterListener listener) {}
 
     public boolean isControllerHasAggro() {
         return !fake && controllerHasAggro;

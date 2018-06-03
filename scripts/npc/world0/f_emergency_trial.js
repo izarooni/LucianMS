@@ -1,7 +1,5 @@
 const GAEventManager = Java.type("com.lucianms.features.auto.GAutoEventManager");
 const ETrial         = Java.type("com.lucianms.features.auto.AEmergencyTrial");
-const ExpTable       = Java.type("constants.ExpTable");
-
 /* izarooni */
 let status = 0;
 let currentEvent = GAEventManager.getCurrentEvent();
@@ -12,25 +10,10 @@ function action(mode, type, selection) {
         cm.dispose();
         return;
     }
-    if (player.getMapId() == ETrial.EndMapID) {
-        LeaveEvent(mode, type, selection);
-    } else {
+    if ([ETrial.BossMapID, ETrial.TransferMapID, ETrial.WaitingMapID].indexOf(player.getMapId()) == -1) {
         EnterEvent(mode, type, selection);
-    }
-}
-
-function LeaveEvent(mode, type, selection) {
-    if (status == 0) {
-        returnMap = currentEvent.popLocation(player.getId());
-        if (returnMap != null) {
-            cm.sendNext("Excellent work! Thanks for slaying that monster, he's been real trouble for me.", 1)
-        } else {
-            cm.sendOk("Looks like you have nowhere to return to");
-            cm.dispose();
-        }
-    } else if (status == 1) {
-        player.gainExp(Math.floor(ExpTable.getExpNeededForLevel(player.getLevel()) * 0.35), true, false);
-        player.changeMap(returnMap);
+    } else {
+        cm.sendOk("Hmmm... I wonder what Von Leon is up to.");
         cm.dispose();
     }
 }

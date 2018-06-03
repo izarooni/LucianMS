@@ -60,9 +60,10 @@ public abstract class BossPQ extends GenericEvent {
     }
 
     public final void registerPlayer(MapleCharacter player) {
-        player.saveLocation("OTHER");
-        player.changeMap(getMapInstance(mapId));
-        player.addGenericEvent(this);
+        if (player.addGenericEvent(this)) {
+            player.saveLocation("OTHER");
+            player.changeMap(getMapInstance(mapId));
+        }
     }
 
     public final void unregisterPlayer(MapleCharacter player) {

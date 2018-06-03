@@ -26,11 +26,12 @@ public class MCarnivalGame extends GenericEvent {
 
     @Override
     public void registerPlayer(MapleCharacter player) {
-        if (startTimestamp == -1) {
-            startTimestamp = System.currentTimeMillis();
+        if (player.addGenericEvent(this)) {
+            if (startTimestamp == -1) {
+                startTimestamp = System.currentTimeMillis();
+            }
+            player.changeMap(lobby.getBattlefieldMapId());
         }
-        player.addGenericEvent(this);
-        player.changeMap(lobby.getBattlefieldMapId());
     }
 
     @Override

@@ -1,11 +1,11 @@
 package com.lucianms.features.auto;
 
 import client.MapleCharacter;
+import com.lucianms.lang.annotation.PacketWorker;
 import com.lucianms.server.events.channel.PlayerMoveEvent;
 import net.server.world.World;
 import server.movement.AbsoluteLifeMovement;
 import server.movement.LifeMovementFragment;
-import com.lucianms.lang.annotation.PacketWorker;
 
 import java.util.HashMap;
 
@@ -57,10 +57,11 @@ public class AFlappyBird extends GAutoEvent {
 
     @Override
     public void playerRegistered(MapleCharacter player) {
-        returnMaps.put(player.getId(), player.getMapId());
-        player.dropMessage("Welcome to Flappy Bird!");
-        player.changeMap(getMapInstance(EventMap));
-        player.addGenericEvent(this);
+        if (player.addGenericEvent(this)) {
+            returnMaps.put(player.getId(), player.getMapId());
+            player.dropMessage("Welcome to Flappy Bird!");
+            player.changeMap(getMapInstance(EventMap));
+        }
     }
 
     @Override

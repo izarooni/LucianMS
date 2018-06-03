@@ -1,9 +1,9 @@
 package com.lucianms.features.auto;
 
 import client.MapleCharacter;
-import net.server.world.World;
 import com.lucianms.scheduler.Task;
 import com.lucianms.scheduler.TaskExecutor;
+import net.server.world.World;
 import server.life.MapleLifeFactory;
 import server.life.MapleMonster;
 import server.life.MapleMonsterStats;
@@ -62,17 +62,18 @@ public class AWhispyWoods extends GAutoEvent {
 
     @Override
     public void playerRegistered(MapleCharacter player) {
-        // show countdown timer to those entering late
-        long endTimestamp = startTimestamp + TimeGiven;
-        long timeLeft = (endTimestamp - System.currentTimeMillis());
-        if (timeLeft > 0) {
-            returnMaps.put(player.getId(), player.getMapId());
-            player.dropMessage("Welcome to Whispy Woods!");
-            player.changeMap(getMapInstance(EventMap));
-            player.addGenericEvent(this);
-            player.announce(MaplePacketCreator.getClock((int) (timeLeft / 1000)));
-        } else {
-            player.dropMessage(5, "This event is now over");
+        if (player.addGenericEvent(this)) {
+            // show countdown timer to those entering late
+            long endTimestamp = startTimestamp + TimeGiven;
+            long timeLeft = (endTimestamp - System.currentTimeMillis());
+            if (timeLeft > 0) {
+                returnMaps.put(player.getId(), player.getMapId());
+                player.dropMessage("Welcome to Whispy Woods!");
+                player.changeMap(getMapInstance(EventMap));
+                player.announce(MaplePacketCreator.getClock((int) (timeLeft / 1000)));
+            } else {
+                player.dropMessage(5, "This event is now over");
+            }
         }
     }
 

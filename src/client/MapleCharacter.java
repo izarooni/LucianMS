@@ -5656,11 +5656,11 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
         return new ArrayList<>(genericEvents);
     }
 
-    public void addGenericEvent(GenericEvent event) {
+    public boolean addGenericEvent(GenericEvent event) {
         if (genericEvents.contains(event)) {
-            throw new RuntimeException(String.format("Player '%s' is already registered under the '%s' generic event", getName(), event.getClass().getSimpleName()));
+            return false;
         }
-        genericEvents.add(event);
+        return genericEvents.add(event);
     }
 
     public void removeGenericEvent(GenericEvent event) {

@@ -56,7 +56,7 @@ public class MonsterPark extends GenericEvent {
                     if (monster != null) {
                         MapleMonsterStats overrides = spawnPoint.createOverrides();
                         overrides.setExp((int) (ExpTable.getExpNeededForLevel(baseLevel) * (Math.random() * 0.01) + 0.01));
-                        monster.addListener(new MonsterListener() {
+                        monster.getListeners().add(new MonsterListener() {
                             @Override
                             public void monsterKilled(int aniTime) {
                                 totalExp.addAndGet(monster.getExp());
@@ -98,16 +98,17 @@ public class MonsterPark extends GenericEvent {
 
     @Override
     public void registerPlayer(MapleCharacter player) {
-        if (timeout == null) { // initialization
-            timeout = TaskExecutor.createTask(() -> returnMaps.forEach((p, m) -> unregisterPlayer(player)), 1000 * 60 * 20);
-            timestampStart = System.currentTimeMillis();
+        if (player.addGenericEvent(this)) {
+            if (timeout == null) { // initialization
+                timeout = TaskExecutor.createTask(() -> returnMaps.forEach((p, m) -> unregisterPlayer(player)), 1000 * 60 * 20);
+                timestampStart = System.currentTimeMillis();
+            }
+            returnMaps.put(player.getId(), player.getMapId());
+            player.changeMap(maps.get(mapId));
+            player.announce(MaplePacketCreator.getClock((60 * 20)));
+            player.announce(MaplePacketCreator.showEffect("monsterPark/stageEff/stage"));
+            TaskExecutor.createTask(() -> player.announce(MaplePacketCreator.showEffect("monsterPark/stageEff/number/1")), 2345);
         }
-        returnMaps.put(player.getId(), player.getMapId());
-        player.changeMap(maps.get(mapId));
-        player.announce(MaplePacketCreator.getClock((60 * 20)));
-        player.announce(MaplePacketCreator.showEffect("monsterPark/stageEff/stage"));
-        TaskExecutor.createTask(() -> player.announce(MaplePacketCreator.showEffect("monsterPark/stageEff/number/1")), 2345);
-        player.addGenericEvent(this);
     }
 
     @Override

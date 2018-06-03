@@ -1,13 +1,14 @@
 package com.lucianms.features.auto;
 
 import client.MapleCharacter;
+import com.lucianms.lang.annotation.PacketWorker;
+import com.lucianms.scheduler.Task;
+import com.lucianms.scheduler.TaskExecutor;
 import com.lucianms.server.events.channel.AbstractDealDamageEvent;
 import com.lucianms.server.events.channel.CloseRangeDamageEvent;
 import com.lucianms.server.events.channel.MagicDamageEvent;
 import com.lucianms.server.events.channel.RangedAttackEvent;
 import net.server.world.World;
-import com.lucianms.scheduler.Task;
-import com.lucianms.scheduler.TaskExecutor;
 import server.life.MapleLifeFactory;
 import server.life.MapleMonster;
 import server.life.MapleMonsterStats;
@@ -15,7 +16,6 @@ import server.life.MonsterListener;
 import server.maps.MapleMap;
 import server.maps.MapleMapObject;
 import tools.MaplePacketCreator;
-import com.lucianms.lang.annotation.PacketWorker;
 
 import java.awt.*;
 import java.util.HashMap;
@@ -70,17 +70,18 @@ public class AHeartlessWall extends GAutoEvent {
 
     @Override
     public void playerRegistered(MapleCharacter player) {
-        // show countdown timer to those entering late
-        long endTimestamp = startTimestamp + 10000;
-        long timeLeft = (endTimestamp - System.currentTimeMillis());
-        if (timeLeft > 0) {
-            player.dropMessage("Welcome to Heartless Wall!");
-            returnMaps.put(player.getId(), player.getMapId());
-            player.changeMap(getMapInstance(EventMap));
-            player.addGenericEvent(this);
-            player.announce(MaplePacketCreator.getClock((int) (timeLeft / 1000)));
-        } else {
-            player.dropMessage(5, "This event is now over");
+        if (player.addGenericEvent(this)) {
+            // show countdown timer to those entering late
+            long endTimestamp = startTimestamp + 10000;
+            long timeLeft = (endTimestamp - System.currentTimeMillis());
+            if (timeLeft > 0) {
+                player.dropMessage("Welcome to Heartless Wall!");
+                returnMaps.put(player.getId(), player.getMapId());
+                player.changeMap(getMapInstance(EventMap));
+                player.announce(MaplePacketCreator.getClock((int) (timeLeft / 1000)));
+            } else {
+                player.dropMessage(5, "This event is now over");
+            }
         }
     }
 

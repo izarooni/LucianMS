@@ -1,14 +1,14 @@
 package com.lucianms.features.controllers;
 
 import client.MapleCharacter;
-import net.SendOpcode;
-import com.lucianms.server.events.channel.UseItemEvent;
+import com.lucianms.features.GenericEvent;
+import com.lucianms.lang.annotation.PacketWorker;
 import com.lucianms.scheduler.Task;
 import com.lucianms.scheduler.TaskExecutor;
-import com.lucianms.features.GenericEvent;
+import com.lucianms.server.events.channel.UseItemEvent;
+import net.SendOpcode;
 import server.life.MapleLifeFactory;
 import server.life.MapleNPC;
-import com.lucianms.lang.annotation.PacketWorker;
 import tools.data.output.MaplePacketLittleEndianWriter;
 
 import java.awt.*;
@@ -39,14 +39,13 @@ public class FlappyBirdController extends GenericEvent {
 
     @Override
     public void registerPlayer(MapleCharacter player) {
-        player.dropMessage("Registered to Flappy Bird");
-        player.addGenericEvent(this);
-        npc = MapleLifeFactory.getNPC(FlappyBirdController.BirdNpc);
-        sendFieldEnter(player);
-
-        npc = new MapleNPC(BirdNpc, null);
-
-        task = TaskExecutor.createRepeatingTask(new FlappyBirdWorker(player), 1000 / 60, 0);
+        if (player.addGenericEvent(this)) {
+            player.dropMessage("Registered to Flappy Bird");
+            npc = MapleLifeFactory.getNPC(FlappyBirdController.BirdNpc);
+            sendFieldEnter(player);
+            npc = new MapleNPC(BirdNpc, null);
+            task = TaskExecutor.createRepeatingTask(new FlappyBirdWorker(player), 1000 / 60, 0);
+        }
     }
 
     @Override

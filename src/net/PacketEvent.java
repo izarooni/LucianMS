@@ -3,6 +3,8 @@ package net;
 import client.MapleClient;
 import tools.data.input.SeekableLittleEndianAccessor;
 
+import java.util.ArrayDeque;
+
 /**
  * Process packets so the data can be used in other ways then server handles (e.g. auto events, PQs, etc.)
  * <p>
@@ -15,6 +17,7 @@ public abstract class PacketEvent {
 
     private MapleClient client;
     private boolean canceled = false;
+    private ArrayDeque<Runnable> posts = new ArrayDeque<>(3);
 
     final void setClient(MapleClient client) {
         this.client = client;
@@ -40,7 +43,16 @@ public abstract class PacketEvent {
         t.printStackTrace();
     }
 
-    public void post() {}
+    public void onPost(Runnable runnable) {
+        posts.add(runnable);
+    }
+
+    public void post() {
+        Runnable poll;
+        while ((poll = posts.poll()) != null) {
+            poll.run();
+        }
+    }
 
     public abstract void process(SeekableLittleEndianAccessor slea);
 
