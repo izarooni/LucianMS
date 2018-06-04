@@ -310,7 +310,7 @@ public class PlayerCommands {
         } else if (command.equals("go")) {
             WeakHashMap<String, Integer> maps = new WeakHashMap<>();
             // @formatter:off
-            maps.put("fm",         809);
+            maps.put("fm",         910000000);
             maps.put("henesys",    100000000);
             maps.put("maya",       100000001);
             maps.put("ellinia",    101000000);
@@ -330,6 +330,7 @@ public class PlayerCommands {
             maps.put("ariant",     260000000);
             maps.put("timetemple", 270000000);
             maps.put("ellin",      300000000);
+            maps.put("home",      809);
             maps.put("arcade",     978);
             // @formatter:on
             if (args.length() == 1) {
