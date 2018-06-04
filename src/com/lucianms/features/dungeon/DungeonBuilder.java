@@ -36,10 +36,10 @@ public class DungeonBuilder {
     private boolean scaleEXP = false;
     private ArrayList<MapleMonster> spawns = new ArrayList<>();
     private boolean allowParty = false;
-    private  int maxPartySize = 6;
+    private  int maxPartySize = 1;
     private int monsterExp = 1337; // this won't be used if scaleEXP is not on.
 
-    private int scaleFromTotal = 1000; // kill 1000 monsters to reach level up
+    private int scaleFromTotal = 25; // kill 25 monsters to reach level up
 
     private int minLevel = 0, maxLevel = 255;
     private ArrayList<Integer> itemRequirements = new ArrayList<>();
@@ -48,7 +48,7 @@ public class DungeonBuilder {
 
     private boolean everyoneNeedsItemRequirements = false;
 
-    private int mapId = 0, returnMap = 0;
+    private int mapId = 599000002, returnMap = 809;
 
     private int monstersPerPoint = 1;
 
