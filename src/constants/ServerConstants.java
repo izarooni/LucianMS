@@ -22,7 +22,7 @@ public class ServerConstants {
 	public static final boolean USE_DUEY = false;
 	public static final boolean USE_ITEM_SORT = true;
 	public static final boolean USE_PARTY_SEARCH = false;
-	public static final int  HOME_MAP = 820000000;
+	public static final int  HOME_MAP = 809;
 	public static final int CURRENCY = 4260002;
 
 	// Rates
