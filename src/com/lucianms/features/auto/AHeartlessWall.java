@@ -151,7 +151,7 @@ public class AHeartlessWall extends GAutoEvent {
             MapleMonsterStats stats = new MapleMonsterStats();
             stats.setHp(Integer.MAX_VALUE);
             monster.setOverrideStats(stats);
-            monster.addListener(new MonsterListener() {
+            monster.getListeners().add(new MonsterListener() {
                 @Override
                 public void monsterKilled(int aniTime) {
                     timeoutTask.cancel();

@@ -125,7 +125,7 @@ public abstract class BossPQ extends GenericEvent {
                             stats.setMp(newMp);
                             monster.setBoss(true);
                             final long spawnTimestamp = System.currentTimeMillis();
-                            monster.addListener(new MonsterListener() {
+                            monster.getListeners().add(new MonsterListener() {
                                 @Override
                                 public void monsterKilled(int aniTime) {
                                     long endTime = System.currentTimeMillis();

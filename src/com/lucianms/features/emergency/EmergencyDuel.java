@@ -59,7 +59,7 @@ public class EmergencyDuel extends Emergency {
                 stats.setMp(monster.getMp());
                 stats.setExp((int) (monster.getExp() * (Bosses[index][1] / 100d)));
 
-                monster.addListener((aniTime) -> bossDeath());
+                monster.getListeners().add((aniTime) -> bossDeath());
                 monster.setOverrideStats(stats);
                 getMap().spawnMonsterOnGroudBelow(monster, spawnPoint.getPosition());
                 getMap().broadcastMessage(MaplePacketCreator.earnTitleMessage(monster.getName() + " has spawned somewhere on this map!"));

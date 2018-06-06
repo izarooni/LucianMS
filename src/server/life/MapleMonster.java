@@ -503,8 +503,6 @@ public class MapleMonster extends AbstractLoadedMapleLife {
         return listeners;
     }
 
-    public void addListener(MonsterListener listener) {}
-
     public boolean isControllerHasAggro() {
         return !fake && controllerHasAggro;
     }

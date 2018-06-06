@@ -78,7 +78,7 @@ public final class SpawnPoint {
         if (overrides != null) {
             monster.setOverrideStats(overrides);
         }
-        monster.addListener(new MonsterListener() {
+        monster.getListeners().add(new MonsterListener() {
             @Override
             public void monsterKilled(int animationTime) {
                 if (spawnedMonsters.get() > 0) {
@@ -88,18 +88,26 @@ public final class SpawnPoint {
                 nextPossibleSpawn += (mobTime > 0) ? (mobTime * 1000) : animationTime;
 
                 long delay = Math.max(3000, (nextPossibleSpawn - System.currentTimeMillis()));
-                TaskExecutor.createTask(new Runnable() {
-                    @Override
-                    public void run() {
-                        if (canSpawn(false)) {
-                            getMonster();
-                            summonMonster();
-                        }
-                    }
-                }, delay);
+                attemptMonsterSummon(delay);
             }
         });
         return monster;
+    }
+
+    private void attemptMonsterSummon(long delay) {
+        System.out.println("TEST");
+        TaskExecutor.createTask(new Runnable() {
+            @Override
+            public void run() {
+                System.out.println(canSpawn(false) ? "T" : "F");
+                if (canSpawn(false)) {
+                    getMonster();
+                    summonMonster();
+                } else {
+                    attemptMonsterSummon(delay);
+                }
+            }
+        }, delay);
     }
 
     public void summonMonster() {

@@ -175,7 +175,7 @@ public class AEmergencyTrial extends GAutoEvent {
                     }
                 }, 1000 * 120);
 
-                monster.addListener(new MonsterListener() {
+                monster.getListeners().add(new MonsterListener() {
                     @Override
                     public void monsterKilled(int aniTime) {
                         map.broadcastMessage(MaplePacketCreator.showEffect("PSO2/stuff/5"));

@@ -50,7 +50,7 @@ public class EmergencyAttack extends Emergency {
                 for (int j = 0; j < summons; j++) {
                     MapleMonster monster = MapleLifeFactory.getMonster(stats[1]);
                     if (monster != null) {
-                        monster.addListener((ani) -> monsterDeath(monster));
+                        monster.getListeners().add((ani) -> monsterDeath(monster));
                         getMap().spawnMonsterOnGroudBelow(monster, sp[Randomizer.nextInt(sp.length)].getPosition());
                     } else {
                         summoned.decrementAndGet();

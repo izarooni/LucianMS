@@ -104,7 +104,7 @@ public class SOuterSpace extends SAutoEvent {
                     }
                 };
                 start = System.currentTimeMillis();
-                monster.addListener(DeathListener);
+                monster.getListeners().add(DeathListener);
                 finished[channel.getId() - 1] = false;
                 eventMap.spawnMonsterOnGroudBelow(monster, pos);
                 channel.broadcastPacket(MaplePacketCreator.serverNotice(0, "The Space Slime has spawned in the Outer Space, Planet Lucian"));

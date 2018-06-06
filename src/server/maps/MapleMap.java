@@ -1980,10 +1980,10 @@ public class MapleMap {
         newpos.y -= 1;
         monster.setPosition(newpos);
         SpawnPoint spawnPoint = new SpawnPoint(this, monster, !monster.isMobile(), mobTime, team);
-        spawnPoints.add(spawnPoint);
         MapleMonster summon = spawnPoint.getMonster();
         if (summon != null) {
             spawnPoint.summonMonster();
+            spawnPoints.add(spawnPoint);
         } else {
             LOGGER.info("Unable to summon invalid monster {} in map {} via SpawnPoint", monster.getId(), getId());
         }
