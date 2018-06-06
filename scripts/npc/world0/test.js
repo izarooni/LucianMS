@@ -208,7 +208,9 @@ function ListPortals(selection) {
 function SpawnPoints(selection) {
     let content = "";
     player.getMap().getMonsterSpawnPoints().forEach(function(sp) {
-        content += "\r\nID:" + sp.getMonster().getId() + ", SP:" + sp.shouldSpawn() + ", Mobile:" + sp.getMonster().isMobile();
+        sp.getMonster();
+        sp.summonMonster();
+        content += "\r\nID:" + sp.getMonster().getId() + ", canSpawn:" + sp.canSpawn(false) + ", Mobile:" + sp.getMonster().isMobile();
     });
     cm.sendOk(content);
     cm.dispose();

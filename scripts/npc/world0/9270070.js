@@ -1,5 +1,5 @@
 load("scripts/util_imports.js");
-var ShenronSummon = Java.type("server.events.custom.summoning.ShenronSummoner");
+var ShenronSummon = Java.type("com.lucianms.features.ShenronSummoner");
 /* izarooni */
 var status = 0;
 var usernameError = "";
@@ -39,7 +39,7 @@ function action(mode, type, selection) {
                     cm.sendOk("You are currently holding too many mesos.");
                 }
                 break;
-            case 1: 
+            case 1:
                 cm.sendGetText(usernameError + "\r\nWho is it that you wish to kill?");
                 return;
             case 2: {

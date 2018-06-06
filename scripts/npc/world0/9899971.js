@@ -1,37 +1,19 @@
  /*
- 
     Author: Lucasdieswagger @ discord
- 
  */
- 
- importPackage(Packages.tools);
-var LifeFactory = Java.type("server.life.MapleLifeFactory");
- var sections = {};
- var method = null;
- var status = 0;
- var text = "";
-
- var moveTo = 90000007;
- 
-function start() {
-    action(1, 0, 0);
-}
+const MaplePacketCreator = Java.type("tools.MaplePacketCreator");
+const moveTo = 90000007;
+let status = 0;
+let text = "";
 
 function action(mode, type, selection) {
-    if (mode === -1) {
+    if (mode < 1) {
         cm.dispose();
         return;
-    } else if (mode === 0) {
-        status--;
-        if (status === 0) {
-            cm.dispose();
-            return;
-        }
     } else {
         status++;
     }
     if (status === 1) {
-        method = null;
         if(cm.getPlayer().getKillType() == 100120) {
             if(cm.getPlayer().getCurrent() >= cm.getPlayer().getGoal()) {
                 // complete quest
@@ -41,7 +23,7 @@ function action(mode, type, selection) {
                 cm.getPlayer().getMap().broadcastMessage(MaplePacketCreator.showEffect("quest/party/clear4"));
                 cm.getPlayer().getMap().broadcastMessage(MaplePacketCreator.playSound("customJQ/quest"));
             } else {
-                var amountLeft = cm.getPlayer().getGoal() - cm.getPlayer().getCurrent();
+                let amountLeft = cm.getPlayer().getGoal() - cm.getPlayer().getCurrent();
                 text = "You still need to kill " + amountLeft + " monsters to continue.";
             }
         } else {
@@ -52,23 +34,5 @@ function action(mode, type, selection) {
         }
         cm.sendOk(text);
         cm.dispose();
-        
-    } else {
-        if (method == null) {
-            method = sections[get(selection)];
-        }
-        method(mode, type, selection);
     }
 }
-
-
-function get(index) {
-    var i = 0;
-    for (var s in sections) {
-        if (i === index)
-            return s;
-        i++;
-    }
-    return null;
-}
-

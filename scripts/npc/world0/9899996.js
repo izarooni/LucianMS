@@ -1,95 +1,60 @@
-load("scripts/util_imports.js");
-load("scripts/util_transaction.js");
-/* izarooni*/
-var SPEC_PROP = "npc.coin_shop.special_idx";
-var status = 0;
-var coin_id = 4011020;
-var special = null;
-var items = {
-    regulars: [[1302001, 1, 1], [1302002, 1, 1]],
-    specials: [[1302003, 1, 1]]
-};
+//Monster Gear NPC Trader
+//Venem
 
-if (System.getProperties().getProperty(SPEC_PROP) == null) {
-    special = Math.floor(Math.random() * items.specials.length);
-    System.getProperties().setProperty(SPEC_PROP, special);
-} else {
-    special = items.specials[parseInt(System.getProperties().getProperty(SPEC_PROP))];
+function start() {
+    status = -1;
+    action(1, 0, 0);
 }
 
 function action(mode, type, selection) {
-    if (mode < 1) {
+    if (mode == -1) {
         cm.dispose();
-        return;
     } else {
-        status++;
-    }
-    if (status == 1) {
-        cm.sendSimple("Hey #h #, would you like to exchange any #b#z" + coin_id + "##k?#b"
-            + "\r\n#L0#Exchange for regular items#l"
-            + "\r\n#L1#Exchange for the daily special item#l");
-    } else if (status == 2) {
-        if (this.choice == null) {
-            this.choice = selection;
-        }
-        if (this.choice == 0) {
-            var text = "Absolutely! What would you like to buy?\r\n";
-            for (var i = 0; i < items.regulars.length; i++) {
-                text += "\t#L0" + i + "##v" + items.regulars[i][0] + "##l";
-            }
-            cm.sendSimple(text);
-        } else if (this.choice == 1) {
-            if (special != null) {
-                cm.sendNext("Today's special item is...\r\n#b#v" + special[0] + "# #z" + special[0] + "##k\r\nWould you like this item?");
-            } else {
-                cm.sendOk("Sorry, the special item is currently not ready!");
-                cm.dispose();
-            }
-        }
-    } else if (status == 3) {
-        if (this.choice == 0) {
-            this.item_selection = items.regulars[selection];
-            cm.sendNext("Are you sure you want to trade for a #b#z" + this.item_selection[0] + "##k?");
-        } else if (this.choice == 1) {
-            if (cm.haveItem(coin_id, special[2])) {
-                if (InventoryModifier.checkSpace(client, special[0], special[1], "")) {
-                    var log = player.getName() + " traded " + special[2] + " " + coin_id + " for " + special[1] + " of item " + special[0];
-                    var transactionId = createTransaction(player.getId(), log);
-                    if (transactionId == -1) {
-                        print("Error creating transaction log (coin_shop)...");
-                        print(log);
-                    }
-                    cm.gainItem(special[0], special[1], true);
-                    cm.gainItem(coin_id, -special[2], true);
-                    cm.sendOk("Enjoy!~\r\n#kHere is your transaction ID : #b" + transactionId);
-                } else {
-                    cm.sendOk("Please make sure you have enough space in your " + ItemConstants.getInventoryType(special[0]) + " inventory");
-                }
-            } else {
-                cm.sendOk("You do not have enough #b#z" + coin_id + "#s#k to make this purchase");
-            }
+        if (mode == 0 && status == 0) {
             cm.dispose();
+            return;
         }
-    } else if (status == 4) {
-        if (this.choice == 0) {
-            if (cm.haveItem(coin_id, this.item_selection[2])) {
-                if (InventoryModifier.checkSpace(client, this.item_selection[0], this.item_selection[1], "")) {
-                    var log = player.getName() + " traded " + this.item_selection[2] + " " + coin_id + " for " + this.item_selection[1] + " of item " + this.item_selection[0];
-                    var transactionId = createTransaction(player.getId(), log);
-                    if (transactionId == -1) {
-                        print("Error creating transaction log (coin_shop)...");
-                        print(log);
-                    }
-                    cm.gainItem(this.item_selection[0], this.item_selection[1], true);
-                    cm.gainItem(coin_id, -this.item_selection[2], true);
-                    cm.sendOk("Enjoy!~\r\n#kHere is your transaction ID : #b" + transactionId);
-                } else {
-                    cm.sendOk("Please make sure you have enough space in your " + ItemConstants.getInventoryType(this.item_selection[0]) + " inventory");
-                }
-            } else {
-                cm.sendOk("You do not have enough #b#z" + coin_id + "#s#k to make this purchase");
-            }
+        if (mode == 1)
+            status++;
+        else
+            status--;
+        if (status == 0) {
+            cm.sendSimple ("Hello, there. Do you love #gMonster Energy#k? Then I got the right deal for you! \r\n\Are you interested in any of the equipments? \r\n\ #L0# Trade 6 #i4011020# for 1 #i1442259# \r\n #L1# Trade 6 #i4011020# for 1 #i1008554# \r\n\ #L2# Trade 6 #i4011020# for 1 #i1082975#"); 
+                  } else if (selection == 0) {
+                                  if(cm.haveItem(4011020, 6)) {
+                                  cm.gainItem(1022994, 1);
+                  cm.gainItem(4011020, -6);
+                                  cm.sendOk("Here's your #gMonster#k item!");
+                  cm.dispose();
         }
+        else {
+        cm.sendOk("You don't have enough #gMonster#k coins! Come back when you have enough.");
         cm.dispose();
-    }
+        }
+                  } else if (selection == 1) {
+                                  if(cm.haveItem(4011020, 6)) {
+                                  cm.gainItem(1442259, 1);
+                  cm.gainItem(4011020, -6);
+                                  cm.sendOk("Here's your #gMonster#k item!");
+                  cm.dispose();
+        }
+        else {
+        cm.sendOk("You don't have enough #gMonster#k coins! Come back when you have enough.");
+        cm.dispose();
+        }
+
+                  } else if (selection == 2) {
+                                  if(cm.haveItem(4011020, 6)) {
+                                  cm.gainItem(1082975, 1);
+                  cm.gainItem(4011020, -6);
+                                  cm.sendOk("Here's your #gMonster#k item!");
+                  cm.dispose();
+				  }
+        else {
+        cm.sendOk("You don't have enough #gMonster#k coins! Come back when you have enough.");
+        cm.dispose();
+
 }
+ }
+ }
+ }
