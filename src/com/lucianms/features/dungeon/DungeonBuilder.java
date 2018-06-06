@@ -6,69 +6,62 @@ import com.lucianms.scheduler.Task;
 import com.lucianms.scheduler.TaskExecutor;
 import constants.ExpTable;
 import constants.ServerConstants;
-import net.server.world.MapleParty;
 import net.server.world.MaplePartyCharacter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import server.FieldBuilder;
 import server.MapleInventoryManipulator;
 import server.life.MapleLifeFactory;
 import server.life.MapleMonster;
+import server.life.SpawnPoint;
 import server.maps.MapleMap;
-import server.maps.MapleMapFactory;
 import tools.MaplePacketCreator;
 import tools.Randomizer;
 
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Random;
 
 
 /**
  * A dungeon builder.
- * @TODO test functionality to make sure it works.
+ *
  * @author Lucas
  * @version 0.1
+ * @TODO test functionality to make sure it works.
  */
 public class DungeonBuilder {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(DungeonBuilder.class);
+
     private MapleCharacter player;
-
-    private int timeLimit = 300;
-    private boolean scaleEXP = false;
     private ArrayList<MapleMonster> spawns = new ArrayList<>();
-    private boolean allowParty = false;
-    private  int maxPartySize = 1;
-    private int monsterExp = 1337; // this won't be used if scaleEXP is not on.
-
-    private int scaleFromTotal = 25; // kill 25 monsters to reach level up
-
-    private int minLevel = 0, maxLevel = 255;
     private ArrayList<Integer> itemRequirements = new ArrayList<>();
-
-    private Task respawnTask, endTask;
-
-    private boolean everyoneNeedsItemRequirements = false;
-
-    private int mapId = 599000002, returnMap = 809;
-
-    private int monstersPerPoint = 1;
-
-    private int minX = 0, maxX = 0;
-
-    private int[] platforms;
-
-    private int maxMonsterAmount;
-
-    private int respawnTime = 4;
-
+    private Task endTask;
+    private MapleMap map;
     private String areLacking = "";
-
+    private int timeLimit = 300;
+    private int maxPartySize = 1;
+    private int monsterExp = 1337; // this won't be used if scaleEXP is not on.
+    private int scaleFromTotal = 25; // kill 25 monsters to reach level up
+    private int minLevel = 0, maxLevel = 255;
+    private int mapId = 599000002, returnMap = 809;
+    private int monstersPerPoint = 1;
+    private int minX = 0, maxX = 0;
+    private int[] platforms;
+    private int maxMonsterAmount;
+    private int respawnTime = 4;
     private boolean disableDrops = true;
+    private boolean everyoneNeedsItemRequirements = false;
+    private boolean allowParty = false;
+    private boolean scaleEXP = false;
 
     private DungeonBuilder(MapleCharacter player, int mapId) {
         this.player = player;
         this.mapId = mapId;
-    }
 
+        map = new FieldBuilder(player.getWorld(), player.getClient().getChannel(), mapId).loadFootholds().build();
+    }
 
     // lol for now
     public static DungeonBuilder prepare(MapleCharacter player, int mapId) {
@@ -93,12 +86,12 @@ public class DungeonBuilder {
      * @return DungeonBuilder
      */
     public DungeonBuilder attachSpawns(Integer... monsters) {
-        if (scaleEXP) {
-            System.out.println("[Dungeon Builder] Scaling EXP for monsters");
-            Arrays.asList(monsters).forEach((integer) -> {
-                MapleMonster monster = MapleLifeFactory.getMonster(integer);
-                if (monster != null) {
-                    MapleCharacter expCalc = player;
+        LOGGER.info("Scaling EXP for monsters");
+        for (Integer monsterId : monsters) {
+            MapleMonster monster = MapleLifeFactory.getMonster(monsterId);
+            if (monster != null) {
+                MapleCharacter expCalc = player;
+                if (scaleEXP) {
                     if (player.getParty() != null) {
                         for (MaplePartyCharacter expCalculation : player.getParty().getMembers()) {
                             if (expCalculation.getLevel() < expCalc.getLevel()) {
@@ -109,30 +102,31 @@ public class DungeonBuilder {
                     monster.getStats().setExp(ExpTable.getExpNeededForLevel(expCalc.getLevel()) / getScaleFromTotal());
                     monster.getStats().setHp(expCalc.getHp() * 2);
                     monster.setLevel(expCalc.getLevel());
-                    System.out.println(String.format("[Dungeon Builder] EXP for monster: %d, EXP %d", monster.getMaxHp(), monster.getStats().getExp()));
-                    spawns.add(monster);
                 }
-            });
-            System.out.println("[Dungeon Builder] Scaling complete.");
-        } else {
-            System.out.println("[Dungeon Builder] Scaling is not enabled.");
-            Arrays.asList(monsters).forEach((integer) -> {
-                MapleMonster monster = MapleLifeFactory.getMonster(integer);
-                if (monster != null) {
-                    monster.getStats().setExp(getMonsterExp());
-                    spawns.add(monster);
+
+                int randomPlatform = this.platforms[Randomizer.nextInt(this.platforms.length)];
+                Point point = new Point(Randomizer.nextInt(maxX + minX) - minX, randomPlatform);
+                Point newpos = map.calcPointBelow(point);
+                if (newpos == null) {
+                    LOGGER.warn("No foothold for monster {} at x:{},y:{} in map {}", monster.getId(), monster.getPosition().x, monster.getPosition().y, mapId);
+                    continue;
                 }
-            });
+                newpos.y -= 1;
+                monster.setPosition(newpos);
+                SpawnPoint spawnPoint = new SpawnPoint(map, monster, !monster.isMobile(), 5000, -1);
+                spawnPoint.summonMonster();
+                map.addMonsterSpawnPoint(spawnPoint);
+                LOGGER.info("Exp for monster {} : {}", monster.getMaxHp(), monster.getExp());
+            }
         }
+        LOGGER.info("Scaling complete.");
         return this;
     }
 
-
     // TODO item requirements
     private boolean buildDungeon(boolean isPartyPlay) {
-        if(allowEntrance()) {
-            MapleMapFactory factory = new MapleMapFactory(player.getWorld(), player.getClient().getChannel());
-            MapleMap map = factory.getMap(this.mapId);
+        if (allowEntrance()) {
+            MapleMap map = new FieldBuilder(player.getWorld(), player.getClient().getChannel(), mapId).loadPortals().loadFootholds().build();
             if (map != null) {
 
                 // Don't want em staying there OwO
@@ -144,7 +138,7 @@ public class DungeonBuilder {
                     portal.setScriptName(null);
                 });
 
-                if(isDisableDrops()) {
+                if (isDisableDrops()) {
                     map.toggleDrops();
                 }
 
@@ -159,33 +153,9 @@ public class DungeonBuilder {
                 }
 
                 // A respawning task that'll end the dungeon if everyone is gone
-                respawnTask = TaskExecutor.createRepeatingTask(() -> {
-                    if (map.getAllPlayer().size() < 1) {
-                        endTask.cancel();
-                        respawnTask.cancel();
-                    } else {
-                        spawns.forEach((monster) -> {
-                            int randomPlatform = this.platforms[Randomizer.nextInt(this.platforms.length)];
-                            monster.setPosition(map.getGroundBelow(new Point(Randomizer.nextInt(maxX + minX) - minX, randomPlatform)));
-                            if (map.getMonsters().size() + this.getMonstersPerPoint() < this.maxMonsterAmount)
-                                for (int i = 0; i < this.getMonstersPerPoint(); i++) {
-                                    MapleMonster nMonster = MapleLifeFactory.getMonster(monster.getId());
-                                    nMonster.getStats().setExp(monster.getStats().getExp());
-                                    nMonster.setHp(monster.getMaxHp());
-                                    nMonster.setLevel(monster.getLevel());
-                                    map.spawnMonsterOnGroundBelow(nMonster, monster.getPosition());
-                                }
-                        });
-                    }
-                }, getRespawnTime() * 1000);
                 map.broadcastMessage(MaplePacketCreator.getClock(getTimeLimit()));
                 // get these people out of here!!
-                endTask = TaskExecutor.createTask(() -> {
-                    map.getAllPlayer().forEach((move) -> move.changeMap(this.returnMap));
-                    if (!respawnTask.isCanceled()) {
-                        respawnTask.cancel();
-                    }
-                }, getTimeLimit() * 1000);
+                endTask = TaskExecutor.createTask(() -> map.getAllPlayer().forEach((move) -> move.changeMap(this.returnMap)), getTimeLimit() * 1000);
 
                 return true;
             }
@@ -194,14 +164,14 @@ public class DungeonBuilder {
     }
 
     private boolean allowEntrance() {
-        if(player.getParty() != null) {
-            for(MaplePartyCharacter pcharacter : player.getParty().getMembers()) {
+        if (player.getParty() != null) {
+            for (MaplePartyCharacter pcharacter : player.getParty().getMembers()) {
                 MapleCharacter character = pcharacter.getPlayer();
-                if(!(character.getLevel() >= getMinLevel() && character.getLevel() <= getMaxLevel())) {
-                    areLacking += String.format("%s does not fullfill the level requirements\r\n", character.getName());
+                if (!(character.getLevel() >= getMinLevel() && character.getLevel() <= getMaxLevel())) {
+                    areLacking += String.format("%s does not fulfill the level requirements\r\n", character.getName());
                     return false;
                 }
-                if(isEveryoneNeedsItemRequirements()) {
+                if (isEveryoneNeedsItemRequirements()) {
                     boolean allHave = true;
                     for (Integer integer : getItemRequirements()) {
                         if (!(character.getItemQuantity(integer, false) >= 1)) {
@@ -209,35 +179,35 @@ public class DungeonBuilder {
                         }
 
                         if (!allHave) {
-                            areLacking += String.format("%s does not fullfill the item requirements\r\n", character.getName());
+                            areLacking += String.format("%s does not fulfill the item requirements\r\n", character.getName());
                             return false;
                         }
                     }
                 } else {
-                    for(Integer integer : getItemRequirements()) {
-                        if(!(player.getItemQuantity(integer, false) >= 1)) {
-                            areLacking += String.format("%s does not fullfill the item requirements\r\n", player.getName());
+                    for (Integer integer : getItemRequirements()) {
+                        if (!(player.getItemQuantity(integer, false) >= 1)) {
+                            areLacking += String.format("%s does not fulfill the item requirements\r\n", player.getName());
                             return false;
                         }
                     }
                 }
             }
         } else {
-            if(!(player.getLevel() >= getMinLevel() && player.getLevel() <= getMaxLevel())) {
-                areLacking += String.format("%s does not fullfill the level requirements\r\n", player.getName());
+            if (!(player.getLevel() >= getMinLevel() && player.getLevel() <= getMaxLevel())) {
+                areLacking += String.format("%s does not fulfill the level requirements\r\n", player.getName());
                 return false;
             }
-            for(Integer integer : getItemRequirements()) {
-                if(!(player.getItemQuantity(integer, false) >= 1)) {
-                    areLacking += String.format("%s does not fullfill the item requirements\r\n", player.getName());
+            for (Integer integer : getItemRequirements()) {
+                if (!(player.getItemQuantity(integer, false) >= 1)) {
+                    areLacking += String.format("%s does not fulfill the item requirements\r\n", player.getName());
                     return false;
                 }
             }
 
         }
 
-        if(player.getParty() != null) {
-            if(isEveryoneNeedsItemRequirements()) {
+        if (player.getParty() != null) {
+            if (isEveryoneNeedsItemRequirements()) {
                 for (MaplePartyCharacter pchar : player.getParty().getMembers()) {
                     MapleCharacter character = pchar.getPlayer();
                     for (Integer integer : getItemRequirements()) {
@@ -245,12 +215,12 @@ public class DungeonBuilder {
                     }
                 }
             } else {
-                for(Integer integer : getItemRequirements()) {
+                for (Integer integer : getItemRequirements()) {
                     MapleInventoryManipulator.removeById(player.getClient(), MapleInventoryType.ETC, integer, 1, false, false);
                 }
             }
         } else {
-            for(Integer integer : getItemRequirements()) {
+            for (Integer integer : getItemRequirements()) {
                 MapleInventoryManipulator.removeById(player.getClient(), MapleInventoryType.ETC, integer, 1, false, false);
             }
         }
@@ -307,11 +277,6 @@ public class DungeonBuilder {
 
     public DungeonBuilder setEndTask(Task endTask) {
         this.endTask = endTask;
-        return this;
-    }
-
-    public DungeonBuilder setRespawnTask(Task respawnTask) {
-        this.respawnTask = respawnTask;
         return this;
     }
 
@@ -400,10 +365,6 @@ public class DungeonBuilder {
 
     public Task getEndTask() {
         return endTask;
-    }
-
-    public Task getRespawnTask() {
-        return respawnTask;
     }
 
     public MapleCharacter getPlayer() {
