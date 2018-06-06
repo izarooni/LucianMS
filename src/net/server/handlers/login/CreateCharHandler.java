@@ -30,7 +30,6 @@ import client.inventory.Item;
 import client.inventory.MapleInventory;
 import client.inventory.MapleInventoryType;
 import net.AbstractMaplePacketHandler;
-import net.server.Server;
 import server.MapleItemInformationProvider;
 import tools.MaplePacketCreator;
 import tools.data.input.SeekableLittleEndianAccessor;
@@ -107,25 +106,29 @@ public final class CreateCharHandler extends AbstractMaplePacketHandler {
 
         MapleInventory equipped = newchar.getInventory(MapleInventoryType.EQUIPPED);
 
-        Item eq_top = MapleItemInformationProvider.getInstance().getEquipById(top);
-        eq_top.setPosition((byte) -5);
-        equipped.addFromDB(eq_top);
-        Item eq_bottom = MapleItemInformationProvider.getInstance().getEquipById(bottom);
-        eq_bottom.setPosition((byte) -6);
-        equipped.addFromDB(eq_bottom);
-        Item eq_shoes = MapleItemInformationProvider.getInstance().getEquipById(shoes);
-        eq_shoes.setPosition((byte) -7);
-        equipped.addFromDB(eq_shoes);
-        Item eq_weapon = MapleItemInformationProvider.getInstance().getEquipById(weapon);
-        eq_weapon.setPosition((byte) -11);
-        ((Equip) eq_weapon).setWatk((short) 30);
-        equipped.addFromDB(eq_weapon.copy());
+        Equip equip;
+
+        equip = MapleItemInformationProvider.getInstance().getEquipById(top);
+        equip.setPosition((byte) -5);
+        equipped.addFromDB(equip);
+
+        equip = MapleItemInformationProvider.getInstance().getEquipById(bottom);
+        equip.setPosition((byte) -6);
+        equipped.addFromDB(equip);
+
+        equip = MapleItemInformationProvider.getInstance().getEquipById(shoes);
+        equip.setPosition((byte) -7);
+        equipped.addFromDB(equip);
+
+        equip = MapleItemInformationProvider.getInstance().getEquipById(weapon);
+        equip.setPosition((byte) -11);
+        equip.setWatk((short) 30);
+        equipped.addFromDB(equip);
 
         if (!newchar.insertNewChar()) {
             c.announce(MaplePacketCreator.deleteCharResponse(0, 9));
             return;
         }
         c.announce(MaplePacketCreator.addNewCharEntry(newchar));
-        Server.getInstance().broadcastGMMessage(MaplePacketCreator.sendYellowTip("[NEW CHAR]: " + c.getAccountName() + " has created a new character with IGN " + name));
     }
 }
