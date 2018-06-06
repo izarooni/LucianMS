@@ -95,11 +95,9 @@ public final class SpawnPoint {
     }
 
     private void attemptMonsterSummon(long delay) {
-        System.out.println("TEST");
         TaskExecutor.createTask(new Runnable() {
             @Override
             public void run() {
-                System.out.println(canSpawn(false) ? "T" : "F");
                 if (canSpawn(false)) {
                     getMonster();
                     summonMonster();
