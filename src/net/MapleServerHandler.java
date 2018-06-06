@@ -170,8 +170,8 @@ public class MapleServerHandler extends IoHandlerAdapter {
                     } catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
                         e.printStackTrace();
                     }
-                } else {
-                    LOGGER.info("Unhandled packet 0x{}", Integer.toHexString(packetId));
+//                } else {
+//                    LOGGER.info("Unhandled packet 0x{}", Integer.toHexString(packetId));
                 }
             }
         }

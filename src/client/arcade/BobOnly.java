@@ -22,7 +22,7 @@ public class BobOnly extends Arcade {
     @Override
     public boolean fail() {
         if (killedWrong) {
-
+            player.setArcade(null);
             player.changeMap(978, 0);
             player.announce(MaplePacketCreator.serverNotice(1, "Game Over!"));
             if (saveData(highscore)) {
@@ -38,7 +38,6 @@ public class BobOnly extends Arcade {
 
             respawnTask.cancel();
             respawnTask = null;
-            player.setArcade(null);
         }
         return true;
     }

@@ -295,10 +295,15 @@ public class HGMCommands {
                 String error = args.getFirstError();
                 if (error == null && npcId < 9901000) {
                     NPCScriptManager.start(client, npcId);
+                } else {
+                    String script = args.get(0);
+                    if (script.startsWith("`")) {
+                        script = script.substring(1);
+                    }
+                    NPCScriptManager.start(client, 10200, script);
                 }
-                NPCScriptManager.start(client, 10200, args.get(0));
             } else {
-                player.dropMessage(5, "You must specify an NPC ID");
+                player.dropMessage(5, "Usage: !onpoc <npc_id/script>");
             }
         } else if (command.equals("saveall")) {
             for (World worlds : Server.getInstance().getWorlds()) {
