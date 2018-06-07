@@ -1,5 +1,5 @@
 load("scripts/util_imports.js");
-var ShenronSummon = Java.type("com.lucianms.features.ShenronSummoner");
+var ShenronSummon = Java.type("com.lucianms.features.summoning.ShenronSummoner");
 /* izarooni */
 var status = 0;
 var usernameError = "";
