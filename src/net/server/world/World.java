@@ -631,6 +631,6 @@ public class World {
 
     public final void shutdown() {
         getChannels().forEach(Channel::shutdown);
-        players.disconnectAll();
+        players.clear();
     }
 }

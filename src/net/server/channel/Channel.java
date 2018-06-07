@@ -35,6 +35,7 @@ import org.apache.mina.core.buffer.IoBuffer;
 import org.apache.mina.core.buffer.SimpleBufferAllocator;
 import org.apache.mina.core.service.IoAcceptor;
 import org.apache.mina.core.session.IdleStatus;
+import org.apache.mina.core.session.IoSession;
 import org.apache.mina.filter.codec.ProtocolCodecFilter;
 import org.apache.mina.transport.socket.SocketSessionConfig;
 import org.apache.mina.transport.socket.nio.NioSocketAcceptor;
@@ -121,8 +122,10 @@ public final class Channel {
 
     public final void shutdown() {
         try {
+            eventScriptManager.close();
             closeAllMerchants();
-            players.disconnectAll();
+
+            acceptor.getManagedSessions().values().forEach(IoSession::closeNow);
 
             acceptor.unbind();
             acceptor.dispose();
