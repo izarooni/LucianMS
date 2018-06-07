@@ -25,6 +25,7 @@ function completeQuest() {
         quest.complete(player);
     } else {
         cm.warp(Packages.constants.ServerConstants.HOME_MAP);
+        cm.dispose();
     }
 }
 
