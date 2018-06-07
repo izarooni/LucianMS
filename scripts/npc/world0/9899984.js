@@ -1,103 +1,55 @@
-/*
- 
-    Author: Lucasdieswagger @ discord
- 
- */
- 
-
- importPackage(Packages.tools);
-var LifeFactory = Java.type("server.life.MapleLifeFactory");
- var sections = {};
- var method = null;
- var status = 0;
- var text = "";
-
- var moveTo = 3;
- 
-function start() {
-    action(1, 0, 0);
-}
-
-sections["Go to the Home Map"] = function(mode, type, selection) {
-    if(status >= 1) {
-        while(cm.getPlayer().getLevel < 8) {
-            cm.getPlayer().gainExp(1500, 0, true, true, false);
-        }
-        cm.getPlayer().changeMap(809);
-        cm.getPlayer().getMap().broadcastMessage(MaplePacketCreator.showEffect("quest/party/clear1"));
-        cm.getPlayer().dropMessage(6, "Welcome to LucianMS!");
-        cm.getPlayer().getClient().getChannelServer().broadcastPacket(MaplePacketCreator.serverNotice(6, "Welcome " + cm.getPlayer().getName() + " to LucianMS, let's give him a warm welcome."));
-    }
-};
-
-sections["Go to Henesys"] = function(mode, type, selection) {
-    if(status >= 1) {
-        while(cm.getPlayer().getLevel < 8) {
-            cm.getPlayer().gainExp(800, 0, true, true, false);
-        }
-        cm.getPlayer().changeMap(100000000);
-        cm.getPlayer().getMap().broadcastMessage(MaplePacketCreator.showEffect("quest/party/clear1"));
-        cm.getPlayer().getMap().broadcastMessage(MaplePacketCreator.playSound("customJQ/quest"));
-        cm.getPlayer().dropMessage(6, "Welcome to LucianMS!");
-        cm.getPlayer().getClient().getChannelServer().broadcastPacket(MaplePacketCreator.serverNotice(6, "Welcome " + cm.getPlayer().getName() + " to LucianMS, let's give him a warm welcome."));
-    }
-};
+load('scripts/util_cquests.js');
+const CQuestBuilder = Java.type('com.lucianms.cquest.CQuestBuilder');
+/* izarooni */
+let status = 0;
+let quest = player.getCustomQuests().get(37);
+let metadata = CQuestBuilder.getMetaData(37);
 
 function action(mode, type, selection) {
-    if (mode === -1) {
+    if (mode < 1) {
         cm.dispose();
         return;
-    } else if (mode === 0) {
-        status--;
-        if (status === 0) {
-            cm.dispose();
-            return;
-        }
     } else {
         status++;
     }
-    if (status === 1) {
-        method = null;
-        if(cm.getPlayer().getKillType() == 9700068) {
-            cm.getPlayer().setCurrent(1);
-            if(cm.getPlayer().getCurrent() >= cm.getPlayer().getGoal()) {
-                // complete quest
-                text = "You are done with the tutorial, where would you like to go now?";
-                var i = 0;
-                 for (var s in sections) {
-                    text += "\r\n#b#L" + (i++) + "#" + s + "#l#k";
-                }
-                cm.sendSimple(text);
-            } else {
-                var amountLeft = cm.getPlayer().getGoal() - cm.getPlayer().getCurrent();
-                text = "You still need to kill " + amountLeft + " monsters to continue.";
-                cm.sendOk(text);
-            }
-        } else {
-            text = "Lets see you kill some monsters, you can kill them by standing nearby them and clicking on your attack key (default: #bctrl#k), kill 10 #o9700068#'s and talk to me again.";
-            cm.getPlayer().setKillType(9700068);
-            cm.getPlayer().setGoal(1);
-            cm.getPlayer().setCurrent(0);
-            cm.sendOk(text);
-            cm.dispose();
-            cm.getPlayer().getMap().broadcastMessage(MaplePacketCreator.showEffect("quest/party/clear1"));
-        }   
+    if (quest == null) beginQuest();
+    else completeQuest();
+}
+
+function completeQuest() {
+    if (!quest.checkRequirements()) {
+        cm.sendOk("Have you forgotten what to do? You can check all of your quests via the #d< @quests >#k command!");
+        cm.dispose();
+    } else if (!quest.isCompleted()) {
+        cm.sendNext("Congratulations, you did it! That wasn't hard now, was it?", 1);
+        quest.complete(player);
     } else {
-        if (method == null) {
-            method = sections[get(selection)];
+        cm.warp(Packages.constants.ServerConstants.HOME_MAP);
+    }
+}
+
+function beginQuest() {
+    if (status == 1) {
+        cm.sendNext("This one can't be too difficult. Let's do it!", 1);
+    } else if (status >= 2 && status <= 4) {
+        var text = "#FUI/UIWindow/Quest/summary#\r\n";
+        if (status == 2) {
+            var res = CQuestKills(metadata.getToKill());
+            if (res != null) cm.sendNext(text + res);
+            else action(1, 0, 0);
+        } else if (status == 3) {
+            var res = CQuestCollect(metadata.getToCollect());
+            if (res != null) cm.sendNext(text + res);
+            else action(1, 0, 0);
+        } else if (status == 4) {
+            var res = CQuestRewards(metadata.getRewards());
+            if (res != null) cm.sendNext(text + res);
+            else action(1, 0, 0);
         }
-        method(mode, type, selection);
+    } else if (status == 5) {
+        cm.sendAcceptDecline("Let me know when you're ready to take on this task!");
+    } else if (status == 6) {
+        CQuestBuilder.beginQuest(player, 37);
+        cm.dispose();
     }
 }
-
-
-function get(index) {
-    var i = 0;
-    for (var s in sections) {
-        if (i === index)
-            return s;
-        i++;
-    }
-    return null;
-}
-
