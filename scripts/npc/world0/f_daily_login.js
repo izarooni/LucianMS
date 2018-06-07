@@ -31,7 +31,7 @@ function action(mode, type, selection) {
         status++;
     }
     if (status == 1) {
-        if (streak != null) {
+        if (ttd != null) {
             var now = Date.now();
             if (now >= ttd) { // it's been at least 24 hours since last login
                 if (now - ttd >= TimeUnit.DAYS.toMillis(1)) { // been 2+ days since login
