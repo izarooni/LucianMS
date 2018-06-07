@@ -2,6 +2,7 @@ package tools;
 
 import com.lucianms.io.Config;
 import com.lucianms.io.defaults.Defaults;
+import constants.ExpTable;
 import org.json.JSONObject;
 import org.json.JSONTokener;
 import org.slf4j.Logger;
@@ -9,6 +10,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.net.SocketTimeoutException;
 import java.net.URISyntaxException;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
@@ -22,9 +24,14 @@ public class Tester {
     private static Config config = null;
 
     public static void main(String[] args) {
-        initConfig();
-        DatabaseConnection.useConfig(config);
-        createAccount("izarooni", "test2");
+//        initConfig();
+//        DatabaseConnection.useConfig(config);
+//        createAccount("izarooni", "test2");
+        int total = 0;
+        for (int i = 1; i <= 10; i++) {
+            total += ExpTable.getExpNeededForLevel(i);
+        }
+        System.out.println(total);
     }
 
     private static void initConfig() {
