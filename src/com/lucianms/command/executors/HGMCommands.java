@@ -165,7 +165,7 @@ public class HGMCommands {
                             channel.getMap(player.getMapId()).broadcastMessage(MaplePacketCreator.spawnNPC(npc));
                         }
                     }
-                    try (PreparedStatement ps = DatabaseConnection.getConnection().prepareStatement("INSERT INTO spawns (idd, f, fh, cy, rx0, rx1, type , x, y, mid, mobtime, script) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)")) {
+                    try (PreparedStatement ps = DatabaseConnection.getConnection().prepareStatement("INSERT INTO spawns (idd, f, fh, cy, rx0, rx1, type , x, mid, mobtime, script) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)")) {
                         ps.setInt(1, npcId);
                         ps.setInt(2, npc.getF());
                         ps.setInt(3, npc.getFh());
@@ -174,10 +174,9 @@ public class HGMCommands {
                         ps.setInt(6, npc.getRx1());
                         ps.setString(7, "n");
                         ps.setInt(8, (int) npc.getPosition().getX());
-                        ps.setInt(9, (int) npc.getPosition().getY());
-                        ps.setInt(10, player.getMapId());
-                        ps.setInt(11, 1);
-                        ps.setString(12, script);
+                        ps.setInt(9, player.getMapId());
+                        ps.setInt(10, 1);
+                        ps.setString(11, script);
                         ps.executeUpdate();
                     } catch (SQLException e) {
                         e.printStackTrace();
