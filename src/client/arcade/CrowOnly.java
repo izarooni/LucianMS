@@ -1,6 +1,7 @@
 package client.arcade;
 
 import client.MapleCharacter;
+import com.lucianms.scheduler.TaskExecutor;
 import server.MapleInventoryManipulator;
 import tools.MaplePacketCreator;
 
@@ -27,6 +28,8 @@ public class CrowOnly extends Arcade {
 
     @Override
     public boolean fail() {
+        player.setArcade(null);
+
         player.changeMap(978, 0);
         player.announce(MaplePacketCreator.serverNotice(1, "Game Over!"));
         if (saveData(highscore)) {
@@ -40,9 +43,7 @@ public class CrowOnly extends Arcade {
             MapleInventoryManipulator.addById(player.getClient(), itemReward, (short) 1);
         }
 
-        respawnTask.cancel();
-        respawnTask = null;
-        player.setArcade(null);
+        respawnTask = TaskExecutor.cancelTask(respawnTask);
         return true;
     }
 

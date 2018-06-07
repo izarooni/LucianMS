@@ -1,6 +1,7 @@
 package client.arcade;
 
 import client.MapleCharacter;
+import com.lucianms.scheduler.TaskExecutor;
 import server.MapleInventoryManipulator;
 import server.life.MapleLifeFactory;
 import server.life.MapleMonster;
@@ -40,6 +41,7 @@ public class BoxSpider extends Arcade {
     @Override
     public boolean fail() {
         if (touched) {
+            player.setArcade(null);
 
             player.changeMap(978, 0);
 
@@ -52,13 +54,11 @@ public class BoxSpider extends Arcade {
         }
 
         // You know i had to do it to 'em
-        for(int i =((int)(rewardPerKill * highscore)); i > 0; i--) {
+        for (int i = ((int) (rewardPerKill * highscore)); i > 0; i--) {
             MapleInventoryManipulator.addById(player.getClient(), itemReward, (short) 1);
         }
 
-        respawnTask.cancel();
-        respawnTask = null;
-        player.setArcade(null);
+        respawnTask = TaskExecutor.cancelTask(respawnTask);
         return true;
     }
 
@@ -72,7 +72,7 @@ public class BoxSpider extends Arcade {
             toSpawn = MapleLifeFactory.getMonster(9500365);
         }
 
-        int spawnX = Randomizer.nextInt( 1803 - 2684) + 2684;
+        int spawnX = Randomizer.rand((1803 - 2684), 2684);
         spawnX = (spawnX >= xStart && spawnX <= xEnd) ? spawnX : 619;
         int spawnY = Randomizer.nextInt(platform.length);
 

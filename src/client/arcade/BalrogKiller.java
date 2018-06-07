@@ -2,6 +2,7 @@ package client.arcade;
 
 import client.MapleCharacter;
 import client.MapleStat;
+import com.lucianms.scheduler.TaskExecutor;
 import server.MapleInventoryManipulator;
 import server.life.MapleLifeFactory;
 import server.life.MapleMonster;
@@ -27,6 +28,7 @@ public class BalrogKiller extends Arcade {
 
     @Override
     public boolean fail() {
+        player.setArcade(null);
 
         player.setHp(player.getMaxHp());
         player.setExp(currExp);
@@ -45,10 +47,7 @@ public class BalrogKiller extends Arcade {
             MapleInventoryManipulator.addById(player.getClient(), itemReward, (short) 1);
         }
 
-
-        respawnTask.cancel();
-        respawnTask = null;
-        player.setArcade(null);
+        respawnTask = TaskExecutor.cancelTask(respawnTask);
         return true;
     }
 

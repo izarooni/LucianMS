@@ -25,6 +25,7 @@ public class MobRush extends Arcade {
     @Override
 
     public boolean fail() {
+        player.setArcade(null);
         player.changeMap(978, 0);
         player.announce(MaplePacketCreator.serverNotice(1, "Game Over!"));
         if (saveData(highscore)) {
@@ -34,22 +35,18 @@ public class MobRush extends Arcade {
         }
 
         // You know i had to do it to 'em
-        for(int i =((int)(rewardPerKill * highscore)); i > 0; i--) {
+        for (int i = ((int) (rewardPerKill * highscore)); i > 0; i--) {
             MapleInventoryManipulator.addById(player.getClient(), itemReward, (short) 1);
         }
 
-        respawnTask.cancel();
-        respawnTask = null;
-        if(this.task != null) {
-            this.task.cancel();
-        }
-        player.setArcade(null);
+        respawnTask = TaskExecutor.cancelTask(respawnTask);
+        task = TaskExecutor.cancelTask(task);
         return true;
     }
 
     @Override
     public boolean nextRound() {
-        if(stage <= 3) {
+        if (stage <= 3) {
             this.mapId += 1;
             this.stage += 1;
 
@@ -62,7 +59,7 @@ public class MobRush extends Arcade {
             player.getMap().toggleDrops();
 
             player.getMap().broadcastMessage(MaplePacketCreator.showEffect("killing/first/start"));
-           TaskExecutor.createTask(() ->  player.getMap().broadcastMessage(MaplePacketCreator.showEffect("killing/first/number/" + this.stage)), 3000);
+            TaskExecutor.createTask(() -> player.getMap().broadcastMessage(MaplePacketCreator.showEffect("killing/first/number/" + this.stage)), 3000);
 
             player.announce(MaplePacketCreator.getClock(180));
             this.task = TaskExecutor.createTask(this::nextRound, 180000);
@@ -82,7 +79,7 @@ public class MobRush extends Arcade {
 
     @Override
     public void onKill(int monster) {
-       add();
+        add();
     }
 
     @Override
@@ -91,7 +88,7 @@ public class MobRush extends Arcade {
             fail();
         }
 
-        if(player.getMap().getMonsters().size() >= 60) {
+        if (player.getMap().getMonsters().size() >= 60) {
             this.fail();
         }
     }

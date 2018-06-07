@@ -1,6 +1,7 @@
 package client.arcade;
 
 import client.MapleCharacter;
+import com.lucianms.scheduler.TaskExecutor;
 import server.MapleInventoryManipulator;
 import tools.MaplePacketCreator;
 
@@ -32,12 +33,11 @@ public class BobOnly extends Arcade {
             }
 
             // You know i had to do it to 'em
-            for(int i =((int)(rewardPerKill * highscore)); i > 0; i--) {
+            for (int i = ((int) (rewardPerKill * highscore)); i > 0; i--) {
                 MapleInventoryManipulator.addById(player.getClient(), itemReward, (short) 1);
             }
 
-            respawnTask.cancel();
-            respawnTask = null;
+            respawnTask = TaskExecutor.cancelTask(respawnTask);
         }
         return true;
     }
