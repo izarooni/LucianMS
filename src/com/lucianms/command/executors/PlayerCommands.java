@@ -47,7 +47,7 @@ public class PlayerCommands {
             commands.add("@help - to see what commands there are");
             commands.add("@commands - another way to see the commands");
             commands.add("@rates - show the server rates");
-             commands.add("@maxskills - Max your skills");
+            commands.add("@maxskills - Max your skills");
             commands.add("@joinevent - join the GM event");
             commands.add("@leaveevent - leave the GM event");
             commands.add("@jautoevent - join the auto event");
@@ -68,6 +68,7 @@ public class PlayerCommands {
             commands.add("@checkme - Check your stats");
             commands.add("@spy <player> - Check another player's stats");
             commands.add("@fixexp - Reset EXP");
+            commands.add("@serverinfo - Displays server information");
             commands.add("@shenron - Warp to the Shenron summoning map");
             commands.add("@quests - List your quests currently in-progress");
             commands.add("@afk <ign> - Check if someone is AFK");
@@ -298,6 +299,15 @@ public class PlayerCommands {
         } else if (command.equals("home")) {
             player.saveLocation(SavedLocationType.FREE_MARKET.name());
             player.changeMap(ServerConstants.HOME_MAP);
+            } else if (command.equals("serverinfo")) {
+          player.dropMessage("Version: 83");
+          player.dropMessage("Rates: 8x|2x|2x");
+          player.dropMessage("Owners: Venem");
+          player.dropMessage("Rates: 8x|2x|2x");
+          player.dropMessage("Developers: Izarooni / Lucas);
+          player.dropMessage("Home Command: @home");
+          player.dropMessage("Main Website: http://lucianms.com");
+          player.dropMessage("Have Fun and consider to donate for more customs!");
         } else if (command.equals("online")) {
             for (Channel channel : client.getWorldServer().getChannels()) {
                 StringBuilder sb = new StringBuilder();
