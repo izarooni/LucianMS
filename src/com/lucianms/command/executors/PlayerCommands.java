@@ -303,7 +303,6 @@ public class PlayerCommands {
           player.dropMessage("Version: 83");
           player.dropMessage("Rates: 8x|2x|2x");
           player.dropMessage("Owners: Venem");
-          player.dropMessage("Rates: 8x|2x|2x");
           player.dropMessage("Developers: Izarooni / Lucas);
           player.dropMessage("Home Command: @home");
           player.dropMessage("Main Website: http://lucianms.com");
