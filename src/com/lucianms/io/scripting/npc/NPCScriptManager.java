@@ -103,7 +103,7 @@ public class NPCScriptManager {
         if (pair != null) {
             try {
                 pair.left.invokeFunction("action", mode, type, selection);
-            } catch (ScriptException | NoSuchMethodException e) {
+            } catch (Exception e) {
                 NPCConversationManager cm = pair.getRight();
 
                 String response = "An error occurred in this NPC";

@@ -27,8 +27,7 @@ function action(mode, type, selection) {
         cm.sendSimple(text);
     } else {
         if (cjobs.indexOf(selection) > -1) {
-            cm.getPlayer().setJob(MapleJob.getById(selection));
-            cm.getPlayer().updateSingleStat(MapleStat.JOB, selection);
+            player.changeJob(MapleJob.getById(selection));
         }
         cjobs = null;
         cm.dispose();
