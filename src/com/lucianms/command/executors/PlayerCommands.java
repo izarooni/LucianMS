@@ -241,8 +241,8 @@ public class PlayerCommands {
             player.dropMessage(6, "EXP rate: " + player.getExpRate());
             player.dropMessage(6, "Drop rate: " + player.getDropRate());
             player.dropMessage(6, "Meso rate: " + player.getMesoRate());
-        } else if (command.equals("job", "jobs")) {
-            NPCScriptManager.start(client, command.equals("job") ? 9201095 : 9900000, null);
+        } else if (command.equals("jobs")) {
+            NPCScriptManager.start(client, 9900000, null);
         } else if (command.equals("joinevent", "leaveevent")) {
             boolean join = command.equals("joinevent");
             ManualPlayerEvent playerEvent = client.getWorldServer().getPlayerEvent();

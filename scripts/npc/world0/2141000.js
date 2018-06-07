@@ -1,8 +1,8 @@
 load('scripts/util_imports.js');
 /* izarooni */
-var status = 0;
-var ID_RewardBox = 2022336;
-var items = {
+let status = 0;
+const ID_RewardBox = 2022336;
+const items = {
     "warrior": {
         "lvl-30": [1052613, 1003864, 1082343, 1102563, 1012377, 1122253, 1132229, 1302124],
         "lvl-60": [1082526, 1052614,1003563, 1302126, 1442084, 1402068],
@@ -57,19 +57,20 @@ function action(mode, type, selection) {
         status++;
     }
     if (status == 1) {
-        var jcategory = getJobCategory(cm.getJobId());
+        let jcategory = getJobCategory(cm.getJobId());
         if (jcategory != null) {
-            var sub = items[jcategory];
-            var i = 0;
-            for (var l in sub) {
-                var level = parseInt(l.split("-")[1]);
-                var obtained = false;
+            let sub = items[jcategory];
+            let i = 0;
+            let obtained = false;
+            for (let l in sub) {
+                let level = parseInt(l.split("-")[1]);
                 if (getLevelReward() <= (i++) && level <= player.getLevel()) {
-                    var item = new Packages.client.inventory.Item(ID_RewardBox, 0, 1);
+                    let item = new Packages.client.inventory.Item(ID_RewardBox, 0, 1);
                     item.setOwner("Level " + level + " - Reward Box")
                     if (!(obtained = InventoryModifier.addFromDrop(client, item, true))) {
                         player.dropMessage(1, "Make room in your USE inventory before receiving your reward box.");
                     } else {
+                        cm.sendOk("Here is your level " + level + " reward box! Open it from your USE inventory!");
                         setLevelReward(getLevelReward() + 1);
                     }
                     break;
@@ -86,7 +87,7 @@ function action(mode, type, selection) {
 }
 
 function getJobCategory(n) {
-    var j = Math.floor(n / 100);
+    let j = Math.floor(n / 100);
     switch (j) {
         case 1: return "warrior";
         case 2: return "magician";
@@ -97,9 +98,9 @@ function getJobCategory(n) {
 }
 
 function getLevelReward() {
-    var ps = Database.getConnection().prepareStatement("select level_reward from characters where id = ?");
+    let ps = Database.getConnection().prepareStatement("select level_reward from characters where id = ?");
     ps.setInt(1, player.getId());
-    var rs = ps.executeQuery();
+    let rs = ps.executeQuery();
     if (rs.next()) {
         return rs.getInt("level_reward");
     }
@@ -109,7 +110,7 @@ function getLevelReward() {
 }
 
 function setLevelReward(n) {
-    var ps = Database.getConnection().prepareStatement("update characters set level_reward = ? where id = ?");
+    let ps = Database.getConnection().prepareStatement("update characters set level_reward = ? where id = ?");
     ps.setInt(1, n);
     ps.setInt(2, player.getId());
     ps.executeUpdate();
