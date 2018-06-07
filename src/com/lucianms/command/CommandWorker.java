@@ -30,7 +30,7 @@ public class CommandWorker {
 
         if (!player.isGM()) {
             if (player.getMapId() >= 90000000 && player.getMapId() <= 90000004) {
-                player.dropMessage("You may not use commands here");
+                player.dropMessage("Commands are disabled in this area.");
                 return true;
             }
         }

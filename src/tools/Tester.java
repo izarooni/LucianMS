@@ -6,11 +6,12 @@ import org.json.JSONObject;
 import org.json.JSONTokener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import server.CashShop;
 
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.net.URISyntaxException;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 
 /**
  * @author izarooni
@@ -21,8 +22,9 @@ public class Tester {
     private static Config config = null;
 
     public static void main(String[] args) {
-//        initConfig();
-//        DatabaseConnection.useConfig(config);
+        initConfig();
+        DatabaseConnection.useConfig(config);
+        createAccount("izarooni", "test2");
     }
 
     private static void initConfig() {
@@ -34,6 +36,16 @@ public class Tester {
                 config = new Config(new JSONObject(new JSONTokener(new FileInputStream("server-config.json"))));
             }
         } catch (URISyntaxException | IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private static void createAccount(String name, String password) {
+        try (PreparedStatement ps = DatabaseConnection.getConnection().prepareStatement("insert into accounts (name, password) values (?, ?)")) {
+            ps.setString(1, name);
+            ps.setString(2, password);
+            ps.executeUpdate();
+        } catch (SQLException e) {
             e.printStackTrace();
         }
     }
