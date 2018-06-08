@@ -19,7 +19,7 @@
     You should have received a copy of the GNU Affero General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
-/* 
+/*
 	Map(s): 		Empress' Road : Training Forest I
 	Description: 		Takes you to Tiv's Forest
 */
@@ -28,7 +28,7 @@ importPackage(Packages.server.life);
 
 function enter(pi) {
 	if(pi.isQuestStarted(20301) || pi.isQuestStarted(20302) || pi.isQuestStarted(20303) || pi.isQuestStarted(20304) || pi.isQuestStarted(20305)) {
-		var map = pi.getClient().getChannelServer().getMapFactory().getMap(108010610);
+		var map = pi.getClient().getChannelServer().getMap(108010610);
 		spawnMob(3345, -452, 9001009, map);
 		pi.warp(108010610, "out00");
 	} else {
@@ -40,7 +40,7 @@ function enter(pi) {
 function spawnMob(x, y, id, map) {
 	if(map.getMonsterById(id) != null)
 		return;
-		
+
 	var mob = MapleLifeFactory.getMonster(id);
 	map.spawnMonsterOnGroudBelow(mob, new java.awt.Point(x, y));
 }

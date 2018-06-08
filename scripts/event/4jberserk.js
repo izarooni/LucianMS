@@ -36,25 +36,23 @@ function setup() {
     var instanceName = "4jberserk" + instanceId;
 
     var eim = em.newInstance(instanceName);
-	
-    var mf = eim.getMapFactory();
-	
+
     instanceId++;
-	
-    var map = mf.getMap(910500200);
+
+    var map = em.getChannel().getMap(910500200);
     map.addMapTimer(3*60);
     em.schedule("timeOut", 20 * 60000);
 
     //you can't warp up to the rocks until all rogs are dead, I think?
     eim.setProperty("canWarp","false");
-	
+
     return eim;
 }
 
 function playerEntry(eim, player) {
     var map = eim.getMapInstance(910500200);
     player.changeMap(map, map.getPortal(0));
-	
+
 //TODO: hold time across map changes
 //player.getClient().getSession().write(tools.MaplePacketCreator.getClock(1800));
 }
@@ -113,7 +111,7 @@ function playerDisconnected(eim, player) {
 	}*/
 }
 
-function leftParty(eim, player) {			
+function leftParty(eim, player) {
     // If only 2 players are left, uncompletable:
     var party = eim.getPlayers();
     if (true) {

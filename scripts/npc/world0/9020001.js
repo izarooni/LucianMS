@@ -227,8 +227,7 @@ function clear(stage, eim, cm) {
     map.broadcastMessage(MaplePacketCreator.showEffect("quest/party/clear"));
     map.broadcastMessage(MaplePacketCreator.playSound("Party1/Clear"));
     map.broadcastMessage(MaplePacketCreator.environmentChange("gate", 2));
-    var mf = eim.getMapFactory();
-    map = mf.getMap(103000800 + stage);
+    map = em.getChannel().getMap(103000800 + stage);
     var nextStage = eim.getMapInstance(103000800 + stage);
     var portal = nextStage.getPortal("next00");
     if (portal != null) {

@@ -4,7 +4,7 @@
 //
 //function enter(pi) {
 //    var mapid = 541010100;
-//    var map = ChannelServer.getInstance(pi.getPlayer().getClient().getChannel()).getMapFactory().getMap(mapid);
+//    var map = ChannelServer.getInstance(pi.getPlayer().getClient().getChannel()).getMap(mapid);
 //    var mapchars = map.getCharacters();
 //    if (mapchars.isEmpty()) {
 //        var mapobjects = map.getMapObjects();

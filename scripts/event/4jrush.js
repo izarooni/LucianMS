@@ -21,7 +21,7 @@
 */
 /*
  * @author AngelSL
- * 
+ *
  * 4th Job Rush Quest.
  * Based on Kerning City PQ script by Stereo
  */
@@ -42,9 +42,8 @@ function setup() {
     exitMap = em.getChannel().getMap(105090700); // <exit>
     var instanceName = "4jrush" + instanceId;
     var eim = em.newInstance(instanceName);
-    var mf = eim.getMapFactory();
     instanceId++;
-    var map = mf.getMap(910500100);
+    var map = em.getChannel().getMap(910500100);
     map.addMapTimer(20*60);
     em.schedule("timeOut", 20 * 60000);
     return eim;
@@ -79,7 +78,7 @@ function playerDisconnected(eim, player) {
     eim.dispose();
 }
 
-function leftParty(eim, player) {			
+function leftParty(eim, player) {
     // If only 2 players are left, uncompletable:
     var party = eim.getPlayers();
     if (true) {

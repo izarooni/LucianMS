@@ -25,7 +25,7 @@
  */
 function enter(pi) {
     if(pi.isQuestStarted(6202)) {
-        pi.getPlayer().getClient().getChannelServer().getMapFactory().getMap(910200000).resetReactors(); // Make sure they actually can do what they need...
+        pi.getPlayer().getClient().getChannelServer().getMap(910200000).resetReactors(); // Make sure they actually can do what they need...
         pi.warp(910200000, 0);
         return true;
     }

@@ -28,7 +28,7 @@
 function act() {
     var eim = rm.getPlayer().getEventInstance();
     var party = rm.getPlayer().getEventInstance().getPlayers();
-    var womanfred = eim.getMapFactory().getMap(240050100);
+    var womanfred = eim.getMap(240050100);
     var vvpMap = rm.getPlayer().getMapId();
     var vvpKey;
     var vvpOrig = 4001087;
@@ -66,5 +66,3 @@ function act() {
     womanfred.spawnItemDrop(theWomanfred, dropper, tehWomanfred, theWomanfred.getPosition(), true, true);
     womanfred.dropMessage(5, "A bright flash of light, then a key suddenly appears somewhere in the map.");
 }
-	
-	

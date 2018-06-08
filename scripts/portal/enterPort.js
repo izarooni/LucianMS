@@ -27,9 +27,9 @@ function enter(pi) {
 			pi.message("The portal is blocked from the other side. I wonder if someone is already fighting the Thief Crow?");
 			return false;
 		} else {
-			var map = pi.getClient().getChannelServer().getMapFactory().getMap(108010700);
+			var map = pi.getClient().getChannelServer().getMap(108010700);
 			spawnMob(2732, 3, 9001013, map);
-			
+
 			pi.playPortalSound();
 			pi.warp(108010700, "west00");
 		}
@@ -42,7 +42,7 @@ function enter(pi) {
 function spawnMob(x, y, id, map) {
 	if(map.getMonsterById(id) != null)
 		return;
-		
+
 	var mob = MapleLifeFactory.getMonster(id);
 	map.spawnMonsterOnGroudBelow(mob, new java.awt.Point(x, y));
 }

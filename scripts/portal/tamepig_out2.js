@@ -22,8 +22,8 @@
 function enter(pi) {
     pi.removeAll(4031507);
     pi.removeAll(4031508);
-    if (pi.getClient().getChannelServer().getMapFactory().getMap(923010000).getCharacters().size() < 1)
-        pi.getClient().getChannelServer().getMapFactory().getMap(923010000).killAllMonsters();
+    if (pi.getClient().getChannelServer().getMap(923010000).getCharacters().size() < 1)
+        pi.getClient().getChannelServer().getMap(923010000).killAllMonsters();
     pi.warp(230000003, "out00");
     return true;
 }

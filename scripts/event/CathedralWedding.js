@@ -21,7 +21,7 @@
 */
 /*
  * @Author Jvlaple
- * 
+ *
  * Wedding for odinMS
  */
 importPackage(java.lang);
@@ -55,24 +55,21 @@ function setup(eim) {
     instanceId++;
 
     var eim = em.newInstance(instanceName);
-	
-    var mf = eim.getMapFactory();
-	
-	
-    var map = mf.getMap(680000200);//wutt
+
+    var map = em.getChannel().getMap(680000200);//wutt
     //Lets make the clock continue through all maps xD
     em.schedule("playerAltar", 3 * 60000);
     eim.setProperty("hclicked", 0);
     eim.setProperty("wclicked", 0);
     eim.setProperty("entryTimestamp",System.currentTimeMillis() + (3 * 60000));
-	
+
     return eim;
 }
 
 function playerEntry(eim, player) {
     var map = eim.getMapInstance(680000200);
     player.changeMap(map, map.getPortal(0));
-	
+
     //1st - 20 min 2nd - 5 min 3rd 5 min xD
     //player.getClient().getSession().write(net.sf.odinms.tools.MaplePacketCreator.getClock(1200));
     //player.getClient().getSession().write(net.sf.odinms.tools.MaplePacketCreator.getClock(180));
@@ -91,7 +88,7 @@ function playerDisconnected(eim, player) {
     playerExit(eim, player);//kick him/her
 }
 
-function leftParty(eim, player) {	//this doesnt fucking matter...		
+function leftParty(eim, player) {	//this doesnt fucking matter...
 }
 
 function disbandParty(eim) {

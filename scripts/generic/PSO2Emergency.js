@@ -1,8 +1,8 @@
-var MaplePacketCreator = Java.type("tools.MaplePacketCreator");
-var MapleLifeFactory = Java.type("server.life.MapleLifeFactory");
-var TaskExecutor = Java.type("scheduler.TaskExecutor");
-var map = ch.getMapFactory().getMap(player.getMapId());
-var monsters = [
+const MaplePacketCreator = Java.type("tools.MaplePacketCreator");
+const MapleLifeFactory = Java.type("server.life.MapleLifeFactory");
+const TaskExecutor = Java.type("scheduler.TaskExecutor");
+const map = ch.getMap(player.getMapId());
+const monsters = [
     {level:20, mID:9400595},
     {level:25, mID:2100103},
     {level:30, mID:3000005},

@@ -1,6 +1,6 @@
-/* 
+/*
  * This file is part of the OdinMS Maple Story Server
-    Copyright (C) 2008 Patrick Huy <patrick.huy@frz.cc> 
+    Copyright (C) 2008 Patrick Huy <patrick.huy@frz.cc>
                        Matthias Butz <matze@odinms.de>
                        Jan Christian Meyer <vimes@odinms.de>
 
@@ -17,13 +17,13 @@
 
     You should have received a copy of the GNU Affero General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
-	
+
 	THIS  FILE WAS MADE BY JVLAPLE. REMOVING THIS NOTICE MEANS YOU CAN'T USE THIS SCRIPT OR ANY OTHER SCRIPT PROVIDED BY JVLAPLE.
  */
 
 /*
  * @Author Jvlaple
- * 
+ *
  * Orbis Party Quest
  */
 
@@ -53,9 +53,8 @@ function setup() {
     exitMap = em.getChannel().getMap(920011200); //Teh exit map :) <---------t
     var instanceName = "OrbisPQ" + instanceId;
     var eim = em.newInstance(instanceName);
-    var mf = eim.getMapFactory();
     em.getChannel().addInstanceId();
-    var map = mf.getMap(920010000);//wutt
+    var map = em.getChannel().getMap(920010000);//wutt
     //map.shuffleReactors();
     // eim.addMapInstance(920010000,map);
     //var firstPortal = eim.getMapInstance(920010000).getPortal("in00");
@@ -96,7 +95,7 @@ function setup() {
     em.schedule("timeOut", 60 * 60000);
     em.schedule("broadcastClock", 1500);
     eim.setProperty("entryTimestamp",System.currentTimeMillis() + (60 * 60000));
-	
+
     return eim;
 }
 
@@ -165,7 +164,7 @@ function playerDisconnected(eim, player) {
     }
 }
 
-function leftParty(eim, player) {			
+function leftParty(eim, player) {
     // If only 5 players are left, uncompletable:
     var party = eim.getPlayers();
     if (party.size() <= minPlayers) {

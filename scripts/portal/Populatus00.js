@@ -20,7 +20,7 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 function enter(pi) {
-    var papuMap = pi.getClient().getChannelServer().getMapFactory().getMap(220080001);
+    var papuMap = pi.getClient().getChannelServer().getMap(220080001);
     if (papuMap.getCharacters().size() == 0) {
         pi.getPlayer().dropMessage("The room is empty. A perfect opportunity to challenge the boss.");
         papuMap.resetReactors();

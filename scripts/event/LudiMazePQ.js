@@ -1,6 +1,6 @@
-/* 
+/*
  * This file is part of the OdinMS Maple Story Server
-    Copyright (C) 2008 Patrick Huy <patrick.huy@frz.cc> 
+    Copyright (C) 2008 Patrick Huy <patrick.huy@frz.cc>
                        Matthias Butz <matze@odinms.de>
                        Jan Christian Meyer <vimes@odinms.de>
 
@@ -21,7 +21,7 @@
 
 /*
  * @Author Raz
- * 
+ *
  * Ludi Maze PQ
  */
 
@@ -45,7 +45,6 @@ function setup() {
     finishMap = em.getChannel().getMap(809050016);
     var instanceName = "LudiMazePQ" + instanceId;
     var eim = em.newInstance(instanceName);
-    var mf = eim.getMapFactory();
     instanceId++;
     var eventTime = 15 * (1000 * 60);
     em.schedule("timeOut", eim, eventTime);
@@ -57,7 +56,7 @@ function playerEntry(eim, player) {
 	var random = Math.floor((Math.random() * 16));
     var map = eim.getMapInstance(809050000 + random);
     player.changeMap(map, map.getPortal(0));
-	
+
 }
 
 function playerDead(eim, player) {
@@ -148,5 +147,5 @@ function timeOut(eim) {
 }
 
 function playerRevive(eim, player) {
-     
+
 }

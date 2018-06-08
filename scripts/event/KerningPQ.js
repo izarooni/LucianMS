@@ -26,7 +26,6 @@ function setup() { // Invoked from "EventManager.startInstance()"
     var eim = em.newInstance("KerningPQ"); // adds a new instance and returns EventInstanceManager.
     var eventTime = 30 * (1000 * 60); // 30 mins.
     var firstPortal = eim.getMapInstance(103000800).getPortal("next00");
-	respawn(eim);
     firstPortal.setScriptName("kpq0");
     em.schedule("timeOut", eim, eventTime); // invokes "timeOut" in how ever many seconds.
     eim.startEventTimer(eventTime); // Sends a clock packet and tags a timer to the players.
@@ -51,22 +50,9 @@ function playerRevive(eim, player) { // player presses ok on the death pop up.
         playerExit(eim, player);
 }
 
-
-// function respawn(eim) {
-// 	var map = eim.getMapInstance(103000800);
-// 	var map2 = eim.getMapInstance(103000805);
-// 	if (map.getSummonState()) {	//Map spawns are set to true by default
-// 		map.instanceMapRespawn();
-// 	}
-// 	if(map2.getSummonState()) {
-// 		map2.instanceMapRespawn();
-// 	}
-// 	eim.schedule("respawn", 10000);
-// }
-
 function playerDisconnected(eim, player) {
     var party = eim.getPlayers().toArray();
-    if (eim.isLeader(player) || party.length < minPlayers) {
+    if (eim.isLeader(player) || party.size() < minPlayers) {
         for (var i = 0; i < party.size(); i++)
             if (party[i].equals(player)) {
                 removePlayer(eim, player);
@@ -121,7 +107,6 @@ function allMonstersDead(eim) {
 }
 
 function dispose(eim) {
-	em.cancelSchedule();
     em.schedule("OpenKPQ", 10000);
 }
 

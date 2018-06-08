@@ -12,7 +12,7 @@ function start(mode, type, selection) {
         qm.dispose();
         return;
     }
-	
+
 	if (status == 0) {
         qm.sendNext("Why do I look like this, you ask? I don't want to talk about it, but I suppose I can't hide from you since you're my master.");
     } else if (status == 1) {
@@ -23,8 +23,8 @@ function start(mode, type, selection) {
 		qm.sendAcceptDecline("Please, Aran. Please stop me from becoming enraged. Only you can control me. It's getting out of my hands now. Please do whatever it takes to #rstop me from going berserk#k!");
 	} else if (status == 4) {
 		qm.startQuest();
-		
-		var map = qm.getClient().getChannelServer().getMapFactory().getMap(914020000);
+
+		var map = qm.getClient().getChannelServer().getMap(914020000);
 		spawnMob(-365, 86, 9001014, map);
 		qm.warp(914020000);
 		qm.dispose();
@@ -41,7 +41,7 @@ function end(mode, type, selection) {
         qm.dispose();
         return;
     }
-	
+
 	if (status == 0) {
 		qm.sendNext("Thank you, Aran. If it weren't for you, I would have become enraged and who knows what could have happened. Thank you, NOT! It's only your duty as my master...");
 	} else if(status == 1) {
@@ -53,16 +53,16 @@ function end(mode, type, selection) {
 				qm.dispose();
 				return;
 			}
-			
+
 			qm.gainItem(1142132, true);
 			qm.changeJobById(2112);
-			
-			
+
+
 			qm.teachSkill(21121000, 0, 10, -1);
 			qm.teachSkill(21120001, 0, 10, -1);
 			qm.teachSkill(21121003, 0, 10, -1);
 			qm.teachSkill(21120002, 0, 10, -1);
-			
+
 			qm.completeQuest();
 		}
 		qm.sendNext("Your skills have been restored. Those skills have been dormant for so long that you'll have to re-train yourself, but you'll be as good as new once you complete your training.");
@@ -72,7 +72,7 @@ function end(mode, type, selection) {
 function spawnMob(x, y, id, map) {
 	if(map.getMonsterById(id) != null)
 		return;
-		
+
 	var mob = MapleLifeFactory.getMonster(id);
 	map.spawnMonsterOnGroudBelow(mob, new java.awt.Point(x, y));
 }
