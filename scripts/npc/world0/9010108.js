@@ -15,7 +15,7 @@ var quests = [
     34, // snowy area
 	38, // haunted jesters
 	39 // kings defeat
-
+];
 var available = [];
 var in_progress = [];
 var completed = [];

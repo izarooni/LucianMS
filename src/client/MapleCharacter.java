@@ -38,7 +38,6 @@ import com.lucianms.io.scripting.Achievements;
 import com.lucianms.io.scripting.event.EventInstanceManager;
 import com.lucianms.scheduler.Task;
 import com.lucianms.scheduler.TaskExecutor;
-import com.lucianms.server.events.channel.ChangeMapEvent;
 import com.lucianms.server.pqs.carnival.MCarnivalPacket;
 import constants.ExpTable;
 import constants.GameConstants;
@@ -1480,7 +1479,11 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
         for (Integer skillId : skills) {
             if (skillId != 0) {
                 Skill skill = SkillFactory.getSkill(skillId);
-                changeSkillLevel(skill, (byte) 0, 10, -1);
+                if (skill != null) {
+                    changeSkillLevel(skill, (byte) 0, 10, -1);
+                } else {
+                    LOGGER.info("Unable to set skill mastery {} for player {}. Does not exist", skillId, getName());
+                }
             }
         }
     }
