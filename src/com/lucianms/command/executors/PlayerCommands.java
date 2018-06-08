@@ -299,14 +299,14 @@ public class PlayerCommands {
         } else if (command.equals("home")) {
             player.saveLocation(SavedLocationType.FREE_MARKET.name());
             player.changeMap(ServerConstants.HOME_MAP);
-            } else if (command.equals("serverinfo")) {
-          player.dropMessage("Version: 83");
-          player.dropMessage("Rates: 8x|2x|2x");
-          player.dropMessage("Owners: Venem");
-          player.dropMessage("Developers: Izarooni / Lucas);
-          player.dropMessage("Home Command: @home");
-          player.dropMessage("Main Website: http://lucianms.com");
-          player.dropMessage("Have Fun and consider to donate for more customs!");
+        } else if (command.equals("serverinfo")) {
+            player.dropMessage("Version: 83");
+            player.dropMessage("Rates: 8x|2x|2x");
+            player.dropMessage("Owners: Venem");
+            player.dropMessage("Developers: izarooni / Lucas");
+            player.dropMessage("Home Command: @home");
+            player.dropMessage("Main Website: http://lucianms.com");
+            player.dropMessage("Have Fun and consider to donate for more customs!");
         } else if (command.equals("online")) {
             for (Channel channel : client.getWorldServer().getChannels()) {
                 StringBuilder sb = new StringBuilder();
@@ -340,7 +340,7 @@ public class PlayerCommands {
             maps.put("ariant",     260000000);
             maps.put("timetemple", 270000000);
             maps.put("ellin",      300000000);
-            maps.put("home",      809);
+            maps.put("home",       809);
             maps.put("arcade",     978);
             // @formatter:on
             if (args.length() == 1) {
@@ -409,7 +409,7 @@ public class PlayerCommands {
                     player.dropMessage("You are now PvPing");
                 }
             }
-            } else if (command.equals("maxskills")) {
+        } else if (command.equals("maxskills")) {
             player.maxSkills();
             player.dropMessage(6, "Your skills are now maxed!");
         } else if (command.equals("rps")) {
