@@ -1,6 +1,8 @@
 package net;
 
 import client.MapleClient;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import tools.data.input.SeekableLittleEndianAccessor;
 
 import java.util.ArrayDeque;
@@ -15,9 +17,17 @@ import java.util.ArrayDeque;
  */
 public abstract class PacketEvent {
 
+    private Logger LOGGER = null;
     private MapleClient client;
     private boolean canceled = false;
     private ArrayDeque<Runnable> posts = new ArrayDeque<>(3);
+
+    public final Logger getLogger() {
+        if (LOGGER == null) {
+            LOGGER = LoggerFactory.getLogger(getClass());
+        }
+        return LOGGER;
+    }
 
     final void setClient(MapleClient client) {
         this.client = client;

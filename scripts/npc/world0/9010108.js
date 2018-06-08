@@ -12,8 +12,9 @@ var quests = [
     27, // beginners luck
     32, // dark cave
     33, // mystery in space
-    34 // snowy area
-  ];
+    34, // snowy area
+	38, // haunted jesters
+	39 // kings defeat
 
 var available = [];
 var in_progress = [];

@@ -562,8 +562,13 @@ public abstract class AbstractDealDamageEvent extends PacketEvent {
                 calcDmgMax = (int) Math.floor(calcDmgMax * (ceffect.getDamage() + 50) / 100 + 0.20 + (comboBuff - 5) * 0.04);
             } else {
                 // Normal Combo
-                MapleStatEffect ceffect = SkillFactory.getSkill(oid).getEffect(player.getSkillLevel(oid));
-                calcDmgMax = (int) Math.floor(calcDmgMax * (ceffect.getDamage() + 50) / 100 + Math.floor((comboBuff - 1) * (player.getSkillLevel(oid) / 6)) / 100);
+                int skillLevel = player.getSkillLevel(oid);
+                if (skillLevel > 0) {
+                    MapleStatEffect ceffect = SkillFactory.getSkill(oid).getEffect(skillLevel);
+                    calcDmgMax = (int) Math.floor(calcDmgMax * (ceffect.getDamage() + 50) / 100 + Math.floor((comboBuff - 1) * (skillLevel / 6)) / 100);
+                } else {
+                    getLogger().info("Invalid skill level {} for skill {}", skillLevel, oid);
+                }
             }
 
             if (GameConstants.isFinisherSkill(ret.skill)) {
