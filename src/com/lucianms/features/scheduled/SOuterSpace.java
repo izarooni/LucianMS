@@ -114,6 +114,7 @@ public class SOuterSpace extends SAutoEvent {
                     @Override
                     public void run() {
                         eventMap.killMonster(monster.getId());
+                        setOpen(false);
                     }
                 }, 1000 * 60 * 5);
             } else {
