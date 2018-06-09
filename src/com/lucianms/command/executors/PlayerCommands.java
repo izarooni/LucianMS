@@ -55,6 +55,9 @@ public class PlayerCommands {
             commands.add("@dispose - Dispose yourself (if you can't interact with npcs, etc) ");
             commands.add("@achievements - Shows your current achievements");
             commands.add("@home - go to the home grounds");
+            commands.add("@reborne - reborn into an Explorer");
+            commands.add("@rebornc - reborn into an Cygnus");
+            commands.add("@reborna - reborn into an Aran");
             commands.add("@online - Show whoever is online");
             commands.add("@go <town|list> - warps you to a town or shows you a list of warpable towns");
             commands.add("@style - open the styling npc");
@@ -289,6 +292,28 @@ public class PlayerCommands {
             } else {
                 player.dropMessage("There is not auto event going on right now");
             }
+            } else if (command.equals("reborne")) || (command.equals("rebirthe"))) {
+          if (player.getLevel() >= 200) {
+            player.doReborn();
+            player.saveToDB(true);
+          } else {
+            player.dropMessage("You must be at least level 200.");
+          }
+        
+        } else if (command.equals("rebornc")) || (command.equals("rebirthc"))) {
+          if (player.getLevel() >= 200) {
+            player.doReborn1();
+            player.saveToDB(true);
+          } else {
+            player.dropMessage("You must be at least level 200.");
+          }
+            } else if (command.equals("reborna")) || (command.equals("rebirtha"))) {
+          if (player.getLevel() >= 200) {
+            player.doReborn2();
+            player.saveToDB(true);
+          } else {
+            player.dropMessage("You must be at least level 200.");
+          }
         } else if (command.equals("dispose")) {
             NPCScriptManager.dispose(client);
             player.announce(MaplePacketCreator.enableActions());
@@ -412,6 +437,11 @@ public class PlayerCommands {
         } else if (command.equals("maxskills")) {
             player.maxSkills();
             player.dropMessage(6, "Your skills are now maxed!");
+             } else if (command.equals("reborn")) || (command.equals("rebirth"))) {
+          player.dropMessage("How to Reborn ~ 1. Get to Level 200");
+          player.dropMessage("- @rebirthe/reborne = Reborns you into Explorer ~");
+          player.dropMessage("- @rebirthc/rebornc = Reborns you into Cygnus ~");
+          player.dropMessage("- @rebirtha/reborna = Reborns to Aran ~");
         } else if (command.equals("rps")) {
             RockPaperScissorsEvent.startGame(player);
             player.dropMessage(6, "Let's play some rock paper scissors!");
