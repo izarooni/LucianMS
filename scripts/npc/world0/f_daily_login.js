@@ -1,15 +1,18 @@
 load('scripts/util_imports.js');
-var TimeUnit = Java.type("java.util.concurrent.TimeUnit");
-var Calendar = Java.type("java.util.Calendar");
+const TimeUnit = Java.type("java.util.concurrent.TimeUnit");
+const Calendar = Java.type("java.util.Calendar");
+const now = Date.now();
 /* izarooni */
 let status = 0;
 let streak = null;
 let ttd = null;
+let show = true;
 
-let ps = Database.getConnection().prepareStatement("select daily_login, login_streak from accounts where id = ?");
+let ps = Database.getConnection().prepareStatement("select daily_login, daily_showable, login_streak from accounts where id = ?");
 ps.setInt(1, client.getAccID());
 let rs = ps.executeQuery();
 if (rs.next()) {
+    show = rs.getBoolean("daily_showable");
     let timestamp = rs.getTimestamp("daily_login");
     streak = rs.getInt("login_streak");
     if (timestamp != null) {
@@ -30,10 +33,10 @@ function action(mode, type, selection) {
     } else {
         status++;
     }
-    if (status == 1) {
+    if (status === 1) {
         if (ttd != null) {
-            var now = Date.now();
             if (now >= ttd) { // it's been at least 24 hours since last login
+                setShowable(true);
                 if (now - ttd >= TimeUnit.DAYS.toMillis(1)) { // been 2+ days since login
                     cm.sendNext("Aw man, your " + streak + " daily login streak has been crushed!\r\nSadly, it has been over #b" + TimeUnit.MILLISECONDS.toDays(now - ttd) + " days#k since your last login.\r\nYou'll have to start over now...", 1);
                     recordStreak(1);
@@ -43,22 +46,43 @@ function action(mode, type, selection) {
                     cm.sendNext("#eLogin Streak: #b" + (streak + 1) + "#k#n\r\nThanks for playing, remember to vote for us~\r\nHave a nice day!", 1);
                 }
             } else {
-                cm.sendOk("You're currently on a #b" + streak + "#k day login streak!\r\nYour next attendance is in #b" + StringUtil.getTimeElapse(ttd - now));
-                cm.dispose();
+                if (show) {
+                    cm.sendSimple("You're currently on a #b" + streak + "#k day login streak!\r\nYour next attendance is in #b" + StringUtil.getTimeElapse(ttd - now) + "\r\n\r\n#L0##bDon't show again for today#l");
+                } else {
+                    cm.dispose();
+                }
             }
         } else {
             cm.sendNext("This is your first daily login reward ever!\r\nBe sure to come back in 24 hours to claim tomorrow's prize~", 1);
         }
-    } else if (status == 2) {
-        if (giveReward(streak)) {
-            cm.sendOk("Here is your reward for your #b" + streak + aaa(streak) + "#k daily login reward!");
-            streak += 1;
-            recordStreak(streak);
+    } else if (status === 2) {
+        if (now < ttd) {
+            setShowable(false);
+            cm.sendOk("Don't forget to login tomorrow~");
+            cm.dispose();
         } else {
-            cm.sendOk("Please make sure you have room in your inventory before claiming your reward");
+            if (giveReward(streak)) {
+                cm.sendSimple("Here is your reward for your #b" + streak + aaa(streak) + "#k daily login reward!\r\n\r\n#L0##bDon't show again for today#l");
+                streak += 1;
+                recordStreak(streak);
+            } else {
+                cm.sendOk("Please make sure you have room in your inventory before claiming your reward");
+                cm.dispose();
+            }
         }
-        cm.dispose();
+    } else if (status === 3 && selection === 0) {
+        status = 1;
+        ttd = Date.now() + 1; // doesn't matter just make it later than execution time
+        action(1, 0 , 0);
     }
+}
+
+function setShowable(b) {
+    let ps = Database.getConnection().prepareStatement("update accounts set daily_showable = ? where id = ?");
+    ps.setBoolean(1, b);
+    ps.setInt(2, player.getAccountID());
+    ps.executeUpdate();
+    ps.close();
 }
 
 function recordStreak(streak) {
@@ -71,7 +95,7 @@ function recordStreak(streak) {
 }
 
 function aaa(streak) {
-    var sw = (streak % 10);
+    let sw = (streak % 10);
     switch (sw) {
         default: return "th";
         case 1: return "st";
