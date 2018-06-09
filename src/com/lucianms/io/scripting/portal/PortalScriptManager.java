@@ -3,9 +3,9 @@ package com.lucianms.io.scripting.portal;
 import client.MapleCharacter;
 import client.MapleClient;
 import client.SpamTracker;
+import com.lucianms.io.scripting.ScriptUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import com.lucianms.io.scripting.ScriptUtil;
 import server.MaplePortal;
 
 import javax.script.Invocable;
@@ -36,7 +36,7 @@ public class PortalScriptManager {
             return scripts.put(script, iv);
         } catch (FileNotFoundException e) {
             LOGGER.warn("No portal script found '{}'", script);
-        } catch (NullPointerException e) {
+        } catch (Exception e) {
             LOGGER.warn("Unable to execute script '{}' in map '{}'", script, client.getPlayer().getMapId(), e);
         }
         return null;
@@ -60,7 +60,7 @@ public class PortalScriptManager {
             if (iv != null) {
                 return (boolean) iv.invokeFunction("enter", new PortalPlayerInteraction(client, portal));
             }
-        } catch (IOException | ScriptException | NoSuchMethodException e) {
+        } catch (Exception e) {
             LOGGER.info("Unable to invoke function 'enter' in script Name: {}, ID: {}, Map: {}", portal.getScriptName(), portal.getId(), player.getMapId(), e);
         }
         return false;

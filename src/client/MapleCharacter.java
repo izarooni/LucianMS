@@ -38,7 +38,6 @@ import com.lucianms.io.scripting.Achievements;
 import com.lucianms.io.scripting.event.EventInstanceManager;
 import com.lucianms.scheduler.Task;
 import com.lucianms.scheduler.TaskExecutor;
-import com.lucianms.server.events.channel.ChangeMapEvent;
 import com.lucianms.server.pqs.carnival.MCarnivalPacket;
 import constants.ExpTable;
 import constants.GameConstants;
@@ -78,6 +77,7 @@ import java.sql.*;
 import java.util.*;
 import java.util.List;
 import java.util.Map.Entry;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.regex.Pattern;
 
@@ -226,8 +226,8 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
     private MapleSkinColor skinColor = MapleSkinColor.NORMAL;
     private SavedLocation[] savedLocations = new SavedLocation[SavedLocationType.values().length];
 
-    private Set<MapleMonster> controlled = new LinkedHashSet<>();
-    private Set<MapleMapObject> visibleMapObjects = new LinkedHashSet<>();
+    private LinkedHashSet<MapleMonster> controlled = new LinkedHashSet<>();
+    private ConcurrentHashMap<Integer, MapleMapObject> visibleMapObjects = new ConcurrentHashMap<>();
 
     private EnumMap<MapleDisease, DiseaseValueHolder> diseases = new EnumMap<>(MapleDisease.class);
     private EnumMap<MapleBuffStat, MapleBuffStatValueHolder> effects = new EnumMap<>(MapleBuffStat.class);
@@ -1107,7 +1107,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
     }
 
     public void addVisibleMapObject(MapleMapObject mo) {
-        visibleMapObjects.add(mo);
+        visibleMapObjects.putIfAbsent(mo.getObjectId(), mo);
     }
 
     public void ban(String reason) {
@@ -1832,10 +1832,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
                     effectsToCancel.add(mbsvh);
                 }
                 if (stat == MapleBuffStat.RECOVERY) {
-                    if (recoveryTask != null) {
-                        recoveryTask.cancel();
-                        recoveryTask = null;
-                    }
+                    recoveryTask = TaskExecutor.cancelTask(recoveryTask);
                 } else if (stat == MapleBuffStat.SUMMON || stat == MapleBuffStat.PUPPET) {
                     int summonId = mbsvh.effect.getSourceId();
                     MapleSummon summon = summons.get(summonId);
@@ -1845,27 +1842,20 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
                         removeVisibleMapObject(summon);
                         summons.remove(summonId);
                         if (summon.getSkill() == DarkKnight.BEHOLDER) {
-                            if (beholderHealingTask != null) {
-                                beholderHealingTask.cancel();
-                                beholderHealingTask = null;
-                            }
-                            if (beholderBuffTask != null) {
-                                beholderBuffTask.cancel();
-                                beholderBuffTask = null;
-                            }
+                            beholderBuffTask = TaskExecutor.cancelTask(beholderBuffTask);
+                            beholderHealingTask = TaskExecutor.cancelTask(beholderHealingTask);
                         }
                     }
                 } else if (stat == MapleBuffStat.DRAGONBLOOD) {
-                    dragonBloodTask.cancel();
-                    dragonBloodTask = null;
+                    dragonBloodTask = TaskExecutor.cancelTask(dragonBloodTask);
                 }
             }
         }
-        for (MapleBuffStatValueHolder cancelEffectCancelTasks : effectsToCancel) {
-            if (cancelEffectCancelTasks.task != null) {
-                cancelEffectCancelTasks.task.cancel();
-                cancelEffectCancelTasks.task = null;
-                cancelEffect(cancelEffectCancelTasks.effect, false, -1);
+        for (MapleBuffStatValueHolder buffHolder : effectsToCancel) {
+            if (buffHolder.task != null) {
+                buffHolder.task.cancel();
+                buffHolder.task = null;
+                cancelEffect(buffHolder.effect, false, -1);
             }
         }
     }
@@ -3209,7 +3199,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
     }
 
     public Collection<MapleMapObject> getVisibleMapObjects() {
-        return Collections.unmodifiableCollection(visibleMapObjects);
+        return new ArrayList<>(visibleMapObjects.values());
     }
 
     public int getWorld() {
@@ -3393,7 +3383,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
     }
 
     public boolean isMapObjectVisible(MapleMapObject mo) {
-        return visibleMapObjects.contains(mo);
+        return visibleMapObjects.containsKey(mo.getObjectId());
     }
 
     public boolean isPartyLeader() {
@@ -3402,14 +3392,15 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
 
     public void leaveMap() {
         controlled.clear();
+        controlled = new LinkedHashSet<>();
+
         visibleMapObjects.clear();
+        visibleMapObjects = new ConcurrentHashMap<>();
+
         if (chair != 0) {
             chair = 0;
         }
-        if (hpDecreaseTask != null) {
-            hpDecreaseTask.cancel();
-            hpDecreaseTask = null;
-        }
+        hpDecreaseTask = TaskExecutor.cancelTask(hpDecreaseTask);
     }
 
     public void levelUp(boolean takeexp) {
