@@ -76,6 +76,15 @@ public class EventCommands {
                         }
                         return true;
                     }
+                    case "help": {
+                        player.dropMessage("!event name <name> - Set the name of the event");
+                        player.dropMessage("!event sp - Set the spawn point of the event");
+                        player.dropMessage("!event gate <time (seconds)> - Set the delay before the gate automatically closes");
+                        player.dropMessage("!event cancel - Reset the event. Mainly used if you decide to not host an event");
+                        player.dropMessage("!event winners <add/remove> <usernames> - Add or remove winners from the list of winners");
+                        player.dropMessage("!event winners view - View all current winners and their points");
+                        return true;
+                    }
                 }
                 if (playerEvent != null) {
                     String action = args.get(0).toLowerCase();
@@ -88,24 +97,10 @@ public class EventCommands {
                             player.dropMessage("Event active: " + playerEvent.isOpen());
                             break;
                         }
-                        case "help": {
-                            player.dropMessage("!event name <name> - Set the name of the event");
-                            player.dropMessage("!event sp - Set the spawn point of the event");
-                            player.dropMessage("!event gate <time (seconds)> - Set the delay before the gate automatically closes");
-                            player.dropMessage("!event cancel - Reset the event. Mainly used if you decide to not host an event");
-                            player.dropMessage("!event winners <add/remove> <usernames> - Add or remove winners from the list of winners");
-                            player.dropMessage("!event winners view - View all current winners and their points");
-                            break;
-                        }
                         case "start": {
                             playerEvent.openGates(playerEvent.getGateTime(), 90, 75, 60, 30, 15, 5, 3, 2, 1);
                             String eventName = (playerEvent.getName() == null) ? "event" : playerEvent.getName();
                             playerEvent.broadcastMessage(String.format("%s is hosting a(n) %s in channel %d, use @joinevent to join!", player.getName(), eventName, playerEvent.getChannel().getId()));
-
-                            String message = String.format("%s is hosting a(n) %s in channel %d", player.getName(), eventName, playerEvent.getChannel().getId());
-                            if (playerEvent.getGateTime() > 0) {
-                                message += " and the gate will close in " + playerEvent.getGateTime() + " seconds";
-                            }
                             break;
                         }
                         case "name": {
