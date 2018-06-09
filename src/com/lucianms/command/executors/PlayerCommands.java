@@ -114,6 +114,7 @@ public class PlayerCommands {
             player.sendMessage("Event Points" + StringUtil.formatNumber(target.getEventPoints()));
             player.sendMessage("Donor Points: {}", StringUtil.formatNumber(client.getDonationPoints()));
             player.sendMessage("Vote points: {}", StringUtil.formatNumber(client.getVotePoints()));
+            player.dropMessage("Rebirths: " + player.getReborns()));
         } else if (command.matches("^reset(stats|str|dex|int|luk)$")) {
             String statName = command.getName().substring(5);
 
