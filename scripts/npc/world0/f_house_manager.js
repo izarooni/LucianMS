@@ -1,4 +1,4 @@
-const HouseManager = Java.type("server.world.HouseManager");
+const HouseManager = Java.type("com.lucianms.helpers.HouseManager");
 const MapleCharacter = Java.type("client.MapleCharacter");
 const StringUtil = Java.type("tools.StringUtil");
 
