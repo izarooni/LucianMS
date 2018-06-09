@@ -1,7 +1,7 @@
 load("scripts/util_party.js");
 /* izarooni */
 var status = 0;
-var destination = 10000;
+var destination = 85;
 var membersMimum = 2;
 
 function action(mode, type, selection) {
@@ -12,7 +12,7 @@ function action(mode, type, selection) {
         status++;
     }
     if (status == 1) {
-        cm.sendSimple("Do you think you're strong enough  to battle against Kaneki? You will need a party of at least #b" + membersMimum + " members#k to attempt this battle.\r\n#b#L0#I want to enter#l\r\n#L1#Tell more more about Kaneki#l");
+        cm.sendSimple("Do you think you're strong enough to battle against Kaneki? You will need a party of at least #b" + membersMimum + " members#k to attempt this battle.\r\n#b#L0#I want to enter#l\r\n#L1#Tell more more about Kaneki#l");
     } else if (status == 2) {
         if (selection == 0) {
             if (partyExists() && partySize() >= membersMimum) {
