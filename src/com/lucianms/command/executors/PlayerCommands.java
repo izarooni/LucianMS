@@ -328,7 +328,7 @@ public class PlayerCommands {
             player.changeMap(ServerConstants.HOME_MAP);
         } else if (command.equals("serverinfo")) {
             player.dropMessage("Version: 83");
-            player.dropMessage("Rates: 150x|2x|2x");
+            player.dropMessage("Rates: 100x|2x|2x");
             player.dropMessage("Owners: Venem");
             player.dropMessage("Developers: izarooni / Lucas");
             player.dropMessage("Staff: Kill / Truce / Luckedy / Jackie / Fluke");
