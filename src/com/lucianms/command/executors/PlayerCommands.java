@@ -66,6 +66,7 @@ public class PlayerCommands {
             commands.add("@report <bug> - report a bug, give as much detail as possible.");
             commands.add("@rps - Start a game of rock paper scissors vs a bot");
             commands.add("@arcade - Warp to the arcade map");
+            commands.add("@update - display latest WZ revision");
             commands.add("@reset<str/dex/int/luk/stats> - Reset assigned AP");
             commands.add("@<str/dex/int/luk> - Assign any available AP to a specified stat");
             commands.add("@checkme - Check your stats");
@@ -327,12 +328,17 @@ public class PlayerCommands {
             player.changeMap(ServerConstants.HOME_MAP);
         } else if (command.equals("serverinfo")) {
             player.dropMessage("Version: 83");
-            player.dropMessage("Rates: 8x|2x|2x");
+            player.dropMessage("Rates: 150x|2x|2x");
             player.dropMessage("Owners: Venem");
             player.dropMessage("Developers: izarooni / Lucas");
+            player.dropMessage("Staff: Kill / Truce / Luckedy / Jackie / Fluke");
             player.dropMessage("Home Command: @home");
             player.dropMessage("Main Website: http://lucianms.com");
+            player.dropMessage("Voting resets every 24th hours!");
             player.dropMessage("Have Fun and consider to donate for more customs!");
+             } else if (command.equals("update")) {
+            player.dropMessage("Last Server WZ revision: 10-06-18");
+            player.dropMessage("New customs added the 1st of every 2nd month!");
         } else if (command.equals("online")) {
             for (Channel channel : client.getWorldServer().getChannels()) {
                 StringBuilder sb = new StringBuilder();
