@@ -121,7 +121,6 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
     private int slots = 0;
     private int energybar;
     private int gmLevel;
-    private int reborns;
     private int ci = 0;
     private int familyId;
     private int bookCover;
@@ -2115,90 +2114,6 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
         client.announce(MaplePacketCreator.modifyInventory(true, mods));
     }
  
- public void doReborn() {
-    setReborns(getReborns() + 1);
-    List reborn = new ArrayList(4);
-    setLevel(1);
-    setExp(0);
-    setJob(MapleJob.BEGINNER);
-    updateSingleStat(MapleStat.LEVEL, 1);
-    updateSingleStat(MapleStat.JOB, 0);
-    updateSingleStat(MapleStat.EXP, 0);
-    if (getReborns() == 0) {
-      client.getSession().write(MaplePacketCreator.serverNotice(6, "[LucianMS Message Board]: Congratulations To " + getName() + " On " + getGenderString() + " 1st Rebirth!"));
-    } else if (getReborns() == 1) {
-      client.getSession().write(MaplePacketCreator.serverNotice(6, "[LucianMS Message Board]: Congratulations To " + getName() + " On " + getGenderString() + " 10th Rebirth!"));
-    } else if (getReborns() == 10) {
-      client.getSession().write(MaplePacketCreator.serverNotice(6, "[LucianMS Message Board]: Congratulations To " + getName() + " On " + getGenderString() + " 25th Rebirth!"));
-    } else if (getReborns() == 25) {
-      client.getSession().write(MaplePacketCreator.serverNotice(6, "[LucianMS Message Board]: Congratulations To " + getName() + " On " + getGenderString() + " 50th Rebirth!"));
-    } else if (getReborns() == 50) {
-      client.getSession().write(MaplePacketCreator.serverNotice(6, "[LucianMS Message Board]: Congratulations To " + getName() + " On " + getGenderString() + " 100th Rebirth!"));
-    } else if (getReborns() == 100) {
-      client.getSession().write(MaplePacketCreator.serverNotice(6, "[LucianMS Message Board]: Congratulations To " + getName() + " On " + getGenderString() + " 200th Rebirth!"));
-    } else if (getReborns() == 200) {
-      client.getSession().write(MaplePacketCreator.serverNotice(6, "[LucianMS Message Board]: Congratulations To " + getName() + " On " + getGenderString() + " 5001th Rebirth!"));
-    } else if (getReborns() == 500) {
-      client.getSession().write(MaplePacketCreator.serverNotice(6, "[LucianMS Message Board]: Congratulations To " + getName() + " On " + getGenderString() + " 1000th Rebirth!"));
-    }
-  }
-
-  public void doReborn1() {
-    setReborns(getReborns() + 1);
-    List reborn = new ArrayList(4);
-    setLevel(1);
-    setExp(0);
-    setJob(MapleJob.NOBLESSE);
-    updateSingleStat(MapleStat.LEVEL, 1);
-    updateSingleStat(MapleStat.JOB, 1000);
-    updateSingleStat(MapleStat.EXP, 0);
-    if (getReborns() == 1) {
-      client.getSession().write(MaplePacketCreator.serverNotice(6, "[LucianMS Message Board]: Congratulations To " + getName() + " On " + getGenderString() + " 1st Rebirth!"));
-    } else if (getReborns() == 1) {
-      client.getSession().write(MaplePacketCreator.serverNotice(6, "[LucianMS Message Board]: Congratulations To " + getName() + " On " + getGenderString() + " 10th Rebirth!"));
-    } else if (getReborns() == 10) {
-      client.getSession().write(MaplePacketCreator.serverNotice(6, "[LucianMS Message Board]: Congratulations To " + getName() + " On " + getGenderString() + " 25th Rebirth!"));
-    } else if (getReborns() == 25) {
-      client.getSession().write(MaplePacketCreator.serverNotice(6, "[LucianMS Message Board]: Congratulations To " + getName() + " On " + getGenderString() + " 50th Rebirth!"));
-    } else if (getReborns() == 50) {
-      client.getSession().write(MaplePacketCreator.serverNotice(6, "[LucianMS Message Board]: Congratulations To " + getName() + " On " + getGenderString() + " 100th Rebirth!"));
-    } else if (getReborns() == 100) {
-      client.getSession().write(MaplePacketCreator.serverNotice(6, "[LucianMS Message Board]: Congratulations To " + getName() + " On " + getGenderString() + " 200th Rebirth!"));
-    } else if (getReborns() == 200) {
-      client.getSession().write(MaplePacketCreator.serverNotice(6, "[LucianMS Message Board]: Congratulations To " + getName() + " On " + getGenderString() + " 500th Rebirth!"));
-    } else if (getReborns() == 500) {
-      client.getSession().write(MaplePacketCreator.serverNotice(6, "[LucianMS Message Board]: Congratulations To " + getName() + " On " + getGenderString() + " 1000th Rebirth!"));
-    }
-  }
-
-  public void doReborn2() {
-    setReborns(getReborns() + 1);
-    List reborn = new ArrayList(4);
-    setLevel(1);
-    setExp(0);
-    setJob(MapleJob.LEGEND);
-    updateSingleStat(MapleStat.LEVEL, 1);
-    updateSingleStat(MapleStat.JOB, 2000);
-    updateSingleStat(MapleStat.EXP, 0);
-    if (getReborns() == 1) {
-      client.getSession().write(MaplePacketCreator.serverNotice(6, "[LucianMS Message Board]: Congratulations To " + getName() + " On " + getGenderString() + " 1st Rebirth!"));
-    } else if (getReborns() == 1) {
-      client.getSession().write(MaplePacketCreator.serverNotice(6, "[LucianMS Message Board]: Congratulations To " + getName() + " On " + getGenderString() + " 10th Rebirth!"));
-    } else if (getReborns() == 10) {
-      client.getSession().write(MaplePacketCreator.serverNotice(6, "[LucianMS Message Board]: Congratulations To " + getName() + " On " + getGenderString() + " 25th Rebirth!"));
-    } else if (getReborns() == 25) {
-      client.getSession().write(MaplePacketCreator.serverNotice(6, "[LucianMS Message Board]: Congratulations To " + getName() + " On " + getGenderString() + " 50th Rebirth!"));
-    } else if (getReborns() == 50) {
-      client.getSession().write(MaplePacketCreator.serverNotice(6, "[LucianMS Message Board]: Congratulations To " + getName() + " On " + getGenderString() + " 10th Rebirth!"));
-    } else if (getReborns() == 100) {
-      client.getSession().write(MaplePacketCreator.serverNotice(6, "[LucianMS Message Board]: Congratulations To " + getName() + " On " + getGenderString() + " 200th Rebirth!"));
-    } else if (getReborns() == 200) {
-      client.getSession().write(MaplePacketCreator.serverNotice(6, "[LucianMS Message Board]: Congratulations To " + getName() + " On " + getGenderString() + " 500th Rebirth!"));
-    } else if (getReborns() == 500) {
-      client.getSession().write(MaplePacketCreator.serverNotice(6, "[LucianMS Message Board]: Congratulations To " + getName() + " On " + getGenderString() + " 1000th Rebirth!"));
-    }
-  }
-
     public void gainGachaExp() {
         int expgain = 0;
         int currentgexp = gachaexp.get();
@@ -4588,14 +4503,6 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
     public void sendKeymap() {
         client.announce(MaplePacketCreator.getKeymap(keymap));
     }
- 
- public int getReborns() {
-        return reborns;
-    }
-
-    public void setReborns(int reborn) {
-        reborns = reborn;
-    }
 
     public void sendMacros() {
         // Always send the macro packet to fix a client side bug when switching characters.
@@ -5552,8 +5459,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
         job = MapleJob.BEGINNER;
         updateSingleStat(MapleStat.JOB, job.getId());
 
-        level = 10;
-        updateSingleStat(MapleStat.LEVEL, 10);
+        level = 1;
 
         exp.set(0);
         updateSingleStat(MapleStat.EXP, 0);

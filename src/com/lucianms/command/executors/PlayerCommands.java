@@ -43,6 +43,7 @@ public class PlayerCommands {
         Channel ch = client.getChannelServer();
 
         if (command.equals("help", "commands")) {
+            boolean npc = args.length() == 1 && args.get(0).equals("npc");
             ArrayList<String> commands = new ArrayList<>();
             commands.add("@help - to see what commands there are");
             commands.add("@commands - another way to see the commands");
@@ -80,8 +81,16 @@ public class PlayerCommands {
             commands.add("@time - Display the current server time");
             commands.add("@house - Display the house manager NPC");
             commands.add("@jobs - Display a list of job modifications");
+            commands.add("@rebirth - Reset your player level to earn more AP");
             commands.sort(String::compareTo);
-            commands.forEach(player::dropMessage);
+            if (npc) {
+                StringBuilder sb = new StringBuilder();
+                commands.forEach(s -> sb.append("\r\n").append(s));
+                client.announce(MaplePacketCreator.getNPCTalk(2007, (byte) 0, sb.toString(), "00 00", (byte) 0));
+            } else {
+                commands.forEach(player::dropMessage);
+                player.dropMessage("If you'd like to view this list in an NPC window, use the command < @help npc >");
+            }
             commands.clear();
         } else if (command.equals("house")) {
             NPCScriptManager.start(client, 2007, "f_house_manager");
@@ -105,6 +114,7 @@ public class PlayerCommands {
             }
             player.sendMessage("================ '{}''s Stats ================", target.getName());
             player.sendMessage("EXP {}x, MESO {}x, DROP {}x", player.getExpRate(), player.getMesoRate(), player.getDropRate());
+            player.sendMessage("Rebirths: {}", player.getRebirths());
             player.sendMessage("Mesos: {}", StringUtil.formatNumber(target.getMeso()));
             player.sendMessage("Ability Power: {}", StringUtil.formatNumber(target.getRemainingAp()));
             player.sendMessage("Hair / Face: {} / {}", target.getHair(), target.getFace());
@@ -115,7 +125,6 @@ public class PlayerCommands {
             player.sendMessage("Event Points" + StringUtil.formatNumber(target.getEventPoints()));
             player.sendMessage("Donor Points: {}", StringUtil.formatNumber(client.getDonationPoints()));
             player.sendMessage("Vote points: {}", StringUtil.formatNumber(client.getVotePoints()));
-            player.sendMessage("Rebirths: " + player.getReborns()));
         } else if (command.matches("^reset(stats|str|dex|int|luk)$")) {
             String statName = command.getName().substring(5);
 
@@ -294,28 +303,13 @@ public class PlayerCommands {
             } else {
                 player.dropMessage("There is not auto event going on right now");
             }
-            } else if (command.equals("reborne")) || (command.equals("rebirthe"))) {
-          if (player.getLevel() >= 200) {
-            player.doReborn();
-            player.saveToDB(true);
-          } else {
-            player.dropMessage("You must be at least level 200.");
-          }
-        
-        } else if (command.equals("rebornc")) || (command.equals("rebirthc"))) {
-          if (player.getLevel() >= 200) {
-            player.doReborn1();
-            player.saveToDB(true);
-          } else {
-            player.dropMessage("You must be at least level 200.");
-          }
-            } else if (command.equals("reborna")) || (command.equals("rebirtha"))) {
-          if (player.getLevel() >= 200) {
-            player.doReborn2();
-            player.saveToDB(true);
-          } else {
-            player.dropMessage("You must be at least level 200.");
-          }
+        } else if (command.equals("rebirth")) {
+            if (player.getLevel() >= player.getMaxLevel()) {
+                player.doRebirth();
+                player.sendMessage("You now have {} rebirths!", player.getRebirths());
+            } else {
+                player.sendMessage("You must be at least level {} before you can rebirth", player.getMaxLevel());
+            }
         } else if (command.equals("dispose")) {
             NPCScriptManager.dispose(client);
             player.announce(MaplePacketCreator.enableActions());
@@ -327,8 +321,9 @@ public class PlayerCommands {
             player.saveLocation(SavedLocationType.FREE_MARKET.name());
             player.changeMap(ServerConstants.HOME_MAP);
         } else if (command.equals("serverinfo")) {
+            // why is this a command, seriously?
             player.dropMessage("Version: 83");
-            player.dropMessage("Rates: 100x|2x|2x");
+            player.dropMessage("Rates: 100x | 2x | 2x");
             player.dropMessage("Owners: Venem");
             player.dropMessage("Developers: izarooni / Lucas");
             player.dropMessage("Staff: Kill / Truce / Luckedy / Jackie / Fluke");
@@ -336,7 +331,7 @@ public class PlayerCommands {
             player.dropMessage("Main Website: http://lucianms.com");
             player.dropMessage("Voting resets every 24th hours!");
             player.dropMessage("Have Fun and consider to donate for more customs!");
-             } else if (command.equals("update")) {
+        } else if (command.equals("update")) {
             player.dropMessage("Last Server WZ revision: 10-06-18");
             player.dropMessage("New customs added the 1st of every 2nd month!");
         } else if (command.equals("online")) {
@@ -444,11 +439,6 @@ public class PlayerCommands {
         } else if (command.equals("maxskills")) {
             player.maxSkills();
             player.dropMessage(6, "Your skills are now maxed!");
-             } else if (command.equals("reborn")) || (command.equals("rebirth"))) {
-          player.dropMessage("How to Reborn ~ 1. Get to Level 200");
-          player.dropMessage("- @rebirthe/reborne = Reborns you into Explorer ~");
-          player.dropMessage("- @rebirthc/rebornc = Reborns you into Cygnus ~");
-          player.dropMessage("- @rebirtha/reborna = Reborns to Aran ~");
         } else if (command.equals("rps")) {
             RockPaperScissorsEvent.startGame(player);
             player.dropMessage(6, "Let's play some rock paper scissors!");
