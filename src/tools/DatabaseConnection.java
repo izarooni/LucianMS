@@ -1,10 +1,12 @@
 package tools;
 
 import com.lucianms.io.Config;
+import net.server.Server;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.sql.*;
+import java.util.Optional;
 
 /**
  * @author Frz (Big Daddy)
@@ -13,6 +15,7 @@ import java.sql.*;
 public class DatabaseConnection {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(DatabaseConnection.class);
+
     private static ThreadLocal<Connection> lConnection = null;
     private static long timeout = 28000;
     private static volatile long lastUse = System.currentTimeMillis();
@@ -47,7 +50,8 @@ public class DatabaseConnection {
         Connection c = lConnection.get();
         try {
             if (c.isClosed()) {
-                lConnection.remove();
+                // re initialize the database connection?
+                lConnection = new ThreadLocalConnection(null);
                 return getConnection();
             }
             c.getMetaData();
@@ -60,16 +64,20 @@ public class DatabaseConnection {
 
     private static class ThreadLocalConnection extends ThreadLocal<Connection> {
 
-        private final Config config;
+        private final String URL;
+        private final String username, password;
 
-        public ThreadLocalConnection(Config config) {
-            this.config = config;
+        private ThreadLocalConnection(Config config) {
+            Config c = Optional.ofNullable(config).orElse(Server.getInstance().getConfig());
+            URL = c.getString("DatabaseURL");
+            username = c.getString("DatabaseUsername");
+            password = c.getString("DatabasePassword");
         }
 
         @Override
         protected Connection initialValue() {
             try {
-                return DriverManager.getConnection(config.getString("DatabaseURL"), config.getString("DatabaseUsername"), config.getString("DatabasePassword"));
+                return DriverManager.getConnection(URL, username, password);
             } catch (SQLException e) {
                 LOGGER.error("Unable to establish database connection", e);
                 e.printStackTrace();
