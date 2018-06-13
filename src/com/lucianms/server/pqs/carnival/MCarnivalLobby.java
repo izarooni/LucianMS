@@ -119,6 +119,7 @@ public class MCarnivalLobby {
                 break;
             }
             case Waiting: {
+                waitingTask = TaskExecutor.cancelTask(waitingTask);
                 broadcastPacket(MaplePacketCreator.getClock(300));
                 waitingTask = TaskExecutor.createTask(() -> setState(State.Available), 60000 * 5); // 5 minutes
                 break;
