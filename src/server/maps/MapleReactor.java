@@ -24,10 +24,10 @@ package server.maps;
 import client.MapleCharacter;
 import client.MapleClient;
 import client.status.MonsterStatus;
+import com.lucianms.io.scripting.reactor.ReactorScriptManager;
+import com.lucianms.scheduler.TaskExecutor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import com.lucianms.scheduler.TaskExecutor;
-import com.lucianms.io.scripting.reactor.ReactorScriptManager;
 import server.life.MapleLifeFactory;
 import server.life.MapleMonster;
 import server.life.MobSkill;
@@ -50,11 +50,12 @@ public class MapleReactor extends AbstractMapleMapObject {
     private String name;
     private int id;
     private int delay;
-    private AtomicInteger state = new AtomicInteger();
+    private AtomicInteger state = new AtomicInteger(0);
     private boolean timerActive;
     private boolean alive = true;
 
     private Pair<MonsterStatus, MobSkill> status = null;
+    private int team = -1;
 
     private volatile long lastHit = 0;
 
@@ -232,5 +233,13 @@ public class MapleReactor extends AbstractMapleMapObject {
 
     public Pair<MonsterStatus, MobSkill> getMonsterStatus() {
         return status;
+    }
+
+    public int getTeam() {
+        return team;
+    }
+
+    public void setTeam(int team) {
+        this.team = team;
     }
 }

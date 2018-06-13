@@ -1053,11 +1053,17 @@ public class MapleMap {
     }
 
     public void addCarnivalMonster(MapleMonster monster, MCarnivalTeam team) {
-        Point nPosition = monster.getPosition().getLocation();
-        nPosition.translate(0, -1);
-        nPosition = calcPointBelow(nPosition);
+        if (spawnPoints.isEmpty()) {
+            LOGGER.warn("Cannot summon Monster Carnival mob due to empty spawn points");
+            return;
+        }
+        SpawnPoint selected = spawnPoints.stream().filter(sp -> sp.getTeam() == team.getId()).findAny().orElse(null);
+        if (selected == null) {
+            LOGGER.warn("Cannot summon Monster Carnival mob because there are no matching spawn points");
+        }
+        Point nPosition = selected.getPosition();
         monster.setPosition(nPosition);
-        SpawnPoint spawnPoint = new SpawnPoint(this, monster, false, 0, team.getId());
+        SpawnPoint spawnPoint = new SpawnPoint(this, monster, false, 1, team.getId());
         addMonsterSpawnPoint(spawnPoint);
 
         spawnPoint.getMonster();

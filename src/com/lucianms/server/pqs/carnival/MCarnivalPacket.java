@@ -66,7 +66,7 @@ public final class MCarnivalPacket {
         final MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
         mplew.writeShort(SendOpcode.MONSTER_CARNIVAL_SUMMON.getValue());
         mplew.write(tab); // Tab
-        mplew.writeShort(number); // Summon index
+        mplew.write(number); // Summon index
         mplew.writeMapleAsciiString(name); // Name of summoner
         return mplew.getPacket();
     }

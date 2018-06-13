@@ -201,6 +201,10 @@ function ListPortals(selection) {
             content += "\r\n#L" + p.getId() + "#" + p.getName() + "#l";
         });
         cm.sendSimple(content);
+    } else if (status == 2) {
+        let map = player.getMap();
+        let portal = map.getPortal(selection);
+        player.changeMap(map, portal.getPosition());
         cm.dispose();
     }
 }

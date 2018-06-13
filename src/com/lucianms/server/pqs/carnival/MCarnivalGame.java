@@ -34,11 +34,14 @@ public class MCarnivalGame extends GenericEvent {
         }
     }
 
-    @Override
-    public void unregisterPlayer(MapleCharacter player) {
+    private void removePlayer(MapleCharacter player) {
         player.removeGenericEvent(this);
         player.changeMap(M_Office);
+    }
 
+    @Override
+    public void unregisterPlayer(MapleCharacter player) {
+        removePlayer(player);
 
         MCarnivalTeam team = getTeam(player.getTeam());
         MaplePartyCharacter leader = team.getParty().getLeader();
@@ -48,6 +51,7 @@ public class MCarnivalGame extends GenericEvent {
             newLeader = team.getParty().getMembers().stream().filter(m -> m.getId() != leader.getId()).map(MaplePartyCharacter::getPlayer).findAny().orElse(null);
             if (newLeader == null) {
                 dispose();
+                lobby.setState(MCarnivalLobby.State.Available);
                 return;
             }
         }
@@ -58,6 +62,7 @@ public class MCarnivalGame extends GenericEvent {
     @Override
     public void onPlayerDisconnect(MapleCharacter player) {
         player.setMapId(M_Office);
+        unregisterPlayer(player);
     }
 
     @Override
@@ -87,12 +92,19 @@ public class MCarnivalGame extends GenericEvent {
     }
 
     public void dispose() {
+        if (teamRed != null) {
+            teamRed.getParty().getMembers().stream().map(MaplePartyCharacter::getPlayer).forEach(this::removePlayer);
+            teamRed = null;
+        }
+        if (teamBlue != null) {
+            teamBlue.getParty().getMembers().stream().map(MaplePartyCharacter::getPlayer).forEach(this::removePlayer);
+            teamBlue = null;
+        }
         MapleMap map = lobby.getChannel().removeMap(lobby.getBattlefieldMapId());
         if (map != null) {
             map.killAllMonsters();
             map.clearDrops();
         }
-        lobby.setState(MCarnivalLobby.State.Available);
     }
 
     public long getTimeLeft() {

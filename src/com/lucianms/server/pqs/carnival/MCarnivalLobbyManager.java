@@ -14,18 +14,18 @@ public class MCarnivalLobbyManager {
     private LinkedHashMap<Integer, MCarnivalLobby> lobbies = new LinkedHashMap<>();
 
     public MCarnivalLobbyManager(Channel channel) {
-        int bMapId = 980000000;
+        final int bMapId = 980000000;
         for (int i = 1; i < 7; i++) {
             int nMapId = bMapId + (i * 100);
-                int maxPartySize;
-                if (i == 1 || i == 2) {
-                    maxPartySize = 2;
-                } else if (i == 3 || i == 4) {
+            int maxPartySize;
+            if (i == 1 || i == 2) {
+                maxPartySize = 2;
+            } else if (i == 3 || i == 4) {
                 maxPartySize = 3;
             } else {
                 maxPartySize = 5;
             }
-            lobbies.put(nMapId, new MCarnivalLobby(channel, maxPartySize,nMapId + 1));
+            lobbies.put(nMapId, new MCarnivalLobby(channel, maxPartySize, nMapId));
         }
     }
 

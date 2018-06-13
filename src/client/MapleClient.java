@@ -461,9 +461,6 @@ public class MapleClient {
 
     public int login(String login, String pwd) {
         loginattempt++;
-        if (loginattempt > 4) {
-            getSession().closeNow();
-        }
         int loginok = 5;
         Connection con = DatabaseConnection.getConnection();
         PreparedStatement ps = null;
@@ -521,6 +518,8 @@ public class MapleClient {
         }
         if (loginok == 0) {
             loginattempt = 0;
+        } else if (loginattempt > 4) {
+            getSession().closeNow();
         }
         return loginok;
     }
@@ -590,7 +589,7 @@ public class MapleClient {
                 }
             }
         } else {
-            this.disconnect(false, false); // Invalid HWID...
+            disconnect(false, false); // Invalid HWID...
         }
     }
 
@@ -783,13 +782,12 @@ public class MapleClient {
             try {
                 if (!cashshop) {
                     if (!this.serverTransition) { // meaning not changing channels
+                        //region messenger
                         if (messengerid > 0) {
                             worlda.leaveMessenger(messengerid, chrm);
                         }
-                        /*    if (fid > 0) {
-                           final MapleFamily family = worlda.getFamily(fid);
-	                	   family.
-	                   }*/
+                        //endregion
+                        //region custom quests
                         for (MapleQuestStatus status : player.getStartedQuests()) { //This is for those quests that you have to stay logged in for a certain amount of time
                             MapleQuest quest = status.getQuest();
                             if (quest.getTimeLimit() > 0) {
@@ -798,11 +796,15 @@ public class MapleClient {
                                 player.updateQuest(newStatus);
                             }
                         }
+                        //endregion
+                        //region guild
                         if (guild != null) {
                             final Server server = Server.getInstance();
                             server.setGuildMemberOnline(chrg, false, player.getClient().getChannel());
                             player.getClient().announce(MaplePacketCreator.showGuildInfo(player));
                         }
+                        //endregion
+                        //region party
                         if (party != null) {
                             chrp.setOnline(false);
                             worlda.updateParty(party.getId(), PartyOperation.LOG_ONOFF, chrp);
@@ -818,12 +820,16 @@ public class MapleClient {
                                 }
                             }
                         }
+                        //endregion
+                        //region buddy list
                         if (bl != null) {
                             worlda.loggedOff(player.getName(), player.getId(), channel, player.getBuddylist().getBuddyIds());
                         }
+                        //endregion
                     }
                 } else {
                     if (!this.serverTransition) { // if dc inside of cash shop.
+                        //region party
                         if (party != null) {
                             chrp.setOnline(false);
                             worlda.updateParty(party.getId(), PartyOperation.LOG_ONOFF, chrp);
@@ -839,9 +845,12 @@ public class MapleClient {
                                 }
                             }
                         }
+                        //endregion
+                        //region buddy list
                         if (bl != null) {
                             worlda.loggedOff(player.getName(), player.getId(), channel, player.getBuddylist().getBuddyIds());
                         }
+                        //endregion
                     }
                 }
             } catch (final Exception e) {

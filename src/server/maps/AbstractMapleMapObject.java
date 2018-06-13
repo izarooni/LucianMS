@@ -33,7 +33,7 @@ public abstract class AbstractMapleMapObject implements MapleMapObject {
 
     @Override
     public Point getPosition() {
-        return new Point(position);
+        return position.getLocation();
     }
 
     @Override

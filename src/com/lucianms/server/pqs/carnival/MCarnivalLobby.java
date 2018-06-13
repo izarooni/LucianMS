@@ -8,6 +8,8 @@ import net.server.world.MaplePartyCharacter;
 import tools.MaplePacketCreator;
 import tools.Randomizer;
 
+import java.util.Optional;
+
 /**
  * @author izarooni
  */
@@ -24,7 +26,7 @@ public class MCarnivalLobby {
 
     private final Channel channel;
     private final int maxPartySize;
-    private final int battlefieldMapId;
+    private final int mapId;
 
     private MCarnivalGame carnivalGame = null;
     private State state = State.Available;
@@ -34,10 +36,19 @@ public class MCarnivalLobby {
 
     private Task waitingTask;
 
-    public MCarnivalLobby(Channel channel, int maxPartySize, int battlefieldMapId) {
+    public MCarnivalLobby(Channel channel, int maxPartySize, int mapId) {
         this.channel = channel;
         this.maxPartySize = maxPartySize;
-        this.battlefieldMapId = battlefieldMapId;
+        this.mapId = mapId;
+    }
+
+    private void broadcastPacket(byte[] packet) {
+        if (party1 != null) {
+            party1.getMembers().stream().filter(MaplePartyCharacter::isOnline).map(MaplePartyCharacter::getPlayer).forEach(p -> p.announce(packet));
+        }
+        if (party2 != null) {
+            party2.getMembers().stream().filter(MaplePartyCharacter::isOnline).map(MaplePartyCharacter::getPlayer).forEach(p -> p.announce(packet));
+        }
     }
 
     public Channel getChannel() {
@@ -48,8 +59,20 @@ public class MCarnivalLobby {
         return maxPartySize;
     }
 
+    public int getMapId() {
+        return mapId;
+    }
+
     public int getBattlefieldMapId() {
-        return battlefieldMapId;
+        return getMapId() + 1;
+    }
+
+    public int getVictoryMapId() {
+        return getMapId() + 3;
+    }
+
+    public int getDefeatedMapId() {
+        return getMapId() + 4;
     }
 
     public Task getWaitingTask() {
@@ -83,50 +106,27 @@ public class MCarnivalLobby {
                     public void run() {
                         party1.getMembers().forEach(p -> carnivalGame.unregisterPlayer(p.getPlayer()));
                         party2.getMembers().forEach(p -> carnivalGame.unregisterPlayer(p.getPlayer()));
-
-                        carnivalGame.dispose();
+                        setState(State.Available);
                     }
                 }, 1000 * 60 * 10); // 10 min game
                 break;
             }
             case Starting: {
-                if (waitingTask != null) {
-                    waitingTask.cancel();
-                }
-                party1.broadcastPacket(MaplePacketCreator.getClock(10));
+                waitingTask = TaskExecutor.cancelTask(waitingTask);
+                broadcastPacket(MaplePacketCreator.getClock(10));
                 // party 2 clock via npc
                 waitingTask = TaskExecutor.createTask(() -> setState(State.InProgress), 10000);
                 break;
             }
             case Waiting: {
+                broadcastPacket(MaplePacketCreator.getClock(300));
                 waitingTask = TaskExecutor.createTask(() -> setState(State.Available), 60000 * 5); // 5 minutes
                 break;
             }
             case Available: {
-                if (waitingTask != null) {
-                    waitingTask.cancel();
-                    waitingTask = null;
-                }
-                if (party1 != null) {
-                    for (MaplePartyCharacter m : party1.getMembers()) {
-                        if (carnivalGame != null) {
-                            carnivalGame.unregisterPlayer(m.getPlayer());
-                        } else {
-                            m.getPlayer().changeMap(M_Office);
-                        }
-                    }
-                    party1 = null;
-                }
-                if (party2 != null) {
-                    for (MaplePartyCharacter m : party2.getMembers()) {
-                        if (carnivalGame != null) {
-                            carnivalGame.unregisterPlayer(m.getPlayer());
-                        } else {
-                            m.getPlayer().changeMap(M_Office);
-                        }
-                    }
-                    party2 = null;
-                }
+                channel.removeMap(getBattlefieldMapId()); // resets
+                waitingTask = TaskExecutor.cancelTask(waitingTask);
+                Optional.ofNullable(carnivalGame).ifPresent(MCarnivalGame::dispose);
                 break;
             }
         }
@@ -145,12 +145,13 @@ public class MCarnivalLobby {
         return party1 != null && party2 != null;
     }
 
-    public void removeParty(MapleParty party) {
-        if (party1 == party) {
+    public boolean removeParty(MapleParty party) {
+        if (party1.getId() == party.getId()) {
             party1 = null;
-        } else if (party2 == party) {
+        } else if (party2.getId() == party.getId()) {
             party2 = null;
         }
+        return party1 == null && party2 == null;
     }
 
     /**

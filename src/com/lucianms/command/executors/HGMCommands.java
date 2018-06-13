@@ -8,7 +8,6 @@ import com.lucianms.command.CommandWorker;
 import com.lucianms.io.scripting.npc.NPCScriptManager;
 import com.lucianms.io.scripting.portal.PortalScriptManager;
 import com.lucianms.io.scripting.reactor.ReactorScriptManager;
-import com.lucianms.server.events.channel.RockPaperScissorsEvent;
 import constants.ItemConstants;
 import net.server.Server;
 import net.server.channel.Channel;
@@ -22,6 +21,8 @@ import server.life.MapleMonster;
 import server.life.MapleMonsterStats;
 import server.life.MapleNPC;
 import server.maps.MapleFoothold;
+import server.maps.MapleReactor;
+import server.maps.MapleReactorFactory;
 import tools.DatabaseConnection;
 import tools.MaplePacketCreator;
 
@@ -327,8 +328,6 @@ public class HGMCommands {
         } else if (command.equals("reloadmobs")) {
             MapleLifeFactory.clear();
             player.dropMessage(6, "Mobs reloaded");
-        } else if (command.equals("test")) {
-            RockPaperScissorsEvent.startGame(player);
         } else if (command.equals("sudo")) {
             if (args.length() > 1) {
                 MapleCharacter target = client.getWorldServer().getPlayerStorage().getCharacterByName(args.get(0));

@@ -2,8 +2,8 @@ const MaplePacketCreator = Java.type("tools.MaplePacketCreator");
 const Lobby = client.getChannelServer().getCarnivalLobbyManager();
 const LobbyState = Java.type("com.lucianms.server.pqs.carnival.MCarnivalLobby.State");
 /* izarooni */
-let status = 0;
 const M_Office = 980000000;
+let status = 0;
 
 function action(mode, type, selection) {
     if (mode < 1) {
@@ -55,9 +55,9 @@ function Queue(selection) {
             cm.dispose();
         }
     } else if (status == 2) {
-        let game = Lobby.getLobby(selection);
-        if (player.isDebug() && game != null && game.getGame() != null) {
-            game.getGame().dispose();
+        let lobby = Lobby.getLobby(selection);
+        if (player.isDebug() && lobby != null && lobby.getGame() != null) {
+            lobby.getGame().dispose();
             cm.sendOk("The game has been disposed.");
             cm.dispose();
             return;
@@ -65,31 +65,18 @@ function Queue(selection) {
         let userCount = cm.getPartyMembers().stream()
             .filter(m => m.getMapId() == M_Office)
             .mapToInt(m => 1).sum();
-        if (game != null && userCount <= game.getMaxPartySize()) {
-            if (game.getState() == LobbyState.Waiting || game.getState() == LobbyState.Available) {
-                if (game.canEnter(cm.getParty())) {
-                    if (game.joiningParty(cm.getParty())) {
+        if (lobby != null && userCount <= lobby.getMaxPartySize()) {
+            if (lobby.getState() == LobbyState.Waiting || lobby.getState() == LobbyState.Available) {
+                if (lobby.canEnter(cm.getParty())) {
+                    // warp present party members to the lobby
+                    cm.getPartyMembers().forEach(chr => chr.changeMap(lobby.getMapId()));
+                    if (lobby.joiningParty(cm.getParty())) {
                         // challenger found
-                        game.setState(LobbyState.Starting);
+                        lobby.setState(LobbyState.Starting);
                     } else {
                         // available lobby
-                        game.setState(LobbyState.Waiting);
+                        lobby.setState(LobbyState.Waiting);
                     }
-
-                    // warp present party members to the lobby
-                    cm.getPartyMembers().forEach(function(chr) {
-                        if (chr.getMapId() == M_Office) {
-                            // warp to lobby
-                            chr.changeMap(game.getBattlefieldMapId() - 1); // battle field lobby
-                        }
-                        // if lobby is waiting, add clock for timeout
-                        if (game.getState() == LobbyState.Waiting) {
-                            chr.announce(MaplePacketCreator.getClock(300));
-                        } else if (game.getState() == LobbyState.Starting) {
-                            // challenging party
-                            chr.announce(MaplePacketCreator.getClock(10));
-                        }
-                    });
                 } else {
                     cm.sendOk("Your party may be too large or small to battle this party");
                 }

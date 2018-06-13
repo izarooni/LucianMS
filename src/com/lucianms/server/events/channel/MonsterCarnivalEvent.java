@@ -88,6 +88,7 @@ public final class MonsterCarnivalEvent extends PacketEvent {
                     } else if (action == 2) { // Debuffs
                         int reactorId = ID_Reactor + friendly.getId();
                         MapleReactor reactor = new MapleReactor(MapleReactorFactory.getReactor(reactorId), reactorId);
+                        reactor.setTeam(friendly.getId());
                         switch (value) {
                             case 0:
                                 reactor.setMonsterStatus(MonsterStatus.WEAPON_ATTACK_UP, MobSkillFactory.getMobSkill(150, 1));
@@ -117,8 +118,10 @@ public final class MonsterCarnivalEvent extends PacketEvent {
                                 reactor.setMonsterStatus(MonsterStatus.MAGIC_IMMUNITY, MobSkillFactory.getMobSkill(141, 1));
                                 break;
                         }
+                        player.getMap().getMonsters().stream().filter(m -> m.getTeam() != player.getTeam()).forEach(m -> reactor.getMonsterStatus().getRight().applyEffect(null, m, true));
                         player.getMap().spawnReactor(reactor);
                     }
+                    map.broadcastMessage(MCarnivalPacket.getMonsterCarnivalSummon(action, value, player.getName()));
                 } else {
                     player.announce(MCarnivalPacket.getMonsterCarnivalResponse((byte) 1));
                 }
