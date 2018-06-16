@@ -2050,7 +2050,7 @@ public class MapleMap {
 
     public void movePlayer(MapleCharacter player, Point newPosition) {
         player.setPosition(newPosition);
-        Collection<MapleMapObject> visibleObjects = new ArrayList<>(player.getVisibleMapObjects());
+        Collection<MapleMapObject> visibleObjects = player.getVisibleMapObjects();
         MapleMapObject[] visibleObjectsNow = visibleObjects.toArray(new MapleMapObject[visibleObjects.size()]);
         for (MapleMapObject mo : visibleObjectsNow) {
             if (mo != null) {

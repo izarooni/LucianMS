@@ -563,7 +563,15 @@ public class MapleMonster extends AbstractLoadedMapleLife {
 
     @Override
     public void sendDestroyData(MapleClient client) {
-        client.announce(MaplePacketCreator.killMonster(getObjectId(), false));
+        /*
+        Issue causing monsters that leave the player's viewport to become untargetable.
+        Monsters aren't considered ranged entities anyways as every monster in a field is sent to the user's client
+        immediately regardless of range between itself and the player avatar.
+
+        Also, this packet does not remove the monster. Using the false parameter does not cause the monster to disappear
+        while using TRUE triggers the monsters death animation (not what we want in this case).
+         */
+//        client.announce(MaplePacketCreator.killMonster(getObjectId(), false));
     }
 
     @Override
