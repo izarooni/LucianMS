@@ -8,6 +8,9 @@ import constants.skills.Aran;
  */
 public class GameConstants {
 
+    private GameConstants() {
+    }
+
     public static int getHiddenSkill(final int skill) {
         switch (skill) {
             case Aran.HIDDEN_FULL_SWING_DOUBLE:
