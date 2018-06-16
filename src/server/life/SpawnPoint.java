@@ -41,7 +41,7 @@ public final class SpawnPoint {
         this.monsterID = monster.getId();
         Point nPos = map.calcPointBelow(monster.getPosition());
         this.pos = (nPos == null) ? monster.getPosition() : nPos.getLocation();
-        this.mobTime = (mobTime <= 0) ? 10 : mobTime;
+        this.mobTime = (mobTime <= 0) ? 8 : mobTime;
         this.team = team;
         this.f = monster.getF();
         this.fh = monster.getFh();
