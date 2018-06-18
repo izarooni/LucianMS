@@ -21,6 +21,7 @@ import server.MapleInventoryManipulator;
 import server.life.MapleMonster;
 import server.life.MapleMonsterInformationProvider;
 import server.life.MapleNPC;
+import server.maps.MapleMapItem;
 import server.maps.MapleMapObject;
 import server.maps.MapleReactor;
 import server.maps.PlayerNPC;

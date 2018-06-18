@@ -3954,7 +3954,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
     }
 
     public void removeVisibleMapObject(MapleMapObject mo) {
-        visibleMapObjects.remove(mo);
+        visibleMapObjects.remove(mo.getObjectId());
     }
 
     public void resetStats() {
