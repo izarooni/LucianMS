@@ -1,8 +1,9 @@
 package net;
 
+import com.lucianms.server.events.PongEvent;
 import com.lucianms.server.events.channel.*;
 import com.lucianms.server.events.login.AccountLoginEvent;
-import com.lucianms.server.events.PongEvent;
+import net.server.channel.handlers.NpcMoveEvent;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -47,6 +48,7 @@ public final class PacketManager {
         handlers.set(RecvOpcode.CHAR_INFO_REQUEST.getValue(), ViewCharacterInfoEvent.class);
 
         handlers.set(RecvOpcode.NPC_TALK.getValue(), NPCTalkEvent.class);
+        handlers.set(RecvOpcode.NPC_ACTION.getValue(), NpcMoveEvent.class);
 
         handlers.set(RecvOpcode.MONSTER_CARNIVAL.getValue(), MonsterCarnivalEvent.class);
 

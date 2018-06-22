@@ -26,15 +26,16 @@ import client.inventory.Item;
 import client.inventory.ItemFactory;
 import client.inventory.MapleInventoryType;
 import client.inventory.MaplePet;
+import com.lucianms.io.scripting.AbstractPlayerInteraction;
 import constants.ExpTable;
 import net.server.Server;
+import net.server.channel.handlers.NpcMoveEvent;
 import net.server.guild.MapleAlliance;
 import net.server.guild.MapleGuild;
 import net.server.world.MapleParty;
 import net.server.world.MaplePartyCharacter;
 import provider.MapleData;
 import provider.MapleDataProviderFactory;
-import com.lucianms.io.scripting.AbstractPlayerInteraction;
 import server.MapleItemInformationProvider;
 import server.MapleStatEffect;
 import server.events.gm.MapleEvent;
@@ -57,14 +58,20 @@ import java.sql.SQLException;
  */
 public class NPCConversationManager extends AbstractPlayerInteraction {
 
+    private int objectID;
     private int npc;
     private String scriptName;
     private String getText;
 
-    public NPCConversationManager(MapleClient c, int npc, String scriptName) {
+    public NPCConversationManager(MapleClient c, int objectID, int npc, String scriptName) {
         super(c);
+        this.objectID = objectID;
         this.npc = npc;
         this.scriptName = scriptName;
+    }
+
+    public int getObjectID() {
+        return objectID;
     }
 
     public int getNpc() {
@@ -172,6 +179,10 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
 
     public String getText() {
         return this.getText;
+    }
+
+    public void showAnimation(byte action) {
+        getClient().announce(NpcMoveEvent.getNpcAction(objectID, action));
     }
 
     public int getJobId() {

@@ -37,7 +37,7 @@ public class NPCTalkEvent extends PacketEvent {
             if (mapObjects instanceof MapleNPC) {
                 MapleNPC npc = (MapleNPC) mapObjects;
                 if (player.isGM() && player.isDebug()) {
-                    player.sendMessage("NPC Talk ID: {}, Script: {}", npc.getId(), npc.getScript());
+                    player.sendMessage("NPC Talk ObjectID: {}, ID: {}, Script: {}", npc.getObjectId(), npc.getId(), npc.getScript());
                 }
                 if (npc.getId() == 9010009) {
                     player.announce(MaplePacketCreator.sendDuey((byte) 8, DueyHandler.loadItems(player)));
@@ -54,7 +54,7 @@ public class NPCTalkEvent extends PacketEvent {
                         // Custom handling for gachapon scripts to reduce the amount of scripts needed.
                         NPCScriptManager.start(getClient(), npc.getId(), "gachapon");
                     } else {
-                        NPCScriptManager.start(getClient(), npc.getId(), npc.getScript());
+                        NPCScriptManager.start(getClient(), npc.getObjectId(), npc.getId(), npc.getScript());
                     }
                 }
             } else if (mapObjects instanceof PlayerNPC) {

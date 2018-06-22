@@ -53,7 +53,7 @@ public abstract class PacketEvent {
         t.printStackTrace();
     }
 
-    public void onPost(Runnable runnable) {
+    public final void onPost(Runnable runnable) {
         posts.add(runnable);
     }
 

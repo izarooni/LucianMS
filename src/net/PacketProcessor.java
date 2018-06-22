@@ -140,7 +140,6 @@ public final class PacketProcessor {
             registerHandler(RecvOpcode.BBS_OPERATION, new BBSOperationHandler());
             registerHandler(RecvOpcode.SKILL_EFFECT, new SkillEffectHandler());
             registerHandler(RecvOpcode.MESSENGER, new MessengerHandler());
-            registerHandler(RecvOpcode.NPC_ACTION, new NPCAnimation());
             registerHandler(RecvOpcode.CHECK_CASH, new TouchingCashShopHandler());
             registerHandler(RecvOpcode.CASHSHOP_OPERATION, new CashOperationHandler());
             registerHandler(RecvOpcode.COUPON_CODE, new CouponCodeHandler());

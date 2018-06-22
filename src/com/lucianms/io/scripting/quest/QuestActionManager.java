@@ -34,7 +34,7 @@ public class QuestActionManager extends NPCConversationManager {
     private int quest;
 
     public QuestActionManager(MapleClient c, int quest, int npc, boolean start) {
-        super(c, npc, null);
+        super(c, 0, npc, null);
         this.quest = quest;
         this.start = start;
     }
