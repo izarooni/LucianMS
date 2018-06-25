@@ -1,7 +1,9 @@
 package com.lucianms.discord.handlers;
 
+import client.inventory.MapleInventoryType;
 import com.lucianms.discord.DiscordSession;
 import com.lucianms.discord.Headers;
+import constants.ItemConstants;
 import provider.MapleData;
 import provider.MapleDataProvider;
 import provider.MapleDataProviderFactory;
@@ -21,7 +23,7 @@ import java.util.List;
  */
 public class SearchRequest extends DiscordRequest {
 
-    private static final int SearchLimit = 50;
+    private static final int SearchLimit = 2000;
 
     @Override
     public void handle(GenericLittleEndianAccessor lea) {
@@ -88,9 +90,12 @@ public class SearchRequest extends DiscordRequest {
             EncodeData(writer, retMobs);
             retMobs.clear();
             mobPairList.clear();
-        } else if (type.equalsIgnoreCase("ITEM") || type.equalsIgnoreCase("ITEMS")) {
+        } else if (type.equalsIgnoreCase("EQUIP") || type.equalsIgnoreCase("ITEM") || type.equalsIgnoreCase("ITEMS")) {
             List<String> retItems = new ArrayList<>();
             for (Pair<Integer, String> itemPair : MapleItemInformationProvider.getInstance().getAllItems()) {
+                if (type.equalsIgnoreCase("EQUIP") && ItemConstants.getInventoryType(itemPair.getLeft()) != MapleInventoryType.EQUIP) {
+                    continue;
+                }
                 if (itemPair.getRight().toLowerCase().contains(search)) {
                     retItems.add(itemPair.getLeft() + " - " + itemPair.getRight());
                 }
@@ -103,7 +108,7 @@ public class SearchRequest extends DiscordRequest {
     }
 
     private void EncodeData(MaplePacketLittleEndianWriter writer, List<String> array) {
-        if (array.size() > SearchLimit) {
+        if (array.stream().mapToInt(String::length).sum() >= SearchLimit) {
             writer.writeInt(-1);
             writer.writeMapleAsciiString("There are too many results to display. Please be more specific with your search query");
         } else {

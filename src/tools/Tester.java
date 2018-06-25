@@ -1,8 +1,11 @@
 package tools;
 
+import client.MapleCharacter;
+import client.MapleClient;
+import client.inventory.Item;
+import client.inventory.MapleInventoryType;
 import com.lucianms.io.Config;
 import com.lucianms.io.defaults.Defaults;
-import constants.ExpTable;
 import org.json.JSONObject;
 import org.json.JSONTokener;
 import org.slf4j.Logger;
@@ -10,7 +13,6 @@ import org.slf4j.LoggerFactory;
 
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.net.SocketTimeoutException;
 import java.net.URISyntaxException;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
@@ -24,9 +26,20 @@ public class Tester {
     private static Config config = null;
 
     public static void main(String[] args) {
-//        initConfig();
-//        DatabaseConnection.useConfig(config);
+        System.setProperty("wzpath", "wz");
+
+        initConfig();
+        DatabaseConnection.useConfig(config);
 //        createAccount("izarooni", "test2");
+
+        MapleClient client = new MapleClient(null, null, null);
+        try {
+            MapleCharacter player = MapleCharacter.loadCharFromDB(1, client, false);
+            Item item = player.getInventory(MapleInventoryType.EQUIPPED).getItem((short) -11);
+            player.forceUpdateItem(item);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 
     private static void initConfig() {
