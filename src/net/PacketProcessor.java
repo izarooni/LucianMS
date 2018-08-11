@@ -22,7 +22,6 @@
 package net;
 
 import net.server.channel.handlers.*;
-import com.lucianms.server.events.PongEvent;
 import net.server.handlers.LoginRequiringNoOpHandler;
 import net.server.handlers.login.*;
 
@@ -101,9 +100,7 @@ public final class PacketProcessor {
             registerHandler(RecvOpcode.VIEW_ALL_PIC_REGISTER, new ViewAllPicRegisterHandler());
         } else {
             //CHANNEL HANDLERS
-            registerHandler(RecvOpcode.CHANGE_CHANNEL, new ChangeChannelHandler());
             registerHandler(RecvOpcode.STRANGE_DATA, LoginRequiringNoOpHandler.getInstance());
-            registerHandler(RecvOpcode.GENERAL_CHAT, new GeneralChatHandler());
             registerHandler(RecvOpcode.WHISPER, new WhisperHandler());
             registerHandler(RecvOpcode.NPC_TALK_MORE, new NPCMoreTalkHandler());
             registerHandler(RecvOpcode.QUEST_ACTION, new QuestActionHandler());
@@ -128,7 +125,6 @@ public final class PacketProcessor {
             registerHandler(RecvOpcode.PARTYCHAT, new PartyChatHandler());
             registerHandler(RecvOpcode.USE_DOOR, new DoorHandler());
             registerHandler(RecvOpcode.ENTER_MTS, new EnterMTSHandler());
-            registerHandler(RecvOpcode.ENTER_CASHSHOP, new EnterCashShopHandler());
             registerHandler(RecvOpcode.DAMAGE_SUMMON, new DamageSummonHandler());
             registerHandler(RecvOpcode.SUMMON_ATTACK, new SummonDamageHandler());
             registerHandler(RecvOpcode.BUDDYLIST_MODIFY, new BuddylistModifyHandler());

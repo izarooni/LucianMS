@@ -36,6 +36,7 @@ import com.lucianms.features.controllers.JumpQuestController;
 import com.lucianms.features.summoning.ShenronSummoner;
 import com.lucianms.io.scripting.Achievements;
 import com.lucianms.io.scripting.event.EventInstanceManager;
+import com.lucianms.lang.GProperties;
 import com.lucianms.scheduler.Task;
 import com.lucianms.scheduler.TaskExecutor;
 import com.lucianms.server.pqs.carnival.MCarnivalPacket;
@@ -188,6 +189,8 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
     private List<MapleRing> friendshipRings = new ArrayList<>();
     private List<GenericEvent> genericEvents = new ArrayList<>();
 
+    private GProperties<Boolean> toggles = new GProperties<>();
+
     private Map<Skill, SkillEntry> skills = new LinkedHashMap<>();
     private Map<Short, String> area_info = new LinkedHashMap<>();
     private Map<Short, MapleQuestStatus> quests = new LinkedHashMap<>();
@@ -211,6 +214,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
     private Task[] fullnessSchedule = new Task[3];
     private MaplePet[] pets = new MaplePet[3];
     private SkillMacro[] skillMacros = new SkillMacro[5];
+    private MapleInventory[] creativeInventory;
     private MapleInventory[] inventory = new MapleInventory[MapleInventoryType.values().length];
 
     private MapleJob job = MapleJob.BEGINNER;
@@ -1774,7 +1778,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
     }
 
     public int countItem(int itemid) {
-        return inventory[MapleItemInformationProvider.getInstance().getInventoryType(itemid).ordinal()].countById(itemid);
+        return getInventory(MapleItemInformationProvider.getInstance().getInventoryType(itemid)).countById(itemid);
     }
 
     public void decreaseBattleshipHp(int decrease) {
@@ -2113,7 +2117,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
         mods.add(new ModifyInventory(0, item));
         client.announce(MaplePacketCreator.modifyInventory(true, mods));
     }
- 
+
     public void gainGachaExp() {
         int expgain = 0;
         int currentgexp = gachaexp.get();
@@ -2605,8 +2609,16 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
         recalcLocalStats();
     }
 
+    public MapleInventory[] getCreativeInventory() {
+        return creativeInventory;
+    }
+
+    public void setCreativeInventory(MapleInventory[] creativeInventory) {
+        this.creativeInventory = creativeInventory;
+    }
+
     public MapleInventory getInventory(MapleInventoryType type) {
-        return inventory[type.ordinal()];
+        return (creativeInventory == null) ? inventory[type.ordinal()] : creativeInventory[type.ordinal()];
     }
 
     public int getItemEffect() {
@@ -2618,9 +2630,9 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
     }
 
     public int getItemQuantity(int itemid, boolean checkEquipped) {
-        int possesed = inventory[MapleItemInformationProvider.getInstance().getInventoryType(itemid).ordinal()].countById(itemid);
+        int possesed = getInventory(MapleItemInformationProvider.getInstance().getInventoryType(itemid)).countById(itemid);
         if (checkEquipped) {
-            possesed += inventory[MapleInventoryType.EQUIPPED.ordinal()].countById(itemid);
+            possesed += getInventory(MapleInventoryType.EQUIPPED).countById(itemid);
         }
         return possesed;
     }
@@ -4628,10 +4640,6 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
         updateSingleStat(MapleStat.MP, mp);
     }
 
-    public void setInventory(MapleInventoryType type, MapleInventory inv) {
-        inventory[type.ordinal()] = inv;
-    }
-
     public void setMap(int PmapId) {
         this.mapid = PmapId;
     }
@@ -5016,6 +5024,10 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
     public void updateAreaInfo(int area, String info) {
         area_info.put((short) area, info);
         announce(MaplePacketCreator.updateAreaInfo(area, info));
+    }
+
+    public GProperties<Boolean> getToggles() {
+        return toggles;
     }
 
     public String getAreaInfo(int area) {

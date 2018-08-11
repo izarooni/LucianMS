@@ -3,6 +3,7 @@ package net;
 import com.lucianms.server.events.PongEvent;
 import com.lucianms.server.events.channel.*;
 import com.lucianms.server.events.login.AccountLoginEvent;
+import net.server.channel.handlers.ChangeChannelEvent;
 import net.server.channel.handlers.NpcMoveEvent;
 
 import java.util.ArrayList;
@@ -55,6 +56,10 @@ public final class PacketManager {
         handlers.set(RecvOpcode.DISTRIBUTE_AP.getValue(), DistributeAPEvent.class);
 
         handlers.set(RecvOpcode.RPS_ACTION.getValue(), RockPaperScissorsEvent.class);
+
+        handlers.set(RecvOpcode.GENERAL_CHAT.getValue(), AllChatEvent.class);
+        handlers.set(RecvOpcode.ENTER_CASHSHOP.getValue(), EnterCashShopEvent.class);
+        handlers.set(RecvOpcode.CHANGE_CHANNEL.getValue(), ChangeChannelEvent.class);
 
         //region movement handlers
         handlers.set(RecvOpcode.MOVE_PLAYER.getValue(), PlayerMoveEvent.class);

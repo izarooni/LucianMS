@@ -4,6 +4,7 @@ import client.MapleCharacter;
 import client.MapleClient;
 import client.SpamTracker;
 import com.lucianms.io.scripting.ScriptUtil;
+import constants.PlayerToggles;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import tools.Pair;
@@ -69,7 +70,11 @@ public class NPCScriptManager {
                 player.dropMessage(1, response);
                 LOGGER.error("Unable to execute script '{}' npc '{}' using player '{}'", path, npc, player.getName(), e);
             }
-            if (iv == null) {
+            boolean revoked = player.getToggles().checkProperty(PlayerToggles.CommandNPCAccess, false);
+            if (iv == null || revoked) {
+                if (revoked) {
+                    player.sendMessage(5, PlayerToggles.ErrorMessage);
+                }
                 dispose(client);
                 return;
             }
