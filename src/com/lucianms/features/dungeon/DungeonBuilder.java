@@ -13,6 +13,7 @@ import server.FieldBuilder;
 import server.MapleInventoryManipulator;
 import server.life.MapleLifeFactory;
 import server.life.MapleMonster;
+import server.life.MapleMonsterStats;
 import server.life.SpawnPoint;
 import server.maps.MapleMap;
 import tools.MaplePacketCreator;
@@ -60,7 +61,8 @@ public class DungeonBuilder {
         this.player = player;
         this.mapId = mapId;
 
-        map = new FieldBuilder(player.getWorld(), player.getClient().getChannel(), mapId).loadFootholds().build();
+        map = new FieldBuilder(player.getWorld(), player.getClient().getChannel(), mapId).loadPortals().loadFootholds().build();
+        map.setRespawnEnabled(true);
     }
 
     // lol for now
@@ -90,19 +92,6 @@ public class DungeonBuilder {
         for (Integer monsterId : monsters) {
             MapleMonster monster = MapleLifeFactory.getMonster(monsterId);
             if (monster != null) {
-                MapleCharacter expCalc = player;
-                if (scaleEXP) {
-                    if (player.getParty() != null) {
-                        for (MaplePartyCharacter expCalculation : player.getParty().getMembers()) {
-                            if (expCalculation.getLevel() < expCalc.getLevel()) {
-                                expCalc = expCalculation.getPlayer();
-                            }
-                        }
-                    }
-                    monster.getStats().setExp(ExpTable.getExpNeededForLevel(expCalc.getLevel()) / getScaleFromTotal());
-                    monster.getStats().setHp(expCalc.getHp() * 2);
-                    monster.setLevel(expCalc.getLevel());
-                }
 
                 int randomPlatform = this.platforms[Randomizer.nextInt(this.platforms.length)];
                 Point point = new Point(Randomizer.nextInt(maxX + minX) - minX, randomPlatform);
@@ -113,10 +102,27 @@ public class DungeonBuilder {
                 }
                 newpos.y -= 1;
                 monster.setPosition(newpos);
-                SpawnPoint spawnPoint = new SpawnPoint(map, monster, !monster.isMobile(), 5000, -1);
+                SpawnPoint spawnPoint = new SpawnPoint(map, monster, !monster.isMobile(), respawnTime, -1);
+
+                MapleMonsterStats overrides = spawnPoint.createOverrides();
+                MapleCharacter expCalc = player;
+                if (scaleEXP) {
+                    if (player.getParty() != null) {
+                        for (MaplePartyCharacter expCalculation : player.getParty().getMembers()) {
+                            if (expCalculation.getLevel() < expCalc.getLevel()) {
+                                expCalc = expCalculation.getPlayer();
+                            }
+                        }
+                    }
+                }
+                overrides.setExp(ExpTable.getExpNeededForLevel(expCalc.getLevel()) / getScaleFromTotal());
+                overrides.setHp(expCalc.getHp() * 2);
+                monster.setLevel(expCalc.getLevel());
+                overrides.setLevel(expCalc.getLevel());
+
+                spawnPoint.getMonster();
                 spawnPoint.summonMonster();
                 map.addMonsterSpawnPoint(spawnPoint);
-                LOGGER.info("Exp for monster {} : {}", monster.getMaxHp(), monster.getExp());
             }
         }
         LOGGER.info("Scaling complete.");
@@ -126,7 +132,6 @@ public class DungeonBuilder {
     // TODO item requirements
     private boolean buildDungeon(boolean isPartyPlay) {
         if (allowEntrance()) {
-            MapleMap map = new FieldBuilder(player.getWorld(), player.getClient().getChannel(), mapId).loadPortals().loadFootholds().build();
             if (map != null) {
 
                 // Don't want em staying there OwO

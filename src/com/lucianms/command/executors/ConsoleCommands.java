@@ -77,7 +77,7 @@ public class ConsoleCommands {
     }
 
     private static void execute(CommandWorker.Command command, CommandWorker.CommandArgs args) {
-        if (command.equals("shutdown", "exit")) {
+        if (command.equals("stop", "exit")) {
             MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
             mplew.write(Headers.Shutdown.value);
             DiscordSession.sendPacket(mplew.getPacket());

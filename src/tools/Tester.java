@@ -1,9 +1,5 @@
 package tools;
 
-import client.MapleCharacter;
-import client.MapleClient;
-import client.inventory.Item;
-import client.inventory.MapleInventoryType;
 import com.lucianms.io.Config;
 import com.lucianms.io.defaults.Defaults;
 import org.json.JSONObject;
@@ -31,15 +27,6 @@ public class Tester {
         initConfig();
         DatabaseConnection.useConfig(config);
 //        createAccount("izarooni", "test2");
-
-        MapleClient client = new MapleClient(null, null, null);
-        try {
-            MapleCharacter player = MapleCharacter.loadCharFromDB(1, client, false);
-            Item item = player.getInventory(MapleInventoryType.EQUIPPED).getItem((short) -11);
-            player.forceUpdateItem(item);
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
     }
 
     private static void initConfig() {
