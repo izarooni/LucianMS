@@ -2,8 +2,8 @@ package com.lucianms.server.events.channel;
 
 import client.MapleCharacter;
 import client.MapleStat;
-import net.PacketEvent;
 import com.lucianms.scheduler.TaskExecutor;
+import net.PacketEvent;
 import server.life.FakePlayer;
 import server.movement.LifeMovementFragment;
 import server.movement.MovementPacketHelper;
@@ -54,7 +54,7 @@ public final class PlayerMoveEvent extends PacketEvent {
                 }, 100);
             }
         }
-        if (player.getMap().getAutoKillPosition() != null) {
+        if ((!player.isGM() || (player.isGM() && player.isDebug())) && player.getMap().getAutoKillPosition() != null) {
             if (player.getPosition().getY() >= player.getMap().getAutoKillPosition().getY()) {
                 player.setHp(0);
                 player.updateSingleStat(MapleStat.HP, 0);
