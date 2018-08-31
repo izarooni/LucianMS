@@ -4,11 +4,11 @@ import client.MapleCharacter;
 import client.MapleClient;
 import client.MapleDisease;
 import com.lucianms.command.CommandWorker;
+import com.lucianms.features.ManualPlayerEvent;
 import net.server.channel.Channel;
 import net.server.world.MapleParty;
 import net.server.world.MaplePartyCharacter;
 import net.server.world.World;
-import com.lucianms.features.ManualPlayerEvent;
 import server.life.MapleLifeFactory;
 import server.life.MapleMonster;
 import server.life.MobSkill;
@@ -58,11 +58,12 @@ public class EventCommands {
                             world.setPlayerEvent((playerEvent = new ManualPlayerEvent(player)));
                             playerEvent.setMap(player.getMap());
                             playerEvent.setChannel(ch);
-                            player.dropMessage("Event creation started. To get help configuring use < !event help >");
-                            player.dropMessage("If you would rather immediately start the event with default values, use < !event start >");
+                            player.dropMessage("Event creation started. To set the name of your event, use: '!event name <event_name>'");
+                            player.dropMessage("If you would rather immediately start the event with default values, use: '!event start'");
+                            player.dropMessage("You may also abort this event creation via '!event cancel'");
                         } else {
-                            player.dropMessage(5, "An event is already being hosted in this channel!");
-                            player.dropMessage(5, "Use < !event info > for more information");
+                            player.dropMessage("An event is already being hosted in this channel!");
+                            player.dropMessage("Use < !event info > for more information");
                         }
                         return true;
                     }
@@ -77,12 +78,18 @@ public class EventCommands {
                         return true;
                     }
                     case "help": {
-                        player.dropMessage("!event name <name> - Set the name of the event");
-                        player.dropMessage("!event sp - Set the spawn point of the event");
-                        player.dropMessage("!event gate <time (seconds)> - Set the delay before the gate automatically closes");
-                        player.dropMessage("!event cancel - Reset the event. Mainly used if you decide to not host an event");
-                        player.dropMessage("!event winners <add/remove> <usernames> - Add or remove winners from the list of winners");
-                        player.dropMessage("!event winners view - View all current winners and their points");
+                        ArrayList<String> list = new ArrayList<>(8);
+                        list.add("!event info - View configuration of the current event");
+                        list.add("!event start - Open your event publicly");
+                        list.add("!event cancel - Cancel configurations and closes the gates");
+
+                        list.add("!event [name] - View or change the name of the current event");
+                        list.add("!event sp - Set the spawn point of the event");
+                        list.add("!event gate <time> - Set the delay (in seconds) before the gate automatically closes");
+                        list.add("!event winners <add/remove> <usernames...> - Add or remove winners from the list of winners");
+                        list.add("!event winners view - View all current winners and their points");
+                        list.sort(String::compareTo);
+                        list.forEach(player::sendMessage);
                         return true;
                     }
                 }
@@ -91,10 +98,12 @@ public class EventCommands {
                     switch (action) {
                         case "info": {
                             player.dropMessage("------------------------------");
-                            player.dropMessage("Event host: " + playerEvent.getHost().getName());
-                            player.dropMessage("Event name: " + playerEvent.getName());
-                            player.dropMessage("Event map: " + playerEvent.getMap());
-                            player.dropMessage("Event active: " + playerEvent.isOpen());
+                            player.dropMessage("Host: " + playerEvent.getHost().getName());
+                            player.dropMessage("Name: " + playerEvent.getName());
+                            player.sendMessage(6, "Map: <{}> {}", player.getMapId(), player.getMap().getMapName());
+                            player.dropMessage("Gates: " + (playerEvent.isOpen() ? "open" : "closed"));
+                            player.dropMessage("Gate delay: " + playerEvent.getGateTime());
+                            player.dropMessage("Winners: " + playerEvent.getWinners().keySet());
                             break;
                         }
                         case "start": {
@@ -109,24 +118,29 @@ public class EventCommands {
                                 playerEvent.setName(name);
                                 player.dropMessage("Event name changed to " + name);
                             } else {
-                                player.dropMessage("Incorrect command usage. Syntax: !event name <name>");
+                                player.sendMessage(6, "Current event name: '{}'", playerEvent.getName());
                             }
                             break;
                         }
+                        case "sp":
                         case "spawnpoint": {
                             playerEvent.setSpawnPoint(player.getPosition());
                             player.dropMessage("Spawn point has been set to your position");
                             break;
                         }
                         case "gate": {
-                            Integer time = args.parseNumber(1, int.class);
-                            String error = args.getFirstError();
-                            if (error != null) {
-                                player.dropMessage(5, error);
-                                return true;
+                            if (args.length() > 1) {
+                                Integer time = args.parseNumber(1, int.class);
+                                String error = args.getFirstError();
+                                if (error != null) {
+                                    player.dropMessage(5, error);
+                                    return true;
+                                }
+                                playerEvent.setGateTime(time);
+                                player.dropMessage(String.format("Event time is now set to %d seconds", time));
+                            } else {
+                                player.dropMessage(5, "You must specify a time (in seconds) to set your gate timer.");
                             }
-                            playerEvent.setGateTime(time);
-                            player.dropMessage(String.format("Event time is now set to %d seconds", time));
                             break;
                         }
                         case "close": {
@@ -134,12 +148,12 @@ public class EventCommands {
                                 playerEvent.setOpen(false);
                                 if (playerEvent.getGateTime() == 0) {
                                     // manual gate closing
-                                    playerEvent.broadcastMessage("The gates are now closed");
+                                    playerEvent.broadcastMessage("The gate is now closed");
                                 } else {
-                                    player.dropMessage("You have closed the event gates");
+                                    player.dropMessage("You have closed the gate");
                                 }
                             } else {
-                                player.dropMessage("The event gates are already closed");
+                                player.dropMessage("The gate is already closed");
                             }
                             break;
                         }
@@ -173,7 +187,7 @@ public class EventCommands {
                                                 player.dropMessage("Specified players are now winners");
                                             }
                                         } else {
-                                            player.dropMessage("You must specify at least 1 username");
+                                            player.dropMessage(5, "You must specify at least 1 username");
                                         }
                                         break;
                                     }
@@ -187,10 +201,11 @@ public class EventCommands {
                                                 player.dropMessage("Specified players are now longer winners");
                                             }
                                         } else {
-                                            player.dropMessage("You must specify at least 1 username");
+                                            player.dropMessage(5, "You must specify at least 1 username");
                                         }
                                         break;
                                     }
+                                    case "list":
                                     case "view": {
                                         Map<String, Integer> w = playerEvent.getWinners();
                                         if (w.isEmpty()) {
@@ -212,14 +227,17 @@ public class EventCommands {
                                 }
                                 player.dropMessage("There are now " + playerEvent.getWinners().size() + " in the winner list");
                             } else {
-                                player.dropMessage("Incorrect command usage");
+                                player.dropMessage(5, "Remove players from the winner list regardless of how many points they have via: '!event winners remove <usernames>");
+                                player.dropMessage(5, "Append players to the winner list via: '!event winners add <usernames...>'");
+                                player.sendMessage(5, "Player names are split with a space e.g.: '!event winners add {}'", player.getName());
                             }
                             break;
                         }
                     }
                 }
             } else {
-                player.dropMessage("Incorrect command usage. Use < !event help > for help on configuring your event");
+                player.dropMessage("Use: '!event new' to begin configuring your event.");
+                player.dropMessage("Use: '!event help' for a list of relevant commands.");
             }
             return true;
         } else if (command.equals("lock", "lockm")) {
@@ -360,13 +378,13 @@ public class EventCommands {
                     player.getMap().setAutoKillPosition(null);
                     player.dropMessage(6, "Auto kill position removed");
                 } else {
-                    player.dropMessage(5, "Use < !ak reset > to remove auto kill");
+                    player.dropMessage(5, "To remove the auto kill for this map, use: '!ak reset");
                 }
                 return true;
             }
-            player.getMap().setAutoKillPosition(player.getPosition());
+            player.getMap().setAutoKillPosition(player.getPosition().getLocation());
             Point ak = player.getMap().getAutoKillPosition();
-            player.dropMessage(6, String.format("Auto kill position set to: x: %d, y: %d", ak.x, ak.y));
+            player.sendMessage(6, "Auto kill location set to x:{}, y:{}", ak.x, ak.y);
         } else if (command.equals("bomb", "bombmap", "bombm")) {
             if (command.equals("bombmap", "bombm")) {
                 for (MapleCharacter players : player.getMap().getCharacters()) {
@@ -381,7 +399,7 @@ public class EventCommands {
                         player.getMap().spawnMonsterOnGroudBelow(bomb, pos);
                     }
                 }
-            } else  {
+            } else {
                 final int timeIndex = args.findArg("-time");
                 Float time = args.parseNumber(timeIndex, 1.5f, float.class);
                 String error = args.getFirstError();
@@ -392,7 +410,7 @@ public class EventCommands {
                     time = Math.max(0, time);
                     player.sendMessage("Bomb timer set to {}s", time);
                 }
-                if (args.length() == 0 || (args.length() == 2  && timeIndex > 0)) {
+                if (args.length() == 0 || (args.length() == 2 && timeIndex > 0)) {
                     MapleMonster bomb = MapleLifeFactory.getMonster(9300166);
                     if (bomb == null) {
                         player.dropMessage(5, "An error occurred");
