@@ -209,7 +209,7 @@ public class HGMCommands {
                         mob.setFh(fh);
                         try {
                             Connection con = DatabaseConnection.getConnection();
-                            PreparedStatement ps = con.prepareStatement("INSERT INTO spawns ( idd, f, fh, cy, rx0, rx1, type, x, y, mid, mobtime ) VALUES ( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? )");
+                            PreparedStatement ps = con.prepareStatement("INSERT INTO spawns ( idd, f, fh, cy, rx0, rx1, type, x, mid, mobtime) VALUES ( ?, ?, ?, ?, ?, ?, ?, ?, ?, ? )");
                             ps.setInt(1, mobId);
                             ps.setInt(2, 0);
                             ps.setInt(3, fh);
@@ -218,9 +218,8 @@ public class HGMCommands {
                             ps.setInt(6, xpos + 50);
                             ps.setString(7, "m");
                             ps.setInt(8, xpos);
-                            ps.setInt(9, ypos);
-                            ps.setInt(10, player.getMapId());
-                            ps.setInt(11, 0);
+                            ps.setInt(9, player.getMapId());
+                            ps.setInt(10, 1000);
                             ps.executeUpdate();
                         } catch (SQLException e) {
                             player.dropMessage(5, "An error occurred while trying to insert the mob into the database: " + e.getMessage());
