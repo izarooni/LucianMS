@@ -25,23 +25,26 @@ public class MobRush extends Arcade {
     @Override
 
     public boolean fail() {
-        player.setArcade(null);
-        player.changeMap(978, 0);
-        player.announce(MaplePacketCreator.serverNotice(1, "Game Over!"));
-        if (saveData(highscore)) {
-            player.dropMessage(5, "[Game Over] Your new highscore for Mob Rush is " + highscore);
-        } else {
-            player.dropMessage(5, "[Game Over] Your highscore for Mob Rush remains at " + Arcade.getHighscore(arcadeId, player));
-        }
+        if (player.getMap().getMonsters().size() >= 60 || player.getHp() < 1) {
+            player.setArcade(null);
+            player.changeMap(978, 0);
+            player.announce(MaplePacketCreator.serverNotice(1, "Game Over!"));
+            if (saveData(highscore)) {
+                player.dropMessage(5, "[Game Over] Your new highscore for Mob Rush is " + highscore);
+            } else {
+                player.dropMessage(5, "[Game Over] Your highscore for Mob Rush remains at " + Arcade.getHighscore(arcadeId, player));
+            }
 
-        // You know i had to do it to 'em
-        for (int i = ((int) (rewardPerKill * highscore)); i > 0; i--) {
-            MapleInventoryManipulator.addById(player.getClient(), itemReward, (short) 1);
-        }
+            // You know i had to do it to 'em
+            for (int i = ((int) (rewardPerKill * highscore)); i > 0; i--) {
+                MapleInventoryManipulator.addById(player.getClient(), itemReward, (short) 1);
+            }
 
-        respawnTask = TaskExecutor.cancelTask(respawnTask);
-        task = TaskExecutor.cancelTask(task);
-        return true;
+            respawnTask = TaskExecutor.cancelTask(respawnTask);
+            task = TaskExecutor.cancelTask(task);
+            return true;
+        }
+        return false;
     }
 
     @Override

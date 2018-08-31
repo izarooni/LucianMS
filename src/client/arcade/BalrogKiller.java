@@ -28,27 +28,30 @@ public class BalrogKiller extends Arcade {
 
     @Override
     public boolean fail() {
-        player.setArcade(null);
+        if (player.getHp() < 1) {
+            player.setArcade(null);
 
-        player.setHp(player.getMaxHp());
-        player.setExp(currExp);
-        player.updateSingleStat(MapleStat.EXP, currExp);
-        player.updateSingleStat(MapleStat.HP, player.getMaxHp());
-        player.changeMap(978);
+            player.setHp(player.getMaxHp());
+            player.setExp(currExp);
+            player.updateSingleStat(MapleStat.EXP, currExp);
+            player.updateSingleStat(MapleStat.HP, player.getMaxHp());
+            player.changeMap(978);
 
-        player.announce(MaplePacketCreator.serverNotice(1, "Game Over!"));
-        if (saveData(highscore)) {
-            player.dropMessage(5, "[Game Over] Your new highscore for Balrog Killer is " + highscore);
-        } else {
-            player.dropMessage(5, "[Game Over] Your highscore for Balrog Killer remains at " + Arcade.getHighscore(arcadeId, player));
+            player.announce(MaplePacketCreator.serverNotice(1, "Game Over!"));
+            if (saveData(highscore)) {
+                player.dropMessage(5, "[Game Over] Your new highscore for Balrog Killer is " + highscore);
+            } else {
+                player.dropMessage(5, "[Game Over] Your highscore for Balrog Killer remains at " + Arcade.getHighscore(arcadeId, player));
+            }
+            // You know i had to do it to 'em
+            for (int i = ((int) (rewardPerKill * highscore)); i > 0; i--) {
+                MapleInventoryManipulator.addById(player.getClient(), itemReward, (short) 1);
+            }
+
+            respawnTask = TaskExecutor.cancelTask(respawnTask);
+            return true;
         }
-        // You know i had to do it to 'em
-        for(int i =((int)(rewardPerKill * highscore)); i > 0; i--) {
-            MapleInventoryManipulator.addById(player.getClient(), itemReward, (short) 1);
-        }
-
-        respawnTask = TaskExecutor.cancelTask(respawnTask);
-        return true;
+        return false;
     }
 
 
@@ -80,10 +83,7 @@ public class BalrogKiller extends Arcade {
     @Override
     public void onHit(int monster) {
         player.setHp(player.getHp() - 1000);
-        if (player.getHp() < 1) {
-            fail();
-        }
-
+        fail();
     }
 
     @Override

@@ -9,24 +9,25 @@ let status = 0;
 
 function StopMonsterControls(selection) {
     if (status == 1) {
-        cm.sendSimple("#b#L0#Stop Controlling#l\r\n#L1#Begin Controlling#l");
+        let text = "Your team: " + player.getTeam();
+        player.setTeam(-1);
+        player.getMap().getMonsters().forEach(m => {
+            text += `\r\n#L${m.getObjectId()}#ID: ${m.getId()} \t Team: ${m.getTeam()}#l`;
+        });
+        cm.sendSimple(text);
     } else if (status == 2) {
-        if (selection == 0) {
-            let controls = new java.util.ArrayList(player.getControlledMonsters());
-            controls.forEach(c => {
-                c.setController(null);
-                player.getMap().updateMonsterController(null);
-                // player.stopControllingMonster(c);
-                // player.announce(MaplePacketCreator.stopControllingMonster(c.getObjectId()))
-            });
-            cm.sendNext("Stopped controlling monsters");
-        } else if (selection == 1) {
-            player.getMap().getMonsters().forEach(m => player.announce(MaplePacketCreator.controlMonster(m, false, false)));
-            cm.sendNext("Begun controlling monsters");
+        let monster = player.getMap().getMapObject(selection);
+        if (monster != null) {
+            player.getMap().spawnMesoDrop(10, monster.getPosition(), monster, player, false, 0);
+            // player.announce(MaplePacketCreator.killMonster(selection, true));
+            // player.announce(MaplePacketCreator.spawnFakeMonster(monster, 0));
+            cm.sendNext("Complete!");
+        } else {
+            cm.sendNext("Monster not found.");
         }
     } else reset();
 }
-features.push(new Selector("Update Monster Controllers", StopMonsterControls));
+features.push(new Selector("Check Monsters", StopMonsterControls));
 
 function action(mode, type, selection) {
     if (mode < 1) {

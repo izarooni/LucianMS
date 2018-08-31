@@ -38,8 +38,9 @@ public class BobOnly extends Arcade {
             }
 
             respawnTask = TaskExecutor.cancelTask(respawnTask);
+            return true;
         }
-        return true;
+        return false;
     }
 
     @Override

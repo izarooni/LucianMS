@@ -28,23 +28,26 @@ public class CrowOnly extends Arcade {
 
     @Override
     public boolean fail() {
-        player.setArcade(null);
+        if(touched) {
+            player.setArcade(null);
 
-        player.changeMap(978, 0);
-        player.announce(MaplePacketCreator.serverNotice(1, "Game Over!"));
-        if (saveData(highscore)) {
-            player.dropMessage(5, "[Game Over] Your new highscore for Crow Only is " + highscore);
-        } else {
-            player.dropMessage(5, "[Game Over] Your highscore for Crow Only remains at " + Arcade.getHighscore(arcadeId, player));
+            player.changeMap(978, 0);
+            player.announce(MaplePacketCreator.serverNotice(1, "Game Over!"));
+            if (saveData(highscore)) {
+                player.dropMessage(5, "[Game Over] Your new highscore for Crow Only is " + highscore);
+            } else {
+                player.dropMessage(5, "[Game Over] Your highscore for Crow Only remains at " + Arcade.getHighscore(arcadeId, player));
+            }
+
+            // You know i had to do it to 'em
+            for (int i = ((int) (rewardPerKill * highscore)); i > 0; i--) {
+                MapleInventoryManipulator.addById(player.getClient(), itemReward, (short) 1);
+            }
+
+            respawnTask = TaskExecutor.cancelTask(respawnTask);
+            return true;
         }
-
-        // You know i had to do it to 'em
-        for(int i =((int)(rewardPerKill * highscore)); i > 0; i--) {
-            MapleInventoryManipulator.addById(player.getClient(), itemReward, (short) 1);
-        }
-
-        respawnTask = TaskExecutor.cancelTask(respawnTask);
-        return true;
+        return false;
     }
 
     @Override

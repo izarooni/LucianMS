@@ -58,8 +58,13 @@ function action(mode, type, selection) {
     }
     if (selection > -1) {
         var item = player.getInventory(InventoryType.USE).getItem(selection);
-        if (item != null && item.getItemId() == ID_RewardBox) {
+        if (item != null && !item.getOwner().isEmpty() && item.getItemId() == ID_RewardBox) {
             var level = parseInt(item.getOwner().split(" ")[1]);
+            if (isNaN(level)) {
+                cm.sendOk("What's this? Where did you get this reward box?");
+                cm.dispose();
+                return;
+            }
             var rewards = items[getJobCategory(cm.getJobId())]["lvl-" + level];
             for (var i = 0; i < rewards.length; i++) {
                 if (!InventoryModifier.checkSpace(client, rewards[i], 1, "")) {

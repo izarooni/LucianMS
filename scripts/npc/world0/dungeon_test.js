@@ -33,7 +33,7 @@ function action(mode, type, selection) {
         .attachRequirements(4031544) // ETC items you need to have to go in
         .attachSpawns(100100, 100100, 100100, 100100,100100) // add spawns
         .enter()) { // go into map
-            cm.sendOk("Some problems have occurred." + dungeon.getAreLacking()); // give feedback on what went wrong to talker
+            cm.sendOk("Some problems have occurred.\r\n#r" + dungeon.getAreLacking()); // give feedback on what went wrong to talker
         }
         cm.dispose();
     }

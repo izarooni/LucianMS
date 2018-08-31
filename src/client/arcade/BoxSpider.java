@@ -51,15 +51,16 @@ public class BoxSpider extends Arcade {
             } else {
                 player.dropMessage(5, "[Game Over] Your highscore for Box Spider remains at " + Arcade.getHighscore(arcadeId, player));
             }
-        }
 
-        // You know i had to do it to 'em
-        for (int i = ((int) (rewardPerKill * highscore)); i > 0; i--) {
-            MapleInventoryManipulator.addById(player.getClient(), itemReward, (short) 1);
-        }
+            // You know i had to do it to 'em
+            for (int i = ((int) (rewardPerKill * highscore)); i > 0; i--) {
+                MapleInventoryManipulator.addById(player.getClient(), itemReward, (short) 1);
+            }
 
-        respawnTask = TaskExecutor.cancelTask(respawnTask);
-        return true;
+            respawnTask = TaskExecutor.cancelTask(respawnTask);
+            return true;
+        }
+        return false;
     }
 
     @Override

@@ -26,7 +26,7 @@ import java.util.List;
  */
 public class PlayerCreative extends GenericEvent {
 
-    private static final int CreativeField = 10000;
+    private static final int CreativeField = 808;
 
     public PlayerCreative() {
         registerAnnotationPacketEvents(this);

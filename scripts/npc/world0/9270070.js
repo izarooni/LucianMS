@@ -1,8 +1,9 @@
 load("scripts/util_imports.js");
-var ShenronSummon = Java.type("com.lucianms.features.summoning.ShenronSummoner");
+const ShenronSummon = Java.type("com.lucianms.features.summoning.ShenronSummoner");
+const MapleStat     = Java.type("client.MapleStat");
 /* izarooni */
-var status = 0;
-var usernameError = "";
+let status = 0;
+let usernameError = "";
 
 function action(mode, type, selection) {
     if (mode < 1) {
@@ -28,7 +29,8 @@ function action(mode, type, selection) {
             + "\r\n#L4#Give me vote points#l"
             + "\r\n#L5#Make me immortal#l"
             + "\r\n#L6#Give me NX#l"
-            + "\r\n#L7#Clone me#l");
+            + "\r\n#L7#Clone me#l"
+            + "\r\n#L8#Time Travel#l");
     } else if (status == 2) {
         switch (selection) {
             case 0:
@@ -73,7 +75,7 @@ function action(mode, type, selection) {
                 break;
             case 7:
                 if (player.getFakePlayer() == null) {
-                    var fake = new Packages.server.life.FakePlayer(player.getName() +"'s Toy");
+                    let fake = new Packages.server.life.FakePlayer(player.getName() +"'s Toy");
                     fake.setMap(player.getMap());
                     fake.clonePlayer(player);
                     player.setFakePlayer(fake);
@@ -92,11 +94,33 @@ function action(mode, type, selection) {
                     cm.sendOk("You already have a clone!");
                 }
                 break;
+            case 8: {
+                let gain = (Math.random() < 0.5) ? 5 : -1;
+                if (gain > 0) {
+                    cm.sendOk("Wish granted. I shall give you #b5 free levels#k");
+                    if (player.getLevel() < 200) {
+                        for (let i = 0; i < (200 - player.getLevel()); i++) {
+                            player.levelUp(true);
+                            gain--;
+                        }
+                    }
+                    gain = Math.max(gain, 200 - player.getLevel());
+                    if (gain > 0) {
+                        player.setLevel(player.getLevel() + gain);
+                        player.updateSingleStat(MapleStat.LEVEL, player.getLevel());
+                    }
+                } else {
+                    cm.sendOk("Wish granted. I shall take away #b1 level#k from you");
+                    player.setLevel(player.getLevel() + gain);
+                    player.updateSingleStat(MapleStat.LEVEL, player.getLevel());
+                }
+                break;
+            }
         }
-        optional.get().wish(player);
+        if (optional.isPresent()) optional.get().wish(player);
         cm.dispose();
     } else if (status == 3) {
-        var username = cm.getText();
+        let username = cm.getText();
         if (username == null || username.length == 0) {
             usernameError = "#r#eYou must specify a username!#k#n";
         } else {
