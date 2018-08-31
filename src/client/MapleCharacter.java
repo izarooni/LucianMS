@@ -5698,7 +5698,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
     }
 
     public boolean isImmortal() {
-        return System.currentTimeMillis() + 60000 <= immortalTimestamp && immortalTimestamp > 0;
+        return System.currentTimeMillis() + 60000 >= immortalTimestamp && immortalTimestamp > 0;
     }
 
     public long getImmortalTimestamp() {
