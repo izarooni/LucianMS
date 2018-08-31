@@ -49,7 +49,7 @@ public class CommandWorker {
 
         if (h == '!' && (player.isGM() || noCheck)) {
             try {
-                if (!EventCommands.execute(client, command, args)) {
+                if ((noCheck || player.gmLevel() >= 1) && !EventCommands.execute(client, command, args)) {
                     if (noCheck || player.gmLevel() >= 6) {
                         AdministratorCommands.execute(client, command, args);
                     }
@@ -59,9 +59,6 @@ public class CommandWorker {
                     if (noCheck || player.gmLevel() >= 2) {
                         GameMasterCommands.execute(client, command, args);
                     }
-                    if (noCheck || player.gmLevel() >= 1) {
-                        EventCommands.execute(client, command, args);
-                    }
                 }
             } catch (Exception e) {
                 e.printStackTrace();
@@ -69,16 +66,16 @@ public class CommandWorker {
             }
             return true;
         } else if (h == '@') {
-             if (!player.isGM() && !noCheck) {
-                 if (!command.equals("dispose", "quests")) {
-                     if (player.getMapId() >= 90000000 && player.getMapId() <= 90000004) {
-                         player.dropMessage("Commands are disabled in this area.");
-                         return true;
-                     } else if (player.getMapId() == 80 || player.getMapId() == 81) {
-                         player.dropMessage("You may not use commands here");
-                         return true;
-                     }
-                 }
+            if (!player.isGM() && !noCheck) {
+                if (!command.equals("dispose", "quests")) {
+                    if (player.getMapId() >= 90000000 && player.getMapId() <= 90000004) {
+                        player.dropMessage("Commands are disabled in this area.");
+                        return true;
+                    } else if (player.getMapId() == 80 || player.getMapId() == 81) {
+                        player.dropMessage("You may not use commands here");
+                        return true;
+                    }
+                }
             }
             PlayerCommands.execute(client, command, args);
             return true;
