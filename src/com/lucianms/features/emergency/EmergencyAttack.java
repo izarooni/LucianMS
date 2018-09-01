@@ -2,6 +2,8 @@ package com.lucianms.features.emergency;
 
 import client.MapleCharacter;
 import net.server.world.MapleParty;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import server.life.MapleLifeFactory;
 import server.life.MapleMonster;
 import server.life.SpawnPoint;
@@ -14,6 +16,8 @@ import java.util.concurrent.atomic.AtomicInteger;
  * @author izarooni
  */
 public class EmergencyAttack extends Emergency {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(EmergencyAttack.class);
 
     private AtomicInteger summoned = null;
     private int totalExp = 0;
@@ -44,7 +48,7 @@ public class EmergencyAttack extends Emergency {
         for (int i = 0; i < monsters.length; i++) {
             int[] stats = monsters[i];
             int[] next = (i == (monsters.length - 1)) ? null : monsters[i + 1];
-            if (next == null || (level >= stats[0] && level <= next[0])) {
+            if ((i == 0 && stats[0] > level) || next == null || (level >= stats[0] && level <= next[0])) {
                 final int summons = Math.min(30, sp.length);
                 summoned = new AtomicInteger(summons);
                 for (int j = 0; j < summons; j++) {
