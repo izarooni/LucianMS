@@ -81,7 +81,7 @@ public class PlayerCommands {
             commands.add("@time - Display the current server time");
             commands.add("@house - Display the house manager NPC");
             commands.add("@jobs - Display a list of job modifications");
-            commands.add("@rebirth - Reset your player level to earn more AP");
+//            commands.add("@rebirth - Reset your player level to earn more AP");
             commands.sort(String::compareTo);
             if (npc) {
                 StringBuilder sb = new StringBuilder();
@@ -303,13 +303,13 @@ public class PlayerCommands {
             } else {
                 player.dropMessage("There is not auto event going on right now");
             }
-        } else if (command.equals("rebirth")) {
-            if (player.getLevel() >= player.getMaxLevel()) {
-                player.doRebirth();
-                player.sendMessage("You now have {} rebirths!", player.getRebirths());
-            } else {
-                player.sendMessage("You must be at least level {} before you can rebirth", player.getMaxLevel());
-            }
+//        } else if (command.equals("rebirth")) {
+//            if (player.getLevel() >= player.getMaxLevel()) {
+//                player.doRebirth();
+//                player.sendMessage("You now have {} rebirths!", player.getRebirths());
+//            } else {
+//                player.sendMessage("You must be at least level {} before you can rebirth", player.getMaxLevel());
+//            }
         } else if (command.equals("dispose")) {
             NPCScriptManager.dispose(client);
             player.announce(MaplePacketCreator.enableActions());
