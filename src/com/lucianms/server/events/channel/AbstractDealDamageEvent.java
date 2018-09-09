@@ -372,7 +372,7 @@ public abstract class AbstractDealDamageEvent extends PacketEvent {
                         }
                     }
                     if (attack.isHH && !monster.isBoss()) {
-                        map.damageMonster(player, monster, monster.getHp() - 1);
+                        map.damageMonster(player, monster, monster.getHp());
                     } else if (attack.isHH) {
                         int HHDmg = (player.calculateMaxBaseDamage(player.getTotalWatk()) * (SkillFactory.getSkill(Paladin.HEAVENS_HAMMER).getEffect(player.getSkillLevel(SkillFactory.getSkill(Paladin.HEAVENS_HAMMER))).getDamage() / 100));
                         map.damageMonster(player, monster, (int) (Math.floor(Math.random() * (HHDmg / 5) + HHDmg * .8)));
