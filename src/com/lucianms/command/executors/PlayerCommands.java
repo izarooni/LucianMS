@@ -323,6 +323,7 @@ public class PlayerCommands {
             player.dropMessage("Rates: 10x | 10x | 2x");
             player.dropMessage("Owner: Venem");
             player.dropMessage("Developers: izarooni");
+            player.dropMessage("Staff: Kill | Evan | Joey | Jackie | Luckedy | Bryan");
             player.dropMessage("Home Command: @home or @go fm");
             player.dropMessage("Main Website: http://lucianms.com");
             player.dropMessage("Voting resets every 24th hours!");   
