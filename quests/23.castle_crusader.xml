@@ -2,7 +2,7 @@
     <imgdir name="info">
         <int name="questId" value="23"/>
 		<int name="preQuest" value="-1"/>
-        <int name="minLevel" value="0"/>
+        <int name="minLevel" value="110"/>
 		<int name="daily" value="0"/>
     </imgdir>
 
