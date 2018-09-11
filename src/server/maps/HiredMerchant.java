@@ -26,7 +26,6 @@ import client.MapleClient;
 import client.inventory.Item;
 import client.inventory.ItemFactory;
 import client.inventory.MapleInventoryType;
-import com.mysql.jdbc.Statement;
 import constants.ItemConstants;
 import net.server.Server;
 import com.lucianms.scheduler.Task;
@@ -169,7 +168,7 @@ public class HiredMerchant extends AbstractMapleMapObject {
                         owner.addMerchantMesos(price);
                     } else {
                         try {
-                            try (PreparedStatement ps = DatabaseConnection.getConnection().prepareStatement("UPDATE characters SET MerchantMesos = MerchantMesos + " + price + " WHERE id = ?", Statement.RETURN_GENERATED_KEYS)) {
+                            try (PreparedStatement ps = DatabaseConnection.getConnection().prepareStatement("UPDATE characters SET MerchantMesos = MerchantMesos + " + price + " WHERE id = ?", PreparedStatement.RETURN_GENERATED_KEYS)) {
                                 ps.setInt(1, ownerId);
                                 ps.executeUpdate();
                             }
@@ -209,7 +208,7 @@ public class HiredMerchant extends AbstractMapleMapObject {
         if (player != null) {
             player.setHasMerchant(false);
         } else {
-            try (PreparedStatement ps = DatabaseConnection.getConnection().prepareStatement("UPDATE characters SET HasMerchant = 0 WHERE id = ?", Statement.RETURN_GENERATED_KEYS)) {
+            try (PreparedStatement ps = DatabaseConnection.getConnection().prepareStatement("UPDATE characters SET HasMerchant = 0 WHERE id = ?", PreparedStatement.RETURN_GENERATED_KEYS)) {
                 ps.setInt(1, ownerId);
                 ps.executeUpdate();
             } catch (SQLException ex) {
@@ -229,7 +228,7 @@ public class HiredMerchant extends AbstractMapleMapObject {
         if (player != null) {
             player.setHasMerchant(false);
         } else {
-            try (PreparedStatement ps = DatabaseConnection.getConnection().prepareStatement("UPDATE characters SET HasMerchant = 0 WHERE id = ?", Statement.RETURN_GENERATED_KEYS)) {
+            try (PreparedStatement ps = DatabaseConnection.getConnection().prepareStatement("UPDATE characters SET HasMerchant = 0 WHERE id = ?", PreparedStatement.RETURN_GENERATED_KEYS)) {
                 ps.setInt(1, ownerId);
                 ps.executeUpdate();
             } catch (SQLException e) {
