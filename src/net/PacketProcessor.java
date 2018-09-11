@@ -176,7 +176,6 @@ public final class PacketProcessor {
             registerHandler(RecvOpcode.USE_MAPLELIFE, new UseMapleLifeHandler());
             registerHandler(RecvOpcode.USE_CATCH_ITEM, new UseCatchItemHandler());
             registerHandler(RecvOpcode.PARTY_SEARCH_REGISTER, new PartySearchRegisterHandler());
-            registerHandler(RecvOpcode.PARTY_SEARCH_START, new PartySearchStartHandler());
             registerHandler(RecvOpcode.ITEM_SORT2, new ItemIdSortHandler());
             registerHandler(RecvOpcode.LEFT_KNOCKBACK, new LeftKnockbackHandler());
             registerHandler(RecvOpcode.SNOWBALL, new SnowballHandler());

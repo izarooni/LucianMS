@@ -56,9 +56,6 @@ public class PlayerCommands {
             commands.add("@dispose - Dispose yourself (if you can't interact with npcs, etc) ");
             commands.add("@achievements - Shows your current achievements");
             commands.add("@home - go to the home grounds");
-            commands.add("@reborne - reborn into an Explorer");
-            commands.add("@rebornc - reborn into an Cygnus");
-            commands.add("@reborna - reborn into an Aran");
             commands.add("@online - Show whoever is online");
             commands.add("@go <town|list> - warps you to a town or shows you a list of warpable towns");
             commands.add("@style - open the styling npc");
@@ -114,7 +111,7 @@ public class PlayerCommands {
             }
             player.sendMessage("================ '{}''s Stats ================", target.getName());
             player.sendMessage("EXP {}x, MESO {}x, DROP {}x", player.getExpRate(), player.getMesoRate(), player.getDropRate());
-            player.sendMessage("Rebirths: {}", player.getRebirths());
+         //   player.sendMessage("Rebirths: {}", player.getRebirths());
             player.sendMessage("Mesos: {}", StringUtil.formatNumber(target.getMeso()));
             player.sendMessage("Ability Power: {}", StringUtil.formatNumber(target.getRemainingAp()));
             player.sendMessage("Hair / Face: {} / {}", target.getHair(), target.getFace());
@@ -323,17 +320,17 @@ public class PlayerCommands {
         } else if (command.equals("serverinfo")) {
             // why is this a command, seriously?
             player.dropMessage("Version: 83");
-            player.dropMessage("Rates: 100x | 2x | 2x");
-            player.dropMessage("Owners: Venem");
-            player.dropMessage("Developers: izarooni / Lucas");
-            player.dropMessage("Staff: Kill / Truce / Luckedy / Jackie / Fluke");
-            player.dropMessage("Home Command: @home");
+            player.dropMessage("Rates: 10x | 10x | 2x");
+            player.dropMessage("Owner: Venem");
+            player.dropMessage("Developers: izarooni");
+            player.dropMessage("Staff: Kill | Evan | Joey | Jackie | Luckedy | Bryan");
+            player.dropMessage("Home Command: @home or @go fm");
             player.dropMessage("Main Website: http://lucianms.com");
-            player.dropMessage("Voting resets every 24th hours!");
+            player.dropMessage("Voting resets every 24th hours!");   
             player.dropMessage("Have Fun and consider to donate for more customs!");
         } else if (command.equals("update")) {
-            player.dropMessage("Last Server WZ revision: 10-06-18");
-            player.dropMessage("New customs added the 1st of every 2nd month!");
+            player.dropMessage("Last Server WZ revision: 11-09-18");
+            player.dropMessage("New customs added every 2nd month!");
         } else if (command.equals("online")) {
             for (Channel channel : client.getWorldServer().getChannels()) {
                 StringBuilder sb = new StringBuilder();
@@ -367,7 +364,7 @@ public class PlayerCommands {
             maps.put("ariant",     260000000);
             maps.put("timetemple", 270000000);
             maps.put("ellin",      300000000);
-            maps.put("home",       809);
+            maps.put("home",       910000000);
             maps.put("arcade",     978);
             // @formatter:on
             if (args.length() == 1) {
