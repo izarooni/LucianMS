@@ -46,7 +46,7 @@ public class MaplePacketDecoder extends CumulativeProtocolDecoder {
         if (in.remaining() >= 4 && decoderState.packetlength == -1) {
             int packetHeader = in.getInt();
             if (!client.getReceiveCrypto().checkPacket(packetHeader)) {
-                session.close(true);
+                    session.closeNow();
                 return false;
             }
             decoderState.packetlength = MapleAESOFB.getPacketLength(packetHeader);

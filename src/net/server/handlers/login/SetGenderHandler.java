@@ -40,7 +40,7 @@ public class SetGenderHandler extends AbstractMaplePacketHandler {
             c.setGender(slea.readByte());
             c.announce(MaplePacketCreator.getAuthSuccess(c));
             final MapleClient client = c;
-            c.setIdleTask(TaskExecutor.createTask(() -> client.getSession().close(true), 600000));
+            c.setIdleTask(TaskExecutor.createTask(() -> client.getSession().closeNow(), 600000));
         }
     }
 

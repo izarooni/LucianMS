@@ -3,10 +3,9 @@ package client.arcade;
 import client.MapleCharacter;
 import com.lucianms.scheduler.Task;
 import com.lucianms.scheduler.TaskExecutor;
+import server.FieldBuilder;
 import server.life.MapleLifeFactory;
 import server.life.MapleMonster;
-import server.maps.MapleMap;
-import server.maps.MapleMapFactory;
 import tools.DatabaseConnection;
 import tools.MaplePacketCreator;
 
@@ -42,17 +41,14 @@ public abstract class Arcade {
     public abstract boolean nextRound(); // in case of next round.
 
     public synchronized void start() {
-        MapleMapFactory factory = new MapleMapFactory(player.getWorld(), player.getClient().getChannel());
-        TaskExecutor.createTask(() -> factory.getMaps().forEach(MapleMap::respawn), 2000);
-        player.changeMap(factory.getMap(mapId), factory.getMap(mapId).getPortal(0));
+        FieldBuilder builder = new FieldBuilder(player.getWorld(), player.getClient().getChannel(), mapId);
 
         // disable portals, we do not want them to leave the map. TODO: disable commands
         player.getMap().getPortals().forEach((portal) -> portal.setPortalStatus(true));
 
         player.getMap().setMobInterval((short) 5);
 
-        // actually we've already got this ian :thonkang:
-//        respawnTask = TaskExecutor.createRepeatingTask(() -> factory.getMaps().forEach(MapleMap::respawn), 10000, 1000);
+        player.changeMap(builder.loadAll().build());
 
         player.getMap().toggleDrops();
         if (player.getArcade().arcadeId == 0) {
@@ -80,7 +76,6 @@ public abstract class Arcade {
 
     }
 
-
     public boolean saveData(int score) {
         if (score > Arcade.getHighscore(arcadeId, player)) {
             try (Connection con = DatabaseConnection.getConnection(); PreparedStatement stmnt = con.prepareStatement("INSERT INTO arcade (id, charid, highscore) VALUES (?, ?, ?) ON DUPLICATE KEY UPDATE highscore = ?")) {
@@ -89,9 +84,7 @@ public abstract class Arcade {
                 stmnt.setInt(3, score);
                 stmnt.setInt(4, score);
                 stmnt.execute();
-
                 return true;
-
             } catch (SQLException e) {
                 e.printStackTrace();
             }
@@ -106,16 +99,11 @@ public abstract class Arcade {
         try (Connection con = DatabaseConnection.getConnection(); PreparedStatement stmnt = con.prepareStatement("SELECT highscore FROM arcade WHERE charid = ? AND id = ?")) {
             stmnt.setInt(1, player.getId());
             stmnt.setInt(2, arcadeId);
-
             stmnt.execute();
-
             ResultSet rs = stmnt.getResultSet();
-
-
             while (rs.next()) {
                 highscore = rs.getInt("highscore");
             }
-
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -126,7 +114,6 @@ public abstract class Arcade {
         StringBuilder sb = new StringBuilder();
         try (Connection con = DatabaseConnection.getConnection(); PreparedStatement stmnt = con.prepareStatement("SELECT * FROM arcade WHERE id = ? ORDER BY highscore DESC LIMIT 50")) {
             stmnt.setInt(1, arcadeId);
-
             if (stmnt.execute()) {
                 ResultSet rs = stmnt.getResultSet();
                 int i = 0;
@@ -138,11 +125,9 @@ public abstract class Arcade {
                     }
                 }
             }
-
         } catch (SQLException e) {
             e.printStackTrace();
         }
-
         return sb.toString();
     }
 

@@ -23,9 +23,8 @@ public class Tester {
 
     public static void main(String[] args) {
         System.setProperty("wzpath", "wz");
-
-        initConfig();
-        DatabaseConnection.useConfig(config);
+//        initConfig();
+//        DatabaseConnection.useConfig(config);
 //        createAccount("izarooni", "test2");
     }
 

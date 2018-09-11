@@ -1,17 +1,17 @@
 package com.lucianms.io.scripting.event;
 
 import client.MapleCharacter;
+import com.lucianms.scheduler.Task;
+import com.lucianms.scheduler.TaskExecutor;
 import net.server.PlayerStorage;
 import net.server.world.MapleParty;
 import net.server.world.MaplePartyCharacter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import com.lucianms.scheduler.Task;
-import com.lucianms.scheduler.TaskExecutor;
+import server.FieldBuilder;
 import server.expeditions.MapleExpedition;
 import server.life.MapleMonster;
 import server.maps.MapleMap;
-import server.maps.MapleMapFactory;
 import tools.DatabaseConnection;
 
 import javax.script.ScriptException;
@@ -30,8 +30,8 @@ public class EventInstanceManager {
     private final String name;
     private final Properties props = new Properties();
 
-    private MapleMapFactory mapFactory;
     private PlayerStorage playerStorage = new PlayerStorage();
+    private HashMap<Integer, MapleMap> maps = new HashMap<>(15);
     private HashMap<Integer, MapleMonster> monsters = new HashMap<>(); // <ObjectID, Monster>
     private Map<Integer, Integer> killCount = new HashMap<>(); // <PlayerID, Count>
     private ArrayList<Integer> tasks = new ArrayList<>(); // <TaskID>
@@ -43,8 +43,6 @@ public class EventInstanceManager {
     public EventInstanceManager(EventManager eventManager, String name) {
         this.eventManager = eventManager;
         this.name = name;
-
-        mapFactory = new MapleMapFactory(eventManager.getChannel().getWorld(), eventManager.getChannel().getId());
     }
 
     public EventManager getEventManager() {
@@ -162,9 +160,6 @@ public class EventInstanceManager {
     }
 
     public void dispose() {
-        if (mapFactory == null) {
-            throw new RuntimeException("Event instance '" + getName() + "' already disposed");
-        }
         try {
             eventManager.getInvocable().invokeFunction("dispose", this);
         } catch (ScriptException | NoSuchMethodException e) {
@@ -186,12 +181,7 @@ public class EventInstanceManager {
             eventManager.getChannel().getExpeditions().remove(expedition);
         }
 
-        mapFactory.clear();
-        mapFactory = null;
-    }
-
-    public MapleMapFactory getMapFactory() {
-        return mapFactory;
+        maps.clear();
     }
 
     public String getName() {
@@ -210,8 +200,12 @@ public class EventInstanceManager {
         }
     }
 
-    public MapleMap getMapInstance(int mapId) {
-        MapleMap map = mapFactory.getMap(mapId);
+    public MapleMap removeMapInstance(int mapID) {
+        return maps.remove(mapID);
+    }
+
+    public MapleMap getMapInstance(int mapID) {
+        MapleMap map = maps.computeIfAbsent(mapID, id -> new FieldBuilder(eventManager.getChannel().getWorld(), eventManager.getChannel().getId(), mapID).loadAll().build());
         if (eventManager.getProperty("shuffleReactors") != null && eventManager.getProperty("shuffleReactors").equals("true")) {
             map.shuffleReactors();
         }
