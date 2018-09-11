@@ -95,7 +95,6 @@ public final class PacketProcessor {
             registerHandler(RecvOpcode.GUEST_LOGIN, new GuestLoginHandler());
             registerHandler(RecvOpcode.REGISTER_PIC, new RegisterPicHandler());
             registerHandler(RecvOpcode.CHAR_SELECT_WITH_PIC, new CharSelectedWithPicHandler());
-            registerHandler(RecvOpcode.SET_GENDER, new SetGenderHandler());
             registerHandler(RecvOpcode.VIEW_ALL_WITH_PIC, new ViewAllCharSelectedWithPicHandler());
             registerHandler(RecvOpcode.VIEW_ALL_PIC_REGISTER, new ViewAllPicRegisterHandler());
         } else {
@@ -110,14 +109,12 @@ public final class PacketProcessor {
             registerHandler(RecvOpcode.USE_CASH_ITEM, new UseCashItemHandler());
             registerHandler(RecvOpcode.USE_SUMMON_BAG, new UseSummonBag());
             registerHandler(RecvOpcode.FACE_EXPRESSION, new FaceExpressionHandler());
-            registerHandler(RecvOpcode.HEAL_OVER_TIME, new HealOvertimeHandler());
             registerHandler(RecvOpcode.SPECIAL_MOVE, new SpecialMoveHandler());
             registerHandler(RecvOpcode.USE_INNER_PORTAL, new InnerPortalHandler());
             registerHandler(RecvOpcode.CANCEL_BUFF, new CancelBuffHandler());
             registerHandler(RecvOpcode.CANCEL_ITEM_EFFECT, new CancelItemEffectHandler());
             registerHandler(RecvOpcode.PLAYER_INTERACTION, new PlayerInteractionHandler());
             registerHandler(RecvOpcode.DISTRIBUTE_SP, new DistributeSPHandler());
-            registerHandler(RecvOpcode.CHANGE_KEYMAP, new KeymapChangeHandler());
             registerHandler(RecvOpcode.STORAGE, new StorageHandler());
             registerHandler(RecvOpcode.GIVE_FAME, new GiveFameHandler());
             registerHandler(RecvOpcode.PARTY_OPERATION, new PartyOperationHandler());
@@ -158,7 +155,6 @@ public final class PacketProcessor {
             registerHandler(RecvOpcode.PET_AUTO_POT, new PetAutoPotHandler());
             registerHandler(RecvOpcode.PET_EXCLUDE_ITEMS, new PetExcludeItemsHandler());
             registerHandler(RecvOpcode.TROCK_ADD_MAP, new TrockAddMapHandler());
-            registerHandler(RecvOpcode.HIRED_MERCHANT_REQUEST, new HiredMerchantRequest());
             registerHandler(RecvOpcode.MOB_DAMAGE_MOB, new MobDamageMobHandler());
             registerHandler(RecvOpcode.REPORT, new ReportHandler());
             registerHandler(RecvOpcode.MONSTER_BOOK_COVER, new MonsterBookCoverHandler());
@@ -174,7 +170,6 @@ public final class PacketProcessor {
             registerHandler(RecvOpcode.ALLIANCE_OPERATION, new AllianceOperationHandler());
             registerHandler(RecvOpcode.USE_SOLOMON_ITEM, new UseSolomonHandler());
             registerHandler(RecvOpcode.USE_GACHA_EXP, new UseGachaExpHandler());
-            registerHandler(RecvOpcode.USE_REMOTE, new RemoteGachaponHandler());
             registerHandler(RecvOpcode.ACCEPT_FAMILY, new AcceptFamilyHandler());
             registerHandler(RecvOpcode.DUEY_ACTION, new DueyHandler());
             registerHandler(RecvOpcode.USE_DEATHITEM, new UseDeathItemHandler());
