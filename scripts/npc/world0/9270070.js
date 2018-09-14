@@ -22,10 +22,10 @@ function action(mode, type, selection) {
     }
     if (status == 1) {
         cm.sendSimple("I am Shenron, I shall grant you any wish. Now speak!\r\n#b"
-            + "\r\n#L0#Make me rich#l"
+            // + "\r\n#L0#Make me rich#l"
             + "\r\n#L1#Kill somebody#l"
             + "\r\n#L2#Give me Crystals#l"
-            + "\r\n#L3#Level me#l"
+            // + "\r\n#L3#Level me#l"
             + "\r\n#L4#Give me vote points#l"
             + "\r\n#L5#Make me immortal#l"
             + "\r\n#L6#Give me NX#l"
