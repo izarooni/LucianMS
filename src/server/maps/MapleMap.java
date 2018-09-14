@@ -36,6 +36,7 @@ import com.lucianms.cquest.CQuestData;
 import com.lucianms.cquest.requirement.CQuestItemRequirement;
 import com.lucianms.cquest.requirement.CQuestKillRequirement;
 import com.lucianms.features.GenericEvent;
+import com.lucianms.features.MonsterPark;
 import com.lucianms.features.emergency.Emergency;
 import com.lucianms.features.emergency.EmergencyAttack;
 import com.lucianms.features.emergency.EmergencyDuel;
@@ -79,6 +80,7 @@ import java.util.stream.Collectors;
 
 public class MapleMap {
 
+    private static final int MAX_CHANCE = 999999;
     private static final Logger LOGGER = LoggerFactory.getLogger(MapleMap.class);
     private static final List<MapleMapObjectType> rangedMapobjectTypes = Arrays.asList(MapleMapObjectType.SHOP, MapleMapObjectType.ITEM, MapleMapObjectType.NPC, MapleMapObjectType.MONSTER, MapleMapObjectType.DOOR, MapleMapObjectType.SUMMON, MapleMapObjectType.REACTOR);
     // locks
@@ -406,6 +408,11 @@ public class MapleMap {
         final MapleMonsterInformationProvider mi = MapleMonsterInformationProvider.getInstance();
         final List<MonsterDropEntry> dropEntry = new ArrayList<>(mi.retrieveDrop(mob.getId()));
 
+        // Monster Coin Drop
+        if (chr.getGenericEvents().stream().anyMatch(g -> g instanceof MonsterPark)) {
+            dropEntry.add(new MonsterDropEntry(4310020, MAX_CHANCE / 100 * 35, 1, 1, (short) -1));
+        }
+
         for (CQuestData qData : chr.getCustomQuests().values()) {
             if (!qData.isCompleted()) {
                 for (CQuestItemRequirement.CQuestItem qItem : qData.getToCollect().getItems().values()) {
@@ -419,7 +426,7 @@ public class MapleMap {
 
         Collections.shuffle(dropEntry);
         for (MonsterDropEntry de : dropEntry) {
-            if (Randomizer.nextInt(999999) < de.chance * chServerrate) {
+            if (Randomizer.nextInt(MAX_CHANCE) < de.chance * chServerrate) {
                 if (droptype == 3) {
                     pos.x = mobpos + (d % 2 == 0 ? (40 * (d + 1) / 2) : -(40 * (d / 2)));
                 } else {
