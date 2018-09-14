@@ -1,3 +1,5 @@
+importPackage(Packages.tools);
+var LifeFactory = Java.type("server.life.MapleLifeFactory");
 var MPC = Java.type("tools.MaplePacketCreator");
 /* izarooni */
 var status = 0;
@@ -17,6 +19,7 @@ function action(mode, type, selection) {
             if (event.isOpen() && !event.isFinished(client.getChannel() - 1)) {
                 event.registerPlayer(player);
                 client.getWorldServer().broadcastMessage(0, "{} in channel {} used a compass to travel to Planet Lucian", player.getName(), client.getChannel());
+				cm.getPlayer().getMap().broadcastMessage(MaplePacketCreator.showEffect("quest/party/clear2"));
                 cm.dispose();
             } else {
                 cm.sendOk("Oh, well it seems the threat is no longer present on the planet. There's no need for you to go there right now");

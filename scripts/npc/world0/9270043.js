@@ -72,7 +72,7 @@ function action(mode, type, selection) {
 			} else {
 				cm.gainItem(icommon, 1);
 			}
-			cm.sendOk("SPARKLING EFFECT!!! Congratz! You recieved an item.");
+			cm.sendOk("SPARKLING EFFECT!!! Congratz! You received an item.");
 			cm.dispose();
 		}
 	}
