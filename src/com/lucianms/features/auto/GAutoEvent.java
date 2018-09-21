@@ -2,8 +2,6 @@ package com.lucianms.features.auto;
 
 import client.MapleCharacter;
 import com.lucianms.features.GenericEvent;
-import com.lucianms.scheduler.Task;
-import com.lucianms.scheduler.TaskExecutor;
 import net.server.world.World;
 import server.FieldBuilder;
 import server.maps.MapleMap;
@@ -23,7 +21,6 @@ public abstract class GAutoEvent extends GenericEvent {
 
     private final World world;
     private HashMap<Integer, MapleMap> maps = null;
-    private Task respawnTask = null;
 
     // [f]irst time using this
     private ConcurrentHashMap<Integer, MapleCharacter> players = new ConcurrentHashMap<>();
@@ -59,15 +56,6 @@ public abstract class GAutoEvent extends GenericEvent {
             throw new NullPointerException("Can't load map instances when auto event is set to not need them");
         }
         return maps.getOrDefault(mapId, new FieldBuilder(0, ChannelID, mapId).loadAll().build());
-    }
-
-    @Deprecated
-    public final Task registerRespawnTimer() {
-        return respawnTask = TaskExecutor.createRepeatingTask(() -> maps.values().forEach(MapleMap::respawn), 1000, 1000);
-    }
-
-    public final Task getRespawnTask() {
-        return respawnTask;
     }
 
     public final World getWorld() {
