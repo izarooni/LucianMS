@@ -2,17 +2,22 @@
 what is readme
 ## Dependencies
 - Apache Commons IO
-  - Version: **2.4**
-  - [Maven](https://mvnrepository.com/artifact/commons-io/commons-io/2.4)
+  - Version: **2.6**
+  - [Maven](https://mvnrepository.com/artifact/commons-io/commons-io)
 - Apache Commons Net
   - Version: **3.6**
-  - [Maven](https://mvnrepository.com/artifact/commons-net/commons-net/3.6)
+  - [Maven](https://mvnrepository.com/artifact/commons-net/commons-net)
 - Apache MINA Core
-  - Version: **2.0.16**
+  - Version: **2.0.19**
   - [Maven](https://mvnrepository.com/artifact/org.apache.mina/mina-core)
 - MySQL Connector
-  - Version: **5.1.34**
-  - [Maven](https://mvnrepository.com/artifact/mysql/mysql-connector-java/5.1.34)
-- SLF4J ( sl4fj-api & slf4j-simple )
+  - Version: **8.0.12**
+  - [Maven](https://mvnrepository.com/artifact/mysql/mysql-connector-java)
+- SLF4J-API ( sl4fj-api & slf4j-simple )
   - Version: **1.7.25**
   - [Website](https://www.slf4j.org/download.html)
+  - [Maven](https://mvnrepository.com/artifact/org.slf4j/slf4j-api)
+- SLF4J-Simple
+  - Version: **1.7.25**
+  - [Website](https://www.slf4j.org/download.html)
+  - [Maven](https://mvnrepository.com/artifact/org.slf4j/slf4j-simple)

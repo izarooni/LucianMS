@@ -3,8 +3,8 @@ package net;
 import com.lucianms.server.events.PongEvent;
 import com.lucianms.server.events.channel.*;
 import com.lucianms.server.events.login.AccountLoginEvent;
-import net.server.channel.handlers.ChangeChannelEvent;
-import net.server.channel.handlers.NpcMoveEvent;
+import net.server.channel.handlers.*;
+import net.server.handlers.login.SetGenderHandler;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -42,6 +42,7 @@ public final class PacketManager {
     private static void addPacketHandlers() {
         handlers.set(RecvOpcode.PONG.getValue(), PongEvent.class);
         handlers.set(RecvOpcode.LOGIN_PASSWORD.getValue(), AccountLoginEvent.class);
+        handlers.set(RecvOpcode.SET_GENDER.getValue(), SetGenderHandler.class);
 
         handlers.set(RecvOpcode.CHANGE_MAP.getValue(), ChangeMapEvent.class);
         handlers.set(RecvOpcode.CHANGE_MAP_SPECIAL.getValue(), ChangeMapSpecialEvent.class);
@@ -54,12 +55,17 @@ public final class PacketManager {
         handlers.set(RecvOpcode.MONSTER_CARNIVAL.getValue(), MonsterCarnivalEvent.class);
 
         handlers.set(RecvOpcode.DISTRIBUTE_AP.getValue(), DistributeAPEvent.class);
+        handlers.set(RecvOpcode.HEAL_OVER_TIME.getValue(), HealOvertimeHandler.class);
 
         handlers.set(RecvOpcode.RPS_ACTION.getValue(), RockPaperScissorsEvent.class);
 
         handlers.set(RecvOpcode.GENERAL_CHAT.getValue(), AllChatEvent.class);
         handlers.set(RecvOpcode.ENTER_CASHSHOP.getValue(), EnterCashShopEvent.class);
         handlers.set(RecvOpcode.CHANGE_CHANNEL.getValue(), ChangeChannelEvent.class);
+        handlers.set(RecvOpcode.CHANGE_KEYMAP.getValue(), KeymapChangeHandler.class);
+        handlers.set(RecvOpcode.HIRED_MERCHANT_REQUEST.getValue(), HiredMerchantEvent.class);
+        handlers.set(RecvOpcode.USE_REMOTE.getValue(), RemoteGachaponHandler.class);
+        handlers.set(RecvOpcode.PARTY_SEARCH_START.getValue(), PartySearchStartHandler.class);
 
         //region movement handlers
         handlers.set(RecvOpcode.MOVE_PLAYER.getValue(), PlayerMoveEvent.class);

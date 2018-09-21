@@ -21,7 +21,6 @@
 */
 package client.inventory;
 
-import com.mysql.jdbc.Statement;
 import server.MapleItemInformationProvider;
 import server.movement.AbsoluteLifeMovement;
 import server.movement.LifeMovement;
@@ -89,7 +88,7 @@ public class MaplePet extends Item {
     }
 
     public static int createPet(int itemid) {
-        try (PreparedStatement ps = DatabaseConnection.getConnection().prepareStatement("INSERT INTO pets (name, level, closeness, fullness, summoned) VALUES (?, 1, 0, 100, 0)", Statement.RETURN_GENERATED_KEYS)) {
+        try (PreparedStatement ps = DatabaseConnection.getConnection().prepareStatement("INSERT INTO pets (name, level, closeness, fullness, summoned) VALUES (?, 1, 0, 100, 0)", PreparedStatement.RETURN_GENERATED_KEYS)) {
             String petName = MapleItemInformationProvider.getInstance().getName(itemid);
             if (petName == null) {
                 petName = "MISSINGNO";
@@ -109,7 +108,7 @@ public class MaplePet extends Item {
     }
 
     public static int createPet(int itemid, byte level, int closeness, int fullness) {
-        try (PreparedStatement ps = DatabaseConnection.getConnection().prepareStatement("INSERT INTO pets (name, level, closeness, fullness, summoned) VALUES (?, ?, ?, ?, 0)", Statement.RETURN_GENERATED_KEYS)) {
+        try (PreparedStatement ps = DatabaseConnection.getConnection().prepareStatement("INSERT INTO pets (name, level, closeness, fullness, summoned) VALUES (?, ?, ?, ?, 0)", PreparedStatement.RETURN_GENERATED_KEYS)) {
             ps.setString(1, MapleItemInformationProvider.getInstance().getName(itemid));
             ps.setByte(2, level);
             ps.setInt(3, closeness);

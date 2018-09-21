@@ -1,53 +1,44 @@
-/*
-	This file is part of the OdinMS Maple Story Server
-    Copyright (C) 2008 Patrick Huy <patrick.huy@frz.cc>
-		       Matthias Butz <matze@odinms.de>
-		       Jan Christian Meyer <vimes@odinms.de>
-
-    This program is free software: you can redistribute it and/or modify
-    it under the terms of the GNU Affero General Public License as
-    published by the Free Software Foundation version 3 as published by
-    the Free Software Foundation. You may not use, modify or distribute
-    this program under any other version of the GNU Affero General Public
-    License.
-
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU Affero General Public License for more details.
-
-    You should have received a copy of the GNU Affero General Public License
-    along with this program.  If not, see <http://www.gnu.org/licenses/>.
- */
 package net.server.channel.handlers;
 
-import client.MapleClient;
-import net.AbstractMaplePacketHandler;
+import client.inventory.MapleInventoryType;
 import com.lucianms.io.scripting.npc.NPCScriptManager;
-import server.MapleItemInformationProvider;
+import constants.ItemConstants;
+import net.PacketEvent;
 import tools.data.input.SeekableLittleEndianAccessor;
 
 /**
- *
  * @author Generic
+ * @author izarooni
  */
-public final class RemoteGachaponHandler extends AbstractMaplePacketHandler {
-	public final void handlePacket(SeekableLittleEndianAccessor slea, MapleClient c) {
-		int ticket = slea.readInt();
-		int gacha = slea.readInt();
-		if (ticket != 5451000){
-			return;
-		} else if(gacha < 0 || gacha > 11) {
-			return;
-		} else if (c.getPlayer().getInventory(MapleItemInformationProvider.getInstance().getInventoryType(ticket)).countById(ticket) < 1) {
-			return;
-		}
-		int npcId = 9100100;
-		if (gacha != 8 && gacha != 9) {
-			npcId += gacha;
-		} else {
-			npcId = gacha == 8 ? 9100109 : 9100117;
-		}
-		NPCScriptManager.start(c, npcId, "gachaponRemote");
-	}
+public class RemoteGachaponHandler extends PacketEvent {
+
+    private int ticket;
+    private int gacha;
+
+    @Override
+    public void process(SeekableLittleEndianAccessor slea) {
+        ticket = slea.readInt();
+        gacha = slea.readInt();
+        if (ticket != 5451000) {
+            setCanceled(true);
+        } else if (gacha < 0 || gacha > 11) {
+            setCanceled(true);
+        }
+        MapleInventoryType type = ItemConstants.getInventoryType(ticket);
+        if (getClient().getPlayer().getInventory(type).countById(ticket) == 0) {
+            setCanceled(true);
+        }
+    }
+
+    @Override
+    public Object onPacket() {
+        int npcID = 9100100;
+        if (gacha != 8 && gacha != 9) {
+            npcID += gacha;
+        } else {
+            npcID = gacha == 8 ? 9100109 : 9100117;
+        }
+        NPCScriptManager.start(getClient(), npcID, "gachaponRemote");
+        return null;
+    }
 }
