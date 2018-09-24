@@ -85,11 +85,11 @@ public final class CloseRangeDamageEvent extends AbstractDealDamageEvent {
             TaskExecutor.createTask(new Runnable() {
                 @Override
                 public void run() {
-                    fakePlayer.getMap().broadcastMessage(fakePlayer, MaplePacketCreator.closeRangeAttack(fakePlayer, attackInfo.skill, attackInfo.skilllevel, attackInfo.stance, attackInfo.numAttackedAndDamage, attackInfo.allDamage, attackInfo.speed, attackInfo.direction, attackInfo.display), false);
+                    fakePlayer.getMap().broadcastMessage(fakePlayer, MaplePacketCreator.closeRangeAttack(fakePlayer, attackInfo.skill, attackInfo.skillLevel, attackInfo.stance, attackInfo.numAttackedAndDamage, attackInfo.allDamage, attackInfo.speed, attackInfo.direction, attackInfo.display), false);
                 }
             }, 100);
         }
-        player.getMap().broadcastMessage(player, MaplePacketCreator.closeRangeAttack(player, attackInfo.skill, attackInfo.skilllevel, attackInfo.stance, attackInfo.numAttackedAndDamage, attackInfo.allDamage, attackInfo.speed, attackInfo.direction, attackInfo.display), false, true);
+        player.getMap().broadcastMessage(player, MaplePacketCreator.closeRangeAttack(player, attackInfo.skill, attackInfo.skillLevel, attackInfo.stance, attackInfo.numAttackedAndDamage, attackInfo.allDamage, attackInfo.speed, attackInfo.direction, attackInfo.display), false, true);
         int numFinisherOrbs = 0;
         Integer comboBuff = player.getBuffedValue(MapleBuffStat.COMBO);
         if (GameConstants.isFinisherSkill(attackInfo.skill)) {

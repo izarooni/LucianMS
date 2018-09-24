@@ -62,10 +62,10 @@ public final class RangedAttackEvent extends AbstractDealDamageEvent {
         }
 
         if (attackInfo.skill == Buccaneer.ENERGY_ORB || attackInfo.skill == ThunderBreaker.SPARK || attackInfo.skill == Shadower.TAUNT || attackInfo.skill == NightLord.TAUNT) {
-            player.getMap().broadcastMessage(player, MaplePacketCreator.rangedAttack(player, attackInfo.skill, attackInfo.skilllevel, attackInfo.stance, attackInfo.numAttackedAndDamage, 0, attackInfo.allDamage, attackInfo.speed, attackInfo.direction, attackInfo.display), false);
+            player.getMap().broadcastMessage(player, MaplePacketCreator.rangedAttack(player, attackInfo.skill, attackInfo.skillLevel, attackInfo.stance, attackInfo.numAttackedAndDamage, 0, attackInfo.allDamage, attackInfo.speed, attackInfo.direction, attackInfo.display), false);
             applyAttack(player, attackInfo, 1);
         } else if (attackInfo.skill == Aran.COMBO_SMASH || attackInfo.skill == Aran.COMBO_PENRIL || attackInfo.skill == Aran.COMBO_TEMPEST) {
-            player.getMap().broadcastMessage(player, MaplePacketCreator.rangedAttack(player, attackInfo.skill, attackInfo.skilllevel, attackInfo.stance, attackInfo.numAttackedAndDamage, 0, attackInfo.allDamage, attackInfo.speed, attackInfo.direction, attackInfo.display), false);
+            player.getMap().broadcastMessage(player, MaplePacketCreator.rangedAttack(player, attackInfo.skill, attackInfo.skillLevel, attackInfo.stance, attackInfo.numAttackedAndDamage, 0, attackInfo.allDamage, attackInfo.speed, attackInfo.direction, attackInfo.display), false);
             if (attackInfo.skill == Aran.COMBO_SMASH && player.getCombo() >= 30) {
                 player.setCombo((short) 0);
                 applyAttack(player, attackInfo, 1);
@@ -170,16 +170,16 @@ public final class RangedAttackEvent extends AbstractDealDamageEvent {
                     case 3221001: // Pierce
                     case 5221004: // Rapid Fire
                     case 13111002: // KoC Hurricane
-                        packet = MaplePacketCreator.rangedAttack(player, attackInfo.skill, attackInfo.skilllevel, attackInfo.rangedirection, attackInfo.numAttackedAndDamage, visProjectile, attackInfo.allDamage, attackInfo.speed, attackInfo.direction, attackInfo.display);
+                        packet = MaplePacketCreator.rangedAttack(player, attackInfo.skill, attackInfo.skillLevel, attackInfo.rangeDirection, attackInfo.numAttackedAndDamage, visProjectile, attackInfo.allDamage, attackInfo.speed, attackInfo.direction, attackInfo.display);
                         break;
                     default:
-                        packet = MaplePacketCreator.rangedAttack(player, attackInfo.skill, attackInfo.skilllevel, attackInfo.stance, attackInfo.numAttackedAndDamage, visProjectile, attackInfo.allDamage, attackInfo.speed, attackInfo.direction, attackInfo.display);
+                        packet = MaplePacketCreator.rangedAttack(player, attackInfo.skill, attackInfo.skillLevel, attackInfo.stance, attackInfo.numAttackedAndDamage, visProjectile, attackInfo.allDamage, attackInfo.speed, attackInfo.direction, attackInfo.display);
                         break;
                 }
 
                 if (fakePlayer != null && fakePlayer.isFollowing()) {
                     int finalVisProjectile = visProjectile;
-                    TaskExecutor.createTask(() -> fakePlayer.getMap().broadcastMessage(fakePlayer, MaplePacketCreator.rangedAttack(fakePlayer, attackInfo.skill, attackInfo.skilllevel, attackInfo.stance, attackInfo.numAttackedAndDamage, finalVisProjectile, attackInfo.allDamage, attackInfo.speed, attackInfo.direction, attackInfo.display), false, true), 100);
+                    TaskExecutor.createTask(() -> fakePlayer.getMap().broadcastMessage(fakePlayer, MaplePacketCreator.rangedAttack(fakePlayer, attackInfo.skill, attackInfo.skillLevel, attackInfo.stance, attackInfo.numAttackedAndDamage, finalVisProjectile, attackInfo.allDamage, attackInfo.speed, attackInfo.direction, attackInfo.display), false, true), 100);
                 }
 
                 player.getMap().broadcastMessage(player, packet, false, true);

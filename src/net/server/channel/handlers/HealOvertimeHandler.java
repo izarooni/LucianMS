@@ -26,7 +26,7 @@ public class HealOvertimeHandler extends PacketEvent {
             getLogger().warn("Abnormal slow health recovery value {} from {}", incHealth, getClient().getPlayer().getName());
             setCanceled(true);
         }
-        if (incMana < 1 || incMana > 1000) {
+        if (incMana > 1000) {
             getLogger().warn("Abnormal slow mana recovery value {} from {}", incMana, getClient().getPlayer().getName());
             setCanceled(true);
         }
