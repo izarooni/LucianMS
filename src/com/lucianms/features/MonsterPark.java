@@ -60,6 +60,9 @@ public class MonsterPark extends GenericEvent {
                         monster.getListeners().add(new MonsterListener() {
                             @Override
                             public void monsterKilled(int aniTime) {
+                                if (portal != null) {
+                                    portal.setPortalStatus(true);
+                                }
                                 totalExp.addAndGet(monster.getExp());
                                 if (instanceMap.getMonsters().stream().noneMatch(m -> m.getHp() > 0)) {
                                     if (getStage(instanceMap.getId()) == 5) {
@@ -77,9 +80,6 @@ public class MonsterPark extends GenericEvent {
                                             }
                                         }, 3500);
                                     } else {
-                                        if (portal != null) {
-                                            portal.setPortalStatus(true);
-                                        }
                                         instanceMap.broadcastMessage(MaplePacketCreator.showEffect("monsterPark/clear"));
                                     }
                                 }
