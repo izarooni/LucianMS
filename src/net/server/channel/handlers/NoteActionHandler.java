@@ -21,15 +21,15 @@
 */
 package net.server.channel.handlers;
 
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-
+import client.MapleClient;
 import net.AbstractMaplePacketHandler;
 import tools.DatabaseConnection;
 import tools.MaplePacketCreator;
 import tools.data.input.SeekableLittleEndianAccessor;
-import client.MapleClient;
+
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 
 public final class NoteActionHandler extends AbstractMaplePacketHandler {
     public final void handlePacket(SeekableLittleEndianAccessor slea, MapleClient c) {
@@ -37,15 +37,11 @@ public final class NoteActionHandler extends AbstractMaplePacketHandler {
         if (action == 0 && c.getPlayer().getCashShop().getAvailableNotes() > 0) {
             String charname = slea.readMapleAsciiString();
             String message = slea.readMapleAsciiString();
-            try {
-                if (c.getPlayer().getCashShop().isOpened())
-                    c.announce(MaplePacketCreator.showCashInventory(c));
-                
-                    c.getPlayer().sendNote(charname, message, (byte) 1);
-                    c.getPlayer().getCashShop().decreaseNotes();
-            } catch (SQLException e) {
-                e.printStackTrace();
+            if (c.getPlayer().getCashShop().isOpened()) {
+                c.announce(MaplePacketCreator.showCashInventory(c));
             }
+            c.getPlayer().sendNote(charname, message, (byte) 1);
+            c.getPlayer().getCashShop().decreaseNotes();
         } else if (action == 1) {
             int num = slea.readByte();
             slea.readByte();
@@ -60,7 +56,7 @@ public final class NoteActionHandler extends AbstractMaplePacketHandler {
                     ps.setInt(1, id);
                     ResultSet rs = ps.executeQuery();
                     if (rs.next())
-                            fame += rs.getInt("fame");
+                        fame += rs.getInt("fame");
                     rs.close();
 
                     ps = DatabaseConnection.getConnection().prepareStatement("UPDATE notes SET `deleted` = 1 WHERE id = ?");

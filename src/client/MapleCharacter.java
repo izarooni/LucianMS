@@ -2005,6 +2005,15 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
         dropMessage(type, MessageFormatter.arrayFormat(message, object).getMessage());
     }
 
+    /**
+     * @see #sendMessage(int, String, Object...)
+     */
+    public void sendDebugMessage(int type, String message, Object... object) {
+        if (isGM()) {
+            sendMessage(type, "[IMPORTANT] " + message, object);
+        }
+    }
+
     public void dropMessage(String message) {
         dropMessage(6, message);
     }
@@ -2760,7 +2769,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
     }
 
     public int getMaxLevel() {
-        return 200;
+        return 250;
     }
 
     public int getMaxMp() {
@@ -4521,7 +4530,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
         client.announce(MaplePacketCreator.getMacros(skillMacros));
     }
 
-    public void sendNote(String to, String msg, byte fame) throws SQLException {
+    public void sendNote(String to, String msg, byte fame) {
         try (PreparedStatement ps = DatabaseConnection.getConnection().prepareStatement("INSERT INTO notes (`to`, `from`, `message`, `timestamp`, `fame`) VALUES (?, ?, ?, ?, ?)", Statement.RETURN_GENERATED_KEYS)) {
             ps.setString(1, to);
             ps.setString(2, this.getName());
@@ -4529,6 +4538,8 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
             ps.setLong(4, System.currentTimeMillis());
             ps.setByte(5, fame);
             ps.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
     }
 

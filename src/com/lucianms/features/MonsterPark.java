@@ -38,9 +38,10 @@ public class MonsterPark extends GenericEvent {
     public MonsterPark(int worldID, int channelID, int mapID, int baseLevel) {
         this.mapId = mapID;
 
-        for (int i = mapID; i < (mapID + (Stages * Increment)); i += Increment) {
+        for (int i = mapID; i <= (mapID + (Stages * Increment)); i += Increment) {
             MapleMap instanceMap = new FieldBuilder(worldID, channelID, i).loadFootholds().loadPortals().build();
             if (instanceMap != null) {
+                instanceMap.setRespawnEnabled(false);
                 maps.put(i, instanceMap);
                 final MaplePortal portal;
                 if (instanceMap.getPortal("next00") != null) {
@@ -60,7 +61,7 @@ public class MonsterPark extends GenericEvent {
                             @Override
                             public void monsterKilled(int aniTime) {
                                 totalExp.addAndGet(monster.getExp());
-                                if (instanceMap.getMonsters().isEmpty()) {
+                                if (instanceMap.getMonsters().stream().noneMatch(m -> m.getHp() > 0)) {
                                     if (getStage(instanceMap.getId()) == 5) {
                                         timeout.cancel();
                                         instanceMap.broadcastMessage(MaplePacketCreator.showEffect("monsterPark/clearF"));

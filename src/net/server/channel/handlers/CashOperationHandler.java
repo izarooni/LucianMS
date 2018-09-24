@@ -110,11 +110,7 @@ public final class CashOperationHandler extends AbstractMaplePacketHandler {
             c.announce(MaplePacketCreator.showGiftSucceed(recipient.get("name"), cItem));
             cs.gainCash(4, -cItem.getPrice());
             c.announce(MaplePacketCreator.showCash(player));
-            try {
-                player.sendNote(recipient.get("name"), player.getName() + " has sent you a gift! Go check out the Cash Shop.", (byte) 0); //fame or not
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
+            player.sendNote(recipient.get("name"), player.getName() + " has sent you a gift! Go check out the Cash Shop.", (byte) 0); //fame or not
             MapleCharacter receiver = c.getChannelServer().getPlayerStorage().getCharacterByName(recipient.get("name"));
             if (receiver != null) receiver.showNote();
         } else if (action == 0x05) { // Modify wish list
@@ -251,11 +247,7 @@ public final class CashOperationHandler extends AbstractMaplePacketHandler {
                     cs.gift(partner.getId(), player.getName(), text, item.getSN(), (ringid + 1));
                     cs.gainCash(toCharge, -ring.getPrice());
                     player.addCrushRing(MapleRing.loadFromDb(ringid));
-                    try {
-                        player.sendNote(partner.getName(), text, (byte) 1);
-                    } catch (SQLException e) {
-                        e.printStackTrace();
-                    }
+                    player.sendNote(partner.getName(), text, (byte) 1);
                     partner.showNote();
                 }
             }
@@ -303,11 +295,7 @@ public final class CashOperationHandler extends AbstractMaplePacketHandler {
                     cs.gift(partner.getId(), player.getName(), text, item.getSN(), (ringid + 1));
                     cs.gainCash(payment, -ring.getPrice());
                     player.addFriendshipRing(MapleRing.loadFromDb(ringid));
-                    try {
-                        player.sendNote(partner.getName(), text, (byte) 1);
-                    } catch (SQLException e) {
-                        e.printStackTrace();
-                    }
+                    player.sendNote(partner.getName(), text, (byte) 1);
                     partner.showNote();
                 }
             }

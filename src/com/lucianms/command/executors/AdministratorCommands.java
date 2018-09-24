@@ -132,7 +132,7 @@ public class AdministratorCommands {
                     }
                 } else if (args.get(0).equalsIgnoreCase("monsters")) {
                     for (MapleMonster monsters : player.getMap().getMonsters()) {
-                        player.sendMessage("{} / id:{} / oid:{} / name:{}", monsters.getPosition().toString(), monsters.getId(), monsters.getObjectId(), monsters.getName());
+                        player.sendMessage("{} / id:{} / oid:{} / name:{} / HP:{}", monsters.getPosition().toString(), monsters.getId(), monsters.getObjectId(), monsters.getName(), monsters.getHp());
                     }
                 } else if (args.get(0).equalsIgnoreCase("npcs")) {
                     for (MapleMapObject object : player.getMap().getMapObjects()) {
