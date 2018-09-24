@@ -25,6 +25,7 @@ function action(mode, type, selection) {
         return (e instanceof MonsterPark);
     }).findFirst();
     if (status == 1) {
+        print("TEST!");
         // skip
     } else if (status == 2) {
         let canEnter = true;
