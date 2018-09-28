@@ -1139,7 +1139,7 @@ public class MapleClient {
             announce(MaplePacketCreator.enableActions());
             return;
         }
-        String[] socket = getChannelServer().getIP().split(":");
+        String[] socket = getWorldServer().getChannel(channel).getIP().split(":");
         if (player.getTrade() != null) {
             MapleTrade.cancelTrade(getPlayer());
         }
