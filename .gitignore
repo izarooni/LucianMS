@@ -1,11 +1,16 @@
+#Project files
 .idea
-Backups
-bin
 out
-wz
+classes
 Harambae source.iml
-MapleWeaponQuest.txt
-world.ini
 src/META-INF/MANIFEST.MF
+
+#Server files
+bin
+wz
+world.ini
 server-config.json
 whitelist.json
+
+#Ian's PC
+Backups

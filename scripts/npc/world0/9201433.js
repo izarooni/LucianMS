@@ -151,7 +151,7 @@ function action(mode, type, selection) {
                 status = 134;
                 cm.sendYesNo("#eCongratulations on reaching such a high level. Do you want to Job Advance now?");
             } else if (cm.getLevel() < 200) {
-                cm.sendNext("#eSorry, but you have already attained the highest level of your job's mastery. \r\n\r\nHowever, you can #rrebirth#k when you are level 200.");
+                cm.sendNext("#eSorry, but you have already attained the highest level of your job's mastery.");
                 status = 98;
             } else {
                 cm.dispose();
