@@ -26,8 +26,6 @@ import client.inventory.*;
 import client.inventory.Equip.ScrollResult;
 import client.status.MonsterStatus;
 import client.status.MonsterStatusEffect;
-import com.lucianms.server.pqs.carnival.MCarnivalGame;
-import com.lucianms.server.pqs.carnival.MCarnivalTeam;
 import constants.GameConstants;
 import constants.ItemConstants;
 import constants.ServerConstants;
@@ -508,22 +506,25 @@ public class MaplePacketCreator {
     }
 
     /**
-     * Gets a login failed packet.
-     * <p>
-     * Possible values for <code>reason</code>:<br> 3: ID deleted or blocked<br>
-     * 4: Incorrect password<br> 5: Not a registered id<br> 6: System error<br>
-     * 7: Already logged in<br> 8: System error<br> 9: System error<br> 10:
-     * Cannot process so many connections<br> 11: Only users older than 20 can
-     * use this channel<br> 13: Unable to log on as master at this ip<br> 14:
-     * Wrong gateway or personal info and weird korean button<br> 15: Processing
-     * request with that korean button!<br> 16: Please verify your account
-     * through email...<br> 17: Wrong gateway or personal info<br> 21: Please
-     * verify your account through email...<br> 23: License agreement<br> 25:
-     * Maple Europe notice =[ FUCK YOU NEXON<br> 27: Some weird full client
-     * notice, probably for trial versions<br>
-     *
-     * @param reason The reason logging in failed.
-     * @return The login failed packet.
+     * <ol>
+     * <li value="3">ID deleted or blocked</li>
+     * <li value="4">Incorrect password</li>
+     * <li value="5">Not a registered id</li>
+     * <li value="6">System error</li>
+     * <li value="7">Already logged in</li>
+     * <li value="8">System error</li>
+     * <li value="9">System error</li>
+     * <li value="10">Cannot process so many connections</li>
+     * <li value="11">Only users older than 20 can use this channel</li>
+     * <li value="13">Unable to log on as master at this ip</li>
+     * <li value="14">Wrong gateway or personal info and weird korean button</li>
+     * <li value="15">Processing request with that korean button!</li>
+     * <li value="16">Please verify your account through email...</li>
+     * <li value="17">Wrong gateway or personal info</li>
+     * <li value="21">Please verify your account through email...</li>
+     * <li value="23">License agreement 25: Maple Europe notice =[ FUCK YOU NEXON</li>
+     * <li value="27">Some weird full client notice, probably for trial versions</li>
+     * </ol>
      */
     public static byte[] getLoginFailed(int reason) {
         final MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter(8);
@@ -599,12 +600,6 @@ public class MaplePacketCreator {
         return mplew.getPacket();
     }
 
-    /**
-     * Gets a successful authentication and PIN Request packet.
-     *
-     * @param c
-     * @return The PIN request packet.
-     */
     public static byte[] getAuthSuccess(MapleClient c) {
         final MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
         mplew.writeShort(SendOpcode.LOGIN_STATUS.getValue());
