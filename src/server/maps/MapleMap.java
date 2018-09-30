@@ -37,6 +37,7 @@ import com.lucianms.cquest.requirement.CQuestItemRequirement;
 import com.lucianms.cquest.requirement.CQuestKillRequirement;
 import com.lucianms.features.GenericEvent;
 import com.lucianms.features.MonsterPark;
+import com.lucianms.features.PlayerBattle;
 import com.lucianms.features.emergency.Emergency;
 import com.lucianms.features.emergency.EmergencyAttack;
 import com.lucianms.features.emergency.EmergencyDuel;
@@ -1669,6 +1670,26 @@ public class MapleMap {
         if (mapid == 109060000) {
             chr.announce(MaplePacketCreator.rollSnowBall(true, 0, null, null));
         }
+
+        //region PvP enabled maps
+        {
+            PlayerBattle battle = chr.getPlayerBattle();
+            if (Arrays.binarySearch(
+                    Server.getInstance().getConfig().getIntArray("PvPEnabled"), getId()) > -1) {
+                if (battle == null) {
+                    new PlayerBattle().registerPlayer(chr);
+                    chr.sendMessage(6, "You have entered a PvP map");
+                }
+            } else if (battle != null) {
+                if (battle.getLastAttack() < 5) {
+                    chr.sendMessage(6, "You remain in combat mode due to attacking or being attacked too recently");
+                } else {
+                    battle.unregisterPlayer(chr);
+                    chr.sendMessage(6, "You are no longer in PvP mode");
+                }
+            }
+        }
+        //endregion
 
         //region emergency attack
         // empty map or contains only party members

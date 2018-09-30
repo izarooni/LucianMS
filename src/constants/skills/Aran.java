@@ -6,12 +6,14 @@ public class Aran {
     public static final int DOUBLE_SWING = 21000002;
     public static final int COMBAT_STEP = 21001001;
     public static final int POLEARM_BOOSTER = 21001003;
+
     public static final int POLEARM_MASTERY = 21100000;
     public static final int TRIPLE_SWING = 21100001;
     public static final int FINAL_CHARGE = 21100002;
     public static final int COMBO_SMASH = 21100004;
     public static final int COMBO_DRAIN = 21100005;
     public static final int BODY_PRESSURE = 21101003;
+
     public static final int COMBO_CRITICAL = 21110000;
     public static final int FULL_SWING = 21110002;
     public static final int FINAL_CROSS = 21110003;
@@ -21,6 +23,7 @@ public class Aran {
     public static final int HIDDEN_FULL_SWING_TRIPLE = 21110008;
     public static final int SMART_KNOCKBACK = 21111001;
     public static final int SNOW_CHARGE = 21111005;
+
     public static final int HIGH_MASTERY = 21120001;
     public static final int OVER_SWING = 21120002;
     public static final int HIGH_DEFENSE = 21120004;

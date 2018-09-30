@@ -55,6 +55,7 @@ public final class PacketManager {
         handlers.set(RecvOpcode.MONSTER_CARNIVAL.getValue(), MonsterCarnivalEvent.class);
 
         handlers.set(RecvOpcode.DISTRIBUTE_AP.getValue(), DistributeAPEvent.class);
+        handlers.set(RecvOpcode.DISTRIBUTE_SP.getValue(), DistributeSPHandler.class);
         handlers.set(RecvOpcode.HEAL_OVER_TIME.getValue(), HealOvertimeHandler.class);
 
         handlers.set(RecvOpcode.RPS_ACTION.getValue(), RockPaperScissorsEvent.class);

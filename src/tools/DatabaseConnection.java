@@ -22,12 +22,6 @@ public class DatabaseConnection {
 
     public static void useConfig(Config config) {
         lConnection = new ThreadLocalConnection(config);
-
-        try {
-            Class.forName("com.mysql.jdbc.Driver");
-        } catch (ClassNotFoundException e) {
-            LOGGER.error("Unable to register jdbc driver", e);
-        }
         try (PreparedStatement ps = getConnection().prepareStatement("SELECT @@GLOBAL.wait_timeout")) {
             try (ResultSet rs = ps.executeQuery()) {
                 if (rs.next()) {

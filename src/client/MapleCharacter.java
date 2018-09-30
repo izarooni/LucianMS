@@ -31,6 +31,7 @@ import com.lucianms.cquest.CQuestBuilder;
 import com.lucianms.cquest.CQuestData;
 import com.lucianms.features.GenericEvent;
 import com.lucianms.features.ManualPlayerEvent;
+import com.lucianms.features.PlayerBattle;
 import com.lucianms.features.PlayerTitles;
 import com.lucianms.features.controllers.JumpQuestController;
 import com.lucianms.features.summoning.ShenronSummoner;
@@ -1187,7 +1188,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
         for (MapleData skill_ : MapleDataProviderFactory.getDataProvider(new File(System.getProperty("wzpath") + "/" + "String.wz")).getData("Skill.img").getChildren()) {
             try {
                 Skill skill = SkillFactory.getSkill(Integer.parseInt(skill_.getName()));
-                if (skill != null && skill != SkillFactory.getSkill(Aran.HIDDEN_FULL_SWING_DOUBLE) && skill != SkillFactory.getSkill(Aran.HIDDEN_FULL_SWING_TRIPLE) && skill != SkillFactory.getSkill(Aran.HIDDEN_OVER_SWING_DOUBLE) && skill != SkillFactory.getSkill(Aran.HIDDEN_OVER_SWING_TRIPLE) && (skill.getId() / 100) != 9) {
+                if (skill != null && ((skill.getId() / 100) != 9 || isGM())) {
                     changeSkillLevel(skill, (byte) skill.getMaxLevel(), skill.getMaxLevel(), -1);
                 }
             } catch (NumberFormatException | NullPointerException e) {
@@ -1416,70 +1417,94 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
     }
 
     public void setMasteries(int jobId) {
-        int[] skills = new int[4];
-        for (int i = 0; i > skills.length; i++) {
-            skills[i] = 0; // that initalization meng
-        }
-        if (jobId == 112) {
-            skills[0] = Hero.ACHILLES;
-            skills[1] = Hero.MONSTER_MAGNET;
-            skills[2] = Hero.BRANDISH;
-        } else if (jobId == 122) {
-            skills[0] = Paladin.ACHILLES;
-            skills[1] = Paladin.MONSTER_MAGNET;
-            skills[2] = Paladin.BLAST;
-        } else if (jobId == 132) {
-            skills[0] = DarkKnight.BEHOLDER;
-            skills[1] = DarkKnight.ACHILLES;
-            skills[2] = DarkKnight.MONSTER_MAGNET;
-        } else if (jobId == 212) {
-            skills[0] = FPArchMage.BIG_BANG;
-            skills[1] = FPArchMage.MANA_REFLECTION;
-            skills[2] = FPArchMage.PARALYZE;
-        } else if (jobId == 222) {
-            skills[0] = ILArchMage.BIG_BANG;
-            skills[1] = ILArchMage.MANA_REFLECTION;
-            skills[2] = ILArchMage.CHAIN_LIGHTNING;
-        } else if (jobId == 232) {
-            skills[0] = Bishop.BIG_BANG;
-            skills[1] = Bishop.MANA_REFLECTION;
-            skills[2] = Bishop.HOLY_SHIELD;
-        } else if (jobId == 312) {
-            skills[0] = Bowmaster.BOW_EXPERT;
-            skills[1] = Bowmaster.HAMSTRING;
-            skills[2] = Bowmaster.SHARP_EYES;
-        } else if (jobId == 322) {
-            skills[0] = Marksman.MARKSMAN_BOOST;
-            skills[1] = Marksman.BLIND;
-            skills[2] = Marksman.SHARP_EYES;
-        } else if (jobId == 412) {
-            skills[0] = NightLord.SHADOW_STARS;
-            skills[1] = NightLord.SHADOW_SHIFTER;
-            skills[2] = NightLord.VENOMOUS_STAR;
-        } else if (jobId == 422) {
-            skills[0] = Shadower.SHADOW_SHIFTER;
-            skills[1] = Shadower.VENOMOUS_STAB;
-            skills[2] = Shadower.BOOMERANG_STEP;
-        } else if (jobId == 512) {
-            skills[0] = Buccaneer.BARRAGE;
-            skills[1] = Buccaneer.ENERGY_ORB;
-            skills[2] = Buccaneer.SPEED_INFUSION;
-            skills[3] = Buccaneer.DRAGON_STRIKE;
-        } else if (jobId == 522) {
-            skills[0] = Corsair.ELEMENTAL_BOOST;
-            skills[1] = Corsair.BULLSEYE;
-            skills[2] = Corsair.WRATH_OF_THE_OCTOPI;
-            skills[3] = Corsair.RAPID_FIRE;
-        } else if (jobId == 2112) {
-            skills[0] = Aran.OVER_SWING;
-            skills[1] = Aran.HIGH_MASTERY;
-            skills[2] = Aran.FREEZE_STANDING;
-        } else if (jobId == 2217) {
-            skills[0] = Evan.MAPLE_WARRIOR;
-            skills[1] = Evan.ILLUSION;
-        } else if (jobId == 2218) {
-            skills[0] = Evan.BLESSING_OF_THE_ONYX;
-            skills[1] = Evan.BLAZE;
+        int[] skills;
+        switch (jobId) {
+            default:
+                return;
+            case 112:
+                skills = new int[3];
+                skills[0] = Hero.ACHILLES;
+                skills[1] = Hero.MONSTER_MAGNET;
+                skills[2] = Hero.BRANDISH;
+                break;
+            case 132:
+                skills = new int[3];
+                skills[0] = DarkKnight.BEHOLDER;
+                skills[1] = DarkKnight.ACHILLES;
+                skills[2] = DarkKnight.MONSTER_MAGNET;
+                break;
+            case 212:
+                skills = new int[3];
+                skills[0] = FPArchMage.BIG_BANG;
+                skills[1] = FPArchMage.MANA_REFLECTION;
+                skills[2] = FPArchMage.PARALYZE;
+                break;
+            case 222:
+                skills = new int[3];
+                skills[0] = ILArchMage.BIG_BANG;
+                skills[1] = ILArchMage.MANA_REFLECTION;
+                skills[2] = ILArchMage.CHAIN_LIGHTNING;
+                break;
+            case 232:
+                skills = new int[3];
+                skills[0] = Bishop.BIG_BANG;
+                skills[1] = Bishop.MANA_REFLECTION;
+                skills[2] = Bishop.HOLY_SHIELD;
+                break;
+            case 312:
+                skills = new int[3];
+                skills[0] = Bowmaster.BOW_EXPERT;
+                skills[1] = Bowmaster.HAMSTRING;
+                skills[2] = Bowmaster.SHARP_EYES;
+                break;
+            case 322:
+                skills = new int[3];
+                skills[0] = Marksman.MARKSMAN_BOOST;
+                skills[1] = Marksman.BLIND;
+                skills[2] = Marksman.SHARP_EYES;
+                break;
+            case 412:
+                skills = new int[3];
+                skills[0] = NightLord.SHADOW_STARS;
+                skills[1] = NightLord.SHADOW_SHIFTER;
+                skills[2] = NightLord.VENOMOUS_STAR;
+                break;
+            case 422:
+                skills = new int[3];
+                skills[0] = Shadower.SHADOW_SHIFTER;
+                skills[1] = Shadower.VENOMOUS_STAB;
+                skills[2] = Shadower.BOOMERANG_STEP;
+                break;
+            case 512:
+                skills = new int[4];
+                skills[0] = Buccaneer.BARRAGE;
+                skills[1] = Buccaneer.ENERGY_ORB;
+                skills[2] = Buccaneer.SPEED_INFUSION;
+                skills[3] = Buccaneer.DRAGON_STRIKE;
+                break;
+            case 522:
+                skills = new int[4];
+                skills[0] = Corsair.ELEMENTAL_BOOST;
+                skills[1] = Corsair.BULLSEYE;
+                skills[2] = Corsair.WRATH_OF_THE_OCTOPI;
+                skills[3] = Corsair.RAPID_FIRE;
+                break;
+            case 2112:
+                skills = new int[3];
+                skills[0] = Aran.OVER_SWING;
+                skills[1] = Aran.HIGH_MASTERY;
+                skills[2] = Aran.FREEZE_STANDING;
+                break;
+            case 2217:
+                skills = new int[2];
+                skills[0] = Evan.MAPLE_WARRIOR;
+                skills[1] = Evan.ILLUSION;
+                break;
+            case 2218:
+                skills = new int[2];
+                skills[0] = Evan.BLESSING_OF_THE_ONYX;
+                skills[1] = Evan.BLAZE;
+                break;
         }
         for (Integer skillId : skills) {
             if (skillId != 0) {
@@ -1692,6 +1717,26 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
 
     public void changePage(int page) {
         this.currentPage = page;
+    }
+
+    public void applyHiddenSkillFixes(Skill skill) {
+        SkillEntry entry;
+        switch (skill.getId()) {
+            case Aran.FULL_SWING:
+            case Aran.HIDDEN_FULL_SWING_DOUBLE:
+            case Aran.HIDDEN_FULL_SWING_TRIPLE:
+                entry = getSkills().get(SkillFactory.getSkill(Aran.FULL_SWING)); // one time index
+                changeSkillLevel(SkillFactory.getSkill(Aran.HIDDEN_FULL_SWING_DOUBLE), entry.skillevel, entry.masterlevel, entry.expiration);
+                changeSkillLevel(SkillFactory.getSkill(Aran.HIDDEN_FULL_SWING_TRIPLE), entry.skillevel, entry.masterlevel, entry.expiration);
+                break;
+            case Aran.OVER_SWING:
+            case Aran.HIDDEN_OVER_SWING_DOUBLE:
+            case Aran.HIDDEN_OVER_SWING_TRIPLE:
+                entry = getSkills().get(SkillFactory.getSkill(Aran.OVER_SWING)); // one time index
+                changeSkillLevel(SkillFactory.getSkill(Aran.HIDDEN_OVER_SWING_DOUBLE), entry.skillevel, entry.masterlevel, entry.expiration);
+                changeSkillLevel(SkillFactory.getSkill(Aran.HIDDEN_OVER_SWING_TRIPLE), entry.skillevel, entry.masterlevel, entry.expiration);
+                break;
+        }
     }
 
     public void changeSkillLevel(Skill skill, byte newLevel, int newMasterlevel, long expiration) {
@@ -2003,6 +2048,15 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
      */
     public void sendMessage(int type, String message, Object... object) {
         dropMessage(type, MessageFormatter.arrayFormat(message, object).getMessage());
+    }
+
+    /**
+     * @see #sendMessage(int, String, Object...)
+     */
+    public void sendDebugMessage(int type, String message, Object... object) {
+        if (isGM()) {
+            sendMessage(type, "[IMPORTANT] " + message, object);
+        }
     }
 
     public void dropMessage(String message) {
@@ -2760,7 +2814,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
     }
 
     public int getMaxLevel() {
-        return 200;
+        return 250;
     }
 
     public int getMaxMp() {
@@ -4521,7 +4575,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
         client.announce(MaplePacketCreator.getMacros(skillMacros));
     }
 
-    public void sendNote(String to, String msg, byte fame) throws SQLException {
+    public void sendNote(String to, String msg, byte fame) {
         try (PreparedStatement ps = DatabaseConnection.getConnection().prepareStatement("INSERT INTO notes (`to`, `from`, `message`, `timestamp`, `fame`) VALUES (?, ?, ?, ?, ?)", Statement.RETURN_GENERATED_KEYS)) {
             ps.setString(1, to);
             ps.setString(2, this.getName());
@@ -4529,6 +4583,8 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
             ps.setLong(4, System.currentTimeMillis());
             ps.setByte(5, fame);
             ps.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
     }
 
@@ -5671,6 +5727,10 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
 
     public void removeGenericEvent(GenericEvent event) {
         genericEvents.remove(event);
+    }
+
+    public PlayerBattle getPlayerBattle() {
+        return (PlayerBattle) getGenericEvents().stream().filter(g -> g instanceof PlayerBattle).findFirst().orElse(null);
     }
 
     public int getRiceCakes() {

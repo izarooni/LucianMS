@@ -18,8 +18,7 @@ public class ChangeChannelEvent extends PacketEvent {
     @Override
     public void process(SeekableLittleEndianAccessor slea) {
         MapleCharacter player = getClient().getPlayer();
-
-        channelID = slea.readInt() + 1;
+        channelID = slea.readByte() + 1;
         if (getClient().getChannel() == channelID) {
             setCanceled(true);
         }

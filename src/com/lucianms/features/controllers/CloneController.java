@@ -44,10 +44,7 @@ public class CloneController extends GenericEvent {
                 fPlayer.removeGenericEvent(pvp.get());
                 player.dropMessage("Clone is no longer PvPing");
             } else {
-                PlayerBattle battle = new PlayerBattle(fPlayer);
-                if (fPlayer.addGenericEvent(battle)) {
-                    player.dropMessage("Clone is now PvPing");
-                }
+                new PlayerBattle().registerPlayer(fPlayer);
             }
         } else if (event.getItemId() == 2002003) { // unregister
             player.removeGenericEvent(this);

@@ -17,6 +17,7 @@ import org.slf4j.LoggerFactory;
 import server.CashShop;
 import tools.data.output.MaplePacketLittleEndianWriter;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.Scanner;
@@ -133,8 +134,12 @@ public class ConsoleCommands {
                         break;
                     }
                     case "config": {
-                        Server.getInstance().getConfig().clearCaches();
-                        LOGGER.info("Server configuration cache cleared!");
+                        try {
+                            Server.getInstance().reloadConfig();
+                            LOGGER.info("Server configuration reloaded!");
+                        } catch (FileNotFoundException e) {
+                            LOGGER.error("Failed to reload config", e);
+                        }
                         break;
                     }
                 }

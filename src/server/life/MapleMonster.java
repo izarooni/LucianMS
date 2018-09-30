@@ -126,7 +126,7 @@ public class MapleMonster extends AbstractLoadedMapleLife {
 
     public int getMaxHp() {
         if (overrideStats != null && overrideStats.getHp() > 0) {
-            return stats.getHp();
+            return overrideStats.getHp();
         }
         return stats.getHp();
     }

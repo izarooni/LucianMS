@@ -26,13 +26,13 @@ import client.inventory.Equip;
 import client.inventory.Item;
 import client.inventory.MapleInventoryType;
 import client.inventory.MaplePet;
+import com.lucianms.io.scripting.npc.NPCScriptManager;
+import com.lucianms.scheduler.TaskExecutor;
 import com.lucianms.server.events.channel.DistributeAPEvent;
 import constants.ExpTable;
 import constants.ItemConstants;
 import net.AbstractMaplePacketHandler;
 import net.server.Server;
-import com.lucianms.scheduler.TaskExecutor;
-import com.lucianms.io.scripting.npc.NPCScriptManager;
 import server.MapleInventoryManipulator;
 import server.MapleItemInformationProvider;
 import server.MapleShop;
@@ -43,7 +43,6 @@ import tools.MaplePacketCreator;
 import tools.Pair;
 import tools.data.input.SeekableLittleEndianAccessor;
 
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
@@ -349,10 +348,7 @@ public final class UseCashItemHandler extends AbstractMaplePacketHandler {
         } else if (itemType == 509) {
             String sendTo = slea.readMapleAsciiString();
             String msg = slea.readMapleAsciiString();
-            try {
-                player.sendNote(sendTo, msg, (byte) 0);
-            } catch (SQLException e) {
-            }
+            player.sendNote(sendTo, msg, (byte) 0);
             remove(c, itemId);
         } else if (itemType == 510) {
             player.getMap().broadcastMessage(MaplePacketCreator.musicChange("Jukebox/Congratulation"));
@@ -372,6 +368,11 @@ public final class UseCashItemHandler extends AbstractMaplePacketHandler {
                 return;
             }
             Item item = player.getInventory(MapleInventoryType.CASH).getItem(pet.getPosition());
+            if (item == null) {
+                player.sendDebugMessage(5, "Your pet (UID:{}) item {} in slot {} does not seem to exist", pet.getUniqueId(), pet.getItemId(), pet.getPosition());
+                c.announce(MaplePacketCreator.enableActions());
+                return;
+            }
             String newName = slea.readMapleAsciiString();
             pet.setName(newName);
             pet.saveToDb();

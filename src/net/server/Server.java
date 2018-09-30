@@ -64,6 +64,7 @@ import tools.Pair;
 import tools.StringUtil;
 
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.URISyntaxException;
@@ -171,11 +172,9 @@ public class Server implements Runnable {
                 LOGGER.info("Server config created. Configure settings and restart the server");
                 System.exit(0);
                 return;
-            } else {
-                config = new Config(new JSONObject(new JSONTokener(new FileInputStream("server-config.json"))));
             }
-
-            if (config.getBoolean("WhitelistEnabled")) {
+            reloadConfig();
+            if (getConfig().getBoolean("WhitelistEnabled")) {
                 if (Defaults.createDefaultIfAbsent(null, "whitelist.json")) {
                     LOGGER.info("Whitelist file created");
                 }
@@ -292,6 +291,10 @@ public class Server implements Runnable {
 
     public Properties getSubnetInfo() {
         return subnetInfo;
+    }
+
+    public void reloadConfig() throws FileNotFoundException {
+        config = new Config(new JSONObject(new JSONTokener(new FileInputStream("server-config.json"))));
     }
 
     public Config getConfig() {

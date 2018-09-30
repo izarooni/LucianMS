@@ -223,7 +223,7 @@ public class FieldBuilder {
                     life.setPosition(new Point(x, y));
                     life.setHide(hide);
 
-                    if (type.equals("n")) {
+                    if (type.equals("n") && NPCs) {
                         ((MapleNPC) life).setScript(rs.getString("script"));
                         map.addMapObject(life);
                     } else if (type.equals("m")) {
@@ -281,6 +281,11 @@ public class FieldBuilder {
                         }
                     }
                 } else {
+                    if (!NPCs && myLife.getType() == MapleMapObjectType.NPC) {
+                        continue;
+                    } else if (!reactors && myLife.getType() == MapleMapObjectType.REACTOR) {
+                        continue;
+                    }
                     map.addMapObject(myLife);
                 }
             } else {
@@ -315,7 +320,7 @@ public class FieldBuilder {
         // @formatter:off
         if (portals) obtainPortals();
         if (footholds) obtainFootholds();
-        if (playerNPCs || NPCs || monsters || SQLSpawns) obtainSpawns();
+        obtainSpawns();
         if (reactors) obtainReactors();
         // @formatter:on
         return map;

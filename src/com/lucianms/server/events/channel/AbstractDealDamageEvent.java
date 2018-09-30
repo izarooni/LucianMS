@@ -56,7 +56,7 @@ public abstract class AbstractDealDamageEvent extends PacketEvent {
 
     public static class AttackInfo {
 
-        public int numAttacked, numDamage, numAttackedAndDamage, skill, skilllevel, stance, direction, rangedirection, charge, display;
+        public int numAttacked, numDamage, numAttackedAndDamage, skill, skillLevel, stance, direction, rangeDirection, charge, display;
         public Map<Integer, List<Integer>> allDamage;
         public boolean isHH = false, isTempest = false, ranged, magic;
         public int speed = 4;
@@ -122,11 +122,23 @@ public abstract class AbstractDealDamageEvent extends PacketEvent {
                     }
                 }
                 int mobCount = attackEffect.getMobCount();
-                if (attack.skill == DawnWarrior.FINAL_ATTACK || attack.skill == Page.FINAL_ATTACK_BW || attack.skill == Page.FINAL_ATTACK_SWORD || attack.skill == Fighter.FINAL_ATTACK_SWORD || attack.skill == Fighter.FINAL_ATTACK_AXE || attack.skill == Spearman.FINAL_ATTACK_SPEAR || attack.skill == Spearman.FINAL_ATTACK_POLE_ARM || attack.skill == WindArcher.FINAL_ATTACK || attack.skill == DawnWarrior.FINAL_ATTACK || attack.skill == Hunter.FINAL_ATTACK_BOW || attack.skill == Crossbowman.FINAL_ATTACK) {
+                if (attack.skill == DawnWarrior.FINAL_ATTACK
+                        || attack.skill == Page.FINAL_ATTACK_BW
+                        || attack.skill == Page.FINAL_ATTACK_SWORD
+                        || attack.skill == Fighter.FINAL_ATTACK_SWORD
+                        || attack.skill == Fighter.FINAL_ATTACK_AXE
+                        || attack.skill == Spearman.FINAL_ATTACK_SPEAR
+                        || attack.skill == Spearman.FINAL_ATTACK_POLE_ARM
+                        || attack.skill == WindArcher.FINAL_ATTACK
+                        || attack.skill == Hunter.FINAL_ATTACK_BOW
+                        || attack.skill == Crossbowman.FINAL_ATTACK) {
                     mobCount = 15;//:(
                 }
 
-                if (attack.skill == Aran.HIDDEN_FULL_SWING_DOUBLE || attack.skill == Aran.HIDDEN_FULL_SWING_TRIPLE || attack.skill == Aran.HIDDEN_OVER_SWING_DOUBLE || attack.skill == Aran.HIDDEN_OVER_SWING_TRIPLE) {
+                if (attack.skill == Aran.HIDDEN_FULL_SWING_DOUBLE
+                        || attack.skill == Aran.HIDDEN_FULL_SWING_TRIPLE
+                        || attack.skill == Aran.HIDDEN_OVER_SWING_DOUBLE
+                        || attack.skill == Aran.HIDDEN_OVER_SWING_TRIPLE) {
                     mobCount = 12;
                 }
 
@@ -425,7 +437,7 @@ public abstract class AbstractDealDamageEvent extends PacketEvent {
         ret.ranged = ranged;
         ret.magic = magic;
         if (ret.skill > 0) {
-            ret.skilllevel = player.getSkillLevel(ret.skill);
+            ret.skillLevel = player.getSkillLevel(ret.skill);
         }
         if (ret.skill == Evan.ICE_BREATH || ret.skill == Evan.FIRE_BREATH || ret.skill == FPArchMage.BIG_BANG || ret.skill == ILArchMage.BIG_BANG || ret.skill == Bishop.BIG_BANG || ret.skill == Gunslinger.GRENADE || ret.skill == Brawler.CORKSCREW_BLOW || ret.skill == ThunderBreaker.CORKSCREW_BLOW || ret.skill == NightWalker.POISON_BOMB) {
             ret.charge = lea.readInt();
@@ -481,7 +493,7 @@ public abstract class AbstractDealDamageEvent extends PacketEvent {
             lea.readByte();
             ret.speed = lea.readByte();
             lea.readByte();
-            ret.rangedirection = lea.readByte();
+            ret.rangeDirection = lea.readByte();
             lea.skip(7);
             if (ret.skill == Bowmaster.HURRICANE || ret.skill == Marksman.PIERCING_ARROW || ret.skill == Corsair.RAPID_FIRE || ret.skill == WindArcher.HURRICANE) {
                 lea.skip(4);
@@ -509,7 +521,8 @@ public abstract class AbstractDealDamageEvent extends PacketEvent {
 
         if (ret.skill != 0) {
             Skill skill = SkillFactory.getSkill(ret.skill);
-            MapleStatEffect effect = skill.getEffect(ret.skilllevel);
+            player.applyHiddenSkillFixes(skill);
+            MapleStatEffect effect = skill.getEffect(ret.skillLevel);
 
             if (magic) {
                 // Since the skill is magic based, use the magic formula

@@ -21,8 +21,6 @@ import server.life.MapleMonster;
 import server.life.MapleMonsterStats;
 import server.life.MapleNPC;
 import server.maps.MapleFoothold;
-import server.maps.MapleReactor;
-import server.maps.MapleReactorFactory;
 import tools.DatabaseConnection;
 import tools.MaplePacketCreator;
 
@@ -288,6 +286,20 @@ public class HGMCommands {
                     player.dropMessage(5, "This shop doesn't exist");
                 }
             }
+        } else if (command.equals("cnpc")) {
+            byte mode = 1, type = 1;
+            int selection = -1;
+            if (args.length() > 0) {
+                mode = args.parseNumber(0, byte.class);
+                type = args.parseNumber(1, byte.class);
+                selection = args.parseNumber(2, int.class);
+                String error = args.getFirstError();
+                if (error != null) {
+                    player.sendMessage(5, error);
+                    return;
+                }
+            }
+            NPCScriptManager.action(client, mode, type, selection);
         } else if (command.equals("onpc")) {
             if (args.length() == 1) {
                 Integer npcId = args.parseNumber(0, int.class);
@@ -302,7 +314,7 @@ public class HGMCommands {
                     NPCScriptManager.start(client, 10200, script);
                 }
             } else {
-                player.dropMessage(5, "Usage: !onpoc <npc_id/script>");
+                player.dropMessage(5, "Usage: !onpc <npc_id/script>");
             }
         } else if (command.equals("saveall")) {
             for (World worlds : Server.getInstance().getWorlds()) {

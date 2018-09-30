@@ -22,6 +22,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 package client;
 
 import client.inventory.MapleInventoryType;
+import com.lucianms.io.scripting.npc.NPCConversationManager;
+import com.lucianms.io.scripting.npc.NPCScriptManager;
+import com.lucianms.io.scripting.quest.QuestActionManager;
+import com.lucianms.io.scripting.quest.QuestScriptManager;
+import com.lucianms.scheduler.Task;
+import com.lucianms.scheduler.TaskExecutor;
 import net.server.Server;
 import net.server.channel.Channel;
 import net.server.guild.MapleGuild;
@@ -30,12 +36,6 @@ import net.server.world.*;
 import org.apache.mina.core.session.IoSession;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import com.lucianms.scheduler.Task;
-import com.lucianms.scheduler.TaskExecutor;
-import com.lucianms.io.scripting.npc.NPCConversationManager;
-import com.lucianms.io.scripting.npc.NPCScriptManager;
-import com.lucianms.io.scripting.quest.QuestActionManager;
-import com.lucianms.io.scripting.quest.QuestScriptManager;
 import server.MapleMiniGame;
 import server.MaplePlayerShop;
 import server.MapleTrade;
@@ -463,58 +463,47 @@ public class MapleClient {
         loginattempt++;
         int loginok = 5;
         Connection con = DatabaseConnection.getConnection();
-        PreparedStatement ps = null;
-        ResultSet rs = null;
         try {
-            ps = con.prepareStatement("SELECT id, password, salt, gender, banned, gm, pin, pic, characterslots, tos FROM accounts WHERE name = ?");
-            ps.setString(1, login);
-            rs = ps.executeQuery();
-            if (rs.next()) {
-                if (rs.getByte("banned") == 1) {
-                    return 3;
-                }
-                accId = rs.getInt("id");
-                gmlevel = rs.getInt("gm");
-                pin = rs.getString("pin");
-                pic = rs.getString("pic");
-                gender = rs.getByte("gender");
-                characterSlots = rs.getByte("characterslots");
-                String passhash = rs.getString("password");
-                String salt = rs.getString("salt");
-                //we do not unban
-                byte tos = rs.getByte("tos");
-                ps.close();
-                rs.close();
-                if (getLoginState() > LOGIN_NOTLOGGEDIN) { // already loggedin
-                    loggedIn = false;
-                    loginok = 7;
-                } else if (pwd.equals(passhash) || checkHash(passhash, "SHA-1", pwd) || checkHash(passhash, "SHA-512", pwd + salt)) {
-                    if (tos == 0) {
-                        loginok = 23;
-                    } else {
-                        loginok = 0;
+            try (PreparedStatement ps = con.prepareStatement("SELECT id, password, salt, gender, banned, gm, pin, pic, characterslots, tos FROM accounts WHERE name = ?")) {
+                ps.setString(1, login);
+                try (ResultSet rs = ps.executeQuery()) {
+                    if (rs.next()) {
+                        if (rs.getByte("banned") == 1) {
+                            return 3;
+                        }
+                        accId = rs.getInt("id");
+                        gmlevel = rs.getInt("gm");
+                        pin = rs.getString("pin");
+                        pic = rs.getString("pic");
+                        gender = rs.getByte("gender");
+                        gender = (gender == 10) ? 0 : gender;
+                        characterSlots = rs.getByte("characterslots");
+                        String passhash = rs.getString("password");
+                        String salt = rs.getString("salt");
+                        byte tos = rs.getByte("tos");
+                        if (getLoginState() > LOGIN_NOTLOGGEDIN) { // already loggedin
+                            loggedIn = false;
+                            loginok = 7;
+                        } else if (pwd.equals(passhash) || checkHash(passhash, "SHA-1", pwd) || checkHash(passhash, "SHA-512", pwd + salt)) {
+                            if (tos == 0) {
+                                loginok = 23;
+                            } else {
+                                loginok = 0;
+                            }
+                        } else {
+                            loggedIn = false;
+                            loginok = 4;
+                        }
                     }
-                } else {
-                    loggedIn = false;
-                    loginok = 4;
                 }
-                ps = con.prepareStatement("INSERT INTO iplog (accountid, ip) VALUES (?, ?)");
+            }
+            try (PreparedStatement ps = con.prepareStatement("INSERT INTO iplog (accountid, ip) VALUES (?, ?)")) {
                 ps.setInt(1, accId);
                 ps.setString(2, session.getRemoteAddress().toString());
                 ps.executeUpdate();
             }
         } catch (SQLException e) {
             e.printStackTrace();
-        } finally {
-            try {
-                if (ps != null && !ps.isClosed()) {
-                    ps.close();
-                }
-                if (rs != null && !rs.isClosed()) {
-                    rs.close();
-                }
-            } catch (SQLException ignored) {
-            }
         }
         if (loginok == 0) {
             loginattempt = 0;
@@ -1139,7 +1128,7 @@ public class MapleClient {
             announce(MaplePacketCreator.enableActions());
             return;
         }
-        String[] socket = getChannelServer().getIP().split(":");
+        String[] socket = getWorldServer().getChannel(channel).getIP().split(":");
         if (player.getTrade() != null) {
             MapleTrade.cancelTrade(getPlayer());
         }

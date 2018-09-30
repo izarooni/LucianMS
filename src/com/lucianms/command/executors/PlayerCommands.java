@@ -6,7 +6,6 @@ import client.MapleStat;
 import client.SpamTracker;
 import client.meta.Occupation;
 import com.lucianms.command.CommandWorker;
-import com.lucianms.features.GenericEvent;
 import com.lucianms.features.ManualPlayerEvent;
 import com.lucianms.features.PlayerBattle;
 import com.lucianms.features.auto.GAutoEvent;
@@ -111,7 +110,7 @@ public class PlayerCommands {
             }
             player.sendMessage("================ '{}''s Stats ================", target.getName());
             player.sendMessage("EXP {}x, MESO {}x, DROP {}x", player.getExpRate(), player.getMesoRate(), player.getDropRate());
-         //   player.sendMessage("Rebirths: {}", player.getRebirths());
+            //   player.sendMessage("Rebirths: {}", player.getRebirths());
             player.sendMessage("Mesos: {}", StringUtil.formatNumber(target.getMeso()));
             player.sendMessage("Ability Power: {}", StringUtil.formatNumber(target.getRemainingAp()));
             player.sendMessage("Hair / Face: {} / {}", target.getHair(), target.getFace());
@@ -326,7 +325,7 @@ public class PlayerCommands {
             player.dropMessage("Staff: Kill | Evan | Joey | Jackie | Luckedy | Bryan");
             player.dropMessage("Home Command: @home or @go fm");
             player.dropMessage("Main Website: http://lucianms.com");
-            player.dropMessage("Voting resets every 24th hours!");   
+            player.dropMessage("Voting resets every 24th hours!");
             player.dropMessage("Have Fun and consider to donate for more customs!");
         } else if (command.equals("update")) {
             player.dropMessage("Last Server WZ revision: 11-09-18");
@@ -423,15 +422,17 @@ public class PlayerCommands {
                 player.dropMessage(5, "You must specify a username and message");
             }
         } else if (command.equals("pvp")) {
-            Optional<GenericEvent> pvp = player.getGenericEvents().stream().filter(g -> (g instanceof PlayerBattle)).findFirst();
-            if (pvp.isPresent()) {
-                player.removeGenericEvent(pvp.get());
-                player.dropMessage("You are no longer PvPing");
-            } else {
-                PlayerBattle battle = new PlayerBattle(player);
-                if (player.addGenericEvent(battle)) {
-                    player.dropMessage("You are now PvPing");
+            PlayerBattle battle = player.getPlayerBattle();
+            if (battle != null) {
+                if (battle.getLastAttack() > 5) {
+                    battle.unregisterPlayer(player);
+                    player.sendMessage(6,"You are no longer in PvP mode");
+                } else {
+                    player.sendMessage(6, "You cannot exit PvP while in combat");
                 }
+            } else {
+                new PlayerBattle().registerPlayer(player);
+                player.sendMessage(6, "You are now PvPing");
             }
         } else if (command.equals("maxskills")) {
             player.maxSkills();
