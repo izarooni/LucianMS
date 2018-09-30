@@ -4,6 +4,7 @@ import client.MapleCharacter;
 import client.inventory.Equip;
 import client.inventory.MapleInventoryType;
 import client.inventory.MapleWeaponType;
+import com.lucianms.lang.annotation.PacketWorker;
 import com.lucianms.server.events.channel.AbstractDealDamageEvent;
 import com.lucianms.server.events.channel.CloseRangeDamageEvent;
 import com.lucianms.server.events.channel.MagicDamageEvent;
@@ -15,7 +16,6 @@ import server.life.MapleMonster;
 import server.maps.MapleMap;
 import tools.MaplePacketCreator;
 import tools.Randomizer;
-import com.lucianms.lang.annotation.PacketWorker;
 
 import java.awt.*;
 import java.util.HashMap;
@@ -30,29 +30,29 @@ public class PlayerBattle extends GenericEvent {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(PlayerBattle.class);
 
-    private final MapleCharacter attacker;
+    private MapleCharacter attacker;
     private HashMap<Integer, Point> locations = new HashMap<>();
     private ReentrantLock lock = new ReentrantLock(true);
 
     private boolean global = false;
     private int damage = 0;
+    private double lastAttack = 0;
     private double cAttackRange = -1;
     private double fAttackRange = -1;
 
-    /**
-     * @param attacker an attacking player
-     */
-    public PlayerBattle(MapleCharacter attacker) {
+    public PlayerBattle() {
         registerAnnotationPacketEvents(this);
-        this.attacker = attacker;
     }
 
     @Override
     public void registerPlayer(MapleCharacter player) {
+        player.addGenericEvent(this);
+        this.attacker = player;
     }
 
     @Override
     public void unregisterPlayer(MapleCharacter player) {
+        player.removeGenericEvent(this);
     }
 
     @Override
@@ -120,6 +120,10 @@ public class PlayerBattle extends GenericEvent {
         }
     }
 
+    public double getLastAttack() {
+        return (System.currentTimeMillis() - lastAttack) / 1000;
+    }
+
     /**
      * cache locations of every player in the field for final distance calculations
      */
@@ -170,11 +174,14 @@ public class PlayerBattle extends GenericEvent {
             }
         }
 
-        for (Map.Entry<Integer, Point> entry : neighbors.entrySet()) { // iterate nearby targets and display damage dealt
-            MapleCharacter mPlayer = attacker.getMap().getCharacterById(entry.getKey());
-            if (mPlayer != null) {
-                mPlayer.addHP(-damage);
-                map.broadcastMessage(MaplePacketCreator.damagePlayer(0, 100100, entry.getKey(), damage, 0, 0, false, 0, false, 0, 0, 0));
+        if (!neighbors.isEmpty()) {
+            lastAttack = System.currentTimeMillis();
+            for (Map.Entry<Integer, Point> entry : neighbors.entrySet()) { // iterate nearby targets and display damage dealt
+                MapleCharacter mPlayer = attacker.getMap().getCharacterById(entry.getKey());
+                if (mPlayer != null) {
+                    mPlayer.addHP(-damage);
+                    map.broadcastMessage(MaplePacketCreator.damagePlayer(0, 100100, entry.getKey(), damage, 0, 0, false, 0, false, 0, 0, 0));
+                }
             }
         }
     }

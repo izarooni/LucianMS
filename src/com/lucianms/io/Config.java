@@ -47,7 +47,7 @@ public class Config {
     public int[] getIntArray(String key) {
         int[] array = iaCache.getOrDefault(key, null);
         String string = getString(key);
-        if (array != null || string.isEmpty()) {
+        if (array == null && string.isEmpty()) {
             return new int[0];
         }
         String[] split = string.split(",");

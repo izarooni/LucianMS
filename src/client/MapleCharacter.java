@@ -31,6 +31,7 @@ import com.lucianms.cquest.CQuestBuilder;
 import com.lucianms.cquest.CQuestData;
 import com.lucianms.features.GenericEvent;
 import com.lucianms.features.ManualPlayerEvent;
+import com.lucianms.features.PlayerBattle;
 import com.lucianms.features.PlayerTitles;
 import com.lucianms.features.controllers.JumpQuestController;
 import com.lucianms.features.summoning.ShenronSummoner;
@@ -5726,6 +5727,10 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
 
     public void removeGenericEvent(GenericEvent event) {
         genericEvents.remove(event);
+    }
+
+    public PlayerBattle getPlayerBattle() {
+        return (PlayerBattle) getGenericEvents().stream().filter(g -> g instanceof PlayerBattle).findFirst().orElse(null);
     }
 
     public int getRiceCakes() {
