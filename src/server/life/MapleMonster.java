@@ -599,12 +599,12 @@ public class MapleMonster extends AbstractLoadedMapleLife {
     }
 
     public void applyDamageOvertime(MapleCharacter from, long duration) {
-        MobSkill mSkill = MobSkillFactory.getMobSkill(145, 1);
+        MobSkill mSkill = MobSkillFactory.getMobSkill(125, 1);
         mSkill.setDuration(duration);
         mSkill.applyEffect(from, this, false);
 
         setDamagedOvertime(true);
-        int calcDamage = from.calculateMaxBaseDamage(from.getTotalWatk());
+        int calcDamage = (int) (from.calculateMaxBaseDamage(from.getTotalWatk()) * 0.75);
         Task damageTask = TaskExecutor.createRepeatingTask(new DamageTask(calcDamage, from, null, null, 1), 1000);
         TaskExecutor.createTask(new Runnable() {
             @Override
