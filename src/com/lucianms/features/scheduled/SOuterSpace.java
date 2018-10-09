@@ -98,7 +98,6 @@ public class SOuterSpace extends SAutoEvent {
                         if (monster.getController() != null) {
                             // damaged -- because this is also invoked by MapleMap#killAllMonsters
                             channel.broadcastPacket(MaplePacketCreator.serverNotice(0, "The Space Slime has been defeated!"));
-                            eventMap.broadcastMessage(MaplePacketCreator.serverNotice(6, "You will be warped momentarily"));
                         }
                     }
                 };
