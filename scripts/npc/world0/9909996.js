@@ -14,18 +14,18 @@ jobs = {
         Pirate: { ID: 500, req: (p) => true }
     },
     Second: {
-        Uchiha: {ID: 110},
-        Rashoumon: {ID: 120},
-        Ark: {ID: 510}
+        Uchiha: { ID: 110 },
+        Rashoumon: { ID: 120 },
+        Ark: { ID: 510}
     },
     Third: {
-        Uchiha: {ID: 111},
-        Rashoumon: {ID: 121},
-        Ark: {ID: 511}
+        Uchiha: { ID: 111 },
+        Rashoumon: { ID: 121 },
+        Ark: { ID: 511}
     },
     Fourth: {
-        Uchiha: {ID: 112},
-        Rashoumon: {ID: 122},
-        Ark: {ID: 512}
+        Uchiha: { ID: 112 },
+        Rashoumon: { ID: 122 },
+        Ark: { ID: 512}
     }
 };

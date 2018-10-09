@@ -12,15 +12,15 @@ jobs = {
             failMessage: "Make sure you have at least #b25#k points in your #bDEX#k stat." }
     },
     Second: {
-        Mercedes: 310,
-        "Crossbow Man": 320
+        Mercedes       : { ID: 310 },
+        "Crossbow Man" : { ID: 320 }
     },
     Third: {
-        Mercedes: 311,
-        "Crossbow Man": 321
+        Mercedes       : { ID: 311 },
+        "Crossbow Man" : { ID: 321 }
     },
     Fourth: {
-        Mercedes: 312,
-        "Crossbow Man": 322
+        Mercedes       : { ID: 312 },
+        "Crossbow Man" : { ID: 322 }
     }
 };

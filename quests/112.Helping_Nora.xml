@@ -26,7 +26,9 @@
             <int name="quantity" value="1"/>
         </imgdir>
     </imgdir>
+    
     <imgdir name="rewards">
+
         <imgdir name="items">
 
             <imgdir name="0">
@@ -34,7 +36,5 @@
                 <int name="quantity" value="1"/>
             </imgdir>>
         </imgdir>
-        <int name="meso" value="355000"/>
-        <int name="exp" value="400000"/>
     </imgdir>
 </imgdir>

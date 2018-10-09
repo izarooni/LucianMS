@@ -11,15 +11,15 @@ jobs = {
             failMessage: "Make sure you have at least #b25#k points in your #bLUK#k stat." }
     },
     Second: {
-        Shade: 410,
-        "Dual Blader": 420
+        Shade         : { ID: 410 },
+        "Dual Blader" : { ID: 420 }
     },
     Third: {
-        Shade: 411,
-        "Dual Blader": 421
+        Shade         : { ID: 411 },
+        "Dual Blader" : { ID: 421 }
     },
     Fourth: {
-        Shade: 412,
-        "Dual Blader": 422
+        Shade         : { ID: 412 },
+        "Dual Blader" : { ID: 422 }
     }
 };

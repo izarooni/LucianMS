@@ -15,8 +15,16 @@
 
     <imgdir name="toCollect">
     </imgdir>
+
     <imgdir name="rewards">
-        <int name="meso" value="5"/>
-        <int name="exp" value="1000000"/>
+
+        <imgdir name="items">
+
+            <!-- Todo: Set to Yato's Scarf item -->
+            <imgdir name="0">
+                <int name="itemId" value="130200">
+                <int name="quantity" value="1">
+            </imgdir>
+        </imgdir>
     </imgdir>
 </imgdir>

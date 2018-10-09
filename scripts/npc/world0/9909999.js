@@ -12,18 +12,18 @@ jobs = {
             failMessage: "Make sure you have at least #b20#k points in your #bINT#k stat."}
     },
     Second: {
-        Phantom: 210,
-        Luminous: 220,
-        Evan: 230
+        Phantom  : { ID: 210 },
+        Luminous : { ID: 220 },
+        Evan     : { ID: 230 }
     },
     Third: {
-        Phantom: 211,
-        Luminous: 221,
-        Evan: 231
+        Phantom  : { ID: 211 },
+        Luminous : { ID: 221 },
+        Evan     : { ID: 231 }
     },
     Fourth: {
-        Phantom: 212,
-        Luminous: 222,
-        Evan: 232
+        Phantom  : { ID: 212 },
+        Luminous : { ID: 222 },
+        Evan     : { ID: 232 }
     }
 };

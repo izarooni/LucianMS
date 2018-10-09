@@ -1,0 +1,22 @@
+<imgdir name="Helping Hiyori">
+    <imgdir name="info">
+        <int name="questId" value="113"/>
+		<int name="preQuest" value="108"/>
+		<int name="daily" value="0"/>
+    </imgdir>
+
+    <imgdir name="toKill">
+    </imgdir>
+
+    <imgdir name="toCollect">
+
+        <!-- ToDo: change -->
+       <imgdir name="0">
+            <int name="itemId" value="4011029"/>
+            <int name="quantity" value="1"/>
+        </imgdir>
+    </imgdir>
+    
+    <imgdir name="rewards">
+    </imgdir>
+</imgdir>

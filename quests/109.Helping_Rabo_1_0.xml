@@ -17,7 +17,5 @@
     </imgdir>
     
     <imgdir name="rewards">
-        <int name="meso" value="35000"/>
-        <int name="exp" value="7500000"/>
     </imgdir>
 </imgdir>
