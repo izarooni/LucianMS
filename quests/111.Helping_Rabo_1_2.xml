@@ -1,22 +1,21 @@
-<imgdir name="Quest Name">
+<imgdir name="Helping Rabo 3">
     <imgdir name="info">
-        <int name="questId" value="107"/>
-		<int name="preQuest" value="106"/>
-		<int name="daily" value="1"/>
+        <int name="questId" value="111"/>
+		<int name="preQuest" value="110"/>
+		<int name="daily" value="0"/>
     </imgdir>
 
     <imgdir name="toKill">
-
         <imgdir name="0">
-            <int name="monsterId" value="9895423"/>
+            <int name="monsterId" value="9895242"/>
             <int name="amount" value="250"/>
         </imgdir>
         <imgdir name="1">
-            <int name="monsterId" value="9895244"/>
+            <int name="monsterId" value="9895238"/>
             <int name="amount" value="250"/>
         </imgdir>
         <imgdir name="2">
-            <int name="monsterId" value="9895238"/>
+            <int name="monsterId" value="9895244"/>
             <int name="amount" value="250"/>
         </imgdir>
     </imgdir>
@@ -24,7 +23,7 @@
     <imgdir name="toCollect">
     </imgdir>
     <imgdir name="rewards">
-        <int name="meso" value="50000"/>
-        <int name="exp" value="550000"/>
+        <int name="meso" value="355000"/>
+        <int name="exp" value="400000"/>
     </imgdir>
 </imgdir>

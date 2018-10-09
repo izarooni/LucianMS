@@ -1,0 +1,130 @@
+const MapleJob = Java.type('client.MapleJob');
+/* izarooni */
+let status = 0;
+
+let jobs = {};
+
+function getNpcPath() {
+    let id = cm.getNpc() % 9909990;
+    if (id == 6) return "power";
+    else if (id == 7)  return "darkness";
+    else if (id == 8) return "swiftness";
+    else if (id == 9) return "magic";
+    return undefined;
+}
+
+function action(mode, type, selection) {
+    if (mode < 1) {
+        cm.dispose();
+        return;
+    } else {
+        status++;
+    }
+    let level = player.getLevel();
+    let jobID = player.getJob().getId();
+    let advancement = (jobID % 100 % 10);
+
+    if (jobID != 0  && !containsJob(jobs, jobID)) {
+        cm.sendOk("This path is not meant for you now.");
+        cm.dispose();
+        return;
+    }
+
+    if (level >= 10 && (jobID == 0 || jobID == 1000 || jobID == 2000)) FirstAdvancement(selection);
+    else if (level >= 30 && (jobID % 100 / 10) == 0) SecondAdvancement(selection);
+    else if (level >= 70 && advancement == 0) ThirdAdvancement(selection);
+    else if (level >= 120 && advancement == 1) FourthAdvancement(selection);
+    else {
+        cm.sendOk("#bA mysterious force repels you from going near the door");
+        cm.dispose();
+    }
+}
+
+function containsJob(jobs, jobID) {
+    for (let adv in jobs) { // advancements
+        for (let j in jobs[adv]) { // listed jobs
+            if (jobs[adv][j].ID == jobID)
+                return true;
+        }
+    }
+    return false;
+}
+
+function nextJob(obj, jobID) {
+    let dec = (jobID % 100 / 10) == 0 ? 10 : 1;
+    for (let o in obj) {
+        if (obj[o].ID - dec == jobID)
+            return obj[o];
+    }
+    return null;
+}
+
+function getByID(obj, selection) {
+    for (var o in obj) {
+        if (obj[o].ID == selection)
+            return obj[o];
+    }
+    return null;
+}
+
+const FirstAdvancement = function(selection) {
+    if (status == 1) {
+        cm.sendNext(FirstAdvancementGreet);
+    } else if (status == 2) {
+        let content = "What path of #b" + getNpcPath() + "#k will you choose?\r\n#b";
+        let avail = jobs.First;
+        for (let job in avail) {
+            if (!(avail[job] instanceof Function))
+                content += `\r\n#L${avail[job].ID}#The path of a ${job.toLowerCase()}#l`;
+        }
+        cm.sendSimple(content);
+    } else if (status == 3) {
+        let nJob = getByID(jobs.First, selection);
+        if (nJob != null) {
+            if (nJob.req(player))
+                player.changeJob(MapleJob.getById(selection));
+            else
+                cm.sendOk("You are not strong enough to make this advancement.\r\n" + nJob.failMessage);
+        } else
+            cm.sendOk("That is not allowed.");
+        cm.dispose();
+    }
+};
+
+const SecondAdvancement = function(selection) {
+    if (status == 1) {
+        let content = "You have become strong but a long journey still awaits.\r\nAre you ready to progress?\r\n#b";
+        for (let job in jobs.Second) {
+            let nj = jobs.Second[job];
+            if (Math.floor(nj.ID / 100) == player.getJob().getId() / 100) {
+                content += `\r\n#L${nj.ID}#${job}#l`;
+            }
+        }
+        cm.sendSimple(content);
+    } else if (status == 2) {
+        let nJob = nextJob(jobs.Second, player.getJob().getId());
+        player.changeJob(MapleJob.getById(nJob.ID));
+        cm.dispose();
+    }
+};
+
+const ThirdAdvancement = function(selection) {
+    if (status == 1) {
+        let content = "From here on you will only grow stronger.\r\nAre you ready to progress?";
+        cm.sendNext(content);
+    } else if (status == 2) {
+        let nJob = nextJob(jobs.Third, player.getJob().getId());
+        player.changeJob(MapleJob.getById(nJob.ID));
+        cm.dispose();
+    }
+};
+
+const FourthAdvancement = function(selection) {
+    if (status == 1)
+        cm.sendSimple("#bThe mysterious force emitted by the door is weakened...\r\n#b#L0#Enter#l\r\n#L1#Nevermind#l", 2)
+    else if (status == 2) {
+        if (selection == 0)
+            cm.warp(90000008);
+        cm.dispose();
+    }
+};
