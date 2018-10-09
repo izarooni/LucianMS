@@ -88,7 +88,7 @@ public final class CashOperationHandler extends AbstractMaplePacketHandler {
             }
             cs.gainCash(useNX, -cItem.getPrice());
             c.announce(MaplePacketCreator.showCash(player));
-        } else if (action == 0x04) {//TODO check for gender
+        } else if (action == 0x04) {
             int birthday = slea.readInt();
             CashItem cItem = CashItemFactory.getItem(slea.readInt());
             Map<String, String> recipient = MapleCharacter.getCharacterFromDatabase(slea.readMapleAsciiString());

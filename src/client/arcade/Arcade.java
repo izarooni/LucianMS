@@ -43,7 +43,7 @@ public abstract class Arcade {
     public synchronized void start() {
         FieldBuilder builder = new FieldBuilder(player.getWorld(), player.getClient().getChannel(), mapId);
 
-        // disable portals, we do not want them to leave the map. TODO: disable commands
+        // disable portals, we do not want them to leave the map.
         player.getMap().getPortals().forEach((portal) -> portal.setPortalStatus(true));
 
         player.getMap().setMobInterval((short) 5);

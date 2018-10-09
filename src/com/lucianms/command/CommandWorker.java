@@ -68,11 +68,10 @@ public class CommandWorker {
         } else if (h == '@') {
             if (!player.isGM() && !noCheck) {
                 if (!command.equals("dispose", "quests")) {
-                    if (player.getMapId() >= 90000000 && player.getMapId() <= 90000004) {
+                    if (player.getArcade() != null
+                            || (player.getMapId() >= 90000000 && player.getMapId() <= 90000004)
+                            || player.getMapId() == 80 || player.getMapId() == 81) {
                         player.dropMessage("Commands are disabled in this area.");
-                        return true;
-                    } else if (player.getMapId() == 80 || player.getMapId() == 81) {
-                        player.dropMessage("You may not use commands here");
                         return true;
                     }
                 }

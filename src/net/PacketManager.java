@@ -67,6 +67,7 @@ public final class PacketManager {
         handlers.set(RecvOpcode.HIRED_MERCHANT_REQUEST.getValue(), HiredMerchantEvent.class);
         handlers.set(RecvOpcode.USE_REMOTE.getValue(), RemoteGachaponHandler.class);
         handlers.set(RecvOpcode.PARTY_SEARCH_START.getValue(), PartySearchStartHandler.class);
+        handlers.set(RecvOpcode.ADMIN_COMMAND.getValue(), AdminCommandHandler.class);
 
         //region movement handlers
         handlers.set(RecvOpcode.MOVE_PLAYER.getValue(), PlayerMoveEvent.class);

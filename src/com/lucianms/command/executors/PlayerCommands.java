@@ -28,7 +28,6 @@ import java.util.*;
  */
 public class PlayerCommands {
 
-    // TODO: Not all command will be seen due to it overflowing the entire text screen!
     public static void execute(MapleClient client, CommandWorker.Command command, CommandWorker.CommandArgs args) {
         MapleCharacter player = client.getPlayer();
 

@@ -29,7 +29,6 @@ import java.util.Arrays;
  *
  * @author Lucas
  * @version 0.1
- * @TODO test functionality to make sure it works.
  */
 public class DungeonBuilder {
 
