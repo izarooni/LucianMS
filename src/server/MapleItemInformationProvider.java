@@ -274,7 +274,7 @@ public class MapleItemInformationProvider {
         if (slotMaxCache.containsKey(itemId)) {
             return slotMaxCache.get(itemId);
         }
-        short ret = 0;
+        short ret = 1;
         MapleData item = getItemData(itemId);
         if (item != null) {
             MapleData smEntry = item.getChildByPath("info/slotMax");
