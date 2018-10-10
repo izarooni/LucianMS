@@ -388,8 +388,6 @@ public class PlayerCommands {
             player.dropMessage(5, "These are the current maps available for you to warp to");
             player.dropMessage(5, sb.toString());
             maps.clear();
-        } else if (command.equals("cleardrops")) {
-            player.getMap().clearDrops();
         } else if (command.equals("save")) {
             player.saveToDB();
             player.dropMessage(6, "Saved!");
