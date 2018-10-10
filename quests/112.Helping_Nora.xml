@@ -32,7 +32,7 @@
         <imgdir name="items">
 
             <imgdir name="0">
-                <int name="itemId" value="10112205"/>
+                <int name="itemId" value="1012205"/>
                 <int name="quantity" value="1"/>
             </imgdir>>
         </imgdir>

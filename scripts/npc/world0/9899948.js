@@ -1,6 +1,6 @@
 load('scripts/util_cquests.js');
 const CQuests = Java.type("com.lucianms.cquest.CQuestBuilder");
-const QuestID = [106, 107, 108];
+const QuestID = [109, 110, 111];
 /* izarooni */
 let status = 0;
 
@@ -11,9 +11,9 @@ function action(mode, type, selection) {
     } else {
         status++;
     }
-    
+
     let pquest;
-    let testFor = function(q, nStatus) {
+    let testFor = function (q, nStatus) {
         if (q != null) {
             if (!q.isCompleted() && q.checkRequirements()) {
                 status = nStatus;
@@ -27,20 +27,20 @@ function action(mode, type, selection) {
     if ((pquest = player.getCustomQuest(QuestID[0])) == null || !pquest.isCompleted()) {
         let metadata = CQuests.getMetaData(QuestID[0]);
         testFor(pquest, 6); // the status to jump to if true
-        if  (status == 1) { // quest beginning
-            cm.sendNext("Placeholder 1 -- Quest 1");
+        if (status == 1) { // quest beginning
+            cm.sendNext(`Placeholder text 1 #b${metadata.getName()}#k`);
         } else if (status == 2) {
-            cm.sendNext("Placeholder 2 -- Quest 1");
+            cm.sendNext(`Placeholder text 2 #b${metadata.getName()}#k`);
         } else if (status == 3) { // quest progress
-            DisplaySummary(metadata); 
+            DisplaySummary(metadata);
         } else if (status == 4) {
-           cm.sendAcceptDecline("Will you give me a hand at completing this task?");
+            cm.sendAcceptDecline("Will you give me a hand at completing this task?");
         } else if (status == 5) {
-            CQuests.beginQuest(QuestID[0]);
+            CQuests.beginQuest(player, QuestID[0]);
             cm.dispose();
         } else if (status == 6) { // quest complete
             if (pquest.complete(player)) {
-                cm.sendNext("Thank you so much for helping me! I'll be sure to ask for help the next time I need it!");
+                cm.sendNext("I appreciate your efforts, I'll let you know if I need your assistance again.");
             } else {
                 cm.sendOk("You must accept my rewards! Please clear up some space in your inventory and speak to me again.");
             }
@@ -48,10 +48,10 @@ function action(mode, type, selection) {
     } else if ((pquest = player.getCustomQuest(QuestID[1])) == null || !pquest.isCompleted()) {
         let metadata = CQuests.getMetaData(QuestID[1]);
         testFor(pquest, 6); // jump
-        if  (status == 1) { // quest beginning
-            cm.sendNext("Placeholder 1 -- Quest 2");
+        if (status == 1) { // quest beginning
+            cm.sendNext(`Placeholder text 1 #b${metadata.getName()}#k`);
         } else if (status == 2) {
-            cm.sendNext("Placeholder 2 -- Quest 2");
+            cm.sendNext(`Placeholder text 2 #b${metadata.getName()}#k`);
         } else if (status == 3) { // quest progress
             DisplaySummary(metadata);
         } else if (status == 4) {
@@ -61,7 +61,7 @@ function action(mode, type, selection) {
             cm.dispose();
         } else if (status == 6) { // quest complete
             if (pquest.complete(player)) {
-                cm.sendNext("Thank you so much for helping me! I'll be sure to ask for help the next time I need it!");
+                cm.sendNext("Very impressive! I suppose to may have my trust now");
             } else {
                 cm.sendOk("You must accept my rewards! Please clear up some space in your inventory and speak to me again.");
             }
@@ -70,10 +70,10 @@ function action(mode, type, selection) {
     } else if ((pquest = player.getCustomQuest(QuestID[2])) == null || !pquest.isCompleted()) {
         let metadata = CQuests.getMetaData(QuestID[2]);
         testFor(pquest, 6); // jump
-        if  (status == 1) { // quest begeining
-            cm.sendNext("Placeholder 1 -- Quest 3");
+        if (status == 1) { // quest begeining
+            cm.sendNext(`Placeholder text 1 #b${metadata.getName()}#k`);
         } else if (status == 2) {
-            cm.sendNext("Placeholder 2 -- Quest 3");
+            cm.sendNext(`Placeholder text 2 #b${metadata.getName()}#k`);
         } else if (status == 3) { // quest progress
             DisplaySummary(metadata);
         } else if (status == 4) {
@@ -90,7 +90,7 @@ function action(mode, type, selection) {
             cm.dispose();
         } else cm.dispose();
     } else {
-        cm.sendOk("---- NOT COMPLETE ----\r\nFind Hiyori and deliver her this letter!");
+        cm.sendOk("Have you spoken to #bNora#k?");
         cm.dispose();
     }
 }

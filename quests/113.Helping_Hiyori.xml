@@ -12,7 +12,7 @@
 
         <!-- ToDo: change -->
        <imgdir name="0">
-            <int name="itemId" value="4011029"/>
+            <int name="itemId" value="1302000"/>
             <int name="quantity" value="1"/>
         </imgdir>
     </imgdir>

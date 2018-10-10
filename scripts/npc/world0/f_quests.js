@@ -41,15 +41,26 @@ function action(mode, type, selection) {
                 var text = "\r\n#b";
                 for (var i = 0; i < completed.length; i++) {
                     var quest = completed[i];
-                    text += "\r\n\t" + quest.getName();
+                    if (player.isDebug())
+                        text += `\r\n\t#L${quest.getId()}#${quest.getName()}#l`;
+                    else
+                        text += "\r\n\t" + quest.getName();
                 }
-                cm.sendNext(text);
-                status = 0;
+                if (player.isDebug()) {
+                    cm.sendSimple(text);
+                } else {
+                    cm.sendNext(text);
+                    status = 0;
+                }
             } else {
                 cm.sendNext("\t\t\t\t\t\t#FUI/UIWindow/Quest/notice2#");
                 status = 0;
             }
         }
+    } else if (status == 3 && selection > -1 && this.sub == 1) {
+        player.getCustomQuests().remove(selection);
+        cm.sendNext("Quest removed");
+        cm.dispose();
     } else {
         if (this.questId == null) this.questId = selection;
         if (this.sub == 0) Progress(this.questId);
