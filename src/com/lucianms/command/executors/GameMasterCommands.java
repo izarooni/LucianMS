@@ -551,7 +551,7 @@ public class GameMasterCommands {
                     return;
                 }
                 MapleInventory inventory = player.getInventory(iType);
-                for (byte i = 0; i < inventory.getSlotLimit(); i++) {
+                for (byte i = 0; i <= inventory.getSlotLimit(); i++) {
                     Item item;
                     if ((item = inventory.getItem(i)) != null) {
                         int itemId = item.getItemId();
