@@ -55,7 +55,7 @@ public class CQuestBuilder {
                         quests.put(qData.getId(), qData);
                     }
                 } catch (IOException | SAXException e) {
-                    e.printStackTrace();
+                    LOGGER.error("Unable to parse quest '{}'", qFile, e);
                 }
             }
         }

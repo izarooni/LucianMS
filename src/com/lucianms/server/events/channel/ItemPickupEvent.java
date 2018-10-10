@@ -40,7 +40,8 @@ import tools.data.input.SeekableLittleEndianAccessor;
 /**
  * @author Matze
  */
-public final class ItemPickupEvent extends PacketEvent {
+public final class
+ItemPickupEvent extends PacketEvent {
 
     private int objectId;
 

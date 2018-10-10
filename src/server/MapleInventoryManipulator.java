@@ -167,11 +167,10 @@ public class MapleInventoryManipulator {
         }
         for (CQuestData qData : player.getCustomQuests().values()) {
             if (!qData.isCompleted()) {
-                for (CQuestItemRequirement.CQuestItem qItem : qData.getToCollect().getItems().values()) {
-                    if (qItem.isUnique() && player.countItem(item.getItemId()) >= qItem.getRequirement()) {
-                        c.announce(MaplePacketCreator.showItemUnavailable()); // is this the right message to use?
-                        return false;
-                    }
+                var qitem = qData.getToCollect().get(item.getItemId());
+                if (qitem != null && qitem.isUnique() && player.countItem(item.getItemId()) >= qitem.getRequirement()) {
+                    c.announce(MaplePacketCreator.showItemUnavailable());
+                    return false;
                 }
             }
         }
