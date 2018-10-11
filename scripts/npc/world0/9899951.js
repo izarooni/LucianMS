@@ -27,16 +27,16 @@ function action(mode, type, selection) {
     if ((pquest = player.getCustomQuest(QuestID[0])) == null || !pquest.isCompleted()) {
         let metadata = CQuests.getMetaData(QuestID[0]);
         testFor(pquest, 6); // the status to jump to if true
-        if  (status == 1) { // quest beginning
-            cm.sendNext("Placeholder 1 -- Quest 1");
+        if (status == 1) { // quest beginning
+            cm.sendNext("It seems that our world somehow has been attacked by darkness and we might need a hand. Do you have a moment? First we need to make sure to get rid of the #rkPhantom Wolves#k. Kill 100 #rPhantom Wolves#k and report back to me!");
         } else if (status == 2) {
-            cm.sendNext("Placeholder 2 -- Quest 1");
+            cm.sendNext("Seems you have completed task 1. Let us continue then. For now the world is a bit safer but lets not celebrate just yet.. Kill 250 #rPhantom Wolves#k and report back to me!");
         } else if (status == 3) { // quest progress
             DisplaySummary(metadata); 
         } else if (status == 4) {
-           cm.sendAcceptDecline("Will you give me a hand at completing this task?");
+            cm.sendAcceptDecline("Will you give me a hand at completing this task?");
         } else if (status == 5) {
-            CQuests.beginQuest(QuestID[0]);
+            CQuests.beginQuest(player, QuestID[0]);
             cm.dispose();
         } else if (status == 6) { // quest complete
             if (pquest.complete(player)) {
