@@ -1,0 +1,40 @@
+<imgdir name="Fighting Zombie Mushmom (Victoria)">
+    <imgdir name="info">
+        <int name="questId" value="211"/>
+        <int name="preQuest" value="209"/>
+        <int name="minLevel" value="65"/>
+        <int name="daily" value="1"/>
+    </imgdir>
+
+    <imgdir name="toKill">
+
+        <imgdir name="0">
+            <int name="monsterId" value="6300005"/>
+            <int name="amount" value="1"/>
+        </imgdir>
+    </imgdir>
+
+    <!-- Poisonous Mushroom is required to complete the quest. -->
+    <imgdir name="toCollect">
+        <imgdir name="0">
+            <int name="itemId" value="4000176"/>
+            <int name="quantity" value="1"/>
+        </imgdir>
+    </imgdir>
+
+    <imgdir name="rewards">
+        <!-- Rewards: White potion & Mana Elixer. -->
+        <imgdir name="items">
+            <imgdir name="0">
+                <int name="itemId" value="2000002"/>
+                <int name="quantity" value="45"/>
+            </imgdir>
+            <imgdir name="1">
+                <int name="itemId" value="2000006"/>
+                <int name="quantity" value="45"/>
+            </imgdir>
+        </imgdir>
+
+        <int name="meso" value="15500"/>
+    </imgdir>
+</imgdir>
