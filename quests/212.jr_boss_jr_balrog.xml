@@ -1,7 +1,7 @@
 <imgdir name="Junior Boss Hunter (Victoria)">
     <imgdir name="info">
         <int name="questId" value="212"/>
-        <int name="preQuest" value="209,210"/>
+        <string name="preQuest" value="209,210"/>
         <int name="minLevel" value="80"/>
         <int name="daily" value="1"/>
     </imgdir>
