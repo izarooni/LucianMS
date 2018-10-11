@@ -1,0 +1,34 @@
+<imgdir name="Junior Boss Hunter (Victoria)">
+    <imgdir name="info">
+        <int name="questId" value="205"/>
+        <int name="preQuest" value="-1"/>
+        <int name="minLevel" value="20"/>
+        <int name="daily" value="1"/>
+    </imgdir>
+
+    <imgdir name="toKill">
+
+        <imgdir name="0">
+            <int name="monsterId" value="2220000"/>
+            <int name="amount" value="1"/>
+        </imgdir>
+    </imgdir>
+
+    <imgdir name="toCollect">
+    </imgdir>
+
+    <imgdir name="rewards">
+        <!-- Rewards: Red Potion & Blue Potion. -->
+        <imgdir name="items">
+            <imgdir name="0">
+                <int name="itemId" value="2000000"/>
+                <int name="quantity" value="50"/>
+            </imgdir>
+            <imgdir name="1">
+                <int name="itemId" value="2000003"/>
+                <int name="quantity" value="50"/>
+            </imgdir>
+        </imgdir>
+        <int name="meso" value="2500"/>
+    </imgdir>
+</imgdir>

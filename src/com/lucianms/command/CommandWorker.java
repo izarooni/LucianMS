@@ -37,7 +37,7 @@ public class CommandWorker {
             // there are command arguments
             name = message.substring(0, cn); // substring command name
             if (message.length() > name.length()) { // separate command name from args
-                sp = message.substring(cn + 1, message.length()).split(" ");
+                sp = message.substring(cn + 1).split(" ");
             }
         } else {
             // no command arguments

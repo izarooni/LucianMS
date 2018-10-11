@@ -1,0 +1,37 @@
+<imgdir name="Junior Boss Hunter (Victoria)">
+    <imgdir name="info">
+        <int name="questId" value="213"/>
+        <int name="preQuest" value="212"/>
+        <int name="minLevel" value="85"/>
+        <int name="daily" value="0"/>
+    </imgdir>
+
+    <imgdir name="toKill">
+
+        <imgdir name="0">
+            <int name="monsterId" value="8220009"/>
+            <int name="amount" value="1"/>
+        </imgdir>
+    </imgdir>
+
+
+    <imgdir name="toCollect">
+    </imgdir>
+
+    <imgdir name="rewards">
+        <!-- Rewards: Unagi & Pure Water. -->
+        <imgdir name="items">
+            <imgdir name="0">
+                <int name="itemId" value="2022003"/>
+                <int name="quantity" value="175"/>
+            </imgdir>
+            <imgdir name="1">
+                <int name="itemId" value="2022000"/>
+                <int name="quantity" value="175"/>
+            </imgdir>
+        </imgdir>
+
+        <int name="exp" value="7500000">
+        <int name="meso" value="500000"/>
+    </imgdir>
+</imgdir>
