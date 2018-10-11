@@ -1,4 +1,4 @@
-<imgdir name="Junior Boss Hunter (Victoria)">
+<imgdir name="Fightning Snack Bar (Victoria)">
     <imgdir name="info">
         <int name="questId" value="213"/>
         <int name="preQuest" value="212"/>
@@ -31,7 +31,7 @@
             </imgdir>
         </imgdir>
 
-        <int name="exp" value="7500000">
+        <int name="exp" value="7500000"/>
         <int name="meso" value="500000"/>
     </imgdir>
 </imgdir>

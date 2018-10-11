@@ -1,4 +1,4 @@
-<imgdir name="Junior Boss Hunter (Victoria)">
+<imgdir name="Fighting Clang (Victoria)">
     <imgdir name="info">
         <int name="questId" value="208"/>
         <int name="preQuest" value="207"/>

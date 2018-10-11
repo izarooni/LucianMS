@@ -1,5 +1,9 @@
 StringUtil = Java.type("tools.StringUtil");
-const SummaryIcon = "#FUI/UIWindow/Quest/summary#"; 
+const SummaryIcon     = "#FUI/UIWindow/Quest/summary#";
+const InProgressIcon  = "#FUI/UIWindow/UtilDlgEx/list0";
+const AvailableIcon   = "#FUI/UIWindow/UtilDlgEx/list1#";
+const CanCompleteIcon = "#FUI/UIWindow/UtilDlgEx/list3#";
+const LockedIcon      = "#FUI/UIWindow/ItemProtector/Icon/0#";
 /* izarooni */
 // get a list of monsters to kill, and the kill progression
 function CQuestPKills(map) {
@@ -13,7 +17,7 @@ function CQuestPKills(map) {
 function DisplaySummary(metadata) {
     this.originalStatus = this.originalStatus || status;
     this.internalStatus = this.internalStatus + 1 || 1;
-    status = this.originalStatus;
+    status = this.originalStatus - 1;
 
     let content = `${SummaryIcon}\r\n`;
     if (this.internalStatus == 1) {
@@ -27,8 +31,8 @@ function DisplaySummary(metadata) {
     } else if (this.internalStatus == 3) {
         let append = CQuestRewards(metadata.getRewards());
         if (append == null) DisplaySummary(metadata, this.originalStatus);
-        else cm.sendNext(content = (contnet + append));
-        status = this.originalStatus + 1;
+        else cm.sendNext(content = (content + append));
+        status = this.originalStatus;
     }
 }
 

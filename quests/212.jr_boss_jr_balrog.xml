@@ -1,4 +1,4 @@
-<imgdir name="Junior Boss Hunter (Victoria)">
+<imgdir name="Fighting Jr. Balrog (Victoria)">
     <imgdir name="info">
         <int name="questId" value="212"/>
         <string name="preQuest" value="209,210"/>
