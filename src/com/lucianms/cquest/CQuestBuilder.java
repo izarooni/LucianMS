@@ -54,7 +54,7 @@ public class CQuestBuilder {
                         }
                         quests.put(qData.getId(), qData);
                     }
-                } catch (IOException | SAXException e) {
+                } catch (Exception e) {
                     LOGGER.error("Unable to parse quest '{}'", qFile, e);
                 }
             }
@@ -84,7 +84,8 @@ public class CQuestBuilder {
      * @return an object containing the necessary data in a custom quest
      */
     public static CQuestMetaData getMetaData(int questId) {
-        return quests.get(questId).getMetaData();
+        CQuestData quest = quests.get(questId);
+        return quest == null ? null : quest.getMetaData();
     }
 
     private static CQuestData parseFile(File file) throws IOException, SAXException {
@@ -95,12 +96,25 @@ public class CQuestBuilder {
                 LOGGER.warn("Invalid quest id {} for custom quest {}", questId, file.getName());
                 return null;
             }
-            int pId = MapleDataTool.getInt(xml.getChildByPath("info/preQuest"), -1);
+            MapleData pqdata = xml.getChildByPath("info/preQuest");
             int minLevel = MapleDataTool.getInt(xml.getChildByPath("info/minLevel"), 0);
             boolean daily = MapleDataTool.getInt(xml.getChildByPath("info/daily"), 0) == 1;
             // begin constructing custom quest data
             CQuestData qData = new CQuestData(questId, xml.getName(), daily);
-            qData.setPreQuestId(pId);
+
+            if (pqdata.getType() == MapleDataType.STRING) {
+                String[] sp = MapleDataTool.getString(pqdata, "-1").split(",");
+                int[] pqids = new int[sp.length];
+                for (int i = 0; i < pqids.length; i++) {
+                    pqids[i] = Integer.parseInt(sp[i]);
+                }
+                qData.setPreQuestIds(pqids);
+                qData.setPreQuestId(-2); // backwards compatibility kms
+            } else {
+                int pId = MapleDataTool.getInt(pqdata, -1);
+                qData.setPreQuestId(pId);
+            }
+
             qData.setMinimumLevel(minLevel);
             // iterate through monsters to kill, setting all progress to 0
             if (xml.getChildByPath("toKill") != null) {

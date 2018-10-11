@@ -23,6 +23,13 @@ public final class CQuestMetaData {
         this.quest = quest;
     }
 
+    @Override
+    public String toString() {
+        return String.format("CQuestMetaData{ID=%d, Name=%s}", quest.getId(), quest.getName());
+    }
+
+    public int getQuestId() { return quest.getId(); }
+
     /**
      * Obtain the prerequisite quest ID that's needed to begin the specified quest
      *
@@ -31,6 +38,8 @@ public final class CQuestMetaData {
     public int getPreQuestId() {
         return quest.getPreQuestId();
     }
+
+    public int[] getPreQuestIDs() { return quest.getPreQuestIds(); }
 
     public int getMinimumLevel() {
         return quest.getMinimumLevel();

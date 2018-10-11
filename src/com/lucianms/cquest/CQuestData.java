@@ -23,6 +23,7 @@ public class CQuestData {
     private boolean completed = false;
     private long completion = -1; // timestamp
     private int preQuestId = -1;
+    private int[] preQuestIds = null; // backwards compatibility i want to die
     private int minimumLevel = 0;
 
     private final CQuestKillRequirement toKill = new CQuestKillRequirement(); // monster kill requirements
@@ -102,6 +103,14 @@ public class CQuestData {
      */
     void setPreQuestId(int preQuestId) {
         this.preQuestId = preQuestId;
+    }
+
+    public int[] getPreQuestIds() {
+        return preQuestIds;
+    }
+
+    void setPreQuestIds(int[] preQuestIds) {
+        this.preQuestIds = preQuestIds;
     }
 
     /**
