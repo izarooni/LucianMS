@@ -134,22 +134,22 @@ function action(mode, type, selection) {
                 continue;
             }
             selected.sub = Quests[q];
-            let arr      = selected.sub.Metadata;
+            let arrmd    = selected.sub.Metadata;
             let complete = selected.sub.Completed;
             let locked   = selected.sub.Locked;
             
-            if (locked.length == 0 && arr.length == 0) {
+            if (locked.length == 0 && arrmd.length == 0) {
                 cm.sendOk("You do not have any Boss Hunter quests available right now. Come back when you have become stronger.");
                 cm.dispose();
                 return;
             }
             let uid = 0;
 
-            if (arr.length > 0) {
+            if (arrmd.length > 0) {
                 content += `${AvailableIcon}#b`;
             }
-            for (let i = 0; i < arr.length; i++) {
-                let metadata = arr[i];
+            for (let i = 0; i < arrmd.length; i++) {
+                let metadata = arrmd[i];
                 content += `\r\n#L${uid++}#Lvl ${metadata.getMinimumLevel()} - ${metadata.getName()}#l`;
             }
 
@@ -170,21 +170,23 @@ function action(mode, type, selection) {
         }
         cm.sendSimple(content);
     } else if (status == 3) {
+        // selection persistence mainly for displaying the quest summary
         if (selected.selection == undefined) selected.selection = selection;
         else if (selection == -1) selection = selected.selection;
+
         selection = selected.selection;
 
-        let sMetadata = selected.sub.Metadata;
-        let offset = sMetadata.length + selected.sub.Completed.length;
+        let arrmd = selected.sub.Metadata; // array of metadata
+        let offset = arrmd.length + selected.sub.Completed.length;
 
-        if (selection >= sMetadata.length && selection < offset) {
-            selected.quest = selected.sub.Completed[selection - sMetadata.length];
+        if (selection >= arrmd.length && selection < offset) { // quest is completed and is to be returned
+            selected.quest = selected.sub.Completed[selection - arrmd.length];
             status = 5;
             action(1, 0 -1);
-        } else if (selection < sMetadata.length) {
-            let metadata = (selected.quest = sMetadata[selection]);
+        } else if (selection < arrmd.length) {
+            let metadata = (selected.quest = arrmd[selection]);
             DisplaySummary(metadata);
-        } else {
+        } else { // a locked quest is selected
             let content = `You must complete the following quests before you may accept this\r\n#b`;
             let rquests = getRequiredQuests(selected.sub.Locked[selection - offset]);
             for (let i = 0; i < rquests.length; i++) {
@@ -199,7 +201,7 @@ function action(mode, type, selection) {
         cm.sendAcceptDecline("I know this is easy for you... Accept this task it'll be no problem! You need to fight the strong to become strong and what better way to do it?");
     } else if (status == 5) {
         CQuests.beginQuest(player, selected.quest.getQuestId());
-        cm.dispose();
+        cm.dispose(); // this is important
     } else if (status == 6) {
         let pquest = selected.quest;
         if (pquest.checkRequirements()) {

@@ -22,17 +22,20 @@ function DisplaySummary(metadata) {
     let content = `${SummaryIcon}\r\n`;
     if (this.internalStatus == 1) {
         let append = CQuestKills(metadata.getToKill());
-        if (append == null) DisplaySummary(metadata, this.originalStatus);
+        if (append == null) DisplaySummary(metadata);
         else cm.sendNext(content = (content + append));
     } else if (this.internalStatus == 2) {
         let append = CQuestCollect(metadata.getToCollect());
-        if (append == null) DisplaySummary(metadata, this.originalStatus);
+        if (append == null) DisplaySummary(metadata);
         else cm.sendNext(content = (content + append))
     } else if (this.internalStatus == 3) {
         let append = CQuestRewards(metadata.getRewards());
-        if (append == null) DisplaySummary(metadata, this.originalStatus);
+        if (append == null) DisplaySummary(metadata);
         else cm.sendNext(content = (content + append));
         status = this.originalStatus;
+    } else if (this.internalStatus == 4) { // no rewards?
+        status = this.originalStatus;
+        action(1, 0, -1);
     }
 }
 

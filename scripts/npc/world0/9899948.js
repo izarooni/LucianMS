@@ -28,9 +28,9 @@ function action(mode, type, selection) {
         let metadata = CQuests.getMetaData(QuestID[0]);
         testFor(pquest, 6); // the status to jump to if true
         if (status == 1) { // quest beginning
-            cm.sendNext(`Placeholder text 1 #b${metadata.getName()}#k`);
+            cm.sendNext(`Placeholder text 1.0 #b${metadata.getName()}#k`);
         } else if (status == 2) {
-            cm.sendNext(`Placeholder text 2 #b${metadata.getName()}#k`);
+            cm.sendNext(`Placeholder text 2.0 #b${metadata.getName()}#k`);
         } else if (status == 3) { // quest progress
             DisplaySummary(metadata);
         } else if (status == 4) {
@@ -49,9 +49,9 @@ function action(mode, type, selection) {
         let metadata = CQuests.getMetaData(QuestID[1]);
         testFor(pquest, 6); // jump
         if (status == 1) { // quest beginning
-            cm.sendNext(`Placeholder text 1 #b${metadata.getName()}#k`);
+            cm.sendNext(`Placeholder text 1.1 #b${metadata.getName()}#k`);
         } else if (status == 2) {
-            cm.sendNext(`Placeholder text 2 #b${metadata.getName()}#k`);
+            cm.sendNext(`Placeholder text 2.1 #b${metadata.getName()}#k`);
         } else if (status == 3) { // quest progress
             DisplaySummary(metadata);
         } else if (status == 4) {
@@ -71,9 +71,9 @@ function action(mode, type, selection) {
         let metadata = CQuests.getMetaData(QuestID[2]);
         testFor(pquest, 6); // jump
         if (status == 1) { // quest begeining
-            cm.sendNext(`Placeholder text 1 #b${metadata.getName()}#k`);
+            cm.sendNext(`Placeholder text 1.2 #b${metadata.getName()}#k`);
         } else if (status == 2) {
-            cm.sendNext(`Placeholder text 2 #b${metadata.getName()}#k`);
+            cm.sendNext(`Placeholder text 2.2 #b${metadata.getName()}#k`);
         } else if (status == 3) { // quest progress
             DisplaySummary(metadata);
         } else if (status == 4) {
