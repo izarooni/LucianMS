@@ -31,7 +31,7 @@ public class CQuestData {
     ArrayList<CQuestReward> rewards = new ArrayList<>();
     CQuestMetaData metadata;
 
-    CQuestData(int id, String name, boolean daily) {
+    public CQuestData(int id, String name, boolean daily) {
         this.id = id;
         this.name = name;
         this.daily = daily;
