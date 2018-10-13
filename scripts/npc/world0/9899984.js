@@ -39,7 +39,9 @@ function beginQuest() {
             var res = CQuestKills(metadata.getToKill());
             if (res != null) {
                 cm.sendNext(text + res);
-                cm.getPlayer().getMap().spawnMonsterOnGroudBelow(9895246, 527, 657); // respawn when not completed quest, but the monster is killed.
+                if(cm.getPlayer().getMap().countMonster(9895246) === 0) {
+                    cm.getPlayer().getMap().spawnMonsterOnGroudBelow(9895246, 527, 657); // respawn when not completed quest, but the monster is killed.
+                }
             }  else {
                 action(1, 0, 0);
             }
