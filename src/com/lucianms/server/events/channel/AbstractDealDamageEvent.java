@@ -503,7 +503,7 @@ public abstract class AbstractDealDamageEvent extends PacketEvent {
             ret.speed = lea.readByte();
             lea.skip(4);
         }
-        int calcDmgMax = 0;
+        int calcDmgMax = 1;
 
         // Find the base damage to base futher calculations on.
         // Several skills have their own formula in this section.
@@ -716,30 +716,17 @@ public abstract class AbstractDealDamageEvent extends PacketEvent {
                     hitDmgMax = 200000;
                 }
 
-                int maxWithCrit = hitDmgMax;
-                if (canCrit) // They can crit, so up the max.
-                {
-                    maxWithCrit *= 2;
-                }
-
-                // Warn if the damage is over 1.5x what we calculated above.
-                //if(damage > maxWithCrit * 1.5) {
-                //  AutobanFactory.DAMAGE_HACK.alert(chr, "DMG: " + damage + " MaxDMG: " + maxWithCrit + " SID: " + ret.skill + " MobID: " + (monster != null ? monster.getId() : "null") + " Map: " + chr.getMap().getMapName() + " (" + chr.getMapId() + ")");
-                //}
-
-                // Add a ab point if its over 5x what we calculated.
-                //	if(damage > maxWithCrit  * 5) {
-                //	AutobanFactory.DAMAGE_HACK.addPoint(chr.getAutobanManager(), "DMG: " + damage + " MaxDMG: " + maxWithCrit + " SID: " + ret.skill + " MobID: " + (monster != null ? monster.getId() : "null") + " Map: " + chr.getMap().getMapName() + " (" + chr.getMapId() + ")");
-                //}
-
                 if (ret.skill == Marksman.SNIPE || (canCrit && damage > hitDmgMax)) {
-                    // If the skill is a crit, inverse the damage to make it show up on clients.
                     damage = -Integer.MAX_VALUE + damage - 1;
                 }
 
                 allDamageNumbers.add(damage);
             }
-            if (ret.skill != Corsair.RAPID_FIRE || ret.skill != Aran.HIDDEN_FULL_SWING_DOUBLE || ret.skill != Aran.HIDDEN_FULL_SWING_TRIPLE || ret.skill != Aran.HIDDEN_OVER_SWING_DOUBLE || ret.skill != Aran.HIDDEN_OVER_SWING_TRIPLE) {
+            if (ret.skill != Corsair.RAPID_FIRE
+                    || ret.skill != Aran.HIDDEN_FULL_SWING_DOUBLE
+                    || ret.skill != Aran.HIDDEN_FULL_SWING_TRIPLE
+                    || ret.skill != Aran.HIDDEN_OVER_SWING_DOUBLE
+                    || ret.skill != Aran.HIDDEN_OVER_SWING_TRIPLE) {
                 lea.skip(4);
             }
             ret.allDamage.put(oid, allDamageNumbers);

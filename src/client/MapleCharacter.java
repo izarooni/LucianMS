@@ -1165,7 +1165,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
                 maxbasedamage = 1;
             }
         }
-        return maxbasedamage;
+        return Math.max(1, maxbasedamage);
     }
 
     public void cancelAllBuffs(boolean disconnect) {

@@ -39,7 +39,7 @@ public class MapleMonsterStats {
     private Map<String, Integer> animationTimes = new HashMap<>();
     private Map<Element, ElementalEffectiveness> resistance = new HashMap<>();
     private ArrayList<Pair<Integer, Integer>> skills = new ArrayList<>();
-    private ArrayList<LoseItem> loseItem = new ArrayList<>();
+    private ArrayList<LoseItem> loseItem = null;
     private ArrayList<Integer> revives = new ArrayList<>();
     private byte tagColor, tagBgColor;
     private Pair<Integer, Integer> cool = null;

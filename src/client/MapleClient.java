@@ -499,7 +499,7 @@ public class MapleClient {
             }
             try (PreparedStatement ps = con.prepareStatement("INSERT INTO iplog (accountid, ip) VALUES (?, ?)")) {
                 ps.setInt(1, accId);
-                ps.setString(2, session.getRemoteAddress().toString());
+                ps.setString(2, getRemoteAddress());
                 ps.executeUpdate();
             }
         } catch (SQLException e) {
@@ -507,6 +507,14 @@ public class MapleClient {
         }
         if (loginok == 0) {
             loginattempt = 0;
+
+            try (PreparedStatement ps = con.prepareStatement("update accounts set ip = ? where id = ?")) {
+                ps.setString(1, getRemoteAddress());
+                ps.setInt(2, getAccID());
+                ps.executeUpdate();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
         } else if (loginattempt > 4) {
             getSession().closeNow();
         }
