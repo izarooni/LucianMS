@@ -22,10 +22,11 @@ end.set(2018, Calendar.OCTOBER, 13, 20, 30); // Oct 13, 2018 @ 10:30 PM
 end.add(Calendar.HOUR_OF_DAY, 38); // First (36+2(utc)) hours to receive the medal
 
 let current = Calendar.getInstance(TimeZone.getDefault());
-current.add(Calendar.HOUR_OF_DAY + 2); // utc
+current.add(Calendar.HOUR_OF_DAY, 2); // utc
 if ((current.getTimeInMillis() >= start.getTimeInMillis() && current.getTimeInMillis() <= end.getTimeInMillis())) {
     firstDay = true;
 }
+
 TimeZone.setDefault(null);
 
 function action(mode, type, selection) {
@@ -44,7 +45,7 @@ function action(mode, type, selection) {
                 + "We only give the starter pack to new players, but we hope you're having fun~");
             cm.dispose();
         } else {
-            cm.sendNext("Here are a few things to help get you started", 1);
+            cm.sendNext("Here are a few things to help get you started. Have fun on your adventure!", 1);
             cm.gainItem(2000002, 200);  // white potions
             cm.gainItem(2000006, 200); // mana elixir
             cm.gainMeso(100000);
