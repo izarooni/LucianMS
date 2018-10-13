@@ -42,6 +42,7 @@ function action(mode, type, selection) {
         if (UGiveaway.checkWithBoth(client.getRemoteAddress(), client.getHWID(), GiveawayType)) {
             cm.sendNext("According to our records... You're amazing! Thanks for playing #bLucianMS#k. "
                 + "We only give the starter pack to new players, but we hope you're having fun~");
+            cm.dispose();
         } else {
             cm.sendNext("Here are a few things to help get you started", 1);
             cm.gainItem(2000002, 200);  // white potions
