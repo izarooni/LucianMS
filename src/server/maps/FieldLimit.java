@@ -1,32 +1,14 @@
-/*
-	This file is part of the OdinMS Maple Story Server
-    Copyright (C) 2008 Patrick Huy <patrick.huy@frz.cc>
-                       Matthias Butz <matze@odinms.de>
-                       Jan Christian Meyer <vimes@odinms.de>
-
-    This program is free software: you can redistribute it and/or modify
-    it under the terms of the GNU Affero General Public License version 3
-    as published by the Free Software Foundation. You may not use, modify
-    or distribute this program under any other version of the
-    GNU Affero General Public License.
-
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU Affero General Public License for more details.
-
-    You should have received a copy of the GNU Affero General Public License
-    along with this program.  If not, see <http://www.gnu.org/licenses/>.
-*/
 package server.maps;
 
 /**
- *
  * @author AngelSL
+ * @author izarooni
  */
 public enum FieldLimit {
-    JUMP(0x01),
-    MOVEMENTSKILLS(0x02),
+
+    UNABLE_TO_JUMP(0x01),
+    UNABLE_TO_USE_SKILLS(0x02),
+    UNABLE_TO_SUMMON_DOOR(0x03),
     SUMMON(0x04),
     DOOR(0x08),
     CHANGECHANNEL(0x10),
@@ -43,9 +25,9 @@ public enum FieldLimit {
     //NoClue6(0x10000), // No notes
     CANNOTJUMPDOWN(0x20000);
     //NoClue7(0x40000); // Seems to .. disable Rush if 0x2 is set
-    private long i;
+    private final long i;
 
-    private FieldLimit(long i) {
+    FieldLimit(long i) {
         this.i = i;
     }
 
@@ -53,7 +35,14 @@ public enum FieldLimit {
         return i;
     }
 
-    public boolean check(int fieldlimit) {
-        return (fieldlimit & i) == i;
+    public boolean check(int fieldLimit) {
+        return ((fieldLimit >> 1) & 1) == 1;
+    }
+
+    public int add(int fieldLimit, FieldLimit flag) {
+        if (check(fieldLimit)) {
+            return fieldLimit;
+        }
+        return fieldLimit | (1 << flag.getValue());
     }
 }

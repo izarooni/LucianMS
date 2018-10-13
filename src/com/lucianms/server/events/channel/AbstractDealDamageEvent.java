@@ -38,10 +38,7 @@ import net.PacketEvent;
 import server.MapleItemInformationProvider;
 import server.MapleStatEffect;
 import server.life.*;
-import server.maps.MapleMap;
-import server.maps.MapleMapItem;
-import server.maps.MapleMapObject;
-import server.maps.MapleMapObjectType;
+import server.maps.*;
 import server.partyquest.Pyramid;
 import tools.MaplePacketCreator;
 import tools.Pair;
@@ -449,6 +446,16 @@ public abstract class AbstractDealDamageEvent extends PacketEvent {
         } else if (ret.skill == Aran.COMBO_TEMPEST) {
             ret.isTempest = true;
         }
+
+        if (ret.skill > 0 && FieldLimit.UNABLE_TO_USE_SKILLS.check(player.getMap().getFieldLimit())) {
+            SpamTracker.SpamData spamTracker = player.getSpamTracker(SpamTracker.SpamOperation.SkillUsage);
+            if (spamTracker.testFor(8000)) {
+                player.sendMessage(5, "Skills are disabled in this map and will not show for other players.");
+                setCanceled(true);
+                spamTracker.record();
+            }
+        }
+
         lea.skip(8);
         ret.display = lea.readByte();
         ret.direction = lea.readByte();
