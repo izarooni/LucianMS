@@ -4,6 +4,7 @@ import com.lucianms.server.events.PongEvent;
 import com.lucianms.server.events.channel.*;
 import com.lucianms.server.events.login.AccountLoginEvent;
 import net.server.channel.handlers.*;
+import net.server.handlers.login.CreateCharHandler;
 import net.server.handlers.login.SetGenderHandler;
 
 import java.util.ArrayList;
@@ -68,6 +69,7 @@ public final class PacketManager {
         handlers.set(RecvOpcode.USE_REMOTE.getValue(), RemoteGachaponHandler.class);
         handlers.set(RecvOpcode.PARTY_SEARCH_START.getValue(), PartySearchStartHandler.class);
         handlers.set(RecvOpcode.ADMIN_COMMAND.getValue(), AdminCommandHandler.class);
+        handlers.set(RecvOpcode.CREATE_CHAR.getValue(), CreateCharHandler.class);
 
         //region movement handlers
         handlers.set(RecvOpcode.MOVE_PLAYER.getValue(), PlayerMoveEvent.class);

@@ -1,40 +1,27 @@
-/*
- This file is part of the OdinMS Maple Story Server
- Copyright (C) 2008 Patrick Huy <patrick.huy@frz.cc>
- Matthias Butz <matze@odinms.de>
- Jan Christian Meyer <vimes@odinms.de>
-
- This program is free software: you can redistribute it and/or modify
- it under the terms of the GNU Affero General Public License as
- published by the Free Software Foundation version 3 as published by
- the Free Software Foundation. You may not use, modify or distribute
- this program under any other version of the GNU Affero General Public
- License.
-
- This program is distributed in the hope that it will be useful,
- but WITHOUT ANY WARRANTY; without even the implied warranty of
- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- GNU Affero General Public License for more details.
-
- You should have received a copy of the GNU Affero General Public License
- along with this program.  If not, see <http://www.gnu.org/licenses/>.
- */
 package net.server.handlers.login;
 
 import client.MapleCharacter;
-import client.MapleClient;
 import client.MapleJob;
 import client.MapleSkinColor;
 import client.inventory.Equip;
 import client.inventory.Item;
 import client.inventory.MapleInventory;
 import client.inventory.MapleInventoryType;
-import net.AbstractMaplePacketHandler;
+import net.PacketEvent;
 import server.MapleItemInformationProvider;
+import tools.DatabaseConnection;
 import tools.MaplePacketCreator;
 import tools.data.input.SeekableLittleEndianAccessor;
 
-public final class CreateCharHandler extends AbstractMaplePacketHandler {
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+
+/**
+ * @author izarooni
+ */
+public class CreateCharHandler extends PacketEvent {
 
     private static int[] IDs = {
             1302000, 1312004, 1322005, 1442079,// weapons
@@ -55,32 +42,39 @@ public final class CreateCharHandler extends AbstractMaplePacketHandler {
         return false;
     }
 
+    private String username;
+    private byte gender;
+    private int jobID;
+    private int hair, face, skin;
+    private int top, bottom, shoes, weapon;
 
     @Override
-    public final void handlePacket(SeekableLittleEndianAccessor slea, MapleClient c) {
-        String name = slea.readMapleAsciiString();
-        if (!MapleCharacter.canCreateChar(name)) {
-            return;
+    public void post() {
+        Connection con = DatabaseConnection.getConnection();
+        try (PreparedStatement ps = con.prepareStatement("delete from ign_reserves where reserve = ? and username = ?")) {
+            ps.setString(1, username);
+            ps.setString(2, getClient().getAccountName());
+            ps.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
-        MapleCharacter newchar = MapleCharacter.getDefault(c);
-        newchar.setWorld(c.getWorld());
+    }
 
-        int job = slea.readInt();
-        int face = slea.readInt();
+    @Override
+    public void process(SeekableLittleEndianAccessor slea) {
+        username = slea.readMapleAsciiString();
 
-        int hair = slea.readInt();
-        int hairColor = slea.readInt();
-        int skincolor = slea.readInt();
+        jobID = slea.readInt();
+        face = slea.readInt();
+        hair = slea.readInt() + slea.readInt();
+        skin = slea.readInt();
 
-        newchar.setSkinColor(MapleSkinColor.getById(skincolor));
-        int top = slea.readInt();
-        int bottom = slea.readInt();
-        int shoes = slea.readInt();
-        int weapon = slea.readInt();
-        newchar.setGender(slea.readByte());
-        newchar.setName(name);
-        newchar.setHair(hair + hairColor);
-        newchar.setFace(face);
+        top = slea.readInt();
+        bottom = slea.readInt();
+        shoes = slea.readInt();
+        weapon = slea.readInt();
+        gender = slea.readByte();
+
 
         int[] items = new int[]{weapon, top, bottom, shoes, hair, face};
         for (int item : items) {
@@ -89,19 +83,50 @@ public final class CreateCharHandler extends AbstractMaplePacketHandler {
             }
         }
 
+        if (!MapleCharacter.canCreateChar(username)) {
+            setCanceled(true);
+        }
+        Connection con = DatabaseConnection.getConnection();
+        try (PreparedStatement ps = con.prepareStatement("select * from ign_reserves where reserve = ? and username = ?")) {
+            ps.setString(1, username);
+            ps.setString(2, getClient().getAccountName());
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    if (!rs.getString("username").equalsIgnoreCase(getClient().getAccountName())) {
+                        getClient().announce(MaplePacketCreator.charNameResponse(username, true));
+                        setCanceled(true);
+                    }
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public Object onPacket() {
+        MapleCharacter newchar = MapleCharacter.getDefault(getClient());
+        newchar.setWorld(getClient().getWorld());
+
+        newchar.setSkinColor(MapleSkinColor.getById(skin));
+        newchar.setGender(gender);
+        newchar.setName(username);
+        newchar.setHair(hair);
+        newchar.setFace(face);
+
         newchar.setMapId(90000000);
-        if (job == 0) { // Knights of Cygnus
+        if (jobID == 0) { // Knights of Cygnus
             newchar.setJob(MapleJob.NOBLESSE);
             newchar.getInventory(MapleInventoryType.ETC).addItem(new Item(4161047, (short) 0, (short) 1));
-        } else if (job == 1) { // Adventurer
+        } else if (jobID == 1) { // Adventurer
             newchar.setJob(MapleJob.BEGINNER);
             newchar.getInventory(MapleInventoryType.ETC).addItem(new Item(4161001, (short) 0, (short) 1));
-        } else if (job == 2) { // Aran
+        } else if (jobID == 2) { // Aran
             newchar.setJob(MapleJob.LEGEND);
             newchar.getInventory(MapleInventoryType.ETC).addItem(new Item(4161048, (short) 0, (short) 1));
         } else {
-            c.announce(MaplePacketCreator.deleteCharResponse(0, 9));
-            return;
+            getClient().announce(MaplePacketCreator.deleteCharResponse(0, 9));
+            return null;
         }
 
         MapleInventory equipped = newchar.getInventory(MapleInventoryType.EQUIPPED);
@@ -126,9 +151,10 @@ public final class CreateCharHandler extends AbstractMaplePacketHandler {
         equipped.addFromDB(equip);
 
         if (!newchar.insertNewChar()) {
-            c.announce(MaplePacketCreator.deleteCharResponse(0, 9));
-            return;
+            getClient().announce(MaplePacketCreator.deleteCharResponse(0, 9));
+            return null;
         }
-        c.announce(MaplePacketCreator.addNewCharEntry(newchar));
+        getClient().announce(MaplePacketCreator.addNewCharEntry(newchar));
+        return null;
     }
 }
