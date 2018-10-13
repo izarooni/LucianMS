@@ -207,7 +207,6 @@ public class FieldBuilder {
                     int rx0 = rs.getInt("rx0");
                     int rx1 = rs.getInt("rx1");
                     int x = rs.getInt("x");
-                    int y = rs.getInt("y");
                     int mobTime = rs.getInt("mobtime");
 
                     AbstractLoadedMapleLife life = MapleLifeFactory.getLife(id, type);
@@ -220,7 +219,7 @@ public class FieldBuilder {
                     life.setFh(fh);
                     life.setRx0(rx0);
                     life.setRx1(rx1);
-                    life.setPosition(new Point(x, y));
+                    life.setPosition(new Point(x, cy));
                     life.setHide(hide);
 
                     if (type.equals("n") && NPCs) {
