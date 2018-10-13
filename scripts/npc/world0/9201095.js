@@ -14,25 +14,27 @@ function action(mode, type, selection) {
         status++;
     }
     if (status == 1) {
-        var text = "Hello, I can change you to any job that you'd like\r\nPlease select a job to change to.\r\n#b";
-        var jobs = MapleJob.values();
-        for (var i = 0; i < jobs.length; i++) {
-            var job = jobs[i];
-            var name = jobName(job.getId());
-            if (name != null  && job.getId() >= 0 && job.getId() < 800) {
-                    cjobs.push(job.getId());
-                    text += "\r\n#L" + job.getId() + "#" + name + "#l";
-            }
-        }
-        cm.sendSimple(text);
-    } else {
-        if (cjobs.indexOf(selection) > -1) {
-            cm.getPlayer().setJob(MapleJob.getById(selection));
-            cm.getPlayer().updateSingleStat(MapleStat.JOB, selection);
-            player.setMasteries(selection);
-        }
-        cjobs = null;
+        cm.sendOk("I have no purpose at the moment.");
         cm.dispose();
+        // var text = "Hello, I can change you to any job that you'd like\r\nPlease select a job to change to.\r\n#b";
+        // var jobs = MapleJob.values();
+        // for (var i = 0; i < jobs.length; i++) {
+        //     var job = jobs[i];
+        //     var name = jobName(job.getId());
+        //     if (name != null  && job.getId() >= 0 && job.getId() < 800) {
+        //             cjobs.push(job.getId());
+        //             text += "\r\n#L" + job.getId() + "#" + name + "#l";
+        //     }
+        // }
+        // cm.sendSimple(text);
+    } else {
+        // if (cjobs.indexOf(selection) > -1) {
+        //     cm.getPlayer().setJob(MapleJob.getById(selection));
+        //     cm.getPlayer().updateSingleStat(MapleStat.JOB, selection);
+        //     player.setMasteries(selection);
+        // }
+        // cjobs = null;
+        // cm.dispose();
     }
 }
 
