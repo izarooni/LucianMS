@@ -199,9 +199,6 @@ public class AdministratorCommands {
                 }
 
             }
-        } else if (command.equals("debug")) {
-            player.setDebug(!player.isDebug());
-            player.sendMessage("Your debug mode is now {}", (player.isDebug() ? "enabled" : "disabled"));
         } else if (command.equals("setgmlevel")) {
             if (args.length() == 2) {
                 Integer GMLevel = args.parseNumber(1, int.class);

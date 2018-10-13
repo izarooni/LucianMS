@@ -67,6 +67,9 @@ public class HGMCommands {
             commands.sort(String::compareTo);
             commands.forEach(player::dropMessage);
             commands.clear();
+        } else if (command.equals("debug")) {
+            player.setDebug(!player.isDebug());
+            player.sendMessage("Your debug mode is now {}", (player.isDebug() ? "enabled" : "disabled"));
         } else if (command.equals("item", "drop")) {
             if (args.length() > 0) {
                 Integer id = args.parseNumber(0, int.class);
