@@ -48,7 +48,7 @@ public abstract class BossPQ extends GenericEvent {
     public abstract void giveRewards(MapleCharacter player);
 
     public MapleMap getMapInstance(int mapId) {
-        return maps.getOrDefault(mapId, new FieldBuilder(0, channelID, mapId).loadAll().loadMonsters().build());
+        return maps.computeIfAbsent(mapId, i -> new FieldBuilder(0, channelID, mapId).loadAll().loadMonsters().build());
     }
 
     private void broadcastPacket(byte[] packet) {
