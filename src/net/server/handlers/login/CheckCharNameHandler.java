@@ -24,14 +24,36 @@ package net.server.handlers.login;
 import client.MapleCharacter;
 import client.MapleClient;
 import net.AbstractMaplePacketHandler;
+import tools.DatabaseConnection;
 import tools.MaplePacketCreator;
 import tools.data.input.SeekableLittleEndianAccessor;
+
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 
 public final class CheckCharNameHandler extends AbstractMaplePacketHandler {
 
     @Override
     public final void handlePacket(SeekableLittleEndianAccessor slea, MapleClient client) {
         String username = slea.readMapleAsciiString();
+        Connection con = DatabaseConnection.getConnection();
+        try (PreparedStatement ps = con.prepareStatement("select * from ign_reserves where reserve = ?")) {
+            ps.setString(1, username);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    if (username.equalsIgnoreCase(rs.getString("reserve"))
+                            && !rs.getString("username").equalsIgnoreCase(client.getAccountName())) {
+                        client.announce(MaplePacketCreator.charNameResponse(username, true));
+                        client.announce(MaplePacketCreator.serverNotice(0, "This ign is reserved for another user"));
+                        return;
+                    }
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
         client.announce(MaplePacketCreator.charNameResponse(username, !MapleCharacter.canCreateChar(username)));
     }
 }
