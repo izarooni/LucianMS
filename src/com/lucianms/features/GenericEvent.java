@@ -82,9 +82,11 @@ public abstract class GenericEvent {
      * When the player dies
      *
      * @param player the player dying
+     * @return true if the death is being handled
      */
-    public void onPlayerDeath(MapleCharacter player) {
+    public boolean onPlayerDeath(Object sender, MapleCharacter player) {
         // do nothing
+        return false;
     }
 
     /**

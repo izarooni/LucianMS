@@ -38,9 +38,9 @@ public class MapleMonsterStats {
     private String name;
     private Map<String, Integer> animationTimes = new HashMap<>();
     private Map<Element, ElementalEffectiveness> resistance = new HashMap<>();
-    private List<Pair<Integer, Integer>> skills = new ArrayList<>();
-    private List<LoseItem> loseItem = null;
-    private List<Integer> revives = Collections.emptyList();
+    private ArrayList<Pair<Integer, Integer>> skills = new ArrayList<>();
+    private ArrayList<LoseItem> loseItem = new ArrayList<>();
+    private ArrayList<Integer> revives = new ArrayList<>();
     private byte tagColor, tagBgColor;
     private Pair<Integer, Integer> cool = null;
     private BanishInfo banish = null;
@@ -178,11 +178,11 @@ public class MapleMonsterStats {
         return animationTimes.containsKey("move") || animationTimes.containsKey("fly");
     }
 
-    public List<Integer> getRevives() {
+    public ArrayList<Integer> getRevives() {
         return revives;
     }
 
-    public void setRevives(List<Integer> revives) {
+    public void setRevives(ArrayList<Integer> revives) {
         this.revives = revives;
     }
 
@@ -303,9 +303,6 @@ public class MapleMonsterStats {
     }
 
     public void addLoseItem(LoseItem li) {
-        if (loseItem == null) {
-            loseItem = new LinkedList<>();
-        }
         loseItem.add(li);
     }
 

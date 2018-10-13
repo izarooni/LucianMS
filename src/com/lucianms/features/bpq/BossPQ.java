@@ -4,6 +4,7 @@ import client.MapleCharacter;
 import com.lucianms.features.GenericEvent;
 import com.lucianms.lang.annotation.PacketWorker;
 import com.lucianms.scheduler.TaskExecutor;
+import com.lucianms.server.events.channel.ChangeMapEvent;
 import com.lucianms.server.events.channel.TakeDamageEvent;
 import server.FieldBuilder;
 import server.life.MapleLifeFactory;
@@ -15,6 +16,8 @@ import tools.MaplePacketCreator;
 import tools.StringUtil;
 
 import java.awt.*;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 
 /**
@@ -73,8 +76,13 @@ public abstract class BossPQ extends GenericEvent {
             ReturnMap = 240070101;
         }
         player.changeMap(ReturnMap);
-        maps.clear();
-        maps = null;
+        MapleMap mapInstance = maps.get(mapId);
+        if (mapInstance.getAllPlayer().isEmpty()) {
+            mapInstance.killAllMonsters();
+            mapInstance.clearDrops();
+            maps.clear();
+            maps = null;
+        }
     }
 
     public final void begin() {
@@ -92,14 +100,16 @@ public abstract class BossPQ extends GenericEvent {
     }
 
     private void nextRound() {
+        final MapleMap mapInstance = getMapInstance(mapId);
         if (round >= bosses.length) {
-            getMapInstance(mapId).startMapEffect("Congrats on defeating all of the bosses!", 5120009);
+            mapInstance.startMapEffect("Congrats on defeating all of the bosses!", 5120009);
+            mapInstance.broadcastMessage(MaplePacketCreator.serverNotice(6, "You will be warped out in 10 seconds."));
             TaskExecutor.createTask(new Runnable() {
                 @Override
                 public void run() {
                     complete();
                 }
-            }, 4000);
+            }, 10000);
         } else {
             broadcastPacket(MaplePacketCreator.getClock(8));
             TaskExecutor.createTask(new Runnable() {
@@ -107,43 +117,42 @@ public abstract class BossPQ extends GenericEvent {
                 public void run() {
                     int monsterId = bosses[round];
                     MapleMonster monster = MapleLifeFactory.getMonster(monsterId);
-                    if (monster != null) {
-                        MapleMap map = getMapInstance(mapId);
-                        if (map != null) {
-                            MapleMonsterStats stats = new MapleMonsterStats();
-                            int newHp = (int) (monster.getHp() * getHealthMultiplier());
-                            int newMp = (int) (monster.getMp() * getHealthMultiplier());
-                            if (newHp < 1) {
-                                // number overflow
-                                newHp = Integer.MAX_VALUE;
-                            }
-                            if (mapId == 803 && monsterId == 9895253) { // hell mode and last boss (black mage)
-                                newHp -= (newHp * 0.25);
-                                newMp -= (newMp * 0.25);
-                            }
-                            stats.setHp(newHp);
-                            stats.setMp(newMp);
-                            monster.setBoss(true);
-                            final long spawnTimestamp = System.currentTimeMillis();
-                            monster.getListeners().add(new MonsterListener() {
-                                @Override
-                                public void monsterKilled(int aniTime) {
-                                    long endTime = System.currentTimeMillis();
-                                    long elapse = endTime - spawnTimestamp;
-                                    String time;
-                                    if (elapse < 1000) {
-                                        time = ((elapse) / 1000d) + "s";
-                                    } else {
-                                        time = StringUtil.getTimeElapse(elapse);
-                                    }
-                                    broadcastMessage(String.format("Round %d completed! It took you %s to kill that boss", (round + 1), time));
 
-                                    round++;
-                                    nextRound();
-                                }
-                            });
-                            map.spawnMonsterOnGroudBelow(monster, getMonsterSpawnPoint());
+                    if (monster != null) {
+                        MapleMonsterStats stats = new MapleMonsterStats();
+                        int newHp = (int) (monster.getHp() * getHealthMultiplier());
+                        int newMp = (int) (monster.getMp() * getHealthMultiplier());
+                        if (newHp < 1) {
+                            // number overflow
+                            newHp = Integer.MAX_VALUE;
                         }
+                        if (mapId == 803 && monsterId == 9895253) { // hell mode and last boss (black mage)
+                            newHp -= (newHp * 0.25);
+                            newMp -= (newMp * 0.25);
+                        }
+                        stats.setRevives(new ArrayList<>());
+                        stats.setHp(newHp);
+                        stats.setMp(newMp);
+                        monster.setBoss(true);
+                        final long spawnTimestamp = System.currentTimeMillis();
+                        monster.getListeners().add(new MonsterListener() {
+                            @Override
+                            public void monsterKilled(int aniTime) {
+                                long endTime = System.currentTimeMillis();
+                                long elapse = endTime - spawnTimestamp;
+                                String time;
+                                if (elapse < 1000) {
+                                    time = ((elapse) / 1000d) + "s";
+                                } else {
+                                    time = StringUtil.getTimeElapse(elapse);
+                                }
+                                broadcastMessage(String.format("Round %d completed! It took you %s to kill that boss", (round + 1), time));
+
+                                round++;
+                                nextRound();
+                            }
+                        });
+                        mapInstance.spawnMonsterOnGroudBelow(monster, getMonsterSpawnPoint());
                     }
                 }
             }, 8000);
@@ -165,6 +174,16 @@ public abstract class BossPQ extends GenericEvent {
             nDamage -= (nDamage * 0.25);
         }
         event.setDamage(nDamage);
+    }
+
+    @Override
+    public boolean onPlayerDeath(Object sender, MapleCharacter player) {
+        if (sender instanceof ChangeMapEvent) {
+            player.setHp(player.getMaxHp());
+            player.changeMap(player.getMap());
+            return true;
+        }
+        return super.onPlayerDeath(sender, player);
     }
 
     @Override

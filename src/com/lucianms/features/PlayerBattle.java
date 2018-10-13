@@ -56,12 +56,13 @@ public class PlayerBattle extends GenericEvent {
     }
 
     @Override
-    public void onPlayerDeath(MapleCharacter player) {
+    public boolean onPlayerDeath(Object sender, MapleCharacter player) {
         Optional<GenericEvent> pvp = player.getGenericEvents().stream().filter(g -> (g instanceof PlayerBattle)).findFirst();
         if (pvp.isPresent()) {
             player.removeGenericEvent(pvp.get());
             player.dropMessage("You are no longer PvPing");
         }
+        return false;
     }
 
     @PacketWorker

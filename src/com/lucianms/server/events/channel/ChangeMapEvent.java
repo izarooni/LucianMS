@@ -3,6 +3,7 @@ package com.lucianms.server.events.channel;
 import client.MapleCharacter;
 import client.MapleClient;
 import client.inventory.MapleInventoryType;
+import com.lucianms.features.GenericEvent;
 import constants.ServerConstants;
 import net.PacketEvent;
 import org.slf4j.Logger;
@@ -111,9 +112,14 @@ public class ChangeMapEvent extends PacketEvent {
                             player.announce(MaplePacketCreator.showWheelsLeft(player.getItemQuantity(5510000, false)));
                         } else {
                             player.cancelAllBuffs(false);
+                            for (GenericEvent event : player.getGenericEvents()) {
+                                if (event.onPlayerDeath(this, player)) {
+                                    return null;
+                                }
+                            }
                             to = player.getMap().getReturnMap();
                             if (to == null) {
-                                LOGGER.info("Player '{}' unable to return to map {}", player.getName(), player.getMap().getReturnMapId());
+                                LOGGER.warn("Player '{}' unable to return to map {}", player.getName(), player.getMap().getReturnMapId());
                                 player.sendMessage("The return map is obstructed");
                                 to = getClient().getChannelServer().getMap(ServerConstants.HOME_MAP);
                             }

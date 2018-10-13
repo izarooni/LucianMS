@@ -197,6 +197,9 @@ public class MapleMonster extends AbstractLoadedMapleLife {
     }
 
     private List<Integer> getRevives() {
+        if (overrideStats != null) {
+            return overrideStats.getRevives();
+        }
         return stats.getRevives();
     }
 

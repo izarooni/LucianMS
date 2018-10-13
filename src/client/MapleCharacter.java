@@ -3707,7 +3707,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
         if (getEventInstance() != null) {
             getEventInstance().playerKilled(this);
         }
-        getGenericEvents().forEach(g -> g.onPlayerDeath(this));
+        getGenericEvents().forEach(g -> g.onPlayerDeath(null, this));
         int[] charmID = {5130000, 4031283, 4140903};
         int possessed = 0;
         int i;

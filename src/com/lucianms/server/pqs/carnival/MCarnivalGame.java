@@ -66,9 +66,10 @@ public class MCarnivalGame extends GenericEvent {
     }
 
     @Override
-    public void onPlayerDeath(MapleCharacter player) {
+    public boolean onPlayerDeath(Object sender, MapleCharacter player) {
         MapleMap map = player.getClient().getChannelServer().getMap(lobby.getBattlefieldMapId());
         map.broadcastMessage(MCarnivalPacket.getMonsterCarnivalPlayerDeath(player));
+        return false;
     }
 
     @PacketWorker
