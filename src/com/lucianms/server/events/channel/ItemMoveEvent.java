@@ -55,10 +55,10 @@ public class ItemMoveEvent extends PacketEvent {
         action = slea.readShort();
         quantity = slea.readShort();
 
-        if (source < 0 && action > 0 && source == -149) {
-            NPCScriptManager.start(getClient(), 9010000, "f_equip_info");
-            setCanceled(true);
-        }
+//        if (source < 0 && action > 0 && source == -149) {
+//            NPCScriptManager.start(getClient(), 9010000, "f_equip_info");
+//            setCanceled(true);
+//        }
     }
 
     @Override

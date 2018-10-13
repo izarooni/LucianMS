@@ -130,7 +130,7 @@ public abstract class BossPQ extends GenericEvent {
                             newHp -= (newHp * 0.25);
                             newMp -= (newMp * 0.25);
                         }
-                        stats.setRevives(new ArrayList<>());
+                        stats.setRevives(null);
                         stats.setHp(newHp);
                         stats.setMp(newMp);
                         monster.setBoss(true);

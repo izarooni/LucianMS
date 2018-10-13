@@ -112,10 +112,10 @@ public final class PlayerLoggedinHandler extends AbstractMaplePacketHandler {
         LOGGER.info("Player {} logged-in", MapleCharacter.getNameById(cid));
 
         MapleInventory eqd = player.getInventory(MapleInventoryType.EQUIPPED);
-        if (eqd.getItem((short) -149) == null) {
-            Equip eq = new Equip(1802056, (short) -149);
-            player.getInventory(MapleInventoryType.EQUIPPED).addFromDB(eq);
-        }
+//        if (eqd.getItem((short) -149) == null) {
+//            Equip eq = new Equip(1802056, (short) -149);
+//            player.getInventory(MapleInventoryType.EQUIPPED).addFromDB(eq);
+//        }
 
         cserv.addPlayer(player);
         List<PlayerBuffValueHolder> buffs = server.getPlayerBuffStorage().getBuffsFromStorage(cid);

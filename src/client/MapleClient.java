@@ -969,6 +969,10 @@ public class MapleClient {
         }, 30000);
     }
 
+    public String getRemoteAddress() {
+        return session.getRemoteAddress().toString().substring(1).split(":")[0];
+    }
+
     public String getHWID() {
         return hwid;
     }
