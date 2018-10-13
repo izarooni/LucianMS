@@ -767,7 +767,7 @@ public class MapleMap {
         }
         spawnedMonstersOnMap.decrementAndGet();
         monster.setHp(0);
-        broadcastMessage(MaplePacketCreator.killMonster(monster.getObjectId(), animation), monster.getPosition());
+        broadcastMessage(MaplePacketCreator.killMonster(monster.getObjectId(), animation));
         // if (monster.getStats().selfDestruction() == null) {//FUU BOMBS D:
         removeMapObject(monster);
         // }
