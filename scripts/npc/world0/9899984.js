@@ -32,12 +32,17 @@ function completeQuest() {
 function beginQuest() {
     if (status == 1) {
         cm.sendNext("This one can't be too difficult. Let's do it!", 1);
+        cm.getPlayer().getMap().spawnMonsterOnGroudBelow(9895246, 527, 657); // initial spawn
     } else if (status >= 2 && status <= 4) {
         var text = "#FUI/UIWindow/Quest/summary#\r\n";
         if (status == 2) {
             var res = CQuestKills(metadata.getToKill());
-            if (res != null) cm.sendNext(text + res);
-            else action(1, 0, 0);
+            if (res != null) {
+                cm.sendNext(text + res);
+                cm.getPlayer().getMap().spawnMonsterOnGroudBelow(9895246, 527, 657); // respawn when not completed quest, but the monster is killed.
+            }  else {
+                action(1, 0, 0);
+            }
         } else if (status == 3) {
             var res = CQuestCollect(metadata.getToCollect());
             if (res != null) cm.sendNext(text + res);
