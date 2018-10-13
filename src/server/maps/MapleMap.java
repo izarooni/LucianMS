@@ -576,11 +576,9 @@ public class MapleMap {
                         // Kaneki boss map
                         if (monster.getMap().getId() == 85) {
                             if (chr.getParty() != null) {
-                                for (MaplePartyCharacter player : chr.getParty().getMembers()) {
-                                    if (player.getMapId() == chr.getMapId()) {
-                                        player.getPlayer().changeMap(88);
-                                        player.getPlayer().dropMessage(5, "Thanks for finally letting me realize my actions were corrupt against the realm.");
-                                    }
+                                for (MapleCharacter players : getAllPlayer()) {
+                                    players.changeMap(88);
+                                    players.dropMessage(5, "Thanks for finally letting me realize my actions were corrupt against the realm.");
                                 }
                             } else {
                                 chr.changeMap(88);
@@ -761,7 +759,7 @@ public class MapleMap {
                 }
             }
         }
-        if (monster.getId() == 9895253 && getId() == 97) {
+        if (monster.getId() == 9895253 && getId() == 97) { // Black Mage
             List<MapleCharacter> warp = new ArrayList<>(getCharacters());
             TaskExecutor.createTask(() -> warp.forEach(c -> c.changeMap(333)), 2500);
         }

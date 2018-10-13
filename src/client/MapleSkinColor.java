@@ -1,7 +1,21 @@
 package client;
 
 public enum MapleSkinColor {
-    NORMAL(0), DARK(1), BLACK(2), PALE(3), BLUE(4), GREEN(5), WHITE(9), PINK(10), BROWN(11), RED(13);
+
+    // @formatter:off
+    NORMAL(0),
+      DARK(1),
+     BLACK(2),
+      PALE(3),
+      BLUE(4),
+     GREEN(5),
+     WHITE(9),
+      PINK(10),
+     BROWN(11),
+ ELF_WHITE(12),
+  ELF_GREY(13),
+ELF_NORMAL(14);
+    // @formatter:on
     final int id;
 
     MapleSkinColor(int id) {

@@ -97,6 +97,7 @@ public class MapleClient {
     private boolean disconnecting = false;
     private int voteTime = -1;
     private long sessionId;
+    private String lastKnownIP = null;
 
     private long discordId = 0;
     private String discordKey = null;
@@ -464,7 +465,7 @@ public class MapleClient {
         int loginok = 5;
         Connection con = DatabaseConnection.getConnection();
         try {
-            try (PreparedStatement ps = con.prepareStatement("SELECT id, password, salt, gender, banned, gm, pin, pic, characterslots, tos FROM accounts WHERE name = ?")) {
+            try (PreparedStatement ps = con.prepareStatement("SELECT id, password, salt, gender, banned, gm, pin, pic, characterslots, tos, ip FROM accounts WHERE name = ?")) {
                 ps.setString(1, login);
                 try (ResultSet rs = ps.executeQuery()) {
                     if (rs.next()) {
@@ -478,6 +479,7 @@ public class MapleClient {
                         gender = rs.getByte("gender");
                         gender = (gender == 10) ? 0 : gender;
                         characterSlots = rs.getByte("characterslots");
+                        lastKnownIP = rs.getString("ip");
                         String passhash = rs.getString("password");
                         String salt = rs.getString("salt");
                         byte tos = rs.getByte("tos");
@@ -975,6 +977,10 @@ public class MapleClient {
                 }
             }
         }, 30000);
+    }
+
+    public String getLastKnownIP() {
+        return lastKnownIP;
     }
 
     public String getRemoteAddress() {
