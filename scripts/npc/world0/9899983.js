@@ -1,4 +1,5 @@
 const UGiveaway = Java.type("tools.UniqueGiveaway");
+const Equip     = Java.type("client.inventory.Equip");
 
 const Calendar  = Java.type("java.util.Calendar");
 const TimeZone  = Java.type("java.util.TimeZone");
@@ -54,7 +55,14 @@ function action(mode, type, selection) {
     } else if (status == 3) {
         if (firstDay) {
             cm.sendNext("It's launch day!! Thanks for taking time to try out #bLucianMS#k!\r\nFor playing on the first day, we would like to reward you with this very exclusive medal");
-            cm.gainItem(GiveawayMedal);
+            let equip = new Equip(GiveawayMedal, 1);
+            equip.setStr(5);
+            equip.setDex(5);
+            equip.setInt(5);
+            equip.setLuk(5);
+            equip.setWatk(1);
+            equip.setMatk(1);
+            cm.gainItem(equip, true);
         }
         cm.dispose();
     }

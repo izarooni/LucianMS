@@ -192,6 +192,10 @@ public class AbstractPlayerInteraction {
         return Integer.parseInt(getPlayer().getQuest(MapleQuest.getInstance(qid)).getProgress().get(0));
     }
 
+    public void gainItem(Item item, boolean show) {
+        MapleInventoryManipulator.addFromDrop(getClient(), item, show);
+    }
+
     public void gainItem(int id, short quantity) {
         gainItem(id, quantity, false, false);
     }
