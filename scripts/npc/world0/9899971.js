@@ -17,7 +17,14 @@ function action(mode, type, selection) {
 }
 
 function completeQuest() {
-    if (!quest.checkRequirements()) {
+    if (quest.isCompleted()) {
+        if (status == 1) {
+            cm.sendNext("Let's move on already! You've completed my first task");
+        } else {
+            cm.warp(90000004);
+            cm.dispose();
+        }
+    } else if (!quest.checkRequirements()) {
         cm.sendOk("Have you forgotten what to do? You can check all of your quests via the #d< @quests >#k command!");
         cm.dispose();
     } else if (!quest.isCompleted()) {
