@@ -45,7 +45,7 @@ public class PlayerCreative extends GenericEvent {
 
         player.saveLocation(SavedLocationType.OTHER.name());
         FieldBuilder fb = new FieldBuilder(player.getWorld(), player.getClient().getChannel(), CreativeField);
-        MapleMap map = fb.loadPortals().loadFootholds().build();
+        MapleMap map = fb.loadNPCs().loadPortals().loadFootholds().build();
         map.getPortals().forEach(portal -> portal.setPortalStatus(false));
 
         MapleNPC npc = MapleLifeFactory.getNPC(2003);
