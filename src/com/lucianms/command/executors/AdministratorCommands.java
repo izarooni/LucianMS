@@ -21,11 +21,9 @@ import server.MapleInventoryManipulator;
 import server.life.MapleMonster;
 import server.life.MapleMonsterInformationProvider;
 import server.life.MapleNPC;
-import server.maps.MapleMapItem;
 import server.maps.MapleMapObject;
 import server.maps.MapleReactor;
 import server.maps.PlayerNPC;
-import tools.HexTool;
 
 import javax.script.ScriptException;
 import java.awt.*;
@@ -63,6 +61,21 @@ public class AdministratorCommands {
                 commands.forEach(player::dropMessage);
             } finally {
                 commands.clear();
+            }
+        } else if (command.equals("setrates")) {
+            if (args.length() == 3) {
+                Integer expRate = args.parseNumber(0, int.class);
+                Integer mesoRate = args.parseNumber(1, int.class);
+                Integer dropRate = args.parseNumber(2, int.class);
+                if (expRate == null || mesoRate == null || dropRate == null) {
+                    player.sendMessage(5, args.getFirstError());
+                    return;
+                }
+                world.setExpRate(expRate);
+                world.setMesoRate(mesoRate);
+                world.setDropRate(dropRate);
+                world.updateRates();
+                world.broadcastMessage(6, "The Exp, Meso and Drop rate have changed to {}x {}x and {}x respectively", expRate, mesoRate, dropRate);
             }
         } else if (command.equals("autoevent")) {
             if (args.length() == 1) {
