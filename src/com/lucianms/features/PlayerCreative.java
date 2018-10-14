@@ -48,12 +48,11 @@ public class PlayerCreative extends GenericEvent {
         MapleMap map = fb.loadNPCs().loadPortals().loadFootholds().build();
         map.getPortals().forEach(portal -> portal.setPortalStatus(false));
 
-        MapleNPC npc = MapleLifeFactory.getNPC(2003);
-        npc.setScript("sandbox_test");
+        MapleNPC npc = MapleLifeFactory.getNPC(9899958);
         npc.setPosition(player.getPosition().getLocation());
-        npc.setCy(player.getPosition().y);
-        npc.setRx0(player.getPosition().x + 50);
-        npc.setRx1(player.getPosition().x - 50);
+        npc.setCy(186);
+        npc.setRx0(135 + 50);
+        npc.setRx1(135 - 50);
         npc.setFh(0);
 
         MapleInventoryType[] inventoryTypes = MapleInventoryType.values();

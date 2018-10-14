@@ -39,8 +39,8 @@ import java.util.*;
 public class MapleGuild {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MapleGuild.class);
-    public final static int CREATE_GUILD_COST = 1500000;
-    public final static int CHANGE_EMBLEM_COST = 5000000;
+    public final static int CREATE_GUILD_COST = 1000000;
+    public final static int CHANGE_EMBLEM_COST = 1500000;
 
     private enum BCOp {
         NONE, DISBAND, EMBELMCHANGE

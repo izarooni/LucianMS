@@ -195,7 +195,6 @@ public class FieldBuilder {
     }
 
     private void obtainSpawns() {
-        LOGGER.info("{} - {}", map.getId(), map.getMapName());
         try (Connection con = Database.getConnection();
              PreparedStatement ps = con.prepareStatement("SELECT * FROM spawns WHERE mid = ?")) {
             ps.setInt(1, map.getId());

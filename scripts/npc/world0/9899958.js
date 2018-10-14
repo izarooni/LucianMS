@@ -14,7 +14,8 @@ function action(mode, type, selection) {
         status++;
     }
 
-    player.getToggles().put("cmd_npc_access", false); // once script is executed, disable npc conversing
+    if(creative != null)
+        player.getToggles().put("cmd_npc_access", false); // once script is executed, disable npc conversing
 
     if (creative != null) {
         if (status == 1) {

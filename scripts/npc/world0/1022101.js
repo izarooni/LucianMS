@@ -3,8 +3,8 @@
  Warp NPC
 */
 
-var status = 0;
-var maps = [
+let status = 0;
+let maps = [
     // [6, "#bTetris #k"],
     [11, "#bWario#k"],
     // [810, "#gCasino#k"],
@@ -24,14 +24,21 @@ function action(mode, type, selection) {
         status++;
     }
     if (status == 1) {
-        var content = "Hello, #r#h ##k! I am the #bMap Warper#k, where would you like to go?\r\n";
-        for (var i = 0; i < maps.length; i++) {
-            content += "\r\n#L" + i + "#" + maps[i][1] + "#l";
+        let content = "Hello, #r#h ##k! I am the #bMap Warper#k, where would you like to go?\r\n";
+        for (let i = 0; i < maps.length; i++) {
+            let map_name = maps[i][1];
+            content += `\r\n#L${i}#${map_name}#l`;
         }
         cm.sendSimple(content);
     } else if (status == 2) {
         if (selection >= 0 && selection < maps.length) {
-            cm.warp(maps[selection][0]);
+            let map_id = maps[selection][0];
+            if (map_id == 808) {// sandbox
+                cm.openNpc(9899958);
+                return;
+            } else {
+                cm.warp(maps[selection][0]);
+             }
         }
         cm.dispose();
     }

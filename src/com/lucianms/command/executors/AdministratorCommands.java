@@ -65,7 +65,6 @@ public class AdministratorCommands {
             if (args.length() == 1) {
                 switch (args.get(0)) {
                     default:
-                        player.sendMessage("achievements, shops, items, monsters, drops, mapscripts, cquests");
                         return;
                     case "achievements":
                         Achievements.loadAchievements();
@@ -105,6 +104,8 @@ public class AdministratorCommands {
                         break;
                 }
                 System.gc();
+            } else {
+                player.sendMessage("achievements, shops, items, monsters, drops, mapscripts, cquests");
             }
         } else if (command.equals("setrates")) {
             if (args.length() == 3) {
