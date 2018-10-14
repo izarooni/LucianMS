@@ -18,10 +18,10 @@ jobs = {
     },
     Third: {
         Mercedes       : { ID: 311 },
-        "Crossbow Man" : { ID: 321 }
+        "Sniper" : { ID: 321 }
     },
     Fourth: {
         Mercedes       : { ID: 312 },
-        "Crossbow Man" : { ID: 322 }
+        "Marksman" : { ID: 322 }
     }
 };

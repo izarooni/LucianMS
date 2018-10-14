@@ -5,15 +5,15 @@
 
 var status = 0;
 var maps = [
-    [6, "#bTetris #k"],
+    // [6, "#bTetris #k"],
     [11, "#bWario#k"],
-    [810, "#gCasino#k"],
+    // [810, "#gCasino#k"],
     [271000000, "#dFuture Gate#k"],
     [273000000, "#rTwilight Perion#k"],
     [211060010, "#bLion King Castle"],
     [219000000, "#dCokeTown#k"],
     [951000000, "#rMonster Park#k"],
-	 [808, "#eSandbox#k"]
+	[808, "#eSandbox#k"]
 ];
 
 function action(mode, type, selection) {
