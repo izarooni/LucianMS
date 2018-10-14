@@ -15,21 +15,25 @@ jobs = {
         Pirate: { ID: 500, req: (p) => true,
             equips: [[1482000, 1], [1492000, 1], [2330000, 1000]] },
         Aran: { ID: 2100, req: (p) => true,
-            equips: [[1442000, 1]]}
+            equips: [[1442000, 1]]},
+        "Dawn Warrior": { ID: 1100, req: (p) => true,
+            equips: [[1302007, 1]] }
     },
     Second: {
         Uchiha: { ID: 110 },
         Rashoumon: { ID: 120 },
         Ark: { ID: 510 },
         Mechanic: { ID: 520 },
-        Aran: { ID: 2110 }
+        Aran: { ID: 2110 },
+        "Dawn Warrior": { ID: 1110 }
     },
     Third: {
         Uchiha: { ID: 111 },
         Rashoumon: { ID: 121 },
         Ark: { ID: 511 },
         Mechanic: { ID: 521 },
-        Aran: { ID: 2111 }
+        Aran: { ID: 2111 },
+        "Dawn Warrior": { ID: 1111 }
     },
     Fourth: {
         Uchiha: { ID: 112 },
