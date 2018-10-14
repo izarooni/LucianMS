@@ -28,6 +28,7 @@ import client.inventory.Equip;
 import client.inventory.Item;
 import client.inventory.MapleInventory;
 import client.inventory.MapleInventoryType;
+import constants.ItemConstants;
 import net.AbstractMaplePacketHandler;
 import server.CashShop;
 import server.CashShop.CashItem;
@@ -37,7 +38,6 @@ import server.MapleItemInformationProvider;
 import tools.MaplePacketCreator;
 import tools.data.input.SeekableLittleEndianAccessor;
 
-import java.sql.SQLException;
 import java.util.Calendar;
 import java.util.List;
 import java.util.Map;
@@ -69,6 +69,14 @@ public final class CashOperationHandler extends AbstractMaplePacketHandler {
                 c.announce(MaplePacketCreator.serverNotice(1, content));
                 c.announce(MaplePacketCreator.showCash(player));
                 return;
+            }
+            if (ItemConstants.isPet(cItem.getItemId())) {
+                int itemID = cItem.getItemId();
+                if (itemID == 5000014 || itemID == 5000022) {
+                    c.announce(MaplePacketCreator.serverNotice(1, "These pets are available for our donors only!"));
+                    c.announce(MaplePacketCreator.showCash(player));
+                    return;
+                }
             }
             if (action == 0x03) { // Item
                 Item item = cItem.toItem();
