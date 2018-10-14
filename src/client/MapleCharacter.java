@@ -4173,12 +4173,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
         }
     }
 
-    // synchronize this call instead of trying to give access all at once (?)
     public void saveToDB() {
-        BiConsumer<String, Long> elapsed = (str, i) -> {
-            System.out.println(str + " - " + ((System.currentTimeMillis() - i) / 1000d) + "s");
-        };
-
         try (Connection con = Database.getConnection()) {
             try (PreparedStatement ps = con.prepareStatement("UPDATE characters SET level = ?, fame = ?, str = ?, dex = ?, luk = ?, `int` = ?, exp = ?, gachaexp = ?, hp = ?, mp = ?, maxhp = ?, maxmp = ?, sp = ?, ap = ?, gm = ?, skincolor = ?, gender = ?, job = ?, hair = ?, face = ?, map = ?, meso = ?, hpMpUsed = ?, spawnpoint = ?, party = ?, buddyCapacity = ?, messengerid = ?, messengerposition = ?, mountlevel = ?, mountexp = ?, mounttiredness= ?, equipslots = ?, useslots = ?, setupslots = ?, etcslots = ?,  monsterbookcover = ?, vanquisherStage = ?, dojoPoints = ?, lastDojoStage = ?, finishedDojoTutorial = ?, vanquisherKills = ?, matchcardwins = ?, matchcardlosses = ?, matchcardties = ?, omokwins = ?, omoklosses = ?, omokties = ?, dataString = ?, fishingpoints = ?, daily = ?, reborns = ?, eventpoints = ?, rebirthpoints = ?, occupation = ?, jumpquestpoints = ? WHERE id = ?", Statement.RETURN_GENERATED_KEYS)) {
                 if (gmLevel < 1 && level > 199) {
@@ -4309,6 +4304,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
                 }
                 ps.executeBatch();
             }
+            con.setAutoCommit(false);
             deleteWhereCharacterId(con, "DELETE FROM keymap WHERE characterid = ?");
             try (PreparedStatement ps = con.prepareStatement("INSERT INTO keymap (characterid, `key`, `type`, `action`) VALUES (?, ?, ?, ?)")) {
                 ps.setInt(1, id);
@@ -4319,7 +4315,9 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
                     ps.addBatch();
                 }
                 ps.executeBatch();
+                con.commit();
             }
+            con.setAutoCommit(true);
             deleteWhereCharacterId(con, "DELETE FROM skillmacros WHERE characterid = ?");
             try (PreparedStatement ps = con.prepareStatement("INSERT INTO skillmacros (characterid, skill1, skill2, skill3, name, shout, position) VALUES (?, ?, ?, ?, ?, ?, ?)")) {
                 ps.setInt(1, getId());
@@ -4348,18 +4346,21 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
 
             relationship.save();
 
+            con.setAutoCommit(false);
             deleteWhereCharacterId(con, "DELETE FROM skills WHERE characterid = ?");
             try (PreparedStatement ps = con.prepareStatement("INSERT INTO skills VALUES (?, ?, ?, ?, ?)")) {
-                ps.setInt(1, id);
+                ps.setInt(2, id);
                 for (Entry<Skill, SkillEntry> skill : skills.entrySet()) {
-                    ps.setInt(2, skill.getKey().getId());
+                    ps.setInt(1, skill.getKey().getId());
                     ps.setInt(3, skill.getValue().skillevel);
                     ps.setInt(4, skill.getValue().masterlevel);
                     ps.setLong(5, skill.getValue().expiration);
                     ps.addBatch();
                 }
                 ps.executeBatch();
+                con.commit();
             }
+            con.setAutoCommit(true);
             deleteWhereCharacterId(con, "DELETE FROM savedlocations WHERE characterid = ?");
             try (PreparedStatement ps = con.prepareStatement("INSERT INTO savedlocations (characterid, `locationtype`, `map`, `portal`) VALUES (?, ?, ?, ?)")) {
                 ps.setInt(1, id);
