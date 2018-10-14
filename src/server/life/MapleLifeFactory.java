@@ -40,9 +40,8 @@ public class MapleLifeFactory {
     private static MapleData npcStringData = stringDataWZ.getData("Npc.img");
     private static Map<Integer, MapleMonsterStats> monsterStats = new HashMap<>();
 
-    public static void clear() {
+    public static void clearCache() {
         monsterStats.clear();
-        System.gc();
     }
 
     public static AbstractLoadedMapleLife getLife(int id, String type) {

@@ -56,12 +56,6 @@ public class HGMCommands {
             commands.add("!onpc <npcId> - Remotely open any NPC");
             commands.add("!oshop <shopId> - Remotely open any shop");
             commands.add("!saveall - Save everything on the server");
-            commands.add("!reloadportals - Reload portal scripts");
-            commands.add("!reloadreactordrops - Reload reactor drops");
-            commands.add("!reloadshops - Reload shop items");
-            commands.add("!reloadskills - Relaod loaded skill data");
-            commands.add("!reloadmobs - Reload mob data");
-            commands.add("!resetreactors - Reset all reactors in the map");
             commands.add("!godmeup - Change values of all stats for all equips");
             commands.add("!stalker - Open the player stalking NPC");
             commands.sort(String::compareTo);
@@ -327,21 +321,6 @@ public class HGMCommands {
         } else if (command.equals("resetreactors")) {
             player.getMap().resetReactors();
             player.dropMessage("Reactors reset");
-        } else if (command.equals("reloadreactordrops")) {
-            ReactorScriptManager.clearDrops();
-            player.dropMessage(6, "Reactor drops reloaded");
-        } else if (command.equals("reloadportals")) {
-            PortalScriptManager.clearPortalScripts();
-            player.dropMessage(6, "Portal scripts reloaded");
-        } else if (command.equals("reloadshosps")) {
-            MapleShopFactory.getInstance().clearCache();
-            player.dropMessage(6, "Shops reloaded");
-        } else if (command.equals("reloadskills")) {
-            SkillFactory.loadAllSkills();
-            player.dropMessage("Loaded all skills");
-        } else if (command.equals("reloadmobs")) {
-            MapleLifeFactory.clear();
-            player.dropMessage(6, "Mobs reloaded");
         } else if (command.equals("sudo")) {
             if (args.length() > 1) {
                 MapleCharacter target = client.getWorldServer().getPlayerStorage().getCharacterByName(args.get(0));

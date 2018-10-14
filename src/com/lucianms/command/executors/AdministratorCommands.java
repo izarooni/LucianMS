@@ -1,10 +1,8 @@
 package com.lucianms.command.executors;
 
-import client.MapleCharacter;
-import client.MapleClient;
-import client.MapleRing;
-import client.Relationship;
+import client.*;
 import client.inventory.Equip;
+import client.meta.Achievement;
 import com.lucianms.command.CommandWorker;
 import com.lucianms.cquest.CQuestBuilder;
 import com.lucianms.features.auto.GAutoEvent;
@@ -13,11 +11,16 @@ import com.lucianms.io.scripting.Achievements;
 import com.lucianms.io.scripting.event.EventInstanceManager;
 import com.lucianms.io.scripting.event.EventManager;
 import com.lucianms.io.scripting.map.MapScriptManager;
+import com.lucianms.io.scripting.portal.PortalScriptManager;
+import com.lucianms.io.scripting.reactor.ReactorScriptManager;
 import net.server.Server;
 import net.server.channel.Channel;
 import net.server.channel.handlers.RingActionHandler;
 import net.server.world.World;
 import server.MapleInventoryManipulator;
+import server.MapleItemInformationProvider;
+import server.MapleShopFactory;
+import server.life.MapleLifeFactory;
 import server.life.MapleMonster;
 import server.life.MapleMonsterInformationProvider;
 import server.life.MapleNPC;
@@ -46,13 +49,9 @@ public class AdministratorCommands {
         if (command.equals("admincommands")) {
             ArrayList<String> commands = new ArrayList<>();
             try {
-                commands.add("!reloaddrops - Clear monster drop cache");
-                commands.add("!reloadmapscripts - Clears stored map scripts");
-                commands.add("!reloadquests - Reload custom quest");
-                commands.add("!reloadachievements - Reload achievement scripts");
+                commands.add("!clearcache - Clear the cache of a specified system");
                 commands.add("!fae - Force an auto event execution");
                 commands.add("!list - Debug command");
-                commands.add("!reloadevents - Reload all event scripts");
                 commands.add("!reloadevent - Reload a specified event script");
                 commands.add("!wpos - Warp yourself to a specified {x,y} position in the current map");
                 commands.add("!setgmlevel - Change the GM level of a specified player");
@@ -61,6 +60,51 @@ public class AdministratorCommands {
                 commands.forEach(player::dropMessage);
             } finally {
                 commands.clear();
+            }
+        } else if (command.equals("clearcache")) {
+            if (args.length() == 1) {
+                switch (args.get(0)) {
+                    default:
+                        player.sendMessage("achievements, shops, items, monsters, drops, mapscripts, cquests");
+                        return;
+                    case "achievements":
+                        Achievements.loadAchievements();
+                        player.sendMessage( "Achievement scripts reloaded");
+                        break;
+                    case "skills":
+                        SkillFactory.loadAllSkills();
+                        player.sendMessage("Skill data reloaded" );
+                    case "shops":
+                        MapleShopFactory.getInstance().clearCache();
+                        player.sendMessage( "NPC shops cache cleared");
+                        break;
+                    case "items":
+                        MapleItemInformationProvider.getInstance().clearCache();
+                        player.sendMessage("Item cache cleared");
+                        break;
+                    case "monsters":
+                        MapleLifeFactory.clearCache();
+                        player.sendMessage("Monster cache cleared");
+                        break;
+                    case "portals":
+                        PortalScriptManager.clearPortalScripts();
+                        player.sendMessage("Portal scripts cache cleared");
+                        break;
+                    case "drops":
+                        ReactorScriptManager.clearDrops();
+                        MapleMonsterInformationProvider.getInstance().clearCache();
+                        player.sendMessage("Drop data cache reloaded");
+                        break;
+                    case "mapscripts":
+                        MapScriptManager.getInstance().clearCache();
+                        player.sendMessage("Map scripts cache cleared");
+                        break;
+                    case "cquests":
+                        CQuestBuilder.loadAllQuests();
+                        player.sendMessage("Custom quests reloaded");
+                        break;
+                }
+                System.gc();
             }
         } else if (command.equals("setrates")) {
             if (args.length() == 3) {
@@ -92,18 +136,6 @@ public class AdministratorCommands {
             } else {
                 player.sendMessage(5, "Usage: !autoevent <event_name>");
             }
-        } else if (command.equals("reloaddrops")) {
-            MapleMonsterInformationProvider.getInstance().clearCache();
-            player.dropMessage("Drops reloaded");
-        } else if (command.equals("reloadmapscripts")) {
-            MapScriptManager.getInstance().clearScripts();
-            player.dropMessage("Map scripts cleared");
-        } else if (command.equals("reloadquests")) {
-            CQuestBuilder.loadAllQuests();
-            player.dropMessage("Quests reloaded");
-        } else if (command.equals("reloadachievements")) {
-            Achievements.loadAchievements();
-            player.dropMessage("Achievements reloaded");
         } else if (command.equals("fae")) { // force auto event
             GAutoEventManager[] manager = GAutoEventManager.values();
             if (args.length() == 1) {

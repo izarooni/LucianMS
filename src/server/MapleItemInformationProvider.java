@@ -65,30 +65,30 @@ public class MapleItemInformationProvider {
     private MapleData etcStringData;
     private MapleData insStringData;
     private MapleData petStringData;
-    private Map<Integer, Short> slotMaxCache = new HashMap<>();
-    private Map<Integer, MapleStatEffect> itemEffects = new HashMap<>();
-    private Map<Integer, Map<String, Integer>> equipStatsCache = new HashMap<>();
-    private Map<Integer, Equip> equipCache = new HashMap<>();
-    private Map<Integer, Double> priceCache = new HashMap<>();
-    private Map<Integer, Integer> wholePriceCache = new HashMap<>();
-    private Map<Integer, Integer> projectileWatkCache = new HashMap<>();
-    private Map<Integer, String> nameCache = new HashMap<>();
-    private Map<Integer, String> msgCache = new HashMap<>();
-    private Map<Integer, Boolean> dropRestrictionCache = new HashMap<>();
-    private Map<Integer, Boolean> pickupRestrictionCache = new HashMap<>();
-    private Map<Integer, Integer> getMesoCache = new HashMap<>();
-    private Map<Integer, Integer> monsterBookID = new HashMap<>();
-    private Map<Integer, Boolean> onEquipUntradableCache = new HashMap<>();
-    private Map<Integer, scriptedItem> scriptedItemCache = new HashMap<>();
-    private Map<Integer, Boolean> karmaCache = new HashMap<>();
-    private Map<Integer, Integer> triggerItemCache = new HashMap<>();
-    private Map<Integer, Integer> expCache = new HashMap<>();
-    private Map<Integer, Integer> levelCache = new HashMap<>();
-    private Map<Integer, Pair<Integer, List<RewardItem>>> rewardCache = new HashMap<>();
-    private List<Pair<Integer, String>> itemNameCache = new ArrayList<>();
-    private Map<Integer, Boolean> consumeOnPickupCache = new HashMap<>();
-    private Map<Integer, Boolean> isQuestItemCache = new HashMap<>();
-    private Map<Integer, String> equipmentSlotCache = new HashMap<>();
+    private HashMap<Integer, Short> slotMaxCache = new HashMap<>();
+    private HashMap<Integer, MapleStatEffect> itemEffects = new HashMap<>();
+    private HashMap<Integer, Map<String, Integer>> equipStatsCache = new HashMap<>();
+    private HashMap<Integer, Equip> equipCache = new HashMap<>();
+    private HashMap<Integer, Double> priceCache = new HashMap<>();
+    private HashMap<Integer, Integer> wholePriceCache = new HashMap<>();
+    private HashMap<Integer, Integer> projectileWatkCache = new HashMap<>();
+    private HashMap<Integer, String> nameCache = new HashMap<>();
+    private HashMap<Integer, String> msgCache = new HashMap<>();
+    private HashMap<Integer, Boolean> dropRestrictionCache = new HashMap<>();
+    private HashMap<Integer, Boolean> pickupRestrictionCache = new HashMap<>();
+    private HashMap<Integer, Integer> getMesoCache = new HashMap<>();
+    private HashMap<Integer, Integer> monsterBookID = new HashMap<>();
+    private HashMap<Integer, Boolean> onEquipUntradableCache = new HashMap<>();
+    private HashMap<Integer, scriptedItem> scriptedItemCache = new HashMap<>();
+    private HashMap<Integer, Boolean> karmaCache = new HashMap<>();
+    private HashMap<Integer, Integer> triggerItemCache = new HashMap<>();
+    private HashMap<Integer, Integer> expCache = new HashMap<>();
+    private HashMap<Integer, Integer> levelCache = new HashMap<>();
+    private HashMap<Integer, Pair<Integer, List<RewardItem>>> rewardCache = new HashMap<>();
+    private ArrayList<Pair<Integer, String>> itemNameCache = new ArrayList<>();
+    private HashMap<Integer, Boolean> consumeOnPickupCache = new HashMap<>();
+    private HashMap<Integer, Boolean> isQuestItemCache = new HashMap<>();
+    private HashMap<Integer, String> equipmentSlotCache = new HashMap<>();
 
     private MapleItemInformationProvider() {
         loadCardIdData();
@@ -108,6 +108,33 @@ public class MapleItemInformationProvider {
             instance = new MapleItemInformationProvider();
         }
         return instance;
+    }
+
+    public void clearCache() {
+        slotMaxCache.clear();
+        itemEffects.clear();
+        equipStatsCache.clear();
+        equipCache.clear();
+        priceCache.clear();
+        wholePriceCache.clear();
+        projectileWatkCache.clear();
+        nameCache.clear();
+        msgCache.clear();
+        dropRestrictionCache.clear();
+        pickupRestrictionCache.clear();
+        getMesoCache.clear();
+        monsterBookID.clear();
+        onEquipUntradableCache.clear();
+        scriptedItemCache.clear();
+        karmaCache.clear();
+        triggerItemCache.clear();
+        expCache.clear();
+        levelCache.clear();
+        rewardCache.clear();
+        itemNameCache.clear();
+        consumeOnPickupCache.clear();
+        isQuestItemCache.clear();
+        equipmentSlotCache.clear();
     }
 
     public MapleInventoryType getInventoryType(int itemId) {
