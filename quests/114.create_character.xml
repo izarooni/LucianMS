@@ -1,0 +1,16 @@
+<imgdir name="Quest Name">
+    <imgdir name="info">
+        <int name="questId" value="114"/>
+		<int name="preQuest" value="-1"/>
+		<int name="daily" value="0"/>
+    </imgdir>
+
+    <imgdir name="toKill">
+    </imgdir>
+
+    <imgdir name="toCollect">
+    </imgdir>
+
+    <imgdir name="rewards">
+    </imgdir>
+</imgdir>
