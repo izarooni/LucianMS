@@ -21,9 +21,9 @@ public class BuddyList {
         BUDDYLIST_FULL, ALREADY_ON_LIST, OK
     }
 
-    private Map<Integer, BuddylistEntry> buddies = new LinkedHashMap<>();
+    private HashMap<Integer, BuddylistEntry> buddies = new HashMap<>();
     private int capacity;
-    private Deque<CharacterNameAndId> pendingRequests = new LinkedList<>();
+    private Deque<CharacterNameAndId> pendingRequests = new ArrayDeque<>();
 
     public BuddyList(int capacity) {
         this.capacity = capacity;

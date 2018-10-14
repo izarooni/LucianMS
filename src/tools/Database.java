@@ -40,7 +40,7 @@ public class Database {
     }
 
     public static Connection getConnection() {
-        System.out.println(Thread.currentThread().getStackTrace()[2]);
+//        System.out.println(Thread.currentThread().getStackTrace()[2]);
         try {
             return cpds.getConnection();
         } catch (SQLException e) {

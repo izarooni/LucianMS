@@ -81,6 +81,7 @@ import java.util.List;
 import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.BiConsumer;
 import java.util.regex.Pattern;
 
 public class MapleCharacter extends AbstractAnimatedMapleMapObject {
@@ -179,20 +180,20 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
     private AtomicInteger gachaexp = new AtomicInteger();
 
     //region collections
-    private List<Task> tasks = new ArrayList<>();
-    private List<String> blockedPortals = new ArrayList<>();
-    private List<Integer> excluded = new ArrayList<>();
-    private List<Integer> trockmaps = new ArrayList<>();
-    private List<Integer> viptrockmaps = new ArrayList<>();
-    private List<Integer> lastmonthfameids = new ArrayList<>(31);
-    private List<MapleDoor> doors = new ArrayList<>();
-    private List<MapleRing> crushRings = new ArrayList<>();
-    private List<MapleRing> friendshipRings = new ArrayList<>();
-    private List<GenericEvent> genericEvents = new ArrayList<>();
+    private ArrayList<Task> tasks = new ArrayList<>();
+    private ArrayList<String> blockedPortals = new ArrayList<>();
+    private ArrayList<Integer> excluded = new ArrayList<>();
+    private ArrayList<Integer> trockmaps = new ArrayList<>();
+    private ArrayList<Integer> viptrockmaps = new ArrayList<>();
+    private ArrayList<Integer> lastmonthfameids = new ArrayList<>(31);
+    private ArrayList<MapleDoor> doors = new ArrayList<>();
+    private ArrayList<MapleRing> crushRings = new ArrayList<>();
+    private ArrayList<MapleRing> friendshipRings = new ArrayList<>();
+    private ArrayList<GenericEvent> genericEvents = new ArrayList<>();
 
     private GProperties<Boolean> toggles = new GProperties<>();
 
-    private Map<Skill, SkillEntry> skills = new LinkedHashMap<>();
+    private HashMap<Skill, SkillEntry> skills = new HashMap<>();
     private Map<Short, String> area_info = new LinkedHashMap<>();
     private Map<Short, MapleQuestStatus> quests = new LinkedHashMap<>();
     private Map<Integer, String> entered = new LinkedHashMap<>();
@@ -200,8 +201,8 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
     private Map<String, Achievement> achievements = new HashMap<>();
     private Map<Integer, CQuestData> customQuests = new HashMap<>();
     private Map<Integer, MapleSummon> summons = new LinkedHashMap<>();
-    private Map<Integer, MapleKeyBinding> keymap = new LinkedHashMap<>();
-    private Map<Integer, MapleCoolDownValueHolder> coolDowns = new LinkedHashMap<>(50);
+    private HashMap<Integer, MapleKeyBinding> keymap = new HashMap<>();
+    private HashMap<Integer, MapleCoolDownValueHolder> coolDowns = new HashMap<>(50);
     //endregion
 
     private BuddyList buddylist = null;
@@ -323,7 +324,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
     }
 
     public static boolean ban(String id, String reason, boolean accountId) {
-        try (Connection con = Database.getConnection()){
+        try (Connection con = Database.getConnection()) {
             if (id.matches("/[0-9]{1,3}\\..*")) {
                 try (PreparedStatement ps = con.prepareStatement("INSERT INTO ipbans VALUES (DEFAULT, ?)")) {
                     ps.setString(1, id);
@@ -772,7 +773,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
                         }
                     }
                 }
-                try (PreparedStatement ps = con.prepareStatement("SELECT skillid,skilllevel,masterlevel,expiration FROM skills WHERE characterid = ?")) {
+                try (PreparedStatement ps = con.prepareStatement("SELECT * FROM skills WHERE characterid = ?")) {
                     ps.setInt(1, charid);
                     try (ResultSet rs = ps.executeQuery()) {
                         while (rs.next()) {
@@ -4173,8 +4174,11 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
     }
 
     // synchronize this call instead of trying to give access all at once (?)
-    public synchronized void saveToDB() {
-        Calendar c = Calendar.getInstance();
+    public void saveToDB() {
+        BiConsumer<String, Long> elapsed = (str, i) -> {
+            System.out.println(str + " - " + ((System.currentTimeMillis() - i) / 1000d) + "s");
+        };
+
         try (Connection con = Database.getConnection()) {
             try (PreparedStatement ps = con.prepareStatement("UPDATE characters SET level = ?, fame = ?, str = ?, dex = ?, luk = ?, `int` = ?, exp = ?, gachaexp = ?, hp = ?, mp = ?, maxhp = ?, maxmp = ?, sp = ?, ap = ?, gm = ?, skincolor = ?, gender = ?, job = ?, hair = ?, face = ?, map = ?, meso = ?, hpMpUsed = ?, spawnpoint = ?, party = ?, buddyCapacity = ?, messengerid = ?, messengerposition = ?, mountlevel = ?, mountexp = ?, mounttiredness= ?, equipslots = ?, useslots = ?, setupslots = ?, etcslots = ?,  monsterbookcover = ?, vanquisherStage = ?, dojoPoints = ?, lastDojoStage = ?, finishedDojoTutorial = ?, vanquisherKills = ?, matchcardwins = ?, matchcardlosses = ?, matchcardties = ?, omokwins = ?, omoklosses = ?, omokties = ?, dataString = ?, fishingpoints = ?, daily = ?, reborns = ?, eventpoints = ?, rebirthpoints = ?, occupation = ?, jumpquestpoints = ? WHERE id = ?", Statement.RETURN_GENERATED_KEYS)) {
                 if (gmLevel < 1 && level > 199) {
@@ -4282,12 +4286,14 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
                 if (updateRows < 1) {
                     throw new RuntimeException("Character not in database (" + id + ")");
                 }
+
                 for (int i = 0; i < 3; i++) {
                     if (pets[i] != null) {
                         pets[i].saveToDb();
                     }
                 }
             }
+
             deleteWhereCharacterId(con, "delete from achievements where player_id = ?");
             try (PreparedStatement ps = con.prepareStatement("INSERT INTO achievements (`completed`, `player_id`, `achievement_name`, `killed_monster`, `casino_one`, `casino_two`) VALUES (?, ?, ?, ?, ?, ?)")) {
                 for (Entry<String, Achievement> entry : achievements.entrySet()) {
@@ -4343,7 +4349,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
             relationship.save();
 
             deleteWhereCharacterId(con, "DELETE FROM skills WHERE characterid = ?");
-            try (PreparedStatement ps = con.prepareStatement("INSERT INTO skills (characterid, skillid, skilllevel, masterlevel, expiration) VALUES (?, ?, ?, ?, ?)")) {
+            try (PreparedStatement ps = con.prepareStatement("INSERT INTO skills VALUES (?, ?, ?, ?, ?)")) {
                 ps.setInt(1, id);
                 for (Entry<Skill, SkillEntry> skill : skills.entrySet()) {
                     ps.setInt(2, skill.getKey().getId());
