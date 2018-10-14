@@ -40,6 +40,9 @@ public class MagicDamageEvent extends AbstractDealDamageEvent {
     @Override
     public void process(SeekableLittleEndianAccessor slea) {
         attackInfo = parseDamage(slea, false, true);
+        if (attackInfo == null) {
+            setCanceled(true);
+        }
     }
 
     @Override

@@ -55,7 +55,8 @@ public class StringUtil {
      * @return The padded string.
      */
     public static String getRightPaddedStr(String in, char padchar, int length) {
-        StringBuilder builder = new StringBuilder(in);
+        StringBuilder builder = new StringBuilder();
+        builder.append(in);
         for (int x = in.length(); x < length; x++) {
             builder.append(padchar);
         }

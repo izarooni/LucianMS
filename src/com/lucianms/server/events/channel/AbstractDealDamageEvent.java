@@ -33,6 +33,7 @@ import client.status.MonsterStatusEffect;
 import com.lucianms.scheduler.TaskExecutor;
 import constants.GameConstants;
 import constants.ItemConstants;
+import constants.ServerConstants;
 import constants.skills.*;
 import net.PacketEvent;
 import server.MapleItemInformationProvider;
@@ -447,13 +448,13 @@ public abstract class AbstractDealDamageEvent extends PacketEvent {
             ret.isTempest = true;
         }
 
-        if (ret.skill > 0 && FieldLimit.UNABLE_TO_USE_SKILLS.check(player.getMap().getFieldLimit())) {
+        if (ret.skill > 0 && getClient().getPlayer().getMapId() == ServerConstants.HOME_MAP) {
             SpamTracker.SpamData spamTracker = player.getSpamTracker(SpamTracker.SpamOperation.SkillUsage);
             if (spamTracker.testFor(8000)) {
                 player.sendMessage(5, "Skills are disabled in this map and will not show for other players.");
-                setCanceled(true);
                 spamTracker.record();
             }
+            return null;
         }
 
         lea.skip(8);

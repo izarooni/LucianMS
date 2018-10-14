@@ -48,6 +48,9 @@ public final class RangedAttackEvent extends AbstractDealDamageEvent {
     @Override
     public void process(SeekableLittleEndianAccessor slea) {
         attackInfo = parseDamage(slea, true, false);
+        if (attackInfo == null) {
+            setCanceled(true);
+        }
     }
 
     @Override
