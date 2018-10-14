@@ -303,6 +303,9 @@ public class MapleMonsterStats {
     }
 
     public void addLoseItem(LoseItem li) {
+        if (loseItem == null) {
+            loseItem = new ArrayList<>();
+        }
         loseItem.add(li);
     }
 

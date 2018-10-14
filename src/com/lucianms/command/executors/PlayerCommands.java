@@ -327,7 +327,7 @@ public class PlayerCommands {
             player.dropMessage("Voting resets every 24th hours!");
             player.dropMessage("Have Fun and consider to donate for more customs!");
         } else if (command.equals("update")) {
-            player.dropMessage("Last Server WZ revision: 11-09-18");
+            player.dropMessage("Last Server WZ revision: October 13, 2018");
             player.dropMessage("New customs added every 2nd month!");
         } else if (command.equals("online")) {
             for (Channel channel : client.getWorldServer().getChannels()) {

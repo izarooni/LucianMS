@@ -18,7 +18,7 @@ public enum GAutoEventManager {
     HeartlessWall("Heartless Wall",    AHeartlessWall.class, false, 0),
     WhispyWoods("Whispy Woods",          AWhispyWoods.class, false, 0),
     CursedCastle("Cursed Castle",       ACursedCastle.class, false, 0),
-    EmergencyTrial("Emergency Trial", AEmergencyTrial.class,  true, 3);
+    EmergencyTrial("Emergency Trial", AEmergencyTrial.class, false, 3);
     // @formatter:on
     private final String name;
     private final Class<? extends GAutoEvent> clazz;
