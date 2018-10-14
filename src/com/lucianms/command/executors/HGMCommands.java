@@ -202,7 +202,7 @@ public class HGMCommands {
                 int fh = player.getMap().getFootholds().findBelow(player.getPosition()).getId();
                 for (int i = 0; i < amount; i++) {
                     MapleMonster mob = MapleLifeFactory.getMonster(mobId);
-                    if (mob != null && !mob.getName().equals("MISSINGNO")) {
+                    if (mob != null) {
                         mob.setPosition(player.getPosition());
                         mob.setCy(ypos);
                         mob.setRx0(xpos + 50);
