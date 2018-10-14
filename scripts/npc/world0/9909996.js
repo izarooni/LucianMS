@@ -13,24 +13,29 @@ jobs = {
             failMessage: "Make sure you have at least #b35#k points in your #bSTR#k stat.",
             equips: [[1302007, 1]] },
         Pirate: { ID: 500, req: (p) => true,
-            equips: [[1482000, 1], [1492000, 1], [2330000, 1000]] }
+            equips: [[1482000, 1], [1492000, 1], [2330000, 1000]] },
+        Aran: { ID: 2100, req: (p) => true,
+            equips: [[1442000, 1]]}
     },
     Second: {
         Uchiha: { ID: 110 },
         Rashoumon: { ID: 120 },
         Ark: { ID: 510 },
-        Mechanic: { ID: 520 }
+        Mechanic: { ID: 520 },
+        Aran: { ID: 2110 }
     },
     Third: {
         Uchiha: { ID: 111 },
         Rashoumon: { ID: 121 },
         Ark: { ID: 511 },
-        Mechanic: { ID: 521 }
+        Mechanic: { ID: 521 },
+        Aran: { ID: 2111 }
     },
     Fourth: {
         Uchiha: { ID: 112 },
         Rashoumon: { ID: 122 },
         Ark: { ID: 512 },
-        Mechanic: { ID: 522 }
+        Mechanic: { ID: 522 },
+        Aran: { ID: 2112 }
     }
 };

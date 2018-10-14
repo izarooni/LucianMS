@@ -99,13 +99,18 @@ const FirstAdvancement = function(selection) {
 const SecondAdvancement = function(selection) {
     if (status == 1) {
         let content = "You have become strong but a long journey still awaits.\r\nAre you ready to progress?\r\n#b";
+        let oLength = content.length;
         for (let job in jobs.Second) {
             let nj = jobs.Second[job];
             if (Math.floor(nj.ID / 100) == player.getJob().getId() / 100) {
                 content += `\r\n#L${nj.ID}#${job}#l`;
             }
         }
-        cm.sendSimple(content);
+        if (oLength == content.length){
+            cm.sendOk("For some reason you apparently don't have any jobs to advance to");
+            cm.dispose();
+        } else
+            cm.sendSimple(content);
     } else if (status == 2) {
         let nJob = getByID(jobs.Second, selection);
         player.changeJob(MapleJob.getById(nJob.ID));
