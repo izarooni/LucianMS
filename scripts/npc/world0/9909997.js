@@ -12,15 +12,15 @@ jobs = {
             equips: [[1472000, 1], [1332007, 1], [2070000, 1000]] }
     },
     Second: {
-        Shade         : { ID: 410 },
+        Dancer        : { ID: 410 },
         "Dual Blader" : { ID: 420 }
     },
     Third: {
-        Shade         : { ID: 411 },
+        Dancer        : { ID: 411 },
         "Dual Blader" : { ID: 421 }
     },
     Fourth: {
-        Shade         : { ID: 412 },
+        Dancer        : { ID: 412 },
         "Dual Blader" : { ID: 422 }
     }
 };
