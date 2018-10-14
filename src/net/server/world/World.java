@@ -121,15 +121,18 @@ public class World {
         return eventmsg;
     }
 
+    public void updateRates() {
+        for (MapleCharacter chr : getPlayerStorage().getAllCharacters()) {
+            chr.setRates();
+        }
+    }
+
     public int getExpRate() {
         return exprate;
     }
 
     public void setExpRate(int exp) {
         this.exprate = exp;
-        for (MapleCharacter chr : getPlayerStorage().getAllCharacters()) {
-            chr.setRates();
-        }
     }
 
     public int getDropRate() {
