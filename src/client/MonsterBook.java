@@ -61,7 +61,7 @@ public final class MonsterBook {
     }
 
     private void calculateLevel() {
-        bookLevel = (int) Math.max(1, Math.sqrt((normalCard + specialCard) / 5));
+        bookLevel = (int) Math.max(1, Math.sqrt((normalCard + specialCard) / 5d));
     }
 
     public int getBookLevel() {

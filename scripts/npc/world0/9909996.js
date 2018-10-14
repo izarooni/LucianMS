@@ -18,16 +18,19 @@ jobs = {
     Second: {
         Uchiha: { ID: 110 },
         Rashoumon: { ID: 120 },
-        Ark: { ID: 510}
+        Ark: { ID: 510 },
+        Mechanic: { ID: 520 }
     },
     Third: {
         Uchiha: { ID: 111 },
         Rashoumon: { ID: 121 },
-        Ark: { ID: 511}
+        Ark: { ID: 511 },
+        Mechanic: { ID: 521 }
     },
     Fourth: {
         Uchiha: { ID: 112 },
         Rashoumon: { ID: 122 },
-        Ark: { ID: 512}
+        Ark: { ID: 512 },
+        Mechanic: { ID: 522 }
     }
 };

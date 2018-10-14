@@ -106,7 +106,7 @@ const SecondAdvancement = function(selection) {
         }
         cm.sendSimple(content);
     } else if (status == 2) {
-        let nJob = nextJob(jobs.Second, player.getJob().getId());
+        let nJob = getByID(jobs.Second, selection);
         player.changeJob(MapleJob.getById(nJob.ID));
         cm.dispose();
     }

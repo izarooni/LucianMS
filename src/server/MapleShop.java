@@ -29,6 +29,7 @@ import constants.ItemConstants;
 import tools.Database;
 import tools.MaplePacketCreator;
 
+import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -208,9 +209,9 @@ public class MapleShop {
 
     public static MapleShop createFromDB(int id, boolean isShopId) {
         MapleShop shop = null;
-        try {
+        try (Connection con = Database.getConnection()) {
             final String statement = "select * from shops where " + (isShopId ? "shopid" : "npcid") + " = ?";
-            try (PreparedStatement ps = Database.getConnection().prepareStatement(statement)) {
+            try (PreparedStatement ps = con.prepareStatement(statement)) {
                 ps.setInt(1, id);
                 try (ResultSet rs = ps.executeQuery()) {
                     if (rs.next()) {
@@ -220,7 +221,7 @@ public class MapleShop {
                     }
                 }
             }
-            try (PreparedStatement ps = Database.getConnection().prepareStatement("SELECT * FROM shopitems WHERE shopid = ? ORDER BY position DESC")) {
+            try (PreparedStatement ps = con.prepareStatement("SELECT * FROM shopitems WHERE shopid = ? ORDER BY position DESC")) {
                 ps.setInt(1, shop.getId());
                 try (ResultSet rs = ps.executeQuery()) {
                     List<Integer> recharges = new ArrayList<>(rechargeableItems);
