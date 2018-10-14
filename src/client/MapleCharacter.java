@@ -662,6 +662,9 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
                 try (ResultSet rs = ps.executeQuery()) {
                     if (rs.next()) {
                         ret.relationship.load(rs.getInt("id"));
+                        if (ret.getMarriageRing() == null) {
+                            ret.relationship.setStatus(Relationship.Status.Single);
+                        }
                     }
                 }
             }

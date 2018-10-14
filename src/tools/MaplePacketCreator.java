@@ -6253,7 +6253,7 @@ public class MaplePacketCreator {
         }
         mplew.writeShort(player.getMarriageRing() != null ? 1 : 0);
         Relationship rltn = player.getRelationship();
-        if (rltn.getStatus() == Relationship.Status.Married) {
+        if (rltn.getStatus() == Relationship.Status.Married && player.getMarriageRing() != null) {
             MapleRing ring = player.getMarriageRing();
             // they could change genders at any time so who fuckin cares my dude
             int mPartnerId = (player.getGender() == 0) ? player.getId() : ring.getPartnerChrId();

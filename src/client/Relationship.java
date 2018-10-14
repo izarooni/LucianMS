@@ -66,6 +66,12 @@ public class Relationship {
 
     public void setStatus(Status status) {
         this.status = status;
+        if (status == Status.Single) {
+            marriageId = 0;
+            groomId = 0;
+            brideId = 0;
+            engagementBoxId = 0;
+        }
     }
 
     public int getMarriageId() {
