@@ -1702,7 +1702,7 @@ public class MapleMap {
              */
             // must be a map that contains monster spawnpoints, contains no boss entity and is a hutning field
             if (!isTown()
-                    && spawnPoints.stream().noneMatch(sp -> sp.getMonster().isBoss())
+                    && spawnPoints.stream().noneMatch(sp -> sp.getMonster().isBoss() || chr.getLevel() - sp.getMonster().getLevel() > 30)
                     && !spawnPoints.isEmpty()
                     && Arrays.binarySearch(Server.getInstance().getConfig().getIntArray("EmergencyExcludes"), getId()) < 0) {
                 // 1/25 chance to trigger emergency
