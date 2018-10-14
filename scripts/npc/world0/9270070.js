@@ -15,7 +15,7 @@ function action(mode, type, selection) {
     var optional = player.getGenericEvents().stream().filter(function(e) {
         return e instanceof ShenronSummon;
     }).findFirst();
-    if (optional.isPresent() && !optional.get().isWishing()) {
+    if (!player.isDebug() && (optional.isPresent() && !optional.get().isWishing())) {
         cm.sendOk("Who are you? You didn't summon me");
         cm.dispose();
         return;
@@ -25,7 +25,7 @@ function action(mode, type, selection) {
             // + "\r\n#L0#Make me rich#l"
             + "\r\n#L1#Kill somebody#l"
             + "\r\n#L2#Give me Crystals#l"
-            // + "\r\n#L3#Level me#l"
+            + "\r\n#L3#Give me more health#l"
             + "\r\n#L4#Give me vote points#l"
             + "\r\n#L5#Make me immortal#l"
             + "\r\n#L6#Give me NX#l"
@@ -56,8 +56,9 @@ function action(mode, type, selection) {
                 break;
             }
             case 3:
-                player.levelUp(true);
-                cm.sendOk("Wish granted. I shall level you #bonce#k");
+                player.setMaxHp(player.getMaxHp() + 20);
+                player.updateSingleStat(MapleStat.MAXHP, player.getMaxHp());
+                cm.sendOk("Wish granted. I shall increase your health by 20 points#k");
                 break;
             case 4:
                 player.addPoints("vp", 2);
@@ -117,7 +118,7 @@ function action(mode, type, selection) {
                 break;
             }
         }
-        if (optional.isPresent()) optional.get().wish(player);
+        if (!player.isDebug() && optional.isPresent()) optional.get().wish(player);
         cm.dispose();
     } else if (status == 3) {
         let username = cm.getText();

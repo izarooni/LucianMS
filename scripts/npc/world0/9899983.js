@@ -1,3 +1,6 @@
+const CQuests    = Java.type("com.lucianms.cquest.CQuestBuilder");
+const CQuestData = Java.type("com.lucianms.cquest.CQuestData");
+
 const UGiveaway = Java.type("tools.UniqueGiveaway");
 const Equip     = Java.type("client.inventory.Equip");
 
@@ -30,6 +33,12 @@ if ((current.getTimeInMillis() >= start.getTimeInMillis() && current.getTimeInMi
 
 TimeZone.setDefault(null);
 
+let silentQuest = player.getCustomQuest(114);
+if (silentQuest == null) {
+    silentQuest = new CQuestData(114, "A New Beginning", false);
+    player.getCustomQuests().put(114, silentQuest);
+}
+
 function action(mode, type, selection) {
     if (mode < 1) {
         cm.dispose();
@@ -42,8 +51,16 @@ function action(mode, type, selection) {
             + "Make sure to join our forum and Discord server to keep up with the latest updates!");
     } else if (status == 2) {
         if (UGiveaway.checkWithBoth(client.getRemoteAddress(), client.getHWID(), GiveawayType)) {
-            cm.sendNext("According to our records... You're amazing! Thanks for playing #bLucianMS#k. "
-                + "We only give the starter pack to new players, but we hope you're having fun~");
+            if (silentQuest.isCompleted()) {
+                cm.sendOk("I've already given you your starter pack! Let's go going, the world is waiting for you!");
+            } else {
+                cm.sendNext("According to our records... You're amazing! Thanks for playing #bLucianMS#k. "
+                    + "Here are a few things to help get you started~");
+                cm.gainItem(2000002, 200);  // white potions
+                cm.gainItem(2000006, 200); // mana elixir
+                cm.gainMeso(100000);
+                silentQuest.setCompleted(true);
+            }
             cm.dispose();
         } else {
             cm.sendNext("Here are a few things to help get you started. Have fun on your adventure!", 1);
@@ -66,4 +83,4 @@ function action(mode, type, selection) {
         }
         cm.dispose();
     }
-}
+} 

@@ -9,7 +9,8 @@ const FirstAdvancementGreet = "Meet absolute strength in a single moment. "
 jobs = {
     First: {
         Archer: { ID: 300, req: (p) => p.getDex() >= 25,
-            failMessage: "Make sure you have at least #b25#k points in your #bDEX#k stat." }
+            failMessage: "Make sure you have at least #b25#k points in your #bDEX#k stat.",
+            equips: [[1452002, 1], [2060000, 2000]] }
     },
     Second: {
         Mercedes       : { ID: 310 },

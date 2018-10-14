@@ -81,9 +81,13 @@ const FirstAdvancement = function(selection) {
     } else if (status == 3) {
         let nJob = getByID(jobs.First, selection);
         if (nJob != null) {
-            if (nJob.req(player))
+            if (nJob.req(player)) {
+                let give = nJob.equips;
+                for (let i = 0; i < give.length; i++) {
+                    cm.gainItem(give[i][0], give[i][1]);
+                }
                 player.changeJob(MapleJob.getById(selection));
-            else
+            } else
                 cm.sendOk("You are not strong enough to make this advancement.\r\n" + nJob.failMessage);
         } else
             cm.sendOk("That is not allowed.");

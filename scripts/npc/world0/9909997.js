@@ -8,7 +8,8 @@ const FirstAdvancementGreet = "Your presence is weak. It was meant to be, your f
 jobs = {
     First: {
         Rogue: { ID: 400, req: (p) => p.getLuk() >= 25,
-            failMessage: "Make sure you have at least #b25#k points in your #bLUK#k stat." }
+            failMessage: "Make sure you have at least #b25#k points in your #bLUK#k stat.",
+            equips: [[1472000, 1], [1332007, 1], [2070000, 1000]] }
     },
     Second: {
         Shade         : { ID: 410 },

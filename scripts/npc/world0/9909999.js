@@ -9,7 +9,8 @@ const FirstAdvancementGreet = "You hold an unending well filled with mana within
 jobs = {
     First: {
         Magician: { ID: 200, req: (p) => p.getInt() >= 20,
-            failMessage: "Make sure you have at least #b20#k points in your #bINT#k stat."}
+            failMessage: "Make sure you have at least #b20#k points in your #bINT#k stat.",
+            equips: [[1382000, 1]]}
     },
     Second: {
         Phantom  : { ID: 210 },

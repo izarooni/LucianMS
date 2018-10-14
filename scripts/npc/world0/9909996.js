@@ -10,8 +10,10 @@ const FirstAdvancementGreet = "Your presence is weak but I sense great potential
 jobs = {
     First: {
         Warrior: { ID: 100, req: (p) => p.getStr() >= 35,
-            failMessage: "Make sure you have at least #b35#k points in your #bSTR#k stat." },
-        Pirate: { ID: 500, req: (p) => true }
+            failMessage: "Make sure you have at least #b35#k points in your #bSTR#k stat.",
+            equips: [[1302007, 1]] },
+        Pirate: { ID: 500, req: (p) => true,
+            equips: [[1482000, 1], [1492000, 1], [2330000, 1000]] }
     },
     Second: {
         Uchiha: { ID: 110 },
