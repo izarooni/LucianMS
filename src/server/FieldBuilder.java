@@ -8,11 +8,12 @@ import provider.MapleDataProviderFactory;
 import provider.MapleDataTool;
 import server.life.*;
 import server.maps.*;
-import tools.DatabaseConnection;
+import tools.Database;
 import tools.StringUtil;
 
 import java.awt.*;
 import java.io.File;
+import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -194,7 +195,9 @@ public class FieldBuilder {
     }
 
     private void obtainSpawns() {
-        try (PreparedStatement ps = DatabaseConnection.getConnection().prepareStatement("SELECT * FROM spawns WHERE mid = ?")) {
+        LOGGER.info("{} - {}", map.getId(), map.getMapName());
+        try (Connection con = Database.getConnection();
+             PreparedStatement ps = con.prepareStatement("SELECT * FROM spawns WHERE mid = ?")) {
             ps.setInt(1, map.getId());
             try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {

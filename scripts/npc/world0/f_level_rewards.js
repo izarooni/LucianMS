@@ -98,21 +98,27 @@ function getJobCategory(n) {
 }
 
 function getLevelReward() {
-    var ps = Database.getConnection().prepareStatement("select level_reward from characters where id = ?");
-    ps.setInt(1, player.getId());
-    var rs = ps.executeQuery();
-    if (rs.next()) {
-        return rs.getInt("level_reward");
-    }
-    rs.close();
-    ps.close();
+    let con = Database.getConnection();
+    try {
+        var ps = con.prepareStatement("select level_reward from characters where id = ?");
+        ps.setInt(1, player.getId());
+        var rs = ps.executeQuery();
+        if (rs.next()) {
+            return rs.getInt("level_reward");
+        }
+        rs.close();
+        ps.close();
+    } finally { con.close(); }
     return -1;
 }
 
 function setLevelReward(n) {
-    var ps = Database.getConnection().prepareStatement("update characters set level_reward = ? where id = ?");
-    ps.setInt(1, n);
-    ps.setInt(2, player.getId());
-    ps.executeUpdate();
-    ps.close();
+    let con = Database.getConnection();
+    try {
+        var ps = con.prepareStatement("update characters set level_reward = ? where id = ?");
+        ps.setInt(1, n);
+        ps.setInt(2, player.getId());
+        ps.executeUpdate();
+        ps.close();
+    } finally { con.close(); }
 }

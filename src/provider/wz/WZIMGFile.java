@@ -39,18 +39,18 @@ public class WZIMGFile {
     private boolean modernImg;
 
     public WZIMGFile(File wzfile, WZFileEntry file, boolean provideImages, boolean modernImg) throws IOException {
-        RandomAccessFile raf = new RandomAccessFile(wzfile, "r");
-        SeekableLittleEndianAccessor slea = new GenericSeekableLittleEndianAccessor(new RandomAccessByteStream(raf));
-        slea.seek(file.getOffset());
-        this.file = file;
-        this.provideImages = provideImages;
-        root = new WZIMGEntry(file.getParent());
-        root.setName(file.getName());
-        root.setType(MapleDataType.EXTENDED);
-        this.modernImg = modernImg;
-        parseExtended(root, slea, 0);
-        root.finish();
-        raf.close();
+        try (RandomAccessFile raf = new RandomAccessFile(wzfile, "r")) {
+            SeekableLittleEndianAccessor slea = new GenericSeekableLittleEndianAccessor(new RandomAccessByteStream(raf));
+            slea.seek(file.getOffset());
+            this.file = file;
+            this.provideImages = provideImages;
+            root = new WZIMGEntry(file.getParent());
+            root.setName(file.getName());
+            root.setType(MapleDataType.EXTENDED);
+            this.modernImg = modernImg;
+            parseExtended(root, slea, 0);
+            root.finish();
+        }
     }
 
     protected void dumpImg(OutputStream out, SeekableLittleEndianAccessor slea) throws IOException {

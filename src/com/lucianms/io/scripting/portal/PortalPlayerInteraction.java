@@ -22,13 +22,15 @@
 package com.lucianms.io.scripting.portal;
 
 import client.MapleClient;
+import com.lucianms.io.scripting.AbstractPlayerInteraction;
+import server.MaplePortal;
+import tools.Database;
+import tools.MaplePacketCreator;
+
+import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import com.lucianms.io.scripting.AbstractPlayerInteraction;
-import server.MaplePortal;
-import tools.DatabaseConnection;
-import tools.MaplePacketCreator;
 
 public class PortalPlayerInteraction extends AbstractPlayerInteraction {
 
@@ -44,31 +46,17 @@ public class PortalPlayerInteraction extends AbstractPlayerInteraction {
     }
 
     public boolean hasLevel30Character() {
-        PreparedStatement ps = null;
-        ResultSet rs = null;
-        try {
-            ps = DatabaseConnection.getConnection().prepareStatement("SELECT `level` FROM `characters` WHERE accountid = ?");
+        try (Connection con = Database.getConnection(); PreparedStatement ps = con.prepareStatement("SELECT `level` FROM `characters` WHERE accountid = ?")) {
             ps.setInt(1, getPlayer().getAccountID());
-            rs = ps.executeQuery();
-            while (rs.next()) {
-                if (rs.getInt("level") >= 30) {
-                	ps.close();	
-                	rs.close();
-                    return true;
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    if (rs.getInt("level") >= 30) {
+                        return true;
+                    }
                 }
             }
-        } catch (SQLException sqle) {
-            sqle.printStackTrace();
-        } finally {
-            try {
-                if (ps != null && !ps.isClosed()) {
-                    ps.close();
-                }
-                if (rs != null && !rs.isClosed()) {
-                    rs.close();
-                }
-            } catch (SQLException ex) {
-            }
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
         return false;
     }

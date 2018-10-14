@@ -27,7 +27,7 @@ import provider.MapleData;
 import provider.MapleDataProvider;
 import provider.MapleDataProviderFactory;
 import provider.MapleDataTool;
-import tools.DatabaseConnection;
+import tools.Database;
 import tools.Pair;
 
 import java.io.File;
@@ -174,7 +174,8 @@ public class CashShop {
 
                 packages.put(Integer.parseInt(cashPackage.getName()), cPackage);
             }
-            try (PreparedStatement ps = DatabaseConnection.getConnection().prepareStatement("SELECT * FROM specialcashitems")) {
+            try (Connection con = Database.getConnection();
+                 PreparedStatement ps = con.prepareStatement("SELECT * FROM specialcashitems")) {
                 try (ResultSet rs = ps.executeQuery()) {
                     while (rs.next()) {
                         specialcashitems.add(new SpecialCashItem(rs.getInt("sn"), rs.getInt("modifier"), rs.getByte("info")));
@@ -225,45 +226,35 @@ public class CashShop {
             factory = ItemFactory.CASH_CYGNUS;
         } else if (jobType == 2) {
             factory = ItemFactory.CASH_ARAN;
+        } else {
+            throw new NullPointerException("Unknown job type" + jobType);
         }
 
-        Connection con = DatabaseConnection.getConnection();
-        PreparedStatement ps = null;
-        ResultSet rs = null;
-        try {
-            ps = con.prepareStatement("SELECT `nxCredit`, `maplePoint`, `nxPrepaid` FROM `accounts` WHERE `id` = ?");
-            ps.setInt(1, accountId);
-            rs = ps.executeQuery();
+        try (Connection con = Database.getConnection()) {
+            try (PreparedStatement ps = con.prepareStatement("SELECT `nxCredit`, `maplePoint`, `nxPrepaid` FROM `accounts` WHERE `id` = ?")) {
+                ps.setInt(1, accountId);
+                try (ResultSet rs = ps.executeQuery()) {
 
-            if (rs.next()) {
-                this.nxCredit = rs.getInt("nxCredit");
-                this.maplePoint = rs.getInt("maplePoint");
-                this.nxPrepaid = rs.getInt("nxPrepaid");
+                    if (rs.next()) {
+                        this.nxCredit = rs.getInt("nxCredit");
+                        this.maplePoint = rs.getInt("maplePoint");
+                        this.nxPrepaid = rs.getInt("nxPrepaid");
+                    }
+                }
             }
 
-            rs.close();
-            ps.close();
-
-            for (Pair<Item, MapleInventoryType> item : factory.loadItems(accountId, false)) {
+            for (Pair<Item, MapleInventoryType> item : factory.loadItems(con, accountId, false)) {
                 inventory.add(item.getLeft());
             }
 
-            ps = con.prepareStatement("SELECT `sn` FROM `wishlists` WHERE `charid` = ?");
-            ps.setInt(1, characterId);
-            rs = ps.executeQuery();
+            try (PreparedStatement ps = con.prepareStatement("SELECT `sn` FROM `wishlists` WHERE `charid` = ?")) {
+                ps.setInt(1, characterId);
+                try (ResultSet rs = ps.executeQuery()) {
 
-            while (rs.next()) {
-                wishList.add(rs.getInt("sn"));
-            }
-
-            rs.close();
-            ps.close();
-        } finally {
-            if (ps != null) {
-                ps.close();
-            }
-            if (rs != null) {
-                rs.close();
+                    while (rs.next()) {
+                        wishList.add(rs.getInt("sn"));
+                    }
+                }
             }
         }
     }
@@ -348,33 +339,24 @@ public class CashShop {
     }
 
     public void gift(int recipient, String from, String message, int sn, int ringid) {
-        PreparedStatement ps = null;
-        try {
-            ps = DatabaseConnection.getConnection().prepareStatement("INSERT INTO `gifts` VALUES (DEFAULT, ?, ?, ?, ?, ?)");
+        try (Connection con = Database.getConnection();
+             PreparedStatement ps = con.prepareStatement("INSERT INTO `gifts` VALUES (DEFAULT, ?, ?, ?, ?, ?)")) {
             ps.setInt(1, recipient);
             ps.setString(2, from);
             ps.setString(3, message);
             ps.setInt(4, sn);
             ps.setInt(5, ringid);
             ps.executeUpdate();
-        } catch (SQLException sqle) {
-            sqle.printStackTrace();
-        } finally {
-            try {
-                if (ps != null) {
-                    ps.close();
-                }
-            } catch (SQLException ex) {
-            }
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
     }
 
 
     public List<Pair<Item, String>> loadGifts() {
         List<Pair<Item, String>> gifts = new ArrayList<>();
-        Connection con = DatabaseConnection.getConnection();
 
-        try {
+        try (Connection con = Database.getConnection()) {
             PreparedStatement ps = con.prepareStatement("SELECT * FROM `gifts` WHERE `to` = ?");
             ps.setInt(1, characterId);
             ResultSet rs = ps.executeQuery();
@@ -425,13 +407,13 @@ public class CashShop {
     }
 
     public void save(Connection con) throws SQLException {
-        PreparedStatement ps = con.prepareStatement("UPDATE `accounts` SET `nxCredit` = ?, `maplePoint` = ?, `nxPrepaid` = ? WHERE `id` = ?");
-        ps.setInt(1, nxCredit);
-        ps.setInt(2, maplePoint);
-        ps.setInt(3, nxPrepaid);
-        ps.setInt(4, accountId);
-        ps.executeUpdate();
-        ps.close();
+        try (PreparedStatement ps = con.prepareStatement("UPDATE `accounts` SET `nxCredit` = ?, `maplePoint` = ?, `nxPrepaid` = ? WHERE `id` = ?")) {
+            ps.setInt(1, nxCredit);
+            ps.setInt(2, maplePoint);
+            ps.setInt(3, nxPrepaid);
+            ps.setInt(4, accountId);
+            ps.executeUpdate();
+        }
         List<Pair<Item, MapleInventoryType>> itemsWithType = new ArrayList<>();
 
         for (Item item : inventory) {
@@ -439,18 +421,16 @@ public class CashShop {
         }
 
         factory.saveItems(itemsWithType, accountId, con);
-        ps = con.prepareStatement("DELETE FROM `wishlists` WHERE `charid` = ?");
-        ps.setInt(1, characterId);
-        ps.executeUpdate();
-        ps.close();
-        ps = con.prepareStatement("INSERT INTO `wishlists` VALUES (DEFAULT, ?, ?)");
-        ps.setInt(1, characterId);
-
-        for (int sn : wishList) {
-            ps.setInt(2, sn);
+        try (PreparedStatement ps = con.prepareStatement("DELETE FROM `wishlists` WHERE `charid` = ?")) {
+            ps.setInt(1, characterId);
             ps.executeUpdate();
         }
-
-        ps.close();
+        try (PreparedStatement ps = con.prepareStatement("INSERT INTO `wishlists` VALUES (DEFAULT, ?, ?)")) {
+            ps.setInt(1, characterId);
+            for (int sn : wishList) {
+                ps.setInt(2, sn);
+                ps.executeUpdate();
+            }
+        }
     }
 }

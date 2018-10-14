@@ -3,12 +3,9 @@ package com.lucianms.helpers;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.lucianms.features.House;
-import tools.DatabaseConnection;
+import tools.Database;
 
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Timestamp;
+import java.sql.*;
 import java.util.Calendar;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -24,7 +21,7 @@ public class HouseManager {
     }
 
     private static House loadHouse(int ownerID) {
-        try (PreparedStatement ps = DatabaseConnection.getConnection().prepareStatement("select * from houses where ownerID = ?")) {
+        try (Connection con = Database.getConnection(); PreparedStatement ps = con.prepareStatement("select * from houses where ownerID = ?")) {
             ps.setInt(1, ownerID);
             try (ResultSet rs = ps.executeQuery()) {
                 if (rs.next()) {
@@ -44,7 +41,7 @@ public class HouseManager {
     public static int loadHouses() {
         // initialize with previous size for load factor calculation
         houses = new ConcurrentHashMap<>((int) ((houses.size() / 0.75f) + 1));
-        try (PreparedStatement ps = DatabaseConnection.getConnection().prepareStatement("select * from houses")) {
+        try (Connection con = Database.getConnection(); PreparedStatement ps = con.prepareStatement("select * from houses")) {
             try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
                     House house = new House(rs.getInt("ownerID"), rs.getInt("mapID"), rs.getString("password"), rs.getTimestamp("bill").getTime());
@@ -58,7 +55,7 @@ public class HouseManager {
     }
 
     public static House createHouse(int ownerID, int mapID, String password) {
-        try (PreparedStatement ps = DatabaseConnection.getConnection().prepareStatement("insert into houses (ownerID, mapID, `password`, bill) values (?, ?, ?, ?)")) {
+        try (Connection con = Database.getConnection(); PreparedStatement ps = con.prepareStatement("insert into houses (ownerID, mapID, `password`, bill) values (?, ?, ?, ?)")) {
             // does this work
             Calendar calendar = Calendar.getInstance();
             calendar.set(Calendar.MONTH, calendar.get(Calendar.MONTH) + 1);
@@ -80,7 +77,7 @@ public class HouseManager {
     }
 
     public static void removeHouse(int ownerID) {
-        try (PreparedStatement ps = DatabaseConnection.getConnection().prepareStatement("delete from houses where ownerID = ?")) {
+        try (Connection con = Database.getConnection(); PreparedStatement ps = con.prepareStatement("delete from houses where ownerID = ?")) {
             ps.setInt(1, ownerID);
             ps.executeUpdate();
         } catch (SQLException e) {
@@ -99,7 +96,7 @@ public class HouseManager {
         Calendar calendar = Calendar.getInstance();
         calendar.set(Calendar.MONTH, calendar.get(Calendar.MONTH) + 1);
         house.setBillDate(calendar.getTimeInMillis());
-        try (PreparedStatement ps = DatabaseConnection.getConnection().prepareStatement("update houses set bill = ? where ownerID = ?")) {
+        try (Connection con = Database.getConnection(); PreparedStatement ps = con.prepareStatement("update houses set bill = ? where ownerID = ?")) {
             ps.setLong(1, house.getBillDate());
             ps.setInt(2, ownerID);
             ps.executeUpdate();

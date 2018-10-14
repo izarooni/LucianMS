@@ -27,13 +27,13 @@ import org.slf4j.LoggerFactory;
 import com.lucianms.io.scripting.ScriptUtil;
 import server.maps.MapleReactor;
 import server.maps.ReactorDropEntry;
-import tools.DatabaseConnection;
-import tools.FilePrinter;
+import tools.Database;
 import tools.Pair;
 
 import javax.script.Invocable;
 import javax.script.ScriptException;
 import java.io.IOException;
+import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.*;
@@ -66,7 +66,7 @@ public class ReactorScriptManager {
         if (ret == null) {
             ret = new LinkedList<>();
             try {
-                try (PreparedStatement ps = DatabaseConnection.getConnection().prepareStatement("SELECT itemid, chance, questid FROM reactordrops WHERE reactorid = ? AND chance >= 0")) {
+                try (Connection con = Database.getConnection(); PreparedStatement ps = con.prepareStatement("SELECT itemid, chance, questid FROM reactordrops WHERE reactorid = ? AND chance >= 0")) {
                     ps.setInt(1, rid);
                     try (ResultSet rs = ps.executeQuery()) {
                         while (rs.next()) {

@@ -37,12 +37,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import provider.*;
 import provider.wz.MapleDataType;
-import tools.DatabaseConnection;
+import tools.Database;
 import tools.Pair;
 import tools.Randomizer;
 
 import java.io.File;
-import java.lang.reflect.Field;
+import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -837,13 +837,15 @@ public class MapleItemInformationProvider {
     }
 
     private void loadCardIdData() {
-        try (PreparedStatement ps = DatabaseConnection.getConnection().prepareStatement("SELECT cardid, mobid FROM monstercarddata")) {
+        try (Connection con = Database.getConnection();
+             PreparedStatement ps = con.prepareStatement("SELECT cardid, mobid FROM monstercarddata")) {
             try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
                     monsterBookID.put(rs.getInt(1), rs.getInt(2));
                 }
             }
-        } catch (SQLException ignored) {
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
     }
 

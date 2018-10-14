@@ -22,12 +22,11 @@
 package net.server.channel.handlers;
 
 import client.*;
-import client.inventory.Equip;
 import client.inventory.MapleInventory;
 import client.inventory.MapleInventoryType;
-import client.meta.Achievement;
 import com.lucianms.helpers.JailManager;
-import constants.GameConstants;
+import com.lucianms.io.scripting.Achievements;
+import com.lucianms.io.scripting.npc.NPCScriptManager;
 import net.AbstractMaplePacketHandler;
 import net.server.PlayerBuffValueHolder;
 import net.server.Server;
@@ -40,9 +39,7 @@ import net.server.world.PartyOperation;
 import net.server.world.World;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import com.lucianms.io.scripting.Achievements;
-import com.lucianms.io.scripting.npc.NPCScriptManager;
-import tools.DatabaseConnection;
+import tools.Database;
 import tools.MaplePacketCreator;
 import tools.data.input.SeekableLittleEndianAccessor;
 
@@ -122,13 +119,12 @@ public final class PlayerLoggedinHandler extends AbstractMaplePacketHandler {
         if (buffs != null) {
             player.silentGiveBuffs(buffs);
         }
-        Connection con = DatabaseConnection.getConnection();
-        try {
+        try (Connection con = Database.getConnection()) {
             try (PreparedStatement ps = con.prepareStatement("SELECT Mesos FROM dueypackages WHERE RecieverId = ? AND Checked = 1")) {
                 ps.setInt(1, player.getId());
                 try (ResultSet rs = ps.executeQuery()) {
                     if (rs.next()) {
-                        try (PreparedStatement pss = DatabaseConnection.getConnection().prepareStatement("UPDATE dueypackages SET Checked = 0 WHERE RecieverId = ?")) {
+                        try (PreparedStatement pss = con.prepareStatement("UPDATE dueypackages SET Checked = 0 WHERE RecieverId = ?")) {
                             pss.setInt(1, player.getId());
                             pss.executeUpdate();
                         }

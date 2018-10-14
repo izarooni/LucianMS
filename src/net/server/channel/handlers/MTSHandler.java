@@ -35,7 +35,7 @@ import net.server.channel.Channel;
 import server.MTSItemInfo;
 import server.MapleInventoryManipulator;
 import server.MapleItemInformationProvider;
-import tools.DatabaseConnection;
+import tools.Database;
 import tools.MaplePacketCreator;
 import tools.Pair;
 import tools.data.input.SeekableLittleEndianAccessor;
@@ -101,7 +101,7 @@ public final class MTSHandler extends AbstractMaplePacketHandler {
                 MapleInventoryType type = MapleItemInformationProvider.getInstance().getInventoryType(itemid);
                 Item i = c.getPlayer().getInventory(type).getItem(slot).copy();
                 if (i != null && c.getPlayer().getMeso() >= 5000) {
-                    Connection con = DatabaseConnection.getConnection();
+                    Connection con = Database.getConnection();
                     try {
                         PreparedStatement ps = con.prepareStatement("SELECT COUNT(*) FROM mts_items WHERE seller = ?");
                         ps.setInt(1, c.getPlayer().getId());
@@ -253,7 +253,7 @@ public final class MTSHandler extends AbstractMaplePacketHandler {
                 c.announce(MaplePacketCreator.notYetSoldInv(getNotYetSold(c.getPlayer().getId())));
             } else if (op == 7) { //cancel sale
                 int id = slea.readInt(); //id of the item
-                Connection con = DatabaseConnection.getConnection();
+                Connection con = Database.getConnection();
                 try {
                     PreparedStatement ps = con.prepareStatement("UPDATE mts_items SET transfer = 1 WHERE id = ? AND seller = ?");
                     ps.setInt(1, id);
@@ -273,7 +273,7 @@ public final class MTSHandler extends AbstractMaplePacketHandler {
                 c.announce(MaplePacketCreator.transferInventory(getTransfer(c.getPlayer().getId())));
             } else if (op == 8) { //transfer item from transfer inv.
                 int id = slea.readInt(); //id of the item
-                Connection con = DatabaseConnection.getConnection();
+                Connection con = Database.getConnection();
                 PreparedStatement ps;
                 ResultSet rs;
                 try {
@@ -333,7 +333,7 @@ public final class MTSHandler extends AbstractMaplePacketHandler {
                 }
             } else if (op == 9) { //add to cart
                 int id = slea.readInt(); //id of the item
-                Connection con = DatabaseConnection.getConnection();
+                Connection con = Database.getConnection();
                 try {
                     try (PreparedStatement ps1 = con.prepareStatement("SELECT * FROM mts_items WHERE id = ? AND seller <> ?")) {
                         ps1.setInt(1, id);//Previene que agregues al cart tus propios items
@@ -365,7 +365,7 @@ public final class MTSHandler extends AbstractMaplePacketHandler {
                 c.announce(MaplePacketCreator.notYetSoldInv(getNotYetSold(c.getPlayer().getId())));
             } else if (op == 10) { //delete from cart
                 int id = slea.readInt(); //id of the item
-                Connection con = DatabaseConnection.getConnection();
+                Connection con = Database.getConnection();
                 try {
                     try (PreparedStatement ps = con.prepareStatement("DELETE FROM mts_cart WHERE itemid = ? AND cid = ?")) {
                         ps.setInt(1, id);
@@ -384,7 +384,7 @@ public final class MTSHandler extends AbstractMaplePacketHandler {
             } else if (op == 14) { //buy auction item now
             } else if (op == 16) { //buy
                 int id = slea.readInt(); //id of the item
-                Connection con = DatabaseConnection.getConnection();
+                Connection con = Database.getConnection();
                 PreparedStatement ps;
                 ResultSet rs;
                 try {
@@ -445,7 +445,7 @@ public final class MTSHandler extends AbstractMaplePacketHandler {
                 }
             } else if (op == 17) { //buy from cart
                 int id = slea.readInt(); //id of the item
-                Connection con = DatabaseConnection.getConnection();
+                Connection con = Database.getConnection();
                 PreparedStatement ps;
                 ResultSet rs;
                 try {
@@ -510,7 +510,7 @@ public final class MTSHandler extends AbstractMaplePacketHandler {
 
     public List<MTSItemInfo> getNotYetSold(int cid) {
         List<MTSItemInfo> items = new ArrayList<>();
-        Connection con = DatabaseConnection.getConnection();
+        Connection con = Database.getConnection();
         PreparedStatement ps;
         ResultSet rs;
         try {
@@ -557,7 +557,7 @@ public final class MTSHandler extends AbstractMaplePacketHandler {
 
     public byte[] getCart(int cid) {
         List<MTSItemInfo> items = new ArrayList<>();
-        Connection con = DatabaseConnection.getConnection();
+        Connection con = Database.getConnection();
         PreparedStatement ps;
         ResultSet rs;
         int pages = 0;
@@ -622,7 +622,7 @@ public final class MTSHandler extends AbstractMaplePacketHandler {
 
     public List<MTSItemInfo> getTransfer(int cid) {
         List<MTSItemInfo> items = new ArrayList<>();
-        Connection con = DatabaseConnection.getConnection();
+        Connection con = Database.getConnection();
         PreparedStatement ps;
         ResultSet rs;
         try {
@@ -669,7 +669,7 @@ public final class MTSHandler extends AbstractMaplePacketHandler {
 
     private static byte[] getMTS(int tab, int type, int page) {
         List<MTSItemInfo> items = new ArrayList<>();
-        Connection con = DatabaseConnection.getConnection();
+        Connection con = Database.getConnection();
         PreparedStatement ps;
         ResultSet rs;
         int pages = 0;
@@ -760,7 +760,7 @@ public final class MTSHandler extends AbstractMaplePacketHandler {
         } else {
             listaitems = " AND sellername LIKE CONCAT('%','" + search + "', '%')";
         }
-        Connection con = DatabaseConnection.getConnection();
+        Connection con = Database.getConnection();
         PreparedStatement ps;
         ResultSet rs;
         int pages = 0;

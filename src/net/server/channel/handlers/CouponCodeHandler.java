@@ -28,7 +28,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import net.AbstractMaplePacketHandler;
 import server.MapleInventoryManipulator;
-import tools.DatabaseConnection;
+import tools.Database;
 import tools.MaplePacketCreator;
 import tools.data.input.SeekableLittleEndianAccessor;
 
@@ -49,7 +49,7 @@ public final class CouponCodeHandler extends AbstractMaplePacketHandler {
             item = getNXCode(code, "item");
             if (type != 5) {
                 try {
-                    Connection con = DatabaseConnection.getConnection();
+                    Connection con = Database.getConnection();
                     PreparedStatement ps = con.prepareStatement("UPDATE nxcode SET `valid` = 0 WHERE code = " + code);
                     ps.executeUpdate();
                     ps.close();
@@ -89,7 +89,7 @@ public final class CouponCodeHandler extends AbstractMaplePacketHandler {
     private int getNXCode(String code, String type) {
         int item = -1;
         try {
-            PreparedStatement ps = DatabaseConnection.getConnection().prepareStatement("SELECT `" + type + "` FROM nxcode WHERE code = ?");
+            PreparedStatement ps = Database.getConnection().prepareStatement("SELECT `" + type + "` FROM nxcode WHERE code = ?");
             ps.setString(1, code);
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
@@ -104,7 +104,7 @@ public final class CouponCodeHandler extends AbstractMaplePacketHandler {
 
     private boolean getNXCodeValid(String code, boolean validcode) {
         try {
-            PreparedStatement ps = DatabaseConnection.getConnection().prepareStatement("SELECT `valid` FROM nxcode WHERE code = ?");
+            PreparedStatement ps = Database.getConnection().prepareStatement("SELECT `valid` FROM nxcode WHERE code = ?");
             ps.setString(1, code);
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {

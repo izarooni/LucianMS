@@ -12,33 +12,36 @@ function action(mode, type, selection) {
         status++;
     }
     if (status == 1) {
-        var ps = Database.getConnection().prepareStatement("select daily_login, login_streak from accounts where id = ?");
-        ps.setInt(1, client.getAccID());
-        var rs = ps.executeQuery();
-        if (rs.next()) {
-            var timestamp = rs.getTimestamp("daily_login");
-            this.streak = rs.getInt("login_streak");
-            if (timestamp != null) {
-                var calendar = Calendar.getInstance();
-                calendar.setTimeInMillis(timestamp.getTime());
-                calendar.set(Calendar.DAY_OF_MONTH, calendar.get(Calendar.DAY_OF_MONTH) + 1);
-                var ttd = calendar.getTime().getTime();
-                var now = Date.now();
-                ttd = parseInt(ttd); // js trust issues -3-
-                if (now >= ttd) { // it's been at least 24 hours since last login
-                    if (now - ttd >= TimeUnit.DAYS.toMillis(1)) { // been 2+ days since login
-                        cm.sendNext("Aw man, your " + this.streak + " daily login streak has been crushed!\r\nSadly, it has been over #b" + TimeUnit.MILLISECONDS.toDays(now - ttd) + " days#k since your last login.\r\nYou'll have to start over now...");
+        let con = Database.getConnection();
+        try {
+            var ps = con.prepareStatement("select daily_login, login_streak from accounts where id = ?");
+            ps.setInt(1, client.getAccID());
+            var rs = ps.executeQuery();
+            if (rs.next()) {
+                var timestamp = rs.getTimestamp("daily_login");
+                this.streak = rs.getInt("login_streak");
+                if (timestamp != null) {
+                    var calendar = Calendar.getInstance();
+                    calendar.setTimeInMillis(timestamp.getTime());
+                    calendar.set(Calendar.DAY_OF_MONTH, calendar.get(Calendar.DAY_OF_MONTH) + 1);
+                    var ttd = calendar.getTime().getTime();
+                    var now = Date.now();
+                    ttd = parseInt(ttd); // js trust issues -3-
+                    if (now >= ttd) { // it's been at least 24 hours since last login
+                        if (now - ttd >= TimeUnit.DAYS.toMillis(1)) { // been 2+ days since login
+                            cm.sendNext("Aw man, your " + this.streak + " daily login streak has been crushed!\r\nSadly, it has been over #b" + TimeUnit.MILLISECONDS.toDays(now - ttd) + " days#k since your last login.\r\nYou'll have to start over now...");
+                        } else {
+                            cm.sendNext("#eLogin Streak: #b" + this.streak + "#k#n\r\nThanks for playing, remember to vote for us~\r\nHave a nice day!");
+                        }
                     } else {
-                        cm.sendNext("#eLogin Streak: #b" + this.streak + "#k#n\r\nThanks for playing, remember to vote for us~\r\nHave a nice day!");
+                        cm.sendOk("We know you're excited to play, but you've already claimed your daily login prize within the last 24 hours!\r\nCome back in #b" + StringUtil.getTimeElapse(ttd - now));
+                        cm.dispose();
                     }
                 } else {
-                    cm.sendOk("We know you're excited to play, but you've already claimed your daily login prize within the last 24 hours!\r\nCome back in #b" + StringUtil.getTimeElapse(ttd - now));
-                    cm.dispose();
+                    cm.sendNext("This is your first daily login reward ever!\r\nBe sure to come back in 24 hours to claim tomorrow's prize~");
                 }
-            } else {
-                cm.sendNext("This is your first daily login reward ever!\r\nBe sure to come back in 24 hours to claim tomorrow's prize~");
             }
-        }
+        } finally { con.close(); }
     } else if (status == 2) {
         if (giveReward(this.streak)) {
             cm.sendOk("Here is your reward for your #b" + this.streak + aaa(this.streak) + "#k daily login reward!");
@@ -52,11 +55,14 @@ function action(mode, type, selection) {
 }
 
 function recordStreak(streak) {
-    var ps = Database.getConnection().prepareStatement("update accounts set daily_login = ?, login_streak = ? where id = ?");
-    ps.setTimestamp(1, new java.sql.Timestamp(java.lang.System.currentTimeMillis()));
-    ps.setInt(2, streak);
-    ps.setInt(3, client.getAccID());
-    ps.executeUpdate();
+    let con = Database.getConnection();
+    try {
+        var ps = con.prepareStatement("update accounts set daily_login = ?, login_streak = ? where id = ?");
+        ps.setTimestamp(1, new java.sql.Timestamp(java.lang.System.currentTimeMillis()));
+        ps.setInt(2, streak);
+        ps.setInt(3, client.getAccID());
+        ps.executeUpdate();
+    } finally { con.close(); }
 }
 
 function aaa(streak) {

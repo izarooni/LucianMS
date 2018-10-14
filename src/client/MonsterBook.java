@@ -21,6 +21,9 @@
 */
 package client;
 
+import tools.Database;
+import tools.MaplePacketCreator;
+
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -28,8 +31,6 @@ import java.sql.SQLException;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
-import tools.DatabaseConnection;
-import tools.MaplePacketCreator;
 
 public final class MonsterBook {
     private int specialCard;
@@ -84,7 +85,7 @@ public final class MonsterBook {
     }
 
     public void loadCards(final int charid) throws SQLException {
-        try (PreparedStatement ps = DatabaseConnection.getConnection().prepareStatement("SELECT cardid, level FROM monsterbook WHERE charid = ? ORDER BY cardid ASC")) {
+        try (Connection con = Database.getConnection(); PreparedStatement ps = con.prepareStatement("SELECT cardid, level FROM monsterbook WHERE charid = ? ORDER BY cardid ASC")) {
             ps.setInt(1, charid);
             try (ResultSet rs = ps.executeQuery()) {
                 int cardid, level;
@@ -107,12 +108,9 @@ public final class MonsterBook {
         if (cards.isEmpty()) {
             return;
         }
-        try {
-            Connection con = DatabaseConnection.getConnection();
-            PreparedStatement ps = con.prepareStatement("DELETE FROM monsterbook WHERE charid = ?");
+        try (Connection con = Database.getConnection(); PreparedStatement ps = con.prepareStatement("DELETE FROM monsterbook WHERE charid = ?")) {
             ps.setInt(1, charid);
-            ps.execute();
-            ps.close();
+            ps.executeUpdate();
             boolean first = true;
             StringBuilder query = new StringBuilder();
             for (Entry<Integer, Integer> all : cards.entrySet()) {
@@ -129,10 +127,9 @@ public final class MonsterBook {
                 query.append(all.getValue());
                 query.append(")");
             }
-            ps = con.prepareStatement(query.toString());
-            ps.execute();
-            ps.close();
+            Database.execute(con, query.toString());
         } catch (SQLException e) {
+            e.printStackTrace();
         }
     }
 }

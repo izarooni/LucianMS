@@ -4,10 +4,11 @@ import provider.MapleData;
 import provider.MapleDataProvider;
 import provider.MapleDataProviderFactory;
 import provider.MapleDataTool;
-import tools.DatabaseConnection;
+import tools.Database;
 import tools.Pair;
 
 import java.io.File;
+import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -32,7 +33,7 @@ public class MapleMonsterInformationProvider {
     }
 
     private void retrieveGlobal() {
-        try (PreparedStatement ps = DatabaseConnection.getConnection().prepareStatement("SELECT * FROM drop_data_global WHERE chance > 0")) {
+        try (Connection con = Database.getConnection(); PreparedStatement ps = con.prepareStatement("SELECT * FROM drop_data_global WHERE chance > 0")) {
             try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
                     globaldrops.add(
@@ -57,7 +58,7 @@ public class MapleMonsterInformationProvider {
         }
         final List<MonsterDropEntry> ret = new LinkedList<>();
 
-        try (PreparedStatement ps = DatabaseConnection.getConnection().prepareStatement("SELECT * FROM drop_data WHERE dropperid = ?")) {
+        try (Connection con = Database.getConnection(); PreparedStatement ps = con.prepareStatement("SELECT * FROM drop_data WHERE dropperid = ?")) {
             ps.setInt(1, monsterId);
             try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
@@ -101,7 +102,7 @@ public class MapleMonsterInformationProvider {
         return monster != null ? monster.getName() : null;
     }
 
-    public final void reload() {
+    public final void clearCache() {
         drops.clear();
         globaldrops.clear();
         retrieveGlobal();

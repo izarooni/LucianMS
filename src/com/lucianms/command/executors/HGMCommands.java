@@ -21,7 +21,7 @@ import server.life.MapleMonster;
 import server.life.MapleMonsterStats;
 import server.life.MapleNPC;
 import server.maps.MapleFoothold;
-import tools.DatabaseConnection;
+import tools.Database;
 import tools.MaplePacketCreator;
 
 import java.awt.*;
@@ -167,7 +167,8 @@ public class HGMCommands {
                             channel.getMap(player.getMapId()).broadcastMessage(MaplePacketCreator.spawnNPC(npc));
                         }
                     }
-                    try (PreparedStatement ps = DatabaseConnection.getConnection().prepareStatement("INSERT INTO spawns (idd, f, fh, cy, rx0, rx1, type , x, mid, mobtime, script) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)")) {
+                    try (Connection con = Database.getConnection();
+                         PreparedStatement ps = con.prepareStatement("INSERT INTO spawns (idd, f, fh, cy, rx0, rx1, type , x, mid, mobtime, script) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)")) {
                         ps.setInt(1, npcId);
                         ps.setInt(2, npc.getF());
                         ps.setInt(3, npc.getFh());
@@ -208,9 +209,8 @@ public class HGMCommands {
                         mob.setRx0(xpos + 50);
                         mob.setRx1(xpos - 50);
                         mob.setFh(fh);
-                        try {
-                            Connection con = DatabaseConnection.getConnection();
-                            PreparedStatement ps = con.prepareStatement("INSERT INTO spawns ( idd, f, fh, cy, rx0, rx1, type, x, mid, mobtime) VALUES ( ?, ?, ?, ?, ?, ?, ?, ?, ?, ? )");
+                        try (Connection con = Database.getConnection();
+                             PreparedStatement ps = con.prepareStatement("INSERT INTO spawns ( idd, f, fh, cy, rx0, rx1, type, x, mid, mobtime) VALUES ( ?, ?, ?, ?, ?, ?, ?, ?, ?, ? )")) {
                             ps.setInt(1, mobId);
                             ps.setInt(2, 0);
                             ps.setInt(3, fh);

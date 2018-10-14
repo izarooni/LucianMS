@@ -52,7 +52,12 @@ public class MapleDataTool {
         if (data == null) {
             return def;
         }
-        return getString(data.getChildByPath(path), def);
+        try {
+            return getString(data.getChildByPath(path), def);
+        } catch (NullPointerException e) {
+            LOGGER.info("No string value for path '{}'", path);
+            return def;
+        }
     }
 
     public static double getDouble(MapleData data) {

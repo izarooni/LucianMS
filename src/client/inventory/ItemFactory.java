@@ -20,7 +20,7 @@
  */
 package client.inventory;
 
-import tools.DatabaseConnection;
+import tools.Database;
 import tools.Pair;
 
 import java.sql.*;
@@ -52,7 +52,7 @@ public enum ItemFactory {
         return value;
     }
 
-    public List<Pair<Item, MapleInventoryType>> loadItems(int id, boolean login) throws SQLException {
+    public List<Pair<Item, MapleInventoryType>> loadItems(Connection con, int id, boolean login) throws SQLException {
         List<Pair<Item, MapleInventoryType>> items = new ArrayList<>();
 
         StringBuilder query = new StringBuilder();
@@ -63,7 +63,7 @@ public enum ItemFactory {
             query.append(" AND `inventorytype` = ").append(MapleInventoryType.EQUIPPED.getType());
         }
 
-        try (PreparedStatement ps = DatabaseConnection.getConnection().prepareStatement(query.toString())) {
+        try (PreparedStatement ps = con.prepareStatement(query.toString())) {
             ps.setInt(1, value);
             ps.setInt(2, id);
             try (ResultSet rs = ps.executeQuery()) {

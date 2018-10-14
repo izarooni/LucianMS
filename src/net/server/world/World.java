@@ -27,7 +27,10 @@ import client.BuddyList.BuddyOperation;
 import client.BuddylistEntry;
 import client.MapleCharacter;
 import client.MapleFamily;
+import com.lucianms.features.ManualPlayerEvent;
+import com.lucianms.features.scheduled.SAutoEvent;
 import com.lucianms.lang.DuplicateEntryException;
+import com.lucianms.scheduler.TaskExecutor;
 import net.server.PlayerStorage;
 import net.server.Server;
 import net.server.channel.Channel;
@@ -35,12 +38,10 @@ import net.server.channel.CharacterIdChannelPair;
 import net.server.guild.MapleGuild;
 import net.server.guild.MapleGuildCharacter;
 import net.server.guild.MapleGuildSummary;
-import com.lucianms.scheduler.TaskExecutor;
-import com.lucianms.features.ManualPlayerEvent;
-import com.lucianms.features.scheduled.SAutoEvent;
-import tools.DatabaseConnection;
+import tools.Database;
 import tools.MaplePacketCreator;
 
+import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.*;
@@ -232,15 +233,13 @@ public class World {
     }
 
     public void setOfflineGuildStatus(int guildid, int guildrank, int cid) {
-        try {
-            try (PreparedStatement ps = DatabaseConnection.getConnection().prepareStatement("UPDATE characters SET guildid = ?, guildrank = ? WHERE id = ?")) {
-                ps.setInt(1, guildid);
-                ps.setInt(2, guildrank);
-                ps.setInt(3, cid);
-                ps.execute();
-            }
-        } catch (SQLException se) {
-            se.printStackTrace();
+        try (Connection con = Database.getConnection(); PreparedStatement ps = con.prepareStatement("UPDATE characters SET guildid = ?, guildrank = ? WHERE id = ?")) {
+            ps.setInt(1, guildid);
+            ps.setInt(2, guildrank);
+            ps.setInt(3, cid);
+            ps.execute();
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
     }
 
@@ -621,7 +620,7 @@ public class World {
     }
 
     public void setServerMessage(String message) {
-        channels.forEach(ch-> ch.setServerMessage(message));
+        channels.forEach(ch -> ch.setServerMessage(message));
     }
 
     public void broadcastPacket(byte[] data) {

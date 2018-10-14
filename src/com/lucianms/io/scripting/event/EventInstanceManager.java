@@ -12,9 +12,10 @@ import server.FieldBuilder;
 import server.expeditions.MapleExpedition;
 import server.life.MapleMonster;
 import server.maps.MapleMap;
-import tools.DatabaseConnection;
+import tools.Database;
 
 import javax.script.ScriptException;
+import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.*;
@@ -189,7 +190,7 @@ public class EventInstanceManager {
     }
 
     public void saveWinner(MapleCharacter chr) {
-        try (PreparedStatement ps = DatabaseConnection.getConnection().prepareStatement("INSERT INTO eventstats (event, instance, characterid, channel) VALUES (?, ?, ?, ?)")) {
+        try (Connection con = Database.getConnection(); PreparedStatement ps = con.prepareStatement("INSERT INTO eventstats (event, instance, characterid, channel) VALUES (?, ?, ?, ?)")) {
             ps.setString(1, eventManager.getScriptName());
             ps.setString(2, getName());
             ps.setInt(3, chr.getId());

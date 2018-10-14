@@ -1,7 +1,8 @@
 package client;
 
-import tools.DatabaseConnection;
+import tools.Database;
 
+import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -22,7 +23,7 @@ public class Relationship {
     private int engagementBoxId = 0; // engagement box that was used to propose
 
     public void load(int marriageId) throws SQLException {
-        try (PreparedStatement ps = DatabaseConnection.getConnection().prepareStatement("select * from marriages where id = ?")) {
+        try (Connection con = Database.getConnection(); PreparedStatement ps = con.prepareStatement("select * from marriages where id = ?")) {
             ps.setInt(1, marriageId);
             try (ResultSet rs = ps.executeQuery()) {
                 if (rs.next()) {
@@ -38,7 +39,7 @@ public class Relationship {
 
     public void save() throws SQLException {
         if (marriageId == 0 && status != Status.Single) {
-            try (PreparedStatement ps = DatabaseConnection.getConnection().prepareStatement("insert into marriages values (default, ?, ?, ? ,?)", PreparedStatement.RETURN_GENERATED_KEYS)) {
+            try (Connection con = Database.getConnection(); PreparedStatement ps = con.prepareStatement("insert into marriages values (default, ?, ?, ? ,?)", PreparedStatement.RETURN_GENERATED_KEYS)) {
                 ps.setInt(1, groomId);
                 ps.setInt(2, brideId);
                 ps.setInt(3, engagementBoxId);
@@ -51,7 +52,7 @@ public class Relationship {
                 }
             }
         } else {
-            try (PreparedStatement ps = DatabaseConnection.getConnection().prepareStatement("update marriages set married = ? where id = ?")) {
+            try (Connection con = Database.getConnection(); PreparedStatement ps = con.prepareStatement("update marriages set married = ? where id = ?")) {
                 ps.setInt(1, status.ordinal());
                 ps.setInt(2, marriageId);
                 ps.executeUpdate();

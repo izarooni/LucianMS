@@ -28,7 +28,7 @@ import java.sql.SQLException;
 import com.lucianms.command.CommandWorker;
 import net.AbstractMaplePacketHandler;
 import net.server.world.World;
-import tools.DatabaseConnection;
+import tools.Database;
 import tools.MaplePacketCreator;
 import tools.data.input.SeekableLittleEndianAccessor;
 import client.MapleCharacter;
@@ -86,7 +86,7 @@ public final class WhisperHandler extends AbstractMaplePacketHandler {
                 }
             } else { // not found
                 try {
-                    PreparedStatement ps = DatabaseConnection.getConnection().prepareStatement("SELECT gm FROM characters WHERE name = ?");
+                    PreparedStatement ps = Database.getConnection().prepareStatement("SELECT gm FROM characters WHERE name = ?");
                     ps.setString(1, recipient);
                     ResultSet rs = ps.executeQuery();
                     if (rs.next()) {

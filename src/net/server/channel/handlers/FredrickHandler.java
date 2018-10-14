@@ -30,7 +30,7 @@ import client.inventory.MapleInventoryType;
 import net.AbstractMaplePacketHandler;
 import net.server.Server;
 import server.MapleInventoryManipulator;
-import tools.DatabaseConnection;
+import tools.Database;
 import tools.MaplePacketCreator;
 import tools.Pair;
 import tools.data.input.SeekableLittleEndianAccessor;
@@ -56,8 +56,8 @@ public class FredrickHandler extends AbstractMaplePacketHandler {
                 break;
             case 0x1A:
                 List<Pair<Item, MapleInventoryType>> items;
-                try {
-                    items = ItemFactory.MERCHANT.loadItems(chr.getId(), false);
+                try (Connection con = Database.getConnection()) {
+                    items = ItemFactory.MERCHANT.loadItems(con, chr.getId(), false);
                     if (!check(chr, items)) {
                         c.announce(MaplePacketCreator.fredrickMessage((byte) 0x21));
                         return;
@@ -103,7 +103,7 @@ public class FredrickHandler extends AbstractMaplePacketHandler {
 
     private static boolean deleteItems(MapleCharacter chr) {
         try {
-            Connection con = DatabaseConnection.getConnection();
+            Connection con = Database.getConnection();
             try (PreparedStatement ps = con.prepareStatement("DELETE FROM `inventoryitems` WHERE `type` = ? AND `characterid` = ?")) {
                 ps.setInt(1, ItemFactory.MERCHANT.getValue());
                 ps.setInt(2, chr.getId());

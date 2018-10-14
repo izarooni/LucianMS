@@ -19,7 +19,7 @@ public class EntryLimits {
     }
 
     public static int getEntries(int playerID, String type) {
-        try (PreparedStatement ps = DatabaseConnection.getConnection().prepareStatement("select entries from entry_limit where playerid = ? and type = ?")) {
+        try (Connection con = Database.getConnection(); PreparedStatement ps = con.prepareStatement("select entries from entry_limit where playerid = ? and type = ?")) {
             ps.setInt(1, playerID);
             ps.setString(2, type);
             try (ResultSet rs = ps.executeQuery()) {
@@ -35,9 +35,8 @@ public class EntryLimits {
 
     public static void incrementEntry(int playerID, String type) {
         final int entries = getEntries(playerID, type);
-        Connection con = DatabaseConnection.getConnection();
         if (entries == -1) {
-            try (PreparedStatement ps = con.prepareStatement("insert into entry_limit (playerid, type, entries, last_entry) values (?, ?, 1, ?)")) {
+            try (Connection con = Database.getConnection(); PreparedStatement ps = con.prepareStatement("insert into entry_limit (playerid, type, entries, last_entry) values (?, ?, 1, ?)")) {
                 ps.setInt(1, playerID);
                 ps.setString(2, type);
                 ps.setLong(3, System.currentTimeMillis());
@@ -46,14 +45,14 @@ public class EntryLimits {
                 LOGGER.error("Unable to insert entry row for player {} type '{}'", playerID, type, e);
             }
         } else {
-            try (PreparedStatement ps = DatabaseConnection.getConnection().prepareStatement("update entry_limit set entries = ?, last_entry = ? where playerid = ? and type = ?")) {
+            try (Connection con = Database.getConnection(); PreparedStatement ps = con.prepareStatement("update entry_limit set entries = ?, last_entry = ? where playerid = ? and type = ?")) {
                 ps.setInt(1, entries + 1);
                 ps.setLong(2, System.currentTimeMillis());
                 ps.setInt(3, playerID);
                 ps.setString(4, type);
                 ps.executeUpdate();
             } catch (SQLException e) {
-                LOGGER.error("Unable to update entry row for player {} type '{]", playerID, type, e);
+                LOGGER.error("Unable to update entry row for player {} type '{}", playerID, type, e);
             }
         }
     }

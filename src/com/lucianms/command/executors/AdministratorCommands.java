@@ -93,7 +93,7 @@ public class AdministratorCommands {
                 player.sendMessage(5, "Usage: !autoevent <event_name>");
             }
         } else if (command.equals("reloaddrops")) {
-            MapleMonsterInformationProvider.getInstance().reload();
+            MapleMonsterInformationProvider.getInstance().clearCache();
             player.dropMessage("Drops reloaded");
         } else if (command.equals("reloadmapscripts")) {
             MapScriptManager.getInstance().clearScripts();

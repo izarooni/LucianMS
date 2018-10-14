@@ -4,9 +4,11 @@ import client.MapleCharacter;
 import client.inventory.ItemFactory;
 import net.PacketEvent;
 import server.maps.MapleMapObjectType;
+import tools.Database;
 import tools.MaplePacketCreator;
 import tools.data.input.SeekableLittleEndianAccessor;
 
+import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Collections;
 
@@ -26,8 +28,8 @@ public class HiredMerchantEvent extends PacketEvent {
         if (player.getMap().getMapObjectsInRange(player.getPosition(), 23000, Collections.singletonList(MapleMapObjectType.HIRED_MERCHANT)).isEmpty()
                 && player.getMapId() > 910000000 && player.getMapId() < 910000023) {
             if (!player.hasMerchant()) {
-                try {
-                    if (ItemFactory.MERCHANT.loadItems(player.getId(), false).isEmpty() && player.getMerchantMeso() == 0) {
+                try (Connection con = Database.getConnection()) {
+                    if (ItemFactory.MERCHANT.loadItems(con, player.getId(), false).isEmpty() && player.getMerchantMeso() == 0) {
                         getClient().announce(MaplePacketCreator.hiredMerchantBox());
                     } else {
                         getClient().announce(MaplePacketCreator.retrieveFirstMessage());

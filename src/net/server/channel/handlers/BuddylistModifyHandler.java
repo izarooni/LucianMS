@@ -35,7 +35,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import net.AbstractMaplePacketHandler;
 import net.server.world.World;
-import tools.DatabaseConnection;
+import tools.Database;
 import tools.MaplePacketCreator;
 import tools.data.input.SeekableLittleEndianAccessor;
 
@@ -61,7 +61,7 @@ public class BuddylistModifyHandler extends AbstractMaplePacketHandler {
     }
 
     private CharacterIdNameBuddyCapacity getCharacterIdAndNameFromDatabase(String name) throws SQLException {
-        Connection con = DatabaseConnection.getConnection();
+        Connection con = Database.getConnection();
         CharacterIdNameBuddyCapacity ret;
         try (PreparedStatement ps = con.prepareStatement("SELECT id, name, buddyCapacity FROM characters WHERE name LIKE ?")) {
             ps.setString(1, name);
@@ -109,7 +109,7 @@ public class BuddylistModifyHandler extends AbstractMaplePacketHandler {
                         if (channel != -1) {
                            buddyAddResult = world.requestBuddyAdd(addName, c.getChannel(), player.getId(), player.getName());
                         } else {
-                            Connection con = DatabaseConnection.getConnection();
+                            Connection con = Database.getConnection();
                             PreparedStatement ps = con.prepareStatement("SELECT COUNT(*) as buddyCount FROM buddies WHERE characterid = ? AND pending = 0");
                             ps.setInt(1, charWithId.getId());
                             ResultSet rs = ps.executeQuery();
@@ -140,7 +140,7 @@ public class BuddylistModifyHandler extends AbstractMaplePacketHandler {
                                 displayChannel = channel;
                                 notifyRemoteChannel(c, channel, otherCid, ADDED);
                             } else if (buddyAddResult != BuddyAddResult.ALREADY_ON_LIST && channel == -1) {
-                                Connection con = DatabaseConnection.getConnection();
+                                Connection con = Database.getConnection();
                                 try (PreparedStatement ps = con.prepareStatement("INSERT INTO buddies (characterid, `buddyid`, `pending`) VALUES (?, ?, 1)")) {
                                     ps.setInt(1, charWithId.getId());
                                     ps.setInt(2, player.getId());
@@ -167,7 +167,7 @@ public class BuddylistModifyHandler extends AbstractMaplePacketHandler {
                     String otherName = null;
                     MapleCharacter otherChar = c.getChannelServer().getPlayerStorage().getCharacterById(otherCid);
                     if (otherChar == null) {
-                        Connection con = DatabaseConnection.getConnection();
+                        Connection con = Database.getConnection();
                         try (PreparedStatement ps = con.prepareStatement("SELECT name FROM characters WHERE id = ?")) {
                             ps.setInt(1, otherCid);
                             try (ResultSet rs = ps.executeQuery()) {

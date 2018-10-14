@@ -23,15 +23,17 @@ package net.server.handlers.login;
 
 import client.MapleCharacter;
 import client.MapleClient;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
 import net.AbstractMaplePacketHandler;
-import tools.DatabaseConnection;
+import tools.Database;
 import tools.MaplePacketCreator;
 import tools.data.input.SeekableLittleEndianAccessor;
+
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
 public final class ViewCharHandler extends AbstractMaplePacketHandler {
     @Override
@@ -40,7 +42,8 @@ public final class ViewCharHandler extends AbstractMaplePacketHandler {
             short charsNum;
             List<Integer> worlds;
             List<MapleCharacter> chars;
-            try (PreparedStatement ps = DatabaseConnection.getConnection().prepareStatement("SELECT world, id FROM characters WHERE accountid = ?")) {
+            try (Connection con = Database.getConnection();
+                 PreparedStatement ps = con.prepareStatement("SELECT world, id FROM characters WHERE accountid = ?")) {
                 ps.setInt(1, c.getAccID());
                 charsNum = 0;
                 worlds = new ArrayList<>();
@@ -65,8 +68,7 @@ public final class ViewCharHandler extends AbstractMaplePacketHandler {
             }
             int unk = charsNum + 3 - charsNum % 3;
             c.announce(MaplePacketCreator.showAllCharacter(charsNum, unk));
-            for (Iterator<Integer> it = worlds.iterator(); it.hasNext();) {
-                int w = it.next();
+            for (Integer w : worlds) {
                 List<MapleCharacter> chrsinworld = new ArrayList<>();
                 for (MapleCharacter chr : chars) {
                     if (chr.getWorld() == w) {
@@ -75,7 +77,8 @@ public final class ViewCharHandler extends AbstractMaplePacketHandler {
                 }
                 c.announce(MaplePacketCreator.showAllCharacterInfo(w, chrsinworld));
             }
-        } catch (Exception e) {
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
     }
 }

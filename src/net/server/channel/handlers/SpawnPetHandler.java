@@ -28,10 +28,9 @@ import java.sql.PreparedStatement;
 import client.MapleClient;
 import client.inventory.MapleInventoryType;
 import client.inventory.MaplePet;
-import client.inventory.PetDataFactory;
 import client.SkillFactory;
 import java.sql.SQLException;
-import tools.DatabaseConnection;
+import tools.Database;
 import net.AbstractMaplePacketHandler;
 import provider.MapleDataProvider;
 import provider.MapleDataProviderFactory;
@@ -65,7 +64,7 @@ public final class SpawnPetHandler extends AbstractMaplePacketHandler {
                     return;
                 }
                 try {
-                    PreparedStatement ps = DatabaseConnection.getConnection().prepareStatement("DELETE FROM pets WHERE `petid` = ?");
+                    PreparedStatement ps = Database.getConnection().prepareStatement("DELETE FROM pets WHERE `petid` = ?");
                     ps.setInt(1, pet.getUniqueId());
                     ps.executeUpdate();
                     ps.close();

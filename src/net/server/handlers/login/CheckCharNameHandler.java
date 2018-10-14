@@ -24,7 +24,7 @@ package net.server.handlers.login;
 import client.MapleCharacter;
 import client.MapleClient;
 import net.AbstractMaplePacketHandler;
-import tools.DatabaseConnection;
+import tools.Database;
 import tools.MaplePacketCreator;
 import tools.data.input.SeekableLittleEndianAccessor;
 
@@ -38,8 +38,8 @@ public final class CheckCharNameHandler extends AbstractMaplePacketHandler {
     @Override
     public final void handlePacket(SeekableLittleEndianAccessor slea, MapleClient client) {
         String username = slea.readMapleAsciiString();
-        Connection con = DatabaseConnection.getConnection();
-        try (PreparedStatement ps = con.prepareStatement("select * from ign_reserves where reserve = ?")) {
+        try (Connection con = Database.getConnection();
+             PreparedStatement ps = con.prepareStatement("select * from ign_reserves where reserve = ?")) {
             ps.setString(1, username);
             try (ResultSet rs = ps.executeQuery()) {
                 if (rs.next()) {

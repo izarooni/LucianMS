@@ -41,8 +41,7 @@ import net.AbstractMaplePacketHandler;
 import net.server.channel.Channel;
 import server.DueyPackages;
 import server.MapleInventoryManipulator;
-import tools.DatabaseConnection;
-import tools.FilePrinter;
+import tools.Database;
 import tools.MaplePacketCreator;
 import tools.data.input.SeekableLittleEndianAccessor;
 
@@ -77,7 +76,7 @@ public final class DueyHandler extends AbstractMaplePacketHandler {
             if (accountid) {
                 text = "SELECT accountid FROM characters WHERE name = ?";
             }
-            ps = DatabaseConnection.getConnection().prepareStatement(text);
+            ps = Database.getConnection().prepareStatement(text);
             ps.setString(1, name);
             int id_;
             try (ResultSet rs = ps.executeQuery()) {
@@ -167,7 +166,7 @@ public final class DueyHandler extends AbstractMaplePacketHandler {
             int packageid = slea.readInt();
             List<DueyPackages> packages = new LinkedList<>();
             DueyPackages dp = null;
-            Connection con = DatabaseConnection.getConnection();
+            Connection con = Database.getConnection();
             try {
                 DueyPackages dueypack;
                 try (PreparedStatement ps = con.prepareStatement("SELECT * FROM dueypackages LEFT JOIN dueyitems USING (PackageId) WHERE PackageId = ?")) {
@@ -214,7 +213,7 @@ public final class DueyHandler extends AbstractMaplePacketHandler {
     }
 
     private void addItemToDB(Item item, int quantity, int mesos, String sName, int recipientID) {
-        Connection con = DatabaseConnection.getConnection();
+        Connection con = Database.getConnection();
         try {
             try (PreparedStatement ps = con.prepareStatement("INSERT INTO dueypackages (RecieverId, SenderName, Mesos, TimeStamp, Checked, Type) VALUES (?, ?, ?, ?, ?, ?)")) {
                 ps.setInt(1, recipientID);
@@ -272,7 +271,7 @@ public final class DueyHandler extends AbstractMaplePacketHandler {
 
     public static List<DueyPackages> loadItems(MapleCharacter chr) {
         List<DueyPackages> packages = new LinkedList<>();
-        Connection con = DatabaseConnection.getConnection();
+        Connection con = Database.getConnection();
         try {
             try (PreparedStatement ps = con.prepareStatement("SELECT * FROM dueypackages LEFT JOIN dueyitems USING (PackageId) WHERE RecieverId = ?")) {
                 ps.setInt(1, chr.getId());
@@ -321,7 +320,7 @@ public final class DueyHandler extends AbstractMaplePacketHandler {
     }
 
     private void removeItemFromDB(int packageid) {
-        Connection con = DatabaseConnection.getConnection();
+        Connection con = Database.getConnection();
         try {
             PreparedStatement ps = con.prepareStatement("DELETE FROM dueypackages WHERE PackageId = ?");
             ps.setInt(1, packageid);

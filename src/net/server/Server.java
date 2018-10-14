@@ -59,7 +59,7 @@ import org.slf4j.helpers.MessageFormatter;
 import server.CashShop.CashItemFactory;
 import server.MapleItemInformationProvider;
 import server.quest.MapleQuest;
-import tools.DatabaseConnection;
+import tools.Database;
 import tools.Pair;
 import tools.StringUtil;
 
@@ -101,7 +101,7 @@ public class Server implements Runnable {
     }
 
     public static void insertLog(String author, String description, Object... args) {
-        try (PreparedStatement ps = DatabaseConnection.getConnection().prepareStatement("insert into loggers (author, description) values (?, ?)")) {
+        try (Connection con = Database.getConnection(); PreparedStatement ps = con.prepareStatement("insert into loggers (author, description) values (?, ?)")) {
             ps.setString(1, author);
             ps.setString(2, MessageFormatter.arrayFormat(description, args).getMessage());
             ps.executeUpdate();
@@ -205,12 +205,16 @@ public class Server implements Runnable {
             return;
         }
 
-        DatabaseConnection.useConfig(config);
-        Connection con = DatabaseConnection.getConnection();
+        Database.init(
+                config.getString("DatabaseHost"),
+                config.getString("DatabaseSchema"),
+                config.getString("DatabaseUsername"),
+                config.getString("DatabasePassword")
+        );
         LOGGER.info("Database connection established");
-        try {
-            con.createStatement().execute("UPDATE accounts SET loggedin = 0");
-            con.createStatement().execute("UPDATE characters SET hasmerchant = 0");
+        try (Connection con = Database.getConnection()) {
+            Database.execute(con, "update accounts set loggedin = 0");
+            Database.execute(con, "update characters set hasmerchant = 0");
         } catch (SQLException e) {
             e.printStackTrace();
         }

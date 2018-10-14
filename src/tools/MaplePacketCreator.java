@@ -60,6 +60,7 @@ import tools.data.output.MaplePacketLittleEndianWriter;
 
 import java.awt.*;
 import java.net.InetAddress;
+import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.*;
@@ -4645,14 +4646,15 @@ public class MaplePacketCreator {
         mplew.skip(5);
         mplew.writeInt(chr.getMerchantMeso());
         mplew.write(0);
-        try {
-            List<Pair<Item, MapleInventoryType>> items = ItemFactory.MERCHANT.loadItems(chr.getId(), false);
+        try (Connection con = Database.getConnection()) {
+            List<Pair<Item, MapleInventoryType>> items = ItemFactory.MERCHANT.loadItems(con, chr.getId(), false);
             mplew.write(items.size());
 
             for (Pair<Item, MapleInventoryType> item : items) {
                 addItemInfo(mplew, item.getLeft(), true);
             }
         } catch (SQLException e) {
+            e.printStackTrace();
         }
         mplew.skip(3);
         return mplew.getPacket();

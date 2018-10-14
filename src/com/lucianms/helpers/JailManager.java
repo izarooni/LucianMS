@@ -2,10 +2,11 @@ package com.lucianms.helpers;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import tools.DatabaseConnection;
+import tools.Database;
 import tools.Randomizer;
 
 import java.security.InvalidParameterException;
+import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -46,7 +47,7 @@ public class JailManager {
     }
 
     public static boolean isJailed(int playerId) {
-        try (PreparedStatement ps = DatabaseConnection.getConnection().prepareStatement("select * from jails where playerid = ?")) {
+        try (Connection con = Database.getConnection(); PreparedStatement ps = con.prepareStatement("select * from jails where playerid = ?")) {
             ps.setInt(1, playerId);
             try (ResultSet rs = ps.executeQuery()) {
                 if (rs.next()) {
@@ -63,7 +64,7 @@ public class JailManager {
         if (reason == null || reason.isEmpty()) {
             throw new InvalidParameterException("Reason must be specified");
         }
-        try (PreparedStatement ps = DatabaseConnection.getConnection().prepareStatement("insert into jails (playerid, reason, accuser) values (?, ?, ?)")) {
+        try (Connection con = Database.getConnection(); PreparedStatement ps = con.prepareStatement("insert into jails (playerid, reason, accuser) values (?, ?, ?)")) {
             ps.setInt(1, target);
             ps.setString(2, reason);
             ps.setInt(3, accuser);
@@ -74,7 +75,7 @@ public class JailManager {
     }
 
     public static void removeJail(int playerId) {
-        try (PreparedStatement ps = DatabaseConnection.getConnection().prepareStatement("delete from jails where playerid = ?")) {
+        try (Connection con = Database.getConnection(); PreparedStatement ps = con.prepareStatement("delete from jails where playerid = ?")) {
             ps.setInt(1, playerId);
             ps.executeUpdate();
         } catch (SQLException e) {
@@ -84,7 +85,7 @@ public class JailManager {
 
     public static ArrayList<JailLog> retrieveLogs() {
         ArrayList<JailLog> logs = new ArrayList<>(25);
-        try (PreparedStatement ps = DatabaseConnection.getConnection().prepareStatement("select * from jails")) {
+        try (Connection con = Database.getConnection(); PreparedStatement ps = con.prepareStatement("select * from jails")) {
             try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
                     logs.add(new JailLog(rs.getInt("playerid"), rs.getInt("accuser"), rs.getString("reason"), rs.getTimestamp("when").getTime()));

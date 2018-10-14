@@ -21,11 +21,12 @@ import server.maps.MapleMap;
 import server.maps.MapleMapItem;
 import server.maps.MapleMapObject;
 import server.maps.MapleMapObjectType;
-import tools.DatabaseConnection;
+import tools.Database;
 import tools.MaplePacketCreator;
 import tools.Pair;
 
 import java.io.File;
+import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -562,8 +563,8 @@ public class GameMasterCommands {
                         if (ItemConstants.isPet(itemId)) {
                             if (item.getPetId() > -1) {
                                 // maybe skip pets instead?
-                                try {
-                                    DatabaseConnection.getConnection().createStatement().execute("delete from pets where petid = " + item.getPet().getUniqueId());
+                                try (Connection con = Database.getConnection()) {
+                                    Database.executeSingle(con, "delete from pets where petid = ?", item.getPet().getUniqueId());
                                 } catch (SQLException e) {
                                     e.printStackTrace();
                                     continue;
@@ -675,7 +676,8 @@ public class GameMasterCommands {
                 String username = args.get(0);
                 ArrayList<String> usernames = new ArrayList<>();
                 // will this statement work? who knows
-                try (PreparedStatement ps = DatabaseConnection.getConnection().prepareStatement("select name from characters where accountid = (select accountid from characters where name = ?)")) {
+                try (Connection con = Database.getConnection();
+                     PreparedStatement ps = con.prepareStatement("select name from characters where accountid = (select accountid from characters where name = ?)")) {
                     ps.setString(1, username);
                     try (ResultSet rs = ps.executeQuery()) {
                         if (rs.isBeforeFirst()) {

@@ -3,10 +3,11 @@ package com.lucianms.helpers;
 import net.server.Server;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import tools.DatabaseConnection;
+import tools.Database;
 
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.sql.Statement;
 
 /**
  * @author izarooni
@@ -18,9 +19,10 @@ public class DailyWorker implements Runnable {
 
     @Override
     public void run() {
-        Connection con = DatabaseConnection.getConnection();
-        try {
-            con.createStatement().execute("update entry_limit set entries = 0");
+        try (Connection con = Database.getConnection()) {
+            try (Statement statement = con.createStatement()) {
+                statement.execute("update entry_limit set entries = 0");
+            }
             LOGGER.info("Entry limits reset!");
         } catch (SQLException e) {
             LOGGER.error("Error while resetting entry limits", e);

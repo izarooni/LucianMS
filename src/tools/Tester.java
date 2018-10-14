@@ -10,6 +10,7 @@ import org.slf4j.LoggerFactory;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.net.URISyntaxException;
+import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
@@ -42,7 +43,8 @@ public class Tester {
     }
 
     private static void createAccount(String name, String password) {
-        try (PreparedStatement ps = DatabaseConnection.getConnection().prepareStatement("insert into accounts (name, password) values (?, ?)")) {
+        try (Connection con = Database.getConnection();
+             PreparedStatement ps = con.prepareStatement("insert into accounts (name, password) values (?, ?)")) {
             ps.setString(1, name);
             ps.setString(2, password);
             ps.executeUpdate();

@@ -9,7 +9,7 @@ import client.inventory.MapleInventory;
 import client.inventory.MapleInventoryType;
 import net.PacketEvent;
 import server.MapleItemInformationProvider;
-import tools.DatabaseConnection;
+import tools.Database;
 import tools.MaplePacketCreator;
 import tools.data.input.SeekableLittleEndianAccessor;
 
@@ -50,8 +50,8 @@ public class CreateCharHandler extends PacketEvent {
 
     @Override
     public void post() {
-        Connection con = DatabaseConnection.getConnection();
-        try (PreparedStatement ps = con.prepareStatement("delete from ign_reserves where reserve = ? and username = ?")) {
+        try (Connection con = Database.getConnection();
+             PreparedStatement ps = con.prepareStatement("delete from ign_reserves where reserve = ? and username = ?")) {
             ps.setString(1, username);
             ps.setString(2, getClient().getAccountName());
             ps.executeUpdate();
@@ -86,8 +86,8 @@ public class CreateCharHandler extends PacketEvent {
         if (!MapleCharacter.canCreateChar(username)) {
             setCanceled(true);
         }
-        Connection con = DatabaseConnection.getConnection();
-        try (PreparedStatement ps = con.prepareStatement("select * from ign_reserves where reserve = ? and username = ?")) {
+        try (Connection con = Database.getConnection();
+             PreparedStatement ps = con.prepareStatement("select * from ign_reserves where reserve = ? and username = ?")) {
             ps.setString(1, username);
             ps.setString(2, getClient().getAccountName());
             try (ResultSet rs = ps.executeQuery()) {

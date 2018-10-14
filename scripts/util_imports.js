@@ -8,5 +8,5 @@ let StringUtil = Java.type("tools.StringUtil");
 
 let System = Java.type("java.lang.System");
 
-let Database = Java.type("tools.DatabaseConnection");
+let Database = Java.type("tools.Database");
 let Randomizer = Java.type("tools.Randomizer");

@@ -28,7 +28,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import net.AbstractMaplePacketHandler;
-import tools.DatabaseConnection;
+import tools.Database;
 import tools.MaplePacketCreator;
 import tools.data.input.SeekableLittleEndianAccessor;
 
@@ -97,7 +97,7 @@ public final class BBSOperationHandler extends AbstractMaplePacketHandler {
 
     private static void listBBSThreads(MapleClient c, int start) {
         try {
-            try (PreparedStatement ps = DatabaseConnection.getConnection().prepareStatement("SELECT * FROM bbs_threads WHERE guildid = ? ORDER BY localthreadid DESC")) {
+            try (PreparedStatement ps = Database.getConnection().prepareStatement("SELECT * FROM bbs_threads WHERE guildid = ? ORDER BY localthreadid DESC")) {
                 ps.setInt(1, c.getPlayer().getGuildId());
                 try (ResultSet rs = ps.executeQuery()) {
                     c.announce(MaplePacketCreator.BBSThreadList(rs, start));
@@ -112,7 +112,7 @@ public final class BBSOperationHandler extends AbstractMaplePacketHandler {
         if (c.getPlayer().getGuildId() <= 0) {
             return;
         }
-        Connection con = DatabaseConnection.getConnection();
+        Connection con = Database.getConnection();
         try {
             PreparedStatement ps = con.prepareStatement("SELECT threadid FROM bbs_threads WHERE guildid = ? AND localthreadid = ?");
             ps.setInt(1, c.getPlayer().getGuildId());
@@ -149,7 +149,7 @@ public final class BBSOperationHandler extends AbstractMaplePacketHandler {
             return;
         }
         try {
-            try (PreparedStatement ps = DatabaseConnection.getConnection().prepareStatement("UPDATE bbs_threads SET `name` = ?, `timestamp` = ?, " + "`icon` = ?, " + "`startpost` = ? WHERE guildid = ? AND localthreadid = ? AND (postercid = ? OR ?)")) {
+            try (PreparedStatement ps = Database.getConnection().prepareStatement("UPDATE bbs_threads SET `name` = ?, `timestamp` = ?, " + "`icon` = ?, " + "`startpost` = ? WHERE guildid = ? AND localthreadid = ? AND (postercid = ? OR ?)")) {
                 ps.setString(1, title);
                 ps.setLong(2, System.currentTimeMillis());
                 ps.setInt(3, icon);
@@ -173,7 +173,7 @@ public final class BBSOperationHandler extends AbstractMaplePacketHandler {
         }
         int nextId = 0;
         try {
-            Connection con = DatabaseConnection.getConnection();
+            Connection con = Database.getConnection();
             PreparedStatement ps;
             if (!bNotice) {
                 ps = con.prepareStatement("SELECT MAX(localthreadid) AS lastLocalId FROM bbs_threads WHERE guildid = ?");
@@ -206,7 +206,7 @@ public final class BBSOperationHandler extends AbstractMaplePacketHandler {
         if (mc.getGuildId() <= 0) {
             return;
         }
-        Connection con = DatabaseConnection.getConnection();
+        Connection con = Database.getConnection();
         try {
             PreparedStatement ps = con.prepareStatement("SELECT threadid, postercid FROM bbs_threads WHERE guildid = ? AND localthreadid = ?");
             ps.setInt(1, mc.getGuildId());
@@ -244,7 +244,7 @@ public final class BBSOperationHandler extends AbstractMaplePacketHandler {
             return;
         }
         int threadid;
-        Connection con = DatabaseConnection.getConnection();
+        Connection con = Database.getConnection();
         try {
             PreparedStatement ps = con.prepareStatement("SELECT postercid, threadid FROM bbs_replies WHERE replyid = ?");
             ps.setInt(1, replyid);
@@ -285,7 +285,7 @@ public final class BBSOperationHandler extends AbstractMaplePacketHandler {
         if (mc.getGuildId() <= 0) {
             return;
         }
-        Connection con = DatabaseConnection.getConnection();
+        Connection con = Database.getConnection();
         try {
             PreparedStatement ps2;
             try (PreparedStatement ps = con.prepareStatement("SELECT * FROM bbs_threads WHERE guildid = ? AND " + (bIsThreadIdLocal ? "local" : "") + "threadid = ?")) {

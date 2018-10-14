@@ -6,7 +6,7 @@ import com.lucianms.scheduler.TaskExecutor;
 import server.FieldBuilder;
 import server.life.MapleLifeFactory;
 import server.life.MapleMonster;
-import tools.DatabaseConnection;
+import tools.Database;
 import tools.MaplePacketCreator;
 
 import java.awt.*;
@@ -78,7 +78,7 @@ public abstract class Arcade {
 
     public boolean saveData(int score) {
         if (score > Arcade.getHighscore(arcadeId, player)) {
-            try (Connection con = DatabaseConnection.getConnection(); PreparedStatement stmnt = con.prepareStatement("INSERT INTO arcade (id, charid, highscore) VALUES (?, ?, ?) ON DUPLICATE KEY UPDATE highscore = ?")) {
+            try (Connection con = Database.getConnection(); PreparedStatement stmnt = con.prepareStatement("INSERT INTO arcade (id, charid, highscore) VALUES (?, ?, ?) ON DUPLICATE KEY UPDATE highscore = ?")) {
                 stmnt.setInt(1, arcadeId);
                 stmnt.setInt(2, player.getId());
                 stmnt.setInt(3, score);
@@ -96,13 +96,14 @@ public abstract class Arcade {
 
     public static int getHighscore(int arcadeId, MapleCharacter player) {
         int highscore = 0;
-        try (Connection con = DatabaseConnection.getConnection(); PreparedStatement stmnt = con.prepareStatement("SELECT highscore FROM arcade WHERE charid = ? AND id = ?")) {
+        try (Connection con = Database.getConnection(); PreparedStatement stmnt = con.prepareStatement("SELECT highscore FROM arcade WHERE charid = ? AND id = ?")) {
             stmnt.setInt(1, player.getId());
             stmnt.setInt(2, arcadeId);
             stmnt.execute();
-            ResultSet rs = stmnt.getResultSet();
-            while (rs.next()) {
-                highscore = rs.getInt("highscore");
+            try (ResultSet rs = stmnt.getResultSet()) {
+                while (rs.next()) {
+                    highscore = rs.getInt("highscore");
+                }
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -112,16 +113,17 @@ public abstract class Arcade {
 
     public static String getTop(int arcadeId) {
         StringBuilder sb = new StringBuilder();
-        try (Connection con = DatabaseConnection.getConnection(); PreparedStatement stmnt = con.prepareStatement("SELECT * FROM arcade WHERE id = ? ORDER BY highscore DESC LIMIT 50")) {
+        try (Connection con = Database.getConnection(); PreparedStatement stmnt = con.prepareStatement("SELECT * FROM arcade WHERE id = ? ORDER BY highscore DESC LIMIT 50")) {
             stmnt.setInt(1, arcadeId);
             if (stmnt.execute()) {
-                ResultSet rs = stmnt.getResultSet();
-                int i = 0;
-                while (rs.next()) {
-                    String user = MapleCharacter.getNameById(rs.getInt("charid"));
-                    if (user != null) {
-                        i++;
-                        sb.append("#k").append(i <= 3 ? "#b" : "").append(i > 3 && i <= 5 ? "" : "").append(i).append(". ").append(user).append(" with a score of ").append(rs.getInt("highscore")).append("\r\n");
+                try (ResultSet rs = stmnt.getResultSet()) {
+                    int i = 0;
+                    while (rs.next()) {
+                        String user = MapleCharacter.getNameById(rs.getInt("charid"));
+                        if (user != null) {
+                            i++;
+                            sb.append("#k").append(i <= 3 ? "#b" : "").append(i > 3 && i <= 5 ? "" : "").append(i).append(". ").append(user).append(" with a score of ").append(rs.getInt("highscore")).append("\r\n");
+                        }
                     }
                 }
             }

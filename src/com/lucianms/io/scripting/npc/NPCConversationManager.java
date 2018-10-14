@@ -45,10 +45,11 @@ import server.maps.MapleMap;
 import server.partyquest.Pyramid;
 import server.partyquest.Pyramid.PyramidMode;
 import server.quest.MapleQuest;
-import tools.DatabaseConnection;
+import tools.Database;
 import tools.MaplePacketCreator;
 
 import java.io.File;
+import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -320,7 +321,8 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
                 getPlayer().changeSkillLevel(skill, (byte) 0, skill.getMaxLevel(), -1);
             } catch (NumberFormatException nfe) {
                 break;
-            } catch (NullPointerException ignored) {
+            } catch (NullPointerException e) {
+                e.printStackTrace();
             }
         }
     }
@@ -340,69 +342,57 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
     public void disbandAlliance(MapleClient c, int allianceId) {
         Server.getInstance().allianceMessage(c.getPlayer().getGuild().getAllianceId(), MaplePacketCreator.disbandAlliance(allianceId), -1, -1);
         Server.getInstance().disbandAlliance(allianceId);
-        try (PreparedStatement ps = DatabaseConnection.getConnection().prepareStatement("DELETE FROM `alliance` WHERE id = ?")) {
+        try (Connection con = Database.getConnection(); PreparedStatement ps = con.prepareStatement("DELETE FROM `alliance` WHERE id = ?")) {
             ps.setInt(1, allianceId);
             ps.executeUpdate();
-        } catch (SQLException sqle) {
-            sqle.printStackTrace();
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
     }
 
     public boolean canBeUsedAllianceName(String name) {
-        if (name.contains(" ") || name.length() > 12) {
+        if (name.isEmpty() || name.contains(" ") || name.length() > 12) {
             return false;
         }
-        try {
-            ResultSet rs;
-            try (PreparedStatement ps = DatabaseConnection.getConnection().prepareStatement("SELECT name FROM alliance WHERE name = ?")) {
-                ps.setString(1, name);
-                rs = ps.executeQuery();
-                if (rs.next()) {
-                    ps.close();
-                    rs.close();
-                    return false;
+        try (Connection con = Database.getConnection(); PreparedStatement ps = con.prepareStatement("SELECT name FROM alliance WHERE name = ?")) {
+            ps.setString(1, name);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (!rs.next()) {
+                    return true;
                 }
             }
-            rs.close();
-            return true;
         } catch (SQLException e) {
             e.printStackTrace();
-            return false;
         }
+        return false;
     }
 
     public static MapleAlliance createAlliance(MapleCharacter chr1, MapleCharacter chr2, String name) {
         int id;
         int guild1 = chr1.getGuildId();
         int guild2 = chr2.getGuildId();
-        try {
-            try (PreparedStatement ps = DatabaseConnection.getConnection().prepareStatement("INSERT INTO `alliance` (`name`, `guild1`, `guild2`) VALUES (?, ?, ?)", PreparedStatement.RETURN_GENERATED_KEYS)) {
-                ps.setString(1, name);
-                ps.setInt(2, guild1);
-                ps.setInt(3, guild2);
-                ps.executeUpdate();
-                try (ResultSet rs = ps.getGeneratedKeys()) {
-                    rs.next();
-                    id = rs.getInt(1);
-                }
+        try (Connection con = Database.getConnection(); PreparedStatement ps = con.prepareStatement("INSERT INTO `alliance` (`name`, `guild1`, `guild2`) VALUES (?, ?, ?)", PreparedStatement.RETURN_GENERATED_KEYS)) {
+            ps.setString(1, name);
+            ps.setInt(2, guild1);
+            ps.setInt(3, guild2);
+            ps.executeUpdate();
+            try (ResultSet rs = ps.getGeneratedKeys()) {
+                rs.next();
+                id = rs.getInt(1);
             }
         } catch (SQLException e) {
             e.printStackTrace();
             return null;
         }
         MapleAlliance alliance = new MapleAlliance(name, id, guild1, guild2);
-        try {
-            Server.getInstance().setGuildAllianceId(guild1, id);
-            Server.getInstance().setGuildAllianceId(guild2, id);
-            chr1.setAllianceRank(1);
-            chr1.saveGuildStatus();
-            chr2.setAllianceRank(2);
-            chr2.saveGuildStatus();
-            Server.getInstance().addAlliance(id, alliance);
-            Server.getInstance().allianceMessage(id, MaplePacketCreator.makeNewAlliance(alliance, chr1.getClient()), -1, -1);
-        } catch (Exception e) {
-            return null;
-        }
+        Server.getInstance().setGuildAllianceId(guild1, id);
+        Server.getInstance().setGuildAllianceId(guild2, id);
+        chr1.setAllianceRank(1);
+        chr1.saveGuildStatus();
+        chr2.setAllianceRank(2);
+        chr2.saveGuildStatus();
+        Server.getInstance().addAlliance(id, alliance);
+        Server.getInstance().allianceMessage(id, MaplePacketCreator.makeNewAlliance(alliance, chr1.getClient()), -1, -1);
         return alliance;
     }
 
@@ -411,18 +401,15 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
     }
 
     public boolean hasMerchantItems() {
-        try {
-            if (!ItemFactory.MERCHANT.loadItems(getPlayer().getId(), false).isEmpty()) {
+        try (Connection con = Database.getConnection()) {
+            if (!ItemFactory.MERCHANT.loadItems(con, getPlayer().getId(), false).isEmpty()) {
                 return true;
             }
         } catch (SQLException e) {
+            e.printStackTrace();
             return false;
         }
-        if (getPlayer().getMerchantMeso() == 0) {
-            return false;
-        } else {
-            return true;
-        }
+        return getPlayer().getMerchantMeso() != 0;
     }
 
     public void showFredrick() {

@@ -5,10 +5,11 @@ import com.lucianms.discord.DiscordSession;
 import com.lucianms.discord.Headers;
 import net.server.Server;
 import net.server.world.World;
-import tools.DatabaseConnection;
+import tools.Database;
 import tools.data.input.GenericLittleEndianAccessor;
 import tools.data.output.MaplePacketLittleEndianWriter;
 
+import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -42,7 +43,7 @@ public class DisconnectRequest extends DiscordRequest {
         } else {
             try {
                 int accountID = 0;
-                try (PreparedStatement ps = DatabaseConnection.getConnection().prepareStatement("SELECT accountid FROM characters WHERE name = ?")) {
+                try (Connection con = Database.getConnection(); PreparedStatement ps = con.prepareStatement("SELECT accountid FROM characters WHERE name = ?")) {
                     ps.setString(1, username);
                     try (ResultSet rs = ps.executeQuery()) {
                         if (rs.next()) {
@@ -51,7 +52,7 @@ public class DisconnectRequest extends DiscordRequest {
                     }
                 }
                 if (accountID > 0) {
-                    try (PreparedStatement ps = DatabaseConnection.getConnection().prepareStatement("UPDATE accounts SET loggedin = 0 WHERE id = ?")) {
+                    try (Connection con = Database.getConnection(); PreparedStatement ps = con.prepareStatement("UPDATE accounts SET loggedin = 0 WHERE id = ?")) {
                         ps.setInt(1, accountID);
                         ps.executeUpdate();
                         writer.writeBool(true);

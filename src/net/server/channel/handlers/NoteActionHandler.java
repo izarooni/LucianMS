@@ -23,10 +23,11 @@ package net.server.channel.handlers;
 
 import client.MapleClient;
 import net.AbstractMaplePacketHandler;
-import tools.DatabaseConnection;
+import tools.Database;
 import tools.MaplePacketCreator;
 import tools.data.input.SeekableLittleEndianAccessor;
 
+import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -47,25 +48,26 @@ public final class NoteActionHandler extends AbstractMaplePacketHandler {
             slea.readByte();
             slea.readByte();
             int fame = 0;
-            for (int i = 0; i < num; i++) {
-                int id = slea.readInt();
-                slea.readByte(); //Fame, but we read it from the database :)
-                PreparedStatement ps;
-                try {
-                    ps = DatabaseConnection.getConnection().prepareStatement("SELECT `fame` FROM notes WHERE id=? AND deleted=0");
-                    ps.setInt(1, id);
-                    ResultSet rs = ps.executeQuery();
-                    if (rs.next())
-                        fame += rs.getInt("fame");
-                    rs.close();
+            try (Connection con = Database.getConnection()) {
+                for (int i = 0; i < num; i++) {
+                    int id = slea.readInt();
+                    slea.readByte(); //Fame, but we read it from the database :)
+                    try (PreparedStatement ps = con.prepareStatement("SELECT `fame` FROM notes WHERE id=? AND deleted=0")) {
+                        ps.setInt(1, id);
+                        try (ResultSet rs = ps.executeQuery()) {
+                            if (rs.next()) {
+                                fame += rs.getInt("fame");
+                            }
+                        }
+                    }
 
-                    ps = DatabaseConnection.getConnection().prepareStatement("UPDATE notes SET `deleted` = 1 WHERE id = ?");
-                    ps.setInt(1, id);
-                    ps.executeUpdate();
-                    ps.close();
-                } catch (SQLException e) {
-                    e.printStackTrace();
+                    try (PreparedStatement ps = con.prepareStatement("UPDATE notes SET `deleted` = 1 WHERE id = ?")) {
+                        ps.setInt(1, id);
+                        ps.executeUpdate();
+                    }
                 }
+            } catch (SQLException e) {
+                e.printStackTrace();
             }
             if (fame > 0) {
                 c.getPlayer().gainFame(fame);

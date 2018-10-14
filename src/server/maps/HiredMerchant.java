@@ -26,17 +26,18 @@ import client.MapleClient;
 import client.inventory.Item;
 import client.inventory.ItemFactory;
 import client.inventory.MapleInventoryType;
-import constants.ItemConstants;
-import net.server.Server;
 import com.lucianms.scheduler.Task;
 import com.lucianms.scheduler.TaskExecutor;
+import constants.ItemConstants;
+import net.server.Server;
 import server.MapleInventoryManipulator;
 import server.MapleItemInformationProvider;
 import server.MaplePlayerShopItem;
-import tools.DatabaseConnection;
+import tools.Database;
 import tools.MaplePacketCreator;
 import tools.Pair;
 
+import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -167,12 +168,12 @@ public class HiredMerchant extends AbstractMapleMapObject {
                     if (owner != null) {
                         owner.addMerchantMesos(price);
                     } else {
-                        try {
-                            try (PreparedStatement ps = DatabaseConnection.getConnection().prepareStatement("UPDATE characters SET MerchantMesos = MerchantMesos + " + price + " WHERE id = ?", PreparedStatement.RETURN_GENERATED_KEYS)) {
-                                ps.setInt(1, ownerId);
-                                ps.executeUpdate();
-                            }
-                        } catch (Exception e) {
+                        try (Connection con = Database.getConnection(); PreparedStatement ps = con.prepareStatement("UPDATE characters SET MerchantMesos = MerchantMesos + ? WHERE id = ?", PreparedStatement.RETURN_GENERATED_KEYS)) {
+                            ps.setInt(1, price);
+                            ps.setInt(2, ownerId);
+                            ps.executeUpdate();
+                        } catch (SQLException e) {
+                            e.printStackTrace();
                         }
                     }
                 } else {
@@ -208,7 +209,7 @@ public class HiredMerchant extends AbstractMapleMapObject {
         if (player != null) {
             player.setHasMerchant(false);
         } else {
-            try (PreparedStatement ps = DatabaseConnection.getConnection().prepareStatement("UPDATE characters SET HasMerchant = 0 WHERE id = ?", PreparedStatement.RETURN_GENERATED_KEYS)) {
+            try (Connection con = Database.getConnection(); PreparedStatement ps = con.prepareStatement("UPDATE characters SET HasMerchant = 0 WHERE id = ?", PreparedStatement.RETURN_GENERATED_KEYS)) {
                 ps.setInt(1, ownerId);
                 ps.executeUpdate();
             } catch (SQLException ex) {
@@ -228,7 +229,7 @@ public class HiredMerchant extends AbstractMapleMapObject {
         if (player != null) {
             player.setHasMerchant(false);
         } else {
-            try (PreparedStatement ps = DatabaseConnection.getConnection().prepareStatement("UPDATE characters SET HasMerchant = 0 WHERE id = ?", PreparedStatement.RETURN_GENERATED_KEYS)) {
+            try (Connection con = Database.getConnection(); PreparedStatement ps = con.prepareStatement("UPDATE characters SET HasMerchant = 0 WHERE id = ?", PreparedStatement.RETURN_GENERATED_KEYS)) {
                 ps.setInt(1, ownerId);
                 ps.executeUpdate();
             } catch (SQLException e) {
@@ -343,7 +344,9 @@ public class HiredMerchant extends AbstractMapleMapObject {
             }
         }
 
-        ItemFactory.MERCHANT.saveItems(itemsWithType, this.ownerId, DatabaseConnection.getConnection());
+        try (Connection con = Database.getConnection()) {
+            ItemFactory.MERCHANT.saveItems(itemsWithType, this.ownerId, con);
+        }
     }
 
     private static boolean check(MapleCharacter chr, List<MaplePlayerShopItem> items) {

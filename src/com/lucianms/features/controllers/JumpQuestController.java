@@ -5,7 +5,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import server.FieldBuilder;
 import server.maps.MapleMap;
-import tools.DatabaseConnection;
+import tools.Database;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -43,13 +43,14 @@ public class JumpQuestController {
 
     public int getHighscore() {
         int highscore = 0;
-        try (Connection con = DatabaseConnection.getConnection(); PreparedStatement stmnt = con.prepareStatement("SELECT time FROM jq_scores WHERE charid = ? AND id = ?")) {
+        try (Connection con = Database.getConnection(); PreparedStatement stmnt = con.prepareStatement("SELECT time FROM jq_scores WHERE charid = ? AND id = ?")) {
             stmnt.setInt(1, player.getId());
             stmnt.setInt(2, id);
             stmnt.execute();
-            ResultSet rs = stmnt.getResultSet();
-            while (rs.next()) {
-                highscore = rs.getInt("time");
+            try (ResultSet rs = stmnt.getResultSet()) {
+                while (rs.next()) {
+                    highscore = rs.getInt("time");
+                }
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -60,21 +61,28 @@ public class JumpQuestController {
 
     public static String getTop(int id) {
         StringBuilder sb = new StringBuilder();
-        try (Connection con = DatabaseConnection.getConnection(); PreparedStatement stmnt = con.prepareStatement("SELECT * FROM jq_scores WHERE id = ? ORDER BY time DESC LIMIT 50")) {
+        try (Connection con = Database.getConnection(); PreparedStatement stmnt = con.prepareStatement("SELECT * FROM jq_scores WHERE id = ? ORDER BY time DESC LIMIT 50")) {
             stmnt.setInt(1, id);
 
             if (stmnt.execute()) {
-                ResultSet rs = stmnt.getResultSet();
-                int i = 0;
-                while (rs.next()) {
-                    String user = MapleCharacter.getNameById(rs.getInt("charid"));
-                    if (user != null) {
-                        i++;
-                        sb.append("#k" + (i <= 3 ? "#b" : "") + (i > 3 && i <= 5 ? "#g" : "") + i + ". " + user + " with a time of " + rs.getInt("time") + " seconds\r\n");
+                try (ResultSet rs = stmnt.getResultSet()) {
+                    int i = 0;
+                    while (rs.next()) {
+                        String user = MapleCharacter.getNameById(rs.getInt("charid"));
+                        if (user != null) {
+                            i++;
+                            sb.append("#k")
+                                    .append(i <= 3 ? "#b" : "")
+                                    .append(i > 3 && i <= 5 ? "#g" : "")
+                                    .append(i).append(". ")
+                                    .append(user)
+                                    .append(" with a time of ")
+                                    .append(rs.getInt("time"))
+                                    .append(" seconds\r\n");
+                        }
                     }
                 }
             }
-
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -84,7 +92,7 @@ public class JumpQuestController {
 
     public void end() {
         int score = getHighscore();
-        try (Connection c = DatabaseConnection.getConnection(); java.sql.PreparedStatement stmnt = c.prepareStatement("INSERT INTO jq_scores (id, charid, time) VALUES (?, ?, ?) ON DUPLICATE KEY UPDATE time = ?")) {
+        try (Connection c = Database.getConnection(); PreparedStatement stmnt = c.prepareStatement("INSERT INTO jq_scores (id, charid, time) VALUES (?, ?, ?) ON DUPLICATE KEY UPDATE time = ?")) {
             int time = (int) ((System.currentTimeMillis() - timeStarted) / 1000);
             time = (score >= time ? time : score);
 

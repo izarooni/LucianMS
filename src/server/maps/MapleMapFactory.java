@@ -30,7 +30,7 @@ import provider.MapleDataProviderFactory;
 import provider.MapleDataTool;
 import server.PortalFactory;
 import server.life.*;
-import tools.DatabaseConnection;
+import tools.Database;
 import tools.StringUtil;
 
 import java.awt.*;
@@ -71,7 +71,7 @@ public class MapleMapFactory {
     }
 
     public MapleMap getMap(final int mapid) {
-        try {
+        try (Connection con = Database.getConnection()) {
             if (!maps.containsKey(mapid)) {
                 String mapName = getMapName(mapid);
                 MapleData mapData = source.getData(mapName);
@@ -151,9 +151,7 @@ public class MapleMapFactory {
                     }
                 }
 
-                try {
-                    Connection con = DatabaseConnection.getConnection();
-                    PreparedStatement ps = con.prepareStatement("SELECT * FROM spawns WHERE mid = ?");
+                try (PreparedStatement ps = con.prepareStatement("SELECT * FROM spawns WHERE mid = ?")) {
                     ps.setInt(1, mapid);
                     ResultSet rs = ps.executeQuery();
                     while (rs.next()) {
@@ -184,10 +182,10 @@ public class MapleMapFactory {
                         }
                     }
                 } catch (SQLException e) {
-                    e.printStackTrace();
+                    LOGGER.error("Unable to load SQL spawns for map {}", mapid, e);
                 }
 
-                try (PreparedStatement ps = DatabaseConnection.getConnection().prepareStatement("select * from playernpcs where map = ?")) {
+                try (PreparedStatement ps = con.prepareStatement("select * from playernpcs where map = ?")) {
                     ps.setInt(1, mapid);
                     try (ResultSet rs = ps.executeQuery()) {
                         while (rs.next()) {
@@ -195,7 +193,7 @@ public class MapleMapFactory {
                         }
                     }
                 } catch (SQLException e) {
-                    LOGGER.warn("Unable to load player npcs in map {}", mapid, e);
+                    LOGGER.error("Unable to load player npcs in map {}", mapid, e);
                 }
                 for (MapleData life : mapData.getChildByPath("life")) {
                     String id = MapleDataTool.getString(life.getChildByPath("id"));
@@ -271,6 +269,9 @@ public class MapleMapFactory {
                 return map;
             }
             return maps.get(mapid);
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return null;
         } finally {
             // these must be reset as they're only used once per invoke
             // to prevent fucking things up with maps that should be loaded normally

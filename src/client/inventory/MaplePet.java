@@ -21,13 +21,16 @@
 */
 package client.inventory;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import server.MapleItemInformationProvider;
 import server.movement.AbsoluteLifeMovement;
 import server.movement.LifeMovement;
 import server.movement.LifeMovementFragment;
-import tools.DatabaseConnection;
+import tools.Database;
 
 import java.awt.*;
+import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -37,6 +40,8 @@ import java.util.List;
  * @author Matze
  */
 public class MaplePet extends Item {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(MaplePet.class);
 
     private String name;
     private int uniqueid;
@@ -55,7 +60,7 @@ public class MaplePet extends Item {
 
     public static MaplePet loadFromDb(int itemid, short position, int petid) {
         MaplePet ret = new MaplePet(itemid, position, petid);
-        try (PreparedStatement ps = DatabaseConnection.getConnection().prepareStatement("SELECT name, level, closeness, fullness, summoned FROM pets WHERE petid = ?")) {
+        try (Connection con = Database.getConnection(); PreparedStatement ps = con.prepareStatement("SELECT name, level, closeness, fullness, summoned FROM pets WHERE petid = ?")) {
             ps.setInt(1, petid);
             try (ResultSet rs = ps.executeQuery()) {
                 if (rs.next()) {
@@ -68,13 +73,13 @@ public class MaplePet extends Item {
                 }
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            LOGGER.error("Unable to load pet {} from database", itemid, e);
         }
         return null;
     }
 
     public void saveToDb() {
-        try (PreparedStatement ps = DatabaseConnection.getConnection().prepareStatement("UPDATE pets SET name = ?, level = ?, closeness = ?, fullness = ?, summoned = ? WHERE petid = ?")) {
+        try (Connection con = Database.getConnection(); PreparedStatement ps = con.prepareStatement("UPDATE pets SET name = ?, level = ?, closeness = ?, fullness = ?, summoned = ? WHERE petid = ?")) {
             ps.setString(1, getName());
             ps.setInt(2, getLevel());
             ps.setInt(3, getCloseness());
@@ -83,12 +88,12 @@ public class MaplePet extends Item {
             ps.setInt(6, getUniqueId());
             ps.executeUpdate();
         } catch (SQLException e) {
-            e.printStackTrace();
+            LOGGER.error("Unable to save pet {} to database", getItemId(), e);
         }
     }
 
     public static int createPet(int itemid) {
-        try (PreparedStatement ps = DatabaseConnection.getConnection().prepareStatement("INSERT INTO pets (name, level, closeness, fullness, summoned) VALUES (?, 1, 0, 100, 0)", PreparedStatement.RETURN_GENERATED_KEYS)) {
+        try (Connection con = Database.getConnection(); PreparedStatement ps = con.prepareStatement("INSERT INTO pets (name, level, closeness, fullness, summoned) VALUES (?, 1, 0, 100, 0)", PreparedStatement.RETURN_GENERATED_KEYS)) {
             String petName = MapleItemInformationProvider.getInstance().getName(itemid);
             if (petName == null) {
                 petName = "MISSINGNO";
@@ -103,12 +108,13 @@ public class MaplePet extends Item {
                 return ret;
             }
         } catch (SQLException e) {
-            return -1;
+            LOGGER.error("Unable to create pet {}", itemid, e);
         }
+        return -1;
     }
 
     public static int createPet(int itemid, byte level, int closeness, int fullness) {
-        try (PreparedStatement ps = DatabaseConnection.getConnection().prepareStatement("INSERT INTO pets (name, level, closeness, fullness, summoned) VALUES (?, ?, ?, ?, 0)", PreparedStatement.RETURN_GENERATED_KEYS)) {
+        try (Connection con = Database.getConnection(); PreparedStatement ps = con.prepareStatement("INSERT INTO pets (name, level, closeness, fullness, summoned) VALUES (?, ?, ?, ?, 0)", PreparedStatement.RETURN_GENERATED_KEYS)) {
             ps.setString(1, MapleItemInformationProvider.getInstance().getName(itemid));
             ps.setByte(2, level);
             ps.setInt(3, closeness);
@@ -122,8 +128,9 @@ public class MaplePet extends Item {
                 return ret;
             }
         } catch (SQLException e) {
-            return -1;
+            e.printStackTrace();
         }
+        return -1;
     }
 
     public String getName() {

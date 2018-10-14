@@ -24,7 +24,7 @@ package server.maps;
 import client.MapleClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import tools.DatabaseConnection;
+import tools.Database;
 import tools.MaplePacketCreator;
 
 import java.awt.*;
@@ -63,7 +63,7 @@ public class PlayerNPC extends AbstractMapleMapObject {
         npcId = rs.getInt("scriptid");
         script = rs.getString("script");
 
-        try (PreparedStatement ps = DatabaseConnection.getConnection().prepareStatement("select equippos, equipid from playernpcs_equip where npcid = ?")) {
+        try (PreparedStatement ps = Database.getConnection().prepareStatement("select equippos, equipid from playernpcs_equip where npcid = ?")) {
             ps.setInt(1, rs.getInt("id"));
             try (ResultSet rs2 = ps.executeQuery()) {
                 while (rs2.next()) {

@@ -37,7 +37,7 @@ import net.AbstractMaplePacketHandler;
 import net.server.Server;
 import com.lucianms.io.scripting.npc.NPCScriptManager;
 import server.MTSItemInfo;
-import tools.DatabaseConnection;
+import tools.Database;
 import tools.MaplePacketCreator;
 import tools.data.input.SeekableLittleEndianAccessor;
 
@@ -75,7 +75,7 @@ public final class EnterMTSHandler extends AbstractMaplePacketHandler {
         List<MTSItemInfo> items = new ArrayList<>();
         int pages = 0;
         try {
-            PreparedStatement ps = DatabaseConnection.getConnection().prepareStatement("SELECT * FROM mts_items WHERE tab = 1 AND transfer = 0 ORDER BY id DESC LIMIT 16, 16");
+            PreparedStatement ps = Database.getConnection().prepareStatement("SELECT * FROM mts_items WHERE tab = 1 AND transfer = 0 ORDER BY id DESC LIMIT 16, 16");
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
                 if (rs.getInt("type") != 1) {
@@ -110,7 +110,7 @@ public final class EnterMTSHandler extends AbstractMaplePacketHandler {
             }
             rs.close();
             ps.close();
-            ps = DatabaseConnection.getConnection().prepareStatement("SELECT COUNT(*) FROM mts_items");
+            ps = Database.getConnection().prepareStatement("SELECT COUNT(*) FROM mts_items");
             rs = ps.executeQuery();
             if (rs.next()) {
                 pages = (int) Math.ceil(rs.getInt(1) / 16);
@@ -127,7 +127,7 @@ public final class EnterMTSHandler extends AbstractMaplePacketHandler {
     private List<MTSItemInfo> getNotYetSold(int cid) {
         List<MTSItemInfo> items = new ArrayList<>();
         try {
-            try (PreparedStatement ps = DatabaseConnection.getConnection().prepareStatement("SELECT * FROM mts_items WHERE seller = ? AND transfer = 0 ORDER BY id DESC")) {
+            try (PreparedStatement ps = Database.getConnection().prepareStatement("SELECT * FROM mts_items WHERE seller = ? AND transfer = 0 ORDER BY id DESC")) {
                 ps.setInt(1, cid);
                 try (ResultSet rs = ps.executeQuery()) {
                     while (rs.next()) {
@@ -171,7 +171,7 @@ public final class EnterMTSHandler extends AbstractMaplePacketHandler {
     private List<MTSItemInfo> getTransfer(int cid) {
         List<MTSItemInfo> items = new ArrayList<>();
         try {
-            Connection con = DatabaseConnection.getConnection();
+            Connection con = Database.getConnection();
             try (PreparedStatement ps = con.prepareStatement("SELECT * FROM mts_items WHERE transfer = 1 AND seller = ? ORDER BY id DESC")) {
                 ps.setInt(1, cid);
                 try (ResultSet rs = ps.executeQuery()) {

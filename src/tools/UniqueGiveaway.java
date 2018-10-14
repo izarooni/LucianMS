@@ -17,8 +17,8 @@ public class UniqueGiveaway {
     }
 
     public static void createData(String ip, String hdd, String description) {
-        Connection con = DatabaseConnection.getConnection();
-        try (PreparedStatement ps = con.prepareStatement("insert into unique_giveaways values (? ,? ,?)")) {
+        try (Connection con = Database.getConnection();
+             PreparedStatement ps = con.prepareStatement("insert into unique_giveaways values (? ,? ,?)")) {
             ps.setString(1, ip);
             ps.setString(2, hdd);
             ps.setString(3, description);
@@ -29,8 +29,8 @@ public class UniqueGiveaway {
     }
 
     public static boolean checkWithBoth(String ip, String hdd, String description) {
-        Connection con = DatabaseConnection.getConnection();
-        try (PreparedStatement ps = con.prepareStatement("select * from unique_giveaways where (mac = ? or hdd = ?) and description = ?")) {
+        try (Connection con = Database.getConnection();
+             PreparedStatement ps = con.prepareStatement("select * from unique_giveaways where (mac = ? or hdd = ?) and description = ?")) {
             ps.setString(1, ip);
             ps.setString(2, hdd);
             ps.setString(3, description);
@@ -46,8 +46,8 @@ public class UniqueGiveaway {
     }
 
     public static boolean checkWithIPAddress(String ip, String description) {
-        Connection con = DatabaseConnection.getConnection();
-        try (PreparedStatement ps = con.prepareStatement("select * from unique_giveaways where mac = ? and description = ?")) {
+        try (Connection con = Database.getConnection();
+             PreparedStatement ps = con.prepareStatement("select * from unique_giveaways where mac = ? and description = ?")) {
             ps.setString(1, ip);
             ps.setString(2, description);
             try (ResultSet rs = ps.executeQuery()) {
@@ -62,8 +62,8 @@ public class UniqueGiveaway {
     }
 
     public static boolean checkWithHDD(String hdd, String description) {
-        Connection con = DatabaseConnection.getConnection();
-        try (PreparedStatement ps = con.prepareStatement("select * from unique_giveaways where hdd = ? and description = ?")) {
+        try (Connection con = Database.getConnection();
+             PreparedStatement ps = con.prepareStatement("select * from unique_giveaways where hdd = ? and description = ?")) {
             ps.setString(1, hdd);
             ps.setString(2, description);
             try (ResultSet rs = ps.executeQuery()) {
@@ -78,9 +78,9 @@ public class UniqueGiveaway {
     }
 
     public static List<Type> getFromIPAddress(String ip) {
-        Connection con = DatabaseConnection.getConnection();
         ArrayList<Type> types = new ArrayList<>();
-        try (PreparedStatement ps = con.prepareStatement("select * from unique_giveaways where mac = ?")) {
+        try (Connection con = Database.getConnection();
+             PreparedStatement ps = con.prepareStatement("select * from unique_giveaways where mac = ?")) {
             ps.setString(1, ip);
             try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
@@ -94,9 +94,9 @@ public class UniqueGiveaway {
     }
 
     public static List<Type> getFromHDDAddress(String ip) {
-        Connection con = DatabaseConnection.getConnection();
         ArrayList<Type> types = new ArrayList<>();
-        try (PreparedStatement ps = con.prepareStatement("select * from unique_giveaways where hdd = ?")) {
+        try (Connection con = Database.getConnection();
+             PreparedStatement ps = con.prepareStatement("select * from unique_giveaways where hdd = ?")) {
             ps.setString(1, ip);
             try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
