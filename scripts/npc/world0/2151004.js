@@ -32,7 +32,7 @@ function action(mode, type, selection) {
         .attachRequirements(4011033) // ETC items you need to have to go in
         .attachSpawns(9500167, 9500167, 9500167, 9500167, 9500167) // add spawns
         .enter()) { // go into map Golden Key
-            cm.sendOk("Some problems have occurred." + dungeon.getAreLacking()); // give feedback on what went wrong to talker
+            cm.sendOk("Some problems have occurred. " + dungeon.getAreLacking()); // give feedback on what went wrong to talker
         }
         cm.dispose();
     }
