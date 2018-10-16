@@ -34,20 +34,11 @@ function setup() {
     eim.setProperty("ActivatedPlants", "0");
     eim.getMapInstance(M_Stage).setSummonState(false);
     eim.getMapInstance(M_Stage).killAllMonsters();
-    respawn(eim);
     var timer = 1000 * 60 * T_Deadline;
     eim.schedule("disbandParty", timer);
     eim.startEventTimer(timer);
     return eim;
 }
-
-// function respawn(eim) {
-// 	var map = eim.getMapInstance(M_Stage);
-// 	if (map.getSummonState()) {
-// 		map.instanceMapRespawn();
-// 	}
-// 	eim.schedule("respawn", 10000);
-// }
 
 function playerEntry(eim, player) {
     var map = eim.getMapInstance(M_Stage);
