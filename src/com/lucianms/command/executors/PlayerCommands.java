@@ -342,6 +342,7 @@ public class PlayerCommands {
         } else if (command.equals("go")) {
             WeakHashMap<String, Integer> maps = new WeakHashMap<>();
             // @formatter:off
+            maps.put("nlc",        600000000);
             maps.put("fm",         910000000);
             maps.put("henesys",    100000000);
             maps.put("maya",       100000001);
