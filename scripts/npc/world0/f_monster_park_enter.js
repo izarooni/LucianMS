@@ -4,7 +4,6 @@
 const MonsterPark = Java.type("com.lucianms.features.MonsterPark");
 const EntryLimits = Java.type("tools.EntryLimits");
 const ENTRY_TYPE = "m_park";
-var status = 0;
 
 const minParticpants = 2;
 const areas = {
@@ -13,6 +12,9 @@ const areas = {
     tiger: [["Mossy Tree Forest", 953030000,160], ["Secret Pirate Hideout", 953060000, 170], ["Sky Forest Training Center", 953040000, 180]],
     extreme: [["Temple of Oblivion", 954040000, 190]]
 };
+
+let status = 0;
+let partyMembers = cm.getPartyMembers();
 
 function action(mode, type, selection) {
     if (mode < 1) {
@@ -25,12 +27,11 @@ function action(mode, type, selection) {
         return (e instanceof MonsterPark);
     }).findFirst();
     if (status == 1) {
-        print("TEST!");
         // skip
     } else if (status == 2) {
         let canEnter = true;
         if (!player.isGM()) {
-            if (cm.getParty() == null || cm.getPartyMembers().size() <= minParticpants) {
+            if (cm.getParty() == null || partyMembers.size() <= minParticpants) {
                 cm.sendOk("You must be in a party with at least #b" + minParticpants + " members#k to enter ths monster park");
                 cm.dispose();
                 return;
@@ -39,11 +40,13 @@ function action(mode, type, selection) {
                 cm.dispose();
                 return;
             }
-            cm.getPartyMembers().forEach(function(member) {
-                if (EntryLimits.getEntries(member.getId(), ENTRY_TYPE) > 3) {
-                    canEnter = false;
-                }
-            });
+            if (partyMembers != null) {
+                partyMembers.forEach(function(member) {
+                    if (EntryLimits.getEntries(member.getId(), ENTRY_TYPE) > 3) {
+                        canEnter = false;
+                    }
+                });
+            }
         }
         if (!canEnter) {
             cm.sendOk("One or more of your party members have reached the daily limit for entering the monster park");
@@ -54,8 +57,21 @@ function action(mode, type, selection) {
         var text = "\r\n#b"
 
         var range = getAreaLevelRange(area);
+
+        if (partyMembers != null) {
+            partyMembers.forEach(function(member) {
+                if (member.getLevel() < range.min || member.getLevel() > range.max) {
+                    canEnter = false;
+                }
+            });
+        }
+
         if (player.getLevel() > range.max || player.getLevel() < range.min) {
             cm.sendOk("You are not within the recommended level range of this Monster Park.\r\n\t#b- Level Range: " + range.min + " ~ " + range.max);
+            cm.dispose();
+            return;
+        } else if (!canEnter) {
+            cm.sendOk("Some members of your party do not meet the level range of this Monster Park.");
             cm.dispose();
             return;
         } else {
@@ -72,7 +88,7 @@ function action(mode, type, selection) {
         } else {
             var park = new MonsterPark(client.getWorld(), client.getChannel(), selection, level);
             if (cm.getParty() != null) {
-                cm.getPartyMembers().forEach(function(member) {
+                partyMembers.forEach(function(member) {
                     if (member.getMapId() == player.getMapId()) {
                         park.registerPlayer(member);
                         EntryLimits.incrementEntry(member.getId(), ENTRY_TYPE);
