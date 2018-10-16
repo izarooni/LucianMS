@@ -18,11 +18,11 @@ let firstDay = false;
 TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
 
 let start = Calendar.getInstance(TimeZone.getDefault());
-start.set(2018, Calendar.OCTOBER, 13, 20, 30); // Oct 13, 2018 @ 10:30 PM
+start.set(2018, Calendar.OCTOBER, 16, 18, 40); // Oct 13, 2018 @ 8:40 PM
 start.add(Calendar.HOUR_OF_DAY, 2); // utc+2 copenhagen time
 
 let end = Calendar.getInstance(TimeZone.getDefault());
-end.set(2018, Calendar.OCTOBER, 13, 20, 30); // Oct 13, 2018 @ 10:30 PM
+end.set(2018, Calendar.OCTOBER, 16, 18, 40); // Oct 13, 2018 @ 10:30 PM
 end.add(Calendar.HOUR_OF_DAY, 38); // First (36+2(utc)) hours to receive the medal
 
 let current = Calendar.getInstance(TimeZone.getDefault());

@@ -90,17 +90,18 @@ function action(mode, type, selection) {
                             otherChars += idNamePair.get(i) + ", ";
                         }
                         cm.sendPrev(
-                                "#e" + this.stalk.name + "'s stats#n\r\n"
-                                + "\r\nAccount Name: " + t.getClient().getAccountName()
-                                + "\r\nAccount Id: " + t.getAccountID()
-                                + "\r\nCharacter Id: " + t.getId()
-                                + "\r\nOther characters: \r\n" + otherChars
-                                + "\r\n\r\nRemote address: " + t.getClient().getSession().getRemoteAddress().toString().substring(1).split(":")[0]
-                                + "\r\n\r\nMACs: " + t.getClient().getMacs()
-                                + "\r\nHWID: " + t.getClient().getHWID()
-                                + "\r\nCrush rings: " + t.getCrushRings()
-                                + "\r\nFriendship rings: " + t.getFriendshipRings()
-                                );
+                            "#e" + this.stalk.name + "'s stats#n\r\n"
+                            + "\r\nGM Level: " + t.gmLevel()
+                            + "\r\nAccount Name: " + t.getClient().getAccountName()
+                            + "\r\nAccount Id: " + t.getAccountID()
+                            + "\r\nCharacter Id: " + t.getId()
+                            + "\r\nOther characters: \r\n" + otherChars
+                            + "\r\n\r\nRemote address: " + t.getClient().getSession().getRemoteAddress().toString().substring(1).split(":")[0]
+                            + "\r\n\r\nMACs: " + t.getClient().getMacs()
+                            + "\r\nHWID: " + t.getClient().getHWID()
+                            + "\r\nCrush rings: " + t.getCrushRings()
+                            + "\r\nFriendship rings: " + t.getFriendshipRings());
+                        cm.dispose();
                     } else {
                         cm.sendNext("The player could not be found");
                         status = 0;
