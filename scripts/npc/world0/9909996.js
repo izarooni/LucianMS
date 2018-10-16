@@ -16,7 +16,7 @@ jobs = {
             equips: [[1482000, 1], [1492000, 1], [2330000, 1000]] },
         Aran: { ID: 2100, req: (p) => true,
             equips: [[1442000, 1]]},
-        "Dawn Warrior": { ID: 1100, req: (p) => true,
+        Valkyrie: { ID: 1100, req: (p) => true,
             equips: [[1302007, 1]] }
     },
     Second: {
@@ -25,7 +25,7 @@ jobs = {
         Ark: { ID: 510 },
         Mechanic: { ID: 520 },
         Aran: { ID: 2110 },
-        "Dawn Warrior": { ID: 1110 }
+        Valkyrie: { ID: 1110 }
     },
     Third: {
         Uchiha: { ID: 111 },
@@ -33,7 +33,7 @@ jobs = {
         Ark: { ID: 511 },
         Mechanic: { ID: 521 },
         Aran: { ID: 2111 },
-        "Dawn Warrior": { ID: 1111 }
+        Valkyrie: { ID: 1111 }
     },
     Fourth: {
         Uchiha: { ID: 112 },
