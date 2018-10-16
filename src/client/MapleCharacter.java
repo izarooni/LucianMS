@@ -602,7 +602,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
                                         ret.addCrushRing(ring);
                                     }
                                 } else {
-                                    System.err.println(String.format("%s loaded invalid ring (itemId: %d) (ringId: %d)", ret.name, equip.getItemId(), equip.getRingId()));
+                                    LOGGER.warn("'{}' loaded invalid ring item({}) ringID({})", ret.name, equip.getItemId(), equip.getRingId());
                                 }
                             }
                         }

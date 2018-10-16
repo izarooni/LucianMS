@@ -114,15 +114,16 @@ public class NPCScriptManager {
                 pair.left.invokeFunction("action", mode, type, selection);
             } catch (Exception e) {
                 NPCConversationManager cm = pair.getRight();
-
-                String response = "An error occurred in this NPC";
-                if (cm.getScriptName() != null) {
-                    response += "\r\nName: " + cm.getScriptName();
+                if (cm != null) {
+                    String response = "An error occurred in this NPC";
+                    if (cm.getScriptName() != null) {
+                        response += "\r\nName: " + cm.getScriptName();
+                    }
+                    response += "\r\nNPC ID: " + cm.getNpc();
+                    client.getPlayer().dropMessage(1, response);
+                    dispose(client);
+                    LOGGER.error("Unable to invoke 'action' function for script '{}' npc '{}' using player '{}'", cm.getScriptName(), cm.getNpc(), client.getPlayer().getName(), e);
                 }
-                response += "\r\nNPC ID: " + cm.getNpc();
-                client.getPlayer().dropMessage(1, response);
-                dispose(client);
-                LOGGER.error("Unable to invoke 'action' function for script '{}' npc '{}' using player '{}'", cm.getScriptName(), cm.getNpc(), client.getPlayer().getName(), e);
             }
         }
     }

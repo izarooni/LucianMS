@@ -27,7 +27,7 @@ import java.util.Scanner;
  */
 public class ConsoleCommands {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(ConsoleCommands.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(ConsoleCommands.class.getSimpleName());
     private static volatile boolean reading = false;
     private static Scanner scanner;
 
@@ -152,15 +152,15 @@ public class ConsoleCommands {
                 for (World worlds : Server.getInstance().getWorlds()) {
                     LOGGER.info("World {}:", (worlds.getId() + 1));
                     for (Channel channels : worlds.getChannels()) {
-                        LOGGER.info("\tChannel {}:", channels.getId());
                         StringBuilder sb = new StringBuilder();
+                        sb.append("\tChannel {}: ");
                         for (MapleCharacter players : channels.getPlayerStorage().getAllCharacters()) {
                             sb.append(players.getName()).append(", ");
                         }
                         if (sb.length() > 2) {
                             sb.setLength(sb.length() - 2);
                         }
-                        LOGGER.info("\t\t{}", sb.toString());
+                        LOGGER.info(sb.toString(), channels.getId());
                         LOGGER.info("");
                     }
                 }

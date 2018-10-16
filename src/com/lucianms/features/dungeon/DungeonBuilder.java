@@ -87,7 +87,6 @@ public class DungeonBuilder {
      * @return DungeonBuilder
      */
     public DungeonBuilder attachSpawns(Integer... monsters) {
-        LOGGER.info("Scaling EXP for monsters");
         for (Integer monsterId : monsters) {
             MapleMonster monster = MapleLifeFactory.getMonster(monsterId);
             if (monster != null) {
@@ -124,7 +123,6 @@ public class DungeonBuilder {
                 map.addMonsterSpawnPoint(spawnPoint);
             }
         }
-        LOGGER.info("Scaling complete.");
         return this;
     }
 

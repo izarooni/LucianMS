@@ -2,12 +2,11 @@ package com.lucianms.command.executors;
 
 import client.MapleCharacter;
 import client.MapleClient;
-import client.SkillFactory;
+import client.MapleStat;
+import client.Skill;
 import client.inventory.*;
 import com.lucianms.command.CommandWorker;
 import com.lucianms.io.scripting.npc.NPCScriptManager;
-import com.lucianms.io.scripting.portal.PortalScriptManager;
-import com.lucianms.io.scripting.reactor.ReactorScriptManager;
 import constants.ItemConstants;
 import net.server.Server;
 import net.server.channel.Channel;
@@ -30,6 +29,7 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author izarooni, lucasdieswagger
@@ -61,6 +61,27 @@ public class HGMCommands {
             commands.sort(String::compareTo);
             commands.forEach(player::dropMessage);
             commands.clear();
+        } else if (command.equals("clearskills")) {
+            for (Map.Entry<Skill, MapleCharacter.SkillEntry> set : player.getSkills().entrySet()) {
+                MapleCharacter.SkillEntry entry = set.getValue();
+                player.changeSkillLevel(set.getKey(), (byte) 0, entry.masterlevel, entry.expiration);
+            }
+        } else if (command.equals("hpmp")) {
+            if (args.length() == 1) {
+                Integer value = args.parseNumber(0, int.class);
+                if (value == null) {
+                    player.sendMessage(5, args.getFirstError());
+                    return;
+                }
+                player.setHp(value);
+                player.setMp(value);
+                player.setMaxHp(value);
+                player.setMaxHp(value);
+                player.updateSingleStat(MapleStat.MAXHP, value);
+                player.updateSingleStat(MapleStat.MAXMP, value);
+                player.updateSingleStat(MapleStat.HP, value);
+                player.updateSingleStat(MapleStat.MP, value);
+            }
         } else if (command.equals("debug")) {
             player.setDebug(!player.isDebug());
             player.sendMessage("Your debug mode is now {}", (player.isDebug() ? "enabled" : "disabled"));

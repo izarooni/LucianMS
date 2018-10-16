@@ -604,7 +604,9 @@ public class MapleMonster extends AbstractLoadedMapleLife {
     public void applyDamageOvertime(MapleCharacter from, long duration) {
         MobSkill mSkill = MobSkillFactory.getMobSkill(125, 1);
         mSkill.setDuration(duration);
-        mSkill.applyEffect(from, this, false);
+        Skill skill = SkillFactory.getSkill(4220005); // venom stab
+        MonsterStatusEffect statusEffect = new MonsterStatusEffect(Map.of(MonsterStatus.POISON, 1), skill, mSkill, true);
+        applyStatus(from, statusEffect, false, duration);
 
         setDamagedOvertime(true);
         int calcDamage = (int) (from.calculateMaxBaseDamage(from.getTotalWatk()) * 0.75);
