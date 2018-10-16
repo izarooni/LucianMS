@@ -74,6 +74,7 @@ public class AdministratorCommands {
                     case "skills":
                         SkillFactory.loadAllSkills();
                         player.sendMessage("Skill data reloaded" );
+                        break;
                     case "shops":
                         MapleShopFactory.getInstance().clearCache();
                         player.sendMessage( "NPC shops cache cleared");

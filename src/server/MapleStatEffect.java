@@ -111,12 +111,16 @@ public class MapleStatEffect {
             ret.duration *= 1000; // items have their times stored in ms, of course
 
             // @formatter:off
-            if (sourceid == Marauder.TRANSFORMATION // pink bean
-                    || sourceid == Buccaneer.SUPER_TRANSFORMATION // super pink bean \o/
-                    || (!ret.isMist() && !ret.isMorph() && !ret.isPoison() && !ret.isMagicDoor() && !ret.isDs()
+            if ((sourceid == Marauder.TRANSFORMATION // pink bean
+                    || sourceid == Buccaneer.SUPER_TRANSFORMATION) // super pink bean \o/
+                    || (!ret.isMist()
+                    && !ret.isMorph()
+                    && !ret.isPoison()
+                    && !ret.isMagicDoor()
+                    && !ret.isDs()
                     && sourceid != Sniper.PUPPET && sourceid != Ranger.PUPPET
-                    && sourceid != Pirate.DASH && sourceid != ThunderBreaker.DASH)
-                    ) {
+                    && sourceid != Pirate.DASH && sourceid != ThunderBreaker.DASH
+                    && sourceid != Shadower.NINJA_AMBUSH)) {
                 ret.duration = Integer.MAX_VALUE;
             }
             ret.overTime = overTime;
