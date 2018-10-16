@@ -1,4 +1,4 @@
-const ConvoManager = Java.type("com.lucianms.io.scripting.npc.NPCConversataionManager");
+const ConvoManager = Java.type("com.lucianms.io.scripting.npc.NPCConversationManager");
 var status;
 var choice;
 var guildName;
