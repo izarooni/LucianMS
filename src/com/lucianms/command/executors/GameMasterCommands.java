@@ -9,6 +9,7 @@ import com.lucianms.command.CommandWorker;
 import com.lucianms.helpers.JailManager;
 import constants.ItemConstants;
 import constants.ServerConstants;
+import net.server.Server;
 import net.server.channel.Channel;
 import net.server.world.World;
 import provider.MapleData;
@@ -636,17 +637,21 @@ public class GameMasterCommands {
                 player.dropMessage(5, "Syntax: !debuff <usernames/map>");
             }
         } else if (command.equals("online")) {
+            player.sendMessage("Login Server: " + Server.getInstance().getAcceptor().getManagedSessionCount());
+
             for (Channel channel : client.getWorldServer().getChannels()) {
+                int count = 0;
                 StringBuilder sb = new StringBuilder();
                 for (MapleCharacter players : channel.getPlayerStorage().getAllCharacters()) {
                     if (!players.isGM() || players.getHidingLevel() <= player.getHidingLevel()) {
+                        count++;
                         sb.append(players.getName()).append(", ");
                     }
                 }
                 if (sb.length() > 2) {
                     sb.setLength(sb.length() - 2);
                 }
-                player.dropMessage(String.format("Channel(%d): %s", channel.getId(), sb.toString()));
+                player.dropMessage(String.format("Channel %d (%d): %s", channel.getId(), count, sb.toString()));
             }
         } else if (command.equals("!")) {
             if (args.length() > 0) {

@@ -21,6 +21,7 @@
 */
 package net.server.channel.handlers;
 
+import constants.ServerConstants;
 import net.server.guild.MapleGuildResponse;
 import net.server.guild.MapleGuild;
 import client.MapleClient;
@@ -100,7 +101,7 @@ public final class GuildOperationHandler extends AbstractMaplePacketHandler {
                 //c.announce(MaplePacketCreator.showGuildInfo(mc));
                 break;
             case 0x02:
-                if (mc.getGuildId() > 0 || mc.getMapId() != 200000301) {
+                if (mc.getGuildId() > 0 || mc.getMapId() != 200000301 || mc.getMapId() != ServerConstants.HOME_MAP) {
                     c.getPlayer().dropMessage(1, "You cannot create a new Guild while in one.");
                     return;
                 }

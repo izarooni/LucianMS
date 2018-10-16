@@ -1,6 +1,7 @@
 Manifest-Version: 1.0
-Class-Path: slf4j-simple-1.7.25.jar slf4j-api-1.7.25.jar mina-core-2.0
- .16.jar commons-net-3.6.jar mysql-connector-java-bin.jar commons-io-2
- .4.jar
+Class-Path: slf4j-simple-1.7.25.jar slf4j-api-1.7.25.jar c3p0-0.9.5.2.
+ jar mysql-connector-java-8.0.12.jar mina-core-2.0.19.jar commons-io-2
+ .6.jar commons-net-3.6.jar protobuf-java-2.6.0.jar mchange-commons-ja
+ va-0.2.11.jar
 Main-Class: net.server.Server
 
