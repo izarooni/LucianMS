@@ -46,7 +46,6 @@ public class PlayerCommands {
             commands.add("@help - to see what commands there are");
             commands.add("@commands - another way to see the commands");
             commands.add("@rates - show the server rates");
-            commands.add("@maxskills - Max your skills");
             commands.add("@joinevent - join the GM event");
             commands.add("@leaveevent - leave the GM event");
             commands.add("@jautoevent - join the auto event");
@@ -432,9 +431,6 @@ public class PlayerCommands {
                 new PlayerBattle().registerPlayer(player);
                 player.sendMessage(6, "You are now PvPing");
             }
-        } else if (command.equals("maxskills")) {
-            player.maxSkills();
-            player.dropMessage(6, "Your skills are now maxed!");
         } else if (command.equals("rps")) {
             RockPaperScissorsEvent.startGame(player);
             player.dropMessage(6, "Let's play some rock paper scissors!");
