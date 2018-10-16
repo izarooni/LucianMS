@@ -7,6 +7,40 @@ const features = [];
 let feature = null;
 let status = 0;
 
+function ListMonsters(selection) {
+    if (status == 1) {
+        let content = "";
+        let objects = player.getMap().getMapObjects();
+        for (let i = 0; i < objects.size(); i++) {
+            let obj = player.getMap().getMonsterByOid(objects.get(i).getObjectId());
+            if (obj != null) {
+                content += `\r\n#L${obj.getObjectId()}#${obj.getName()}#l`;
+            }
+        }
+        if (content.length > 0)
+            cm.sendSimple("#b" + content)
+        else {
+            cm.sendOk("There are no monsters in the map");
+            cm.dispose();
+        }
+    } else if (status == 2) {
+        let obj = player.getMap().getMonsterByOid(selection);
+        if (obj != null) {
+            let content = "";
+            content += `\r\nNAME: ${obj.getName()}`;
+            content += `\r\nID: ${obj.getId()}`;
+            content += `\r\nOID: ${obj.getObjectId()}`;
+            content += `\r\nHP: ${obj.getHp()}`;
+            cm.sendOk(content);
+            status = 0;
+        } else {
+            cm.sendOk("The monster could not be found.");
+            cm.dispose();
+        }
+    }
+}
+features.push(new Selector("List Monsters", ListMonsters));
+
 function StopMonsterControls(selection) {
     if (status == 1) {
         let text = "Your team: " + player.getTeam();

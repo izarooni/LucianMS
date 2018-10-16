@@ -443,6 +443,15 @@ public class MapleMonster extends AbstractLoadedMapleLife {
                             getMap().spawnMonsterOnGroudBelow(mob, getPosition());
                         }
                     }
+                    if (getId() >= 8810002 && getId() <= 8810009) { // horntail defeated
+                        for (int i = 8810010; i < 8810018; i++) {
+                            MapleMonster ht = getMap().getMonsterById(i);
+                            if (ht == null) {
+                                return;
+                            }
+                        }
+                        getMap().killMonster(getMap().getMonsterById(8810018), killer, true);
+                    }
                 }
             }, getAnimationTime("die1"));
         }

@@ -544,7 +544,7 @@ public class MapleMap {
     }
 
     public boolean damageMonster(final MapleCharacter chr, final MapleMonster monster, final int damage) {
-        if (monster.getId() == 8800000) {
+        if (monster.getId() == 8800000) { // zakum
             for (MapleMapObject object : chr.getMap().getMapObjects()) {
                 MapleMonster mons = chr.getMap().getMonsterByOid(object.getObjectId());
                 if (mons != null) {
@@ -648,7 +648,6 @@ public class MapleMap {
                                 spawnMonsterOnGroudBelow(mob, monster.getPosition());
                             }
                         }
-
                         if (monster.getId() == chr.getKillType() && chr.getCurrent() < chr.getGoal()) {
                             chr.setCurrent(chr.getCurrent() + 1);
                             if (!(chr.getCurrent() > chr.getGoal())) {
@@ -657,9 +656,9 @@ public class MapleMap {
                         }
                         killed = true;
                     }
-                } else if (monster.getId() >= 8810002 && monster.getId() <= 8810009) {
-                    for (MapleMapObject object : chr.getMap().getMapObjects()) {
-                        MapleMonster mons = chr.getMap().getMonsterByOid(object.getObjectId());
+                } else if (monster.getId() >= 8810002 && monster.getId() <= 8810009) { // horntail
+                    for (MapleMapObject object : getMapObjects()) {
+                        MapleMonster mons = getMonsterByOid(object.getObjectId());
                         if (mons != null) {
                             if (monster.isAlive() && (monster.getId() >= 8810010 && monster.getId() <= 8810017)) {
                                 if (mons.getId() == 8810018) {
@@ -707,6 +706,7 @@ public class MapleMap {
         }
         if (chr == null) {
             spawnedMonstersOnMap.decrementAndGet();
+            monster.killBy(chr);
             monster.setHp(0);
             broadcastMessage(MaplePacketCreator.killMonster(monster.getObjectId(), animation), monster.getPosition());
             removeMapObject(monster);
@@ -753,11 +753,7 @@ public class MapleMap {
             }
         }
         if (monster.getId() == 8810018 && chr.getMapId() == 240060200) {
-            for (Channel cserv : Server.getInstance().getWorld(world).getChannels()) {
-                for (MapleCharacter player : cserv.getPlayerStorage().getAllCharacters()) {
-                    player.dropMessage("To the crew that have finally conquered Horned Tail after numerous attempts, I salute thee! You are the true heroes of Leafre!!");
-                }
-            }
+            chr.getClient().getWorldServer().broadcastMessage(6, "To the crew that have finally conquered Horned Tail after numerous attempts, I salute thee! You are the true heroes of Leafre!!");
         }
         if (monster.getId() == 9895253 && getId() == 97) { // Black Mage
             List<MapleCharacter> warp = new ArrayList<>(getCharacters());
@@ -769,11 +765,7 @@ public class MapleMap {
         // if (monster.getStats().selfDestruction() == null) {//FUU BOMBS D:
         removeMapObject(monster);
         // }
-        Optional<GenericEvent> op = chr.getGenericEvents().stream().filter(o -> o instanceof MCarnivalGame).findFirst();
-        MCarnivalGame carnivalGame = null;
-        if (op.isPresent()) {
-            carnivalGame = (MCarnivalGame) op.get();
-        }
+        MCarnivalGame carnivalGame = (MCarnivalGame) chr.getGenericEvents().stream().filter(o -> o instanceof MCarnivalGame).findFirst().orElse(null);
         if (monster.getCP() > 0 && carnivalGame != null) {
             carnivalGame.getTeam(chr.getTeam()).addCarnivalPoints(chr, monster.getCP());
             chr.announce(MCarnivalPacket.getMonsterCarnivalPointsUpdate(chr.getCP(), chr.getObtainedCP()));

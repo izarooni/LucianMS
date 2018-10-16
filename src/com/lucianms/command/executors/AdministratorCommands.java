@@ -32,6 +32,7 @@ import javax.script.ScriptException;
 import java.awt.*;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
+import java.util.function.Function;
 
 /**
  * Level 6 permission requirement
@@ -171,23 +172,24 @@ public class AdministratorCommands {
             }
         } else if (command.equals("list")) {
             if (args.length() == 1) {
+                Function<Point, String> readable = p -> String.format("Location{X:%d,Y:%d}", p.x, p.y);
                 if (args.get(0).equalsIgnoreCase("reactors")) {
                     for (MapleMapObject object : player.getMap().getReactors()) {
                         MapleReactor reactor = (MapleReactor) object;
-                        player.sendMessage("{} / id:{} / oid:{} / name:{}", reactor.getPosition().toString(), reactor.getId(), reactor.getObjectId(), reactor.getName());
+                        player.sendMessage("{} / id:{} / oid:{} / name:{}", readable.apply(reactor.getPosition()), reactor.getId(), reactor.getObjectId(), reactor.getName());
                     }
                 } else if (args.get(0).equalsIgnoreCase("monsters")) {
                     for (MapleMonster monsters : player.getMap().getMonsters()) {
-                        player.sendMessage("{} / id:{} / oid:{} / name:{} / HP:{}", monsters.getPosition().toString(), monsters.getId(), monsters.getObjectId(), monsters.getName(), monsters.getHp());
+                        player.sendMessage("{} / id:{} / oid:{} / name:{} / HP:{}", readable.apply(monsters.getPosition()), monsters.getId(), monsters.getObjectId(), monsters.getName(), monsters.getHp());
                     }
                 } else if (args.get(0).equalsIgnoreCase("npcs")) {
                     for (MapleMapObject object : player.getMap().getMapObjects()) {
                         if (object instanceof MapleNPC) {
                             MapleNPC npc = ((MapleNPC) object);
-                            player.sendMessage("{} / id:{} / oid:{} / name:{} / script:{}", npc.getPosition().toString(), npc.getId(), npc.getObjectId(), npc.getName(), npc.getScript());
+                            player.sendMessage("{} / id:{} / oid:{} / name:{} / script:{}", readable.apply(npc.getPosition()), npc.getId(), npc.getObjectId(), npc.getName(), npc.getScript());
                         } else if (object instanceof PlayerNPC) {
                             PlayerNPC npc = ((PlayerNPC) object);
-                            player.sendMessage("{} / id:{} / oid:{} / name:{} / script:{}", npc.getPosition().toString(), npc.getId(), npc.getObjectId(), npc.getName(), npc.getScript());
+                            player.sendMessage("{} / id:{} / oid:{} / name:{} / script:{}", readable.apply(npc.getPosition()), npc.getId(), npc.getObjectId(), npc.getName(), npc.getScript());
                         }
                     }
                 }
