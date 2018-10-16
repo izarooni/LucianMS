@@ -22,6 +22,7 @@ jobs = {
     Second: {
         Uchiha: { ID: 110 },
         Rashoumon: { ID: 120 },
+        Dragoon: { ID: 130 },
         Ark: { ID: 510 },
         Mechanic: { ID: 520 },
         Aran: { ID: 2110 },
@@ -30,6 +31,7 @@ jobs = {
     Third: {
         Uchiha: { ID: 111 },
         Rashoumon: { ID: 121 },
+        Dragoon: { ID: 131 },
         Ark: { ID: 511 },
         Mechanic: { ID: 521 },
         Aran: { ID: 2111 },
@@ -38,6 +40,7 @@ jobs = {
     Fourth: {
         Uchiha: { ID: 112 },
         Rashoumon: { ID: 122 },
+        Dragoon: { ID: 132 },
         Ark: { ID: 512 },
         Mechanic: { ID: 522 },
         Aran: { ID: 2112 }
