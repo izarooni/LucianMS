@@ -1,6 +1,7 @@
 package com.lucianms.features;
 
 import client.MapleCharacter;
+import com.lucianms.io.scripting.npc.NPCScriptManager;
 import com.lucianms.scheduler.Task;
 import com.lucianms.scheduler.TaskExecutor;
 import constants.ExpTable;
@@ -121,6 +122,15 @@ public class MonsterPark extends GenericEvent {
     @Override
     public boolean banishPlayer(MapleCharacter player, int mapId) {
         return false;
+    }
+
+    @Override
+    public boolean onPlayerChangeMapInternal(MapleCharacter player, MapleMap destination) {
+        if (player.getMapId() / 1000000 == 95) {
+            NPCScriptManager.start(player.getClient(), 9071000, "f_monster_park_quit");
+            return false;
+        }
+        return true;
     }
 
     private int getStage(int mapId) {

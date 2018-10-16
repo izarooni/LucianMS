@@ -2793,7 +2793,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
     }
 
     public int getMaxLevel() {
-        return 250;
+        return 200;
     }
 
     public int getMaxMp() {
