@@ -13,18 +13,18 @@ jobs = {
             equips: [[1382000, 1]]}
     },
     Second: {
-        Phantom  : { ID: 210 },
-        Luminous : { ID: 220 },
-        Evan     : { ID: 230 }
+        "Demon Slayer" : { ID: 210 },
+        Luminous       : { ID: 220 },
+        Evan           : { ID: 230 }
     },
     Third: {
-        Phantom  : { ID: 211 },
-        Luminous : { ID: 221 },
-        Evan     : { ID: 231 }
+        "Demon Slayer" : { ID: 211 },
+        Luminous       : { ID: 221 },
+        Evan           : { ID: 231 }
     },
     Fourth: {
-        Phantom  : { ID: 212 },
-        Luminous : { ID: 222 },
-        Evan     : { ID: 232 }
+        "Demon Slayer" : { ID: 212 },
+        Luminous       : { ID: 222 },
+        Evan           : { ID: 232 }
     }
 };
