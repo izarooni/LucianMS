@@ -16,6 +16,7 @@ import tools.Triple;
 import tools.data.input.SeekableLittleEndianAccessor;
 import tools.data.output.MaplePacketLittleEndianWriter;
 
+import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.HashMap;
 
@@ -154,8 +155,8 @@ public class RingActionHandler extends AbstractMaplePacketHandler {
                             MapleInventoryManipulator.addById(pplayer.getClient(), p.getLeft(), (short) 1); // (empty) engagement box
                             MapleInventoryManipulator.addById(client, p.getRight(), (short) 1); // engagement ring
 
-                            try {
-                                rltn.save();
+                            try (Connection con = player.getClient().getChannelServer().getConnection()) {
+                                rltn.save(con);
                             } catch (SQLException e) {
                                 logger().warn("Unable to save relationship data for player '{}': {}", player.getName(), e.getMessage());
                             }

@@ -22,22 +22,24 @@
 package net.server.channel.handlers;
 
 import client.MapleCharacter;
-import java.awt.Point;
-import java.io.File;
-import java.sql.PreparedStatement;
 import client.MapleClient;
+import client.SkillFactory;
 import client.inventory.MapleInventoryType;
 import client.inventory.MaplePet;
-import client.SkillFactory;
-import java.sql.SQLException;
-import tools.Database;
 import net.AbstractMaplePacketHandler;
 import provider.MapleDataProvider;
 import provider.MapleDataProviderFactory;
 import provider.MapleDataTool;
 import server.MapleInventoryManipulator;
+import tools.Database;
 import tools.MaplePacketCreator;
 import tools.data.input.SeekableLittleEndianAccessor;
+
+import java.awt.*;
+import java.io.File;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 
 public final class SpawnPetHandler extends AbstractMaplePacketHandler {
     private static MapleDataProvider dataRoot = MapleDataProviderFactory.getDataProvider(new File(System.getProperty("wzpath") + "/Item.wz"));
@@ -63,12 +65,13 @@ public final class SpawnPetHandler extends AbstractMaplePacketHandler {
                 if (petId == -1) {
                     return;
                 }
-                try {
-                    PreparedStatement ps = Database.getConnection().prepareStatement("DELETE FROM pets WHERE `petid` = ?");
-                    ps.setInt(1, pet.getUniqueId());
-                    ps.executeUpdate();
-                    ps.close();
+                try (Connection con = c.getChannelServer().getConnection()) {
+                    try (PreparedStatement ps = con.prepareStatement("DELETE FROM pets WHERE `petid` = ?")) {
+                        ps.setInt(1, pet.getUniqueId());
+                        ps.executeUpdate();
+                    }
                 } catch (SQLException ex) {
+                    logger().error("Unable to create a database connection: {}", ex.getMessage());
                 }
                 long expiration = chr.getInventory(MapleInventoryType.CASH).getItem(slot).getExpiration();
                 MapleInventoryManipulator.removeById(c, MapleInventoryType.CASH, petid, (short) 1, false, false);

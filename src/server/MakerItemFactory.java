@@ -21,6 +21,9 @@
 */
 package server;
 
+import net.server.Server;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import tools.Database;
 import tools.Pair;
 
@@ -37,13 +40,15 @@ import java.util.Map;
  * @author Jay Estrella
  */
 public class MakerItemFactory {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(MakerItemFactory.class);
     private static Map<Integer, MakerItemCreateEntry> createCache = new HashMap<Integer, MakerItemCreateEntry>();
 
     public static MakerItemCreateEntry getItemCreateEntry(int toCreate) {
         if (createCache.get(toCreate) != null) {
             return createCache.get(toCreate);
         } else {
-            try (Connection con = Database.getConnection()) {
+            try (Connection con = Server.getConnection()) {
                 try (PreparedStatement ps = con.prepareStatement("SELECT req_level, req_maker_level, req_meso, quantity FROM makercreatedata WHERE itemid = ?")) {
                     ps.setInt(1, toCreate);
                     try (ResultSet rs = ps.executeQuery()) {
@@ -70,7 +75,8 @@ public class MakerItemFactory {
                         createCache.put(toCreate, ret);
                     }
                 }
-            } catch (SQLException sqle) {
+            } catch (SQLException e) {
+                LOGGER.error("Unable to create database connection: {}", e.getMessage());
             }
         }
         return createCache.get(toCreate);

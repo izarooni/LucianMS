@@ -1,5 +1,9 @@
 package server;
 
+import com.lucianms.server.events.channel.ChangeMapEvent;
+import net.server.Server;
+import net.server.channel.Channel;
+import net.server.world.World;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import provider.MapleData;
@@ -195,7 +199,8 @@ public class FieldBuilder {
     }
 
     private void obtainSpawns() {
-        try (Connection con = Database.getConnection();
+        Channel channel = Server.getInstance().getChannel(map.getWorld(), map.getChannel());
+        try (Connection con = channel.getConnection();
              PreparedStatement ps = con.prepareStatement("SELECT * FROM spawns WHERE mid = ?")) {
             ps.setInt(1, map.getId());
             try (ResultSet rs = ps.executeQuery()) {
@@ -239,7 +244,7 @@ public class FieldBuilder {
                 }
             }
         } catch (SQLException e) {
-            LOGGER.error("Unable to load SQL spawn information for map {}", map.getId(), e);
+            LOGGER.error("Unable to load SQL spawn information for map {}: {}", map.getId(), e.getMessage());
         }
 
         for (MapleData life : mapData.getChildByPath("life")) {

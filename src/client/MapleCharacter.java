@@ -81,7 +81,6 @@ import java.util.List;
 import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.function.BiConsumer;
 import java.util.regex.Pattern;
 
 public class MapleCharacter extends AbstractAnimatedMapleMapObject {
@@ -324,7 +323,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
     }
 
     public static boolean ban(String id, String reason, boolean accountId) {
-        try (Connection con = Database.getConnection()) {
+        try (Connection con = Server.getConnection()) {
             if (id.matches("/[0-9]{1,3}\\..*")) {
                 try (PreparedStatement ps = con.prepareStatement("INSERT INTO ipbans VALUES (DEFAULT, ?)")) {
                     ps.setString(1, id);
@@ -429,7 +428,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
     public static Map<String, String> getCharacterFromDatabase(String name) {
         Map<String, String> character = new LinkedHashMap<>();
 
-        try (Connection con = Database.getConnection();
+        try (Connection con = Server.getConnection();
              PreparedStatement ps = con.prepareStatement("SELECT `id`, `accountid`, `name` FROM `characters` WHERE `name` = ?")) {
             ps.setString(1, name);
             try (ResultSet rs = ps.executeQuery()) {
@@ -446,7 +445,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
     }
 
     public static int getIdByName(String name) {
-        try (Connection con = Database.getConnection();
+        try (Connection con = Server.getConnection();
              PreparedStatement ps = con.prepareStatement("SELECT id FROM characters WHERE name = ?")) {
             ps.setString(1, name);
             try (ResultSet rs = ps.executeQuery()) {
@@ -461,7 +460,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
     }
 
     public static String getNameById(int id) {
-        try (Connection con = Database.getConnection();
+        try (Connection con = Server.getConnection();
              PreparedStatement ps = con.prepareStatement("SELECT name FROM characters WHERE id = ?")) {
             ps.setInt(1, id);
             try (ResultSet rs = ps.executeQuery()) {
@@ -475,404 +474,399 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
         return null;
     }
 
-    public static MapleCharacter loadCharFromDB(int charid, MapleClient client, boolean channelserver) throws SQLException {
-        try (Connection con = Database.getConnection()) {
-            MapleCharacter ret = new MapleCharacter();
-            ret.client = client;
-            ret.id = charid;
+    public static MapleCharacter loadCharFromDB(Connection con, int charid, MapleClient client, boolean channelserver) throws SQLException {
+        MapleCharacter ret = new MapleCharacter();
+        ret.client = client;
+        ret.id = charid;
 
-            int partyid;
-            int messengerid;
-            int position;
+        int partyid;
+        int messengerid;
+        int position;
 
-            int mountexp;
-            int mountlevel;
-            int mounttiredness;
+        int mountexp;
+        int mountlevel;
+        int mounttiredness;
 
-            try (PreparedStatement ps = con.prepareStatement("SELECT * FROM characters WHERE id = ?")) {
-                ps.setInt(1, charid);
-                try (ResultSet rs = ps.executeQuery()) {
-                    if (!rs.next()) {
-                        throw new RuntimeException("Loading char failed (not found)");
-                    }
-                    ret.name = rs.getString("name");
-                    ret.level = rs.getInt("level");
-                    ret.fame = rs.getInt("fame");
-                    ret.str = rs.getInt("str");
-                    ret.dex = rs.getInt("dex");
-                    ret.int_ = rs.getInt("int");
-                    ret.luk = rs.getInt("luk");
-                    ret.exp.set(rs.getInt("exp"));
-                    ret.gachaexp.set(rs.getInt("gachaexp"));
-                    ret.hp = rs.getInt("hp");
-                    ret.maxhp = rs.getInt("maxhp");
-                    ret.mp = rs.getInt("mp");
-                    ret.maxmp = rs.getInt("maxmp");
-                    ret.hpMpApUsed = rs.getInt("hpMpUsed");
-                    ret.hasMerchant = rs.getInt("HasMerchant") == 1;
-                    String[] skillPoints = rs.getString("sp").split(",");
-                    for (int i = 0; i < ret.remainingSp.length; i++) {
-                        ret.remainingSp[i] = Integer.parseInt(skillPoints[i]);
-                    }
-                    messengerid = rs.getInt("messengerid");
-                    position = rs.getInt("messengerposition");
-                    partyid = rs.getInt("party");
+        try (PreparedStatement ps = con.prepareStatement("SELECT * FROM characters WHERE id = ?")) {
+            ps.setInt(1, charid);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (!rs.next()) {
+                    throw new RuntimeException("Loading char failed (not found)");
+                }
+                ret.name = rs.getString("name");
+                ret.level = rs.getInt("level");
+                ret.fame = rs.getInt("fame");
+                ret.str = rs.getInt("str");
+                ret.dex = rs.getInt("dex");
+                ret.int_ = rs.getInt("int");
+                ret.luk = rs.getInt("luk");
+                ret.exp.set(rs.getInt("exp"));
+                ret.gachaexp.set(rs.getInt("gachaexp"));
+                ret.hp = rs.getInt("hp");
+                ret.maxhp = rs.getInt("maxhp");
+                ret.mp = rs.getInt("mp");
+                ret.maxmp = rs.getInt("maxmp");
+                ret.hpMpApUsed = rs.getInt("hpMpUsed");
+                ret.hasMerchant = rs.getInt("HasMerchant") == 1;
+                String[] skillPoints = rs.getString("sp").split(",");
+                for (int i = 0; i < ret.remainingSp.length; i++) {
+                    ret.remainingSp[i] = Integer.parseInt(skillPoints[i]);
+                }
+                messengerid = rs.getInt("messengerid");
+                position = rs.getInt("messengerposition");
+                partyid = rs.getInt("party");
 
-                    ret.remainingAp = rs.getInt("ap");
-                    ret.meso.set(rs.getInt("meso"));
-                    ret.merchantmeso = rs.getInt("MerchantMesos");
-                    ret.gmLevel = rs.getInt("gm");
-                    ret.skinColor = MapleSkinColor.getById(rs.getInt("skincolor"));
-                    ret.gender = rs.getInt("gender");
-                    ret.job = MapleJob.getById(rs.getInt("job"));
-                    ret.finishedDojoTutorial = rs.getInt("finishedDojoTutorial") == 1;
-                    ret.vanquisherKills = rs.getInt("vanquisherKills");
-                    ret.omokwins = rs.getInt("omokwins");
-                    ret.omoklosses = rs.getInt("omoklosses");
-                    ret.omokties = rs.getInt("omokties");
-                    ret.matchcardwins = rs.getInt("matchcardwins");
-                    ret.matchcardlosses = rs.getInt("matchcardlosses");
-                    ret.matchcardties = rs.getInt("matchcardties");
-                    ret.hair = rs.getInt("hair");
-                    ret.face = rs.getInt("face");
-                    ret.accountid = rs.getInt("accountid");
-                    ret.mapid = rs.getInt("map");
-                    ret.initialSpawnPoint = rs.getInt("spawnpoint");
-                    ret.world = rs.getByte("world");
-                    ret.rank = rs.getInt("rank");
-                    ret.rankMove = rs.getInt("rankMove");
-                    ret.jobRank = rs.getInt("jobRank");
-                    ret.jobRankMove = rs.getInt("jobRankMove");
-                    mountexp = rs.getInt("mountexp");
-                    mountlevel = rs.getInt("mountlevel");
-                    mounttiredness = rs.getInt("mounttiredness");
-                    ret.guildid = rs.getInt("guildid");
-                    ret.guildrank = rs.getInt("guildrank");
-                    ret.allianceRank = rs.getInt("allianceRank");
-                    ret.familyId = rs.getInt("familyId");
-                    ret.bookCover = rs.getInt("monsterbookcover");
-                    ret.monsterbook = new MonsterBook();
-                    ret.monsterbook.loadCards(charid);
-                    ret.vanquisherStage = rs.getInt("vanquisherStage");
-                    ret.dojoPoints = rs.getInt("dojoPoints");
-                    ret.dojoStage = rs.getInt("lastDojoStage");
-                    ret.dataString = rs.getString("dataString");
-                    ret.fishingPoints = rs.getInt("fishingpoints");
-                    ret.daily = rs.getTimestamp("daily");
-                    ret.rebirths = rs.getInt("reborns");
-                    ret.rebirthPoints = rs.getInt("rebirthpoints");
-                    ret.eventPoints = rs.getInt("eventpoints");
-                    ret.jumpQuestPoints = rs.getInt("jumpquestpoints");
-                    int oOrdinal = rs.getInt("occupation");
-                    if (oOrdinal > -1) {
-                        ret.occupation = new Occupation(Occupation.Type.fromValue(oOrdinal));
-                    }
-                    if (ret.guildid > 0) {
-                        ret.mgc = new MapleGuildCharacter(ret);
-                    }
-                    int buddyCapacity = rs.getInt("buddyCapacity");
-                    ret.buddylist = new BuddyList(buddyCapacity);
-                    ret.getInventory(MapleInventoryType.EQUIP).setSlotLimit(rs.getByte("equipslots"));
-                    ret.getInventory(MapleInventoryType.USE).setSlotLimit(rs.getByte("useslots"));
-                    ret.getInventory(MapleInventoryType.SETUP).setSlotLimit(rs.getByte("setupslots"));
-                    ret.getInventory(MapleInventoryType.ETC).setSlotLimit(rs.getByte("etcslots"));
-                    for (Pair<Item, MapleInventoryType> item : ItemFactory.INVENTORY.loadItems(con, ret.id, !channelserver)) {
-                        ret.getInventory(item.getRight()).addFromDB(item.getLeft());
-                        Item itemz = item.getLeft();
-                        if (itemz.getPetId() > -1) {
-                            MaplePet pet = itemz.getPet();
-                            if (pet != null && pet.isSummoned()) {
-                                ret.addPet(pet);
-                            }
-                            continue;
+                ret.remainingAp = rs.getInt("ap");
+                ret.meso.set(rs.getInt("meso"));
+                ret.merchantmeso = rs.getInt("MerchantMesos");
+                ret.gmLevel = rs.getInt("gm");
+                ret.skinColor = MapleSkinColor.getById(rs.getInt("skincolor"));
+                ret.gender = rs.getInt("gender");
+                ret.job = MapleJob.getById(rs.getInt("job"));
+                ret.finishedDojoTutorial = rs.getInt("finishedDojoTutorial") == 1;
+                ret.vanquisherKills = rs.getInt("vanquisherKills");
+                ret.omokwins = rs.getInt("omokwins");
+                ret.omoklosses = rs.getInt("omoklosses");
+                ret.omokties = rs.getInt("omokties");
+                ret.matchcardwins = rs.getInt("matchcardwins");
+                ret.matchcardlosses = rs.getInt("matchcardlosses");
+                ret.matchcardties = rs.getInt("matchcardties");
+                ret.hair = rs.getInt("hair");
+                ret.face = rs.getInt("face");
+                ret.accountid = rs.getInt("accountid");
+                ret.mapid = rs.getInt("map");
+                ret.initialSpawnPoint = rs.getInt("spawnpoint");
+                ret.world = rs.getByte("world");
+                ret.rank = rs.getInt("rank");
+                ret.rankMove = rs.getInt("rankMove");
+                ret.jobRank = rs.getInt("jobRank");
+                ret.jobRankMove = rs.getInt("jobRankMove");
+                mountexp = rs.getInt("mountexp");
+                mountlevel = rs.getInt("mountlevel");
+                mounttiredness = rs.getInt("mounttiredness");
+                ret.guildid = rs.getInt("guildid");
+                ret.guildrank = rs.getInt("guildrank");
+                ret.allianceRank = rs.getInt("allianceRank");
+                ret.familyId = rs.getInt("familyId");
+                ret.bookCover = rs.getInt("monsterbookcover");
+                ret.monsterbook = new MonsterBook();
+                ret.monsterbook.loadCards(charid);
+                ret.vanquisherStage = rs.getInt("vanquisherStage");
+                ret.dojoPoints = rs.getInt("dojoPoints");
+                ret.dojoStage = rs.getInt("lastDojoStage");
+                ret.dataString = rs.getString("dataString");
+                ret.fishingPoints = rs.getInt("fishingpoints");
+                ret.daily = rs.getTimestamp("daily");
+                ret.rebirths = rs.getInt("reborns");
+                ret.rebirthPoints = rs.getInt("rebirthpoints");
+                ret.eventPoints = rs.getInt("eventpoints");
+                ret.jumpQuestPoints = rs.getInt("jumpquestpoints");
+                int oOrdinal = rs.getInt("occupation");
+                if (oOrdinal > -1) {
+                    ret.occupation = new Occupation(Occupation.Type.fromValue(oOrdinal));
+                }
+                if (ret.guildid > 0) {
+                    ret.mgc = new MapleGuildCharacter(ret);
+                }
+                int buddyCapacity = rs.getInt("buddyCapacity");
+                ret.buddylist = new BuddyList(buddyCapacity);
+                ret.getInventory(MapleInventoryType.EQUIP).setSlotLimit(rs.getByte("equipslots"));
+                ret.getInventory(MapleInventoryType.USE).setSlotLimit(rs.getByte("useslots"));
+                ret.getInventory(MapleInventoryType.SETUP).setSlotLimit(rs.getByte("setupslots"));
+                ret.getInventory(MapleInventoryType.ETC).setSlotLimit(rs.getByte("etcslots"));
+                for (Pair<Item, MapleInventoryType> item : ItemFactory.INVENTORY.loadItems(con, ret.id, !channelserver)) {
+                    ret.getInventory(item.getRight()).addFromDB(item.getLeft());
+                    Item itemz = item.getLeft();
+                    if (itemz.getPetId() > -1) {
+                        MaplePet pet = itemz.getPet();
+                        if (pet != null && pet.isSummoned()) {
+                            ret.addPet(pet);
                         }
-                        if (item.getRight() == MapleInventoryType.EQUIP || item.getRight() == MapleInventoryType.EQUIPPED) {
-                            Equip equip = (Equip) item.getLeft();
-                            if (equip.getRingId() > -1) {
-                                MapleRing ring = MapleRing.loadFromDb(equip.getRingId());
-                                if (ring != null) {
-                                    if (item.getRight() == MapleInventoryType.EQUIPPED) {
-                                        ring.equip();
-                                    }
-                                    if (ring.getItemId() >= 1112803 && ring.getItemId() <= 1112809) {
-                                        ret.setMarriageRing(ring);
-                                    } else if (ring.getItemId() > 1112015) {
-                                        ret.addFriendshipRing(ring);
-                                    } else {
-                                        ret.addCrushRing(ring);
-                                    }
-                                } else {
-                                    LOGGER.warn("'{}' loaded invalid ring item({}) ringID({})", ret.name, equip.getItemId(), equip.getRingId());
+                        continue;
+                    }
+                    if (item.getRight() == MapleInventoryType.EQUIP || item.getRight() == MapleInventoryType.EQUIPPED) {
+                        Equip equip = (Equip) item.getLeft();
+                        if (equip.getRingId() > -1) {
+                            MapleRing ring = MapleRing.loadFromDb(equip.getRingId());
+                            if (ring != null) {
+                                if (item.getRight() == MapleInventoryType.EQUIPPED) {
+                                    ring.equip();
                                 }
+                                if (ring.getItemId() >= 1112803 && ring.getItemId() <= 1112809) {
+                                    ret.setMarriageRing(ring);
+                                } else if (ring.getItemId() > 1112015) {
+                                    ret.addFriendshipRing(ring);
+                                } else {
+                                    ret.addCrushRing(ring);
+                                }
+                            } else {
+                                LOGGER.warn("'{}' loaded invalid ring item({}) ringID({})", ret.name, equip.getItemId(), equip.getRingId());
                             }
                         }
                     }
                 }
             }
-            if (channelserver) {
-                ret.map = client.getChannelServer().getMap(ret.mapid);
-                MaplePortal portal = ret.map.getPortal(ret.initialSpawnPoint);
-                if (portal == null) {
-                    portal = ret.map.getPortal(0);
-                    ret.initialSpawnPoint = 0;
-                }
-                ret.setPosition(portal.getPosition());
-                MapleParty party = Server.getInstance().getWorld(ret.world).getParty(partyid);
-                if (party != null) {
-                    ret.mpc = new MaplePartyCharacter(ret);
-                    party.updateMember(ret.mpc);
-                    ret.party = party;
-                }
-                if (messengerid > 0 && position < 4 && position > -1) {
-                    MapleMessenger messenger = Server.getInstance().getWorld(ret.world).getMessenger(messengerid);
-                    if (messenger != null) {
-                        ret.messenger = messenger;
-                        ret.messengerposition = position;
-                    }
-                }
-                ret.loggedIn = true;
+        }
+        if (channelserver) {
+            ret.map = client.getChannelServer().getMap(ret.mapid);
+            MaplePortal portal = ret.map.getPortal(ret.initialSpawnPoint);
+            if (portal == null) {
+                portal = ret.map.getPortal(0);
+                ret.initialSpawnPoint = 0;
             }
-            try (PreparedStatement ps = con.prepareStatement("SELECT mapid,vip FROM trocklocations WHERE characterid = ? LIMIT 15")) {
-                ps.setInt(1, charid);
-                try (ResultSet rs = ps.executeQuery()) {
-                    byte v = 0;
-                    byte r = 0;
-                    while (rs.next()) {
-                        if (rs.getInt("vip") == 1) {
-                            ret.viptrockmaps.add(rs.getInt("mapid"));
-                            v++;
-                        } else {
-                            ret.trockmaps.add(rs.getInt("mapid"));
-                            r++;
-                        }
-                    }
-                    while (v < 10) {
-                        ret.viptrockmaps.add(999999999);
+            ret.setPosition(portal.getPosition());
+            MapleParty party = Server.getInstance().getWorld(ret.world).getParty(partyid);
+            if (party != null) {
+                ret.mpc = new MaplePartyCharacter(ret);
+                party.updateMember(ret.mpc);
+                ret.party = party;
+            }
+            if (messengerid > 0 && position < 4 && position > -1) {
+                MapleMessenger messenger = Server.getInstance().getWorld(ret.world).getMessenger(messengerid);
+                if (messenger != null) {
+                    ret.messenger = messenger;
+                    ret.messengerposition = position;
+                }
+            }
+            ret.loggedIn = true;
+        }
+        try (PreparedStatement ps = con.prepareStatement("SELECT mapid,vip FROM trocklocations WHERE characterid = ? LIMIT 15")) {
+            ps.setInt(1, charid);
+            try (ResultSet rs = ps.executeQuery()) {
+                byte v = 0;
+                byte r = 0;
+                while (rs.next()) {
+                    if (rs.getInt("vip") == 1) {
+                        ret.viptrockmaps.add(rs.getInt("mapid"));
                         v++;
-                    }
-                    while (r < 5) {
-                        ret.trockmaps.add(999999999);
+                    } else {
+                        ret.trockmaps.add(rs.getInt("mapid"));
                         r++;
                     }
                 }
-            }
-            try (PreparedStatement ps = con.prepareStatement("SELECT id FROM marriages WHERE groom = ? OR bride = ?")) {
-                ps.setInt(1, ret.id);
-                ps.setInt(2, ret.id);
-                try (ResultSet rs = ps.executeQuery()) {
-                    if (rs.next()) {
-                        ret.relationship.load(rs.getInt("id"));
-                        if (ret.getMarriageRing() == null) {
-                            ret.relationship.setStatus(Relationship.Status.Single);
-                        }
-                    }
+                while (v < 10) {
+                    ret.viptrockmaps.add(999999999);
+                    v++;
+                }
+                while (r < 5) {
+                    ret.trockmaps.add(999999999);
+                    r++;
                 }
             }
-            try (PreparedStatement ps = con.prepareStatement("SELECT name FROM accounts WHERE id = ?", Statement.RETURN_GENERATED_KEYS)) {
-                ps.setInt(1, ret.accountid);
-                try (ResultSet rs = ps.executeQuery()) {
-                    if (rs.next()) {
-                        ret.getClient().setAccountName(rs.getString("name"));
-                    }
-                }
-            }
-            try (PreparedStatement ps = con.prepareStatement("SELECT `area`,`info` FROM area_info WHERE charid = ?")) {
-                ps.setInt(1, ret.id);
-                try (ResultSet rs = ps.executeQuery()) {
-                    while (rs.next()) {
-                        ret.area_info.put(rs.getShort("area"), rs.getString("info"));
-                    }
-                }
-            }
-            try (PreparedStatement ps = con.prepareStatement("SELECT `name`,`info` FROM eventstats WHERE characterid = ?")) {
-                ps.setInt(1, ret.id);
-                try (ResultSet rs = ps.executeQuery()) {
-                    while (rs.next()) {
-                        String name = rs.getString("name");
-                        if (rs.getString("name").equals("rescueGaga")) {
-                            ret.events.put(name, new RescueGaga(rs.getInt("info")));
-                        }
-                        // ret.events = new MapleEvents(new
-                        // RescueGaga(rs.getInt("rescuegaga")), new
-                        // ArtifactHunt(rs.getInt("artifacthunt")));
-                    }
-                }
-            }
-            ret.cashshop = new CashShop(ret.accountid, ret.id, ret.getJobType());
-            try (PreparedStatement ps = con.prepareStatement("SELECT name, level FROM characters WHERE accountid = ? AND id != ? ORDER BY level DESC LIMIT 1")) {
-                ps.setInt(1, ret.accountid);
-                ps.setInt(2, charid);
-                try (ResultSet rs = ps.executeQuery()) {
-                    if (rs.next()) {
-                        ret.linkedName = rs.getString("name");
-                        ret.linkedLevel = rs.getInt("level");
-                    }
-                }
-            }
-            if (channelserver) {
-                try (PreparedStatement ps = con.prepareStatement("SELECT * FROM achievements WHERE player_id = ?")) {
-                    ps.setInt(1, ret.getId());
-                    try (ResultSet rs = ps.executeQuery()) {
-                        while (rs.next()) {
-                            Achievement achievement = ret.getAchievement(rs.getString("achievement_name"));
-                            achievement.setCompleted(rs.getInt("completed") == 1);
-                            achievement.setMonstersKilled(rs.getInt("killed_monster"));
-                            achievement.setCasino1Completed(rs.getInt("casino_one") == 1);
-                            achievement.setCasino1Completed(rs.getInt("casino_two") == 1);
-                        }
-                    }
-                }
-                try (PreparedStatement ps = con.prepareStatement("SELECT * FROM queststatus WHERE characterid = ?")) {
-                    ps.setInt(1, charid);
-                    try (ResultSet rs = ps.executeQuery()) {
-                        try (PreparedStatement pse = con.prepareStatement("SELECT * FROM questprogress WHERE queststatusid = ?")) {
-                            try (PreparedStatement psf = con.prepareStatement("SELECT mapid FROM medalmaps WHERE queststatusid = ?")) {
-                                while (rs.next()) {
-                                    MapleQuest q = MapleQuest.getInstance(rs.getShort("quest"));
-                                    MapleQuestStatus status = new MapleQuestStatus(q, MapleQuestStatus.Status.getById(rs.getInt("status")));
-                                    long cTime = rs.getLong("time");
-                                    if (cTime > -1) {
-                                        status.setCompletionTime(cTime * 1000);
-                                    }
-                                    status.setForfeited(rs.getInt("forfeited"));
-                                    ret.quests.put(q.getId(), status);
-                                    pse.setInt(1, rs.getInt("queststatusid"));
-                                    try (ResultSet rsProgress = pse.executeQuery()) {
-                                        while (rsProgress.next()) {
-                                            status.setProgress(rsProgress.getInt("progressid"), rsProgress.getString("progress"));
-                                        }
-                                    }
-                                    psf.setInt(1, rs.getInt("queststatusid"));
-                                    try (ResultSet medalmaps = psf.executeQuery()) {
-                                        while (medalmaps.next()) {
-                                            status.addMedalMap(medalmaps.getInt("mapid"));
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-                try (PreparedStatement ps = con.prepareStatement("SELECT * FROM cquest WHERE characterid = ?")) {
-                    ps.setInt(1, ret.id);
-                    try (ResultSet rs = ps.executeQuery()) {
-                        while (rs.next()) {
-                            CQuestData cQuest = CQuestBuilder.beginQuest(ret, rs.getInt("questid"));
-                            if (cQuest != null) {
-                                if (rs.getInt("completed") == 0) {
-                                    try (PreparedStatement stmt = con.prepareStatement("SELECT * FROM cquestdata WHERE qtableid = ?")) {
-                                        stmt.setInt(1, rs.getInt("id"));
-                                        try (ResultSet res = stmt.executeQuery()) {
-                                            while (res.next()) {
-                                                cQuest.getToKill().incrementRequirement(res.getInt("monsterid"), res.getInt("kills"));
-                                            }
-                                        }
-                                    }
-                                } else {
-                                    cQuest.setCompleted(true);
-                                    cQuest.setCompletion(rs.getLong("completion"));
-                                }
-                            }
-                        }
-                    }
-                }
-                try (PreparedStatement ps = con.prepareStatement("SELECT * FROM skills WHERE characterid = ?")) {
-                    ps.setInt(1, charid);
-                    try (ResultSet rs = ps.executeQuery()) {
-                        while (rs.next()) {
-                            int sid = rs.getInt("skillid");
-                            Skill s = SkillFactory.getSkill(sid);
-                            if (s == null) {
-                                LOGGER.warn("Invalid skill {} for player {}", sid, ret.name);
-                                continue;
-                            }
-                            SkillEntry sentry = new SkillEntry(rs.getByte("skilllevel"), rs.getInt("masterlevel"), rs.getLong("expiration"));
-                            ret.skills.put(s, sentry);
-                        }
-                    }
-                }
-                try (PreparedStatement ps = con.prepareStatement("SELECT SkillID,StartTime,length FROM cooldowns WHERE charid = ?")) {
-                    ps.setInt(1, ret.getId());
-                    try (ResultSet rs = ps.executeQuery()) {
-                        while (rs.next()) {
-                            final int skillid = rs.getInt("SkillID");
-                            final long length = rs.getLong("length"), startTime = rs.getLong("StartTime");
-                            if (skillid != 5221999 && (length + startTime < System.currentTimeMillis())) {
-                                continue;
-                            }
-                            ret.giveCoolDowns(skillid, startTime, length);
-                        }
-                    }
-                }
-                try (PreparedStatement ps = con.prepareStatement("DELETE FROM cooldowns WHERE charid = ?")) {
-                    ps.setInt(1, ret.getId());
-                    ps.executeUpdate();
-                }
-                try (PreparedStatement ps = con.prepareStatement("SELECT * FROM skillmacros WHERE characterid = ?")) {
-                    ps.setInt(1, charid);
-                    try (ResultSet rs = ps.executeQuery()) {
-                        while (rs.next()) {
-                            int index = rs.getInt("position");
-                            SkillMacro macro = new SkillMacro(
-                                    rs.getInt("skill1"),
-                                    rs.getInt("skill2"),
-                                    rs.getInt("skill3"),
-                                    rs.getString("name"),
-                                    rs.getInt("shout"), index);
-                            ret.skillMacros[index] = macro;
-                        }
-                    }
-                }
-                try (PreparedStatement ps = con.prepareStatement("SELECT `key`,`type`,`action` FROM keymap WHERE characterid = ?")) {
-                    ps.setInt(1, charid);
-                    try (ResultSet rs = ps.executeQuery()) {
-                        while (rs.next()) {
-                            int key = rs.getInt("key");
-                            int type = rs.getInt("type");
-                            int action = rs.getInt("action");
-                            ret.keymap.put(key, new MapleKeyBinding(type, action));
-                        }
-                    }
-                }
-                try (PreparedStatement ps = con.prepareStatement("SELECT `locationtype`,`map`,`portal` FROM savedlocations WHERE characterid = ?")) {
-                    ps.setInt(1, charid);
-                    try (ResultSet rs = ps.executeQuery()) {
-                        while (rs.next()) {
-                            ret.savedLocations[SavedLocationType.valueOf(rs.getString("locationtype")).ordinal()] = new SavedLocation(rs.getInt("map"), rs.getInt("portal"));
-                        }
-                    }
-                }
-                try (PreparedStatement ps = con.prepareStatement("SELECT `characterid_to`,`when` FROM famelog WHERE characterid = ? AND DATEDIFF(NOW(),`when`) < 30")) {
-                    ps.setInt(1, charid);
-                    try (ResultSet rs = ps.executeQuery()) {
-                        ret.lastfametime = 0;
-                        while (rs.next()) {
-                            ret.lastfametime = Math.max(ret.lastfametime, rs.getTimestamp("when").getTime());
-                            ret.lastmonthfameids.add(rs.getInt("characterid_to"));
-                        }
-                    }
-                }
-                ret.buddylist.loadFromDb(charid);
-                ret.storage = MapleStorage.loadOrCreateFromDB(ret.accountid, ret.world);
-                ret.recalcLocalStats();
-                // ret.resetBattleshipHp();
-                ret.silentEnforceMaxHpMp();
-            }
-            int mountid = ret.getJobType() * 10000000 + 1004;
-            if (ret.getInventory(MapleInventoryType.EQUIPPED).getItem((short) -18) != null) {
-                ret.maplemount = new MapleMount(ret, ret.getInventory(MapleInventoryType.EQUIPPED).getItem((short) -18).getItemId(), mountid);
-            } else {
-                ret.maplemount = new MapleMount(ret, 0, mountid);
-            }
-            ret.maplemount.setExp(mountexp);
-            ret.maplemount.setLevel(mountlevel);
-            ret.maplemount.setTiredness(mounttiredness);
-            ret.maplemount.setActive(false);
-            return ret;
-        } catch (SQLException | RuntimeException e) {
-            e.printStackTrace();
         }
-        return null;
+        try (PreparedStatement ps = con.prepareStatement("SELECT id FROM marriages WHERE groom = ? OR bride = ?")) {
+            ps.setInt(1, ret.id);
+            ps.setInt(2, ret.id);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    ret.relationship.load(con, rs.getInt("id"));
+                    if (ret.getMarriageRing() == null) {
+                        ret.relationship.setStatus(Relationship.Status.Single);
+                    }
+                }
+            }
+        }
+        try (PreparedStatement ps = con.prepareStatement("SELECT name FROM accounts WHERE id = ?", Statement.RETURN_GENERATED_KEYS)) {
+            ps.setInt(1, ret.accountid);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    ret.getClient().setAccountName(rs.getString("name"));
+                }
+            }
+        }
+        try (PreparedStatement ps = con.prepareStatement("SELECT `area`,`info` FROM area_info WHERE charid = ?")) {
+            ps.setInt(1, ret.id);
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    ret.area_info.put(rs.getShort("area"), rs.getString("info"));
+                }
+            }
+        }
+        try (PreparedStatement ps = con.prepareStatement("SELECT `name`,`info` FROM eventstats WHERE characterid = ?")) {
+            ps.setInt(1, ret.id);
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    String name = rs.getString("name");
+                    if (rs.getString("name").equals("rescueGaga")) {
+                        ret.events.put(name, new RescueGaga(rs.getInt("info")));
+                    }
+                    // ret.events = new MapleEvents(new
+                    // RescueGaga(rs.getInt("rescuegaga")), new
+                    // ArtifactHunt(rs.getInt("artifacthunt")));
+                }
+            }
+        }
+        ret.cashshop = new CashShop(ret.accountid, ret.id, ret.getJobType());
+        try (PreparedStatement ps = con.prepareStatement("SELECT name, level FROM characters WHERE accountid = ? AND id != ? ORDER BY level DESC LIMIT 1")) {
+            ps.setInt(1, ret.accountid);
+            ps.setInt(2, charid);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    ret.linkedName = rs.getString("name");
+                    ret.linkedLevel = rs.getInt("level");
+                }
+            }
+        }
+        if (channelserver) {
+            try (PreparedStatement ps = con.prepareStatement("SELECT * FROM achievements WHERE player_id = ?")) {
+                ps.setInt(1, ret.getId());
+                try (ResultSet rs = ps.executeQuery()) {
+                    while (rs.next()) {
+                        Achievement achievement = ret.getAchievement(rs.getString("achievement_name"));
+                        achievement.setCompleted(rs.getInt("completed") == 1);
+                        achievement.setMonstersKilled(rs.getInt("killed_monster"));
+                        achievement.setCasino1Completed(rs.getInt("casino_one") == 1);
+                        achievement.setCasino1Completed(rs.getInt("casino_two") == 1);
+                    }
+                }
+            }
+            try (PreparedStatement ps = con.prepareStatement("SELECT * FROM queststatus WHERE characterid = ?")) {
+                ps.setInt(1, charid);
+                try (ResultSet rs = ps.executeQuery()) {
+                    try (PreparedStatement pse = con.prepareStatement("SELECT * FROM questprogress WHERE queststatusid = ?")) {
+                        try (PreparedStatement psf = con.prepareStatement("SELECT mapid FROM medalmaps WHERE queststatusid = ?")) {
+                            while (rs.next()) {
+                                MapleQuest q = MapleQuest.getInstance(rs.getShort("quest"));
+                                MapleQuestStatus status = new MapleQuestStatus(q, MapleQuestStatus.Status.getById(rs.getInt("status")));
+                                long cTime = rs.getLong("time");
+                                if (cTime > -1) {
+                                    status.setCompletionTime(cTime * 1000);
+                                }
+                                status.setForfeited(rs.getInt("forfeited"));
+                                ret.quests.put(q.getId(), status);
+                                pse.setInt(1, rs.getInt("queststatusid"));
+                                try (ResultSet rsProgress = pse.executeQuery()) {
+                                    while (rsProgress.next()) {
+                                        status.setProgress(rsProgress.getInt("progressid"), rsProgress.getString("progress"));
+                                    }
+                                }
+                                psf.setInt(1, rs.getInt("queststatusid"));
+                                try (ResultSet medalmaps = psf.executeQuery()) {
+                                    while (medalmaps.next()) {
+                                        status.addMedalMap(medalmaps.getInt("mapid"));
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            try (PreparedStatement ps = con.prepareStatement("SELECT * FROM cquest WHERE characterid = ?")) {
+                ps.setInt(1, ret.id);
+                try (ResultSet rs = ps.executeQuery()) {
+                    while (rs.next()) {
+                        CQuestData cQuest = CQuestBuilder.beginQuest(ret, rs.getInt("questid"));
+                        if (cQuest != null) {
+                            if (rs.getInt("completed") == 0) {
+                                try (PreparedStatement stmt = con.prepareStatement("SELECT * FROM cquestdata WHERE qtableid = ?")) {
+                                    stmt.setInt(1, rs.getInt("id"));
+                                    try (ResultSet res = stmt.executeQuery()) {
+                                        while (res.next()) {
+                                            cQuest.getToKill().incrementRequirement(res.getInt("monsterid"), res.getInt("kills"));
+                                        }
+                                    }
+                                }
+                            } else {
+                                cQuest.setCompleted(true);
+                                cQuest.setCompletion(rs.getLong("completion"));
+                            }
+                        }
+                    }
+                }
+            }
+            try (PreparedStatement ps = con.prepareStatement("SELECT * FROM skills WHERE characterid = ?")) {
+                ps.setInt(1, charid);
+                try (ResultSet rs = ps.executeQuery()) {
+                    while (rs.next()) {
+                        int sid = rs.getInt("skillid");
+                        Skill s = SkillFactory.getSkill(sid);
+                        if (s == null) {
+                            LOGGER.warn("Invalid skill {} for player {}", sid, ret.name);
+                            continue;
+                        }
+                        SkillEntry sentry = new SkillEntry(rs.getByte("skilllevel"), rs.getInt("masterlevel"), rs.getLong("expiration"));
+                        ret.skills.put(s, sentry);
+                    }
+                }
+            }
+            try (PreparedStatement ps = con.prepareStatement("SELECT SkillID,StartTime,length FROM cooldowns WHERE charid = ?")) {
+                ps.setInt(1, ret.getId());
+                try (ResultSet rs = ps.executeQuery()) {
+                    while (rs.next()) {
+                        final int skillid = rs.getInt("SkillID");
+                        final long length = rs.getLong("length"), startTime = rs.getLong("StartTime");
+                        if (skillid != 5221999 && (length + startTime < System.currentTimeMillis())) {
+                            continue;
+                        }
+                        ret.giveCoolDowns(skillid, startTime, length);
+                    }
+                }
+            }
+            try (PreparedStatement ps = con.prepareStatement("DELETE FROM cooldowns WHERE charid = ?")) {
+                ps.setInt(1, ret.getId());
+                ps.executeUpdate();
+            }
+            try (PreparedStatement ps = con.prepareStatement("SELECT * FROM skillmacros WHERE characterid = ?")) {
+                ps.setInt(1, charid);
+                try (ResultSet rs = ps.executeQuery()) {
+                    while (rs.next()) {
+                        int index = rs.getInt("position");
+                        SkillMacro macro = new SkillMacro(
+                                rs.getInt("skill1"),
+                                rs.getInt("skill2"),
+                                rs.getInt("skill3"),
+                                rs.getString("name"),
+                                rs.getInt("shout"), index);
+                        ret.skillMacros[index] = macro;
+                    }
+                }
+            }
+            try (PreparedStatement ps = con.prepareStatement("SELECT `key`,`type`,`action` FROM keymap WHERE characterid = ?")) {
+                ps.setInt(1, charid);
+                try (ResultSet rs = ps.executeQuery()) {
+                    while (rs.next()) {
+                        int key = rs.getInt("key");
+                        int type = rs.getInt("type");
+                        int action = rs.getInt("action");
+                        ret.keymap.put(key, new MapleKeyBinding(type, action));
+                    }
+                }
+            }
+            try (PreparedStatement ps = con.prepareStatement("SELECT `locationtype`,`map`,`portal` FROM savedlocations WHERE characterid = ?")) {
+                ps.setInt(1, charid);
+                try (ResultSet rs = ps.executeQuery()) {
+                    while (rs.next()) {
+                        ret.savedLocations[SavedLocationType.valueOf(rs.getString("locationtype")).ordinal()] = new SavedLocation(rs.getInt("map"), rs.getInt("portal"));
+                    }
+                }
+            }
+            try (PreparedStatement ps = con.prepareStatement("SELECT `characterid_to`,`when` FROM famelog WHERE characterid = ? AND DATEDIFF(NOW(),`when`) < 30")) {
+                ps.setInt(1, charid);
+                try (ResultSet rs = ps.executeQuery()) {
+                    ret.lastfametime = 0;
+                    while (rs.next()) {
+                        ret.lastfametime = Math.max(ret.lastfametime, rs.getTimestamp("when").getTime());
+                        ret.lastmonthfameids.add(rs.getInt("characterid_to"));
+                    }
+                }
+            }
+            ret.buddylist.loadFromDb(charid);
+            ret.storage = MapleStorage.loadOrCreateFromDB(ret.accountid, ret.world);
+            ret.recalcLocalStats();
+            // ret.resetBattleshipHp();
+            ret.silentEnforceMaxHpMp();
+        }
+        int mountid = ret.getJobType() * 10000000 + 1004;
+        if (ret.getInventory(MapleInventoryType.EQUIPPED).getItem((short) -18) != null) {
+            ret.maplemount = new MapleMount(ret, ret.getInventory(MapleInventoryType.EQUIPPED).getItem((short) -18).getItemId(), mountid);
+        } else {
+            ret.maplemount = new MapleMount(ret, 0, mountid);
+        }
+        ret.maplemount.setExp(mountexp);
+        ret.maplemount.setLevel(mountlevel);
+        ret.maplemount.setTiredness(mounttiredness);
+        ret.maplemount.setActive(false);
+        return ret;
     }
 
     public static String makeMapleReadable(String in) {
@@ -891,7 +885,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
     }
 
     public static void changeRow(String player, String row, String type, Object newval) {
-        try (Connection c = Database.getConnection(); PreparedStatement statement = c.prepareStatement("UPDATE characters SET ? = ? WHERE name = ?")) {
+        try (Connection c = Server.getConnection(); PreparedStatement statement = c.prepareStatement("UPDATE characters SET ? = ? WHERE name = ?")) {
             statement.setString(1, row);
             switch (type.toLowerCase()) {
                 case "int":
@@ -920,7 +914,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
 
     public static boolean wipe(String playerName) {
         int playerId = MapleCharacter.getIdByName(playerName);
-        try (Connection con = Database.getConnection()) {
+        try (Connection con = Server.getConnection()) {
             Database.executeSingle(con, "delete from inventoryitems where characterid = ?", playerId);
             return true;
         } catch (SQLException e) {
@@ -1100,7 +1094,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
 
     public void ban(String reason) {
         this.isbanned = true;
-        try (Connection con = Database.getConnection();
+        try (Connection con = Server.getConnection();
              PreparedStatement ps = con.prepareStatement("UPDATE accounts SET banned = 1, banreason = ? WHERE id = ?")) {
             ps.setString(1, reason);
             ps.setInt(2, accountid);
@@ -1399,102 +1393,115 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
     }
 
     public void setMasteries(int jobId) {
-        int[] skills;
+        List<Pair<Integer, Integer>> skills;
         switch (jobId) {
             default:
                 return;
             case 112:
-                skills = new int[3];
-                skills[0] = Hero.ACHILLES;
-                skills[1] = Hero.MONSTER_MAGNET;
-                skills[2] = Hero.BRANDISH;
+                skills = Arrays.asList(
+                        new Pair<>(Hero.ACHILLES, 10),
+                        new Pair<>(Hero.MONSTER_MAGNET, 10),
+                        new Pair<>(Hero.BRANDISH, 10));
                 break;
             case 132:
-                skills = new int[3];
-                skills[0] = DarkKnight.BEHOLDER;
-                skills[1] = DarkKnight.ACHILLES;
-                skills[2] = DarkKnight.MONSTER_MAGNET;
+                skills = Arrays.asList(
+                        new Pair<>(DarkKnight.BEHOLDER, 10),
+                        new Pair<>(DarkKnight.ACHILLES, 10),
+                        new Pair<>(DarkKnight.MONSTER_MAGNET, 10));
                 break;
             case 212:
-                skills = new int[3];
-                skills[0] = FPArchMage.BIG_BANG;
-                skills[1] = FPArchMage.MANA_REFLECTION;
-                skills[2] = FPArchMage.PARALYZE;
+                skills = Arrays.asList(
+                        new Pair<>(FPArchMage.BIG_BANG, 10),
+                        new Pair<>(FPArchMage.MANA_REFLECTION, 10),
+                        new Pair<>(FPArchMage.PARALYZE, 10));
                 break;
             case 222:
-                skills = new int[3];
-                skills[0] = ILArchMage.BIG_BANG;
-                skills[1] = ILArchMage.MANA_REFLECTION;
-                skills[2] = ILArchMage.CHAIN_LIGHTNING;
+                skills = Arrays.asList(
+                        new Pair<>(ILArchMage.BIG_BANG, 10),
+                        new Pair<>(ILArchMage.MANA_REFLECTION, 10),
+                        new Pair<>(ILArchMage.CHAIN_LIGHTNING, 10));
                 break;
             case 232:
-                skills = new int[3];
-                skills[0] = Bishop.BIG_BANG;
-                skills[1] = Bishop.MANA_REFLECTION;
-                skills[2] = Bishop.HOLY_SHIELD;
+                skills = Arrays.asList(
+                        new Pair<>(Bishop.BIG_BANG, 10),
+                        new Pair<>(Bishop.MANA_REFLECTION, 10),
+                        new Pair<>(Bishop.HOLY_SHIELD, 10));
                 break;
             case 312:
-                skills = new int[3];
-                skills[0] = Bowmaster.BOW_EXPERT;
-                skills[1] = Bowmaster.HAMSTRING;
-                skills[2] = Bowmaster.SHARP_EYES;
+                skills = Arrays.asList(
+                        new Pair<>(Bowmaster.BOW_EXPERT, 10),
+                        new Pair<>(Bowmaster.HAMSTRING, 10),
+                        new Pair<>(Bowmaster.SHARP_EYES, 10));
                 break;
             case 322:
-                skills = new int[3];
-                skills[0] = Marksman.MARKSMAN_BOOST;
-                skills[1] = Marksman.BLIND;
-                skills[2] = Marksman.SHARP_EYES;
+                skills = Arrays.asList(
+                        new Pair<>(Marksman.MARKSMAN_BOOST, 10),
+                        new Pair<>(Marksman.BLIND, 10),
+                        new Pair<>(Marksman.SHARP_EYES, 10));
                 break;
             case 412:
-                skills = new int[3];
-                skills[0] = NightLord.SHADOW_STARS;
-                skills[1] = NightLord.SHADOW_SHIFTER;
-                skills[2] = NightLord.VENOMOUS_STAR;
+                skills = Arrays.asList(
+                        new Pair<>(NightLord.SHADOW_STARS, 10),
+                        new Pair<>(NightLord.SHADOW_SHIFTER, 10),
+                        new Pair<>(NightLord.VENOMOUS_STAR, 10));
                 break;
             case 422:
-                skills = new int[3];
-                skills[0] = Shadower.SHADOW_SHIFTER;
-                skills[1] = Shadower.VENOMOUS_STAB;
-                skills[2] = Shadower.BOOMERANG_STEP;
+                skills = Arrays.asList(
+                        new Pair<>(Shadower.SHADOW_SHIFTER, 10),
+                        new Pair<>(Shadower.VENOMOUS_STAB, 10),
+                        new Pair<>(Shadower.BOOMERANG_STEP, 10));
                 break;
             case 512:
-                skills = new int[4];
-                skills[0] = Buccaneer.BARRAGE;
-                skills[1] = Buccaneer.ENERGY_ORB;
-                skills[2] = Buccaneer.SPEED_INFUSION;
-                skills[3] = Buccaneer.DRAGON_STRIKE;
+                skills = Arrays.asList(
+                        new Pair<>(Buccaneer.BARRAGE, 10),
+                        new Pair<>(Buccaneer.ENERGY_ORB, 10),
+                        new Pair<>(Buccaneer.SPEED_INFUSION, 10),
+                        new Pair<>(Buccaneer.DRAGON_STRIKE, 10));
                 break;
             case 522:
-                skills = new int[4];
-                skills[0] = Corsair.ELEMENTAL_BOOST;
-                skills[1] = Corsair.BULLSEYE;
-                skills[2] = Corsair.WRATH_OF_THE_OCTOPI;
-                skills[3] = Corsair.RAPID_FIRE;
+                skills = Arrays.asList(
+                        new Pair<>(Corsair.ELEMENTAL_BOOST, 10),
+                        new Pair<>(Corsair.BULLSEYE, 10),
+                        new Pair<>(Corsair.WRATH_OF_THE_OCTOPI, 10),
+                        new Pair<>(Corsair.RAPID_FIRE, 10));
+                break;
+            case 2100:
+                skills = Arrays.asList(
+                        new Pair<>(21000000, 10),
+                        new Pair<>(21001001, 20),
+                        new Pair<>(21001003, 20));
+                break;
+            case 2110:
+                skills = Arrays.asList(
+                        new Pair<>(21100000, 20),
+                        new Pair<>(21100002, 30),
+                        new Pair<>(21100004, 20),
+                        new Pair<>(21100005, 20));
                 break;
             case 2112:
-                skills = new int[3];
-                skills[0] = Aran.OVER_SWING;
-                skills[1] = Aran.HIGH_MASTERY;
-                skills[2] = Aran.FREEZE_STANDING;
+                skills = Arrays.asList(
+                        new Pair<>(Aran.OVER_SWING, 10),
+                        new Pair<>(Aran.HIGH_MASTERY, 10),
+                        new Pair<>(Aran.FREEZE_STANDING, 10));
                 break;
             case 2217:
-                skills = new int[2];
-                skills[0] = Evan.MAPLE_WARRIOR;
-                skills[1] = Evan.ILLUSION;
+                skills = Arrays.asList(
+                        new Pair<>(Evan.MAPLE_WARRIOR, 10),
+                        new Pair<>(Evan.ILLUSION, 10));
                 break;
             case 2218:
-                skills = new int[2];
-                skills[0] = Evan.BLESSING_OF_THE_ONYX;
-                skills[1] = Evan.BLAZE;
+                skills = Arrays.asList(
+                        new Pair<>(Evan.BLESSING_OF_THE_ONYX, 10),
+                        new Pair<>(Evan.BLAZE, 10));
                 break;
         }
-        for (Integer skillId : skills) {
-            if (skillId != 0) {
-                Skill skill = SkillFactory.getSkill(skillId);
+        for (Pair<Integer, Integer> pair : skills) {
+            if (pair.getLeft() != 0) {
+                Skill skill = SkillFactory.getSkill(pair.getLeft());
                 if (skill != null) {
-                    changeSkillLevel(skill, (byte) 0, 10, -1);
+                    changeSkillLevel(skill, (byte) 0, pair.getRight(), -1);
                 } else {
-                    LOGGER.info("Unable to set skill mastery {} for player {}. Does not exist", skillId, getName());
+                    LOGGER.info("Unable to set skill mastery {} for player {}. Does not exist", pair.getLeft(), getName());
                 }
             }
         }
@@ -1730,7 +1737,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
         } else {
             skills.remove(skill);
             this.client.announce(MaplePacketCreator.updateSkill(skill.getId(), newLevel, newMasterlevel, -1)); // Shouldn't
-            try (Connection con = Database.getConnection();
+            try (Connection con = client.getChannelServer().getConnection();
                  PreparedStatement ps = con.prepareStatement("DELETE FROM skills WHERE skillid = ? AND characterid = ?")) {
                 ps.setInt(1, skill.getId());
                 ps.setInt(2, id);
@@ -1827,7 +1834,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
     }
 
     public void deleteGuild(int guildId) {
-        try (Connection con = Database.getConnection()) {
+        try (Connection con = Server.getConnection()) {
             try (PreparedStatement ps = con.prepareStatement("UPDATE characters SET guildid = 0, guildrank = 5 WHERE guildid = ?")) {
                 ps.setInt(1, guildId);
                 ps.execute();
@@ -2814,7 +2821,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
     }
 
     public void setMerchantMeso(int set) {
-        try (Connection con = Database.getConnection();
+        try (Connection con = client.getChannelServer().getConnection();
              PreparedStatement ps = con.prepareStatement("UPDATE characters SET MerchantMesos = ? WHERE id = ?", Statement.RETURN_GENERATED_KEYS)) {
             ps.setInt(1, set);
             ps.setInt(2, id);
@@ -3357,7 +3364,8 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
     public void hasGivenFame(MapleCharacter to) {
         lastfametime = System.currentTimeMillis();
         lastmonthfameids.add(to.getId());
-        try (Connection con = Database.getConnection(); PreparedStatement ps = con.prepareStatement("INSERT INTO famelog (characterid, characterid_to) VALUES (?, ?)")) {
+        try (Connection con = client.getChannelServer().getConnection();
+             PreparedStatement ps = con.prepareStatement("INSERT INTO famelog (characterid, characterid_to) VALUES (?, ?)")) {
             ps.setInt(1, getId());
             ps.setInt(2, to.getId());
             ps.executeUpdate();
@@ -3619,7 +3627,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
     }
 
     public void createPlayerNPC(MapleCharacter v, int scriptId, String script) {
-        try (Connection con = Database.getConnection()) {
+        try (Connection con = client.getChannelServer().getConnection()) {
             int pnpcid = 0;
             try (PreparedStatement ps = con.prepareStatement("INSERT INTO playernpcs (name, scriptid, script, map, hair, face, skin, gender, foothold, dir, x, cy, rx0, rx1) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", Statement.RETURN_GENERATED_KEYS)) {
                 ps.setString(1, v.getName());
@@ -3660,7 +3668,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
                     ps.setInt(1, pnpcid);
                     try (ResultSet rs = ps.executeQuery()) {
                         if (rs.next()) {
-                            PlayerNPC playerNPC = new PlayerNPC(rs);
+                            PlayerNPC playerNPC = new PlayerNPC(con, rs);
                             for (Channel channel : Server.getInstance().getChannelsFromWorld(world)) {
                                 MapleMap m = channel.getMap(getMapId());
                                 m.broadcastMessage(MaplePacketCreator.spawnPlayerNPC(playerNPC));
@@ -4079,7 +4087,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
 
     public synchronized void saveCooldowns() {
         if (getAllCooldowns().size() > 0) {
-            try (Connection con = Database.getConnection()) {
+            try (Connection con = client.getChannelServer().getConnection()) {
                 deleteWhereCharacterId(con, "DELETE FROM cooldowns WHERE charid = ?");
                 try (PreparedStatement ps = con.prepareStatement("INSERT INTO cooldowns (charid, SkillID, StartTime, length) VALUES (?, ?, ?, ?)")) {
                     ps.setInt(1, getId());
@@ -4098,7 +4106,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
     }
 
     public void saveGuildStatus() {
-        try (Connection con = Database.getConnection();
+        try (Connection con = client.getChannelServer().getConnection();
              PreparedStatement ps = con.prepareStatement("UPDATE characters SET guildid = ?, guildrank = ?, allianceRank = ? WHERE id = ?")) {
             ps.setInt(1, guildid);
             ps.setInt(2, guildrank);
@@ -4116,7 +4124,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
     }
 
     public final boolean insertNewChar() {
-        try (Connection con = Database.getConnection()) {
+        try (Connection con = Server.getConnection()) {
             try (PreparedStatement ps = con.prepareStatement("INSERT INTO characters (str, dex, luk, `int`, gm, skincolor, gender, job, hair, face, map, meso, spawnpoint, accountid, name, world) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", PreparedStatement.RETURN_GENERATED_KEYS)) {
                 ps.setInt(1, 12);
                 ps.setInt(2, 5);
@@ -4177,7 +4185,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
     }
 
     public void saveToDB() {
-        try (Connection con = Database.getConnection()) {
+        try (Connection con = client.getChannelServer().getConnection()) {
             try (PreparedStatement ps = con.prepareStatement("UPDATE characters SET level = ?, fame = ?, str = ?, dex = ?, luk = ?, `int` = ?, exp = ?, gachaexp = ?, hp = ?, mp = ?, maxhp = ?, maxmp = ?, sp = ?, ap = ?, gm = ?, skincolor = ?, gender = ?, job = ?, hair = ?, face = ?, map = ?, meso = ?, hpMpUsed = ?, spawnpoint = ?, party = ?, buddyCapacity = ?, messengerid = ?, messengerposition = ?, mountlevel = ?, mountexp = ?, mounttiredness= ?, equipslots = ?, useslots = ?, setupslots = ?, etcslots = ?,  monsterbookcover = ?, vanquisherStage = ?, dojoPoints = ?, lastDojoStage = ?, finishedDojoTutorial = ?, vanquisherKills = ?, matchcardwins = ?, matchcardlosses = ?, matchcardties = ?, omokwins = ?, omoklosses = ?, omokties = ?, dataString = ?, fishingpoints = ?, daily = ?, reborns = ?, eventpoints = ?, rebirthpoints = ?, occupation = ?, jumpquestpoints = ? WHERE id = ?", Statement.RETURN_GENERATED_KEYS)) {
                 if (gmLevel < 1 && level > 199) {
                     ps.setInt(1, isCygnus() ? 120 : 200);
@@ -4347,7 +4355,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
             }
             ItemFactory.INVENTORY.saveItems(itemsWithType, id, con);
 
-            relationship.save();
+            relationship.save(con);
 
             con.setAutoCommit(false);
             deleteWhereCharacterId(con, "DELETE FROM skills WHERE characterid = ?");
@@ -4525,7 +4533,8 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
     }
 
     public void sendNote(String to, String msg, byte fame) {
-        try (Connection con = Database.getConnection(); PreparedStatement ps = con.prepareStatement("INSERT INTO notes (`to`, `from`, `message`, `timestamp`, `fame`) VALUES (?, ?, ?, ?, ?)", Statement.RETURN_GENERATED_KEYS)) {
+        try (Connection con = Server.getConnection();
+             PreparedStatement ps = con.prepareStatement("INSERT INTO notes (`to`, `from`, `message`, `timestamp`, `fame`) VALUES (?, ?, ?, ?, ?)", Statement.RETURN_GENERATED_KEYS)) {
             ps.setString(1, to);
             ps.setString(2, this.getName());
             ps.setString(3, msg);
@@ -4595,7 +4604,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
     }
 
     public void setHasMerchant(boolean set) {
-        try (Connection con = Database.getConnection();
+        try (Connection con = client.getChannelServer().getConnection();
              PreparedStatement ps = con.prepareStatement("UPDATE characters SET HasMerchant = ? WHERE id = ?")) {
             ps.setInt(1, set ? 1 : 0);
             ps.setInt(2, id);
@@ -4608,7 +4617,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
     }
 
     public void addMerchantMesos(int add) {
-        try (Connection con = Database.getConnection();
+        try (Connection con = client.getChannelServer().getConnection();
              PreparedStatement ps = con.prepareStatement("UPDATE characters SET MerchantMesos = ? WHERE id = ?", Statement.RETURN_GENERATED_KEYS)) {
             ps.setInt(1, merchantmeso + add);
             ps.setInt(2, id);
@@ -4695,7 +4704,8 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
 
     public void changeName(String name) {
         this.name = name;
-        try (Connection con = Database.getConnection(); PreparedStatement ps = con.prepareStatement("UPDATE `characters` SET `name` = ? WHERE `id` = ?")) {
+        try (Connection con = client.getChannelServer().getConnection();
+             PreparedStatement ps = con.prepareStatement("UPDATE `characters` SET `name` = ? WHERE `id` = ?")) {
             ps.setString(1, name);
             ps.setInt(2, id);
             ps.executeUpdate();
@@ -4768,7 +4778,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
     }
 
     public void showNote() {
-        try (Connection con = Database.getConnection();
+        try (Connection con = client.getChannelServer().getConnection();
              PreparedStatement ps = con.prepareStatement("SELECT * FROM notes WHERE `to`=? AND `deleted` = 0", ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_UPDATABLE)) {
             ps.setString(1, this.getName());
             try (ResultSet rs = ps.executeQuery()) {
@@ -5056,7 +5066,8 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
         Calendar cal = Calendar.getInstance();
         cal.add(Calendar.DATE, days);
         Timestamp TS = new Timestamp(cal.getTimeInMillis());
-        try (Connection con = Database.getConnection(); PreparedStatement ps = con.prepareStatement("UPDATE accounts SET banreason = ?, tempban = ?, greason = ? WHERE id = ?")) {
+        try (Connection con = client.getChannelServer().getConnection();
+             PreparedStatement ps = con.prepareStatement("UPDATE accounts SET banreason = ?, tempban = ?, greason = ? WHERE id = ?")) {
             ps.setString(1, desc);
             ps.setTimestamp(2, TS);
             ps.setInt(3, reason);
@@ -5531,7 +5542,8 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
     }
 
     public boolean tempban(Timestamp tempban) {
-        try (Connection con = Database.getConnection(); PreparedStatement ps = con.prepareStatement("UPDATE accounts SET tempban = ? WHERE id = ?")) {
+        try (Connection con = client.getChannelServer().getConnection();
+             PreparedStatement ps = con.prepareStatement("UPDATE accounts SET tempban = ? WHERE id = ?")) {
             ps.setTimestamp(1, tempban);
             ps.setInt(2, getAccountID());
             return ps.execute();

@@ -28,14 +28,14 @@ public class HiredMerchantEvent extends PacketEvent {
         if (player.getMap().getMapObjectsInRange(player.getPosition(), 23000, Collections.singletonList(MapleMapObjectType.HIRED_MERCHANT)).isEmpty()
                 && player.getMapId() > 910000000 && player.getMapId() < 910000023) {
             if (!player.hasMerchant()) {
-                try (Connection con = Database.getConnection()) {
+                try (Connection con = getClient().getChannelServer().getConnection()) {
                     if (ItemFactory.MERCHANT.loadItems(con, player.getId(), false).isEmpty() && player.getMerchantMeso() == 0) {
                         getClient().announce(MaplePacketCreator.hiredMerchantBox());
                     } else {
                         getClient().announce(MaplePacketCreator.retrieveFirstMessage());
                     }
                 } catch (SQLException e) {
-                    getLogger().error("Unable to load items", e);
+                    getLogger().error("Unable to load items: {}", e.getMessage());
                 }
             } else {
                 player.sendMessage(1, "You already have a store open.");

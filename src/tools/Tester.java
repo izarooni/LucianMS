@@ -2,6 +2,8 @@ package tools;
 
 import com.lucianms.io.Config;
 import com.lucianms.io.defaults.Defaults;
+import com.zaxxer.hikari.HikariDataSource;
+import net.server.Server;
 import org.json.JSONObject;
 import org.json.JSONTokener;
 import org.slf4j.Logger;
@@ -12,6 +14,7 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 
 /**
@@ -24,9 +27,21 @@ public class Tester {
 
     public static void main(String[] args) {
         System.setProperty("wzpath", "wz");
-//        initConfig();
-//        DatabaseConnection.useConfig(config);
-//        createAccount("izarooni", "test2");
+        initConfig();
+        HikariDataSource hikari = Database.createDataSource("test");
+        for (int i = 0; i < 1000; i++) {
+            try {
+                Connection con = hikari.getConnection();
+                System.out.println("connection " + i + " created");
+                try (PreparedStatement ps = con.prepareStatement("select * from accounts")) {
+                    try (ResultSet rs = ps.executeQuery()) {
+                        rs.next();
+                    }
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     private static void initConfig() {
@@ -43,7 +58,7 @@ public class Tester {
     }
 
     private static void createAccount(String name, String password) {
-        try (Connection con = Database.getConnection();
+        try (Connection con = Server.getConnection();
              PreparedStatement ps = con.prepareStatement("insert into accounts (name, password) values (?, ?)")) {
             ps.setString(1, name);
             ps.setString(2, password);

@@ -21,23 +21,20 @@
 */
 package net.server.channel.handlers;
 
-import client.BuddyList;
+import client.*;
 import client.BuddyList.BuddyAddResult;
 import client.BuddyList.BuddyOperation;
-import static client.BuddyList.BuddyOperation.ADDED;
-import client.BuddylistEntry;
-import client.CharacterNameAndId;
-import client.MapleCharacter;
-import client.MapleClient;
+import net.AbstractMaplePacketHandler;
+import net.server.world.World;
+import tools.MaplePacketCreator;
+import tools.data.input.SeekableLittleEndianAccessor;
+
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import net.AbstractMaplePacketHandler;
-import net.server.world.World;
-import tools.Database;
-import tools.MaplePacketCreator;
-import tools.data.input.SeekableLittleEndianAccessor;
+
+import static client.BuddyList.BuddyOperation.ADDED;
 
 public class BuddylistModifyHandler extends AbstractMaplePacketHandler {
     private static class CharacterIdNameBuddyCapacity extends CharacterNameAndId {
@@ -60,8 +57,7 @@ public class BuddylistModifyHandler extends AbstractMaplePacketHandler {
         }
     }
 
-    private CharacterIdNameBuddyCapacity getCharacterIdAndNameFromDatabase(String name) throws SQLException {
-        Connection con = Database.getConnection();
+    private CharacterIdNameBuddyCapacity getCharacterIdAndNameFromDatabase(Connection con, String name) throws SQLException {
         CharacterIdNameBuddyCapacity ret;
         try (PreparedStatement ps = con.prepareStatement("SELECT id, name, buddyCapacity FROM characters WHERE name LIKE ?")) {
             ps.setString(1, name);
@@ -92,7 +88,7 @@ public class BuddylistModifyHandler extends AbstractMaplePacketHandler {
             } else if (buddylist.isFull() && ble == null) {
                 c.announce(MaplePacketCreator.serverNotice(1, "Your buddylist is already full"));
             } else if (ble == null) {
-                try {
+                try (Connection con = c.getChannelServer().getConnection()) {
                     World world = c.getWorldServer();
                     CharacterIdNameBuddyCapacity charWithId;
                     int channel;
@@ -102,33 +98,32 @@ public class BuddylistModifyHandler extends AbstractMaplePacketHandler {
                         charWithId = new CharacterIdNameBuddyCapacity(otherChar.getId(), otherChar.getName(), otherChar.getBuddylist().getCapacity());
                     } else {
                         channel = world.find(addName);
-                        charWithId = getCharacterIdAndNameFromDatabase(addName);
+                        charWithId = getCharacterIdAndNameFromDatabase(con, addName);
                     }
                     if (charWithId != null) {
                         BuddyAddResult buddyAddResult = null;
                         if (channel != -1) {
-                           buddyAddResult = world.requestBuddyAdd(addName, c.getChannel(), player.getId(), player.getName());
+                            buddyAddResult = world.requestBuddyAdd(addName, c.getChannel(), player.getId(), player.getName());
                         } else {
-                            Connection con = Database.getConnection();
-                            PreparedStatement ps = con.prepareStatement("SELECT COUNT(*) as buddyCount FROM buddies WHERE characterid = ? AND pending = 0");
-                            ps.setInt(1, charWithId.getId());
-                            ResultSet rs = ps.executeQuery();
-                            if (!rs.next()) {
-                                throw new RuntimeException("Result set expected");
-                            } else if (rs.getInt("buddyCount") >= charWithId.getBuddyCapacity()) {
-                                buddyAddResult = BuddyAddResult.BUDDYLIST_FULL;
+                            try (PreparedStatement ps = con.prepareStatement("SELECT COUNT(*) as buddyCount FROM buddies WHERE characterid = ? AND pending = 0")) {
+                                ps.setInt(1, charWithId.getId());
+                                try (ResultSet rs = ps.executeQuery()) {
+                                    if (!rs.next()) {
+                                        throw new RuntimeException("Result set expected");
+                                    } else if (rs.getInt("buddyCount") >= charWithId.getBuddyCapacity()) {
+                                        buddyAddResult = BuddyAddResult.BUDDYLIST_FULL;
+                                    }
+                                }
                             }
-                            rs.close();
-                            ps.close();
-                            ps = con.prepareStatement("SELECT pending FROM buddies WHERE characterid = ? AND buddyid = ?");
-                            ps.setInt(1, charWithId.getId());
-                            ps.setInt(2, player.getId());
-                            rs = ps.executeQuery();
-                            if (rs.next()) {
-                                buddyAddResult = BuddyAddResult.ALREADY_ON_LIST;
+                            try (PreparedStatement ps = con.prepareStatement("SELECT pending FROM buddies WHERE characterid = ? AND buddyid = ?")) {
+                                ps.setInt(1, charWithId.getId());
+                                ps.setInt(2, player.getId());
+                                try (ResultSet rs = ps.executeQuery()) {
+                                    if (rs.next()) {
+                                        buddyAddResult = BuddyAddResult.ALREADY_ON_LIST;
+                                    }
+                                }
                             }
-                            rs.close();
-                            ps.close();
                         }
                         if (buddyAddResult == BuddyAddResult.BUDDYLIST_FULL) {
                             c.announce(MaplePacketCreator.serverNotice(1, "\"" + addName + "\"'s Buddylist is full"));
@@ -140,7 +135,6 @@ public class BuddylistModifyHandler extends AbstractMaplePacketHandler {
                                 displayChannel = channel;
                                 notifyRemoteChannel(c, channel, otherCid, ADDED);
                             } else if (buddyAddResult != BuddyAddResult.ALREADY_ON_LIST && channel == -1) {
-                                Connection con = Database.getConnection();
                                 try (PreparedStatement ps = con.prepareStatement("INSERT INTO buddies (characterid, `buddyid`, `pending`) VALUES (?, ?, 1)")) {
                                     ps.setInt(1, charWithId.getId());
                                     ps.setInt(2, player.getId());
@@ -154,6 +148,7 @@ public class BuddylistModifyHandler extends AbstractMaplePacketHandler {
                         c.announce(MaplePacketCreator.serverNotice(1, "A character called \"" + addName + "\" does not exist"));
                     }
                 } catch (SQLException e) {
+                    logger().error("Unable to create database connection: {}", e.getMessage());
                 }
             } else {
                 ble.changeGroup(group);
@@ -162,29 +157,28 @@ public class BuddylistModifyHandler extends AbstractMaplePacketHandler {
         } else if (mode == 2) { // accept buddy
             int otherCid = slea.readInt();
             if (!buddylist.isFull()) {
-                try {
-                    int channel = c.getWorldServer().find(otherCid);//worldInterface.find(otherCid);
-                    String otherName = null;
-                    MapleCharacter otherChar = c.getChannelServer().getPlayerStorage().getCharacterById(otherCid);
-                    if (otherChar == null) {
-                        Connection con = Database.getConnection();
-                        try (PreparedStatement ps = con.prepareStatement("SELECT name FROM characters WHERE id = ?")) {
-                            ps.setInt(1, otherCid);
-                            try (ResultSet rs = ps.executeQuery()) {
-                                if (rs.next()) {
-                                    otherName = rs.getString("name");
-                                }
+                int channel = c.getWorldServer().find(otherCid);//worldInterface.find(otherCid);
+                String otherName = null;
+                MapleCharacter otherChar = c.getChannelServer().getPlayerStorage().getCharacterById(otherCid);
+                if (otherChar == null) {
+                    try (Connection con = c.getChannelServer().getConnection();
+                         PreparedStatement ps = con.prepareStatement("SELECT name FROM characters WHERE id = ?")) {
+                        ps.setInt(1, otherCid);
+                        try (ResultSet rs = ps.executeQuery()) {
+                            if (rs.next()) {
+                                otherName = rs.getString("name");
                             }
                         }
-                    } else {
-                        otherName = otherChar.getName();
+                    } catch (SQLException e) {
+                        logger().error("Unable to select from characters: {}", e.getMessage());
                     }
-                    if (otherName != null) {
-                        buddylist.put(new BuddylistEntry(otherName, "Default Group", otherCid, channel, true));
-                        c.announce(MaplePacketCreator.updateBuddylist(buddylist.getBuddies()));
-                        notifyRemoteChannel(c, channel, otherCid, ADDED);
-                    }
-                } catch (SQLException e) {
+                } else {
+                    otherName = otherChar.getName();
+                }
+                if (otherName != null) {
+                    buddylist.put(new BuddylistEntry(otherName, "Default Group", otherCid, channel, true));
+                    c.announce(MaplePacketCreator.updateBuddylist(buddylist.getBuddies()));
+                    notifyRemoteChannel(c, channel, otherCid, ADDED);
                 }
             }
             nextPendingRequest(c);

@@ -3,10 +3,10 @@ package client.arcade;
 import client.MapleCharacter;
 import com.lucianms.scheduler.Task;
 import com.lucianms.scheduler.TaskExecutor;
+import net.server.Server;
 import server.FieldBuilder;
 import server.life.MapleLifeFactory;
 import server.life.MapleMonster;
-import tools.Database;
 import tools.MaplePacketCreator;
 
 import java.awt.*;
@@ -78,7 +78,8 @@ public abstract class Arcade {
 
     public boolean saveData(int score) {
         if (score > Arcade.getHighscore(arcadeId, player)) {
-            try (Connection con = Database.getConnection(); PreparedStatement stmnt = con.prepareStatement("INSERT INTO arcade (id, charid, highscore) VALUES (?, ?, ?) ON DUPLICATE KEY UPDATE highscore = ?")) {
+            try (Connection con = player.getClient().getChannelServer().getConnection();
+                 PreparedStatement stmnt = con.prepareStatement("INSERT INTO arcade (id, charid, highscore) VALUES (?, ?, ?) ON DUPLICATE KEY UPDATE highscore = ?")) {
                 stmnt.setInt(1, arcadeId);
                 stmnt.setInt(2, player.getId());
                 stmnt.setInt(3, score);
@@ -96,7 +97,8 @@ public abstract class Arcade {
 
     public static int getHighscore(int arcadeId, MapleCharacter player) {
         int highscore = 0;
-        try (Connection con = Database.getConnection(); PreparedStatement stmnt = con.prepareStatement("SELECT highscore FROM arcade WHERE charid = ? AND id = ?")) {
+        try (Connection con = player.getClient().getChannelServer().getConnection();
+             PreparedStatement stmnt = con.prepareStatement("SELECT highscore FROM arcade WHERE charid = ? AND id = ?")) {
             stmnt.setInt(1, player.getId());
             stmnt.setInt(2, arcadeId);
             stmnt.execute();
@@ -113,7 +115,8 @@ public abstract class Arcade {
 
     public static String getTop(int arcadeId) {
         StringBuilder sb = new StringBuilder();
-        try (Connection con = Database.getConnection(); PreparedStatement stmnt = con.prepareStatement("SELECT * FROM arcade WHERE id = ? ORDER BY highscore DESC LIMIT 50")) {
+        try (Connection con = Server.getConnection();
+             PreparedStatement stmnt = con.prepareStatement("SELECT * FROM arcade WHERE id = ? ORDER BY highscore DESC LIMIT 50")) {
             stmnt.setInt(1, arcadeId);
             if (stmnt.execute()) {
                 try (ResultSet rs = stmnt.getResultSet()) {

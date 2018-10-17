@@ -98,7 +98,7 @@ function getJobCategory(n) {
 }
 
 function getLevelReward() {
-    let con = Database.getConnection();
+    let con = cm.getDatabaseConnection();
     try {
         var ps = con.prepareStatement("select level_reward from characters where id = ?");
         ps.setInt(1, player.getId());
@@ -113,7 +113,7 @@ function getLevelReward() {
 }
 
 function setLevelReward(n) {
-    let con = Database.getConnection();
+    let con = cm.getDatabaseConnection();
     try {
         var ps = con.prepareStatement("update characters set level_reward = ? where id = ?");
         ps.setInt(1, n);

@@ -25,6 +25,7 @@ import client.MapleClient;
 import client.inventory.Item;
 import client.inventory.ItemFactory;
 import client.inventory.MapleInventoryType;
+import net.server.Server;
 import tools.Database;
 import tools.MaplePacketCreator;
 import tools.Pair;
@@ -68,7 +69,7 @@ public class MapleStorage {
 
     public static MapleStorage loadOrCreateFromDB(int id, int world) {
         int storeId;
-        try (Connection con = Database.getConnection()) {
+        try (Connection con = Server.getConnection()) {
             try (PreparedStatement ps = con.prepareStatement("SELECT storageid, slots, meso FROM storages WHERE accountid = ? AND world = ?")) {
                 ps.setInt(1, id);
                 ps.setInt(2, world);

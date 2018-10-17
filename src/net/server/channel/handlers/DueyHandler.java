@@ -28,6 +28,15 @@ import client.inventory.Item;
 import client.inventory.MapleInventoryType;
 import constants.ItemConstants;
 import constants.ServerConstants;
+import net.AbstractMaplePacketHandler;
+import net.server.Server;
+import net.server.channel.Channel;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import server.DueyPackages;
+import server.MapleInventoryManipulator;
+import tools.MaplePacketCreator;
+import tools.data.input.SeekableLittleEndianAccessor;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -36,14 +45,6 @@ import java.sql.SQLException;
 import java.util.Calendar;
 import java.util.LinkedList;
 import java.util.List;
-
-import net.AbstractMaplePacketHandler;
-import net.server.channel.Channel;
-import server.DueyPackages;
-import server.MapleInventoryManipulator;
-import tools.Database;
-import tools.MaplePacketCreator;
-import tools.data.input.SeekableLittleEndianAccessor;
 
 public final class DueyHandler extends AbstractMaplePacketHandler {
     private enum Actions {
@@ -60,7 +61,7 @@ public final class DueyHandler extends AbstractMaplePacketHandler {
         TOCLIENT_PACKAGE_MSG(0x1B); // Ending byte; 4 if recieved. 3 if delete.
         final byte code;
 
-        private Actions(int code) {
+        Actions(int code) {
             this.code = (byte) code;
         }
 
@@ -69,36 +70,35 @@ public final class DueyHandler extends AbstractMaplePacketHandler {
         }
     }
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(DueyHandler.class);
+
     private static int getAccIdFromCNAME(String name, boolean accountid) {
-        try {
-            PreparedStatement ps;
-            String text = "SELECT accountid FROM characters WHERE name = ?";
-            if (accountid) {
-                text = "SELECT accountid FROM characters WHERE name = ?";
-            }
-            ps = Database.getConnection().prepareStatement(text);
+        String text = "SELECT accountid FROM characters WHERE name = ?";
+        if (accountid) {
+            text = "SELECT accountid FROM characters WHERE name = ?";
+        }
+        try (Connection con = Server.getConnection();
+             PreparedStatement ps = con.prepareStatement(text)) {
             ps.setString(1, name);
             int id_;
             try (ResultSet rs = ps.executeQuery()) {
                 if (!rs.next()) {
-                    rs.close();
-                    ps.close();
                     return -1;
                 }
                 id_ = accountid ? rs.getInt("accountid") : rs.getInt("id");
             }
-            ps.close();
             return id_;
         } catch (SQLException e) {
+            LOGGER.error("Unable to execute query", e.getMessage());
         }
         return -1;
     }
 
     @Override
     public final void handlePacket(SeekableLittleEndianAccessor slea, MapleClient c) {
-    	if (!ServerConstants.USE_DUEY){
-    		return;
-    	}
+        if (!ServerConstants.USE_DUEY) {
+            return;
+        }
         byte operation = slea.readByte();
         if (operation == Actions.TOSERVER_SEND_ITEM.getCode()) {
             final int fee = 5000;
@@ -108,7 +108,7 @@ public final class DueyHandler extends AbstractMaplePacketHandler {
             int mesos = slea.readInt();
             String recipient = slea.readMapleAsciiString();
             if (mesos < 0 || (long) mesos > Integer.MAX_VALUE || ((long) mesos + fee + getFee(mesos)) > Integer.MAX_VALUE || amount < 1) {
-            	return;
+                return;
             }
             int finalcost = mesos + fee + getFee(mesos);
             boolean send = false;
@@ -130,12 +130,12 @@ public final class DueyHandler extends AbstractMaplePacketHandler {
             }
             boolean recipientOn = false;
             MapleClient rClient = null;
-                int channel = c.getWorldServer().find(recipient);
-                if (channel > -1) {
-                    recipientOn = true;
-                    Channel rcserv = c.getWorldServer().getChannel(channel);
-                    rClient = rcserv.getPlayerStorage().getCharacterByName(recipient).getClient();
-                }
+            int channel = c.getWorldServer().find(recipient);
+            if (channel > -1) {
+                recipientOn = true;
+                Channel rcserv = c.getWorldServer().getChannel(channel);
+                rClient = rcserv.getPlayerStorage().getCharacterByName(recipient).getClient();
+            }
             if (send) {
                 if (inventId > 0) {
                     MapleInventoryType inv = MapleInventoryType.getByType(inventId);
@@ -166,24 +166,23 @@ public final class DueyHandler extends AbstractMaplePacketHandler {
             int packageid = slea.readInt();
             List<DueyPackages> packages = new LinkedList<>();
             DueyPackages dp = null;
-            Connection con = Database.getConnection();
-            try {
-                DueyPackages dueypack;
-                try (PreparedStatement ps = con.prepareStatement("SELECT * FROM dueypackages LEFT JOIN dueyitems USING (PackageId) WHERE PackageId = ?")) {
-                    ps.setInt(1, packageid);
-                    try (ResultSet rs = ps.executeQuery()) {
-                        dueypack = null;
-                        if (rs.next()) {
-                            dueypack = getItemByPID(rs);
-                            dueypack.setSender(rs.getString("SenderName"));
-                            dueypack.setMesos(rs.getInt("Mesos"));
-                            dueypack.setSentTime(rs.getString("TimeStamp"));
-                            packages.add(dueypack);
-                        }
+            DueyPackages dueypack;
+            try (Connection con = c.getChannelServer().getConnection();
+                 PreparedStatement ps = con.prepareStatement("SELECT * FROM dueypackages LEFT JOIN dueyitems USING (PackageId) WHERE PackageId = ?")) {
+                ps.setInt(1, packageid);
+                try (ResultSet rs = ps.executeQuery()) {
+                    dueypack = null;
+                    if (rs.next()) {
+                        dueypack = getItemByPID(rs);
+                        dueypack.setSender(rs.getString("SenderName"));
+                        dueypack.setMesos(rs.getInt("Mesos"));
+                        dueypack.setSentTime(rs.getString("TimeStamp"));
+                        packages.add(dueypack);
                     }
                 }
                 dp = dueypack;
             } catch (SQLException e) {
+                logger().info("Unable to view packages: {}", e.getMessage());
             }
             if (dp.getItem() != null) {
                 if (!MapleInventoryManipulator.checkSpace(c, dp.getItem().getItemId(), dp.getItem().getQuantity(), dp.getItem().getOwner())) {
@@ -213,8 +212,7 @@ public final class DueyHandler extends AbstractMaplePacketHandler {
     }
 
     private void addItemToDB(Item item, int quantity, int mesos, String sName, int recipientID) {
-        Connection con = Database.getConnection();
-        try {
+        try (Connection con = Server.getConnection()) {
             try (PreparedStatement ps = con.prepareStatement("INSERT INTO dueypackages (RecieverId, SenderName, Mesos, TimeStamp, Checked, Type) VALUES (?, ?, ?, ?, ?, ?)")) {
                 ps.setInt(1, recipientID);
                 ps.setString(2, sName);
@@ -271,8 +269,7 @@ public final class DueyHandler extends AbstractMaplePacketHandler {
 
     public static List<DueyPackages> loadItems(MapleCharacter chr) {
         List<DueyPackages> packages = new LinkedList<>();
-        Connection con = Database.getConnection();
-        try {
+        try (Connection con = chr.getClient().getChannelServer().getConnection()) {
             try (PreparedStatement ps = con.prepareStatement("SELECT * FROM dueypackages LEFT JOIN dueyitems USING (PackageId) WHERE RecieverId = ?")) {
                 ps.setInt(1, chr.getId());
                 try (ResultSet rs = ps.executeQuery()) {
@@ -320,16 +317,15 @@ public final class DueyHandler extends AbstractMaplePacketHandler {
     }
 
     private void removeItemFromDB(int packageid) {
-        Connection con = Database.getConnection();
-        try {
-            PreparedStatement ps = con.prepareStatement("DELETE FROM dueypackages WHERE PackageId = ?");
-            ps.setInt(1, packageid);
-            ps.executeUpdate();
-            ps.close();
-            ps = con.prepareStatement("DELETE FROM dueyitems WHERE PackageId = ?");
-            ps.setInt(1, packageid);
-            ps.executeUpdate();
-            ps.close();
+        try (Connection con = Server.getConnection()) {
+            try (PreparedStatement ps = con.prepareStatement("DELETE FROM dueypackages WHERE PackageId = ?")) {
+                ps.setInt(1, packageid);
+                ps.executeUpdate();
+            }
+            try (PreparedStatement ps = con.prepareStatement("DELETE FROM dueyitems WHERE PackageId = ?")) {
+                ps.setInt(1, packageid);
+                ps.executeUpdate();
+            }
         } catch (SQLException e) {
         }
     }

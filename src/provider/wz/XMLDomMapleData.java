@@ -28,6 +28,7 @@ import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
+import org.xml.sax.SAXParseException;
 import provider.MapleData;
 import provider.MapleDataEntity;
 
@@ -58,6 +59,8 @@ public class XMLDomMapleData implements MapleData {
             fis.close();
         } catch (ParserConfigurationException | IOException e) {
             e.printStackTrace();
+        } catch (SAXParseException e) {
+            LOGGER.error("unable to parse '{}': {}", imageDataDir.getName(), e.getMessage());
         }
         this.imageDataDir = imageDataDir;
     }

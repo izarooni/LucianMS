@@ -20,7 +20,6 @@ import server.life.MapleMonster;
 import server.life.MapleMonsterStats;
 import server.life.MapleNPC;
 import server.maps.MapleFoothold;
-import tools.Database;
 import tools.MaplePacketCreator;
 
 import java.awt.*;
@@ -28,6 +27,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -62,9 +62,10 @@ public class HGMCommands {
             commands.forEach(player::dropMessage);
             commands.clear();
         } else if (command.equals("clearskills")) {
-            for (Map.Entry<Skill, MapleCharacter.SkillEntry> set : player.getSkills().entrySet()) {
+            for (Map.Entry<Skill, MapleCharacter.SkillEntry> set : new HashMap<>(player.getSkills()).entrySet()) {
+                Skill sk = set.getKey();
                 MapleCharacter.SkillEntry entry = set.getValue();
-                player.changeSkillLevel(set.getKey(), (byte) 0, entry.masterlevel, entry.expiration);
+                player.changeSkillLevel(sk, (byte) (sk.isHidden() ? -1 : 0), sk.isHidden() ? 0 : entry.masterlevel, entry.expiration);
             }
         } else if (command.equals("hpmp")) {
             if (args.length() == 1) {
@@ -182,7 +183,7 @@ public class HGMCommands {
                             channel.getMap(player.getMapId()).broadcastMessage(MaplePacketCreator.spawnNPC(npc));
                         }
                     }
-                    try (Connection con = Database.getConnection();
+                    try (Connection con = client.getChannelServer().getConnection();
                          PreparedStatement ps = con.prepareStatement("INSERT INTO spawns (idd, f, fh, cy, rx0, rx1, type , x, mid, mobtime, script) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)")) {
                         ps.setInt(1, npcId);
                         ps.setInt(2, npc.getF());
@@ -224,7 +225,7 @@ public class HGMCommands {
                         mob.setRx0(xpos + 50);
                         mob.setRx1(xpos - 50);
                         mob.setFh(fh);
-                        try (Connection con = Database.getConnection();
+                        try (Connection con = client.getChannelServer().getConnection();
                              PreparedStatement ps = con.prepareStatement("INSERT INTO spawns ( idd, f, fh, cy, rx0, rx1, type, x, mid, mobtime) VALUES ( ?, ?, ?, ?, ?, ?, ?, ?, ?, ? )")) {
                             ps.setInt(1, mobId);
                             ps.setInt(2, 0);

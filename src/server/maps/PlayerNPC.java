@@ -28,6 +28,7 @@ import tools.Database;
 import tools.MaplePacketCreator;
 
 import java.awt.*;
+import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -48,7 +49,7 @@ public class PlayerNPC extends AbstractMapleMapObject {
     private String script = null;
     private int FH, RX0, RX1, CY;
 
-    public PlayerNPC(ResultSet rs) throws SQLException {
+    public PlayerNPC(Connection con, ResultSet rs) throws SQLException {
         name = rs.getString("name");
         hair = rs.getInt("hair");
         face = rs.getInt("face");
@@ -63,7 +64,7 @@ public class PlayerNPC extends AbstractMapleMapObject {
         npcId = rs.getInt("scriptid");
         script = rs.getString("script");
 
-        try (PreparedStatement ps = Database.getConnection().prepareStatement("select equippos, equipid from playernpcs_equip where npcid = ?")) {
+        try (PreparedStatement ps = con.prepareStatement("select equippos, equipid from playernpcs_equip where npcid = ?")) {
             ps.setInt(1, rs.getInt("id"));
             try (ResultSet rs2 = ps.executeQuery()) {
                 while (rs2.next()) {

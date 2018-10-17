@@ -33,6 +33,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 public final class NoteActionHandler extends AbstractMaplePacketHandler {
+
     public final void handlePacket(SeekableLittleEndianAccessor slea, MapleClient c) {
         int action = slea.readByte();
         if (action == 0 && c.getPlayer().getCashShop().getAvailableNotes() > 0) {
@@ -48,7 +49,7 @@ public final class NoteActionHandler extends AbstractMaplePacketHandler {
             slea.readByte();
             slea.readByte();
             int fame = 0;
-            try (Connection con = Database.getConnection()) {
+            try (Connection con = c.getChannelServer().getConnection()) {
                 for (int i = 0; i < num; i++) {
                     int id = slea.readInt();
                     slea.readByte(); //Fame, but we read it from the database :)
@@ -67,7 +68,7 @@ public final class NoteActionHandler extends AbstractMaplePacketHandler {
                     }
                 }
             } catch (SQLException e) {
-                e.printStackTrace();
+                logger().error("Unable to create database connection: {}", e.getMessage());
             }
             if (fame > 0) {
                 c.getPlayer().gainFame(fame);

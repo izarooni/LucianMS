@@ -445,7 +445,7 @@ public class GameMasterCommands {
         } else if (command.equals("notice")) {
             if (args.length() > 0) {
                 String message = args.concatFrom(0);
-                ch.broadcastPacket(MaplePacketCreator.serverNotice(6, message));
+                ch.broadcastPacket(MaplePacketCreator.serverNotice(6, player.getName() + " : " + message));
             } else {
                 player.dropMessage(5, "You must specify a message");
             }
@@ -589,7 +589,7 @@ public class GameMasterCommands {
                         if (ItemConstants.isPet(itemId)) {
                             if (item.getPetId() > -1) {
                                 // maybe skip pets instead?
-                                try (Connection con = Database.getConnection()) {
+                                try (Connection con = client.getChannelServer().getConnection()) {
                                     Database.executeSingle(con, "delete from pets where petid = ?", item.getPet().getUniqueId());
                                 } catch (SQLException e) {
                                     e.printStackTrace();
@@ -706,7 +706,7 @@ public class GameMasterCommands {
                 String username = args.get(0);
                 ArrayList<String> usernames = new ArrayList<>();
                 // will this statement work? who knows
-                try (Connection con = Database.getConnection();
+                try (Connection con = client.getChannelServer().getConnection();
                      PreparedStatement ps = con.prepareStatement("select name from characters where accountid = (select accountid from characters where name = ?)")) {
                     ps.setString(1, username);
                     try (ResultSet rs = ps.executeQuery()) {

@@ -190,7 +190,8 @@ public class EventInstanceManager {
     }
 
     public void saveWinner(MapleCharacter chr) {
-        try (Connection con = Database.getConnection(); PreparedStatement ps = con.prepareStatement("INSERT INTO eventstats (event, instance, characterid, channel) VALUES (?, ?, ?, ?)")) {
+        try (Connection con = eventManager.getChannel().getConnection();
+             PreparedStatement ps = con.prepareStatement("INSERT INTO eventstats (event, instance, characterid, channel) VALUES (?, ?, ?, ?)")) {
             ps.setString(1, eventManager.getScriptName());
             ps.setString(2, getName());
             ps.setInt(3, chr.getId());

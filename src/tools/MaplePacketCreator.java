@@ -4646,7 +4646,7 @@ public class MaplePacketCreator {
         mplew.skip(5);
         mplew.writeInt(chr.getMerchantMeso());
         mplew.write(0);
-        try (Connection con = Database.getConnection()) {
+        try (Connection con = chr.getClient().getChannelServer().getConnection()) {
             List<Pair<Item, MapleInventoryType>> items = ItemFactory.MERCHANT.loadItems(con, chr.getId(), false);
             mplew.write(items.size());
 
@@ -5200,6 +5200,21 @@ public class MaplePacketCreator {
         mplew.write(0x12);
         mplew.skip(6);
         return mplew.getPacket();
+    }
+
+    public static byte[] getBuddyFindResult(MapleCharacter target, byte resultType) {
+        MaplePacketLittleEndianWriter writer = new MaplePacketLittleEndianWriter();
+        writer.writeShort(SendOpcode.WHISPER.getValue());
+        writer.write(0x48);
+        writer.writeMapleAsciiString(target.getName());
+        writer.write(resultType);
+        if (resultType == 1) {
+            writer.writeInt(target.getMapId());
+            writer.write(new byte[8]);
+        } else {
+            writer.writeInt(target.getClient().getChannel() - 1);
+        }
+        return writer.getPacket();
     }
 
     /**

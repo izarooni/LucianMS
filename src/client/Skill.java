@@ -34,6 +34,7 @@ public class Skill {
     public int job;
     public int weapon;
     public boolean action;
+    boolean hidden = false;
 
     public Skill(int id) {
         this.id = id;
@@ -76,5 +77,9 @@ public class Skill {
 
     public boolean getAction() {
         return action;
+    }
+
+    public boolean isHidden() {
+        return hidden;
     }
 }

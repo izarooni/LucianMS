@@ -12,7 +12,7 @@ function action(mode, type, selection) {
         status++;
     }
     if (status == 1) {
-        let con = Database.getConnection();
+        let con = cm.getDatabaseConnection();
         try {
             var ps = con.prepareStatement("select daily_login, login_streak from accounts where id = ?");
             ps.setInt(1, client.getAccID());
@@ -55,7 +55,7 @@ function action(mode, type, selection) {
 }
 
 function recordStreak(streak) {
-    let con = Database.getConnection();
+    let con = cm.getDatabaseConnection();
     try {
         var ps = con.prepareStatement("update accounts set daily_login = ?, login_streak = ? where id = ?");
         ps.setTimestamp(1, new java.sql.Timestamp(java.lang.System.currentTimeMillis()));

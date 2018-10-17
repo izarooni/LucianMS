@@ -1,5 +1,7 @@
 package tools;
 
+import net.server.Server;
+
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -17,7 +19,7 @@ public class UniqueGiveaway {
     }
 
     public static void createData(String ip, String hdd, String description) {
-        try (Connection con = Database.getConnection();
+        try (Connection con = Server.getConnection() ;
              PreparedStatement ps = con.prepareStatement("insert into unique_giveaways values (? ,? ,?)")) {
             ps.setString(1, ip);
             ps.setString(2, hdd);
@@ -29,7 +31,7 @@ public class UniqueGiveaway {
     }
 
     public static boolean checkWithBoth(String ip, String hdd, String description) {
-        try (Connection con = Database.getConnection();
+        try (Connection con = Server.getConnection();
              PreparedStatement ps = con.prepareStatement("select * from unique_giveaways where (mac = ? or hdd = ?) and description = ?")) {
             ps.setString(1, ip);
             ps.setString(2, hdd);
@@ -46,7 +48,7 @@ public class UniqueGiveaway {
     }
 
     public static boolean checkWithIPAddress(String ip, String description) {
-        try (Connection con = Database.getConnection();
+        try (Connection con = Server.getConnection();
              PreparedStatement ps = con.prepareStatement("select * from unique_giveaways where mac = ? and description = ?")) {
             ps.setString(1, ip);
             ps.setString(2, description);
@@ -62,7 +64,7 @@ public class UniqueGiveaway {
     }
 
     public static boolean checkWithHDD(String hdd, String description) {
-        try (Connection con = Database.getConnection();
+        try (Connection con = Server.getConnection();
              PreparedStatement ps = con.prepareStatement("select * from unique_giveaways where hdd = ? and description = ?")) {
             ps.setString(1, hdd);
             ps.setString(2, description);
@@ -79,7 +81,7 @@ public class UniqueGiveaway {
 
     public static List<Type> getFromIPAddress(String ip) {
         ArrayList<Type> types = new ArrayList<>();
-        try (Connection con = Database.getConnection();
+        try (Connection con = Server.getConnection();
              PreparedStatement ps = con.prepareStatement("select * from unique_giveaways where mac = ?")) {
             ps.setString(1, ip);
             try (ResultSet rs = ps.executeQuery()) {
@@ -95,7 +97,7 @@ public class UniqueGiveaway {
 
     public static List<Type> getFromHDDAddress(String ip) {
         ArrayList<Type> types = new ArrayList<>();
-        try (Connection con = Database.getConnection();
+        try (Connection con = Server.getConnection();
              PreparedStatement ps = con.prepareStatement("select * from unique_giveaways where hdd = ?")) {
             ps.setString(1, ip);
             try (ResultSet rs = ps.executeQuery()) {

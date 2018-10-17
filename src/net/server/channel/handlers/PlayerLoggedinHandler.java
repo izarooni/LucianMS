@@ -65,8 +65,8 @@ public final class PlayerLoggedinHandler extends AbstractMaplePacketHandler {
         MapleCharacter player = c.getWorldServer().getPlayerStorage().getCharacterById(cid);
         boolean newcomer = false;
         if (player == null) {
-            try {
-                player = MapleCharacter.loadCharFromDB(cid, c, true);
+            try (Connection con = c.getChannelServer().getConnection()) {
+                player = MapleCharacter.loadCharFromDB(con, cid, c, true);
                 newcomer = true;
             } catch (SQLException e) {
                 e.printStackTrace();
@@ -119,7 +119,7 @@ public final class PlayerLoggedinHandler extends AbstractMaplePacketHandler {
         if (buffs != null) {
             player.silentGiveBuffs(buffs);
         }
-        try (Connection con = Database.getConnection()) {
+        try (Connection con = c.getChannelServer().getConnection()) {
             try (PreparedStatement ps = con.prepareStatement("SELECT Mesos FROM dueypackages WHERE RecieverId = ? AND Checked = 1")) {
                 ps.setInt(1, player.getId());
                 try (ResultSet rs = ps.executeQuery()) {
