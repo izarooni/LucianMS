@@ -6,7 +6,7 @@ function getName() {
 }
 
 function testForPlayer(player) {
-    let con = Database.getConnection();
+    let con = player.getClient().getChannelServer().getConnection();
     try {
         let ps = con.prepareStatement("select createdate from characters where id = ?");
         ps.setInt(1, player.getId());

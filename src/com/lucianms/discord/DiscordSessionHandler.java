@@ -30,7 +30,6 @@ public class DiscordSessionHandler extends IoHandlerAdapter {
 
     @Override
     public void sessionCreated(IoSession session) {
-        LOGGER.info("Session #{} created", session.getId());
     }
 
     @Override
@@ -42,7 +41,6 @@ public class DiscordSessionHandler extends IoHandlerAdapter {
 
     @Override
     public void sessionClosed(IoSession session) {
-        LOGGER.info("Session #{} closed", session.getId());
     }
 
     @Override
@@ -66,7 +64,6 @@ public class DiscordSessionHandler extends IoHandlerAdapter {
             DiscordRequest request = DiscordRequestManager.getRequest(header);
             if (request != null) {
                 try {
-                    LOGGER.info("{} handler requested", request.getClass().getSimpleName());
                     request.handle(lea);
                 } catch (Throwable t) {
                     LOGGER.error("Failed to handle packet 0x{}", Integer.toHexString(header));
@@ -82,6 +79,5 @@ public class DiscordSessionHandler extends IoHandlerAdapter {
 
     @Override
     public void messageSent(IoSession session, Object message) {
-        LOGGER.info("Session #{} sent message", session.getId());
     }
 }
