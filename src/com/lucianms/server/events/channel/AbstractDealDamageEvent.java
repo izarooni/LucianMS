@@ -39,7 +39,10 @@ import net.PacketEvent;
 import server.MapleItemInformationProvider;
 import server.MapleStatEffect;
 import server.life.*;
-import server.maps.*;
+import server.maps.MapleMap;
+import server.maps.MapleMapItem;
+import server.maps.MapleMapObject;
+import server.maps.MapleMapObjectType;
 import server.partyquest.Pyramid;
 import tools.MaplePacketCreator;
 import tools.Pair;
@@ -143,7 +146,7 @@ public abstract class AbstractDealDamageEvent extends PacketEvent {
                 if (attack.numAttacked > mobCount) {
                     Cheater.CheatEntry entry = player.getCheater().getCheatEntry(Cheats.ConcurrentAttacks);
                     entry.incrementCheatCount();
-                    entry.announce(player.getClient(), 500, "[{}] {} attacking too many monsters at once ({} monsters, should be {}) skill: {}", entry.cheatCount, player.getName(), attack.numAttacked, attackEffect.getMobCount(), attack.skill);
+                    entry.announce(player.getClient(), 10000, "[{}] {} attacking too many monsters at once ({} monsters, should be {}) skill: {}", entry.cheatCount, player.getName(), attack.numAttacked, attackEffect.getMobCount(), attack.skill);
                 }
             }
             if (!player.isAlive()) {
