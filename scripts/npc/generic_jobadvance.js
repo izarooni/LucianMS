@@ -88,6 +88,11 @@ const FirstAdvancement = function(selection) {
                     cm.gainItem(give[i][0], give[i][1]);
                 }
                 player.changeJob(MapleJob.getById(selection));
+                let totalSP = (Math.min(30, player.getLevel()) - 10) * 3;
+                if (totalSP > 0) {
+                    player.setRemainingSp(totalSP);
+                    player.updateSingleStat(Packages.client.MapleStat.AVAILABLESP, totalSP);
+                }
             } else
                 cm.sendOk("You are not strong enough to make this advancement.\r\n" + nJob.failMessage);
         } else
