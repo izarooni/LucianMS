@@ -83,7 +83,8 @@ public class GameMasterCommands {
             commands.add("!seduce <usernames> - force players to move in a direction");
             commands.add("!seducemap - force all players in the map to move in a direction");
             commands.add("!online - list all visible GMs and players online");
-            commands.add("!gift - Give a player a certain type and specified amount of points");
+            commands.add("!gift <type> <username> <amount> - Give a player a certain type and specified amount of points");
+            commands.add("!gift <type> <amount> <players..> - Give a multiple players a certain type of points");
             commands.add("!! <message> - sends a message to all GMs online");
             commands.add("!itemvac - Loot all item drops in the map");
             commands.add("!characters <username> - lists other characters that belong to a player");
@@ -468,8 +469,32 @@ public class GameMasterCommands {
                 } else {
                     player.sendMessage(5, "Unable to find any player named '{}'", username);
                 }
+            } else if(args.length() >= 3) {
+                String type = args.get(0);
+                Integer amount = args.parseNumber(1, int.class);
+                for(int i = 2; i < args.length(); i++) {
+                    String username = args.get(i);
+                    String error = args.getFirstError();
+                    if (error != null) {
+                        player.dropMessage(5, error);
+                        continue;
+                    }
+                    MapleCharacter target = world.getPlayerStorage().getCharacterByName(username);
+                    if(target != null) {
+                        if(target.addPoints(type, amount)) {
+                            player.dropMessage(6, target.getName() + " received " + amount + " " + type);
+                        } else {
+                            player.sendMessage(5, "'{}' is an invalid point type", type);
+                            break;
+                        }
+                    } else {
+                        player.sendMessage(5, "Unable to find any player named '{}'", username);
+                    }
+                }
+
             } else {
-                player.dropMessage(5, "Syntax: !gift <point_type> <username> <amount>");
+                player.dropMessage(5, "Syntax: !gift <point_type> <username> <amount> OR");
+                player.dropMessage(5, "Syntax: !gift <point_type> <amount> <usernames..>");
             }
         } else if (command.equals("kill", "killmap")) {
             if (command.equals("killmap")) {

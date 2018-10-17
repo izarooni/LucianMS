@@ -63,11 +63,17 @@ function action(mode, type, selection) {
             }
             cm.dispose();
         } else {
-            cm.sendNext("Here are a few things to help get you started. Have fun on your adventure!", 1);
-            cm.gainItem(2000002, 200);  // white potions
-            cm.gainItem(2000006, 200); // mana elixir
-            cm.gainMeso(100000);
-            UGiveaway.createData(client.getRemoteAddress(), client.getHWID(), GiveawayType);
+            if(!silentQuest.isCompleted()) {
+                cm.sendNext("Here are a few things to help get you started. Have fun on your adventure!", 1);
+                cm.gainItem(2000002, 200);  // white potions
+                cm.gainItem(2000006, 200); // mana elixir
+                cm.gainMeso(100000);
+                UGiveaway.createData(client.getRemoteAddress(), client.getHWID(), GiveawayType);
+                silentQuest.setCompleted(true);
+            } else {
+                cm.sendOk("I've already given you your starter pack! Let's go going, the world is waiting for you!");
+                cm.dispose();
+            }
         }
     } else if (status == 3) {
         if (firstDay) {
