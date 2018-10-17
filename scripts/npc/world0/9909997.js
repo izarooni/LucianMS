@@ -10,7 +10,9 @@ jobs = {
         Rogue: { ID: 400, req: (p) => p.getLuk() >= 25,
             failMessage: "Make sure you have at least #b25#k points in your #bLUK#k stat.",
             equips: [[1472000, 1], [1332007, 1], [2070000, 1000]] },
-        "Night Walker": { ID: 1400 }
+        "Night Walker": { ID: 1400, req: (p) => p.getLuk() >= 25,
+            failMessage: "Make sure you have at least #b25#k points in your #bLUK#k stat.",
+            equips: [[1472000, 1], [1332007, 1], [2070000, 1000]] }
     },
     Second: {
         Dancer        : { ID: 410 },

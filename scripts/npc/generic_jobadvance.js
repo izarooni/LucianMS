@@ -24,7 +24,7 @@ function action(mode, type, selection) {
     let jobID = player.getJob().getId();
     let advancement = (jobID % 100 % 10);
 
-    if (jobID != 0 && jobID != 1000 && jobID == 2000
+    if (jobID != 0 && jobID != 1000 && jobID != 2000
           && !containsJob(jobs, jobID)) {
         cm.sendOk("This path is not meant for you now.");
         cm.dispose();

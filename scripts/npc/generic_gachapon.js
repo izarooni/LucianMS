@@ -27,7 +27,7 @@ function action(mode, type, selection) {
             var item = items[Math.floor(Math.random() * items.length)];
             if (InventoryModifier.checkSpace(client, item, 1, "")) {
                 var log = player.getName() + " traded 1 " + ticket + " for 1 " + item + " from a gachapon";
-                var transactionId = createTransaction(player.getId(), log);
+                var transactionId = createTransaction(cm.getDatabaseConnection(), player.getId(), log);
                 if (transactionId == -1) {
                     print("Error creating transaction log...");
                     print(log);

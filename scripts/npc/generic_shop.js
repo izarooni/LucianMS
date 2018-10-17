@@ -96,7 +96,7 @@ function action(mode, type, selection) {
             if (InventoryModifier.checkSpace(client, this.itemChoice[0], this.itemChoice[1], "")) {
 
                 var log = player.getName() + " traded " + this.itemChoice[2] + " " + display + " for " + this.itemChoice[1] + " of item " + this.itemChoice[0];
-                var transactionId = createTransaction(player.getId(), log);
+                var transactionId = createTransaction(cm.getDatabaseConnection(), player.getId(), log);
                 if (transactionId == -1) {
                     print("Error creating transaction log...");
                     print(log);

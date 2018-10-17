@@ -2,8 +2,7 @@
 
 // Create a log of a player's in-game shop transaction
 // of what they purchased, what it cost and when
-function createTransaction(playerId, log) {
-    let con = Packages.tools.Database.getConnection();
+function createTransaction(con, playerId, log) {
     try {
         var ps = con.prepareStatement("insert into transactions values (default, ?, ?, default)", Packages.java.sql.Statement.RETURN_GENERATED_KEYS);
         ps.setInt(1, playerId);
