@@ -67,7 +67,11 @@ public class NPCScriptManager {
                 }
                 response += "\r\nNPC ID: " + npc;
                 player.dropMessage(1, response);
-                LOGGER.error("Unable to execute script '{}' npc '{}' using player '{}'", path, npc, player.getName(), e);
+                if (e instanceof ScriptException) {
+                    LOGGER.error("Unable to execute script '{}' npc '{}' using player '{}': {}", path, npc, player.getName(), e.getMessage());
+                } else {
+                    LOGGER.error("Unable to execute script '{}' npc '{}' using player '{}'", path, npc, player.getName(), e);
+                }
             }
             boolean revoked = player.getToggles().checkProperty(PlayerToggles.CommandNPCAccess, false);
             if (iv == null || revoked) {

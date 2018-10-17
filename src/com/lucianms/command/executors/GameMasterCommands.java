@@ -445,7 +445,7 @@ public class GameMasterCommands {
         } else if (command.equals("notice")) {
             if (args.length() > 0) {
                 String message = args.concatFrom(0);
-                ch.broadcastPacket(MaplePacketCreator.serverNotice(6, message));
+                ch.broadcastPacket(MaplePacketCreator.serverNotice(6, player.getName() + " : " + message));
             } else {
                 player.dropMessage(5, "You must specify a message");
             }
