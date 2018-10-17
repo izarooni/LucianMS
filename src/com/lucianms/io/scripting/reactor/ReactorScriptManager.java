@@ -22,12 +22,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 package com.lucianms.io.scripting.reactor;
 
 import client.MapleClient;
+import com.lucianms.io.scripting.ScriptUtil;
+import net.server.Server;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import com.lucianms.io.scripting.ScriptUtil;
 import server.maps.MapleReactor;
 import server.maps.ReactorDropEntry;
-import tools.Database;
 import tools.Pair;
 
 import javax.script.Invocable;
@@ -66,7 +66,8 @@ public class ReactorScriptManager {
         if (ret == null) {
             ret = new LinkedList<>();
             try {
-                try (Connection con = Database.getConnection(); PreparedStatement ps = con.prepareStatement("SELECT itemid, chance, questid FROM reactordrops WHERE reactorid = ? AND chance >= 0")) {
+                try (Connection con = Server.getConnection();
+                     PreparedStatement ps = con.prepareStatement("SELECT itemid, chance, questid FROM reactordrops WHERE reactorid = ? AND chance >= 0")) {
                     ps.setInt(1, rid);
                     try (ResultSet rs = ps.executeQuery()) {
                         while (rs.next()) {

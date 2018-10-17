@@ -8,7 +8,6 @@ import net.server.channel.Channel;
 import net.server.world.World;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import tools.Database;
 import tools.Randomizer;
 import tools.data.input.GenericLittleEndianAccessor;
 import tools.data.output.MaplePacketLittleEndianWriter;
@@ -38,9 +37,9 @@ public class BindRequest extends DiscordRequest {
         writer.writeLong(channelId);
         writer.writeLong(authorId);
 
-        try {
+        try (Connection con = DiscordSession.getConnection()) {
             int accountId = 0;
-            try (Connection con = Database.getConnection(); PreparedStatement ps = con.prepareStatement("select discord_id, id, loggedin from accounts where name = ?")) {
+            try (PreparedStatement ps = con.prepareStatement("select discord_id, id, loggedin from accounts where name = ?")) {
                 ps.setString(1, accountUsername);
                 try (ResultSet rs = ps.executeQuery()) {
                     if (rs.next()) {
@@ -61,7 +60,7 @@ public class BindRequest extends DiscordRequest {
                 writer.writeMapleAsciiString(accountUsername);
                 DiscordSession.sendPacket(writer.getPacket());
             } else {
-                try (Connection con = Database.getConnection(); PreparedStatement ps = con.prepareStatement("select id from characters where accountid = ?")) {
+                try (PreparedStatement ps = con.prepareStatement("select id from characters where accountid = ?")) {
                     ps.setInt(1, accountId);
                     try (ResultSet rs = ps.executeQuery()) {
                         while (rs.next()) {

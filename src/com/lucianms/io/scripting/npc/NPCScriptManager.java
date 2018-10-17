@@ -24,7 +24,6 @@ public class NPCScriptManager {
     private static final Logger LOGGER = LoggerFactory.getLogger(NPCScriptManager.class);
     private static ConcurrentHashMap<Integer, Pair<Invocable, NPCConversationManager>> storage = new ConcurrentHashMap<>();
 
-
     private NPCScriptManager() {
     }
 

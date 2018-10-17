@@ -1,5 +1,6 @@
 package client;
 
+import net.server.Server;
 import tools.Database;
 
 import java.sql.*;
@@ -25,7 +26,7 @@ public class MapleRing implements Comparable<MapleRing> {
     }
 
     public static MapleRing loadFromDb(int ringId) {
-        try (Connection con = Database.getConnection()) {
+        try (Connection con = Server.getConnection()) {
             try (PreparedStatement ps = con.prepareStatement("SELECT * FROM rings WHERE id = ?")) {
                 ps.setInt(1, ringId);
                 try (ResultSet rs = ps.executeQuery()) {
@@ -51,7 +52,7 @@ public class MapleRing implements Comparable<MapleRing> {
             return -1;
         }
         int[] ringID = new int[2];
-        try (Connection con = Database.getConnection()) {
+        try (Connection con = partner1.getClient().getChannelServer().getConnection()) {
             try (PreparedStatement ps = con.prepareStatement("INSERT INTO rings (itemid, partnerChrId, partnername) VALUES (?, ?, ?)", Statement.RETURN_GENERATED_KEYS)) {
                 ps.setInt(1, itemid);
                 ps.setInt(2, partner2.getId());

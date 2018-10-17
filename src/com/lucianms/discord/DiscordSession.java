@@ -2,6 +2,7 @@ package com.lucianms.discord;
 
 import com.lucianms.discord.proto.RawDecoder;
 import com.lucianms.discord.proto.RawEncoder;
+import com.zaxxer.hikari.HikariDataSource;
 import org.apache.mina.core.service.IoAcceptor;
 import org.apache.mina.core.session.IdleStatus;
 import org.apache.mina.core.session.IoSession;
@@ -12,10 +13,13 @@ import org.apache.mina.filter.codec.ProtocolEncoder;
 import org.apache.mina.transport.socket.nio.NioSocketAcceptor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import tools.Database;
 
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
+import java.sql.Connection;
+import java.sql.SQLException;
 
 /**
  * Use basic encoding/decoding, socket should be local ONLY
@@ -26,9 +30,14 @@ public class DiscordSession {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(DiscordSession.class);
 
+    private static HikariDataSource hikari = Database.createDataSource("hikari-discord");
     private static IoAcceptor acceptor = null;
 
     private static IoSession session = null;
+
+    public static Connection getConnection() throws SQLException  {
+        return hikari.getConnection();
+    }
 
     public static synchronized void listen() {
         if (acceptor != null) {

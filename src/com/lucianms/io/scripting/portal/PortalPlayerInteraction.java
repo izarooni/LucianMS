@@ -24,7 +24,6 @@ package com.lucianms.io.scripting.portal;
 import client.MapleClient;
 import com.lucianms.io.scripting.AbstractPlayerInteraction;
 import server.MaplePortal;
-import tools.Database;
 import tools.MaplePacketCreator;
 
 import java.sql.Connection;
@@ -46,7 +45,8 @@ public class PortalPlayerInteraction extends AbstractPlayerInteraction {
     }
 
     public boolean hasLevel30Character() {
-        try (Connection con = Database.getConnection(); PreparedStatement ps = con.prepareStatement("SELECT `level` FROM `characters` WHERE accountid = ?")) {
+        try (Connection con = getClient().getChannelServer().getConnection();
+             PreparedStatement ps = con.prepareStatement("SELECT `level` FROM `characters` WHERE accountid = ?")) {
             ps.setInt(1, getPlayer().getAccountID());
             try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {

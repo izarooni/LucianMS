@@ -24,7 +24,7 @@ public class House {
         this.password = password;
         this.billDate = billDate;
 
-        map = new FieldBuilder(0, 0, mapID)
+        map = new FieldBuilder(0, 1, mapID)
                 .loadFootholds()
                 .loadPortals()
                 .build();

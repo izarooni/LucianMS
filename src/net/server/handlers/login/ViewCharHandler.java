@@ -24,6 +24,7 @@ package net.server.handlers.login;
 import client.MapleCharacter;
 import client.MapleClient;
 import net.AbstractMaplePacketHandler;
+import net.server.Server;
 import tools.Database;
 import tools.MaplePacketCreator;
 import tools.data.input.SeekableLittleEndianAccessor;
@@ -42,7 +43,7 @@ public final class ViewCharHandler extends AbstractMaplePacketHandler {
             short charsNum;
             List<Integer> worlds;
             List<MapleCharacter> chars;
-            try (Connection con = Database.getConnection();
+            try (Connection con = Server.getConnection();
                  PreparedStatement ps = con.prepareStatement("SELECT world, id FROM characters WHERE accountid = ?")) {
                 ps.setInt(1, c.getAccID());
                 charsNum = 0;
@@ -60,7 +61,7 @@ public final class ViewCharHandler extends AbstractMaplePacketHandler {
                         if (!inside) {
                             worlds.add(cworld);
                         }
-                        MapleCharacter chr = MapleCharacter.loadCharFromDB(rs.getInt("id"), c, false);
+                        MapleCharacter chr = MapleCharacter.loadCharFromDB(con, rs.getInt("id"), c, false);
                         chars.add(chr);
                         charsNum++;
                     }

@@ -1,5 +1,6 @@
 package client;
 
+import net.server.Server;
 import tools.Database;
 import tools.MaplePacketCreator;
 
@@ -89,7 +90,7 @@ public class BuddyList {
     }
 
     public void loadFromDb(int characterId) {
-        try (Connection con = Database.getConnection()) {
+        try (Connection con = Server.getConnection()) {
             try (PreparedStatement ps = con.prepareStatement("SELECT b.buddyid, b.pending, b.group, c.name as buddyname FROM buddies as b, characters as c WHERE c.id = b.buddyid AND b.characterid = ?")) {
                 ps.setInt(1, characterId);
                 try (ResultSet rs = ps.executeQuery()) {

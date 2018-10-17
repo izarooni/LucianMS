@@ -26,6 +26,7 @@ import client.inventory.Item;
 import client.inventory.MapleInventoryType;
 import client.inventory.MaplePet;
 import constants.ItemConstants;
+import net.server.Server;
 import tools.Database;
 import tools.MaplePacketCreator;
 
@@ -209,7 +210,7 @@ public class MapleShop {
 
     public static MapleShop createFromDB(int id, boolean isShopId) {
         MapleShop shop = null;
-        try (Connection con = Database.getConnection()) {
+        try (Connection con = Server.getConnection()) {
             final String statement = "select * from shops where " + (isShopId ? "shopid" : "npcid") + " = ?";
             try (PreparedStatement ps = con.prepareStatement(statement)) {
                 ps.setInt(1, id);

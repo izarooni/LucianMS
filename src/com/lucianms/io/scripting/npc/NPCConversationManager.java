@@ -34,6 +34,7 @@ import net.server.guild.MapleAlliance;
 import net.server.guild.MapleGuild;
 import net.server.world.MapleParty;
 import net.server.world.MaplePartyCharacter;
+import org.apache.commons.net.chargen.CharGenTCPClient;
 import provider.MapleData;
 import provider.MapleDataProviderFactory;
 import server.MapleItemInformationProvider;
@@ -342,7 +343,8 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
     public void disbandAlliance(MapleClient c, int allianceId) {
         Server.getInstance().allianceMessage(c.getPlayer().getGuild().getAllianceId(), MaplePacketCreator.disbandAlliance(allianceId), -1, -1);
         Server.getInstance().disbandAlliance(allianceId);
-        try (Connection con = Database.getConnection(); PreparedStatement ps = con.prepareStatement("DELETE FROM `alliance` WHERE id = ?")) {
+        try (Connection con = Server.getConnection();
+             PreparedStatement ps = con.prepareStatement("DELETE FROM `alliance` WHERE id = ?")) {
             ps.setInt(1, allianceId);
             ps.executeUpdate();
         } catch (SQLException e) {
@@ -354,7 +356,8 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
         if (name.isEmpty() || name.contains(" ") || name.length() > 12) {
             return false;
         }
-        try (Connection con = Database.getConnection(); PreparedStatement ps = con.prepareStatement("SELECT name FROM alliance WHERE name = ?")) {
+        try (Connection con = getClient().getChannelServer().getConnection();
+             PreparedStatement ps = con.prepareStatement("SELECT name FROM alliance WHERE name = ?")) {
             ps.setString(1, name);
             try (ResultSet rs = ps.executeQuery()) {
                 if (!rs.next()) {
@@ -371,7 +374,8 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
         int id;
         int guild1 = chr1.getGuildId();
         int guild2 = chr2.getGuildId();
-        try (Connection con = Database.getConnection(); PreparedStatement ps = con.prepareStatement("INSERT INTO `alliance` (`name`, `guild1`, `guild2`) VALUES (?, ?, ?)", PreparedStatement.RETURN_GENERATED_KEYS)) {
+        try (Connection con = chr1.getClient().getChannelServer().getConnection();
+             PreparedStatement ps = con.prepareStatement("INSERT INTO `alliance` (`name`, `guild1`, `guild2`) VALUES (?, ?, ?)", PreparedStatement.RETURN_GENERATED_KEYS)) {
             ps.setString(1, name);
             ps.setInt(2, guild1);
             ps.setInt(3, guild2);
@@ -401,7 +405,7 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
     }
 
     public boolean hasMerchantItems() {
-        try (Connection con = Database.getConnection()) {
+        try (Connection con = getClient().getChannelServer().getConnection()) {
             if (!ItemFactory.MERCHANT.loadItems(con, getPlayer().getId(), false).isEmpty()) {
                 return true;
             }

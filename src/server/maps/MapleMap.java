@@ -161,6 +161,14 @@ public class MapleMap {
         objectWLock = objectLock.writeLock();
     }
 
+    public int getWorld() {
+        return world;
+    }
+
+    public int getChannel() {
+        return channel;
+    }
+
     public ReadLock getCharacterReadLock() {
         return chrRLock;
     }
@@ -737,7 +745,7 @@ public class MapleMap {
         if (monster.getStats().getLevel() >= chr.getLevel() + 30 && !chr.isGM()) {
             Cheater.CheatEntry entry = chr.getCheater().getCheatEntry(Cheats.UnderLevelAttack);
             entry.incrementCheatCount();
-            entry.announce(chr.getClient(), 2500, "[{}] {} (level {}) attacked a monster ({}) too high of level (level {})", entry.cheatCount, chr.getName(), chr.getLevel(), monster.getId(), monster.getStats().getLevel());
+            entry.announce(chr.getClient(), 8000, "[{}] {} (level {}) attacked a monster ({}) too high of level (level {})", entry.cheatCount, chr.getName(), chr.getLevel(), monster.getId(), monster.getStats().getLevel());
         }
         int buff = monster.getBuffToGive();
         if (buff > -1) {

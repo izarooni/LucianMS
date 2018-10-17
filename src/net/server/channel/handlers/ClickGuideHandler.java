@@ -35,11 +35,5 @@ public class ClickGuideHandler extends AbstractMaplePacketHandler {
 
     @Override
     public void handlePacket(SeekableLittleEndianAccessor slea, MapleClient c) {
-        if (c.getPlayer().getJob().equals(MapleJob.NOBLESSE)) {
-            NPCScriptManager.start(c, 1101008, null);
-        } else {
-            NPCScriptManager.start(c, 1202000, null);
-        }
     }
-
 }

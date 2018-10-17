@@ -1,10 +1,10 @@
 package server.life;
 
+import net.server.Server;
 import provider.MapleData;
 import provider.MapleDataProvider;
 import provider.MapleDataProviderFactory;
 import provider.MapleDataTool;
-import tools.Database;
 import tools.Pair;
 
 import java.io.File;
@@ -33,7 +33,8 @@ public class MapleMonsterInformationProvider {
     }
 
     private void retrieveGlobal() {
-        try (Connection con = Database.getConnection(); PreparedStatement ps = con.prepareStatement("SELECT * FROM drop_data_global WHERE chance > 0")) {
+        try (Connection con = Server.getConnection();
+             PreparedStatement ps = con.prepareStatement("SELECT * FROM drop_data_global WHERE chance > 0")) {
             try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
                     globaldrops.add(
@@ -58,7 +59,8 @@ public class MapleMonsterInformationProvider {
         }
         final List<MonsterDropEntry> ret = new LinkedList<>();
 
-        try (Connection con = Database.getConnection(); PreparedStatement ps = con.prepareStatement("SELECT * FROM drop_data WHERE dropperid = ?")) {
+        try (Connection con = Server.getConnection();
+             PreparedStatement ps = con.prepareStatement("SELECT * FROM drop_data WHERE dropperid = ?")) {
             ps.setInt(1, monsterId);
             try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {

@@ -25,7 +25,6 @@ import client.MapleCharacter;
 import client.MapleClient;
 import net.AbstractMaplePacketHandler;
 import net.server.Server;
-import tools.Database;
 import tools.MaplePacketCreator;
 import tools.data.input.SeekableLittleEndianAccessor;
 
@@ -84,9 +83,8 @@ public final class ReportHandler extends AbstractMaplePacketHandler {
 
     public void addReport(int reporterid, int victimid, int reason, String description, String chatlog) {
         Calendar calendar = Calendar.getInstance();
-        Connection con = Database.getConnection();
-        try {
-            PreparedStatement ps = con.prepareStatement("INSERT INTO reports (`reporttime`, `reporterid`, `victimid`, `reason`, `chatlog`, `description`) VALUES (?, ?, ?, ?, ?, ?)");
+        try (Connection con = Server.getConnection();
+             PreparedStatement ps = con.prepareStatement("INSERT INTO reports (`reporttime`, `reporterid`, `victimid`, `reason`, `chatlog`, `description`) VALUES (?, ?, ?, ?, ?, ?)")) {
             ps.setString(1, DateFormat.getInstance().format(new Date()));
             ps.setInt(2, reporterid);
             ps.setInt(3, victimid);
@@ -95,7 +93,6 @@ public final class ReportHandler extends AbstractMaplePacketHandler {
             ps.setString(6, description);
             ps.addBatch();
             ps.executeBatch();
-            ps.close();
         } catch (SQLException ex) {
             ex.printStackTrace();
         }

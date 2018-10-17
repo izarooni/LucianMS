@@ -24,6 +24,7 @@ package net.server.channel;
 import client.MapleCharacter;
 import com.lucianms.io.scripting.event.EventScriptManager;
 import com.lucianms.server.pqs.carnival.MCarnivalLobbyManager;
+import com.zaxxer.hikari.HikariDataSource;
 import net.MapleServerHandler;
 import net.mina.MapleCodecFactory;
 import net.server.PlayerStorage;
@@ -47,11 +48,14 @@ import server.expeditions.MapleExpedition;
 import server.maps.HiredMerchant;
 import server.maps.MapleMap;
 import server.maps.MapleMapObject;
+import tools.Database;
 import tools.MaplePacketCreator;
 
 import java.io.File;
 import java.io.IOException;
 import java.net.InetSocketAddress;
+import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
@@ -73,14 +77,16 @@ public final class Channel {
     private List<MapleExpedition> expeditions = new ArrayList<>();
     private MCarnivalLobbyManager carnivalLobbyManager;
     private MapleEvent event;
+    private HikariDataSource hikari;
 
     public Channel(final int world, final int channel) {
         this.world = world;
         this.channel = channel;
-        reloadEventScriptManager();
         carnivalLobbyManager = new MCarnivalLobbyManager(this);
         final int port = (7575 + (this.channel - 1)) + (world * 100);
         ip = Server.getInstance().getConfig().getString("ServerHost") + ":" + port;
+
+        hikari = Database.createDataSource("hikari-channel" + getId());
 
         IoBuffer.setUseDirectBuffer(false);
         IoBuffer.setAllocator(new SimpleBufferAllocator());
@@ -96,6 +102,10 @@ public final class Channel {
             e.printStackTrace();
         }
         LOGGER.info("Channel {} bind to port {}", getId(), port);
+    }
+
+    public Connection getConnection() throws SQLException {
+        return hikari.getConnection();
     }
 
     public MCarnivalLobbyManager getCarnivalLobbyManager() {

@@ -8,26 +8,28 @@ let streak = null;
 let ttd = null;
 let show = true;
 
-let con = Database.getConnection();
-try {
-    let ps = con.prepareStatement("select daily_login, daily_showable, login_streak from accounts where id = ?");
-    ps.setInt(1, client.getAccID());
-    let rs = ps.executeQuery();
-    if (rs.next()) {
-        show = rs.getBoolean("daily_showable");
-        let timestamp = rs.getTimestamp("daily_login");
-        streak = rs.getInt("login_streak");
-        if (timestamp != null) {
-            let calendar = Calendar.getInstance();
-            calendar.setTimeInMillis(timestamp.getTime());
-            calendar.set(Calendar.DAY_OF_MONTH, calendar.get(Calendar.DAY_OF_MONTH) + 1);
-            ttd = calendar.getTime().getTime();
-            ttd = parseInt(ttd);
+{
+    let con = cm.getDatabaseConnection();
+    try {
+        let ps = con.prepareStatement("select daily_login, daily_showable, login_streak from accounts where id = ?");
+        ps.setInt(1, client.getAccID());
+        let rs = ps.executeQuery();
+        if (rs.next()) {
+            show = rs.getBoolean("daily_showable");
+            let timestamp = rs.getTimestamp("daily_login");
+            streak = rs.getInt("login_streak");
+            if (timestamp != null) {
+                let calendar = Calendar.getInstance();
+                calendar.setTimeInMillis(timestamp.getTime());
+                calendar.set(Calendar.DAY_OF_MONTH, calendar.get(Calendar.DAY_OF_MONTH) + 1);
+                ttd = calendar.getTime().getTime();
+                ttd = parseInt(ttd);
+            }
         }
-    }
-    ps.close();
-    rs.close();
-} finally { con.close(); }
+        ps.close();
+        rs.close();
+    } finally { con.close(); }
+}
 
 function action(mode, type, selection) {
     if (mode < 1) {
@@ -81,7 +83,7 @@ function action(mode, type, selection) {
 }
 
 function setShowable(b) {
-    let con = Database.getConnection();
+    let con = cm.getDatabaseConnection();
     try {
         let ps = con.prepareStatement("update accounts set daily_showable = ? where id = ?");
         ps.setBoolean(1, b);
@@ -92,7 +94,7 @@ function setShowable(b) {
 }
 
 function recordStreak(streak) {
-    let con = Database.getConnection();
+    let con = cm.getDatabaseConnection();
     try {
         let record = con.prepareStatement("update accounts set daily_login = ?, login_streak = ? where id = ?");
         record.setTimestamp(1, new java.sql.Timestamp(java.lang.System.currentTimeMillis()));

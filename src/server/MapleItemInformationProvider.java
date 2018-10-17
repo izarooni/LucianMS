@@ -33,6 +33,7 @@ import constants.ItemConstants;
 import constants.skills.Assassin;
 import constants.skills.Gunslinger;
 import constants.skills.NightWalker;
+import net.server.Server;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import provider.*;
@@ -864,7 +865,7 @@ public class MapleItemInformationProvider {
     }
 
     private void loadCardIdData() {
-        try (Connection con = Database.getConnection();
+        try (Connection con = Server.getConnection();
              PreparedStatement ps = con.prepareStatement("SELECT cardid, mobid FROM monstercarddata")) {
             try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {

@@ -22,6 +22,7 @@
 package com.lucianms.helpers;
 
 import client.MapleJob;
+import net.server.Server;
 import tools.Database;
 
 import java.sql.Connection;
@@ -52,7 +53,7 @@ public class RankingWorker implements Runnable {
             sqlCharSelect += "AND c.job DIV 100 = ? ";
         }
         sqlCharSelect += "ORDER BY c.level DESC , c.exp DESC , c.fame DESC , c.meso DESC";
-        try (Connection con = Database.getConnection()) {
+        try (Connection con = Server.getConnection()) {
             try (PreparedStatement charSelect = con.prepareStatement(sqlCharSelect)) {
                 if (job != null) {
                     charSelect.setInt(1, job.getId() / 100);

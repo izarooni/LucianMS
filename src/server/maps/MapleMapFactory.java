@@ -22,6 +22,7 @@
 package server.maps;
 
 import client.MapleCharacter;
+import net.server.Server;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import provider.MapleData;
@@ -71,7 +72,7 @@ public class MapleMapFactory {
     }
 
     public MapleMap getMap(final int mapid) {
-        try (Connection con = Database.getConnection()) {
+        try (Connection con = Server.getConnection()) {
             if (!maps.containsKey(mapid)) {
                 String mapName = getMapName(mapid);
                 MapleData mapData = source.getData(mapName);
@@ -189,7 +190,7 @@ public class MapleMapFactory {
                     ps.setInt(1, mapid);
                     try (ResultSet rs = ps.executeQuery()) {
                         while (rs.next()) {
-                            map.addMapObject(new PlayerNPC(rs));
+                            map.addMapObject(new PlayerNPC(con, rs));
                         }
                     }
                 } catch (SQLException e) {

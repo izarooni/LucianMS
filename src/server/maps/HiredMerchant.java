@@ -33,7 +33,6 @@ import net.server.Server;
 import server.MapleInventoryManipulator;
 import server.MapleItemInformationProvider;
 import server.MaplePlayerShopItem;
-import tools.Database;
 import tools.MaplePacketCreator;
 import tools.Pair;
 
@@ -168,7 +167,8 @@ public class HiredMerchant extends AbstractMapleMapObject {
                     if (owner != null) {
                         owner.addMerchantMesos(price);
                     } else {
-                        try (Connection con = Database.getConnection(); PreparedStatement ps = con.prepareStatement("UPDATE characters SET MerchantMesos = MerchantMesos + ? WHERE id = ?", PreparedStatement.RETURN_GENERATED_KEYS)) {
+                        try (Connection con = Server.getConnection();
+                             PreparedStatement ps = con.prepareStatement("UPDATE characters SET MerchantMesos = MerchantMesos + ? WHERE id = ?", PreparedStatement.RETURN_GENERATED_KEYS)) {
                             ps.setInt(1, price);
                             ps.setInt(2, ownerId);
                             ps.executeUpdate();
@@ -209,7 +209,8 @@ public class HiredMerchant extends AbstractMapleMapObject {
         if (player != null) {
             player.setHasMerchant(false);
         } else {
-            try (Connection con = Database.getConnection(); PreparedStatement ps = con.prepareStatement("UPDATE characters SET HasMerchant = 0 WHERE id = ?", PreparedStatement.RETURN_GENERATED_KEYS)) {
+            try (Connection con = Server.getConnection();
+                 PreparedStatement ps = con.prepareStatement("UPDATE characters SET HasMerchant = 0 WHERE id = ?", PreparedStatement.RETURN_GENERATED_KEYS)) {
                 ps.setInt(1, ownerId);
                 ps.executeUpdate();
             } catch (SQLException ex) {
@@ -229,7 +230,8 @@ public class HiredMerchant extends AbstractMapleMapObject {
         if (player != null) {
             player.setHasMerchant(false);
         } else {
-            try (Connection con = Database.getConnection(); PreparedStatement ps = con.prepareStatement("UPDATE characters SET HasMerchant = 0 WHERE id = ?", PreparedStatement.RETURN_GENERATED_KEYS)) {
+            try (Connection con = c.getChannelServer().getConnection();
+                 PreparedStatement ps = con.prepareStatement("UPDATE characters SET HasMerchant = 0 WHERE id = ?", PreparedStatement.RETURN_GENERATED_KEYS)) {
                 ps.setInt(1, ownerId);
                 ps.executeUpdate();
             } catch (SQLException e) {
@@ -344,7 +346,7 @@ public class HiredMerchant extends AbstractMapleMapObject {
             }
         }
 
-        try (Connection con = Database.getConnection()) {
+        try (Connection con = Server.getConnection()) {
             ItemFactory.MERCHANT.saveItems(itemsWithType, this.ownerId, con);
         }
     }

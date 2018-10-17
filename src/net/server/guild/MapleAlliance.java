@@ -21,6 +21,7 @@
 */
 package net.server.guild;
 
+import net.server.Server;
 import tools.Database;
 
 import java.sql.Connection;
@@ -57,7 +58,8 @@ public class MapleAlliance {
             return null;
         }
         MapleAlliance alliance = new MapleAlliance(null, -1, -1, -1);
-        try (Connection con = Database.getConnection(); PreparedStatement ps = con.prepareStatement("SELECT * FROM alliance WHERE id = ?")) {
+        try (Connection con = Server.getConnection();
+             PreparedStatement ps = con.prepareStatement("SELECT * FROM alliance WHERE id = ?")) {
             ps.setInt(1, id);
             try (ResultSet rs = ps.executeQuery()) {
                 if (!rs.next()) {
@@ -90,7 +92,8 @@ public class MapleAlliance {
         for (int i = 1; i <= 5; i++) {
             sb.append("guild").append(i).append(" = ?, ");
         }
-        try (Connection con = Database.getConnection(); PreparedStatement ps = con.prepareStatement("UPDATE `alliance` SET " + sb.toString() + " WHERE id = ?")) {
+        try (Connection con = Server.getConnection();
+             PreparedStatement ps = con.prepareStatement("UPDATE `alliance` SET " + sb.toString() + " WHERE id = ?")) {
             ps.setInt(1, this.capacity);
             ps.setString(2, this.notice);
             for (int i = 0; i < rankTitles.length; i++) {
@@ -109,7 +112,7 @@ public class MapleAlliance {
 
     public boolean addRemGuildFromDB(int gid, boolean add) {
         int avail = -1;
-        try (Connection con = Database.getConnection()) {
+        try (Connection con = Server.getConnection()) {
             try (PreparedStatement ps = con.prepareStatement("SELECT * FROM alliance WHERE id = ?")) {
                 ps.setInt(1, this.allianceId);
                 try (ResultSet rs = ps.executeQuery()) {

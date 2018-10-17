@@ -37,6 +37,7 @@ import com.lucianms.io.scripting.Achievements;
 import com.lucianms.scheduler.Task;
 import com.lucianms.scheduler.TaskExecutor;
 import com.lucianms.server.Whitelist;
+import com.zaxxer.hikari.HikariDataSource;
 import constants.ServerConstants;
 import net.MapleServerHandler;
 import net.mina.MapleCodecFactory;
@@ -63,6 +64,7 @@ import tools.Database;
 import tools.Pair;
 import tools.StringUtil;
 
+import javax.swing.plaf.basic.BasicInternalFrameTitlePane;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -90,8 +92,13 @@ public class Server implements Runnable {
     private boolean online = false;
     private Task dailyTask = null;
 
+    private static HikariDataSource hikari = Database.createDataSource("hikari-server");
     private Properties subnetInfo = new Properties();
     private Config config = null;
+
+    public static Connection getConnection() throws SQLException {
+        return hikari.getConnection();
+    }
 
     public static Server getInstance() {
         if (instance == null) {
@@ -101,7 +108,7 @@ public class Server implements Runnable {
     }
 
     public static void insertLog(String author, String description, Object... args) {
-        try (Connection con = Database.getConnection(); PreparedStatement ps = con.prepareStatement("insert into loggers (author, description) values (?, ?)")) {
+        try (Connection con = hikari.getConnection(); PreparedStatement ps = con.prepareStatement("insert into loggers (author, description) values (?, ?)")) {
             ps.setString(1, author);
             ps.setString(2, MessageFormatter.arrayFormat(description, args).getMessage());
             ps.executeUpdate();
@@ -157,6 +164,7 @@ public class Server implements Runnable {
 
     @Override
     public void run() {
+        final long beginning = System.currentTimeMillis();
         Properties p = new Properties();
         try {
             p.load(new FileInputStream("world.ini"));
@@ -205,14 +213,8 @@ public class Server implements Runnable {
             return;
         }
 
-        Database.init(
-                config.getString("DatabaseHost"),
-                config.getString("DatabaseSchema"),
-                config.getString("DatabaseUsername"),
-                config.getString("DatabasePassword")
-        );
         LOGGER.info("Database connection established");
-        try (Connection con = Database.getConnection()) {
+        try (Connection con = hikari.getConnection()) {
             Database.execute(con, "update accounts set loggedin = 0");
             Database.execute(con, "update characters set hasmerchant = 0");
         } catch (SQLException e) {
@@ -248,10 +250,6 @@ public class Server implements Runnable {
 
         Achievements.loadAchievements();
 
-        timeToTake = System.currentTimeMillis();
-        int count = HouseManager.loadHouses();
-        LOGGER.info("{} houses loaded in {}s", count, ((System.currentTimeMillis() - timeToTake) / 1000d));
-
         try {
             timeToTake = System.currentTimeMillis();
             int qWorlds = Integer.parseInt(p.getProperty("worlds"));
@@ -272,6 +270,7 @@ public class Server implements Runnable {
                     Channel channel = new Channel(i, channelId);
                     world.addChannel(channel);
                     channels.get(i).put(channelId, channel.getIP());
+                    channel.reloadEventScriptManager();
                 }
                 world.setServerMessage(sMessage);
 
@@ -285,10 +284,14 @@ public class Server implements Runnable {
             System.exit(0);
         }
 
+        timeToTake = System.currentTimeMillis();
+        int count = HouseManager.loadHouses();
+        LOGGER.info("{} houses loaded in {}s", count, ((System.currentTimeMillis() - timeToTake) / 1000d));
+
         ConsoleCommands.beginReading();
         LOGGER.info("Console now listening for commands");
 
-        LOGGER.info("LucianMS took {}s to start", ((System.currentTimeMillis() - timeToTake) / 1000d));
+        LOGGER.info("LucianMS took {}s to start", ((System.currentTimeMillis() - beginning) / 1000d));
         online = true;
 
     }

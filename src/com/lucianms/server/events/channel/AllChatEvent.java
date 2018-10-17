@@ -6,7 +6,6 @@ import com.lucianms.discord.DiscordSession;
 import com.lucianms.discord.Headers;
 import com.lucianms.discord.handlers.BindRequest;
 import net.PacketEvent;
-import tools.Database;
 import tools.MaplePacketCreator;
 import tools.data.input.SeekableLittleEndianAccessor;
 import tools.data.output.MaplePacketLittleEndianWriter;
@@ -41,7 +40,8 @@ public class AllChatEvent extends PacketEvent {
             DiscordSession.sendPacket(writer.getPacket());
             BindRequest.keys.remove(getClient().getDiscordKey());
             getClient().setDiscordKey(null);
-            try (Connection con = Database.getConnection(); PreparedStatement ps = con.prepareStatement("update accounts set discord_id = ? where id = ?")) {
+            try (Connection con = getClient().getChannelServer().getConnection();
+                 PreparedStatement ps = con.prepareStatement("update accounts set discord_id = ? where id = ?")) {
                 ps.setLong(1, getClient().getDiscordId());
                 ps.setInt(2, player.getAccountID());
                 ps.executeUpdate();

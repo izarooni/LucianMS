@@ -1,11 +1,11 @@
 package com.lucianms.features.controllers;
 
 import client.MapleCharacter;
+import net.server.Server;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import server.FieldBuilder;
 import server.maps.MapleMap;
-import tools.Database;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -29,7 +29,6 @@ public class JumpQuestController {
     }
 
     public void start() {
-        LOGGER.info("Map: {}, From: {}, ID: {}", map, mapComingFrom, id);
         FieldBuilder builder = new FieldBuilder(player.getWorld(), player.getClient().getChannel(), map);
         MapleMap map = builder.loadAll().build();
 
@@ -43,7 +42,8 @@ public class JumpQuestController {
 
     public int getHighscore() {
         int highscore = 0;
-        try (Connection con = Database.getConnection(); PreparedStatement stmnt = con.prepareStatement("SELECT time FROM jq_scores WHERE charid = ? AND id = ?")) {
+        try (Connection con = player.getClient().getChannelServer().getConnection();
+             PreparedStatement stmnt = con.prepareStatement("SELECT time FROM jq_scores WHERE charid = ? AND id = ?")) {
             stmnt.setInt(1, player.getId());
             stmnt.setInt(2, id);
             stmnt.execute();
@@ -61,7 +61,8 @@ public class JumpQuestController {
 
     public static String getTop(int id) {
         StringBuilder sb = new StringBuilder();
-        try (Connection con = Database.getConnection(); PreparedStatement stmnt = con.prepareStatement("SELECT * FROM jq_scores WHERE id = ? ORDER BY time DESC LIMIT 50")) {
+        try (Connection con = Server.getConnection();
+             PreparedStatement stmnt = con.prepareStatement("SELECT * FROM jq_scores WHERE id = ? ORDER BY time DESC LIMIT 50")) {
             stmnt.setInt(1, id);
 
             if (stmnt.execute()) {
@@ -92,7 +93,8 @@ public class JumpQuestController {
 
     public void end() {
         int score = getHighscore();
-        try (Connection c = Database.getConnection(); PreparedStatement stmnt = c.prepareStatement("INSERT INTO jq_scores (id, charid, time) VALUES (?, ?, ?) ON DUPLICATE KEY UPDATE time = ?")) {
+        try (Connection c = player.getClient().getChannelServer().getConnection();
+             PreparedStatement stmnt = c.prepareStatement("INSERT INTO jq_scores (id, charid, time) VALUES (?, ?, ?) ON DUPLICATE KEY UPDATE time = ?")) {
             int time = (int) ((System.currentTimeMillis() - timeStarted) / 1000);
             time = (score >= time ? time : score);
 

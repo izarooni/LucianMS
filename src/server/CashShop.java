@@ -23,6 +23,7 @@ package server;
 
 import client.inventory.*;
 import constants.ItemConstants;
+import net.server.Server;
 import provider.MapleData;
 import provider.MapleDataProvider;
 import provider.MapleDataProviderFactory;
@@ -174,7 +175,7 @@ public class CashShop {
 
                 packages.put(Integer.parseInt(cashPackage.getName()), cPackage);
             }
-            try (Connection con = Database.getConnection();
+            try (Connection con = Server.getConnection();
                  PreparedStatement ps = con.prepareStatement("SELECT * FROM specialcashitems")) {
                 try (ResultSet rs = ps.executeQuery()) {
                     while (rs.next()) {
@@ -230,7 +231,7 @@ public class CashShop {
             throw new NullPointerException("Unknown job type" + jobType);
         }
 
-        try (Connection con = Database.getConnection()) {
+        try (Connection con = Server.getConnection()) {
             try (PreparedStatement ps = con.prepareStatement("SELECT `nxCredit`, `maplePoint`, `nxPrepaid` FROM `accounts` WHERE `id` = ?")) {
                 ps.setInt(1, accountId);
                 try (ResultSet rs = ps.executeQuery()) {
@@ -339,7 +340,7 @@ public class CashShop {
     }
 
     public void gift(int recipient, String from, String message, int sn, int ringid) {
-        try (Connection con = Database.getConnection();
+        try (Connection con = Server.getConnection();
              PreparedStatement ps = con.prepareStatement("INSERT INTO `gifts` VALUES (DEFAULT, ?, ?, ?, ?, ?)")) {
             ps.setInt(1, recipient);
             ps.setString(2, from);
@@ -356,41 +357,41 @@ public class CashShop {
     public List<Pair<Item, String>> loadGifts() {
         List<Pair<Item, String>> gifts = new ArrayList<>();
 
-        try (Connection con = Database.getConnection()) {
-            PreparedStatement ps = con.prepareStatement("SELECT * FROM `gifts` WHERE `to` = ?");
-            ps.setInt(1, characterId);
-            ResultSet rs = ps.executeQuery();
+        try (Connection con = Server.getConnection()) {
+            try (PreparedStatement ps = con.prepareStatement("SELECT * FROM `gifts` WHERE `to` = ?")) {
+                ps.setInt(1, characterId);
+                try (ResultSet rs = ps.executeQuery()) {
 
-            while (rs.next()) {
-                notes++;
-                CashItem cItem = CashItemFactory.getItem(rs.getInt("sn"));
-                Item item = cItem.toItem();
-                Equip equip = null;
-                item.setGiftFrom(rs.getString("from"));
-                if (item.getType() == MapleInventoryType.EQUIP.getType()) {
-                    equip = (Equip) item;
-                    equip.setRingId(rs.getInt("ringid"));
-                    gifts.add(new Pair<Item, String>(equip, rs.getString("message")));
-                } else {
-                    gifts.add(new Pair<>(item, rs.getString("message")));
-                }
+                    while (rs.next()) {
+                        notes++;
+                        CashItem cItem = CashItemFactory.getItem(rs.getInt("sn"));
+                        Item item = cItem.toItem();
+                        Equip equip = null;
+                        item.setGiftFrom(rs.getString("from"));
+                        if (item.getType() == MapleInventoryType.EQUIP.getType()) {
+                            equip = (Equip) item;
+                            equip.setRingId(rs.getInt("ringid"));
+                            gifts.add(new Pair<Item, String>(equip, rs.getString("message")));
+                        } else {
+                            gifts.add(new Pair<>(item, rs.getString("message")));
+                        }
 
-                if (CashItemFactory.isPackage(cItem.getItemId())) { //Packages never contains a ring
-                    for (Item packageItem : CashItemFactory.getPackage(cItem.getItemId())) {
-                        packageItem.setGiftFrom(rs.getString("from"));
-                        addToInventory(packageItem);
+                        if (CashItemFactory.isPackage(cItem.getItemId())) { //Packages never contains a ring
+                            for (Item packageItem : CashItemFactory.getPackage(cItem.getItemId())) {
+                                packageItem.setGiftFrom(rs.getString("from"));
+                                addToInventory(packageItem);
+                            }
+                        } else {
+                            addToInventory(equip == null ? item : equip);
+                        }
                     }
-                } else {
-                    addToInventory(equip == null ? item : equip);
                 }
             }
 
-            rs.close();
-            ps.close();
-            ps = con.prepareStatement("DELETE FROM `gifts` WHERE `to` = ?");
-            ps.setInt(1, characterId);
-            ps.executeUpdate();
-            ps.close();
+            try (PreparedStatement ps = con.prepareStatement("DELETE FROM `gifts` WHERE `to` = ?")) {
+                ps.setInt(1, characterId);
+                ps.executeUpdate();
+            }
         } catch (SQLException sqle) {
             sqle.printStackTrace();
         }

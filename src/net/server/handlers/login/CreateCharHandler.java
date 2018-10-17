@@ -8,6 +8,7 @@ import client.inventory.Item;
 import client.inventory.MapleInventory;
 import client.inventory.MapleInventoryType;
 import net.PacketEvent;
+import net.server.Server;
 import server.MapleItemInformationProvider;
 import tools.Database;
 import tools.MaplePacketCreator;
@@ -50,7 +51,7 @@ public class CreateCharHandler extends PacketEvent {
 
     @Override
     public void post() {
-        try (Connection con = Database.getConnection();
+        try (Connection con = Server.getConnection();
              PreparedStatement ps = con.prepareStatement("delete from ign_reserves where reserve = ? and username = ?")) {
             ps.setString(1, username);
             ps.setString(2, getClient().getAccountName());
@@ -86,7 +87,7 @@ public class CreateCharHandler extends PacketEvent {
         if (!MapleCharacter.canCreateChar(username)) {
             setCanceled(true);
         }
-        try (Connection con = Database.getConnection();
+        try (Connection con = Server.getConnection();
              PreparedStatement ps = con.prepareStatement("select * from ign_reserves where reserve = ? and username = ?")) {
             ps.setString(1, username);
             ps.setString(2, getClient().getAccountName());

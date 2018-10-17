@@ -7,7 +7,6 @@ import com.lucianms.discord.Headers;
 import net.server.Server;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import tools.Database;
 import tools.data.input.GenericLittleEndianAccessor;
 import tools.data.output.MaplePacketLittleEndianWriter;
 
@@ -45,7 +44,8 @@ public class FaceChangeRequest extends DiscordRequest {
         } else {
             int playerId = MapleCharacter.getIdByName(username);
             if (playerId > 0) {
-                try (Connection con = Database.getConnection(); PreparedStatement ps = con.prepareStatement("update characters set face = ? where id = ?")) {
+                try (Connection con = DiscordSession.getConnection();
+                     PreparedStatement ps = con.prepareStatement("update characters set face = ? where id = ?")) {
                     ps.setInt(1, faceId);
                     ps.setInt(2, playerId);
                     ps.executeUpdate();

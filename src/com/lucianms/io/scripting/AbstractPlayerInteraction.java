@@ -26,16 +26,17 @@ import client.MapleClient;
 import client.MapleQuestStatus;
 import client.SkillFactory;
 import client.inventory.*;
+import com.lucianms.io.scripting.event.EventManager;
+import com.lucianms.io.scripting.npc.NPCScriptManager;
+import com.lucianms.scheduler.Task;
+import com.lucianms.scheduler.TaskExecutor;
+import com.zaxxer.hikari.HikariDataSource;
 import constants.ItemConstants;
 import constants.ServerConstants;
 import net.server.Server;
 import net.server.guild.MapleGuild;
 import net.server.world.MapleParty;
 import net.server.world.MaplePartyCharacter;
-import com.lucianms.scheduler.Task;
-import com.lucianms.scheduler.TaskExecutor;
-import com.lucianms.io.scripting.event.EventManager;
-import com.lucianms.io.scripting.npc.NPCScriptManager;
 import server.MapleInventoryManipulator;
 import server.MapleItemInformationProvider;
 import server.expeditions.MapleExpedition;
@@ -50,9 +51,12 @@ import server.maps.MapleMapObjectType;
 import server.partyquest.PartyQuest;
 import server.partyquest.Pyramid;
 import server.quest.MapleQuest;
+import tools.Database;
 import tools.MaplePacketCreator;
 
 import java.awt.*;
+import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -60,6 +64,12 @@ import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 public class AbstractPlayerInteraction {
+
+    private static final HikariDataSource hikari = Database.createDataSource("hikari-scripts");
+
+    public Connection getDatabaseConnection() throws SQLException {
+        return hikari.getConnection();
+    }
 
     public MapleClient c;
 

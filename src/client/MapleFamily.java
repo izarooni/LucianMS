@@ -1,5 +1,6 @@
 package client;
 
+import net.server.Server;
 import tools.Database;
 
 import java.sql.Connection;
@@ -18,7 +19,7 @@ public class MapleFamily {
     private static Map<Integer, MapleFamilyEntry> members = new HashMap<Integer, MapleFamilyEntry>();
 
     public MapleFamily(int cid) {
-        try (Connection con = Database.getConnection()) {
+        try (Connection con = Server.getConnection()) {
             try (PreparedStatement ps = con.prepareStatement("SELECT familyid FROM family_character WHERE cid = ?")) {
                 ps.setInt(1, cid);
                 try (ResultSet rs = ps.executeQuery()) {
@@ -34,7 +35,7 @@ public class MapleFamily {
     }
 
     private static void getMapleFamily() {
-        try (Connection con = Database.getConnection()) {
+        try (Connection con = Server.getConnection()) {
             try (PreparedStatement ps = con.prepareStatement("SELECT * FROM family_character WHERE familyid = ?")) {
                 ps.setInt(1, id);
                 try (ResultSet rs = ps.executeQuery()) {
