@@ -13,6 +13,7 @@ world.ini
 server-config.json
 whitelist.json
 start.bat
+hikari-db.properties
 
 #Ian's PC
 Backups
