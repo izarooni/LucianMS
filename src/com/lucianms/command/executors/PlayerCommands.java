@@ -57,7 +57,7 @@ public class PlayerCommands {
             commands.add("@go <town|list> - warps you to a town or shows you a list of warpable towns");
             commands.add("@style - open the styling npc");
             commands.add("@kin - alternative to opening the syle npc");
-            commands.add("@callgm <player> <reason> - report a player, insert your own name if it is for another reason.");
+            commands.add("@callgm <reason> - report a player, insert your own name if it is for another reason.");
             commands.add("@report <bug> - report a bug, give as much detail as possible.");
             commands.add("@rps - Start a game of rock paper scissors vs a bot");
             commands.add("@arcade - Warp to the arcade map");
@@ -395,7 +395,7 @@ public class PlayerCommands {
             if (args.length() > 0) {
                 String message = args.concatFrom(0);
                 if (!message.isEmpty()) {
-                    client.getWorldServer().broadcastGMPacket(MaplePacketCreator.serverNotice(6, String.format("[GM_CALL] %s : %s", player.getName(), message)));
+                    client.getWorldServer().broadcastGMPacket(MaplePacketCreator.serverNotice(6, String.format("[GM_CALL] %s: %s", player.getName(), message)));
                     player.dropMessage(6, "Help message sent");
                 } else {
                     player.dropMessage(5, "You must specify a message");
