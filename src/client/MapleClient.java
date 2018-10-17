@@ -936,7 +936,7 @@ public class MapleClient {
                 } catch (NullPointerException ignored) {
                 }
             }
-        }, 30000);
+        }, 90000);
     }
 
     public String getLastKnownIP() {

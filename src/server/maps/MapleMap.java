@@ -35,7 +35,6 @@ import client.status.MonsterStatusEffect;
 import com.lucianms.cquest.CQuestData;
 import com.lucianms.cquest.requirement.CQuestItemRequirement;
 import com.lucianms.cquest.requirement.CQuestKillRequirement;
-import com.lucianms.features.GenericEvent;
 import com.lucianms.features.MonsterPark;
 import com.lucianms.features.PlayerBattle;
 import com.lucianms.features.emergency.Emergency;
@@ -53,7 +52,6 @@ import constants.GameConstants;
 import constants.ItemConstants;
 import constants.ServerConstants;
 import net.server.Server;
-import net.server.channel.Channel;
 import net.server.world.MaplePartyCharacter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -72,11 +70,9 @@ import java.awt.*;
 import java.util.*;
 import java.util.List;
 import java.util.Map.Entry;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.locks.ReentrantReadWriteLock;
-import java.util.concurrent.locks.ReentrantReadWriteLock.ReadLock;
-import java.util.concurrent.locks.ReentrantReadWriteLock.WriteLock;
 import java.util.stream.Collectors;
 
 public class MapleMap {
@@ -84,14 +80,9 @@ public class MapleMap {
     private static final int MAX_CHANCE = 999999;
     private static final Logger LOGGER = LoggerFactory.getLogger(MapleMap.class);
     private static final List<MapleMapObjectType> rangedMapobjectTypes = Arrays.asList(MapleMapObjectType.SHOP, MapleMapObjectType.ITEM, MapleMapObjectType.NPC, MapleMapObjectType.MONSTER, MapleMapObjectType.DOOR, MapleMapObjectType.SUMMON, MapleMapObjectType.REACTOR);
-    // locks
-    private final ReadLock chrRLock;
-    private final WriteLock chrWLock;
-    private final ReadLock objectRLock;
-    private final WriteLock objectWLock;
 
-    private Collection<MapleCharacter> characters = new LinkedHashSet<>();
-    private Map<Integer, MapleMapObject> mapobjects = new LinkedHashMap<>();
+    private ConcurrentHashMap<Integer, MapleCharacter> characters = new ConcurrentHashMap<>(100);
+    private ConcurrentHashMap<Integer, MapleMapObject> mapobjects = new ConcurrentHashMap<>(100);
     private Map<Integer, MaplePortal> portals = new HashMap<>();
     private Map<Integer, Integer> backgroundTypes = new HashMap<>();
     private ArrayList<Rectangle> areas = new ArrayList<>();
@@ -152,13 +143,6 @@ public class MapleMap {
         if (this.monsterRate == 0) {
             this.monsterRate = 1;
         }
-        final ReentrantReadWriteLock chrLock = new ReentrantReadWriteLock(true);
-        chrRLock = chrLock.readLock();
-        chrWLock = chrLock.writeLock();
-
-        final ReentrantReadWriteLock objectLock = new ReentrantReadWriteLock(true);
-        objectRLock = objectLock.readLock();
-        objectWLock = objectLock.writeLock();
     }
 
     public int getWorld() {
@@ -169,38 +153,14 @@ public class MapleMap {
         return channel;
     }
 
-    public ReadLock getCharacterReadLock() {
-        return chrRLock;
-    }
-
-    public WriteLock getCharacterWriteLock() {
-        return chrWLock;
-    }
-
     public void broadcastMessage(MapleCharacter source, final byte[] packet) {
-        chrRLock.lock();
-        try {
-            for (MapleCharacter chr : characters) {
-                if (chr != source) {
-                    chr.getClient().announce(packet);
-                }
-            }
-        } finally {
-            chrRLock.unlock();
-        }
+        getCharacters().stream().filter(c -> c.getId() != source.getId()).forEach(c -> c.getClient().announce(packet));
     }
 
     public void broadcastGMMessage(MapleCharacter source, final byte[] packet) {
-        chrRLock.lock();
-        try {
-            for (MapleCharacter chr : characters) {
-                if (chr != source && (chr.gmLevel() > source.gmLevel())) {
-                    chr.getClient().announce(packet);
-                }
-            }
-        } finally {
-            chrRLock.unlock();
-        }
+        getCharacters().stream()
+                .filter(c -> c.getId() != source.getId() && c.gmLevel() > source.gmLevel())
+                .forEach(c -> c.getClient().announce(packet));
     }
 
     public void toggleDrops() {
@@ -208,20 +168,9 @@ public class MapleMap {
     }
 
     public List<MapleMapObject> getMapObjectsInRect(Rectangle box, List<MapleMapObjectType> types) {
-        objectRLock.lock();
-        final List<MapleMapObject> ret = new LinkedList<>();
-        try {
-            for (MapleMapObject l : mapobjects.values()) {
-                if (types.contains(l.getType())) {
-                    if (box.contains(l.getPosition())) {
-                        ret.add(l);
-                    }
-                }
-            }
-        } finally {
-            objectRLock.unlock();
-        }
-        return ret;
+        return getMapObjects().stream()
+                .filter(o -> types.contains(o.getType()) && box.contains(o.getPosition()))
+                .collect(Collectors.toList());
     }
 
     public int getId() {
@@ -255,18 +204,13 @@ public class MapleMap {
     }
 
     public void setReactorState() {
-        objectRLock.lock();
-        try {
-            for (MapleMapObject o : mapobjects.values()) {
-                if (o.getType() == MapleMapObjectType.REACTOR) {
-                    if (((MapleReactor) o).getState() < 1) {
-                        ((MapleReactor) o).setState((byte) 1);
-                        broadcastMessage(MaplePacketCreator.triggerReactor((MapleReactor) o, 1));
-                    }
+        for (MapleMapObject o : mapobjects.values()) {
+            if (o.getType() == MapleMapObjectType.REACTOR) {
+                if (((MapleReactor) o).getState() < 1) {
+                    ((MapleReactor) o).setState((byte) 1);
+                    broadcastMessage(MaplePacketCreator.triggerReactor((MapleReactor) o, 1));
                 }
             }
-        } finally {
-            objectRLock.unlock();
         }
     }
 
@@ -304,14 +248,9 @@ public class MapleMap {
     }
 
     public void addMapObject(MapleMapObject mapobject) {
-        objectWLock.lock();
-        try {
-            int curOID = getUsableOID();
-            mapobject.setObjectId(curOID);
-            this.mapobjects.put(curOID, mapobject);
-        } finally {
-            objectWLock.unlock();
-        }
+        int curOID = getUsableOID();
+        mapobject.setObjectId(curOID);
+        mapobjects.put(curOID, mapobject);
     }
 
     private void spawnAndAddRangedMapObject(MapleMapObject mapobject, DelayedPacketCreation packetbakery) {
@@ -319,23 +258,14 @@ public class MapleMap {
     }
 
     private void spawnAndAddRangedMapObject(MapleMapObject mapobject, DelayedPacketCreation packetbakery, SpawnCondition condition) {
-        chrRLock.lock();
-        objectWLock.lock();
-        try {
-            int curOID = getUsableOID();
-            mapobject.setObjectId(curOID);
-            this.mapobjects.put(curOID, mapobject);
-            for (MapleCharacter chr : characters) {
-                if (!(chr instanceof FakePlayer) && (condition == null || condition.canSpawn(chr))) {
-                    if (chr.getPosition().distanceSq(mapobject.getPosition()) <= 722500) {
-                        packetbakery.sendPackets(chr.getClient());
-                        chr.addVisibleMapObject(mapobject);
-                    }
+        addMapObject(mapobject);
+        for (MapleCharacter chr : getCharacters()) {
+            if (!(chr instanceof FakePlayer) && (condition == null || condition.canSpawn(chr))) {
+                if (chr.getPosition().distanceSq(mapobject.getPosition()) <= 722500) {
+                    packetbakery.sendPackets(chr.getClient());
+                    chr.addVisibleMapObject(mapobject);
                 }
             }
-        } finally {
-            chrRLock.unlock();
-            objectWLock.unlock();
         }
     }
 
@@ -343,27 +273,16 @@ public class MapleMap {
         if (runningOid.incrementAndGet() > 2000000000) {
             runningOid.set(1000);
         }
-        objectRLock.lock();
-        try {
-            if (mapobjects.containsKey(runningOid.get())) {
-                while (mapobjects.containsKey(runningOid.incrementAndGet())) {
-                    ;
-                }
+        if (mapobjects.containsKey(runningOid.get())) {
+            while (mapobjects.containsKey(runningOid.incrementAndGet())) {
+                ;
             }
-        } finally {
-            objectRLock.unlock();
         }
-
         return runningOid.get();
     }
 
     public MapleMapObject removeMapObject(int num) {
-        objectWLock.lock();
-        try {
-            return mapobjects.remove(num);
-        } finally {
-            objectWLock.unlock();
-        }
+        return mapobjects.remove(num);
     }
 
     public void removeMapObject(final MapleMapObject obj) {
@@ -525,17 +444,12 @@ public class MapleMap {
     }
 
     public MapleMonster getMonsterById(int id) {
-        objectRLock.lock();
-        try {
-            for (MapleMapObject obj : mapobjects.values()) {
-                if (obj.getType() == MapleMapObjectType.MONSTER) {
-                    if (((MapleMonster) obj).getId() == id) {
-                        return (MapleMonster) obj;
-                    }
+        for (MapleMapObject obj : getMapObjects()) {
+            if (obj.getType() == MapleMapObjectType.MONSTER) {
+                if (((MapleMonster) obj).getId() == id) {
+                    return (MapleMonster) obj;
                 }
             }
-        } finally {
-            objectRLock.unlock();
         }
         return null;
     }
@@ -893,55 +807,41 @@ public class MapleMap {
     }
 
     public void resetReactors() {
-        objectRLock.lock();
-        try {
-            for (MapleMapObject o : mapobjects.values()) {
-                if (o.getType() == MapleMapObjectType.REACTOR) {
-                    final MapleReactor r = ((MapleReactor) o);
-                    r.setState((byte) 0);
-                    r.setTimerActive(false);
-                    broadcastMessage(MaplePacketCreator.triggerReactor(r, 0));
-                }
+        for (MapleMapObject o : getMapObjects()) {
+            if (o.getType() == MapleMapObjectType.REACTOR) {
+                final MapleReactor r = ((MapleReactor) o);
+                r.setState((byte) 0);
+                r.setTimerActive(false);
+                broadcastMessage(MaplePacketCreator.triggerReactor(r, 0));
             }
-        } finally {
-            objectRLock.unlock();
         }
     }
 
     public void shuffleReactors() {
         List<Point> points = new ArrayList<>();
-        objectRLock.lock();
-        try {
-            for (MapleMapObject o : mapobjects.values()) {
-                if (o.getType() == MapleMapObjectType.REACTOR) {
-                    points.add(o.getPosition());
-                }
+        for (MapleMapObject o : getMapObjects()) {
+            if (o.getType() == MapleMapObjectType.REACTOR) {
+                points.add(o.getPosition());
             }
-            Collections.shuffle(points);
-            for (MapleMapObject o : mapobjects.values()) {
-                if (o.getType() == MapleMapObjectType.REACTOR) {
-                    o.setPosition(points.remove(points.size() - 1));
-                }
-            }
-        } finally {
-            objectRLock.unlock();
         }
+        Collections.shuffle(points);
+        for (MapleMapObject o : getMapObjects()) {
+            if (o.getType() == MapleMapObjectType.REACTOR) {
+                o.setPosition(points.remove(points.size() - 1));
+            }
+        }
+        points.clear();
     }
 
     public MapleReactor getReactorById(int Id) {
-        objectRLock.lock();
-        try {
-            for (MapleMapObject obj : mapobjects.values()) {
-                if (obj.getType() == MapleMapObjectType.REACTOR) {
-                    if (((MapleReactor) obj).getId() == Id) {
-                        return (MapleReactor) obj;
-                    }
+        for (MapleMapObject obj : getMapObjects()) {
+            if (obj.getType() == MapleMapObjectType.REACTOR) {
+                if (((MapleReactor) obj).getId() == Id) {
+                    return (MapleReactor) obj;
                 }
             }
-            return null;
-        } finally {
-            objectRLock.unlock();
         }
+        return null;
     }
 
     /**
@@ -964,16 +864,11 @@ public class MapleMap {
             }
             int mincontrolled = -1;
             MapleCharacter newController = null;
-            chrRLock.lock();
-            try {
-                for (MapleCharacter chr : characters) {
-                    if (!(chr instanceof FakePlayer) && !chr.isHidden() && (chr.getControlledMonsters().size() < mincontrolled || mincontrolled == -1)) {
-                        mincontrolled = chr.getControlledMonsters().size();
-                        newController = chr;
-                    }
+            for (MapleCharacter chr : getCharacters()) {
+                if (!(chr instanceof FakePlayer) && !chr.isHidden() && (chr.getControlledMonsters().size() < mincontrolled || mincontrolled == -1)) {
+                    mincontrolled = chr.getControlledMonsters().size();
+                    newController = chr;
                 }
-            } finally {
-                chrRLock.unlock();
             }
             if (newController != null) {// was a new controller found? (if not
                 // no one is on the map)
@@ -990,25 +885,24 @@ public class MapleMap {
         }
     }
 
-    public Collection<MapleMapObject> getMapObjects() {
+    public ArrayList<MapleMapObject> getMapObjects() {
         return new ArrayList<>(mapobjects.values());
+    }
+
+    public ArrayList<MapleCharacter> getCharacters() {
+        return new ArrayList<>(characters.values());
     }
 
     public boolean containsNPC(int npcid) {
         if (npcid == 9000066) {
             return true;
         }
-        objectRLock.lock();
-        try {
-            for (MapleMapObject obj : mapobjects.values()) {
-                if (obj.getType() == MapleMapObjectType.NPC) {
-                    if (((MapleNPC) obj).getId() == npcid) {
-                        return true;
-                    }
+        for (MapleMapObject obj : getMapObjects()) {
+            if (obj.getType() == MapleMapObjectType.NPC) {
+                if (((MapleNPC) obj).getId() == npcid) {
+                    return true;
                 }
             }
-        } finally {
-            objectRLock.unlock();
         }
         return false;
     }
@@ -1043,17 +937,12 @@ public class MapleMap {
     }
 
     public MapleReactor getReactorByName(String name) {
-        objectRLock.lock();
-        try {
-            for (MapleMapObject obj : mapobjects.values()) {
-                if (obj.getType() == MapleMapObjectType.REACTOR) {
-                    if (((MapleReactor) obj).getName().equals(name)) {
-                        return (MapleReactor) obj;
-                    }
+        for (MapleMapObject obj : getCharacters()) {
+            if (obj.getType() == MapleMapObjectType.REACTOR) {
+                if (((MapleReactor) obj).getName().equals(name)) {
+                    return (MapleReactor) obj;
                 }
             }
-        } finally {
-            objectRLock.unlock();
         }
         return null;
     }
@@ -1263,20 +1152,15 @@ public class MapleMap {
     }
 
     public List<MapleCharacter> getPlayersInRange(Rectangle box, List<MapleCharacter> chr) {
-        List<MapleCharacter> character = new LinkedList<>();
-        chrRLock.lock();
-        try {
-            for (MapleCharacter a : characters) {
-                if (chr.contains(a)) {
-                    if (box.contains(a.getPosition())) {
-                        character.add(a);
-                    }
+        List<MapleCharacter> inRange = new LinkedList<>();
+        for (MapleCharacter a : getCharacters()) {
+            if (chr.contains(a)) {
+                if (box.contains(a.getPosition())) {
+                    inRange.add(a);
                 }
             }
-            return character;
-        } finally {
-            chrRLock.unlock();
         }
+        return inRange;
     }
 
     public void spawnSummon(final MapleSummon summon) {
@@ -1397,14 +1281,10 @@ public class MapleMap {
     }
 
     public final List<MapleReactor> getReactors() {
-        objectRLock.lock();
-        try {
-            ArrayList<MapleReactor> array = new ArrayList();
-            mapobjects.values().stream().filter(o -> (o instanceof MapleReactor)).map(o -> (MapleReactor) o).forEach(array::add);
-            return array;
-        } finally {
-            objectRLock.unlock();
-        }
+        return getMapObjects().stream()
+                .filter(o -> o instanceof MapleReactor)
+                .map(o -> (MapleReactor) o)
+                .collect(Collectors.toList());
     }
 
     public void startMapEffect(String msg, int itemId) {
@@ -1427,38 +1307,19 @@ public class MapleMap {
     }
 
     public void addFakePlayer(FakePlayer fakePlayer) {
-        chrWLock.lock();
-        objectWLock.lock();
-        try {
-            mapobjects.put(fakePlayer.getObjectId(), fakePlayer);
-            characters.add(fakePlayer);
-            broadcastMessage(fakePlayer, MaplePacketCreator.spawnPlayerMapobject(fakePlayer), false);
-        } finally {
-            chrWLock.unlock();
-            objectWLock.unlock();
-        }
+        mapobjects.put(fakePlayer.getObjectId(), fakePlayer);
+        characters.put(fakePlayer.getObjectId(), fakePlayer);
+        broadcastMessage(fakePlayer, MaplePacketCreator.spawnPlayerMapobject(fakePlayer), false);
     }
 
     public void removeFakePlayer(FakePlayer fakePlayer) {
-        chrWLock.lock();
-        objectWLock.lock();
-        try {
-            mapobjects.remove(fakePlayer.getObjectId());
-            characters.remove(fakePlayer);
-            broadcastMessage(fakePlayer, MaplePacketCreator.removePlayerFromMap(fakePlayer.getId()), false);
-        } finally {
-            chrWLock.unlock();
-            objectWLock.unlock();
-        }
+        mapobjects.remove(fakePlayer.getObjectId());
+        characters.remove(fakePlayer.getObjectId());
+        broadcastMessage(fakePlayer, MaplePacketCreator.removePlayerFromMap(fakePlayer.getId()), false);
     }
 
     public void addPlayer(final MapleCharacter chr) {
-        chrWLock.lock();
-        try {
-            characters.add(chr);
-        } finally {
-            chrWLock.unlock();
-        }
+        characters.put(chr.getObjectId(), chr);
         chr.setMapId(mapid);
         if (onFirstUserEnter.length() != 0 && !chr.hasEntered(onFirstUserEnter, mapid) && MapScriptManager.getInstance().scriptExists(onFirstUserEnter, true)) {
             if (getAllPlayer().size() <= 1) {
@@ -1616,12 +1477,7 @@ public class MapleMap {
             chr.getClient().announce(MaplePacketCreator.coconutScore(0, 0));
             chr.getClient().announce(MaplePacketCreator.showForcedEquip(chr.getTeam()));
         }
-        objectWLock.lock();
-        try {
-            this.mapobjects.put(chr.getObjectId(), chr);
-        } finally {
-            objectWLock.unlock();
-        }
+        mapobjects.put(chr.getObjectId(), chr);
         if (chr.getPlayerShop() != null) {
             addMapObject(chr.getPlayerShop());
         }
@@ -1692,7 +1548,7 @@ public class MapleMap {
         //region emergency attack
         // empty map or contains only party members
         if (characters.size() == 1
-                || (chr.getPartyId() > 0 && characters.stream().allMatch(p -> p.getPartyId() == chr.getPartyId()))) {
+                || (chr.getPartyId() > 0 && getCharacters().stream().allMatch(p -> p.getPartyId() == chr.getPartyId()))) {
             /*
             May only activate under the following conditions:
             Contains monster spawn points,
@@ -1776,12 +1632,7 @@ public class MapleMap {
     }
 
     public void removePlayer(MapleCharacter chr) {
-        chrWLock.lock();
-        try {
-            characters.remove(chr);
-        } finally {
-            chrWLock.unlock();
-        }
+        characters.remove(chr.getObjectId());
         removeMapObject(chr.getObjectId());
         if (!chr.isHidden()) {
             broadcastMessage(MaplePacketCreator.removePlayerFromMap(chr.getId()));
@@ -1839,21 +1690,16 @@ public class MapleMap {
     }
 
     private void broadcastMessage(MapleCharacter source, final byte[] packet, double rangeSq, Point rangedFrom) {
-        chrRLock.lock();
-        try {
-            for (MapleCharacter chr : characters) {
-                if (chr != source && !(chr instanceof FakePlayer)) {
-                    if (rangeSq < Double.POSITIVE_INFINITY) {
-                        if (rangedFrom.distanceSq(chr.getPosition()) <= rangeSq) {
-                            chr.getClient().announce(packet);
-                        }
-                    } else {
+        for (MapleCharacter chr : getCharacters()) {
+            if (chr != source && !(chr instanceof FakePlayer)) {
+                if (rangeSq < Double.POSITIVE_INFINITY) {
+                    if (rangedFrom.distanceSq(chr.getPosition()) <= rangeSq) {
                         chr.getClient().announce(packet);
                     }
+                } else {
+                    chr.getClient().announce(packet);
                 }
             }
-        } finally {
-            chrRLock.unlock();
         }
     }
 
@@ -1873,31 +1719,21 @@ public class MapleMap {
 
     private void sendObjectPlacement(MapleClient mapleClient) {
         MapleCharacter chr = mapleClient.getPlayer();
-        objectRLock.lock();
-        try {
-            for (MapleMapObject o : mapobjects.values()) {
-                if (o.getType() == MapleMapObjectType.SUMMON) {
-                    MapleSummon summon = (MapleSummon) o;
-                    if (summon.getOwner() == chr) {
-                        if (chr.getSummons().isEmpty() || !chr.getSummons().containsValue(summon)) {
-                            objectWLock.lock();
-                            try {
-                                mapobjects.remove(o);
-                            } finally {
-                                objectWLock.unlock();
-                            }
-                            continue;
-                        }
+        for (MapleMapObject o : getMapObjects()) {
+            if (o.getType() == MapleMapObjectType.SUMMON) {
+                MapleSummon summon = (MapleSummon) o;
+                if (summon.getOwner() == chr) {
+                    if (chr.getSummons().isEmpty() || !chr.getSummons().containsValue(summon)) {
+                        mapobjects.remove(o);
+                        continue;
                     }
                 }
-                if (isNonRangedType(o.getType())) {
-                    o.sendSpawnData(mapleClient);
-                } else if (o.getType() == MapleMapObjectType.MONSTER) {
-                    updateMonsterController((MapleMonster) o);
-                }
             }
-        } finally {
-            objectRLock.unlock();
+            if (isNonRangedType(o.getType())) {
+                o.sendSpawnData(mapleClient);
+            } else if (o.getType() == MapleMapObjectType.MONSTER) {
+                updateMonsterController((MapleMonster) o);
+            }
         }
         if (chr != null) {
             for (MapleMapObject o : getMapObjectsInRange(chr.getPosition(), 722500, rangedMapobjectTypes)) {
@@ -1916,19 +1752,14 @@ public class MapleMap {
 
     public List<MapleMapObject> getMapObjectsInRange(Point from, double rangeSq, List<MapleMapObjectType> types) {
         List<MapleMapObject> ret = new LinkedList<>();
-        objectRLock.lock();
-        try {
-            for (MapleMapObject l : mapobjects.values()) {
-                if (types.contains(l.getType())) {
-                    if (from.distanceSq(l.getPosition()) <= rangeSq) {
-                        ret.add(l);
-                    }
+        for (MapleMapObject l : getMapObjects()) {
+            if (types.contains(l.getType())) {
+                if (from.distanceSq(l.getPosition()) <= rangeSq) {
+                    ret.add(l);
                 }
             }
-            return ret;
-        } finally {
-            objectRLock.unlock();
         }
+        return ret;
     }
 
     public <T> ArrayList<T> getMapObjects(Class<T> t) {
@@ -1936,34 +1767,24 @@ public class MapleMap {
             throw new IllegalArgumentException();
         }
         ArrayList<T> ret = new ArrayList<>();
-        objectRLock.lock();
-        try {
-            for (MapleMapObject object : mapobjects.values()) {
-                if (object.getClass() == t) {
-                    ret.add((T) object);
-                }
+        for (MapleMapObject object : getMapObjects()) {
+            if (object.getClass() == t) {
+                ret.add((T) object);
             }
-            return ret;
-        } finally {
-            objectRLock.unlock();
         }
+        return ret;
     }
 
     public List<MapleMapObject> getMapObjectsInBox(Rectangle box, List<MapleMapObjectType> types) {
         List<MapleMapObject> ret = new LinkedList<>();
-        objectRLock.lock();
-        try {
-            for (MapleMapObject l : mapobjects.values()) {
-                if (types.contains(l.getType())) {
-                    if (box.contains(l.getPosition())) {
-                        ret.add(l);
-                    }
+        for (MapleMapObject l : getMapObjects()) {
+            if (types.contains(l.getType())) {
+                if (box.contains(l.getPosition())) {
+                    ret.add(l);
                 }
             }
-            return ret;
-        } finally {
-            objectRLock.unlock();
         }
+        return ret;
     }
 
     public void addPortal(MaplePortal myPortal) {
@@ -2029,22 +1850,13 @@ public class MapleMap {
         return new ArrayList<>(spawnPoints);
     }
 
-    public Collection<MapleCharacter> getCharacters() {
-        return Collections.unmodifiableCollection(this.characters);
-    }
-
     public MapleCharacter getCharacterById(int id) {
-        chrRLock.lock();
-        try {
-            for (MapleCharacter c : this.characters) {
-                if (c.getId() == id) {
-                    return c;
-                }
+        for (MapleCharacter c : getCharacters()) {
+            if (c.getId() == id) {
+                return c;
             }
-            return null;
-        } finally {
-            chrRLock.unlock();
         }
+        return null;
     }
 
     private void updateMapObjectVisibility(MapleCharacter chr, MapleMapObject mo) {
@@ -2064,13 +1876,8 @@ public class MapleMap {
 
     public void moveMonster(MapleMonster monster, Point reportedPos) {
         monster.setPosition(reportedPos);
-        chrRLock.lock();
-        try {
-            for (MapleCharacter chr : characters) {
-                updateMapObjectVisibility(chr, monster);
-            }
-        } finally {
-            chrRLock.unlock();
+        for (MapleCharacter chr : getCharacters()) {
+            updateMapObjectVisibility(chr, monster);
         }
     }
 
@@ -2182,28 +1989,16 @@ public class MapleMap {
     }
 
     public void broadcastNightEffect() {
-        chrRLock.lock();
-        try {
-            for (MapleCharacter c : characters) {
-                sendNightEffect(c);
-            }
-        } finally {
-            chrRLock.unlock();
-        }
+        getCharacters().forEach(this::sendNightEffect);
     }
 
     public MapleCharacter getCharacterByName(String name) {
-        chrRLock.lock();
-        try {
-            for (MapleCharacter c : this.characters) {
-                if (c.getName().equalsIgnoreCase(name)) {
-                    return c;
-                }
+        for (MapleCharacter c : getCharacters()) {
+            if (c.getName().equalsIgnoreCase(name)) {
+                return c;
             }
-            return null;
-        } finally {
-            chrRLock.unlock();
         }
+        return null;
     }
 
     public void instanceMapRespawn() {
@@ -2273,34 +2068,24 @@ public class MapleMap {
     }
 
     private void broadcastGMMessage(MapleCharacter source, final byte[] packet, double rangeSq, Point rangedFrom) {
-        chrRLock.lock();
-        try {
-            for (MapleCharacter chr : characters) {
-                if (chr != source && chr.isGM()) {
-                    if (rangeSq < Double.POSITIVE_INFINITY) {
-                        if (rangedFrom.distanceSq(chr.getPosition()) <= rangeSq) {
-                            chr.getClient().announce(packet);
-                        }
-                    } else {
+        for (MapleCharacter chr : getCharacters()) {
+            if (chr != source && chr.isGM()) {
+                if (rangeSq < Double.POSITIVE_INFINITY) {
+                    if (rangedFrom.distanceSq(chr.getPosition()) <= rangeSq) {
                         chr.getClient().announce(packet);
                     }
+                } else {
+                    chr.getClient().announce(packet);
                 }
             }
-        } finally {
-            chrRLock.unlock();
         }
     }
 
     public void broadcastNONGMMessage(MapleCharacter source, final byte[] packet, boolean repeatToSource) {
-        chrRLock.lock();
-        try {
-            for (MapleCharacter chr : characters) {
-                if (chr != source && !chr.isGM()) {
-                    chr.getClient().announce(packet);
-                }
+        for (MapleCharacter chr : getCharacters()) {
+            if (chr != source && !chr.isGM()) {
+                chr.getClient().announce(packet);
             }
-        } finally {
-            chrRLock.unlock();
         }
     }
 
@@ -2412,17 +2197,7 @@ public class MapleMap {
     }
 
     public void warpEveryone(int to) {
-        List<MapleCharacter> players;
-        chrRLock.lock();
-        try {
-            players = new ArrayList<>(getCharacters());
-        } finally {
-            chrRLock.unlock();
-        }
-
-        for (MapleCharacter chr : players) {
-            chr.changeMap(to);
-        }
+        getCharacters().forEach(p -> p.changeMap(to));
     }
 
     // BEGIN EVENTS

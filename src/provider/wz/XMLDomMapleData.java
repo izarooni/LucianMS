@@ -82,7 +82,12 @@ public class XMLDomMapleData implements MapleData {
             boolean foundChild = false;
             for (int i = 0; i < childNodes.getLength(); i++) {
                 Node childNode = childNodes.item(i);
-                if (childNode.getNodeType() == Node.ELEMENT_NODE && childNode.getAttributes().getNamedItem("name").getNodeValue().equals(segment)) {
+                if (childNode == null) {
+                    continue;
+                }
+                NamedNodeMap attr = childNode.getAttributes();
+                if (childNode.getNodeType() == Node.ELEMENT_NODE
+                        && attr.getNamedItem("name") != null && attr.getNamedItem("name").getNodeValue().equals(segment)) {
                     myNode = childNode;
                     foundChild = true;
                     break;

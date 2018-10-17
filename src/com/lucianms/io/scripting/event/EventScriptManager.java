@@ -1,13 +1,18 @@
 package com.lucianms.io.scripting.event;
 
 import net.server.channel.Channel;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import javax.script.ScriptException;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * @author izarooni
  */
 public class EventScriptManager {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(EventScriptManager.class);
 
     private final Channel channel;
     private ConcurrentHashMap<String, EventManager> events = new ConcurrentHashMap<>();
@@ -38,9 +43,10 @@ public class EventScriptManager {
         for (EventManager manager : events.values()) {
             try {
                 manager.getInvocable().invokeFunction("init", (Object) null);
-            } catch (Exception e) {
-                System.err.println(String.format("Unable to invoke init function in script '%s'", manager.getScriptName()));
+            } catch (NoSuchMethodException e) {
                 e.printStackTrace();
+            } catch (ScriptException e) {
+                LOGGER.error("Unable to invoke 'init' script '{}'", manager.getScriptName(), e.getStackTrace()[0]);
             }
         }
     }

@@ -609,6 +609,10 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
         }
         if (channelserver) {
             ret.map = client.getChannelServer().getMap(ret.mapid);
+            if (ret.map == null) {
+                ret.map = client.getChannelServer().getMap(ServerConstants.HOME_MAP);
+                ret.dropMessage(5, "You were returned to the home map due to the map being obstructed");
+            }
             MaplePortal portal = ret.map.getPortal(ret.initialSpawnPoint);
             if (portal == null) {
                 portal = ret.map.getPortal(0);

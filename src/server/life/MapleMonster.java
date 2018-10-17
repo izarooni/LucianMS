@@ -265,18 +265,13 @@ public class MapleMonster extends AbstractLoadedMapleLife {
     }
 
     private void distributeExperienceToParty(int pid, int exp, int killer, Map<Integer, Integer> expDist) {
-        LinkedList<MapleCharacter> members = new LinkedList<>();
+        ArrayList<MapleCharacter> members = new ArrayList<>();
 
-        map.getCharacterReadLock().lock();
         Collection<MapleCharacter> chrs = map.getCharacters();
-        try {
-            for (MapleCharacter mc : chrs) {
-                if (mc.getPartyId() == pid) {
-                    members.add(mc);
-                }
+        for (MapleCharacter mc : chrs) {
+            if (mc.getPartyId() == pid) {
+                members.add(mc);
             }
-        } finally {
-            map.getCharacterReadLock().unlock();
         }
 
         final int minLevel = getLevel() - 5;
@@ -310,7 +305,7 @@ public class MapleMonster extends AbstractLoadedMapleLife {
                 if (mostDamage) {
                     xp += (exp * 0.20f);
                 }
-                giveExpToCharacter(mc, xp * mc.getParty().getMembers().size(), isKiller, leechCount);
+                giveExpToCharacter(mc, xp, isKiller, leechCount);
             }
         }
     }
@@ -327,28 +322,23 @@ public class MapleMonster extends AbstractLoadedMapleLife {
         for (Entry<Integer, AtomicInteger> damage : takenDamage.entrySet()) {
             expDist.put(damage.getKey(), (int) (0.80f * exp * damage.getValue().get() / totalHealth));
         }
-        map.getCharacterReadLock().lock(); // avoid concurrent mod
         Collection<MapleCharacter> chrs = map.getCharacters();
-        try {
-            for (MapleCharacter mc : chrs) {
-                if (expDist.containsKey(mc.getId())) {
-                    boolean isKiller = mc.getId() == killerId;
-                    int xp = expDist.get(mc.getId());
-                    if (isKiller) {
-                        xp += exp / 5;
-                    }
-                    MapleParty p = mc.getParty();
-                    if (p != null) {
-                        int pID = p.getId();
-                        int pXP = xp + (partyExp.getOrDefault(pID, 0));
-                        partyExp.put(pID, pXP);
-                    } else {
-                        giveExpToCharacter(mc, xp, isKiller, 1);
-                    }
+        for (MapleCharacter mc : chrs) {
+            Integer xp = expDist.get(mc.getId());
+            if (xp != null) {
+                boolean isKiller = mc.getId() == killerId;
+                if (isKiller) {
+                    xp += exp / 5;
+                }
+                MapleParty p = mc.getParty();
+                if (p != null) {
+                    int pID = p.getId();
+                    int pXP = xp + (partyExp.getOrDefault(pID, 0));
+                    partyExp.put(pID, pXP);
+                } else {
+                    giveExpToCharacter(mc, xp, isKiller, 1);
                 }
             }
-        } finally {
-            map.getCharacterReadLock().unlock();
         }
         for (Entry<Integer, Integer> party : partyExp.entrySet()) {
             distributeExperienceToParty(party.getKey(), party.getValue(), killerId, expDist);

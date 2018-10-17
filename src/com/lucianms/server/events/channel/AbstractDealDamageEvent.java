@@ -122,32 +122,32 @@ public abstract class AbstractDealDamageEvent extends PacketEvent {
                         player.getClient().announce(MaplePacketCreator.enableActions());
                     }
                 }
-                int mobCount = attackEffect.getMobCount();
-                if (attack.skill == DawnWarrior.FINAL_ATTACK
-                        || attack.skill == Page.FINAL_ATTACK_BW
-                        || attack.skill == Page.FINAL_ATTACK_SWORD
-                        || attack.skill == Fighter.FINAL_ATTACK_SWORD
-                        || attack.skill == Fighter.FINAL_ATTACK_AXE
-                        || attack.skill == Spearman.FINAL_ATTACK_SPEAR
-                        || attack.skill == Spearman.FINAL_ATTACK_POLE_ARM
-                        || attack.skill == WindArcher.FINAL_ATTACK
-                        || attack.skill == Hunter.FINAL_ATTACK_BOW
-                        || attack.skill == Crossbowman.FINAL_ATTACK) {
-                    mobCount = 15;//:(
-                }
+//                int mobCount = attackEffect.getMobCount();
+//                if (attack.skill == DawnWarrior.FINAL_ATTACK
+//                        || attack.skill == Page.FINAL_ATTACK_BW
+//                        || attack.skill == Page.FINAL_ATTACK_SWORD
+//                        || attack.skill == Fighter.FINAL_ATTACK_SWORD
+//                        || attack.skill == Fighter.FINAL_ATTACK_AXE
+//                        || attack.skill == Spearman.FINAL_ATTACK_SPEAR
+//                        || attack.skill == Spearman.FINAL_ATTACK_POLE_ARM
+//                        || attack.skill == WindArcher.FINAL_ATTACK
+//                        || attack.skill == Hunter.FINAL_ATTACK_BOW
+//                        || attack.skill == Crossbowman.FINAL_ATTACK) {
+//                    mobCount = 15;//:(
+//                }
+//
+//                if (attack.skill == Aran.HIDDEN_FULL_SWING_DOUBLE
+//                        || attack.skill == Aran.HIDDEN_FULL_SWING_TRIPLE
+//                        || attack.skill == Aran.HIDDEN_OVER_SWING_DOUBLE
+//                        || attack.skill == Aran.HIDDEN_OVER_SWING_TRIPLE) {
+//                    mobCount = 12;
+//                }
 
-                if (attack.skill == Aran.HIDDEN_FULL_SWING_DOUBLE
-                        || attack.skill == Aran.HIDDEN_FULL_SWING_TRIPLE
-                        || attack.skill == Aran.HIDDEN_OVER_SWING_DOUBLE
-                        || attack.skill == Aran.HIDDEN_OVER_SWING_TRIPLE) {
-                    mobCount = 12;
-                }
-
-                if (attack.numAttacked > mobCount) {
-                    Cheater.CheatEntry entry = player.getCheater().getCheatEntry(Cheats.ConcurrentAttacks);
-                    entry.incrementCheatCount();
-                    entry.announce(player.getClient(), 10000, "[{}] {} attacking too many monsters at once ({} monsters, should be {}) skill: {}", entry.cheatCount, player.getName(), attack.numAttacked, attackEffect.getMobCount(), attack.skill);
-                }
+//                if (attack.numAttacked > mobCount) {
+//                    Cheater.CheatEntry entry = player.getCheater().getCheatEntry(Cheats.ConcurrentAttacks);
+//                    entry.incrementCheatCount();
+//                    entry.announce(player.getClient(), 10000, "[{}] {} attacking too many monsters at once ({} monsters, should be {}) skill: {}", entry.cheatCount, player.getName(), attack.numAttacked, attackEffect.getMobCount(), attack.skill);
+//                }
             }
             if (!player.isAlive()) {
                 return;
