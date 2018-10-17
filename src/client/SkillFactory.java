@@ -72,6 +72,7 @@ public class SkillFactory {
         boolean isBuff = false;
         int skillType = MapleDataTool.getInt("skillType", data, -1);
         ret.weapon = MapleDataTool.getInt("weapon", data, 0);
+        ret.hidden = MapleDataTool.getInt("invisible", data, 0) == 1;
         String elem = MapleDataTool.getString("elemAttr", data, null);
         if (elem != null) {
             ret.element = Element.getFromChar(elem.charAt(0));

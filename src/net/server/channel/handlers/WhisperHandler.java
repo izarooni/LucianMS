@@ -29,17 +29,14 @@ import net.server.world.World;
 import tools.MaplePacketCreator;
 import tools.data.input.SeekableLittleEndianAccessor;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-
 /**
  * @author Matze
  */
 public final class WhisperHandler extends AbstractMaplePacketHandler {
 
     public final void handlePacket(SeekableLittleEndianAccessor slea, MapleClient client) {
+        MapleCharacter player = client.getPlayer();
+
         byte mode = slea.readByte();
         if (mode == 6) { // whisper
             String recipient = slea.readMapleAsciiString();
@@ -49,11 +46,11 @@ public final class WhisperHandler extends AbstractMaplePacketHandler {
                     return;
                 }
             }
-            MapleCharacter player = client.getChannelServer().getPlayerStorage().getCharacterByName(recipient);
-            if (player != null) {
-                player.getClient().announce(MaplePacketCreator.getWhisper(client.getPlayer().getName(), client.getChannel(), message));
+            MapleCharacter target = client.getChannelServer().getPlayerStorage().getCharacterByName(recipient);
+            if (target != null) {
+                target.getClient().announce(MaplePacketCreator.getWhisper(client.getPlayer().getName(), client.getChannel(), message));
 
-                if (player.isHidden() && player.gmLevel() > client.getPlayer().gmLevel()) {
+                if (target.isHidden() && target.gmLevel() > client.getPlayer().gmLevel()) {
                     client.announce(MaplePacketCreator.getWhisperReply(recipient, (byte) 0));
                 } else {
                     client.announce(MaplePacketCreator.getWhisperReply(recipient, (byte) 1));
@@ -63,8 +60,8 @@ public final class WhisperHandler extends AbstractMaplePacketHandler {
                 if (world.isConnected(recipient)) {
                     world.whisper(client.getPlayer().getName(), recipient, client.getChannel(), message);
 
-                    player = world.getPlayerStorage().getCharacterByName(recipient);
-                    if (player != null && player.isHidden() && player.gmLevel() > client.getPlayer().gmLevel())
+                    target = world.getPlayerStorage().getCharacterByName(recipient);
+                    if (target != null && target.isHidden() && target.gmLevel() > client.getPlayer().gmLevel())
                         client.announce(MaplePacketCreator.getWhisperReply(recipient, (byte) 0));
                     else
                         client.announce(MaplePacketCreator.getWhisperReply(recipient, (byte) 1));
@@ -72,32 +69,21 @@ public final class WhisperHandler extends AbstractMaplePacketHandler {
                     client.announce(MaplePacketCreator.getWhisperReply(recipient, (byte) 0));
                 }
             }
-        } else if (mode == 5) { // - /find
+        } else if (mode == 5 || mode == 0x44) { // - /find
             String recipient = slea.readMapleAsciiString();
-            MapleCharacter victim = client.getChannelServer().getPlayerStorage().getCharacterByName(recipient);
-            if (victim != null && client.getPlayer().gmLevel() >= victim.gmLevel()) {
-                if (victim.getCashShop().isOpened()) {
-                    client.announce(MaplePacketCreator.getFindReply(victim.getName(), -1, 2));
-                    //} else if (victim.inMTS()) {
-                    //    c.announce(MaplePacketCreator.getFindReply(victim.getName(), -1, 0));
+            MapleCharacter target = client.getChannelServer().getPlayerStorage().getCharacterByName(recipient);
+            if (mode == 0x44 && target != null) {
+                if (player.getBuddylist().containsVisible(target.getId()) && target.getBuddylist().containsVisible(player.getId())) {
+                    // only find if they are mutual friends
+                    client.announce(MaplePacketCreator.getBuddyFindResult(target, (byte) (target.getClient().getChannel() == client.getChannel() ? 1 : 3)));
+                }
+            } else if (target != null && client.getPlayer().gmLevel() >= target.gmLevel()) {
+                if (target.getCashShop().isOpened()) {
+                    client.announce(MaplePacketCreator.getFindReply(target.getName(), -1, 2));
                 } else {
-                    client.announce(MaplePacketCreator.getFindReply(victim.getName(), victim.getMap().getId(), 1));
+                    client.announce(MaplePacketCreator.getFindReply(target.getName(), target.getMap().getId(), 1));
                 }
             } else { // not found
-                try (Connection con = client.getChannelServer().getConnection();
-                     PreparedStatement ps = con.prepareStatement("SELECT gm FROM characters WHERE name = ?")) {
-                    ps.setString(1, recipient);
-                    try (ResultSet rs = ps.executeQuery()) {
-                        if (rs.next()) {
-                            if (rs.getInt("gm") > client.getPlayer().gmLevel()) {
-                                client.announce(MaplePacketCreator.getWhisperReply(recipient, (byte) 0));
-                                return;
-                            }
-                        }
-                    }
-                } catch (SQLException e) {
-                    logger().error("Unable to select character via name '{}': {}", recipient, e.getMessage());
-                }
                 byte channel = (byte) (client.getWorldServer().find(recipient) - 1);
                 if (channel > -1) {
                     client.announce(MaplePacketCreator.getFindReply(recipient, channel, 3));
@@ -105,8 +91,6 @@ public final class WhisperHandler extends AbstractMaplePacketHandler {
                     client.announce(MaplePacketCreator.getWhisperReply(recipient, (byte) 0));
                 }
             }
-        } else if (mode == 0x44) {
-            //Buddy find?
         }
     }
 }

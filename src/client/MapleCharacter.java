@@ -1393,102 +1393,115 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
     }
 
     public void setMasteries(int jobId) {
-        int[] skills;
+        List<Pair<Integer, Integer>> skills;
         switch (jobId) {
             default:
                 return;
             case 112:
-                skills = new int[3];
-                skills[0] = Hero.ACHILLES;
-                skills[1] = Hero.MONSTER_MAGNET;
-                skills[2] = Hero.BRANDISH;
+                skills = Arrays.asList(
+                        new Pair<>(Hero.ACHILLES, 10),
+                        new Pair<>(Hero.MONSTER_MAGNET, 10),
+                        new Pair<>(Hero.BRANDISH, 10));
                 break;
             case 132:
-                skills = new int[3];
-                skills[0] = DarkKnight.BEHOLDER;
-                skills[1] = DarkKnight.ACHILLES;
-                skills[2] = DarkKnight.MONSTER_MAGNET;
+                skills = Arrays.asList(
+                        new Pair<>(DarkKnight.BEHOLDER, 10),
+                        new Pair<>(DarkKnight.ACHILLES, 10),
+                        new Pair<>(DarkKnight.MONSTER_MAGNET, 10));
                 break;
             case 212:
-                skills = new int[3];
-                skills[0] = FPArchMage.BIG_BANG;
-                skills[1] = FPArchMage.MANA_REFLECTION;
-                skills[2] = FPArchMage.PARALYZE;
+                skills = Arrays.asList(
+                        new Pair<>(FPArchMage.BIG_BANG, 10),
+                        new Pair<>(FPArchMage.MANA_REFLECTION, 10),
+                        new Pair<>(FPArchMage.PARALYZE, 10));
                 break;
             case 222:
-                skills = new int[3];
-                skills[0] = ILArchMage.BIG_BANG;
-                skills[1] = ILArchMage.MANA_REFLECTION;
-                skills[2] = ILArchMage.CHAIN_LIGHTNING;
+                skills = Arrays.asList(
+                        new Pair<>(ILArchMage.BIG_BANG, 10),
+                        new Pair<>(ILArchMage.MANA_REFLECTION, 10),
+                        new Pair<>(ILArchMage.CHAIN_LIGHTNING, 10));
                 break;
             case 232:
-                skills = new int[3];
-                skills[0] = Bishop.BIG_BANG;
-                skills[1] = Bishop.MANA_REFLECTION;
-                skills[2] = Bishop.HOLY_SHIELD;
+                skills = Arrays.asList(
+                        new Pair<>(Bishop.BIG_BANG, 10),
+                        new Pair<>(Bishop.MANA_REFLECTION, 10),
+                        new Pair<>(Bishop.HOLY_SHIELD, 10));
                 break;
             case 312:
-                skills = new int[3];
-                skills[0] = Bowmaster.BOW_EXPERT;
-                skills[1] = Bowmaster.HAMSTRING;
-                skills[2] = Bowmaster.SHARP_EYES;
+                skills = Arrays.asList(
+                        new Pair<>(Bowmaster.BOW_EXPERT, 10),
+                        new Pair<>(Bowmaster.HAMSTRING, 10),
+                        new Pair<>(Bowmaster.SHARP_EYES, 10));
                 break;
             case 322:
-                skills = new int[3];
-                skills[0] = Marksman.MARKSMAN_BOOST;
-                skills[1] = Marksman.BLIND;
-                skills[2] = Marksman.SHARP_EYES;
+                skills = Arrays.asList(
+                        new Pair<>(Marksman.MARKSMAN_BOOST, 10),
+                        new Pair<>(Marksman.BLIND, 10),
+                        new Pair<>(Marksman.SHARP_EYES, 10));
                 break;
             case 412:
-                skills = new int[3];
-                skills[0] = NightLord.SHADOW_STARS;
-                skills[1] = NightLord.SHADOW_SHIFTER;
-                skills[2] = NightLord.VENOMOUS_STAR;
+                skills = Arrays.asList(
+                        new Pair<>(NightLord.SHADOW_STARS, 10),
+                        new Pair<>(NightLord.SHADOW_SHIFTER, 10),
+                        new Pair<>(NightLord.VENOMOUS_STAR, 10));
                 break;
             case 422:
-                skills = new int[3];
-                skills[0] = Shadower.SHADOW_SHIFTER;
-                skills[1] = Shadower.VENOMOUS_STAB;
-                skills[2] = Shadower.BOOMERANG_STEP;
+                skills = Arrays.asList(
+                        new Pair<>(Shadower.SHADOW_SHIFTER, 10),
+                        new Pair<>(Shadower.VENOMOUS_STAB, 10),
+                        new Pair<>(Shadower.BOOMERANG_STEP, 10));
                 break;
             case 512:
-                skills = new int[4];
-                skills[0] = Buccaneer.BARRAGE;
-                skills[1] = Buccaneer.ENERGY_ORB;
-                skills[2] = Buccaneer.SPEED_INFUSION;
-                skills[3] = Buccaneer.DRAGON_STRIKE;
+                skills = Arrays.asList(
+                        new Pair<>(Buccaneer.BARRAGE, 10),
+                        new Pair<>(Buccaneer.ENERGY_ORB, 10),
+                        new Pair<>(Buccaneer.SPEED_INFUSION, 10),
+                        new Pair<>(Buccaneer.DRAGON_STRIKE, 10));
                 break;
             case 522:
-                skills = new int[4];
-                skills[0] = Corsair.ELEMENTAL_BOOST;
-                skills[1] = Corsair.BULLSEYE;
-                skills[2] = Corsair.WRATH_OF_THE_OCTOPI;
-                skills[3] = Corsair.RAPID_FIRE;
+                skills = Arrays.asList(
+                        new Pair<>(Corsair.ELEMENTAL_BOOST, 10),
+                        new Pair<>(Corsair.BULLSEYE, 10),
+                        new Pair<>(Corsair.WRATH_OF_THE_OCTOPI, 10),
+                        new Pair<>(Corsair.RAPID_FIRE, 10));
+                break;
+            case 2100:
+                skills = Arrays.asList(
+                        new Pair<>(21000000, 10),
+                        new Pair<>(21001001, 20),
+                        new Pair<>(21001003, 20));
+                break;
+            case 2110:
+                skills = Arrays.asList(
+                        new Pair<>(21100000, 20),
+                        new Pair<>(21100002, 30),
+                        new Pair<>(21100004, 20),
+                        new Pair<>(21100005, 20));
                 break;
             case 2112:
-                skills = new int[3];
-                skills[0] = Aran.OVER_SWING;
-                skills[1] = Aran.HIGH_MASTERY;
-                skills[2] = Aran.FREEZE_STANDING;
+                skills = Arrays.asList(
+                        new Pair<>(Aran.OVER_SWING, 10),
+                        new Pair<>(Aran.HIGH_MASTERY, 10),
+                        new Pair<>(Aran.FREEZE_STANDING, 10));
                 break;
             case 2217:
-                skills = new int[2];
-                skills[0] = Evan.MAPLE_WARRIOR;
-                skills[1] = Evan.ILLUSION;
+                skills = Arrays.asList(
+                        new Pair<>(Evan.MAPLE_WARRIOR, 10),
+                        new Pair<>(Evan.ILLUSION, 10));
                 break;
             case 2218:
-                skills = new int[2];
-                skills[0] = Evan.BLESSING_OF_THE_ONYX;
-                skills[1] = Evan.BLAZE;
+                skills = Arrays.asList(
+                        new Pair<>(Evan.BLESSING_OF_THE_ONYX, 10),
+                        new Pair<>(Evan.BLAZE, 10));
                 break;
         }
-        for (Integer skillId : skills) {
-            if (skillId != 0) {
-                Skill skill = SkillFactory.getSkill(skillId);
+        for (Pair<Integer, Integer> pair : skills) {
+            if (pair.getLeft() != 0) {
+                Skill skill = SkillFactory.getSkill(pair.getLeft());
                 if (skill != null) {
-                    changeSkillLevel(skill, (byte) 0, 10, -1);
+                    changeSkillLevel(skill, (byte) 0, pair.getRight(), -1);
                 } else {
-                    LOGGER.info("Unable to set skill mastery {} for player {}. Does not exist", skillId, getName());
+                    LOGGER.info("Unable to set skill mastery {} for player {}. Does not exist", pair.getLeft(), getName());
                 }
             }
         }

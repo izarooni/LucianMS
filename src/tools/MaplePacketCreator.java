@@ -5202,6 +5202,21 @@ public class MaplePacketCreator {
         return mplew.getPacket();
     }
 
+    public static byte[] getBuddyFindResult(MapleCharacter target, byte resultType) {
+        MaplePacketLittleEndianWriter writer = new MaplePacketLittleEndianWriter();
+        writer.writeShort(SendOpcode.WHISPER.getValue());
+        writer.write(0x48);
+        writer.writeMapleAsciiString(target.getName());
+        writer.write(resultType);
+        if (resultType == 1) {
+            writer.writeInt(target.getMapId());
+            writer.write(new byte[8]);
+        } else {
+            writer.writeInt(target.getClient().getChannel() - 1);
+        }
+        return writer.getPacket();
+    }
+
     /**
      * @param target
      * @param mapid
