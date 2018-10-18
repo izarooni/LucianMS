@@ -24,7 +24,7 @@ function action(mode, type, selection) {
             if (InventoryModifier.checkSpace(client, Crystal, selection, "")) {
                 let totalMesos = (MesoRate * selection);
                 let content = `${player.getName()} traded ${totalMesos} Mesos for ${selection} of item ${Crystal}`;
-                let transactionId = createTransaction(player.getId(), content);
+                let transactionId = createTransaction(cm.getDatabaseConnection(), player.getId(), content);
                 player.gainMeso(totalMesos, true);
                 cm.gainItem(Crystal, selection, true);
                 cm.sendOk("Pleasure doing business with you!~\r\n#kHere is your transaction ID : #b" + transactionId)

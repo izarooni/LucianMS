@@ -56,9 +56,9 @@ function action(mode, type, selection) {
                 break;
             }
             case 3:
-                player.setMaxHp(player.getMaxHp() + 20);
+                player.setMaxHp(player.getMaxHp() + 350);
                 player.updateSingleStat(MapleStat.MAXHP, player.getMaxHp());
-                cm.sendOk("Wish granted. I shall increase your health by 20 points#k");
+                cm.sendOk("Wish granted. I shall increase your health by 350 points#k");
                 break;
             case 4:
                 player.addPoints("vp", 2);

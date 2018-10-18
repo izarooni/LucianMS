@@ -1,19 +1,13 @@
-load("scripts/npc/generic_shop.js");
+/* izarooni */
+let status = 0;
 
-const pointsType = 4031203;
-
-dialog.intro = "Happy halloween!";
-dialog.first = "#b{PointsName}#k are good. Trade them now!\r\n You currently have #b{PointsQuantity} {PointsName}#l";
-dialog.second = "some text";
-
-try {
-    let file = new java.io.File("resources/data-candy.json");
-    let content = Packages.org.apache.commons.io.FileUtils.readFileToString(file);
-    let json = JSON.parse(content);
-
-    for (let j in json) {
-        items[j] = JSON.parse("[" + json[j] + "]");
+function action(mode, type, selection) {
+    if (mode < 1) {
+        cm.dispose();
+        return;
+    } else {
+        status++;
     }
-} catch (e) {
-    broken = e.message.replace(/\\/g, "/");
+    if (status == 1) {
+    }
 }

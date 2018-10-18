@@ -54,7 +54,7 @@ function action(mode, type, selection) {
             if (cm.haveItem(coin_id, special[2])) {
                 if (InventoryModifier.checkSpace(client, special[0], special[1], "")) {
                     var log = player.getName() + " traded " + special[2] + " " + coin_id + " for " + special[1] + " of item " + special[0];
-                    var transactionId = createTransaction(player.getId(), log);
+                    var transactionId = createTransaction(cm.getDatabaseConnection(), player.getId(), log);
                     if (transactionId == -1) {
                         print("Error creating transaction log (coin_shop)...");
                         print(log);
@@ -75,7 +75,7 @@ function action(mode, type, selection) {
             if (cm.haveItem(coin_id, this.item_selection[2])) {
                 if (InventoryModifier.checkSpace(client, this.item_selection[0], this.item_selection[1], "")) {
                     var log = player.getName() + " traded " + this.item_selection[2] + " " + coin_id + " for " + this.item_selection[1] + " of item " + this.item_selection[0];
-                    var transactionId = createTransaction(player.getId(), log);
+                    var transactionId = createTransaction(cm.getDatabaseConnection(), player.getId(), log);
                     if (transactionId == -1) {
                         print("Error creating transaction log (coin_shop)...");
                         print(log);
