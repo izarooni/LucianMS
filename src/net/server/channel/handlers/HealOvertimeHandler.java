@@ -22,7 +22,7 @@ public class HealOvertimeHandler extends PacketEvent {
         incHealth = slea.readShort();
         incMana = slea.readShort();
 
-        if (incHealth > 140) {
+        if (incHealth > 1000) {
             getLogger().warn("Abnormal slow health recovery value {} from {}", incHealth, getClient().getPlayer().getName());
             setCanceled(true);
         }
@@ -46,7 +46,7 @@ public class HealOvertimeHandler extends PacketEvent {
         entry.latestOperationTimestamp = System.currentTimeMillis();
 
         if (incHealth != 0) {
-            int abHeal = 140;
+            int abHeal = 500;
             if (player.getMapId() == 105040401 || player.getMapId() == 105040402 || player.getMapId() == 809000101 || player.getMapId() == 809000201) {
                 abHeal += 40; // Sleepywood sauna and showa spa...
             }

@@ -177,7 +177,6 @@ public class EventInstanceManager {
 
         tasks.forEach(TaskExecutor::cancelTask);
 
-        eventManager.removeInstance(name);
         if (expedition != null) {
             eventManager.getChannel().getExpeditions().remove(expedition);
         }

@@ -43,6 +43,8 @@ import tools.MaplePacketCreator;
 import tools.Pair;
 import tools.data.input.SeekableLittleEndianAccessor;
 
+import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
@@ -375,7 +377,10 @@ public final class UseCashItemHandler extends AbstractMaplePacketHandler {
             }
             String newName = slea.readMapleAsciiString();
             pet.setName(newName);
-            pet.saveToDb();
+            try (Connection con = c.getChannelServer().getConnection()) {
+                pet.saveToDb(con);
+            } catch (SQLException ignore) {
+            }
             player.forceUpdateItem(item);
             player.getMap().broadcastMessage(player, MaplePacketCreator.changePetName(player, newName, 1), true);
             c.announce(MaplePacketCreator.enableActions());

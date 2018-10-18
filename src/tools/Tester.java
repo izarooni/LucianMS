@@ -2,7 +2,6 @@ package tools;
 
 import com.lucianms.io.Config;
 import com.lucianms.io.defaults.Defaults;
-import com.zaxxer.hikari.HikariDataSource;
 import net.server.Server;
 import org.json.JSONObject;
 import org.json.JSONTokener;
@@ -14,7 +13,6 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 
 /**
@@ -27,21 +25,22 @@ public class Tester {
 
     public static void main(String[] args) {
         System.setProperty("wzpath", "wz");
-        initConfig();
-        HikariDataSource hikari = Database.createDataSource("test");
-        for (int i = 0; i < 1000; i++) {
-            try {
-                Connection con = hikari.getConnection();
-                System.out.println("connection " + i + " created");
-                try (PreparedStatement ps = con.prepareStatement("select * from accounts")) {
-                    try (ResultSet rs = ps.executeQuery()) {
-                        rs.next();
-                    }
-                }
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
-        }
+
+//        initConfig();
+//        HikariDataSource hikari = Database.createDataSource("test");
+//        for (int i = 0; i < 1000; i++) {
+//            try {
+//                Connection con = hikari.getConnection();
+//                System.out.println("connection " + i + " created");
+//                try (PreparedStatement ps = con.prepareStatement("select * from accounts")) {
+//                    try (ResultSet rs = ps.executeQuery()) {
+//                        rs.next();
+//                    }
+//                }
+//            } catch (SQLException e) {
+//                e.printStackTrace();
+//            }
+//        }
     }
 
     private static void initConfig() {

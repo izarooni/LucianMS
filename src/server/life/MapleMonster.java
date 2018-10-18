@@ -305,7 +305,7 @@ public class MapleMonster extends AbstractLoadedMapleLife {
                 if (mostDamage) {
                     xp += (exp * 0.20f);
                 }
-                giveExpToCharacter(mc, xp, isKiller, leechCount);
+                giveExpToCharacter(mc, xp * Math.max(4, members.size()), isKiller, leechCount);
             }
         }
     }
@@ -331,7 +331,7 @@ public class MapleMonster extends AbstractLoadedMapleLife {
                     xp += exp / 5;
                 }
                 MapleParty p = mc.getParty();
-                if (p != null) {
+                if (p != null && p.getMembers().stream().filter(m -> m.getMapId() == getMap().getId()).mapToInt(v -> 1).sum() > 1) {
                     int pID = p.getId();
                     int pXP = xp + (partyExp.getOrDefault(pID, 0));
                     partyExp.put(pID, pXP);

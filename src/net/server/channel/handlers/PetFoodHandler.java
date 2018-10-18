@@ -111,8 +111,6 @@ public class PetFoodHandler extends AbstractMaplePacketHandler {
         }
         MapleInventoryManipulator.removeFromSlot(c, MapleInventoryType.USE, pos, (short) 1, false);
         
-        pet.saveToDb();
-        
         Item petz = player.getInventory(MapleInventoryType.CASH).getItem(pet.getPosition());
         if (petz == null){ //Not a real fix but fuck it you know?
         	return;

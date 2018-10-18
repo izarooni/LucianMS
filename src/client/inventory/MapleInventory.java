@@ -32,13 +32,12 @@ import java.util.*;
  */
 public class MapleInventory implements Iterable<Item> {
 
-    private Map<Short, Item> inventory = new LinkedHashMap<>();
+    private HashMap<Short, Item> inventory = new HashMap<>(100);
     private byte slotLimit;
     private MapleInventoryType type;
     private boolean checked = false;
 
     public MapleInventory(MapleInventoryType type, byte slotLimit) {
-        this.inventory = new LinkedHashMap<>();
         this.type = type;
         this.slotLimit = slotLimit;
     }

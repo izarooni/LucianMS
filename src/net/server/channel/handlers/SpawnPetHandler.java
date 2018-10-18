@@ -31,7 +31,6 @@ import provider.MapleDataProvider;
 import provider.MapleDataProviderFactory;
 import provider.MapleDataTool;
 import server.MapleInventoryManipulator;
-import tools.Database;
 import tools.MaplePacketCreator;
 import tools.data.input.SeekableLittleEndianAccessor;
 
@@ -95,7 +94,6 @@ public final class SpawnPetHandler extends AbstractMaplePacketHandler {
             pet.setFh(chr.getMap().getFootholds().findBelow(pet.getPos()).getId());
             pet.setStance(0);
             pet.setSummoned(true);
-            pet.saveToDb();
             chr.addPet(pet);
             chr.getMap().broadcastMessage(c.getPlayer(), MaplePacketCreator.showPet(c.getPlayer(), pet, false, false), true);
             c.announce(MaplePacketCreator.petStatUpdate(c.getPlayer()));

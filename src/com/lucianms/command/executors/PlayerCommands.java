@@ -126,10 +126,10 @@ public class PlayerCommands {
             int nStat = 0;
             switch (statName) {
                 case "stats":
-                    nStat += player.getStr();
-                    nStat += player.getDex();
-                    nStat += player.getInt();
-                    nStat += player.getLuk();
+                    nStat += player.getStr() - 4;
+                    nStat += player.getDex() - 4;
+                    nStat += player.getInt() - 4;
+                    nStat += player.getLuk() - 4;
 
                     player.setStr(4);
                     player.setDex(4);
@@ -141,22 +141,22 @@ public class PlayerCommands {
                     statChange.add(new Pair<>(MapleStat.LUK, 4));
                     break;
                 case "str":
-                    nStat = player.getStr();
+                    nStat = player.getStr() - 4;
                     player.setStr(4);
                     statChange.add(new Pair<>(MapleStat.STR, 4));
                     break;
                 case "dex":
-                    nStat = player.getDex();
+                    nStat = player.getDex() - 4;
                     player.setDex(4);
                     statChange.add(new Pair<>(MapleStat.DEX, 4));
                     break;
                 case "int":
-                    nStat = player.getInt();
+                    nStat = player.getInt() - 4;
                     player.setInt(4);
                     statChange.add(new Pair<>(MapleStat.INT, 4));
                     break;
                 case "luk":
-                    nStat = player.getLuk();
+                    nStat = player.getLuk() - 4;
                     player.setLuk(4);
                     statChange.add(new Pair<>(MapleStat.LUK, 4));
                     break;
@@ -388,9 +388,6 @@ public class PlayerCommands {
             player.dropMessage(5, "These are the current maps available for you to warp to");
             player.dropMessage(5, sb.toString());
             maps.clear();
-        } else if (command.equals("save")) {
-            player.saveToDB();
-            player.dropMessage(6, "Saved!");
         } else if (command.equals("callgm")) {
             if (args.length() > 0) {
                 String message = args.concatFrom(0);

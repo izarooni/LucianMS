@@ -106,11 +106,11 @@ public final class MonsterBook {
         calculateLevel();
     }
 
-    public void saveCards(final int charid) {
+    public void saveCards(Connection con, final int charid) {
         if (cards.isEmpty()) {
             return;
         }
-        try (Connection con = Server.getConnection(); PreparedStatement ps = con.prepareStatement("DELETE FROM monsterbook WHERE charid = ?")) {
+        try (PreparedStatement ps = con.prepareStatement("DELETE FROM monsterbook WHERE charid = ?")) {
             ps.setInt(1, charid);
             ps.executeUpdate();
             boolean first = true;

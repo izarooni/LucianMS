@@ -155,6 +155,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
     private int[] remainingSp = new int[10];
     //endregion
 
+    private long lastSave = 0;
     private long lastEmergency = 0;
     private long immortalTimestamp = 0;
     private long portaldelay = 0, lastcombo = 0;
@@ -4189,6 +4190,10 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
     }
 
     public void saveToDB() {
+        if (System.currentTimeMillis() - lastSave <= 1000 * 60 * 5) {
+            return;
+        }
+        lastSave = System.currentTimeMillis();
         try (Connection con = client.getChannelServer().getConnection()) {
             try (PreparedStatement ps = con.prepareStatement("UPDATE characters SET level = ?, fame = ?, str = ?, dex = ?, luk = ?, `int` = ?, exp = ?, gachaexp = ?, hp = ?, mp = ?, maxhp = ?, maxmp = ?, sp = ?, ap = ?, gm = ?, skincolor = ?, gender = ?, job = ?, hair = ?, face = ?, map = ?, meso = ?, hpMpUsed = ?, spawnpoint = ?, party = ?, buddyCapacity = ?, messengerid = ?, messengerposition = ?, mountlevel = ?, mountexp = ?, mounttiredness= ?, equipslots = ?, useslots = ?, setupslots = ?, etcslots = ?,  monsterbookcover = ?, vanquisherStage = ?, dojoPoints = ?, lastDojoStage = ?, finishedDojoTutorial = ?, vanquisherKills = ?, matchcardwins = ?, matchcardlosses = ?, matchcardties = ?, omokwins = ?, omoklosses = ?, omokties = ?, dataString = ?, fishingpoints = ?, daily = ?, reborns = ?, eventpoints = ?, rebirthpoints = ?, occupation = ?, jumpquestpoints = ? WHERE id = ?", Statement.RETURN_GENERATED_KEYS)) {
                 if (gmLevel < 1 && level > 199) {
@@ -4268,7 +4273,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
                     ps.setInt(i + 31, getSlots(i));
                 }
 
-                monsterbook.saveCards(getId());
+                monsterbook.saveCards(con, getId());
 
                 ps.setInt(36, bookCover);
                 ps.setInt(37, vanquisherStage);
@@ -4299,7 +4304,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
 
                 for (int i = 0; i < 3; i++) {
                     if (pets[i] != null) {
-                        pets[i].saveToDb();
+                        pets[i].saveToDb(con);
                     }
                 }
             }
@@ -4817,24 +4822,23 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
     }
 
     public void startFullnessSchedule(final int decrease, final MaplePet pet, int petSlot) {
-        fullnessSchedule[petSlot] = TaskExecutor.createRepeatingTask(new Runnable() {
-            @Override
-            public void run() {
-                int newFullness = pet.getFullness() - decrease;
-                if (newFullness <= 5) {
-                    pet.setFullness(15);
-                    pet.saveToDb();
-                    unequipPet(pet, true);
-                } else {
-                    pet.setFullness(newFullness);
-                    pet.saveToDb();
-                    Item petz = getInventory(MapleInventoryType.CASH).getItem(pet.getPosition());
-                    if (petz != null) {
-                        forceUpdateItem(petz);
-                    }
-                }
-            }
-        }, 180000, 18000);
+//        fullnessSchedule[petSlot] = TaskExecutor.createRepeatingTask(new Runnable() {
+//            @Override
+//            public void run() {
+//                int newFullness = pet.getFullness() - decrease;
+//                if (newFullness <= 5) {
+//                    pet.setFullness(15);
+//                    unequipPet(pet, true);
+//                } else {
+//                    pet.setFullness(newFullness);
+//                    Item petz = getInventory(MapleInventoryType.CASH).getItem(pet.getPosition());
+//                    if (petz != null) {
+//                        forceUpdateItem(petz);
+//                    }
+//                }
+//                pet.saveToDb();
+//            }
+//        }, 180000, 18000);
     }
 
     public void startMapEffect(String msg, int itemId) {
@@ -4866,7 +4870,9 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
     public void unequipPet(MaplePet pet, boolean shift_left, boolean hunger) {
         if (this.getPet(this.getPetIndex(pet)) != null) {
             this.getPet(this.getPetIndex(pet)).setSummoned(false);
-            this.getPet(this.getPetIndex(pet)).saveToDb();
+            try (Connection con = getClient().getChannelServer().getConnection()) {
+                this.getPet(this.getPetIndex(pet)).saveToDb(con);
+            } catch (SQLException ignore) {}
         }
         cancelFullnessSchedule(getPetIndex(pet));
         getMap().broadcastMessage(this, MaplePacketCreator.showPet(this, pet, true, hunger), true);
