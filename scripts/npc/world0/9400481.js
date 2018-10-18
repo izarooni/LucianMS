@@ -54,6 +54,7 @@ function action(mode, type, selection) {
                             selectedMode.pq.registerPlayer(n.getPlayer());
                         }
                     }
+                    selectedMode.pq.begin();
                 } else {
                     cm.sendOk("Only the party leader may decide when to enter the PQ");
                 }
