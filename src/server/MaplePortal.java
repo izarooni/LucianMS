@@ -47,6 +47,10 @@ public interface MaplePortal {
 
     void setPortalStatus(boolean newStatus);
 
+    void setDisabled(boolean disabled);
+
+    boolean isDisabled();
+
     boolean getPortalStatus();
 
     int getTargetMapId();

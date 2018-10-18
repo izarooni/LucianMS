@@ -45,6 +45,15 @@ public class MapleGenericPortal implements MaplePortal {
         this.type = type;
     }
 
+    public boolean isDisabled() {
+        return disabled;
+    }
+
+    @Override
+    public void setDisabled(boolean disabled) {
+        this.disabled = disabled;
+    }
+
     @Override
     public int getId() {
         return id;
