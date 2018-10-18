@@ -88,7 +88,7 @@ const FirstAdvancement = function(selection) {
                     cm.gainItem(give[i][0], give[i][1]);
                 }
                 player.changeJob(MapleJob.getById(selection));
-                let totalSP = (Math.min(30, player.getLevel()) - 10) * 3;
+                let totalSP = 1 + (Math.min(30, player.getLevel()) - 10) * 3;
                 if (totalSP > 0) {
                     player.setRemainingSp(totalSP);
                     player.updateSingleStat(Packages.client.MapleStat.AVAILABLESP, totalSP);
@@ -135,11 +135,23 @@ const ThirdAdvancement = function(selection) {
 };
 
 const FourthAdvancement = function(selection) {
-    if (status == 1)
-        cm.sendSimple("#bThe mysterious force emitted by the door is weakened...\r\n#b#L0#Enter#l\r\n#L1#Nevermind#l", 2)
-    else if (status == 2) {
-        if (selection == 0)
-            cm.warp(551030804); // boss ID: 9895226
+    if (player.getJob().getId() / 100 > 11) {
+        cm.sendOk("Coming soon");
+        cm.dispose();
+    } else if (status == 1) {
+        cm.sendNext("The end is near and you'll be the one to defeat it....right?");
+    } else if (status == 2) {
+        let nJob = nextJob(jobs.Fourth, player.getJob().getId());
+        if (nJob != null) {
+            player.changeJob(MapleJob.getById(nJob.ID));
+        }
         cm.dispose();
     }
+    // if (status == 1)
+    //     cm.sendSimple("#bThe mysterious force emitted by the door is weakened...\r\n#b#L0#Enter#l\r\n#L1#Nevermind#l", 2)
+    // else if (status == 2) {
+    //     if (selection == 0)
+    //         cm.warp(551030804); // boss ID: 9895226
+    //     cm.dispose();
+    // }
 };
