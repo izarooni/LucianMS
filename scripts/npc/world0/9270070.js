@@ -108,9 +108,9 @@ function action(mode, type, selection) {
                         for(let i = 0; i < 10; i++) {
                             cm.getPlayer().gainExp(partEXP, true, false);
                         }
-                    } else {
-                        cm.sendOk("Wish granted.\n\n*You are unable to gain anything from the power transfer*");
                     }
+                } else {
+                    cm.sendOk("Wish granted.\n\n*You are unable to gain anything from the power transfer*");
                 }
 
                 break;
