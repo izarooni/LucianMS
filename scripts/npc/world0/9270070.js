@@ -1,6 +1,7 @@
 load("scripts/util_imports.js");
 const ShenronSummon = Java.type("com.lucianms.features.summoning.ShenronSummoner");
 const MapleStat     = Java.type("client.MapleStat");
+const ExpTable      = Java.type("constants.ExpTable");
 /* izarooni */
 let status = 0;
 let usernameError = "";
