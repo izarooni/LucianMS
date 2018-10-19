@@ -99,6 +99,7 @@ function action(mode, type, selection) {
             case 8: {
                 let gainPercentage = (Math.random() < 0.5) ? 10 : -2;
                 let EXPToGain = (ExpTable.getExpNeededForLevel(cm.getPlayer().getLevel()) / 100) * gainPercentage;
+                if(EXPToGain < 0) EXPToGain = 0;
                 cm.sendOk("Wish granted. Take my power, and do not block it or suffer the backlash.");
                 if (player.getLevel() < 200) {
                     // give exp in 10 parts
