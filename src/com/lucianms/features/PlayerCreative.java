@@ -102,13 +102,21 @@ public class PlayerCreative extends GenericEvent {
                 player.sendMessage(5, "'{}' is not a number.", args[1]);
                 return;
             }
-            Item item;
+            Item item = null;
             if (ItemConstants.getInventoryType(itemID) == MapleInventoryType.EQUIP) {
                 item = new Equip(itemID, (short) 0);
-            } else {
-                item = new Item(itemID, (short) 0, (short) 1);
+            } else if(ItemConstants.getInventoryType(itemID) == MapleInventoryType.SETUP) {
+                if(itemID / 10000 == 301) {
+                    item = new Item(itemID, (short) 0, (short) 1);
+                } else {
+                    player.dropMessage(5, "Only items of type 'equip' are allowed to be spawned.");
+                }
             }
-            player.getMap().spawnItemDrop(player, player, item, player.getPosition(), true, false);
+
+            if(item != null) {
+                player.getMap().spawnItemDrop(player, player, item, player.getPosition(), true, false);
+            }
+
         } else if (args[0].equals("cleardrops")) {
             player.getMap().clearDrops();
         }
