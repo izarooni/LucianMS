@@ -97,22 +97,18 @@ function action(mode, type, selection) {
                 }
                 break;
             case 8: {
-                let gainPercentage = (Math.random() < 0.5) ? 20 : -10;
-                let EXPToGain = (ExpTable.getExpNeededForLevel(cm.getPlayer().getLevel()) / 100) * gainPercentage;
-                if(EXPToGain < 0 && (cm.getPlayer().getExp() - EXPToGain < 0)) EXPToGain = 0;
-                if(EXPToGain > 0) {
-                    cm.sendOk("Wish granted. Take my power, and do not block it or suffer the backlash.");
-                    if (player.getLevel() < 200) {
-                        // give exp in 10 parts
-                        let partEXP = EXPToGain / 10;
-                        for(let i = 0; i < 10; i++) {
-                            cm.getPlayer().gainExp(partEXP, true, false);
-                        }
+            
+                let EXPToGain = (ExpTable.getExpNeededForLevel(cm.getPlayer().getLevel()));
+                
+                cm.sendOk("Wish granted. Take my power and make it your own.");
+                if (player.getLevel() < 200) {
+                     // give exp in 10 parts
+                    let partEXP = EXPToGain / 10;
+                    for(let i = 0; i < 10; i++) {
+                        cm.getPlayer().gainExp(partEXP, true, false);
                     }
-                } else {
-                    cm.sendOk("Wish granted.\n\n*You are unable to gain anything from the power transfer*");
                 }
-
+        
                 break;
             }
         }
