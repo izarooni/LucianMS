@@ -96,25 +96,17 @@ function action(mode, type, selection) {
                 }
                 break;
             case 8: {
-                let gain = (Math.random() < 0.5) ? 5 : -1;
-                if (gain > 0) {
-                    cm.sendOk("Wish granted. I shall give you #b5 free levels#k");
-                    if (player.getLevel() < 200) {
-                        for (let i = 0; i < (200 - player.getLevel()); i++) {
-                            player.levelUp(true);
-                            gain--;
-                        }
+                let gainPercentage = (Math.random() < 0.5) ? 10 : -2;
+                let EXPToGain = (ExpTable.getExpNeededForLevel(cm.getPlayer().getLevel()) / 100) * gainPercentage;
+                cm.sendOk("Wish granted. Take my power, and do not block it or suffer the backlash.");
+                if (player.getLevel() < 200) {
+                    // give exp in 10 parts
+                    let partEXP = EXPToGain / 10;
+                    for(let i = 0; i < 10; i++) {
+                        cm.getPlayer().gainExp(partEXP, true, false);
                     }
-                    gain = Math.max(gain, 200 - player.getLevel());
-                    if (gain > 0) {
-                        player.setLevel(player.getLevel() + gain);
-                        player.updateSingleStat(MapleStat.LEVEL, player.getLevel());
-                    }
-                } else {
-                    cm.sendOk("Wish granted. I shall take away #b1 level#k from you");
-                    player.setLevel(player.getLevel() + gain);
-                    player.updateSingleStat(MapleStat.LEVEL, player.getLevel());
                 }
+
                 break;
             }
         }
