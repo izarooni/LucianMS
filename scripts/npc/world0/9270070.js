@@ -31,7 +31,7 @@ function action(mode, type, selection) {
             + "\r\n#L5#Make me immortal#l"
             + "\r\n#L6#Give me NX#l"
             + "\r\n#L7#Clone me#l"
-            + "\r\n#L8#Time Travel#l");
+            + "\r\n#L8#Grant me more power#l");
     } else if (status == 2) {
         switch (selection) {
             case 0:
@@ -97,15 +97,19 @@ function action(mode, type, selection) {
                 }
                 break;
             case 8: {
-                let gainPercentage = (Math.random() < 0.5) ? 10 : -2;
+                let gainPercentage = (Math.random() < 0.5) ? 20 : -10;
                 let EXPToGain = (ExpTable.getExpNeededForLevel(cm.getPlayer().getLevel()) / 100) * gainPercentage;
-                if(EXPToGain < 0) EXPToGain = 0;
-                cm.sendOk("Wish granted. Take my power, and do not block it or suffer the backlash.");
-                if (player.getLevel() < 200) {
-                    // give exp in 10 parts
-                    let partEXP = EXPToGain / 10;
-                    for(let i = 0; i < 10; i++) {
-                        cm.getPlayer().gainExp(partEXP, true, false);
+                if(EXPToGain < 0 && (cm.getPlayer().getExp() - EXPToGain < 0)) EXPToGain = 0;
+                if(EXPToGain > 0) {
+                    cm.sendOk("Wish granted. Take my power, and do not block it or suffer the backlash.");
+                    if (player.getLevel() < 200) {
+                        // give exp in 10 parts
+                        let partEXP = EXPToGain / 10;
+                        for(let i = 0; i < 10; i++) {
+                            cm.getPlayer().gainExp(partEXP, true, false);
+                        }
+                    } else {
+                        cm.sendOk("Wish granted.\n\n*You are unable to gain anything from the power transfer*");
                     }
                 }
 
