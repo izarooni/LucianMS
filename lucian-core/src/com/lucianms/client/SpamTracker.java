@@ -18,10 +18,10 @@ public class SpamTracker {
         public boolean testFor(long cooldown) {
             if (System.currentTimeMillis() - timestamp > cooldown) {
                 triggers = 0;
-                return true;
+                return false;
             }
             triggers++;
-            return false;
+            return true;
         }
 
         public int getTriggers() {

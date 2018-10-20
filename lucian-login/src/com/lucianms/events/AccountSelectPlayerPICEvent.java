@@ -45,7 +45,8 @@ public class AccountSelectPlayerPICEvent extends PacketEvent {
         try {
             String[] socket = getClient().getChannelServer().getIP().split(":");
             getClient().announce(MaplePacketCreator.getServerIP(InetAddress.getByName(socket[0]), Integer.parseInt(socket[1]), playerID));
-        } catch (UnknownHostException ignore) {
+        } catch (UnknownHostException e) {
+            e.printStackTrace();
         }
         return null;
     }

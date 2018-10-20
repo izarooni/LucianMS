@@ -6,7 +6,6 @@ import com.lucianms.discord.DiscordSession;
 import com.lucianms.discord.Headers;
 import com.lucianms.discord.handlers.BindRequest;
 import com.lucianms.nio.receive.MaplePacketReader;
-import com.lucianms.events.PacketEvent;
 import tools.MaplePacketCreator;
 import tools.data.output.MaplePacketLittleEndianWriter;
 
@@ -63,7 +62,6 @@ public class PlayerAllChatEvent extends PacketEvent {
             }
             if (!player.isHidden()) {
                 player.getChatType().sendChat(player, content, shout);
-                //                player.getMap().broadcastMessage(MaplePacketCreator.getChatText(player.getId(), content, player.getWhiteChat(), show));
             } else {
                 player.getMap().broadcastGMMessage(MaplePacketCreator.serverNotice(2, player.getClient().getChannel(), String.format("[hide] %s : %s", player.getName(), content)));
                 player.getMap().broadcastGMMessage(MaplePacketCreator.getChatText(player.getId(), content, false, 1));

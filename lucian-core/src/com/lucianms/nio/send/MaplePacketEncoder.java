@@ -16,7 +16,9 @@ public class MaplePacketEncoder extends MessageToByteEncoder<Object> {
         Channel channel = ctx.channel();
         MapleClient client = channel.attr(MapleClient.CLIENT_KEY).get();
 
-        byte[] unencrypted = (byte[]) o;
+        byte[] dont_touch = (byte[]) o;
+        byte[] unencrypted = new byte[dont_touch.length];
+        System.arraycopy(dont_touch, 0, unencrypted, 0, dont_touch.length);
 
         if (client == null) {
             b.writeBytes(ByteBuffer.wrap(unencrypted));

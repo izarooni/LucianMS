@@ -38,7 +38,7 @@ public class NPCScriptManager {
     public static void start(MapleClient client, int objectID, int npc, String fileName) {
         MapleCharacter player = client.getPlayer();
         SpamTracker.SpamData spamTracker = player.getSpamTracker(SpamTracker.SpamOperation.NpcTalk);
-        if (!spamTracker.testFor(1000)) {
+        if (spamTracker.testFor(1000)) {
             return;
         }
 

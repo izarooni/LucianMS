@@ -32,7 +32,7 @@ public class PlayerCommands {
         MapleCharacter player = client.getPlayer();
 
         SpamTracker.SpamData spamTracker = player.getSpamTracker(SpamTracker.SpamOperation.PlayerCommands);
-        if (!spamTracker.testFor(1300) && spamTracker.getTriggers() > 3) {
+        if (spamTracker.testFor(1300) && spamTracker.getTriggers() > 3) {
             player.sendMessage(5, "You are doing this too fast");
             return;
         }

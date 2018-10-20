@@ -50,7 +50,7 @@ public class PortalScriptManager {
     public static boolean executePortalScript(MapleClient client, MaplePortal portal) {
         MapleCharacter player = client.getPlayer();
         SpamTracker.SpamData spamTracker = player.getSpamTracker(SpamTracker.SpamOperation.PortalScripts);
-        if (!spamTracker.testFor(1000)) {
+        if (spamTracker.testFor(1000)) {
             return false;
         }
         spamTracker.record();

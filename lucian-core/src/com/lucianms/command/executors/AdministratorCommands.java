@@ -4,6 +4,7 @@ import com.lucianms.client.*;
 import com.lucianms.client.inventory.Equip;
 import com.lucianms.command.CommandWorker;
 import com.lucianms.cquest.CQuestBuilder;
+import com.lucianms.events.PlayerRingActionEvent;
 import com.lucianms.features.auto.GAutoEvent;
 import com.lucianms.features.auto.GAutoEventManager;
 import com.lucianms.io.scripting.Achievements;
@@ -12,13 +13,11 @@ import com.lucianms.io.scripting.event.EventManager;
 import com.lucianms.io.scripting.map.MapScriptManager;
 import com.lucianms.io.scripting.portal.PortalScriptManager;
 import com.lucianms.io.scripting.reactor.ReactorScriptManager;
-import com.lucianms.server.Server;
-import com.lucianms.server.channel.MapleChannel;
-import com.lucianms.events.PlayerRingActionEvent;
-import com.lucianms.server.world.MapleWorld;
 import com.lucianms.server.MapleInventoryManipulator;
 import com.lucianms.server.MapleItemInformationProvider;
 import com.lucianms.server.MapleShopFactory;
+import com.lucianms.server.Server;
+import com.lucianms.server.channel.MapleChannel;
 import com.lucianms.server.life.MapleLifeFactory;
 import com.lucianms.server.life.MapleMonster;
 import com.lucianms.server.life.MapleMonsterInformationProvider;
@@ -26,6 +25,8 @@ import com.lucianms.server.life.MapleNPC;
 import com.lucianms.server.maps.MapleMapObject;
 import com.lucianms.server.maps.MapleReactor;
 import com.lucianms.server.maps.PlayerNPC;
+import com.lucianms.server.world.MapleWorld;
+import tools.MaplePacketCreator;
 
 import javax.script.ScriptException;
 import java.awt.*;
@@ -62,7 +63,9 @@ public class AdministratorCommands {
                 commands.clear();
             }
         } else if (command.equals("test")) {
-            player.sendMessage(5, "");
+            for (MapleCharacter players : player.getMap().getCharacters()) {
+                players.getClient().announce(MaplePacketCreator.getChatText(player.getId(), "test", false, 0));
+            }
         } else if (command.equals("clearcache")) {
             if (args.length() == 1) {
                 switch (args.get(0)) {
@@ -70,15 +73,15 @@ public class AdministratorCommands {
                         return;
                     case "achievements":
                         Achievements.loadAchievements();
-                        player.sendMessage( "Achievement scripts reloaded");
+                        player.sendMessage("Achievement scripts reloaded");
                         break;
                     case "skills":
                         SkillFactory.loadAllSkills();
-                        player.sendMessage("Skill data reloaded" );
+                        player.sendMessage("Skill data reloaded");
                         break;
                     case "shops":
                         MapleShopFactory.getInstance().clearCache();
-                        player.sendMessage( "NPC shops cache cleared");
+                        player.sendMessage("NPC shops cache cleared");
                         break;
                     case "items":
                         MapleItemInformationProvider.getInstance().clearCache();
