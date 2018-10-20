@@ -28,6 +28,6 @@ public class DailyWorker implements Runnable {
 
         LOGGER.info("Testing for account age achievements");
         // testFor character data (character age)
-        Server.getInstance().getWorlds().forEach(w -> w.getPlayerStorage().getAllPlayers().forEach(p -> com.lucianms.io.scripting.Achievements.testFor(p, -1)));
+        Server.getWorlds().forEach(w -> w.getPlayerStorage().getAllPlayers().forEach(p -> com.lucianms.io.scripting.Achievements.testFor(p, -1)));
     }
 }

@@ -389,7 +389,7 @@ public class PlayerCashItemUseEvent extends PacketEvent implements Cleaner.Clean
                         }
                         break;
                     case 2: // Super megaphone
-                        Server.getInstance().broadcastMessage(MaplePacketCreator.serverNotice(3, getClient().getChannel(), medal + player.getName() + " : " + content, whisperEnabled));
+                        Server.broadcastMessage(MaplePacketCreator.serverNotice(3, getClient().getChannel(), medal + player.getName() + " : " + content, whisperEnabled));
                         break;
                     case 5: { // Maple TV
                         int type = itemID % 10;
@@ -411,7 +411,7 @@ public class PlayerCashItemUseEvent extends PacketEvent implements Cleaner.Clean
                                 messages.add(message);
                             }
                             if (messenger) {
-                                Server.getInstance().broadcastMessage(MaplePacketCreator.serverNotice(3, getClient().getChannel(), medal + player.getName() + " : " + builder.toString(), whisperEnabled));
+                                Server.broadcastMessage(MaplePacketCreator.serverNotice(3, getClient().getChannel(), medal + player.getName() + " : " + builder.toString(), whisperEnabled));
                             }
                             if (!MapleTVEffect.isActive()) {
                                 new MapleTVEffect(player, victim, messages, type);
@@ -439,13 +439,13 @@ public class PlayerCashItemUseEvent extends PacketEvent implements Cleaner.Clean
                                 return null;
                             }
                         }
-                        Server.getInstance().broadcastMessage(MaplePacketCreator.itemMegaphone(msg, whisperEnabled, getClient().getChannel(), item));
+                        Server.broadcastMessage(MaplePacketCreator.itemMegaphone(msg, whisperEnabled, getClient().getChannel(), item));
                         break;
                     case 7: //triple megaphone
                         for (int i = 0; i < messages.length; i++) {
                             messages[i] = medal + player.getName() + " : " + messages[i];
                         }
-                        Server.getInstance().broadcastMessage(MaplePacketCreator.getMultiMegaphone(messages, getClient().getChannel(), whisperEnabled));
+                        Server.broadcastMessage(MaplePacketCreator.getMultiMegaphone(messages, getClient().getChannel(), whisperEnabled));
                         break;
                 }
                 remove(getClient(), itemID);
@@ -571,8 +571,8 @@ public class PlayerCashItemUseEvent extends PacketEvent implements Cleaner.Clean
                     medal = "<" + ii.getName(medalItem.getItemId()) + "> ";
                 }
 
-                Server.getInstance().broadcastMessage(MaplePacketCreator.getAvatarMega(player, medal, getClient().getChannel(), itemID, Arrays.asList(messages), whisperEnabled));
-                TaskExecutor.createTask(() -> Server.getInstance().broadcastMessage(MaplePacketCreator.byeAvatarMega()), 1000 * 10);
+                Server.broadcastMessage(MaplePacketCreator.getAvatarMega(player, medal, getClient().getChannel(), itemID, Arrays.asList(messages), whisperEnabled));
+                TaskExecutor.createTask(() -> Server.broadcastMessage(MaplePacketCreator.byeAvatarMega()), 1000 * 10);
                 remove(getClient(), itemID);
             } else if (itemType == 545) { // MiuMiu's travel store
                 if (player.getShop() == null) {

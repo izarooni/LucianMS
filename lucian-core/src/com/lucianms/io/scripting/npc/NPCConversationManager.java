@@ -337,13 +337,13 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
         sendNext("You have obtained a #b#t" + item.getId() + "##k.");
         String map = c.getChannelServer().getMap(maps[(getNpc() != 9100117 && getNpc() != 9100109) ? (getNpc() - 9100100) : getNpc() == 9100109 ? 8 : 9]).getMapName();
         if (item.getTier() > 0) { //Uncommon and Rare
-            Server.getInstance().broadcastMessage(MaplePacketCreator.gachaponMessage(itemGained, map, getPlayer()));
+            Server.broadcastMessage(MaplePacketCreator.gachaponMessage(itemGained, map, getPlayer()));
         }
     }
 
     public void disbandAlliance(MapleClient c, int allianceId) {
-        Server.getInstance().allianceMessage(c.getPlayer().getGuild().getAllianceId(), MaplePacketCreator.disbandAlliance(allianceId), -1, -1);
-        Server.getInstance().disbandAlliance(allianceId);
+        Server.allianceMessage(c.getPlayer().getGuild().getAllianceId(), MaplePacketCreator.disbandAlliance(allianceId), -1, -1);
+        Server.disbandAlliance(allianceId);
         try (Connection con = Server.getConnection();
              PreparedStatement ps = con.prepareStatement("DELETE FROM `alliance` WHERE id = ?")) {
             ps.setInt(1, allianceId);
@@ -390,14 +390,14 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
             return null;
         }
         MapleAlliance alliance = new MapleAlliance(name, id, guild1, guild2);
-        Server.getInstance().setGuildAllianceId(guild1, id);
-        Server.getInstance().setGuildAllianceId(guild2, id);
+        Server.setGuildAllianceId(guild1, id);
+        Server.setGuildAllianceId(guild2, id);
         chr1.setAllianceRank(1);
         chr1.saveGuildStatus();
         chr2.setAllianceRank(2);
         chr2.saveGuildStatus();
-        Server.getInstance().addAlliance(id, alliance);
-        Server.getInstance().allianceMessage(id, MaplePacketCreator.makeNewAlliance(alliance, chr1.getClient()), -1, -1);
+        Server.addAlliance(id, alliance);
+        Server.allianceMessage(id, MaplePacketCreator.makeNewAlliance(alliance, chr1.getClient()), -1, -1);
         return alliance;
     }
 

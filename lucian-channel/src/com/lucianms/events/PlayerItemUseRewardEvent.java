@@ -71,7 +71,7 @@ public class PlayerItemUseRewardEvent extends PacketEvent {
                     String msg = reward.worldmsg;
                     msg = msg.replaceAll("/name", player.getName());
                     msg = msg.replaceAll("/item", ii.getName(reward.itemid));
-                    Server.getInstance().broadcastMessage(MaplePacketCreator.serverNotice(6, msg));
+                    Server.broadcastMessage(MaplePacketCreator.serverNotice(6, msg));
                 }
                 break;
             }

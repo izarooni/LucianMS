@@ -119,7 +119,7 @@ public class MapleExpedition {
         startMap.broadcastMessage(MaplePacketCreator.removeClock());
         broadcastExped(MaplePacketCreator.serverNotice(6, "The expedition has started! The expedition leader is waiting inside!"));
         startTime = System.currentTimeMillis();
-        Server.getInstance().broadcastGMMessage(MaplePacketCreator.serverNotice(6, type.toString() + " Expedition started with leader: " + leader.getName()));
+        Server.broadcastGMMessage(MaplePacketCreator.serverNotice(6, type.toString() + " Expedition started with leader: " + leader.getName()));
     }
 
     public String addMember(MapleCharacter player) {

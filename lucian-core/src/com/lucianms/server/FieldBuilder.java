@@ -195,7 +195,7 @@ public class FieldBuilder {
     }
 
     private void obtainSpawns() {
-        MapleChannel channel = Server.getInstance().getChannel(map.getWorld(), map.getChannel());
+        MapleChannel channel = Server.getChannel(map.getWorld(), map.getChannel());
         try (Connection con = channel.getConnection();
              PreparedStatement ps = con.prepareStatement("SELECT * FROM spawns WHERE mid = ?")) {
             ps.setInt(1, map.getId());

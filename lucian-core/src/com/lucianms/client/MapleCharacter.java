@@ -620,14 +620,14 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
                 ret.initialSpawnPoint = 0;
             }
             ret.setPosition(portal.getPosition());
-            MapleParty party = Server.getInstance().getWorld(ret.world).getParty(partyid);
+            MapleParty party = Server.getWorld(ret.world).getParty(partyid);
             if (party != null) {
                 ret.mpc = new MaplePartyCharacter(ret);
                 party.updateMember(ret.mpc);
                 ret.party = party;
             }
             if (messengerid > 0 && position < 4 && position > -1) {
-                MapleMessenger messenger = Server.getInstance().getWorld(ret.world).getMessenger(messengerid);
+                MapleMessenger messenger = Server.getWorld(ret.world).getMessenger(messengerid);
                 if (messenger != null) {
                     ret.messenger = messenger;
                     ret.messengerposition = position;
@@ -1781,7 +1781,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
 
     public void checkMessenger() {
         if (messenger != null && messengerposition < 4 && messengerposition > -1) {
-            MapleWorld worldz = Server.getInstance().getWorld(world);
+            MapleWorld worldz = Server.getWorld(world);
             worldz.silentJoinMessenger(messenger.getId(), new MapleMessengerCharacter(this, messengerposition), messengerposition);
             worldz.updateMessenger(getMessenger().getId(), name, client.getChannel());
         }
@@ -1910,7 +1910,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
         if (guildid < 1 || guildrank != 1) {
             return;
         }
-        Server.getInstance().disbandGuild(guildid);
+        Server.disbandGuild(guildid);
     }
 
     public void dispel() {
@@ -2089,7 +2089,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
         recalcLocalStats();
         enforceMaxHpMp();
         if (getMessenger() != null) {
-            Server.getInstance().getWorld(world).updateMessenger(getMessenger(), getName(), getWorld(), client.getChannel());
+            Server.getWorld(world).updateMessenger(getMessenger(), getName(), getWorld(), client.getChannel());
         }
         MapleInventory inventory = getInventory(MapleInventoryType.EQUIPPED);
         // DBZ Drop rate boost
@@ -2564,7 +2564,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
 
     public MapleGuild getGuild() {
         try {
-            return Server.getInstance().getGuild(getGuildId(), getWorld(), null);
+            return Server.getGuild(getGuildId(), getWorld(), null);
         } catch (Exception ex) {
             return null;
         }
@@ -3284,11 +3284,11 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
         mgc.setLevel(level);
         mgc.setJobId(job.getId());
         try {
-            Server.getInstance().memberLevelJobUpdate(this.mgc);
-            // Server.getInstance().getGuild(guildid, world, mgc).gainGP(40);
+            Server.memberLevelJobUpdate(this.mgc);
+            // Server.getGuild(guildid, world, mgc).gainGP(40);
             int allianceId = getGuild().getAllianceId();
             if (allianceId > 0) {
-                Server.getInstance().allianceMessage(allianceId, MaplePacketCreator.updateAllianceJobLevel(this), getId(), -1);
+                Server.allianceMessage(allianceId, MaplePacketCreator.updateAllianceJobLevel(this), getId(), -1);
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -3381,7 +3381,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
             dropMessage(1, "You don't have enough mesos.");
             return;
         }
-        Server.getInstance().increaseGuildCapacity(guildid);
+        Server.increaseGuildCapacity(guildid);
         gainMeso(-getGuild().getIncreaseGuildCost(getGuild().getCapacity()), true, false, false);
     }
 
@@ -3663,7 +3663,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
                     try (ResultSet rs = ps.executeQuery()) {
                         if (rs.next()) {
                             PlayerNPC playerNPC = new PlayerNPC(con, rs);
-                            for (MapleChannel channel : Server.getInstance().getChannelsFromWorld(world)) {
+                            for (MapleChannel channel : Server.getChannelsFromWorld(world)) {
                                 MapleMap m = channel.getMap(getMapId());
                                 m.broadcastMessage(MaplePacketCreator.spawnPlayerNPC(playerNPC));
                                 m.broadcastMessage(MaplePacketCreator.getPlayerNPC(playerNPC));
@@ -3887,7 +3887,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
             int channel = client.getChannel();
             for (MaplePartyCharacter partychar : party.getMembers()) {
                 if (partychar.getMapId() == getMapId() && partychar.getChannel() == channel) {
-                    MapleCharacter other = Server.getInstance().getWorld(world).getChannel(channel).getPlayerStorage().getPlayerByName(partychar.getName());
+                    MapleCharacter other = Server.getWorld(world).getChannel(channel).getPlayerStorage().getPlayerByName(partychar.getName());
                     if (other != null) {
                         client.announce(MaplePacketCreator.updatePartyMemberHP(other.getId(), other.getHp(), other.getCurrentMaxHp()));
                     }
@@ -4572,7 +4572,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
     public void setRates() {
         Calendar cal = Calendar.getInstance();
         cal.setTimeZone(TimeZone.getTimeZone("GMT-8"));
-        MapleWorld w = Server.getInstance().getWorld(world);
+        MapleWorld w = Server.getWorld(world);
         int hr = cal.get(Calendar.HOUR_OF_DAY);
 
         expRate = w.getExpRate();
@@ -4808,7 +4808,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
 
     public void silentPartyUpdate() {
         if (party != null) {
-            Server.getInstance().getWorld(world).updateParty(party.getId(), PartyOperation.SILENT_UPDATE, getMPC());
+            Server.getWorld(world).updateParty(party.getId(), PartyOperation.SILENT_UPDATE, getMPC());
         }
     }
 
@@ -4886,7 +4886,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
             int channel = client.getChannel();
             for (MaplePartyCharacter partychar : party.getMembers()) {
                 if (partychar.getMapId() == getMapId() && partychar.getChannel() == channel) {
-                    MapleCharacter other = Server.getInstance().getWorld(world).getChannel(channel).getPlayerStorage().getPlayerByName(partychar.getName());
+                    MapleCharacter other = Server.getWorld(world).getChannel(channel).getPlayerStorage().getPlayerByName(partychar.getName());
                     if (other != null) {
                         other.client.announce(MaplePacketCreator.updatePartyMemberHP(getId(), this.hp, maxhp));
                     }
@@ -5065,7 +5065,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
                 client.disconnect(false, false);
             }
         }, 5000);
-        Server.getInstance().broadcastGMMessage(MaplePacketCreator.serverNotice(6, MapleCharacter.makeMapleReadable(this.name) + " was autobanned for " + reason));
+        Server.broadcastGMMessage(MaplePacketCreator.serverNotice(6, MapleCharacter.makeMapleReadable(this.name) + " was autobanned for " + reason));
     }
 
     public void block(int reason, int days, String desc) {

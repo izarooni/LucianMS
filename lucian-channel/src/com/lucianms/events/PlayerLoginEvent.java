@@ -95,7 +95,7 @@ public class PlayerLoginEvent extends PacketEvent {
 //        }
 
         channel.addPlayer(player);
-        List<PlayerBuffValueHolder> buffs = Server.getInstance().getPlayerBuffStorage().remove(playerID);
+        List<PlayerBuffValueHolder> buffs = Server.getPlayerBuffStorage().remove(playerID);
         if (buffs != null) {
             player.silentGiveBuffs(buffs);
             buffs.clear();
@@ -164,21 +164,21 @@ public class PlayerLoginEvent extends PacketEvent {
 
         //region guild
         if (player.getGuildId() > 0) {
-            MapleGuild playerGuild = Server.getInstance().getGuild(player.getGuildId(), player.getWorld(), player.getMGC());
+            MapleGuild playerGuild = Server.getGuild(player.getGuildId(), player.getWorld(), player.getMGC());
             if (playerGuild == null) {
                 player.deleteGuild(player.getGuildId());
                 player.resetMGC();
                 player.setGuildId(0);
             } else {
-                Server.getInstance().setGuildMemberOnline(player.getMGC(), true, getClient().getChannel());
+                Server.setGuildMemberOnline(player.getMGC(), true, getClient().getChannel());
                 getClient().announce(MaplePacketCreator.showGuildInfo(player));
                 int allianceId = player.getGuild().getAllianceId();
                 if (allianceId > 0) {
-                    MapleAlliance newAlliance = Server.getInstance().getAlliance(allianceId);
+                    MapleAlliance newAlliance = Server.getAlliance(allianceId);
                     if (newAlliance == null) {
                         newAlliance = MapleAlliance.loadAlliance(allianceId);
                         if (newAlliance != null) {
-                            Server.getInstance().addAlliance(allianceId, newAlliance);
+                            Server.addAlliance(allianceId, newAlliance);
                         } else {
                             player.getGuild().setAllianceId(0);
                         }
@@ -186,7 +186,7 @@ public class PlayerLoginEvent extends PacketEvent {
                     if (newAlliance != null) {
                         getClient().announce(MaplePacketCreator.getAllianceInfo(newAlliance));
                         getClient().announce(MaplePacketCreator.getGuildAlliances(newAlliance, getClient()));
-                        Server.getInstance().allianceMessage(allianceId, MaplePacketCreator.allianceMemberOnline(player, true), player.getId(), -1);
+                        Server.allianceMessage(allianceId, MaplePacketCreator.allianceMemberOnline(player, true), player.getId(), -1);
                     }
                 }
             }

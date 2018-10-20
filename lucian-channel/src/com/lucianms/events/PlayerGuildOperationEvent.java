@@ -169,7 +169,7 @@ public class PlayerGuildOperationEvent extends PacketEvent {
                     player.dropMessage(1, "The Guild name you have chosen is not accepted.");
                     return null;
                 }
-                int guildID = Server.getInstance().createGuild(player.getId(), name);
+                int guildID = Server.createGuild(player.getId(), name);
                 if (guildID == 0) {
                     getClient().announce(MaplePacketCreator.genericGuildMessage((byte) 0x1c));
                     return null;
@@ -217,7 +217,7 @@ public class PlayerGuildOperationEvent extends PacketEvent {
                 player.setGuildRank(5); // start at lowest rank
                 int s;
 
-                s = Server.getInstance().addGuildMember(player.getMGC());
+                s = Server.addGuildMember(player.getMGC());
                 if (s == 0) {
                     player.dropMessage(1, "The Guild you are trying to join is already full.");
                     player.setGuildId(0);
@@ -233,32 +233,32 @@ public class PlayerGuildOperationEvent extends PacketEvent {
                     return null;
                 }
                 getClient().announce(MaplePacketCreator.updateGP(player.getGuildId(), 0));
-                Server.getInstance().leaveGuild(player.getMGC());
+                Server.leaveGuild(player.getMGC());
                 getClient().announce(MaplePacketCreator.showGuildInfo(null));
                 player.setGuildId(0);
                 player.saveGuildStatus();
                 respawnPlayer(player);
                 break;
             case 0x08:
-                Server.getInstance().expelMember(player.getMGC(), name, playerID);
+                Server.expelMember(player.getMGC(), name, playerID);
                 break;
             case 0x0d:
-                Server.getInstance().changeRankTitle(player.getGuildId(), ranks);
+                Server.changeRankTitle(player.getGuildId(), ranks);
                 break;
             case 0x0e:
-                Server.getInstance().changeRank(player.getGuildId(), playerID, newRank);
+                Server.changeRank(player.getGuildId(), playerID, newRank);
                 break;
             case 0x0f:
                 if (player.getMeso() < MapleGuild.CHANGE_EMBLEM_COST) {
                     getClient().announce(MaplePacketCreator.serverNotice(1, "You do not have enough mesos to create a Guild."));
                     return null;
                 }
-                Server.getInstance().setGuildEmblem(player.getGuildId(), background, backgroundColor, logo, logoColor);
+                Server.setGuildEmblem(player.getGuildId(), background, backgroundColor, logo, logoColor);
                 player.gainMeso(-MapleGuild.CHANGE_EMBLEM_COST, true, false, true);
                 respawnPlayer(player);
                 break;
             case 0x10:
-                Server.getInstance().setGuildNotice(player.getGuildId(), content);
+                Server.setGuildNotice(player.getGuildId(), content);
                 break;
         }
         return null;

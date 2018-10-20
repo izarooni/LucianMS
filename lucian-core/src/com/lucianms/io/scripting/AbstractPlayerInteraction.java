@@ -26,21 +26,18 @@ import com.lucianms.client.MapleClient;
 import com.lucianms.client.MapleQuestStatus;
 import com.lucianms.client.SkillFactory;
 import com.lucianms.client.inventory.*;
+import com.lucianms.constants.ItemConstants;
+import com.lucianms.constants.ServerConstants;
 import com.lucianms.io.scripting.event.EventManager;
 import com.lucianms.io.scripting.npc.NPCScriptManager;
 import com.lucianms.scheduler.Task;
 import com.lucianms.scheduler.TaskExecutor;
-import com.zaxxer.hikari.HikariDataSource;
-import com.lucianms.constants.ItemConstants;
-import com.lucianms.constants.ServerConstants;
-import com.lucianms.server.Server;
-import com.lucianms.server.guild.MapleGuild;
-import com.lucianms.server.world.MapleParty;
-import com.lucianms.server.world.MaplePartyCharacter;
 import com.lucianms.server.MapleInventoryManipulator;
 import com.lucianms.server.MapleItemInformationProvider;
+import com.lucianms.server.Server;
 import com.lucianms.server.expeditions.MapleExpedition;
 import com.lucianms.server.expeditions.MapleExpeditionType;
+import com.lucianms.server.guild.MapleGuild;
 import com.lucianms.server.life.MapleLifeFactory;
 import com.lucianms.server.life.MapleMonster;
 import com.lucianms.server.life.MobSkill;
@@ -51,6 +48,9 @@ import com.lucianms.server.maps.MapleMapObjectType;
 import com.lucianms.server.partyquest.PartyQuest;
 import com.lucianms.server.partyquest.Pyramid;
 import com.lucianms.server.quest.MapleQuest;
+import com.lucianms.server.world.MapleParty;
+import com.lucianms.server.world.MaplePartyCharacter;
+import com.zaxxer.hikari.HikariDataSource;
 import tools.Database;
 import tools.MaplePacketCreator;
 
@@ -333,11 +333,7 @@ public class AbstractPlayerInteraction {
     }
 
     public MapleGuild getGuild() {
-        try {
-            return Server.getInstance().getGuild(getPlayer().getGuildId(), getPlayer().getWorld(), null);
-        } catch (Exception e) {
-        }
-        return null;
+        return Server.getGuild(getPlayer().getGuildId(), getPlayer().getWorld(), null);
     }
 
     public MapleParty getParty() {

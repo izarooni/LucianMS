@@ -95,7 +95,7 @@ public class ConsoleCommands {
                     LOGGER.warn(error);
                     return;
                 }
-                for (MapleWorld world : Server.getInstance().getWorlds()) {
+                for (MapleWorld world : Server.getWorlds()) {
                     for (MapleChannel channel : world.getChannels()) {
                         channel.reloadMap(mapID);
                         LOGGER.info("Reloading map {} in world {} channel {}", mapID, (world.getId() + 1), channel.getId());
@@ -137,7 +137,7 @@ public class ConsoleCommands {
                     }
                     case "config": {
                         try {
-                            Server.getInstance().reloadConfig();
+                            Server.reloadConfig();
                             LOGGER.info("Server configuration reloaded!");
                         } catch (FileNotFoundException e) {
                             LOGGER.error("Failed to reload config", e);
@@ -150,7 +150,7 @@ public class ConsoleCommands {
             }
         } else if (command.equals("online")) {
             LOGGER.info("Server: " + Server.getServerHandler().getChannels().size());
-            for (MapleWorld worlds : Server.getInstance().getWorlds()) {
+            for (MapleWorld worlds : Server.getWorlds()) {
                 LOGGER.info("World {}:", (worlds.getId() + 1));
                 for (MapleChannel channels : worlds.getChannels()) {
                     StringBuilder sb = new StringBuilder();
@@ -173,7 +173,7 @@ public class ConsoleCommands {
         } else if (command.equals("crash")) {
             if (args.length() == 1) {
                 String username = args.get(0);
-                for (MapleWorld world : Server.getInstance().getWorlds()) {
+                for (MapleWorld world : Server.getWorlds()) {
                     MapleCharacter player = world.getPlayerStorage().getPlayerByName(username);
                     if (player != null) {
                         player.getClient().disconnect(false, player.getCashShop().isOpened());

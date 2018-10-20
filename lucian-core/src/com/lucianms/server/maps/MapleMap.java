@@ -200,7 +200,7 @@ public class MapleMap {
     }
 
     public MapleMap getReturnMap() {
-        return Server.getInstance().getWorld(world).getChannel(channel).getMap(returnMapId);
+        return Server.getWorld(world).getChannel(channel).getMap(returnMapId);
     }
 
     public int getReturnMapId() {
@@ -227,7 +227,7 @@ public class MapleMap {
     }
 
     public MapleMap getForcedReturnMap() {
-        return Server.getInstance().getWorld(world).getChannel(channel).getMap(forcedReturnMap);
+        return Server.getWorld(world).getChannel(channel).getMap(forcedReturnMap);
     }
 
     public void setForcedReturnMap(int map) {
@@ -1538,7 +1538,7 @@ public class MapleMap {
         {
             PlayerBattle battle = chr.getPlayerBattle();
             if (Arrays.binarySearch(
-                    Server.getInstance().getConfig().getIntArray("PvPEnabled"), getId()) > -1) {
+                    Server.getConfig().getIntArray("PvPEnabled"), getId()) > -1) {
                 if (battle == null) {
                     new PlayerBattle().registerPlayer(chr);
                     chr.sendMessage(6, "You have entered a PvP map");
@@ -1569,7 +1569,7 @@ public class MapleMap {
             if (!isTown()
                     && spawnPoints.stream().noneMatch(sp -> sp.getMonster().isBoss() || chr.getLevel() - sp.getMonster().getLevel() > 30)
                     && !spawnPoints.isEmpty()
-                    && Arrays.binarySearch(Server.getInstance().getConfig().getIntArray("EmergencyExcludes"), getId()) < 0) {
+                    && Arrays.binarySearch(Server.getConfig().getIntArray("EmergencyExcludes"), getId()) < 0) {
                 // 1/25 chance to trigger emergency
                 if ((chr.isGM() && chr.isDebug())
                         || ((System.currentTimeMillis() > nextEmergency)

@@ -22,8 +22,7 @@ public class OnlineRequest extends DiscordRequest {
 
     @Override
     public void handle(MaplePacketReader reader) {
-        Server server = Server.getInstance();
-        List<MapleWorld> worlds = server.getWorlds();
+        List<MapleWorld> worlds = Server.getWorlds();
 
         MaplePacketLittleEndianWriter writer = new MaplePacketLittleEndianWriter();
         writer.write(Headers.Online.value);

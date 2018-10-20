@@ -44,7 +44,7 @@ public class AccountLoginEvent extends PacketEvent {
     public Object onPacket() {
         getClient().setAccountName(username);
         int loginResult = getClient().login(username, password);
-        if (Server.getInstance().getConfig().getBoolean("WhitelistEnabled")) {
+        if (Server.getConfig().getBoolean("WhitelistEnabled")) {
             if (!Whitelist.hasAccount(getClient().getAccID())) {
                 LOGGER.warn("Attempted non-whitelist account login username: '{}' , accountID: '{}'", username, getClient().getAccID());
                 getClient().announce(MaplePacketCreator.getLoginFailed(5));

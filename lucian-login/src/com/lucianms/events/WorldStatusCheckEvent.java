@@ -23,7 +23,7 @@ public class WorldStatusCheckEvent extends PacketEvent {
     public Object onPacket() {
         int status;
         int num = 0;
-        for (MapleChannel ch : Server.getInstance().getWorld(world).getChannels()) {
+        for (MapleChannel ch : Server.getWorld(world).getChannels()) {
             num += ch.getConnectedClients();
         }
         if (num >= ServerConstants.CHANNEL_LOAD) {

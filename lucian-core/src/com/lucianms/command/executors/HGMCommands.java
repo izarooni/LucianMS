@@ -336,7 +336,7 @@ public class HGMCommands {
                 player.dropMessage(5, "Usage: !onpc <npc_id/script>");
             }
         } else if (command.equals("saveall")) {
-            for (MapleWorld worlds : Server.getInstance().getWorlds()) {
+            for (MapleWorld worlds : Server.getWorlds()) {
                 worlds.getPlayerStorage().getAllPlayers().forEach(MapleCharacter::saveToDB);
             }
             player.dropMessage(6, "All characters saved!");

@@ -2260,7 +2260,7 @@ public class MaplePacketCreator {
         MapleGuildSummary gs = chr.getClient().getWorldServer().getGuildSummary(chr.getGuildId(), chr.getWorld());
         if (chr.getGuildId() > 0 && gs != null) {
             guildName = gs.getName();
-            MapleAlliance alliance = Server.getInstance().getAlliance(gs.getAllianceId());
+            MapleAlliance alliance = Server.getAlliance(gs.getAllianceId());
             if (alliance != null) {
                 allianceName = alliance.getName();
             }
@@ -5814,7 +5814,7 @@ public class MaplePacketCreator {
         mplew.writeInt(2); // probably capacity
         mplew.writeShort(0);
         for (Integer guildd : alliance.getGuilds()) {
-            getGuildInfo(mplew, Server.getInstance().getGuild(guildd, c.getWorld(), c.getPlayer().getMGC()));
+            getGuildInfo(mplew, Server.getGuild(guildd, c.getWorld(), c.getPlayer().getMGC()));
         }
         return mplew.getPacket();
     }
@@ -5825,7 +5825,7 @@ public class MaplePacketCreator {
         mplew.write(0x0D);
         mplew.writeInt(alliance.getGuilds().size());
         for (Integer guild : alliance.getGuilds()) {
-            getGuildInfo(mplew, Server.getInstance().getGuild(guild, c.getWorld(), null));
+            getGuildInfo(mplew, Server.getGuild(guild, c.getWorld(), null));
         }
         return mplew.getPacket();
     }
@@ -5846,7 +5846,7 @@ public class MaplePacketCreator {
         mplew.writeInt(2);
         mplew.writeMapleAsciiString(alliance.getNotice());
         mplew.writeInt(newGuild);
-        getGuildInfo(mplew, Server.getInstance().getGuild(newGuild, c.getWorld(), null));
+        getGuildInfo(mplew, Server.getGuild(newGuild, c.getWorld(), null));
         return mplew.getPacket();
     }
 
@@ -5909,7 +5909,7 @@ public class MaplePacketCreator {
         mplew.writeInt(2);
         mplew.writeMapleAsciiString(alliance.getNotice());
         mplew.writeInt(expelledGuild);
-        getGuildInfo(mplew, Server.getInstance().getGuild(expelledGuild, c.getWorld(), null));
+        getGuildInfo(mplew, Server.getGuild(expelledGuild, c.getWorld(), null));
         mplew.write(0x01);
         return mplew.getPacket();
     }

@@ -208,7 +208,7 @@ public class AdministratorCommands {
                 player.changeMap(player.getMap(), new Point(x, y));
             }
         } else if (command.equals("reloadevents")) {
-            for (MapleWorld worlds : Server.getInstance().getWorlds()) {
+            for (MapleWorld worlds : Server.getWorlds()) {
                 for (MapleChannel channels : worlds.getChannels()) {
                     channels.reloadEventScriptManager();
                 }

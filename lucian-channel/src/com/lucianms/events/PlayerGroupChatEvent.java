@@ -42,11 +42,11 @@ public class PlayerGroupChatEvent extends PacketEvent {
         } else if (action == 1 && player.getParty() != null) {
             world.partyChat(player.getParty(), content, player.getName());
         } else if (action == 2 && player.getGuildId() > 0) {
-            Server.getInstance().guildChat(player.getGuildId(), player.getName(), player.getId(), content);
+            Server.guildChat(player.getGuildId(), player.getName(), player.getId(), content);
         } else if (action == 3 && player.getGuild() != null) {
             int allianceId = player.getGuild().getAllianceId();
             if (allianceId > 0) {
-                Server.getInstance().allianceMessage(allianceId, MaplePacketCreator.multiChat(player.getName(), content, 3), player.getId(), -1);
+                Server.allianceMessage(allianceId, MaplePacketCreator.multiChat(player.getName(), content, 3), player.getId(), -1);
             }
         }
         return null;

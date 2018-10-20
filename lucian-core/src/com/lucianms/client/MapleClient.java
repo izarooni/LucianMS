@@ -766,8 +766,7 @@ public class MapleClient {
                         //endregion
                         //region guild
                         if (guild != null) {
-                            final Server server = Server.getInstance();
-                            server.setGuildMemberOnline(chrg, false, player.getClient().getChannel());
+                            Server.setGuildMemberOnline(chrg, false, player.getClient().getChannel());
                             player.getClient().announce(MaplePacketCreator.showGuildInfo(player));
                         }
                         //endregion
@@ -849,19 +848,19 @@ public class MapleClient {
     }
 
     public MapleChannel getChannelServer() {
-        return Server.getInstance().getChannel(world, channel);
+        return Server.getChannel(world, channel);
     }
 
     public MapleWorld getWorldServer() {
-        return Server.getInstance().getWorld(world);
+        return Server.getWorld(world);
     }
 
     public MapleChannel getChannelServer(byte channel) {
-        return Server.getInstance().getChannel(world, channel);
+        return Server.getChannel(world, channel);
     }
 
     public boolean deleteCharacter(int cid) {
-        MapleCharacter player = Server.getInstance().getWorld(0).getPlayerStorage().getPlayerByID(cid);
+        MapleCharacter player = Server.getWorld(0).getPlayerStorage().getPlayerByID(cid);
         if (player != null) {
             player.getClient().disconnect(false, false);
             disconnect(false, false);
@@ -877,7 +876,7 @@ public class MapleClient {
                     }
                     if (rs.getInt("guildid") > 0) {
                         try {
-                            Server.getInstance().deleteGuildCharacter(new MapleGuildCharacter(cid, 0, rs.getString("name"), (byte) -1, (byte) -1, 0, rs.getInt("guildrank"), rs.getInt("guildid"), false, rs.getInt("allianceRank")));
+                            Server.deleteGuildCharacter(new MapleGuildCharacter(cid, 0, rs.getString("name"), (byte) -1, (byte) -1, 0, rs.getInt("guildrank"), rs.getInt("guildid"), false, rs.getInt("allianceRank")));
                         } catch (Exception re) {
                             return false;
                         }
@@ -1096,7 +1095,6 @@ public class MapleClient {
     }
 
     public void changeChannel(int channel) {
-        Server server = Server.getInstance();
         if (player.isBanned()) {
             disconnect(false, false);
             return;
@@ -1118,7 +1116,7 @@ public class MapleClient {
                 merchant.removeVisitor(getPlayer());
             }
         }
-        server.getPlayerBuffStorage().put(player.getId(), player.getAllBuffs());
+        Server.getPlayerBuffStorage().put(player.getId(), player.getAllBuffs());
         player.cancelBuffEffects();
         player.cancelMagicDoor();
         player.saveCooldowns();

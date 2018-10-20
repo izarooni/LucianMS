@@ -77,7 +77,7 @@ public class HiredMerchant extends AbstractMapleMapObject {
             @Override
             public void run() {
                 HiredMerchant.this.forceClose();
-                Server.getInstance().getChannel(world, channel).removeHiredMerchant(ownerId);
+                Server.getChannel(world, channel).removeHiredMerchant(ownerId);
             }
         }, 1000 * 60 * 60 * 24);
     }
@@ -163,7 +163,7 @@ public class HiredMerchant extends AbstractMapleMapObject {
                     if (pItem.getBundles() < 1) {
                         pItem.setDoesExist(false);
                     }
-                    MapleCharacter owner = Server.getInstance().getWorld(world).getPlayerStorage().getPlayerByName(ownerName);
+                    MapleCharacter owner = Server.getWorld(world).getPlayerStorage().getPlayerByName(ownerName);
                     if (owner != null) {
                         owner.addMerchantMesos(price);
                     } else {
@@ -200,12 +200,12 @@ public class HiredMerchant extends AbstractMapleMapObject {
         } catch (SQLException ex) {
             ex.printStackTrace();
         }
-        //Server.getInstance().getChannel(world, channel).removeHiredMerchant(ownerId);
+        //Server.getChannel(world, channel).removeHiredMerchant(ownerId);
         map.broadcastMessage(MaplePacketCreator.destroyHiredMerchant(getOwnerId()));
 
         map.removeMapObject(this);
 
-        MapleCharacter player = Server.getInstance().getWorld(world).getPlayerStorage().getPlayerByID(ownerId);
+        MapleCharacter player = Server.getWorld(world).getPlayerStorage().getPlayerByID(ownerId);
         if (player != null) {
             player.setHasMerchant(false);
         } else {

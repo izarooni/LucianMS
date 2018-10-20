@@ -53,7 +53,7 @@ public class ManualPlayerEvent extends GenericEvent {
     }
 
     public void broadcastMessage(String message) {
-        Server.getInstance().getWorld(getChannel().getWorld()).broadcastPacket(MaplePacketCreator.serverNotice(6, "[Event] " + message));
+        Server.getWorld(getChannel().getWorld()).broadcastPacket(MaplePacketCreator.serverNotice(6, "[Event] " + message));
     }
 
     /**
