@@ -87,7 +87,10 @@ public class EventManager extends GenericEvent {
             public void run() {
                 try {
                     getInvocable().invokeFunction(function, eim);
-                } catch (ScriptException | NoSuchMethodException e) {
+                } catch (ScriptException e) {
+                    String message = e.getMessage();
+                    LOGGER.error("Unable to invoke function {} in script {}", function, scriptName, message.contains("ReferenceError") ? e.getMessage() : e);
+                } catch (NoSuchMethodException e) {
                     LOGGER.error("Unable to invoke function {} in script {}", function, scriptName, e);
                 }
             }

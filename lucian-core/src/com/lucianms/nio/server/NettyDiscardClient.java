@@ -16,15 +16,16 @@ import io.netty.handler.codec.MessageToByteEncoder;
  */
 public class NettyDiscardClient implements AutoCloseable {
 
+    private final Bootstrap bootstrap = new Bootstrap();
     private final NioEventLoopGroup parentGroup;
     private final ChannelInboundHandlerAdapter serverInboundHandler;
     private final String address;
     private final int port;
-    private ByteToMessageDecoder decoder;
-    private MessageToByteEncoder encoder;
+    private Class<? extends ByteToMessageDecoder> decoder;
+    private Class<? extends MessageToByteEncoder> encoder;
     private ChannelFuture channelFuture;
 
-    public NettyDiscardClient(String address, int port, NioEventLoopGroup parentGroup, ChannelInboundHandlerAdapter serverInboundHandler, ByteToMessageDecoder decoder, MessageToByteEncoder encoder) {
+    public NettyDiscardClient(String address, int port, NioEventLoopGroup parentGroup, ChannelInboundHandlerAdapter serverInboundHandler, Class<? extends ByteToMessageDecoder> decoder, Class<? extends MessageToByteEncoder> encoder) {
         this.address = address;
         this.port = port;
         this.parentGroup = parentGroup;
@@ -33,9 +34,8 @@ public class NettyDiscardClient implements AutoCloseable {
         this.encoder = encoder;
     }
 
-    public void run() throws Exception {
-        Bootstrap b = new Bootstrap();
-        b.group(parentGroup)
+    public void run() {
+        bootstrap.group(parentGroup)
                 .channel(NioSocketChannel.class)
                 .option(ChannelOption.TCP_NODELAY, true)
                 .option(ChannelOption.SO_KEEPALIVE, true)
@@ -43,12 +43,15 @@ public class NettyDiscardClient implements AutoCloseable {
                     @Override
                     public void initChannel(SocketChannel ch) throws Exception {
                         ch.pipeline()
-                                .addLast("decoder", decoder)
-                                .addLast("encoder", encoder)
+                                .addLast("decoder", decoder.getDeclaredConstructor().newInstance())
+                                .addLast("encoder", encoder.getDeclaredConstructor().newInstance())
                                 .addLast(serverInboundHandler);
                     }
                 });
-        channelFuture = b.connect(address, port);
+    }
+
+    public Bootstrap getBootstrap() {
+        return bootstrap;
     }
 
     public ChannelFuture getChannelFuture() {

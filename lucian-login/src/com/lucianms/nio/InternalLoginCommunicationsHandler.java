@@ -10,6 +10,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import tools.MaplePacketCreator;
 
+import java.io.IOException;
+
 @ChannelHandler.Sharable
 public class InternalLoginCommunicationsHandler extends ChannelInboundHandlerAdapter {
 
@@ -49,6 +51,9 @@ public class InternalLoginCommunicationsHandler extends ChannelInboundHandlerAda
 
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
+        if (cause instanceof IOException) {
+            return;
+        }
         cause.printStackTrace();
     }
 }

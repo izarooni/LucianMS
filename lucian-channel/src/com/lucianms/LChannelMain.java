@@ -4,20 +4,12 @@ import com.lucianms.events.*;
 import com.lucianms.io.Config;
 import com.lucianms.nio.ReceivePacketState;
 import com.lucianms.nio.RecvOpcode;
-import com.lucianms.nio.receive.DirectPacketDecoder;
-import com.lucianms.nio.send.DirectPacketEncoder;
 import com.lucianms.nio.server.MapleServerInboundHandler;
-import com.lucianms.nio.server.NettyDiscardClient;
-import com.lucianms.scheduler.TaskExecutor;
 import com.lucianms.server.Server;
 import com.lucianms.server.channel.MapleChannel;
-import com.lucianms.events.PlayerPartySearchBeginEvent;
-import com.lucianms.events.PlayerNpcShopInteractionEvent;
 import com.lucianms.server.world.MapleWorld;
 import com.lucianms.service.InternalChannelCommunicationsHandler;
 import com.zaxxer.hikari.HikariDataSource;
-import io.netty.channel.ChannelFuture;
-import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.nio.NioEventLoopGroup;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,6 +22,7 @@ import java.sql.SQLException;
 public class LChannelMain {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(LChannelMain.class);
+    private static InternalChannelCommunicationsHandler communicationsHandler;
 
     public static void main(String[] args) {
         initReceiveHeaders();
@@ -68,7 +61,7 @@ public class LChannelMain {
 
         try {
             LOGGER.info("Initializing communications connector");
-            attemptCommunicationsReconnect(config.getNumber("LoginBasePort").intValue() + 1);
+            communicationsHandler = new InternalChannelCommunicationsHandler(config.getString("ServerHost"), config.getNumber("LoginBasePort").intValue() + 1);
         } catch (Exception e) {
             e.printStackTrace();
             System.exit(0);
@@ -83,29 +76,6 @@ public class LChannelMain {
         } catch (SQLException e) {
             e.printStackTrace();
         }
-    }
-
-    private static void attemptCommunicationsReconnect(int port) throws Exception {
-        NettyDiscardClient client = new NettyDiscardClient("127.0.0.1", port, new NioEventLoopGroup(), new InternalChannelCommunicationsHandler(), new DirectPacketDecoder(), new DirectPacketEncoder());
-        client.run();
-        client.getChannelFuture().addListener(new ChannelFutureListener() {
-            @Override
-            public void operationComplete(ChannelFuture channelFuture) throws Exception {
-                if (!channelFuture.isSuccess()) {
-                    TaskExecutor.createTask(new Runnable() {
-                        @Override
-                        public void run() {
-                            try {
-                                attemptCommunicationsReconnect(port);
-                                LOGGER.info("Failed to connect to login server. Retrying in 5 seconds");
-                            } catch (Exception e) {
-                                e.printStackTrace();
-                            }
-                        }
-                    }, 5000);
-                }
-            }
-        });
     }
 
     private static void initReceiveHeaders() {

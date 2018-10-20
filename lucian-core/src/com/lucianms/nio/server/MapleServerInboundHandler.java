@@ -21,6 +21,8 @@ import org.slf4j.LoggerFactory;
 import tools.MapleAESOFB;
 import tools.MaplePacketCreator;
 
+import java.io.IOException;
+
 @ChannelHandler.Sharable
 public class MapleServerInboundHandler extends ChannelInboundHandlerAdapter {
 
@@ -121,6 +123,9 @@ public class MapleServerInboundHandler extends ChannelInboundHandlerAdapter {
 
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
+        if (cause instanceof IOException) {
+            return;
+        }
         cause.printStackTrace();
     }
 

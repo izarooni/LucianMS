@@ -234,8 +234,6 @@ public class Server {
         }
 
         ConsoleCommands.beginReading();
-
-        LOGGER.info("LucianMS took {}s to start", ((System.currentTimeMillis() - beginning) / 1000d));
     }
 
     public static void reloadConfig() throws FileNotFoundException {
