@@ -11,7 +11,17 @@ public class GProperties<V> extends Hashtable<String, V> {
         super(10);
     }
 
-    public boolean checkProperty(String key, Object value) {
-        return get(key) != null && get(key).equals(value);
+    /**
+     * Verify the existence of a specified property.
+     * <p>
+     * Set the value should it not exist
+     * </p>
+     *
+     * @param key   the property key
+     * @param value the property value
+     * @return the existing value or the specified one if one doesn't exist
+     */
+    public V checkProperty(String key, V value) {
+        return computeIfAbsent(key, k -> value);
     }
 }

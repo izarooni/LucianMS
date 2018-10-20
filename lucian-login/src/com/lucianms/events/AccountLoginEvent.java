@@ -47,7 +47,7 @@ public class AccountLoginEvent extends PacketEvent {
         if (Server.getConfig().getBoolean("WhitelistEnabled")) {
             if (!Whitelist.hasAccount(getClient().getAccID())) {
                 LOGGER.warn("Attempted non-whitelist account login username: '{}' , accountID: '{}'", username, getClient().getAccID());
-                getClient().announce(MaplePacketCreator.getLoginFailed(5));
+                getClient().announce(MaplePacketCreator.getLoginFailed(7));
                 getClient().announce(MaplePacketCreator.serverNotice(1, "The server is in whitelist mode! Only certain users will have access to the game right now."));
                 return null;
             }
