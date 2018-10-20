@@ -42,7 +42,6 @@ public class LLoginMain {
             LOGGER.info("Internal login on {}:{}", address, port);
 
             serverHandler = new MapleServerInboundHandler(ReceivePacketState.LoginServer, address, port.intValue(), new NioEventLoopGroup());
-            Server.setServerHandler(serverHandler);
             LOGGER.info("Server login on {}:{}", address, port);
         } catch (Exception e) {
             e.printStackTrace();
@@ -57,13 +56,13 @@ public class LLoginMain {
     private static void initReceiveHeaders() {
         RecvOpcode.LOGIN_PASSWORD.clazz = AccountLoginEvent.class;
         RecvOpcode.SERVERLIST_REREQUEST.clazz = WorldListEvent.class;
+        RecvOpcode.SERVERLIST_REQUEST.clazz = WorldListEvent.class;
         RecvOpcode.CHARLIST_REQUEST.clazz = AccountChannelSelectEvent.class;
         RecvOpcode.SERVERSTATUS_REQUEST.clazz = WorldStatusCheckEvent.class;
         RecvOpcode.ACCEPT_TOS.clazz = AccountToSResultEvent.class;
         RecvOpcode.SET_GENDER.clazz = AccountGenderSetEvent.class;
         RecvOpcode.AFTER_LOGIN.clazz = AccountPostLoginEvent.class;
         RecvOpcode.REGISTER_PIN.clazz = AccountPINSetEvent.class;
-        RecvOpcode.SERVERLIST_REQUEST.clazz = WorldListEvent.class;
         RecvOpcode.VIEW_ALL_CHAR.clazz = ViewCharHandler.class;
         RecvOpcode.PICK_ALL_CHAR.clazz = PickCharHandler.class;
         RecvOpcode.CHAR_SELECT.clazz = AccountPlayerSelectEvent.class;

@@ -1327,7 +1327,6 @@ public class MapleMap {
     }
 
     public void addPlayer(final MapleCharacter chr) {
-        mapobjects.put(chr.getObjectId(), chr);
         characters.put(chr.getObjectId(), chr);
 
         chr.setMapId(mapid);
@@ -1477,6 +1476,8 @@ public class MapleMap {
         }
 
         sendObjectPlacement(chr.getClient());
+        mapobjects.put(chr.getObjectId(), chr);
+
         if (isStartingEventMap() && !eventStarted()) {
             chr.getMap().getPortal("join00").setPortalStatus(false);
         }

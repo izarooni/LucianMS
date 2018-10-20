@@ -50,7 +50,7 @@ public class NPCScriptManager {
             NPCConversationManager cm = new NPCConversationManager(client, objectID, npc, fileName);
             String path = "npc/world" + client.getWorld() + "/" + (fileName == null ? npc : fileName) + ".js";
             ArrayList<Pair<String, Object>> binds = new ArrayList<>();
-            binds.add(new Pair<>("com/lucianms/client", client));
+            binds.add(new Pair<>("client", client));
             binds.add(new Pair<>("player", player));
             binds.add(new Pair<>("ch", client.getChannelServer()));
             binds.add(new Pair<>("cm", cm));

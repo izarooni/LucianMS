@@ -662,8 +662,6 @@ public class GameMasterCommands {
                 player.dropMessage(5, "Syntax: !debuff <usernames/map>");
             }
         } else if (command.equals("online")) {
-            player.sendMessage("Login Server: " + Server.getServerHandler().getChannels().size());
-
             for (MapleChannel channel : client.getWorldServer().getChannels()) {
                 int count = 0;
                 StringBuilder sb = new StringBuilder();

@@ -149,7 +149,6 @@ public class ConsoleCommands {
                 LOGGER.info("Available operations: cs, whitelist, cquests, achievements, houses, config");
             }
         } else if (command.equals("online")) {
-            LOGGER.info("Server: " + Server.getServerHandler().getChannels().size());
             for (MapleWorld worlds : Server.getWorlds()) {
                 LOGGER.info("World {}:", (worlds.getId() + 1));
                 for (MapleChannel channels : worlds.getChannels()) {

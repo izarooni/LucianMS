@@ -42,8 +42,8 @@ public class InternalLoginCommunicationsHandler extends ChannelInboundHandlerAda
         byte header = reader.readByte();
         switch (header) {
             case 0: {
-                String content = reader.readMapleAsciiString();
-                LLoginMain.getServerHandler().getChannels().writeAndFlush(MaplePacketCreator.serverNotice(0, content));
+                final String content = reader.readMapleAsciiString();
+                LLoginMain.getServerHandler().getChannels().forEach(ch -> ch.writeAndFlush((MaplePacketCreator.serverNotice(0, content))));
                 break;
             }
         }

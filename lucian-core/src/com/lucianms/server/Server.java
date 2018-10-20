@@ -15,7 +15,6 @@ import com.lucianms.io.Config;
 import com.lucianms.io.defaults.Defaults;
 import com.lucianms.io.scripting.Achievements;
 import com.lucianms.lang.GProperties;
-import com.lucianms.nio.server.MapleServerInboundHandler;
 import com.lucianms.scheduler.Task;
 import com.lucianms.scheduler.TaskExecutor;
 import com.lucianms.server.CashShop.CashItemFactory;
@@ -56,8 +55,6 @@ public class Server {
     public static final long Uptime = System.currentTimeMillis();
 
     private static Task dailyTask = null;
-    private static MapleServerInboundHandler serverHandler;
-
     private static final PlayerBuffStorage buffStorage = new PlayerBuffStorage();
     private static final ArrayList<MapleWorld> worlds = new ArrayList<>();
     private static final ArrayList<Map<Integer, String>> channels = new ArrayList<>();
@@ -71,14 +68,6 @@ public class Server {
 
     public static Connection getConnection() throws SQLException {
         return hikari.getConnection();
-    }
-
-    public static MapleServerInboundHandler getServerHandler() {
-        return serverHandler;
-    }
-
-    public static void setServerHandler(MapleServerInboundHandler serverHandler) {
-        Server.serverHandler = serverHandler;
     }
 
     public static GProperties<Boolean> getToggles() {

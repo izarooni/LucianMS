@@ -190,5 +190,7 @@ public class LChannelMain {
         RecvOpcode.MESSENGER.clazz = PlayerMessengerEvent.class;
         RecvOpcode.PARTY_SEARCH_START.clazz = PlayerPartySearchBeginEvent.class;
         RecvOpcode.NPC_SHOP.clazz = PlayerNpcShopInteractionEvent.class;
+        RecvOpcode.CHANGE_MAP_SPECIAL.clazz = ChangeMapSpecialEvent.class;
+        RecvOpcode.ITEM_PICKUP.clazz = ItemPickupEvent.class;
     }
 }

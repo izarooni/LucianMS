@@ -1,5 +1,6 @@
 package com.lucianms.nio;
 
+import com.lucianms.events.IgnoredPacketEvent;
 import com.lucianms.events.PacketEvent;
 import com.lucianms.events.PlayerUpdateEvent;
 import com.lucianms.events.PongEvent;
@@ -34,6 +35,7 @@ public enum RecvOpcode {
     CHAR_SELECT_WITH_PIC    (0x001E, ReceivePacketState.LoginServer),
     VIEW_ALL_PIC_REGISTER   (0x001F, ReceivePacketState.LoginServer),
     VIEW_ALL_WITH_PIC       (0x0020, ReceivePacketState.LoginServer),
+    UNKNOWN                 (0x0023, ReceivePacketState.Both, IgnoredPacketEvent.class),
     CHANGE_MAP              (0x0026, ReceivePacketState.ChannelServer),
     CHANGE_CHANNEL          (0x0027, ReceivePacketState.ChannelServer),
     ENTER_CASHSHOP          (0x0028, ReceivePacketState.ChannelServer),
@@ -92,6 +94,7 @@ public enum RecvOpcode {
     TROCK_ADD_MAP           (0x0066, ReceivePacketState.ChannelServer),
     REPORT                  (0x006A, ReceivePacketState.ChannelServer),
     QUEST_ACTION            (0x006B, ReceivePacketState.ChannelServer),
+    UNKNOWN2                (0x006C, ReceivePacketState.Both, IgnoredPacketEvent.class),
     SKILL_MACRO             (0x006E, ReceivePacketState.ChannelServer),
     USE_ITEM_REWARD         (0x0070, ReceivePacketState.ChannelServer),
     MAKER_SKILL             (0x0071, ReceivePacketState.ChannelServer),
@@ -107,13 +110,14 @@ public enum RecvOpcode {
     GUILD_OPERATION         (0x007E, ReceivePacketState.ChannelServer),
     DENY_GUILD_REQUEST      (0x007F, ReceivePacketState.ChannelServer),
     ADMIN_COMMAND           (0x0080, ReceivePacketState.ChannelServer),
-    ADMIN_LOG               (0x0081, ReceivePacketState.ChannelServer),
+    ADMIN_LOG               (0x0081, ReceivePacketState.ChannelServer, IgnoredPacketEvent.class),
     BUDDYLIST_MODIFY        (0x0082, ReceivePacketState.ChannelServer),
     NOTE_ACTION             (0x0083, ReceivePacketState.ChannelServer),
     USE_DOOR                (0x0085, ReceivePacketState.ChannelServer),
     CHANGE_KEYMAP           (0x0087, ReceivePacketState.ChannelServer),
     RPS_ACTION              (0x0088, ReceivePacketState.ChannelServer),
     RING_ACTION             (0x0089, ReceivePacketState.ChannelServer),
+    UNKNOWN3                (0x008F, ReceivePacketState.Both, IgnoredPacketEvent.class),
     WEDDING_ACTION          (0x008A, ReceivePacketState.ChannelServer),
     OPEN_FAMILY             (0x0092, ReceivePacketState.ChannelServer),
     ADD_FAMILY              (0x0093, ReceivePacketState.ChannelServer),
@@ -146,7 +150,7 @@ public enum RecvOpcode {
     ITEM_PICKUP             (0x00CA, ReceivePacketState.ChannelServer),
     DAMAGE_REACTOR          (0x00CD, ReceivePacketState.ChannelServer),
     TOUCHING_REACTOR        (0x00CE, ReceivePacketState.ChannelServer),
-    TEMP_SKILL              (0x00CF, ReceivePacketState.ChannelServer),
+    TEMP_SKILL              (0x00CF, ReceivePacketState.ChannelServer, IgnoredPacketEvent.class),
     MAPLETV                 (0xFFFE, ReceivePacketState.ChannelServer),
     SNOWBALL                (0x00D3, ReceivePacketState.ChannelServer),
     LEFT_KNOCKBACK          (0x00D4, ReceivePacketState.ChannelServer),
