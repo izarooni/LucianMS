@@ -98,7 +98,7 @@ public class ConsoleCommands {
                 for (MapleWorld world : Server.getInstance().getWorlds()) {
                     for (MapleChannel channel : world.getChannels()) {
                         channel.reloadMap(mapID);
-                        LOGGER.info("Reloading map {} in world {} com.lucianms.server.events.channel {}", mapID, (world.getId() + 1), channel.getId());
+                        LOGGER.info("Reloading map {} in world {} channel {}", mapID, (world.getId() + 1), channel.getId());
                     }
                 }
             }

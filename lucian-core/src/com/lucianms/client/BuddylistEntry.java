@@ -44,7 +44,7 @@ public class BuddylistEntry {
     }
 
     /**
-     * @return the com.lucianms.server.events.channel the character is on. If the character is offline returns -1.
+     * @return the channel the character is on. If the character is offline returns -1.
      */
     public int getChannel() {
         return channel;

@@ -23,18 +23,18 @@ package com.lucianms.server.channel.handlers;
 
 import com.lucianms.client.MapleCharacter;
 import com.lucianms.client.MapleClient;
-import com.lucianms.client.inventory.MaplePet;
-import com.lucianms.server.events.channel.ItemPickupEvent;
-import com.lucianms.events.PacketEvent;
-import com.lucianms.server.MapleInventoryManipulator;
-import com.lucianms.server.maps.MapleMapItem;
-import com.lucianms.server.maps.MapleMapObject;
-import tools.MaplePacketCreator;
 import com.lucianms.client.inventory.MapleInventoryType;
-import com.lucianms.server.world.MaplePartyCharacter;
+import com.lucianms.client.inventory.MaplePet;
+import com.lucianms.events.ItemPickupEvent;
+import com.lucianms.events.PacketEvent;
 import com.lucianms.io.scripting.item.ItemScriptManager;
+import com.lucianms.server.MapleInventoryManipulator;
 import com.lucianms.server.MapleItemInformationProvider;
 import com.lucianms.server.MapleItemInformationProvider.scriptedItem;
+import com.lucianms.server.maps.MapleMapItem;
+import com.lucianms.server.maps.MapleMapObject;
+import com.lucianms.server.world.MaplePartyCharacter;
+import tools.MaplePacketCreator;
 import tools.data.input.LittleEndianReader;
 
 /**
@@ -45,9 +45,9 @@ public final class PetLootHandler extends PacketEvent {
         MapleCharacter chr = c.getPlayer();
         MaplePet pet = chr.getPet(chr.getPetIndex(slea.readInt()));//why would it be an int...?
         if (pet == null || !pet.isSummoned()) {
-        	return;
+            return;
         }
-        
+
         slea.skip(13);
         int oid = slea.readInt();
         MapleMapObject ob = chr.getMap().getMapObject(oid);
@@ -63,10 +63,10 @@ public final class PetLootHandler extends PacketEvent {
                     c.announce(MaplePacketCreator.enableActions());
                     return;
                 }
-				if(System.currentTimeMillis() - mapitem.getDropTime() < 900) {
-					c.announce(MaplePacketCreator.enableActions());
-					return;
-				} 
+                if (System.currentTimeMillis() - mapitem.getDropTime() < 900) {
+                    c.announce(MaplePacketCreator.enableActions());
+                    return;
+                }
                 if (mapitem.isPickedUp()) {
                     c.announce(MaplePacketCreator.getInventoryFull());
                     return;
@@ -80,18 +80,19 @@ public final class PetLootHandler extends PacketEvent {
                         if (mesosamm > 50000 * chr.getMesoRate()) return;
                         int partynum = 0;
                         for (MaplePartyCharacter partymem : chr.getParty().getMembers()) {
-                             if (partymem.isOnline() && partymem.getMapId() == chr.getMap().getId() && partymem.getChannel() == c.getChannel()) {
-                                 partynum++;
-                             }
-                         }
-                         for (MaplePartyCharacter partymem : chr.getParty().getMembers()) {
-                              if (partymem.isOnline() && partymem.getMapId() == chr.getMap().getId()) {
-                                  MapleCharacter somecharacter = c.getChannelServer().getPlayerStorage().getPlayerByID(partymem.getId());
-                                  if (somecharacter != null) somecharacter.gainMeso(mesosamm / partynum, true, true, false);
-                              }
-                         }
-                         chr.getMap().broadcastMessage(MaplePacketCreator.removeItemFromMap(mapitem.getObjectId(), 5, chr.getId(), true, chr.getPetIndex(pet)), mapitem.getPosition());
-                         chr.getMap().removeMapObject(ob);
+                            if (partymem.isOnline() && partymem.getMapId() == chr.getMap().getId() && partymem.getChannel() == c.getChannel()) {
+                                partynum++;
+                            }
+                        }
+                        for (MaplePartyCharacter partymem : chr.getParty().getMembers()) {
+                            if (partymem.isOnline() && partymem.getMapId() == chr.getMap().getId()) {
+                                MapleCharacter somecharacter = c.getChannelServer().getPlayerStorage().getPlayerByID(partymem.getId());
+                                if (somecharacter != null)
+                                    somecharacter.gainMeso(mesosamm / partynum, true, true, false);
+                            }
+                        }
+                        chr.getMap().broadcastMessage(MaplePacketCreator.removeItemFromMap(mapitem.getObjectId(), 5, chr.getId(), true, chr.getPetIndex(pet)), mapitem.getPosition());
+                        chr.getMap().removeMapObject(ob);
                     } else if (chr.getInventory(MapleInventoryType.EQUIPPED).findById(1812000) != null) {
                         chr.gainMeso(mapitem.getMeso(), true, true, false);
                         chr.getMap().broadcastMessage(MaplePacketCreator.removeItemFromMap(mapitem.getObjectId(), 5, chr.getId(), true, chr.getPetIndex(pet)), mapitem.getPosition());
@@ -135,7 +136,7 @@ public final class PetLootHandler extends PacketEvent {
                     }
                     chr.getMap().broadcastMessage(MaplePacketCreator.removeItemFromMap(mapitem.getObjectId(), 5, chr.getId(), true, chr.getPetIndex(pet)), mapitem.getPosition());
                     chr.getMap().removeMapObject(ob);
-				} else if(mapitem.getItemId() == 4031865 || mapitem.getItemId() == 4031866) {
+                } else if (mapitem.getItemId() == 4031865 || mapitem.getItemId() == 4031866) {
                     // Add NX to account, show effect and make item disapear
                     chr.getCashShop().gainCash(1, mapitem.getItemId() == 4031865 ? 100 : 250);
                     chr.getMap().broadcastMessage(MaplePacketCreator.removeItemFromMap(mapitem.getObjectId(), 5, chr.getId(), true, chr.getPetIndex(pet)), mapitem.getPosition());
@@ -143,7 +144,7 @@ public final class PetLootHandler extends PacketEvent {
                 } else if (MapleInventoryManipulator.addFromDrop(c, mapitem.getItem(), true)) {
                     chr.getMap().broadcastMessage(MaplePacketCreator.removeItemFromMap(mapitem.getObjectId(), 5, chr.getId(), true, chr.getPetIndex(pet)), mapitem.getPosition());
                     chr.getMap().removeMapObject(ob);
-				} else {
+                } else {
                     return;
                 }
                 mapitem.setPickedUp(true);

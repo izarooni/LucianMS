@@ -515,7 +515,7 @@ public class MaplePacketCreator {
      * <li value="8">System error</li>
      * <li value="9">System error</li>
      * <li value="10">Cannot process so many connections</li>
-     * <li value="11">Only users older than 20 can use this com.lucianms.server.events.channel</li>
+     * <li value="11">Only users older than 20 can use this channel</li>
      * <li value="13">Unable to log on as master at this ip</li>
      * <li value="14">Wrong gateway or personal info and weird korean button</li>
      * <li value="15">Processing request with that korean button!</li>
@@ -536,14 +536,14 @@ public class MaplePacketCreator {
     }
 
     /**
-     * Gets a com.lucianms.server.events.login failed packet.
+     * Gets a login failed packet.
      * <p>
      * Possible values for <code>reason</code>:<br> 2: ID deleted or blocked<br>
      * 3: ID deleted or blocked<br> 4: Incorrect password<br> 5: Not a
      * registered id<br> 6: Trouble logging into the game?<br> 7: Already logged
      * in<br> 8: Trouble logging into the game?<br> 9: Trouble logging into the
      * game?<br> 10: Cannot process so many connections<br> 11: Only users older
-     * than 20 can use this com.lucianms.server.events.channel<br> 12: Trouble logging into the game?<br>
+     * than 20 can use this channel<br> 12: Trouble logging into the game?<br>
      * 13: Unable to log on as master at this ip<br> 14: Wrong gateway or
      * personal info and weird korean button<br> 15: Processing request with
      * that korean button!<br> 16: Please verify your account through
@@ -553,7 +553,7 @@ public class MaplePacketCreator {
      * trial versions<br>
      *
      * @param reason The reason logging in failed.
-     * @return The com.lucianms.server.events.login failed packet.
+     * @return The login failed packet.
      */
     public static byte[] getAfterLoginError(int reason) {//same as above o.o
         final MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter(8);
@@ -676,7 +676,7 @@ public class MaplePacketCreator {
      *
      * @param serverId
      * @param serverName  The name of the server.
-     * @param channelLoad Load of the com.lucianms.server.events.channel - 1200 seems to be max.
+     * @param channelLoad Load of the channel - 1200 seems to be max.
      * @return The server info packet.
      */
     public static byte[] getServerList(int serverId, String serverName, int flag, String eventmsg, List<MapleChannel> channelLoad) {
@@ -731,10 +731,10 @@ public class MaplePacketCreator {
     }
 
     /**
-     * Gets a packet telling the client the IP of the com.lucianms.server.events.channel server.
+     * Gets a packet telling the client the IP of the channel server.
      *
-     * @param inetAddr The InetAddress of the requested com.lucianms.server.events.channel server.
-     * @param port     The port the com.lucianms.server.events.channel is on.
+     * @param inetAddr The InetAddress of the requested channel server.
+     * @param port     The port the channel is on.
      * @param clientId The ID of the client.
      * @return The server IP packet.
      */
@@ -751,10 +751,10 @@ public class MaplePacketCreator {
     }
 
     /**
-     * Gets a packet telling the client the IP of the new com.lucianms.server.events.channel.
+     * Gets a packet telling the client the IP of the new channel.
      *
-     * @param inetAddr The InetAddress of the requested com.lucianms.server.events.channel server.
-     * @param port     The port the com.lucianms.server.events.channel is on.
+     * @param inetAddr The InetAddress of the requested channel server.
+     * @param port     The port the channel is on.
      * @return The server IP packet.
      */
     public static byte[] getChannelChange(InetAddress inetAddr, int port) {
@@ -1136,7 +1136,7 @@ public class MaplePacketCreator {
      * 5: Pink Text<br> 6: Lightblue Text<br> 7: BroadCasting NPC
      *
      * @param type          The type of the notice.
-     * @param channel       The com.lucianms.server.events.channel this notice was sent on.
+     * @param channel       The channel this notice was sent on.
      * @param message       The message to convey.
      * @param servermessage Is this a scrolling ticker?
      * @return The server notice packet.
@@ -1150,7 +1150,7 @@ public class MaplePacketCreator {
         }
         mplew.writeMapleAsciiString(message);
         if (type == 3) {
-            mplew.write(channel - 1); // com.lucianms.server.events.channel
+            mplew.write(channel - 1); // channel
             mplew.writeBool(megaEar);
         } else if (type == 6) {
             mplew.writeInt(0);
@@ -1165,7 +1165,7 @@ public class MaplePacketCreator {
      *
      * @param chr     The character name.
      * @param medal   The medal text.
-     * @param channel Which com.lucianms.server.events.channel.
+     * @param channel Which channel.
      * @param itemId  Which item used.
      * @param message The message sent.
      * @param ear     Whether or not the ear is shown for whisper.
@@ -1179,7 +1179,7 @@ public class MaplePacketCreator {
         for (String s : message) {
             mplew.writeMapleAsciiString(s);
         }
-        mplew.writeInt(channel - 1); // com.lucianms.server.events.channel
+        mplew.writeInt(channel - 1); // channel
         mplew.writeBool(ear);
         addCharLook(mplew, chr, true);
         return mplew.getPacket();
@@ -2899,7 +2899,7 @@ public class MaplePacketCreator {
         mplew.writeShort(SendOpcode.WHISPER.getValue());
         mplew.write(0x12);
         mplew.writeMapleAsciiString(sender);
-        mplew.writeShort(channel - 1); // I guess this is the com.lucianms.server.events.channel
+        mplew.writeShort(channel - 1); // I guess this is the channel
         mplew.writeMapleAsciiString(text);
         return mplew.getPacket();
     }
@@ -3114,7 +3114,7 @@ public class MaplePacketCreator {
      * didn't work due to an unexpected error. 13: You have yet to join a party.
      * 16: Already have joined a party. 17: The party you're trying to join is
      * already in full capacity. 19: Unable to find the requested character in
-     * this com.lucianms.server.events.channel.
+     * this channel.
      *
      * @param message
      * @return
@@ -4768,7 +4768,7 @@ public class MaplePacketCreator {
     /*
      * Possible things for ENTRUSTED_SHOP_CHECK_RESULT
      * 0x0E = 00 = Renaming Failed - Can't find the merchant, 01 = Renaming succesful
-     * 0x10 = Changes com.lucianms.server.events.channel to the store (Store is open at Channel 1, do you want to change channels?)
+     * 0x10 = Changes channel to the store (Store is open at Channel 1, do you want to change channels?)
      * 0x11 = You cannot sell any items when managing.. blabla
      * 0x12 = FKING POPUP LOL
      */
@@ -6090,7 +6090,7 @@ public class MaplePacketCreator {
      * Gets a "block" packet (ie. the cash shop is unavailable, etc)
      * <p>
      * Possible values for <code>type</code>:<br> 1: You cannot move that
-     * com.lucianms.server.events.channel. Please try again later.<br> 2: You cannot go into the cash shop.
+     * channel. Please try again later.<br> 2: You cannot go into the cash shop.
      * Please try again later.<br> 3: The Item-Trading Shop is currently
      * unavailable. Please try again later.<br> 4: You cannot go into the trade
      * shop, due to limitation of user count.<br> 5: You do not meet the minimum

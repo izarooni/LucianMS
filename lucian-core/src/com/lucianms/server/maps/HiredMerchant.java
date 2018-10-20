@@ -200,7 +200,7 @@ public class HiredMerchant extends AbstractMapleMapObject {
         } catch (SQLException ex) {
             ex.printStackTrace();
         }
-        //Server.getInstance().getChannel(world, com.lucianms.server.events.channel).removeHiredMerchant(ownerId);
+        //Server.getInstance().getChannel(world, channel).removeHiredMerchant(ownerId);
         map.broadcastMessage(MaplePacketCreator.destroyHiredMerchant(getOwnerId()));
 
         map.removeMapObject(this);

@@ -28,6 +28,16 @@ public class AccountLoginEvent extends PacketEvent {
     public void processInput(MaplePacketReader reader) {
         username = reader.readMapleAsciiString();
         password = reader.readMapleAsciiString();
+        if (!Server.getToggles().checkProperty("server_online", false)) {
+            getClient().announce(MaplePacketCreator.getLoginFailed((byte) 7));
+            getClient().announce(MaplePacketCreator.serverNotice(0,
+                    "The server is currently under maintenance." +
+                            "\r\nFeel free to keep your game open and" +
+                            "\r\ntry again in a few minutes." +
+                            "\r\nYou will otherwise be noticed" +
+                            "\r\nwhen you may login."));
+            setCanceled(true);
+        }
     }
 
     @Override
@@ -36,7 +46,7 @@ public class AccountLoginEvent extends PacketEvent {
         int loginResult = getClient().login(username, password);
         if (Server.getInstance().getConfig().getBoolean("WhitelistEnabled")) {
             if (!Whitelist.hasAccount(getClient().getAccID())) {
-                LOGGER.warn("Attempted non-whitelist account com.lucianms.server.events.login username: '{}' , accountID: '{}'", username, getClient().getAccID());
+                LOGGER.warn("Attempted non-whitelist account login username: '{}' , accountID: '{}'", username, getClient().getAccID());
                 getClient().announce(MaplePacketCreator.getLoginFailed(5));
                 getClient().announce(MaplePacketCreator.serverNotice(1, "The server is in whitelist mode! Only certain users will have access to the game right now."));
                 return null;

@@ -20,7 +20,7 @@ public final class ReceivePacketManager {
 
     public ReceivePacketManager(ReceivePacketState packetState) {
         RecvOpcode[] values = RecvOpcode.values();
-        handlers = new Class[values[values.length - 1].value];
+        handlers = new Class[values[values.length - 1].value + 1];
         for (RecvOpcode op : values) {
             if (op.packetState == packetState || op.packetState == ReceivePacketState.Both) {
                 if (op.clazz != null) {

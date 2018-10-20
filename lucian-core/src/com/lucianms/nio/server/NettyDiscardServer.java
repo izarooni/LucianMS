@@ -21,10 +21,10 @@ public class NettyDiscardServer implements AutoCloseable {
     private ChannelFuture channelFuture;
     private ChannelInboundHandlerAdapter serverInboundHandler;
     private EventLoopGroup parentGroup;
-    private ByteToMessageDecoder decoder;
-    private MessageToByteEncoder encoder;
+    private Class<? extends ByteToMessageDecoder> decoder;
+    private Class<? extends MessageToByteEncoder> encoder;
 
-    public NettyDiscardServer(String address, int port, ChannelInboundHandlerAdapter serverInboundHandler, EventLoopGroup parentGroup, ByteToMessageDecoder decoder, MessageToByteEncoder encoder) {
+    public NettyDiscardServer(String address, int port, ChannelInboundHandlerAdapter serverInboundHandler, EventLoopGroup parentGroup, Class<? extends ByteToMessageDecoder> decoder, Class<? extends MessageToByteEncoder> encoder) {
         this.address = address;
         this.port = port;
         this.serverInboundHandler = serverInboundHandler;
@@ -41,18 +41,17 @@ public class NettyDiscardServer implements AutoCloseable {
                     @Override
                     public void initChannel(SocketChannel ch) throws Exception {
                         ch.pipeline()
-                                .addLast("decoder", decoder)
-                                .addLast("encoder", encoder)
+                                .addLast("decoder", decoder.getDeclaredConstructor().newInstance())
+                                .addLast("encoder", encoder.getDeclaredConstructor().newInstance())
                                 .addLast(serverInboundHandler);
                     }
                 })
-                .option(ChannelOption.TCP_NODELAY, true)
                 .option(ChannelOption.SO_BACKLOG, 200)
+                .childOption(ChannelOption.TCP_NODELAY, true)
                 .childOption(ChannelOption.SO_KEEPALIVE, true);
 
         // Bind and start to accept incoming connections.
         channelFuture = b.bind(address, port).sync();
-        LOGGER.info("Discard server on {}:{}", address, port);
     }
 
     @Override

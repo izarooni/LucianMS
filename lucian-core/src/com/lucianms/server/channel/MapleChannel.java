@@ -102,9 +102,9 @@ public final class MapleChannel {
                 eventScriptManager.close();
             }
             closeAllMerchants();
-            LOGGER.info("Shut down world {} com.lucianms.server.events.channel {}", world, channel);
+            LOGGER.info("Shut down world {} channel {}", world, channel);
         } catch (Exception e) {
-            LOGGER.error("Exception while shutting down world {} com.lucianms.server.events.channel {}", world, channel);
+            LOGGER.error("Exception while shutting down world {} channel {}", world, channel);
             e.printStackTrace();
         }
     }

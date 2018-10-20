@@ -8,7 +8,7 @@ public class ServerConstants {
 			"Stius", "Croa", "Medere" };
 
 	// Login Configuration
-	public static final int CHANNEL_LOAD = 100;// Players per com.lucianms.server.events.channel
+	public static final int CHANNEL_LOAD = 100;// Players per channel
 	public static final long RANKING_INTERVAL = 60 * 60 * 1000;// 60 minutes,
 																// 3600000
 	public static final boolean ENABLE_PIC = true;

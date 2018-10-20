@@ -62,7 +62,7 @@ public class EventCommands {
                             player.dropMessage("If you would rather immediately start the event with default values, use: '!event start'");
                             player.dropMessage("You may also abort this event creation via '!event cancel'");
                         } else {
-                            player.dropMessage("An event is already being hosted in this com.lucianms.server.events.channel!");
+                            player.dropMessage("An event is already being hosted in this channel!");
                             player.dropMessage("Use < !event info > for more information");
                         }
                         return true;
@@ -73,7 +73,7 @@ public class EventCommands {
                             playerEvent.garbage();
                             player.dropMessage("You have cancelled the event");
                         } else {
-                            player.dropMessage("There is no event on this com.lucianms.server.events.channel right now");
+                            player.dropMessage("There is no event on this channel right now");
                         }
                         return true;
                     }
@@ -109,7 +109,7 @@ public class EventCommands {
                         case "start": {
                             playerEvent.openGates(playerEvent.getGateTime(), 90, 75, 60, 30, 15, 5, 3, 2, 1);
                             String eventName = (playerEvent.getName() == null) ? "event" : playerEvent.getName();
-                            playerEvent.broadcastMessage(String.format("%s is hosting a(n) %s in com.lucianms.server.events.channel %d, use @joinevent to join!", player.getName(), eventName, playerEvent.getChannel().getId()));
+                            playerEvent.broadcastMessage(String.format("%s is hosting a(n) %s in channel %d, use @joinevent to join!", player.getName(), eventName, playerEvent.getChannel().getId()));
                             break;
                         }
                         case "name": {

@@ -4,6 +4,7 @@ import com.lucianms.Whitelist;
 import com.lucianms.client.MapleCharacter;
 import com.lucianms.client.SkillFactory;
 import com.lucianms.command.executors.ConsoleCommands;
+import com.lucianms.constants.PlayerToggles;
 import com.lucianms.constants.ServerConstants;
 import com.lucianms.cquest.CQuestBuilder;
 import com.lucianms.features.auto.GAutoEventManager;
@@ -14,6 +15,7 @@ import com.lucianms.helpers.RankingWorker;
 import com.lucianms.io.Config;
 import com.lucianms.io.defaults.Defaults;
 import com.lucianms.io.scripting.Achievements;
+import com.lucianms.lang.GProperties;
 import com.lucianms.nio.server.MapleServerInboundHandler;
 import com.lucianms.scheduler.Task;
 import com.lucianms.scheduler.TaskExecutor;
@@ -46,6 +48,10 @@ import java.util.concurrent.TimeUnit;
 
 public class Server {
 
+    public enum RunningOperation {
+        Login, Channel
+    }
+
     private static final Logger LOGGER = LoggerFactory.getLogger(Server.class);
     public static final long Uptime = System.currentTimeMillis();
 
@@ -54,9 +60,10 @@ public class Server {
     private static List<Map<Integer, String>> channels = new LinkedList<>();
     private static List<MapleWorld> worlds = new ArrayList<>();
     private static List<Pair<Integer, String>> worldRecommendedList = new LinkedList<>();
-    private final Map<Integer, MapleGuild> guilds = new LinkedHashMap<>();
-    private final Map<Integer, MapleAlliance> alliances = new LinkedHashMap<>();
+    private static final Map<Integer, MapleGuild> guilds = new LinkedHashMap<>();
+    private static final Map<Integer, MapleAlliance> alliances = new LinkedHashMap<>();
     private static PlayerBuffStorage buffStorage = new PlayerBuffStorage();
+    private static final GProperties<Boolean> toggles = new GProperties<>();
     private static Task dailyTask = null;
 
     private static HikariDataSource hikari = Database.createDataSource("hikari-server");
@@ -79,6 +86,10 @@ public class Server {
             instance = new Server();
         }
         return instance;
+    }
+
+    public static GProperties<Boolean> getToggles() {
+        return toggles;
     }
 
     @Deprecated
@@ -125,8 +136,10 @@ public class Server {
         return channels.get(world).get(channel);
     }
 
-    public static void createServer() {
+    public static void createServer(RunningOperation operation) {
         final long beginning = System.currentTimeMillis();
+        long timeToTake;
+
         Properties p = new Properties();
         try {
             p.load(new FileInputStream("world.ini"));
@@ -170,21 +183,22 @@ public class Server {
         dailyTask = TaskExecutor.createRepeatingTask(new DailyWorker(), (tmrw.getTimeInMillis() - System.currentTimeMillis()), TimeUnit.DAYS.toMillis(1));
         LOGGER.info("Entry reset scheduled to run in {}", StringUtil.getTimeElapse(tmrw.getTimeInMillis() - System.currentTimeMillis()));
 
-        long timeToTake = System.currentTimeMillis();
-        MapleQuest.loadAllQuest();
-        CQuestBuilder.loadAllQuests();
-        LOGGER.info("Quest data loaded in {}s", ((System.currentTimeMillis() - timeToTake) / 1000d));
+        if (operation == RunningOperation.Channel) {
+            timeToTake = System.currentTimeMillis();
+            MapleQuest.loadAllQuest();
+            CQuestBuilder.loadAllQuests();
+            LOGGER.info("Quest data loaded in {}s", ((System.currentTimeMillis() - timeToTake) / 1000d));
 
-        timeToTake = System.currentTimeMillis();
-        SkillFactory.loadAllSkills();
-        LOGGER.info("Skill data loaded in {}s", ((System.currentTimeMillis() - timeToTake) / 1000d));
+            timeToTake = System.currentTimeMillis();
+            SkillFactory.loadAllSkills();
+            LOGGER.info("Skill data loaded in {}s", ((System.currentTimeMillis() - timeToTake) / 1000d));
 
+            Achievements.loadAchievements();
+        }
         timeToTake = System.currentTimeMillis();
         MapleItemInformationProvider.getInstance().getAllItems();
         CashItemFactory.loadCommodities();
         LOGGER.info("Item data loaded in {}s", ((System.currentTimeMillis() - timeToTake) / 1000d));
-
-        Achievements.loadAchievements();
 
         try {
             timeToTake = System.currentTimeMillis();
@@ -212,12 +226,14 @@ public class Server {
                 final long repeat = (1000 * 60 * 60) * 4;
                 TaskExecutor.createRepeatingTask(() -> GAutoEventManager.startRandomEvent(world), repeat);
                 world.addScheduledEvent(new SOuterSpace(world));
-                LOGGER.info("World {} created in {}s", (world.getId() + 1), ((System.currentTimeMillis() - timeToTake) / 1000d));
+                LOGGER.info("World {} created {} channels in {}s", (world.getId() + 1), world.getChannels().size(), ((System.currentTimeMillis() - timeToTake) / 1000d));
             }
 
-            timeToTake = System.currentTimeMillis();
-            int count = HouseManager.loadHouses();
-            LOGGER.info("{} houses loaded in {}s", count, ((System.currentTimeMillis() - timeToTake) / 1000d));
+            if (operation == RunningOperation.Channel) {
+                timeToTake = System.currentTimeMillis();
+                int count = HouseManager.loadHouses();
+                LOGGER.info("{} houses loaded in {}s", count, ((System.currentTimeMillis() - timeToTake) / 1000d));
+            }
         } catch (Exception e) {
             e.printStackTrace();// For those who get errors
             System.exit(0);
@@ -536,6 +552,7 @@ public class Server {
 
                 getWorlds().forEach(MapleWorld::shutdown);
 
+                TaskExecutor.cancelTask(dailyTask);
                 TaskExecutor.shutdownNow();
 
                 LOGGER.info("Worlds & channels are now offline");

@@ -22,26 +22,36 @@ import org.slf4j.LoggerFactory;
 public class LLoginMain {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(LLoginMain.class);
+    private static MapleServerInboundHandler serverHandler;
 
     public static void main(String[] args) {
         initReceiveHeaders();
-        Server.createServer();
+        Server.createServer(Server.RunningOperation.Login);
         Config config = Server.getConfig();
 
         try {
             String address = config.getString("ServerHost");
             Long port = config.getNumber("LoginBasePort");
 
-            NettyDiscardServer interServer = new NettyDiscardServer(address, port.intValue() + 1, new InternalLoginCommunicationsHandler(), new NioEventLoopGroup(), new DirectPacketDecoder(), new DirectPacketEncoder());
+            NettyDiscardServer interServer = new NettyDiscardServer(address, port.intValue() + 1,
+                    new InternalLoginCommunicationsHandler(),
+                    new NioEventLoopGroup(),
+                    DirectPacketDecoder.class,
+                    DirectPacketEncoder.class);
             interServer.run();
+            LOGGER.info("Internal login on {}:{}", address, port);
 
-            MapleServerInboundHandler handler = new MapleServerInboundHandler(ReceivePacketState.LoginServer, address, port.intValue(), new NioEventLoopGroup());
-            Server.setServerHandler(handler);
-            LOGGER.info("Login server open on {}", port);
+            serverHandler = new MapleServerInboundHandler(ReceivePacketState.LoginServer, address, port.intValue(), new NioEventLoopGroup());
+            Server.setServerHandler(serverHandler);
+            LOGGER.info("Server login on {}:{}", address, port);
         } catch (Exception e) {
             e.printStackTrace();
             System.exit(0);
         }
+    }
+
+    public static MapleServerInboundHandler getServerHandler() {
+        return serverHandler;
     }
 
     private static void initReceiveHeaders() {

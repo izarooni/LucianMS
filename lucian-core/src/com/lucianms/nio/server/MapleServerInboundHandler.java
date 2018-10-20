@@ -33,7 +33,7 @@ public class MapleServerInboundHandler extends ChannelInboundHandlerAdapter {
 
     public MapleServerInboundHandler(ReceivePacketState packetState, String address, int port, EventLoopGroup parentGroup) throws Exception {
         this.packetState = packetState;
-        discardServer = new NettyDiscardServer(address, port, this, parentGroup, new MaplePacketDecoder(), new MaplePacketEncoder());
+        discardServer = new NettyDiscardServer(address, port, this, parentGroup, MaplePacketDecoder.class, MaplePacketEncoder.class);
         discardServer.run();
         packetManager = new ReceivePacketManager(packetState);
     }
@@ -84,7 +84,6 @@ public class MapleServerInboundHandler extends ChannelInboundHandlerAdapter {
 
     @Override
     public void channelInactive(ChannelHandlerContext ctx) throws Exception {
-        System.out.println("MapleServerInboundHandler.channelInactive");
         MapleClient client = ctx.channel().attr(MapleClient.CLIENT_KEY).get();
         if (client == null) {
             return;
@@ -122,7 +121,6 @@ public class MapleServerInboundHandler extends ChannelInboundHandlerAdapter {
 
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
-        System.out.println("ServerHandler.exceptionCaught");
         cause.printStackTrace();
     }
 

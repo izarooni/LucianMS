@@ -260,7 +260,7 @@ public class MapleGuild {
                     }
                 }
             } catch (Exception re) {
-                System.out.println("Failed to contact com.lucianms.server.events.channel(s) for broadcast.");//fu?
+                System.out.println("Failed to contact channel(s) for broadcast.");//fu?
             }
         }
     }

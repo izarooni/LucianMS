@@ -660,7 +660,7 @@ public class MapleClient {
         } catch (SQLException e) {
             loggedIn = false;
             e.printStackTrace();
-            throw new RuntimeException("com.lucianms.server.events.login state");
+            throw new RuntimeException("login state");
         }
     }
 
@@ -835,7 +835,7 @@ public class MapleClient {
         }
         if (!serverTransition && isLoggedIn()) {
             updateLoginState(MapleClient.LOGIN_NOTLOGGEDIN);
-            session.attr(CLIENT_KEY).set(null); // prevents double dcing during com.lucianms.server.events.login
+            session.attr(CLIENT_KEY).set(null); // prevents double dcing during login
             session.close(); // instead of using a deprecated method
         }
     }
@@ -1137,7 +1137,7 @@ public class MapleClient {
         try {
             announce(MaplePacketCreator.getChannelChange(InetAddress.getByName(socket[0]), Integer.parseInt(socket[1])));
         } catch (IOException e) {
-            LOGGER.error("Unable to change to com.lucianms.server.events.channel {} from {} for user {} player {}", channel, this.channel, getAccountName(), player.getName());
+            LOGGER.error("Unable to change to channel {} from {} for user {} player {}", channel, this.channel, getAccountName(), player.getName());
         }
     }
 

@@ -1,6 +1,5 @@
 package com.lucianms;
 
-import com.lucianms.discord.DiscordSession;
 import com.lucianms.events.*;
 import com.lucianms.io.Config;
 import com.lucianms.nio.ReceivePacketState;
@@ -9,11 +8,14 @@ import com.lucianms.nio.receive.DirectPacketDecoder;
 import com.lucianms.nio.send.DirectPacketEncoder;
 import com.lucianms.nio.server.MapleServerInboundHandler;
 import com.lucianms.nio.server.NettyDiscardClient;
+import com.lucianms.scheduler.TaskExecutor;
 import com.lucianms.server.Server;
 import com.lucianms.server.channel.MapleChannel;
 import com.lucianms.server.world.MapleWorld;
 import com.lucianms.service.InternalChannelCommunicationsHandler;
 import com.zaxxer.hikari.HikariDataSource;
+import io.netty.channel.ChannelFuture;
+import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.nio.NioEventLoopGroup;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,11 +31,8 @@ public class LChannelMain {
 
     public static void main(String[] args) {
         initReceiveHeaders();
-        Server.createServer();
+        Server.createServer(Server.RunningOperation.Channel);
         Config config = Server.getConfig();
-
-        LOGGER.info("Initializing communications connector");
-        attemptCommunicationsReconnect(config.getNumber("LoginBasePort").intValue() + 1);
 
         for (MapleWorld world : Server.getWorlds()) {
             for (MapleChannel channel : world.getChannels()) {
@@ -65,17 +64,46 @@ public class LChannelMain {
             }
         }
 
+        try {
+            LOGGER.info("Initializing communications connector");
+            attemptCommunicationsReconnect(config.getNumber("LoginBasePort").intValue() + 1);
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.exit(0);
+            return;
+        }
+
+//        DiscordSession.listen();
+
         try (Connection con = Server.getConnection()) {
             Database.execute(con, "update accounts set loggedin = 0");
             Database.execute(con, "update characters set hasmerchant = 0");
-            DiscordSession.listen();
         } catch (SQLException e) {
             e.printStackTrace();
         }
     }
 
-    private static void attemptCommunicationsReconnect(int port) {
+    private static void attemptCommunicationsReconnect(int port) throws Exception {
         NettyDiscardClient client = new NettyDiscardClient("127.0.0.1", port, new NioEventLoopGroup(), new InternalChannelCommunicationsHandler(), new DirectPacketDecoder(), new DirectPacketEncoder());
+        client.run();
+        client.getChannelFuture().addListener(new ChannelFutureListener() {
+            @Override
+            public void operationComplete(ChannelFuture channelFuture) throws Exception {
+                if (!channelFuture.isSuccess()) {
+                    TaskExecutor.createTask(new Runnable() {
+                        @Override
+                        public void run() {
+                            try {
+                                attemptCommunicationsReconnect(port);
+                                LOGGER.info("Failed to connect to login server. Retrying in 5 seconds");
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
+                        }
+                    }, 5000);
+                }
+            }
+        });
     }
 
     private static void initReceiveHeaders() {

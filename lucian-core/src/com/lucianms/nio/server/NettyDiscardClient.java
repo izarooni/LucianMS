@@ -7,7 +7,7 @@ import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelOption;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
-import io.netty.channel.socket.nio.NioServerSocketChannel;
+import io.netty.channel.socket.nio.NioSocketChannel;
 import io.netty.handler.codec.ByteToMessageDecoder;
 import io.netty.handler.codec.MessageToByteEncoder;
 
@@ -36,10 +36,9 @@ public class NettyDiscardClient implements AutoCloseable {
     public void run() throws Exception {
         Bootstrap b = new Bootstrap();
         b.group(parentGroup)
-                .channel(NioServerSocketChannel.class)
+                .channel(NioSocketChannel.class)
                 .option(ChannelOption.TCP_NODELAY, true)
                 .option(ChannelOption.SO_KEEPALIVE, true)
-                .option(ChannelOption.SO_BACKLOG, 5)
                 .handler(new ChannelInitializer<SocketChannel>() {
                     @Override
                     public void initChannel(SocketChannel ch) throws Exception {
@@ -50,6 +49,10 @@ public class NettyDiscardClient implements AutoCloseable {
                     }
                 });
         channelFuture = b.connect(address, port);
+    }
+
+    public ChannelFuture getChannelFuture() {
+        return channelFuture;
     }
 
     @Override
