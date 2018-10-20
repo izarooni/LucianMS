@@ -6,20 +6,16 @@ import com.lucianms.client.MapleStat;
 import com.lucianms.client.Skill;
 import com.lucianms.client.inventory.*;
 import com.lucianms.command.CommandWorker;
-import com.lucianms.io.scripting.npc.NPCScriptManager;
 import com.lucianms.constants.ItemConstants;
-import com.lucianms.server.Server;
+import com.lucianms.io.scripting.npc.NPCScriptManager;
+import com.lucianms.server.*;
 import com.lucianms.server.channel.MapleChannel;
-import com.lucianms.server.world.MapleWorld;
-import com.lucianms.server.MapleInventoryManipulator;
-import com.lucianms.server.MapleItemInformationProvider;
-import com.lucianms.server.MapleShop;
-import com.lucianms.server.MapleShopFactory;
 import com.lucianms.server.life.MapleLifeFactory;
 import com.lucianms.server.life.MapleMonster;
 import com.lucianms.server.life.MapleMonsterStats;
 import com.lucianms.server.life.MapleNPC;
 import com.lucianms.server.maps.MapleFoothold;
+import com.lucianms.server.world.MapleWorld;
 import tools.MaplePacketCreator;
 
 import java.awt.*;
@@ -290,6 +286,8 @@ public class HGMCommands {
             player.dropMessage(6, "Map id - " + player.getMapId());
             player.dropMessage(6, "Map name - " + player.getMap().getMapName());
             player.dropMessage(6, "Map street name - " + player.getMap().getStreetName());
+            player.dropMessage(6, "Map onUserEnter - " + player.getMap().getOnUserEnter());
+            player.dropMessage(6, "Map onFirstUserEnter - " + player.getMap().getOnFirstUserEnter());
         } else if (command.equals("oshop")) {
             if (args.length() == 1) {
                 Integer shopId = args.parseNumber(0, int.class);

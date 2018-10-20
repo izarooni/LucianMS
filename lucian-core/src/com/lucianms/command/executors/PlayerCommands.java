@@ -37,7 +37,6 @@ public class PlayerCommands {
             return;
         }
         spamTracker.record();
-
         MapleChannel ch = client.getChannelServer();
 
         if (command.equals("help", "commands")) {
@@ -341,6 +340,7 @@ public class PlayerCommands {
         } else if (command.equals("go")) {
             WeakHashMap<String, Integer> maps = new WeakHashMap<>();
             // @formatter:off
+            maps.put("shenron",    908);
             maps.put("nlc",        600000000);
             maps.put("fm",         910000000);
             maps.put("henesys",    100000000);
