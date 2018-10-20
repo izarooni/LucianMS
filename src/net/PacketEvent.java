@@ -21,7 +21,7 @@
 */
 package net;
 
-import client.MapleClient;
+import com.lucianms.client.MapleClient;
 
 @Deprecated
 public abstract class PacketEvent implements MaplePacketHandler {

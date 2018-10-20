@@ -21,7 +21,7 @@
 */
 package net;
 
-import client.MapleClient;
+import com.lucianms.client.MapleClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import tools.data.input.LittleEndianReader;

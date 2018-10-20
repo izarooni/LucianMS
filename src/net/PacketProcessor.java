@@ -22,7 +22,7 @@
 package net;
 
 import com.lucianms.nio.RecvOpcode;
-import net.server.channel.handlers.*;
+import com.lucianms.server.channel.handlers.*;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -76,7 +76,7 @@ public final class PacketProcessor {
     public void reset(int channel) {
         handlers = new MaplePacketHandler[handlers.length];
 
-        if (channel >= 0) {//login
+        if (channel >= 0) {//com.lucianms.server.events.login
             //CHANNEL HANDLERS
             registerHandler(RecvOpcode.USE_ITEMEFFECT, new UseItemEffectHandler());
             registerHandler(RecvOpcode.BBS_OPERATION, new BBSOperationHandler());
