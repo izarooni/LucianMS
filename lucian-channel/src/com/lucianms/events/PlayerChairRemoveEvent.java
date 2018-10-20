@@ -10,11 +10,13 @@ import tools.MaplePacketCreator;
  */
 public class PlayerChairRemoveEvent extends PacketEvent {
 
-    private int chairID;
+    private int chairID = -1;
 
     @Override
     public void processInput(MaplePacketReader reader) {
-        chairID = reader.readInt();
+        if (reader.available() > 4) {
+            chairID = reader.readInt();
+        }
     }
 
     @Override
