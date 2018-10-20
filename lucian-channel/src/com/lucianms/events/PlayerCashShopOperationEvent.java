@@ -321,7 +321,7 @@ public class PlayerCashShopOperationEvent extends PacketEvent {
                 }
                 MapleCharacter partner = getClient().getChannelServer().getPlayerStorage().getPlayerByName(username);
                 if (partner == null) {
-                    player.getClient().announce(MaplePacketCreator.serverNotice(1, "The partner you specified cannot be found.\r\nPlease make sure your partner is online and in the same com.lucianms.server.events.channel."));
+                    player.getClient().announce(MaplePacketCreator.serverNotice(1, "The partner you specified cannot be found.\r\nPlease make sure your partner is online and in the same channel."));
                 } else {
                     if (ring.toItem() instanceof Equip) {
                         Equip item = (Equip) ring.toItem();
@@ -364,7 +364,7 @@ public class PlayerCashShopOperationEvent extends PacketEvent {
                 }
                 MapleCharacter partner = getClient().getChannelServer().getPlayerStorage().getPlayerByName(username);
                 if (partner == null) {
-                    player.dropMessage("The partner you specified cannot be found.\r\nPlease make sure your partner is online and in the same com.lucianms.server.events.channel.");
+                    player.dropMessage("The partner you specified cannot be found.\r\nPlease make sure your partner is online and in the same channel.");
                 } else {
                     // Need to check to make sure its actually an equip and the right SN...
                     if (ring.toItem() instanceof Equip) {

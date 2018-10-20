@@ -26,34 +26,32 @@ import com.lucianms.client.inventory.*;
 import com.lucianms.client.inventory.Equip.ScrollResult;
 import com.lucianms.client.status.MonsterStatus;
 import com.lucianms.client.status.MonsterStatusEffect;
-import com.lucianms.nio.SendOpcode;
 import com.lucianms.constants.GameConstants;
 import com.lucianms.constants.ItemConstants;
 import com.lucianms.constants.ServerConstants;
 import com.lucianms.constants.skills.Buccaneer;
 import com.lucianms.constants.skills.Corsair;
 import com.lucianms.constants.skills.ThunderBreaker;
-import com.lucianms.server.PlayerCoolDownValueHolder;
-import com.lucianms.server.Server;
-import com.lucianms.server.channel.MapleChannel;
 import com.lucianms.events.PlayerInteractionEvent;
-import com.lucianms.server.guild.MapleAlliance;
-import com.lucianms.server.guild.MapleGuild;
-import com.lucianms.server.guild.MapleGuildCharacter;
-import com.lucianms.server.guild.MapleGuildSummary;
-import com.lucianms.server.world.MapleParty;
-import com.lucianms.server.world.MaplePartyCharacter;
-import com.lucianms.server.world.PartyOperation;
+import com.lucianms.events.gm.MapleSnowball;
+import com.lucianms.nio.SendOpcode;
 import com.lucianms.server.CashShop.CashItem;
 import com.lucianms.server.CashShop.CashItemFactory;
 import com.lucianms.server.CashShop.SpecialCashItem;
 import com.lucianms.server.*;
-import com.lucianms.events.gm.MapleSnowball;
+import com.lucianms.server.channel.MapleChannel;
+import com.lucianms.server.guild.MapleAlliance;
+import com.lucianms.server.guild.MapleGuild;
+import com.lucianms.server.guild.MapleGuildCharacter;
+import com.lucianms.server.guild.MapleGuildSummary;
 import com.lucianms.server.life.MapleMonster;
 import com.lucianms.server.life.MapleNPC;
 import com.lucianms.server.life.MobSkill;
 import com.lucianms.server.maps.*;
 import com.lucianms.server.movement.LifeMovementFragment;
+import com.lucianms.server.world.MapleParty;
+import com.lucianms.server.world.MaplePartyCharacter;
+import com.lucianms.server.world.PartyOperation;
 import tools.data.output.LittleEndianWriter;
 import tools.data.output.MaplePacketLittleEndianWriter;
 
@@ -5962,11 +5960,9 @@ public class MaplePacketCreator {
         mplew.writeShort(SendOpcode.WEDDING_GIFT_RESULT.getValue());
         mplew.write(0x0B);
         mplew.writeInt(0);
-        for (int i = 0; i < 0; i++) // f4
-        {
+        for (int i = 0; i < 0; i++) {
             mplew.write(0);
         }
-
         addItemInfo(mplew, item, true);
         return mplew.getPacket();
     }

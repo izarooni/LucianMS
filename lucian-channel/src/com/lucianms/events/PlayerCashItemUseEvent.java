@@ -517,7 +517,7 @@ public class PlayerCashItemUseEvent extends PacketEvent implements Cleaner.Clean
                             player.dropMessage(1, "You cannot teleport to this map.");
                         }
                     } else {
-                        player.dropMessage(1, "Player could not be found in this com.lucianms.server.events.channel.");
+                        player.dropMessage(1, "Player could not be found in this channel.");
                     }
                     getClient().announce(MaplePacketCreator.enableActions());
                 }

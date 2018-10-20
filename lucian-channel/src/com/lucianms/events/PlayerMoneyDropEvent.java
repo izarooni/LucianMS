@@ -30,7 +30,7 @@ public class PlayerMoneyDropEvent extends PacketEvent {
             return null;
         }
         SpamTracker.SpamData spammer = player.getSpamTracker(SpamTracker.SpamOperation.MoneyDrop);
-        if (spammer.testFor(500)) {
+        if (spammer.testFor(50)) {
             player.sendMessage(5, "You are doing that too fast!");
             return null;
         }
