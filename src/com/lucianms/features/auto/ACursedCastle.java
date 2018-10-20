@@ -2,7 +2,7 @@ package com.lucianms.features.auto;
 
 import client.MapleCharacter;
 import com.lucianms.server.events.channel.*;
-import net.server.world.World;
+import net.server.world.MapleWorld;
 import com.lucianms.scheduler.TaskExecutor;
 import server.life.MapleLifeFactory;
 import server.life.MapleMonster;
@@ -39,7 +39,7 @@ public class ACursedCastle extends GAutoEvent {
     private ConcurrentHashMap<Integer, Long> hits = new ConcurrentHashMap<>();
     private HashMap<Integer, Integer> returnMaps = new HashMap<>();
 
-    public ACursedCastle(World world) {
+    public ACursedCastle(MapleWorld world) {
         super(world, true);
     }
 
@@ -85,25 +85,25 @@ public class ACursedCastle extends GAutoEvent {
     }
 
     @PacketWorker
-    public void onCloseRangeAttack(CloseRangeDamageEvent event) {
+    public void onCloseRangeAttack(PlayerDealDamageNearbyEvent event) {
         onMonsterAttacked(event.getClient().getPlayer(), event.getAttackInfo());
         event.setCanceled(true);
     }
 
     @PacketWorker
-    public void onRangedAttack(RangedAttackEvent event) {
+    public void onRangedAttack(PlayerDealDamageRangedEvent event) {
         onMonsterAttacked(event.getClient().getPlayer(), event.getAttackInfo());
         event.setCanceled(true);
     }
 
     @PacketWorker
-    public void onMagicAttack(MagicDamageEvent event) {
+    public void onMagicAttack(PlayerDealDamageMagicEvent event) {
         onMonsterAttacked(event.getClient().getPlayer(), event.getAttackInfo());
         event.setCanceled(true);
     }
 
     @PacketWorker
-    public void onPlayerTakeDamage(TakeDamageEvent event) {
+    public void onPlayerTakeDamage(PlayerTakeDamageEvent event) {
         MapleCharacter player = event.getClient().getPlayer();
         unregisterPlayer(player);
         hits.put(player.getId(), System.currentTimeMillis()); // timestamp when the player got hit

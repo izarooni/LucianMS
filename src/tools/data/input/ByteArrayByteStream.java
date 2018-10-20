@@ -25,7 +25,7 @@ import tools.HexTool;
 
 import java.io.IOException;
 
-public class ByteArrayByteStream implements SeekableInputStreamBytestream {
+public class ByteArrayByteStream {
 
     private int pos = 0;
     private long bytesRead = 0;
@@ -35,22 +35,18 @@ public class ByteArrayByteStream implements SeekableInputStreamBytestream {
         this.arr = arr;
     }
 
-    @Override
     public long getPosition() {
         return pos;
     }
 
-    @Override
     public void seek(long offset) throws IOException {
         pos = (int) offset;
     }
 
-    @Override
     public long getBytesRead() {
         return bytesRead;
     }
 
-    @Override
     public int readByte() {
         bytesRead++;
         return ((int) arr[pos++]) & 0xFF;
@@ -61,7 +57,6 @@ public class ByteArrayByteStream implements SeekableInputStreamBytestream {
         return HexTool.toString(arr);
     }
 
-    @Override
     public long available() {
         return arr.length - pos;
     }

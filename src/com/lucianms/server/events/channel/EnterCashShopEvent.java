@@ -1,10 +1,10 @@
 package com.lucianms.server.events.channel;
 
 import client.MapleCharacter;
-import net.PacketEvent;
+import com.lucianms.nio.receive.MaplePacketReader;
+import com.lucianms.server.events.PacketEvent;
 import net.server.Server;
 import tools.MaplePacketCreator;
-import tools.data.input.SeekableLittleEndianAccessor;
 
 /**
  * @author Flav
@@ -13,7 +13,7 @@ import tools.data.input.SeekableLittleEndianAccessor;
 public class EnterCashShopEvent extends PacketEvent {
 
     @Override
-    public void process(SeekableLittleEndianAccessor slea) {
+    public void processInput(MaplePacketReader reader) {
     }
 
     @Override
@@ -24,14 +24,14 @@ public class EnterCashShopEvent extends PacketEvent {
             return null;
         }
 
-        Server.getInstance().getPlayerBuffStorage().addBuffsToStorage(player.getId(), player.getAllBuffs());
+        Server.getInstance().getPlayerBuffStorage().put(player.getId(), player.getAllBuffs());
 
         player.cancelBuffEffects();
         player.cancelExpirationTask();
 
         getClient().announce(MaplePacketCreator.openCashShop(getClient(), false));
 
-        player.saveToDB();
+        player.saveToDB(true);
         player.getCashShop().open(true);
 
         if (player.getFakePlayer() != null) {

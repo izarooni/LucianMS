@@ -26,13 +26,13 @@ import client.MapleClient;
 import client.SkillFactory;
 import client.inventory.MapleInventoryType;
 import client.inventory.MaplePet;
-import net.AbstractMaplePacketHandler;
+import net.PacketEvent;
 import provider.MapleDataProvider;
 import provider.MapleDataProviderFactory;
 import provider.MapleDataTool;
 import server.MapleInventoryManipulator;
 import tools.MaplePacketCreator;
-import tools.data.input.SeekableLittleEndianAccessor;
+import tools.data.input.LittleEndianReader;
 
 import java.awt.*;
 import java.io.File;
@@ -40,10 +40,10 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
-public final class SpawnPetHandler extends AbstractMaplePacketHandler {
+public final class SpawnPetHandler extends PacketEvent {
     private static MapleDataProvider dataRoot = MapleDataProviderFactory.getDataProvider(new File(System.getProperty("wzpath") + "/Item.wz"));
 
-    public final void handlePacket(SeekableLittleEndianAccessor slea, MapleClient c) {
+    public final void handlePacket(LittleEndianReader slea, MapleClient c) {
         MapleCharacter chr = c.getPlayer();
         slea.readInt();
         byte slot = slea.readByte();

@@ -30,6 +30,7 @@ import server.quest.MapleQuest;
 import tools.Pair;
 
 import javax.script.Invocable;
+import java.io.FileNotFoundException;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -67,6 +68,8 @@ public class QuestScriptManager {
             }
             storage.put(client, new Pair<>(iv, qm));
             iv.invokeFunction("start", (byte) 1, (byte) 0, 0);
+        } catch (FileNotFoundException e) {
+            LOGGER.info("No script file for quest {}", questId);
         } catch (Exception e) {
             e.printStackTrace();
             dispose(client);

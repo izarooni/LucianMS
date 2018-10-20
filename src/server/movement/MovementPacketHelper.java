@@ -1,29 +1,9 @@
-/*
- This file is part of the OdinMS Maple Story Server
- Copyright (C) 2008 Patrick Huy <patrick.huy@frz.cc>
- Matthias Butz <matze@odinms.de>
- Jan Christian Meyer <vimes@odinms.de>
-
- This program is free software: you can redistribute it and/or modify
- it under the terms of the GNU Affero General Public License as
- published by the Free Software Foundation version 3 as published by
- the Free Software Foundation. You may not use, modify or distribute
- this program under any other version of the GNU Affero General Public
- License.
-
- This program is distributed in the hope that it will be useful,
- but WITHOUT ANY WARRANTY; without even the implied warranty of
- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- GNU Affero General Public License for more details.
-
- You should have received a copy of the GNU Affero General Public License
- along with this program.  If not, see <http://www.gnu.org/licenses/>.
- */
 package server.movement;
 
 import client.MapleClient;
+import com.lucianms.nio.receive.MaplePacketReader;
 import server.maps.AnimatedMapleMapObject;
-import tools.data.input.LittleEndianAccessor;
+import tools.data.input.LittleEndianReader;
 
 import java.awt.*;
 import java.util.ArrayList;
@@ -31,22 +11,22 @@ import java.util.List;
 
 public final class MovementPacketHelper {
 
-    public static List<LifeMovementFragment> parse(MapleClient client, LittleEndianAccessor lea) {
+    public static List<LifeMovementFragment> parse(MapleClient client, MaplePacketReader reader) {
         List<LifeMovementFragment> res = new ArrayList<>();
-        byte numCommands = lea.readByte();
+        byte numCommands = reader.readByte();
         for (byte i = 0; i < numCommands; i++) {
-            byte command = lea.readByte();
+            byte command = reader.readByte();
             switch (command) {
                 case 0: // normal move
                 case 5:
                 case 17: { // Float
-                    short xpos = lea.readShort();
-                    short ypos = lea.readShort();
-                    short xwobble = lea.readShort();
-                    short ywobble = lea.readShort();
-                    short unk = lea.readShort();
-                    byte newstate = lea.readByte();
-                    short duration = lea.readShort();
+                    short xpos = reader.readShort();
+                    short ypos = reader.readShort();
+                    short xwobble = reader.readShort();
+                    short ywobble = reader.readShort();
+                    short unk = reader.readShort();
+                    byte newstate = reader.readByte();
+                    short duration = reader.readShort();
                     AbsoluteLifeMovement alm = new AbsoluteLifeMovement(command, new Point(xpos, ypos), duration, newstate);
                     alm.setUnk(unk);
                     alm.setPixelsPerSecond(new Point(xwobble, ywobble));
@@ -63,10 +43,10 @@ public final class MovementPacketHelper {
                 case 19: // Springs on maps
                 case 20: // Aran Combat Step
                 case 22: {
-                    short xpos = lea.readShort();
-                    short ypos = lea.readShort();
-                    byte newstate = lea.readByte();
-                    short duration = lea.readShort();
+                    short xpos = reader.readShort();
+                    short ypos = reader.readShort();
+                    byte newstate = reader.readByte();
+                    short duration = reader.readShort();
                     RelativeLifeMovement rlm = new RelativeLifeMovement(command, new Point(xpos, ypos), duration, newstate);
                     res.add(rlm);
                     break;
@@ -79,42 +59,31 @@ public final class MovementPacketHelper {
                 case 11: //chair
                 {
                     //                case 14: {
-                    short xpos = lea.readShort();
-                    short ypos = lea.readShort();
-                    short xwobble = lea.readShort();
-                    short ywobble = lea.readShort();
-                    byte newstate = lea.readByte();
+                    short xpos = reader.readShort();
+                    short ypos = reader.readShort();
+                    short xwobble = reader.readShort();
+                    short ywobble = reader.readShort();
+                    byte newstate = reader.readByte();
                     TeleportMovement tm = new TeleportMovement(command, new Point(xpos, ypos), newstate);
                     tm.setPixelsPerSecond(new Point(xwobble, ywobble));
                     res.add(tm);
                     break;
                 }
                 case 14:
-                    lea.skip(9); // jump down (?)
+                    reader.skip(9); // jump down (?)
                     break;
                 case 10: // Change Equip
-                    res.add(new ChangeEquip(lea.readByte()));
+                    res.add(new ChangeEquip(reader.readByte()));
                     break;
-                /*case 11: { // Chair
-                    short xpos = lea.readShort();
-                    short ypos = lea.readShort();
-                    short unk = lea.readShort();
-                    byte newstate = lea.readByte();
-                    short duration = lea.readShort();
-                    ChairMovement cm = new ChairMovement(command, new Point(xpos, ypos), duration, newstate);
-                    cm.setUnk(unk);
-                    res.add(cm);
-                    break;
-                }*/
                 case 15: {
-                    short xpos = lea.readShort();
-                    short ypos = lea.readShort();
-                    short xwobble = lea.readShort();
-                    short ywobble = lea.readShort();
-                    short unk = lea.readShort();
-                    short fh = lea.readShort();
-                    byte newstate = lea.readByte();
-                    short duration = lea.readShort();
+                    short xpos = reader.readShort();
+                    short ypos = reader.readShort();
+                    short xwobble = reader.readShort();
+                    short ywobble = reader.readShort();
+                    short unk = reader.readShort();
+                    short fh = reader.readShort();
+                    byte newstate = reader.readByte();
+                    short duration = reader.readShort();
                     JumpDownMovement jdm = new JumpDownMovement(command, new Point(xpos, ypos), duration, newstate);
                     jdm.setUnk(unk);
                     jdm.setPixelsPerSecond(new Point(xwobble, ywobble));
@@ -122,12 +91,8 @@ public final class MovementPacketHelper {
                     res.add(jdm);
                     break;
                 }
-                case 21: {//Causes aran to do weird stuff when attacking o.o
-                    /*byte newstate = lea.readByte();
-                     short unk = lea.readShort();
-                     AranMovement am = new AranMovement(command, null, unk, newstate);
-                     res.add(am);*/
-                    lea.skip(3);
+                case 21: {
+                    reader.skip(3);
                     break;
                 }
                 default:

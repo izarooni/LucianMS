@@ -22,19 +22,18 @@
 package net.server.channel.handlers;
 
 import client.MapleClient;
-import net.AbstractMaplePacketHandler;
-import tools.Database;
+import net.PacketEvent;
 import tools.MaplePacketCreator;
-import tools.data.input.SeekableLittleEndianAccessor;
+import tools.data.input.LittleEndianReader;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-public final class NoteActionHandler extends AbstractMaplePacketHandler {
+public final class NoteActionHandler extends PacketEvent {
 
-    public final void handlePacket(SeekableLittleEndianAccessor slea, MapleClient c) {
+    public final void handlePacket(LittleEndianReader slea, MapleClient c) {
         int action = slea.readByte();
         if (action == 0 && c.getPlayer().getCashShop().getAvailableNotes() > 0) {
             String charname = slea.readMapleAsciiString();

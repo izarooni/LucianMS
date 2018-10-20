@@ -34,24 +34,19 @@ import com.lucianms.helpers.RankingWorker;
 import com.lucianms.io.Config;
 import com.lucianms.io.defaults.Defaults;
 import com.lucianms.io.scripting.Achievements;
+import com.lucianms.nio.ReceivePacketState;
+import com.lucianms.nio.server.MapleServerInboundHandler;
 import com.lucianms.scheduler.Task;
 import com.lucianms.scheduler.TaskExecutor;
 import com.lucianms.server.Whitelist;
 import com.zaxxer.hikari.HikariDataSource;
 import constants.ServerConstants;
-import net.MapleServerHandler;
-import net.mina.MapleCodecFactory;
-import net.server.channel.Channel;
+import io.netty.channel.nio.NioEventLoopGroup;
+import net.server.channel.MapleChannel;
 import net.server.guild.MapleAlliance;
 import net.server.guild.MapleGuild;
 import net.server.guild.MapleGuildCharacter;
-import net.server.world.World;
-import org.apache.mina.core.buffer.IoBuffer;
-import org.apache.mina.core.buffer.SimpleBufferAllocator;
-import org.apache.mina.core.service.IoAcceptor;
-import org.apache.mina.core.session.IdleStatus;
-import org.apache.mina.filter.codec.ProtocolCodecFilter;
-import org.apache.mina.transport.socket.nio.NioSocketAcceptor;
+import net.server.world.MapleWorld;
 import org.json.JSONObject;
 import org.json.JSONTokener;
 import org.slf4j.Logger;
@@ -64,11 +59,9 @@ import tools.Database;
 import tools.Pair;
 import tools.StringUtil;
 
-import javax.swing.plaf.basic.BasicInternalFrameTitlePane;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.net.InetSocketAddress;
 import java.net.URISyntaxException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -82,9 +75,9 @@ public class Server implements Runnable {
     public static final long Uptime = System.currentTimeMillis();
 
     private static Server instance = null;
-    private IoAcceptor acceptor;
+    private static MapleServerInboundHandler serverHandler;
     private List<Map<Integer, String>> channels = new LinkedList<>();
-    private List<World> worlds = new ArrayList<>();
+    private List<MapleWorld> worlds = new ArrayList<>();
     private List<Pair<Integer, String>> worldRecommendedList = new LinkedList<>();
     private final Map<Integer, MapleGuild> guilds = new LinkedHashMap<>();
     private final Map<Integer, MapleAlliance> alliances = new LinkedHashMap<>();
@@ -100,6 +93,10 @@ public class Server implements Runnable {
         return hikari.getConnection();
     }
 
+    public static MapleServerInboundHandler getServerHandler() {
+        return serverHandler;
+    }
+
     public static Server getInstance() {
         if (instance == null) {
             instance = new Server();
@@ -107,6 +104,7 @@ public class Server implements Runnable {
         return instance;
     }
 
+    @Deprecated
     public static void insertLog(String author, String description, Object... args) {
         try (Connection con = hikari.getConnection(); PreparedStatement ps = con.prepareStatement("insert into loggers (author, description) values (?, ?)")) {
             ps.setString(1, author);
@@ -121,10 +119,6 @@ public class Server implements Runnable {
         Server.getInstance().run();
     }
 
-    public IoAcceptor getAcceptor() {
-        return acceptor;
-    }
-
     public boolean isOnline() {
         return online;
     }
@@ -136,23 +130,23 @@ public class Server implements Runnable {
     public void removeChannel(int worldid, int channel) {
         channels.remove(channel);
 
-        World world = worlds.get(worldid);
+        MapleWorld world = worlds.get(worldid);
         if (world != null) {
             world.removeChannel(channel);
         }
     }
 
-    public Channel getChannel(int world, int channel) {
+    public MapleChannel getChannel(int world, int channel) {
         return worlds.get(world).getChannel(channel);
     }
 
-    public List<Channel> getChannelsFromWorld(int world) {
+    public List<MapleChannel> getChannelsFromWorld(int world) {
         return worlds.get(world).getChannels();
     }
 
-    public List<Channel> getAllChannels() {
-        List<Channel> channelz = new ArrayList<>();
-        for (World world : worlds) {
+    public List<MapleChannel> getAllChannels() {
+        List<MapleChannel> channelz = new ArrayList<>();
+        for (MapleWorld world : worlds) {
             channelz.addAll(world.getChannels());
         }
         return channelz;
@@ -171,9 +165,8 @@ public class Server implements Runnable {
         } catch (Exception e) {
             LOGGER.info("Please start create_server.bat");
             System.exit(0);
+            return;
         }
-
-        LOGGER.info("LucianMS v{} starting up!", ServerConstants.VERSION);
 
         try {
             if (Defaults.createDefaultIfAbsent(null, "server-config.json")) {
@@ -198,22 +191,6 @@ public class Server implements Runnable {
         TaskExecutor.prestartAllCoreThreads();
         Runtime.getRuntime().addShutdownHook(new Thread(shutdown()));
 
-        try {
-            IoBuffer.setUseDirectBuffer(false);
-            IoBuffer.setAllocator(new SimpleBufferAllocator());
-            acceptor = new NioSocketAcceptor();
-            acceptor.getFilterChain().addLast("codec", new ProtocolCodecFilter(new MapleCodecFactory()));
-            acceptor.getSessionConfig().setIdleTime(IdleStatus.BOTH_IDLE, 120);
-            acceptor.setHandler(new MapleServerHandler());
-            acceptor.bind(new InetSocketAddress(8484));
-            LOGGER.info("Listening on port 8484");
-        } catch (IOException e) {
-            e.printStackTrace();
-            System.exit(0);
-            return;
-        }
-
-        LOGGER.info("Database connection established");
         try (Connection con = hikari.getConnection()) {
             Database.execute(con, "update accounts set loggedin = 0");
             Database.execute(con, "update characters set hasmerchant = 0");
@@ -244,9 +221,8 @@ public class Server implements Runnable {
 
         timeToTake = System.currentTimeMillis();
         MapleItemInformationProvider.getInstance().getAllItems();
-        LOGGER.info("Item data loaded in {}s", ((System.currentTimeMillis() - timeToTake) / 1000d));
         CashItemFactory.loadCommodities();
-        LOGGER.info("Cash shop commodities loaded in {}s", ((System.currentTimeMillis() - timeToTake) / 1000d));
+        LOGGER.info("Item data loaded in {}s", ((System.currentTimeMillis() - timeToTake) / 1000d));
 
         Achievements.loadAchievements();
 
@@ -258,7 +234,7 @@ public class Server implements Runnable {
                 String eMessage = p.getProperty("eventmessage" + i);
                 String sMessage = p.getProperty("servermessage" + i);
 
-                World world = new World(i, flag, eMessage, Integer.parseInt(p.getProperty("exprate" + i)), Integer.parseInt(p.getProperty("droprate" + i)), Integer.parseInt(p.getProperty("mesorate" + i)), Integer.parseInt(p.getProperty("bossdroprate" + i)));
+                MapleWorld world = new MapleWorld(i, flag, eMessage, Integer.parseInt(p.getProperty("exprate" + i)), Integer.parseInt(p.getProperty("droprate" + i)), Integer.parseInt(p.getProperty("mesorate" + i)), Integer.parseInt(p.getProperty("bossdroprate" + i)));
 
                 worlds.add(world);
                 worldRecommendedList.add(new Pair<>(i, p.getProperty("recommend" + i)));
@@ -267,7 +243,7 @@ public class Server implements Runnable {
                 int qChannels = Integer.parseInt(p.getProperty("channels" + i));
                 for (int j = 0; j < qChannels; j++) {
                     int channelId = j + 1;
-                    Channel channel = new Channel(i, channelId);
+                    MapleChannel channel = new MapleChannel(i, channelId);
                     world.addChannel(channel);
                     channels.get(i).put(channelId, channel.getIP());
                     channel.reloadEventScriptManager();
@@ -279,21 +255,22 @@ public class Server implements Runnable {
                 world.addScheduledEvent(new SOuterSpace(world));
                 LOGGER.info("World {} created in {}s", (world.getId() + 1), ((System.currentTimeMillis() - timeToTake) / 1000d));
             }
+
+            timeToTake = System.currentTimeMillis();
+            int count = HouseManager.loadHouses();
+            LOGGER.info("{} houses loaded in {}s", count, ((System.currentTimeMillis() - timeToTake) / 1000d));
+
+            serverHandler = new MapleServerInboundHandler(ReceivePacketState.LoginServer,8484, new NioEventLoopGroup(), null);
         } catch (Exception e) {
             e.printStackTrace();// For those who get errors
             System.exit(0);
+            return;
         }
 
-        timeToTake = System.currentTimeMillis();
-        int count = HouseManager.loadHouses();
-        LOGGER.info("{} houses loaded in {}s", count, ((System.currentTimeMillis() - timeToTake) / 1000d));
-
         ConsoleCommands.beginReading();
-        LOGGER.info("Console now listening for commands");
 
         LOGGER.info("LucianMS took {}s to start", ((System.currentTimeMillis() - beginning) / 1000d));
         online = true;
-
     }
 
     public Properties getSubnetInfo() {
@@ -567,8 +544,8 @@ public class Server implements Runnable {
     }
 
     public void reloadGuildCharacters(int world) {
-        World worlda = getWorld(world);
-        for (MapleCharacter mc : worlda.getPlayerStorage().getAllCharacters()) {
+        MapleWorld worlda = getWorld(world);
+        for (MapleCharacter mc : worlda.getPlayerStorage().getAllPlayers()) {
             if (mc.getGuildId() > 0) {
                 setGuildMemberOnline(mc.getMGC(), true, worlda.getId());
                 memberLevelJobUpdate(mc.getMGC());
@@ -578,20 +555,20 @@ public class Server implements Runnable {
     }
 
     public void broadcastMessage(final byte[] packet) {
-        for (Channel ch : getChannelsFromWorld(0)) {
+        for (MapleChannel ch : getChannelsFromWorld(0)) {
             ch.broadcastPacket(packet);
         }
     }
 
     public void broadcastGMMessage(final byte[] packet) {
-        for (Channel ch : getChannelsFromWorld(0)) {
+        for (MapleChannel ch : getChannelsFromWorld(0)) {
             ch.broadcastGMPacket(packet);
         }
     }
 
     public boolean isGmOnline() {
-        for (Channel ch : getChannelsFromWorld(0)) {
-            for (MapleCharacter player : ch.getPlayerStorage().getAllCharacters()) {
+        for (MapleChannel ch : getChannelsFromWorld(0)) {
+            for (MapleCharacter player : ch.getPlayerStorage().getAllPlayers()) {
                 if (player.isGM()) {
                     return true;
                 }
@@ -600,11 +577,11 @@ public class Server implements Runnable {
         return false;
     }
 
-    public World getWorld(int id) {
+    public MapleWorld getWorld(int id) {
         return worlds.get(id);
     }
 
-    public List<World> getWorlds() {
+    public List<MapleWorld> getWorlds() {
         return worlds;
     }
 
@@ -614,12 +591,9 @@ public class Server implements Runnable {
             public void run() {
                 LOGGER.info("Shutdown hook invoked");
 
-                acceptor.unbind();
-                acceptor.dispose();
-                acceptor = null;
                 LOGGER.info("Login server closed");
 
-                getWorlds().forEach(World::shutdown);
+                getWorlds().forEach(MapleWorld::shutdown);
 
                 TaskExecutor.shutdownNow();
 
@@ -627,7 +601,7 @@ public class Server implements Runnable {
 
                 ConsoleCommands.stopReading();
 
-                DiscordSession.ignore();
+//                DiscordSession.getDiscordServer().close(); // todo shutdown
             }
         };
     }

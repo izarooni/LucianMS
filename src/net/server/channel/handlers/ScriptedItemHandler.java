@@ -23,20 +23,20 @@ package net.server.channel.handlers;
 
 import client.MapleClient;
 import client.inventory.Item;
-import net.AbstractMaplePacketHandler;
+import net.PacketEvent;
 import com.lucianms.io.scripting.item.ItemScriptManager;
 import server.MapleItemInformationProvider;
 import server.MapleItemInformationProvider.scriptedItem;
 import tools.MaplePacketCreator;
-import tools.data.input.SeekableLittleEndianAccessor;
+import tools.data.input.LittleEndianReader;
 
 /**
  *
  * @author Jay Estrella
  */
-public final class ScriptedItemHandler extends AbstractMaplePacketHandler {
+public final class ScriptedItemHandler extends PacketEvent {
     @Override
-    public final void handlePacket(SeekableLittleEndianAccessor slea, MapleClient c) {
+    public final void handlePacket(LittleEndianReader slea, MapleClient c) {
         MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
         slea.readInt(); // trash stamp (thx rmzero)
         short itemSlot = slea.readShort(); // item sl0t (thx rmzero)

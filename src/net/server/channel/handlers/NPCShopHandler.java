@@ -1,59 +1,64 @@
-/*
-	This file is part of the OdinMS Maple Story Server
-    Copyright (C) 2008 Patrick Huy <patrick.huy@frz.cc>
-		       Matthias Butz <matze@odinms.de>
-		       Jan Christian Meyer <vimes@odinms.de>
-
-    This program is free software: you can redistribute it and/or modify
-    it under the terms of the GNU Affero General Public License as
-    published by the Free Software Foundation version 3 as published by
-    the Free Software Foundation. You may not use, modify or distribute
-    this program under any other version of the GNU Affero General Public
-    License.
-
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU Affero General Public License for more details.
-
-    You should have received a copy of the GNU Affero General Public License
-    along with this program.  If not, see <http://www.gnu.org/licenses/>.
-*/
 package net.server.channel.handlers;
 
-import client.MapleClient;
-import net.AbstractMaplePacketHandler;
-import server.MapleItemInformationProvider;
-import tools.FilePrinter;
-import tools.data.input.SeekableLittleEndianAccessor;
+import client.MapleCharacter;
+import com.lucianms.nio.receive.MaplePacketReader;
+import com.lucianms.server.events.PacketEvent;
+import constants.ItemConstants;
 
 /**
- * 
- * @author Matze
+ * @author izarooni
  */
-public class NPCShopHandler extends AbstractMaplePacketHandler {
+public class NPCShopHandler extends PacketEvent {
+
+    private byte action;
+    private short slot;
+    private short quantity;
+    private int itemID;
 
     @Override
-    public void handlePacket(SeekableLittleEndianAccessor slea, MapleClient c) {
-        byte bmode = slea.readByte();
-        if (bmode == 0) { // mode 0 = buy :)
-            short slot = slea.readShort();// slot
-            int itemId = slea.readInt();
-            short quantity = slea.readShort();
-            if (quantity < 1) {
-            	return;
-            }
-            c.getPlayer().getShop().buy(c, slot, itemId, quantity);
-        } else if (bmode == 1) { // sell ;)
-            short slot = slea.readShort();
-            int itemId = slea.readInt();
-            short quantity = slea.readShort();
-            c.getPlayer().getShop().sell(c, MapleItemInformationProvider.getInstance().getInventoryType(itemId), slot, quantity);
-        } else if (bmode == 2) { // recharge ;)
-            byte slot = (byte) slea.readShort();
-            c.getPlayer().getShop().recharge(c, slot);
-        } else if (bmode == 3) { // leaving :(
-            c.getPlayer().setShop(null);
+    public void processInput(MaplePacketReader reader) {
+        MapleCharacter player = getClient().getPlayer();
+        action = reader.readByte();
+        switch (action) {
+            case 0: // buy
+                slot = reader.readShort();
+                itemID = reader.readInt();
+                quantity = reader.readShort();
+                if (quantity < 1 || player.getShop() == null) {
+                    setCanceled(true);
+                }
+                break;
+            case 1: // sell
+                slot = reader.readShort();
+                itemID = reader.readInt();
+                quantity = reader.readShort();
+                if (quantity < 1 || player.getShop() == null) {
+                    setCanceled(true);
+                }
+                break;
+            case 2: // recharge
+                slot = reader.readShort();
+                break;
         }
+    }
+
+    @Override
+    public Object onPacket() {
+        MapleCharacter player = getClient().getPlayer();
+        switch (action) {
+            case 0:
+                player.getShop().buy(getClient(), slot, itemID, quantity);
+                break;
+            case 1:
+                player.getShop().sell(getClient(), ItemConstants.getInventoryType(itemID), slot, quantity);
+                break;
+            case 2:
+                player.getShop().recharge(getClient(), slot);
+                break;
+            case 3:
+                player.setShop(null);
+                break;
+        }
+        return null;
     }
 }

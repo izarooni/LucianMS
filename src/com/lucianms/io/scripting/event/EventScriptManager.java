@@ -1,6 +1,6 @@
 package com.lucianms.io.scripting.event;
 
-import net.server.channel.Channel;
+import net.server.channel.MapleChannel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -14,10 +14,10 @@ public class EventScriptManager {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(EventScriptManager.class);
 
-    private final Channel channel;
+    private final MapleChannel channel;
     private ConcurrentHashMap<String, EventManager> events = new ConcurrentHashMap<>();
 
-    public EventScriptManager(Channel channel) {
+    public EventScriptManager(MapleChannel channel) {
         this.channel = channel;
     }
 

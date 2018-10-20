@@ -24,18 +24,18 @@ package net.server.channel.handlers;
 import client.MapleClient;
 import constants.skills.DarkKnight;
 import java.util.Collection;
-import net.AbstractMaplePacketHandler;
+import net.PacketEvent;
 import server.maps.MapleSummon;
-import tools.data.input.SeekableLittleEndianAccessor;
+import tools.data.input.LittleEndianReader;
 
 /**
  *
  * @author BubblesDev
  */
-public final class BeholderHandler extends AbstractMaplePacketHandler {//Summon Skills noobs
+public final class BeholderHandler extends PacketEvent {//Summon Skills noobs
 
     @Override
-    public final void handlePacket(SeekableLittleEndianAccessor slea, MapleClient c) {
+    public final void handlePacket(LittleEndianReader slea, MapleClient c) {
         //System.out.println(slea.toString());
         Collection<MapleSummon> summons = c.getPlayer().getSummons().values();
         int oid = slea.readInt();

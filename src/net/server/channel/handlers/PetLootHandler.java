@@ -25,23 +25,23 @@ import client.MapleCharacter;
 import client.MapleClient;
 import client.inventory.MaplePet;
 import com.lucianms.server.events.channel.ItemPickupEvent;
-import net.AbstractMaplePacketHandler;
+import net.PacketEvent;
 import server.MapleInventoryManipulator;
 import server.maps.MapleMapItem;
 import server.maps.MapleMapObject;
 import tools.MaplePacketCreator;
-import tools.data.input.SeekableLittleEndianAccessor;
 import client.inventory.MapleInventoryType;
 import net.server.world.MaplePartyCharacter;
 import com.lucianms.io.scripting.item.ItemScriptManager;
 import server.MapleItemInformationProvider;
 import server.MapleItemInformationProvider.scriptedItem;
+import tools.data.input.LittleEndianReader;
 
 /**
  * @author TheRamon
  */
-public final class PetLootHandler extends AbstractMaplePacketHandler {
-    public final void handlePacket(SeekableLittleEndianAccessor slea, MapleClient c) {
+public final class PetLootHandler extends PacketEvent {
+    public final void handlePacket(LittleEndianReader slea, MapleClient c) {
         MapleCharacter chr = c.getPlayer();
         MaplePet pet = chr.getPet(chr.getPetIndex(slea.readInt()));//why would it be an int...?
         if (pet == null || !pet.isSummoned()) {
@@ -86,7 +86,7 @@ public final class PetLootHandler extends AbstractMaplePacketHandler {
                          }
                          for (MaplePartyCharacter partymem : chr.getParty().getMembers()) {
                               if (partymem.isOnline() && partymem.getMapId() == chr.getMap().getId()) {
-                                  MapleCharacter somecharacter = c.getChannelServer().getPlayerStorage().getCharacterById(partymem.getId());
+                                  MapleCharacter somecharacter = c.getChannelServer().getPlayerStorage().getPlayerByID(partymem.getId());
                                   if (somecharacter != null) somecharacter.gainMeso(mesosamm / partynum, true, true, false);
                               }
                          }

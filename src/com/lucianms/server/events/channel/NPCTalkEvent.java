@@ -1,7 +1,8 @@
 package com.lucianms.server.events.channel;
 
 import client.MapleCharacter;
-import net.PacketEvent;
+import com.lucianms.nio.receive.MaplePacketReader;
+import com.lucianms.server.events.PacketEvent;
 import net.server.channel.handlers.DueyHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -10,7 +11,6 @@ import server.life.MapleNPC;
 import server.maps.MapleMapObject;
 import server.maps.PlayerNPC;
 import tools.MaplePacketCreator;
-import tools.data.input.SeekableLittleEndianAccessor;
 
 /**
  * @author izarooni
@@ -21,8 +21,8 @@ public class NPCTalkEvent extends PacketEvent {
     private int objectId;
 
     @Override
-    public void process(SeekableLittleEndianAccessor slea) {
-        objectId = slea.readInt();
+    public void processInput(MaplePacketReader reader) {
+        objectId = reader.readInt();
     }
 
     @Override

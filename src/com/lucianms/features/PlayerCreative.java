@@ -7,7 +7,7 @@ import client.inventory.MapleInventory;
 import client.inventory.MapleInventoryType;
 import com.lucianms.io.scripting.npc.NPCScriptManager;
 import com.lucianms.lang.annotation.PacketWorker;
-import com.lucianms.server.events.channel.AllChatEvent;
+import com.lucianms.server.events.channel.PlayerAllChatEvent;
 import com.lucianms.server.events.channel.EnterCashShopEvent;
 import constants.ItemConstants;
 import constants.PlayerToggles;
@@ -86,7 +86,7 @@ public class PlayerCreative extends GenericEvent {
     }
 
     @PacketWorker
-    public void onChatEvent(AllChatEvent event) {
+    public void onChatEvent(PlayerAllChatEvent event) {
         MapleCharacter player = event.getClient().getPlayer();
         String message = event.getContent();
 
@@ -106,7 +106,8 @@ public class PlayerCreative extends GenericEvent {
             if (ItemConstants.getInventoryType(itemID) == MapleInventoryType.EQUIP) {
                 item = new Equip(itemID, (short) 0);
             } else {
-                item = new Item(itemID, (short) 0, (short) 1);
+                player.sendMessage(5, "Only equips are allowed!");
+                return;
             }
             player.getMap().spawnItemDrop(player, player, item, player.getPosition(), true, false);
         } else if (args[0].equals("cleardrops")) {

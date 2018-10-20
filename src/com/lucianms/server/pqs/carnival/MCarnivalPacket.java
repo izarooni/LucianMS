@@ -1,7 +1,7 @@
 package com.lucianms.server.pqs.carnival;
 
 import client.MapleCharacter;
-import net.SendOpcode;
+import com.lucianms.nio.SendOpcode;
 import tools.data.output.MaplePacketLittleEndianWriter;
 
 /**

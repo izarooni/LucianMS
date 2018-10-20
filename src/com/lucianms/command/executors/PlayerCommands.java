@@ -14,7 +14,7 @@ import com.lucianms.io.scripting.npc.NPCScriptManager;
 import com.lucianms.server.events.channel.RockPaperScissorsEvent;
 import constants.ServerConstants;
 import net.server.Server;
-import net.server.channel.Channel;
+import net.server.channel.MapleChannel;
 import server.maps.MapleMap;
 import server.maps.SavedLocationType;
 import tools.MaplePacketCreator;
@@ -38,7 +38,7 @@ public class PlayerCommands {
         }
         spamTracker.record();
 
-        Channel ch = client.getChannelServer();
+        MapleChannel ch = client.getChannelServer();
 
         if (command.equals("help", "commands")) {
             boolean npc = args.length() == 1 && args.get(0).equals("npc");
@@ -96,7 +96,7 @@ public class PlayerCommands {
             MapleCharacter target = player;
             if (command.equals("spy")) {
                 if (args.length() == 1) {
-                    target = ch.getPlayerStorage().getCharacterByName(args.get(0));
+                    target = ch.getPlayerStorage().getPlayerByName(args.get(0));
                     if (target == null) {
                         player.sendMessage("Unable to find any player named '{}'", args.get(0));
                         return;
@@ -167,9 +167,9 @@ public class PlayerCommands {
             player.dropMessage(6, "Done!");
         } else if (command.equals("afk", "away")) {
             if (args.length() >= 1) {
-                MapleCharacter target = ch.getPlayerStorage().getCharacterByName(args.get(0));
+                MapleCharacter target = ch.getPlayerStorage().getPlayerByName(args.get(0));
                 if (target != null) {
-                    player.dropMessage(String.format("%s is currently %s", target.getName(), (target.getClient().getSession().isBothIdle() ? "AFK" : "not AFK")));
+                    player.dropMessage(String.format("%s is currently %s", target.getName(), (target.getClient().getSession().isActive() ? "AFK" : "not AFK")));
                 } else {
                     player.dropMessage("The player you tried to check is not online, or does not exist.");
                 }
@@ -329,9 +329,9 @@ public class PlayerCommands {
             player.dropMessage("Last Server WZ revision: October 13, 2018");
             player.dropMessage("New customs added every 2nd month!");
         } else if (command.equals("online")) {
-            for (Channel channel : client.getWorldServer().getChannels()) {
+            for (MapleChannel channel : client.getWorldServer().getChannels()) {
                 StringBuilder sb = new StringBuilder();
-                for (MapleCharacter players : channel.getPlayerStorage().getAllCharacters()) {
+                for (MapleCharacter players : channel.getPlayerStorage().getAllPlayers()) {
                     if (!players.isGM()) {
                         sb.append(players.getName()).append(" ");
                     }
@@ -406,7 +406,7 @@ public class PlayerCommands {
             if (args.length() > 1) {
                 String username = args.get(0);
                 String message = args.concatFrom(1);
-                MapleCharacter target = client.getWorldServer().getPlayerStorage().getCharacterByName(username);
+                MapleCharacter target = client.getWorldServer().getPlayerStorage().getPlayerByName(username);
                 if (target != null) {
                     client.getWorldServer().broadcastGMPacket(MaplePacketCreator.serverNotice(6, String.format("[REPORT] %s : (%s) %s", player.getName(), username, message)));
                 } else {

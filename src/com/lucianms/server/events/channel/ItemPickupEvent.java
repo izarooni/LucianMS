@@ -24,7 +24,8 @@ package com.lucianms.server.events.channel;
 import client.MapleCharacter;
 import client.MapleClient;
 import client.inventory.Item;
-import net.PacketEvent;
+import com.lucianms.nio.receive.MaplePacketReader;
+import com.lucianms.server.events.PacketEvent;
 import net.server.world.MaplePartyCharacter;
 import com.lucianms.io.scripting.item.ItemScriptManager;
 import server.MapleInventoryManipulator;
@@ -35,7 +36,6 @@ import server.maps.MapleMapObject;
 import com.lucianms.cquest.CQuestData;
 import com.lucianms.cquest.requirement.CQuestItemRequirement;
 import tools.MaplePacketCreator;
-import tools.data.input.SeekableLittleEndianAccessor;
 
 /**
  * @author Matze
@@ -46,11 +46,11 @@ ItemPickupEvent extends PacketEvent {
     private int objectId;
 
     @Override
-    public void process(SeekableLittleEndianAccessor slea) {
-        slea.skip(4);
-        slea.skip(1);
-        slea.skip(4);
-        objectId = slea.readInt();
+    public void processInput(MaplePacketReader reader) {
+        reader.skip(4);
+        reader.skip(1);
+        reader.skip(4);
+        objectId = reader.readInt();
     }
 
     @Override
@@ -136,7 +136,7 @@ ItemPickupEvent extends PacketEvent {
                             }
                             for (MaplePartyCharacter partymem : chr.getParty().getMembers()) {
                                 if (partymem.isOnline() && partymem.getMapId() == chr.getMap().getId()) {
-                                    MapleCharacter somecharacter = getClient().getChannelServer().getPlayerStorage().getCharacterById(partymem.getId());
+                                    MapleCharacter somecharacter = getClient().getChannelServer().getPlayerStorage().getPlayerByID(partymem.getId());
                                     if (somecharacter != null) {
                                         somecharacter.gainMeso(mesosamm / partynum, true, true, false);
                                     }

@@ -32,17 +32,15 @@ import java.io.RandomAccessFile;
  * @version 1.0
  * @since Revision 323
  */
-public class RandomAccessByteStream implements SeekableInputStreamBytestream {
+public class RandomAccessByteStream {
 
     private RandomAccessFile raf;
     private long read = 0;
 
     public RandomAccessByteStream(RandomAccessFile raf) {
-        super();
         this.raf = raf;
     }
 
-    @Override
     public int readByte() {
         int temp;
         try {
@@ -57,22 +55,18 @@ public class RandomAccessByteStream implements SeekableInputStreamBytestream {
         }
     }
 
-    @Override
     public void seek(long offset) throws IOException {
         raf.seek(offset);
     }
 
-    @Override
     public long getPosition() throws IOException {
         return raf.getFilePointer();
     }
 
-    @Override
     public long getBytesRead() {
         return read;
     }
 
-    @Override
     public long available() {
         try {
             return raf.length() - raf.getFilePointer();

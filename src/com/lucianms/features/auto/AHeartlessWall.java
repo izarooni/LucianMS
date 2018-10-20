@@ -5,10 +5,10 @@ import com.lucianms.lang.annotation.PacketWorker;
 import com.lucianms.scheduler.Task;
 import com.lucianms.scheduler.TaskExecutor;
 import com.lucianms.server.events.channel.AbstractDealDamageEvent;
-import com.lucianms.server.events.channel.CloseRangeDamageEvent;
-import com.lucianms.server.events.channel.MagicDamageEvent;
-import com.lucianms.server.events.channel.RangedAttackEvent;
-import net.server.world.World;
+import com.lucianms.server.events.channel.PlayerDealDamageNearbyEvent;
+import com.lucianms.server.events.channel.PlayerDealDamageMagicEvent;
+import com.lucianms.server.events.channel.PlayerDealDamageRangedEvent;
+import net.server.world.MapleWorld;
 import server.life.MapleLifeFactory;
 import server.life.MapleMonster;
 import server.life.MapleMonsterStats;
@@ -39,7 +39,7 @@ public class AHeartlessWall extends GAutoEvent {
     private HashMap<Integer, Integer> returnMaps = new HashMap<>();
     private HashMap<Integer, Integer> damageLog = new HashMap<>();
 
-    public AHeartlessWall(World world) {
+    public AHeartlessWall(MapleWorld world) {
         super(world, true);
     }
 
@@ -95,17 +95,17 @@ public class AHeartlessWall extends GAutoEvent {
     }
 
     @PacketWorker
-    public void onCloseRangeAttack(CloseRangeDamageEvent event) {
+    public void onCloseRangeAttack(PlayerDealDamageNearbyEvent event) {
         onMonsterAttacked(event.getClient().getPlayer(), event.getAttackInfo());
     }
 
     @PacketWorker
-    public void onRangedAttack(RangedAttackEvent event) {
+    public void onRangedAttack(PlayerDealDamageRangedEvent event) {
         onMonsterAttacked(event.getClient().getPlayer(), event.getAttackInfo());
     }
 
     @PacketWorker
-    public void onMagicAttack(MagicDamageEvent event) {
+    public void onMagicAttack(PlayerDealDamageMagicEvent event) {
         onMonsterAttacked(event.getClient().getPlayer(), event.getAttackInfo());
     }
 

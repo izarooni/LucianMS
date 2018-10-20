@@ -23,10 +23,10 @@ package net.server.channel.handlers;
 
 import client.MapleCharacter;
 import client.MapleClient;
-import net.AbstractMaplePacketHandler;
+import net.PacketEvent;
 import net.server.Server;
 import tools.MaplePacketCreator;
-import tools.data.input.SeekableLittleEndianAccessor;
+import tools.data.input.LittleEndianReader;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -39,8 +39,8 @@ import java.util.Date;
  *
  * @author BubblesDev
  */
-public final class ReportHandler extends AbstractMaplePacketHandler {
-    public final void handlePacket(SeekableLittleEndianAccessor slea, MapleClient c) {
+public final class ReportHandler extends PacketEvent {
+    public final void handlePacket(LittleEndianReader slea, MapleClient c) {
         int type = slea.readByte(); //01 = Conversation claim 00 = illegal program
         String victim = slea.readMapleAsciiString();
         int reason = slea.readByte();

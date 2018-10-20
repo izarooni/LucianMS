@@ -6,9 +6,9 @@ import client.inventory.MapleInventoryType;
 import client.inventory.MapleWeaponType;
 import com.lucianms.lang.annotation.PacketWorker;
 import com.lucianms.server.events.channel.AbstractDealDamageEvent;
-import com.lucianms.server.events.channel.CloseRangeDamageEvent;
-import com.lucianms.server.events.channel.MagicDamageEvent;
-import com.lucianms.server.events.channel.RangedAttackEvent;
+import com.lucianms.server.events.channel.PlayerDealDamageNearbyEvent;
+import com.lucianms.server.events.channel.PlayerDealDamageMagicEvent;
+import com.lucianms.server.events.channel.PlayerDealDamageRangedEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import server.life.MapleLifeFactory;
@@ -66,7 +66,7 @@ public class PlayerBattle extends GenericEvent {
     }
 
     @PacketWorker
-    public void onCloseRangeAttack(CloseRangeDamageEvent event) {
+    public void onCloseRangeAttack(PlayerDealDamageNearbyEvent event) {
         lock.lock();
         try {
             // set attack type
@@ -82,7 +82,7 @@ public class PlayerBattle extends GenericEvent {
     }
 
     @PacketWorker
-    public void onFarRangeAttack(RangedAttackEvent event) {
+    public void onFarRangeAttack(PlayerDealDamageRangedEvent event) {
         lock.lock();
         try {
             // set attack type
@@ -106,7 +106,7 @@ public class PlayerBattle extends GenericEvent {
      * @param event the magic attack packet event
      */
     @PacketWorker
-    public void onMagicAttack(MagicDamageEvent event) {
+    public void onMagicAttack(PlayerDealDamageMagicEvent event) {
         lock.lock();
         try {
             // set attack type

@@ -23,17 +23,15 @@
 package net.server.channel.handlers;
 
 import client.MapleClient;
-import client.MapleJob;
-import net.AbstractMaplePacketHandler;
-import com.lucianms.io.scripting.npc.NPCScriptManager;
-import tools.data.input.SeekableLittleEndianAccessor;
+import net.PacketEvent;
+import tools.data.input.LittleEndianReader;
 
 /**
  * @author kevintjuh93
  */
-public class ClickGuideHandler extends AbstractMaplePacketHandler {
+public class ClickGuideHandler extends PacketEvent {
 
     @Override
-    public void handlePacket(SeekableLittleEndianAccessor slea, MapleClient c) {
+    public void handlePacket(LittleEndianReader slea, MapleClient c) {
     }
 }

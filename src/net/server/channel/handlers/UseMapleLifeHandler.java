@@ -22,16 +22,16 @@
 package net.server.channel.handlers;
 
 import client.MapleClient;
-import net.AbstractMaplePacketHandler;
+import net.PacketEvent;
 import tools.MaplePacketCreator;
-import tools.data.input.SeekableLittleEndianAccessor;
+import tools.data.input.LittleEndianReader;
 
 /**
  *
  * @author Jay Estrella
  */
-public class UseMapleLifeHandler extends AbstractMaplePacketHandler {
-    public void handlePacket(SeekableLittleEndianAccessor slea, MapleClient c) {
+public class UseMapleLifeHandler extends PacketEvent {
+    public void handlePacket(LittleEndianReader slea, MapleClient c) {
         c.announce(MaplePacketCreator.charNameResponse(slea.readMapleAsciiString(), false));
     }
 }

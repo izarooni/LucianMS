@@ -12,7 +12,6 @@ import server.FieldBuilder;
 import server.expeditions.MapleExpedition;
 import server.life.MapleMonster;
 import server.maps.MapleMap;
-import tools.Database;
 
 import javax.script.ScriptException;
 import java.sql.Connection;
@@ -92,7 +91,7 @@ public class EventInstanceManager {
     }
 
     public Collection<MapleCharacter> getPlayers() {
-        return Collections.unmodifiableCollection(playerStorage.getAllCharacters());
+        return Collections.unmodifiableCollection(playerStorage.getAllPlayers());
     }
 
     public void registerMonster(MapleMonster monster) {
@@ -166,13 +165,13 @@ public class EventInstanceManager {
         } catch (ScriptException | NoSuchMethodException e) {
             LOGGER.error("Unable to invoke function 'dispose' in event instance '{}'", getName(), e);
         }
-        playerStorage.getAllCharacters().forEach(this::removePlayer);
+        playerStorage.getAllPlayers().forEach(this::removePlayer);
         playerStorage.clear();
 
-        monsters.clear();
+        if (monsters != null) monsters.clear();
         monsters = null;
 
-        killCount.clear();
+        if (killCount != null) killCount.clear();
         killCount = null;
 
         tasks.forEach(TaskExecutor::cancelTask);

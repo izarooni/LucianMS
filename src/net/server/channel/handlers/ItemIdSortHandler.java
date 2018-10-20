@@ -28,24 +28,24 @@ import java.util.List;
 import client.autoban.Cheater;
 import client.autoban.Cheats;
 import constants.ServerConstants;
-import net.AbstractMaplePacketHandler;
+import net.PacketEvent;
 import tools.MaplePacketCreator;
-import tools.data.input.SeekableLittleEndianAccessor;
 import client.MapleCharacter;
 import client.MapleClient;
 import client.inventory.Item;
 import client.inventory.MapleInventory;
 import client.inventory.MapleInventoryType;
 import client.inventory.ModifyInventory;
+import tools.data.input.LittleEndianReader;
 
 /**
  *
  * @author BubblesDev
  */
-public final class ItemIdSortHandler extends AbstractMaplePacketHandler {
+public final class ItemIdSortHandler extends PacketEvent {
 
     @Override
-    public final void handlePacket(SeekableLittleEndianAccessor slea, MapleClient c) {
+    public final void handlePacket(LittleEndianReader slea, MapleClient c) {
     	MapleCharacter chr = c.getPlayer();
         Cheater.CheatEntry entry = chr.getCheater().getCheatEntry(Cheats.FastInventorySort);
         if (System.currentTimeMillis() - entry.latestOperationTimestamp < 250) {

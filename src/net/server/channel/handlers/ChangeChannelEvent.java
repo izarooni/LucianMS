@@ -3,9 +3,9 @@ package net.server.channel.handlers;
 import client.MapleCharacter;
 import client.autoban.Cheater;
 import client.autoban.Cheats;
-import net.PacketEvent;
+import com.lucianms.nio.receive.MaplePacketReader;
+import com.lucianms.server.events.PacketEvent;
 import tools.MaplePacketCreator;
-import tools.data.input.SeekableLittleEndianAccessor;
 
 /**
  * @author Matze
@@ -16,9 +16,9 @@ public class ChangeChannelEvent extends PacketEvent {
     private int channelID;
 
     @Override
-    public void process(SeekableLittleEndianAccessor slea) {
+    public void processInput(MaplePacketReader reader) {
         MapleCharacter player = getClient().getPlayer();
-        channelID = slea.readByte() + 1;
+        channelID = reader.readByte() + 1;
         if (getClient().getChannel() == channelID) {
             setCanceled(true);
         }

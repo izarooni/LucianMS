@@ -21,16 +21,16 @@
 */
 package net.server.channel.handlers;
 
-import net.AbstractMaplePacketHandler;
-import tools.data.input.SeekableLittleEndianAccessor;
+import net.PacketEvent;
 import client.MapleClient;
+import tools.data.input.LittleEndianReader;
 
 /**
  *
  * @author Quasar
  */
-public class PartySearchRegisterHandler extends AbstractMaplePacketHandler {
-    public void handlePacket(SeekableLittleEndianAccessor slea, MapleClient c) {
+public class PartySearchRegisterHandler extends PacketEvent {
+    public void handlePacket(LittleEndianReader slea, MapleClient c) {
     	return; //Disabling this for now.
 /*    	MapleCharacter chr = c.getPlayer();
     	int min = slea.readInt();

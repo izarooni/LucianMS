@@ -23,22 +23,22 @@ package net.server.channel.handlers;
 
 import client.MapleCharacter;
 import client.MapleClient;
-import net.AbstractMaplePacketHandler;
-import net.SendOpcode;
+import net.PacketEvent;
+import com.lucianms.nio.SendOpcode;
 import net.server.Server;
 import net.server.guild.MapleAlliance;
 import tools.MaplePacketCreator;
-import tools.data.input.SeekableLittleEndianAccessor;
+import tools.data.input.LittleEndianReader;
 import tools.data.output.MaplePacketLittleEndianWriter;
 
 /**
  *
  * @author XoticStory
  */
-public final class AllianceOperationHandler extends AbstractMaplePacketHandler {
+public final class AllianceOperationHandler extends PacketEvent {
 
     @Override
-    public final void handlePacket(SeekableLittleEndianAccessor slea, MapleClient c) {
+    public final void handlePacket(LittleEndianReader slea, MapleClient c) {
         MapleAlliance alliance = null;
         if (c.getPlayer().getGuild() != null && c.getPlayer().getGuild().getAllianceId() > 0) {
             alliance = Server.getInstance().getAlliance(c.getPlayer().getGuild().getAllianceId());
@@ -69,7 +69,7 @@ public final class AllianceOperationHandler extends AbstractMaplePacketHandler {
                 if (channel == -1) {
                     c.getPlayer().dropMessage("The player is not online.");
                 } else {
-                    MapleCharacter victim = Server.getInstance().getChannel(c.getWorld(), channel).getPlayerStorage().getCharacterByName(charName);
+                    MapleCharacter victim = Server.getInstance().getChannel(c.getWorld(), channel).getPlayerStorage().getPlayerByName(charName);
                     if (victim.getGuildId() == 0) {
                         c.getPlayer().dropMessage("The person you are trying to invite does not have a guild.");
                     } else if (victim.getGuildRank() != 1) {

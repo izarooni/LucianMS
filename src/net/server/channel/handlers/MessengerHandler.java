@@ -23,20 +23,20 @@ package net.server.channel.handlers;
 
 import client.MapleCharacter;
 import client.MapleClient;
-import net.AbstractMaplePacketHandler;
+import net.PacketEvent;
 import net.server.world.MapleMessenger;
 import net.server.world.MapleMessengerCharacter;
-import net.server.world.World;
+import net.server.world.MapleWorld;
 import tools.MaplePacketCreator;
-import tools.data.input.SeekableLittleEndianAccessor;
+import tools.data.input.LittleEndianReader;
 
-public final class MessengerHandler extends AbstractMaplePacketHandler {
+public final class MessengerHandler extends PacketEvent {
 
-    public final void handlePacket(SeekableLittleEndianAccessor slea, MapleClient c) {
+    public final void handlePacket(LittleEndianReader slea, MapleClient c) {
         String input;
         byte mode = slea.readByte();
         MapleCharacter player = c.getPlayer();
-        World world = c.getWorldServer();
+        MapleWorld world = c.getWorldServer();
         MapleMessenger messenger = player.getMessenger();
         switch (mode) {
             case 0x00:
@@ -70,7 +70,7 @@ public final class MessengerHandler extends AbstractMaplePacketHandler {
             case 0x03:
                 if (messenger.getMembers().size() < 3) {
                     input = slea.readMapleAsciiString();
-                    MapleCharacter target = c.getChannelServer().getPlayerStorage().getCharacterByName(input);
+                    MapleCharacter target = c.getChannelServer().getPlayerStorage().getPlayerByName(input);
                     if (target != null) {
                         if (target.getMessenger() == null) {
                             target.getClient().announce(MaplePacketCreator.messengerInvite(c.getPlayer().getName(), messenger.getId()));
@@ -91,7 +91,7 @@ public final class MessengerHandler extends AbstractMaplePacketHandler {
                 break;
             case 0x05:
                 String targeted = slea.readMapleAsciiString();
-                MapleCharacter target = c.getChannelServer().getPlayerStorage().getCharacterByName(targeted);
+                MapleCharacter target = c.getChannelServer().getPlayerStorage().getPlayerByName(targeted);
                 if (target != null) {
                     if (target.getMessenger() != null) {
                         target.getClient().announce(MaplePacketCreator.messengerNote(player.getName(), 5, 0));

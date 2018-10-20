@@ -3,9 +3,9 @@ package com.lucianms.discord.handlers;
 import client.MapleCharacter;
 import com.lucianms.discord.DiscordSession;
 import com.lucianms.discord.Headers;
+import com.lucianms.nio.receive.MaplePacketReader;
 import net.server.Server;
-import net.server.world.World;
-import tools.data.input.GenericLittleEndianAccessor;
+import net.server.world.MapleWorld;
 import tools.data.output.MaplePacketLittleEndianWriter;
 
 import java.sql.Connection;
@@ -23,25 +23,25 @@ public class DisconnectRequest extends DiscordRequest {
     }
 
     @Override
-    public void handle(GenericLittleEndianAccessor lea) {
-        byte action = lea.readByte();
+    public void handle(MaplePacketReader reader) {
+        byte action = reader.readByte();
 
         MaplePacketLittleEndianWriter writer = new MaplePacketLittleEndianWriter();
         writer.write(Headers.Disconnect.value);
         writer.write(action);
 
         if (action == 0) {
-            DisconnectChannel(lea, writer);
+            DisconnectChannel(reader, writer);
         } else if (action == 1) {
-            DisconnectDM(lea, writer);
+            DisconnectDM(reader, writer);
         }
     }
 
     /**
      * Invoked via command usage in a private message
      */
-    private void DisconnectDM(GenericLittleEndianAccessor lea, MaplePacketLittleEndianWriter writer) {
-        long userID = lea.readLong();
+    private void DisconnectDM(MaplePacketReader reader, MaplePacketLittleEndianWriter writer) {
+        long userID = reader.readLong();
         writer.writeLong(userID);
 
         try (Connection con = DiscordSession.getConnection()) {
@@ -49,8 +49,8 @@ public class DisconnectRequest extends DiscordRequest {
                 ps.setLong(1, userID);
                 try (ResultSet rs = ps.executeQuery()) {
                     while (rs.next()) {
-                        for (World world : Server.getInstance().getWorlds()) {
-                            MapleCharacter target = world.getPlayerStorage().getCharacterById(rs.getInt("id"));
+                        for (MapleWorld world : Server.getInstance().getWorlds()) {
+                            MapleCharacter target = world.getPlayerStorage().getPlayerByID(rs.getInt("id"));
                             if (target != null) {
                                 world.removePlayer(target);
                                 target.getClient().disconnect(false, target.getCashShop().isOpened());
@@ -75,16 +75,16 @@ public class DisconnectRequest extends DiscordRequest {
     /**
      * Invoked via command usage in the Discord server
      */
-    private void DisconnectChannel(GenericLittleEndianAccessor lea, MaplePacketLittleEndianWriter writer) {
-        final long channelID = lea.readLong();
-        String username = lea.readMapleAsciiString();
+    private void DisconnectChannel(MaplePacketReader reader, MaplePacketLittleEndianWriter writer) {
+        final long channelID = reader.readLong();
+        String username = reader.readMapleAsciiString();
 
         boolean online = false;
 
         writer.writeLong(channelID);
 
-        for (World world : Server.getInstance().getWorlds()) {
-            MapleCharacter player = world.getPlayerStorage().getCharacterByName(username);
+        for (MapleWorld world : Server.getInstance().getWorlds()) {
+            MapleCharacter player = world.getPlayerStorage().getPlayerByName(username);
             if (player != null) {
                 online = true;
                 player.getClient().disconnect(false, false);

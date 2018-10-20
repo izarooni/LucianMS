@@ -3,13 +3,13 @@ package com.lucianms.discord.handlers;
 import client.MapleCharacter;
 import com.lucianms.discord.DiscordSession;
 import com.lucianms.discord.Headers;
+import com.lucianms.nio.receive.MaplePacketReader;
 import net.server.Server;
-import net.server.channel.Channel;
-import net.server.world.World;
+import net.server.channel.MapleChannel;
+import net.server.world.MapleWorld;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import tools.Randomizer;
-import tools.data.input.GenericLittleEndianAccessor;
 import tools.data.output.MaplePacketLittleEndianWriter;
 
 import java.sql.Connection;
@@ -27,10 +27,10 @@ public class BindRequest extends DiscordRequest {
     public static final ArrayList<String> keys = new ArrayList<>();
 
     @Override
-    public void handle(GenericLittleEndianAccessor lea) {
-        long channelId = lea.readLong();
-        long authorId = lea.readLong();
-        String accountUsername = lea.readMapleAsciiString();
+    public void handle(MaplePacketReader reader) {
+        long channelId = reader.readLong();
+        long authorId = reader.readLong();
+        String accountUsername = reader.readMapleAsciiString();
 
         MaplePacketLittleEndianWriter writer = new MaplePacketLittleEndianWriter();
         writer.write(Headers.Bind.value);
@@ -74,9 +74,9 @@ public class BindRequest extends DiscordRequest {
                             writer.writeMapleAsciiString(accountUsername);
                             DiscordSession.sendPacket(writer.getPacket());
 
-                            for (World world : Server.getInstance().getWorlds()) {
-                                for (Channel channel : world.getChannels()) {
-                                    MapleCharacter player = channel.getPlayerStorage().getCharacterById(rs.getInt("id"));
+                            for (MapleWorld world : Server.getInstance().getWorlds()) {
+                                for (MapleChannel channel : world.getChannels()) {
+                                    MapleCharacter player = channel.getPlayerStorage().getPlayerByID(rs.getInt("id"));
                                     if (player != null) {
                                         player.getClient().setDiscordId(authorId);
                                         player.getClient().setDiscordKey(key);

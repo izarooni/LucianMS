@@ -3,7 +3,7 @@ package com.lucianms.features.auto;
 import client.MapleCharacter;
 import com.lucianms.lang.annotation.PacketWorker;
 import com.lucianms.server.events.channel.PlayerMoveEvent;
-import net.server.world.World;
+import net.server.world.MapleWorld;
 import server.movement.AbsoluteLifeMovement;
 import server.movement.LifeMovementFragment;
 
@@ -22,7 +22,7 @@ public class AFlappyBird extends GAutoEvent {
 
     private HashMap<Integer, Integer> returnMaps = new HashMap<>();
 
-    public AFlappyBird(World world) {
+    public AFlappyBird(MapleWorld world) {
         super(world, true);
         registerAnnotationPacketEvents(this);
     }

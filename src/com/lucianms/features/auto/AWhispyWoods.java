@@ -3,7 +3,7 @@ package com.lucianms.features.auto;
 import client.MapleCharacter;
 import com.lucianms.scheduler.Task;
 import com.lucianms.scheduler.TaskExecutor;
-import net.server.world.World;
+import net.server.world.MapleWorld;
 import server.life.MapleLifeFactory;
 import server.life.MapleMonster;
 import server.life.MapleMonsterStats;
@@ -36,7 +36,7 @@ public class AWhispyWoods extends GAutoEvent {
 
     private HashMap<Integer, Integer> returnMaps = new HashMap<>();
 
-    public AWhispyWoods(World world) {
+    public AWhispyWoods(MapleWorld world) {
         super(world, true);
     }
 

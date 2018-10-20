@@ -1,23 +1,11 @@
 package com.lucianms.discord;
 
-import com.lucianms.discord.proto.RawDecoder;
-import com.lucianms.discord.proto.RawEncoder;
 import com.zaxxer.hikari.HikariDataSource;
-import org.apache.mina.core.service.IoAcceptor;
-import org.apache.mina.core.session.IdleStatus;
-import org.apache.mina.core.session.IoSession;
-import org.apache.mina.filter.codec.ProtocolCodecFactory;
-import org.apache.mina.filter.codec.ProtocolCodecFilter;
-import org.apache.mina.filter.codec.ProtocolDecoder;
-import org.apache.mina.filter.codec.ProtocolEncoder;
-import org.apache.mina.transport.socket.nio.NioSocketAcceptor;
+import io.netty.channel.Channel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import tools.Database;
 
-import java.io.IOException;
-import java.net.InetAddress;
-import java.net.InetSocketAddress;
 import java.sql.Connection;
 import java.sql.SQLException;
 
@@ -29,69 +17,49 @@ import java.sql.SQLException;
 public class DiscordSession {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(DiscordSession.class);
+    private static final int ListeningPort = 8483;
 
     private static HikariDataSource hikari = Database.createDataSource("hikari-discord");
-    private static IoAcceptor acceptor = null;
+    private static DiscordServer discordServer = null;
+    private static Channel session;
 
-    private static IoSession session = null;
+    private DiscordSession() {
+    }
 
-    public static Connection getConnection() throws SQLException  {
+    public static Connection getConnection() throws SQLException {
         return hikari.getConnection();
     }
 
-    public static synchronized void listen() {
-        if (acceptor != null) {
-            acceptor.dispose();
-            acceptor = null;
-        }
-        try {
-            acceptor = new NioSocketAcceptor();
-            acceptor.getSessionConfig().setIdleTime(IdleStatus.BOTH_IDLE, 300);
-            acceptor.getFilterChain().addLast("codec", new ProtocolCodecFilter(new ProtocolCodecFactory() {
-                private RawDecoder decoder = new RawDecoder();
-                private RawEncoder encoder = new RawEncoder();
-
-                @Override
-                public ProtocolEncoder getEncoder(IoSession ioSession) throws Exception {
-                    return encoder;
-                }
-
-                @Override
-                public ProtocolDecoder getDecoder(IoSession ioSession) throws Exception {
-                    return decoder;
-                }
-            }));
-            acceptor.setHandler(new DiscordSessionHandler());
-            acceptor.bind(new InetSocketAddress(InetAddress.getLoopbackAddress(), 8483));
-            LOGGER.info("Discord now listening on port 8483");
-        } catch (IOException e) {
-            LOGGER.warn("Unable to create Discord listener on port 8483", e);
-        }
+    public static DiscordServer getDiscordServer() {
+        return discordServer;
     }
 
-    public static synchronized void ignore() {
-        if (acceptor != null) {
-            acceptor.unbind();
-            acceptor.dispose();
-            LOGGER.info("Discord listener disposed");
-        } else {
-            LOGGER.info("No Discord listener assigned");
+    public static void listen() {
+        if (discordServer != null) {
+            LOGGER.warn("Discord server is already listening");
+            return;
+        }
+        try {
+            discordServer = new DiscordServer(ListeningPort);
+        } catch (Exception e) {
+            LOGGER.warn("Unable to create Discord listener on port", ListeningPort, e);
         }
     }
 
     public static void sendPacket(byte[] packet) {
-        if (session == null) {
+        if (discordServer == null) {
             LOGGER.error("Currently not connected to the server");
             return;
         }
+
         session.write(packet);
     }
 
-    public static IoSession getSession() {
+    public static Channel getSession() {
         return session;
     }
 
-    public static void setSession(IoSession session) {
+    public static void setSession(Channel session) {
         DiscordSession.session = session;
     }
 }

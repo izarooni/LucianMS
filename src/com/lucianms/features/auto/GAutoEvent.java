@@ -2,7 +2,7 @@ package com.lucianms.features.auto;
 
 import client.MapleCharacter;
 import com.lucianms.features.GenericEvent;
-import net.server.world.World;
+import net.server.world.MapleWorld;
 import server.FieldBuilder;
 import server.maps.MapleMap;
 import tools.MaplePacketCreator;
@@ -19,13 +19,13 @@ public abstract class GAutoEvent extends GenericEvent {
 
     private static final int ChannelID = 1;
 
-    private final World world;
+    private final MapleWorld world;
     private HashMap<Integer, MapleMap> maps = null;
 
     // [f]irst time using this
     private ConcurrentHashMap<Integer, MapleCharacter> players = new ConcurrentHashMap<>();
 
-    public GAutoEvent(World world, boolean nMapInstances) {
+    public GAutoEvent(MapleWorld world, boolean nMapInstances) {
         this.world = world;
         if (nMapInstances) {
             maps = new HashMap<>(10);
@@ -58,7 +58,7 @@ public abstract class GAutoEvent extends GenericEvent {
         return maps.getOrDefault(mapId, new FieldBuilder(0, ChannelID, mapId).loadAll().build());
     }
 
-    public final World getWorld() {
+    public final MapleWorld getWorld() {
         return world;
     }
 

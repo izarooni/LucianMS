@@ -2,7 +2,7 @@ package com.lucianms.io.scripting.event;
 
 import client.MapleCharacter;
 import com.lucianms.lang.DuplicateEntryException;
-import net.server.channel.Channel;
+import net.server.channel.MapleChannel;
 import net.server.world.MapleParty;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,14 +29,14 @@ public class EventManager extends GenericEvent {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(EventManager.class);
 
-    private final Channel channel;
+    private final MapleChannel channel;
     private final String scriptName;
     private Invocable invocable;
 
     private ConcurrentHashMap<String, EventInstanceManager> instances = new ConcurrentHashMap<>();
     private Properties props = new Properties();
 
-    public EventManager(Channel channel, String scriptName) {
+    public EventManager(MapleChannel channel, String scriptName) {
         this.channel = channel;
         this.scriptName = scriptName;
 
@@ -57,7 +57,7 @@ public class EventManager extends GenericEvent {
         throw new UnsupportedOperationException("The EventManager is not an event itself for players to be registered in");
     }
 
-    public Channel getChannel() {
+    public MapleChannel getChannel() {
         return channel;
     }
 

@@ -149,9 +149,6 @@ public class MapleShop {
 
 
     public void sell(MapleClient c, MapleInventoryType type, short slot, short quantity) {
-        if (quantity < 1) {
-            quantity = 1;
-        }
         MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
         Item item = c.getPlayer().getInventory(type).getItem(slot);
         if (item == null) {

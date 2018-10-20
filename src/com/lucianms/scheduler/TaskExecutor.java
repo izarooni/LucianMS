@@ -20,7 +20,7 @@ public final class TaskExecutor {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(TaskExecutor.class);
     private static final HashMap<Integer, Task> TASKS = new HashMap<>();
-    private static final ScheduledThreadPoolExecutor EXECUTOR = new ScheduledThreadPoolExecutor(12, new ThreadFactory() {
+    private static final ScheduledThreadPoolExecutor EXECUTOR = new ScheduledThreadPoolExecutor(Runtime.getRuntime().availableProcessors(), new ThreadFactory() {
         private int threadId = 0;
 
         @Override

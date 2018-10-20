@@ -28,15 +28,15 @@ import client.inventory.Item;
 import client.inventory.MapleInventoryType;
 import constants.ItemConstants;
 import constants.ServerConstants;
-import net.AbstractMaplePacketHandler;
+import net.PacketEvent;
 import net.server.Server;
-import net.server.channel.Channel;
+import net.server.channel.MapleChannel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import server.DueyPackages;
 import server.MapleInventoryManipulator;
 import tools.MaplePacketCreator;
-import tools.data.input.SeekableLittleEndianAccessor;
+import tools.data.input.LittleEndianReader;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -46,7 +46,7 @@ import java.util.Calendar;
 import java.util.LinkedList;
 import java.util.List;
 
-public final class DueyHandler extends AbstractMaplePacketHandler {
+public final class DueyHandler extends PacketEvent {
     private enum Actions {
         TOSERVER_SEND_ITEM(0x02),
         TOSERVER_CLAIM_PACKAGE(0x04),
@@ -95,7 +95,7 @@ public final class DueyHandler extends AbstractMaplePacketHandler {
     }
 
     @Override
-    public final void handlePacket(SeekableLittleEndianAccessor slea, MapleClient c) {
+    public final void handlePacket(LittleEndianReader slea, MapleClient c) {
         if (!ServerConstants.USE_DUEY) {
             return;
         }
@@ -133,8 +133,8 @@ public final class DueyHandler extends AbstractMaplePacketHandler {
             int channel = c.getWorldServer().find(recipient);
             if (channel > -1) {
                 recipientOn = true;
-                Channel rcserv = c.getWorldServer().getChannel(channel);
-                rClient = rcserv.getPlayerStorage().getCharacterByName(recipient).getClient();
+                MapleChannel rcserv = c.getWorldServer().getChannel(channel);
+                rClient = rcserv.getPlayerStorage().getPlayerByName(recipient).getClient();
             }
             if (send) {
                 if (inventId > 0) {

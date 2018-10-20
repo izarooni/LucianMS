@@ -30,15 +30,15 @@ import client.inventory.MapleInventoryType;
 import client.inventory.MaplePet;
 import client.inventory.Item;
 import tools.Randomizer;
-import net.AbstractMaplePacketHandler;
+import net.PacketEvent;
 import server.MapleInventoryManipulator;
 import tools.MaplePacketCreator;
-import tools.data.input.SeekableLittleEndianAccessor;
+import tools.data.input.LittleEndianReader;
 
-public class PetFoodHandler extends AbstractMaplePacketHandler {
+public class PetFoodHandler extends PacketEvent {
 
     @Override
-    public void handlePacket(SeekableLittleEndianAccessor slea, MapleClient c) {
+    public void handlePacket(LittleEndianReader slea, MapleClient c) {
         MapleCharacter player = c.getPlayer();
         Cheater.CheatEntry entry = player.getCheater().getCheatEntry(Cheats.PetFeeding);
 

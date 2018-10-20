@@ -37,7 +37,7 @@ public class PortalScriptManager {
         } catch (FileNotFoundException e) {
             LOGGER.warn("No portal script found '{}'", script);
         } catch (Exception e) {
-            LOGGER.warn("Unable to execute script '{}' in map '{}'", script, client.getPlayer().getMapId(), e);
+            LOGGER.warn("Unable to execute script '{}' in map '{}': {}", script, client.getPlayer().getMapId(), e);
         }
         return null;
     }

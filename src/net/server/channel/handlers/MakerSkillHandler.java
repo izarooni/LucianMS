@@ -22,22 +22,22 @@
 package net.server.channel.handlers;
 
 import client.MapleClient;
-import net.AbstractMaplePacketHandler;
+import net.PacketEvent;
 import server.MapleInventoryManipulator;
 import server.MapleItemInformationProvider;
 import server.MakerItemFactory;
 import server.MakerItemFactory.MakerItemCreateEntry;
 import tools.Pair;
-import tools.data.input.SeekableLittleEndianAccessor;
+import tools.data.input.LittleEndianReader;
 
 /**
  *
  * @author Jay Estrella
  */
-public final class MakerSkillHandler extends AbstractMaplePacketHandler {
+public final class MakerSkillHandler extends PacketEvent {
     private MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
 
-    public final void handlePacket(SeekableLittleEndianAccessor slea, MapleClient c) {
+    public final void handlePacket(LittleEndianReader slea, MapleClient c) {
         slea.readInt();
         int toCreate = slea.readInt();
         MakerItemCreateEntry recipe = MakerItemFactory.getItemCreateEntry(toCreate);

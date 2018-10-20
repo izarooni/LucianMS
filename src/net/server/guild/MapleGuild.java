@@ -24,10 +24,9 @@ package net.server.guild;
 import client.MapleCharacter;
 import client.MapleClient;
 import net.server.Server;
-import net.server.channel.Channel;
+import net.server.channel.MapleChannel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import tools.Database;
 import tools.MaplePacketCreator;
 
 import java.sql.Connection;
@@ -268,9 +267,9 @@ public class MapleGuild {
 
     public void guildMessage(final byte[] serverNotice) {
         for (MapleGuildCharacter mgc : members) {
-            for (Channel cs : Server.getInstance().getChannelsFromWorld(world)) {
-                if (cs.getPlayerStorage().getCharacterById(mgc.getId()) != null) {
-                    cs.getPlayerStorage().getCharacterById(mgc.getId()).getClient().announce(serverNotice);
+            for (MapleChannel cs : Server.getInstance().getChannelsFromWorld(world)) {
+                if (cs.getPlayerStorage().getPlayerByID(mgc.getId()) != null) {
+                    cs.getPlayerStorage().getPlayerByID(mgc.getId()).getClient().announce(serverNotice);
                     break;
                 }
             }
@@ -490,7 +489,7 @@ public class MapleGuild {
     }
 
     public static MapleGuildResponse sendInvite(MapleClient c, String targetName) {
-        MapleCharacter mc = c.getChannelServer().getPlayerStorage().getCharacterByName(targetName);
+        MapleCharacter mc = c.getChannelServer().getPlayerStorage().getPlayerByName(targetName);
         if (mc == null) {
             return MapleGuildResponse.NOT_IN_CHANNEL;
         }

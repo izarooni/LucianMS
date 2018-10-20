@@ -7,7 +7,7 @@ import java.util.Map;
 
 import client.MapleCharacter;
 import net.server.Server;
-import net.server.channel.Channel;
+import net.server.channel.MapleChannel;
 import com.lucianms.scheduler.TaskExecutor;
 import server.maps.MapleMap;
 import tools.MaplePacketCreator;
@@ -28,7 +28,7 @@ public class ManualPlayerEvent extends GenericEvent {
     }
 
     private final MapleCharacter host;
-    private Channel channel;
+    private MapleChannel channel;
     private String name = null;
     private Point spawnPoint = null;
     private MapleMap map = null;
@@ -133,11 +133,11 @@ public class ManualPlayerEvent extends GenericEvent {
         return host;
     }
 
-    public Channel getChannel() {
+    public MapleChannel getChannel() {
         return channel;
     }
 
-    public void setChannel(Channel channel) {
+    public void setChannel(MapleChannel channel) {
         this.channel = channel;
     }
 

@@ -2,11 +2,10 @@ package com.lucianms.server.events.channel;
 
 import client.MapleCharacter;
 import client.inventory.ItemFactory;
-import net.PacketEvent;
+import com.lucianms.nio.receive.MaplePacketReader;
+import com.lucianms.server.events.PacketEvent;
 import server.maps.MapleMapObjectType;
-import tools.Database;
 import tools.MaplePacketCreator;
-import tools.data.input.SeekableLittleEndianAccessor;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -18,7 +17,7 @@ import java.util.Collections;
 public class HiredMerchantEvent extends PacketEvent {
 
     @Override
-    public void process(SeekableLittleEndianAccessor slea) {
+    public void processInput(MaplePacketReader reader) {
     }
 
     @Override

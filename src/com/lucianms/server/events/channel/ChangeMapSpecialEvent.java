@@ -1,11 +1,11 @@
 package com.lucianms.server.events.channel;
 
 import client.MapleCharacter;
-import net.PacketEvent;
+import com.lucianms.nio.receive.MaplePacketReader;
+import com.lucianms.server.events.PacketEvent;
 import server.MaplePortal;
 import server.MapleTrade;
 import tools.MaplePacketCreator;
-import tools.data.input.SeekableLittleEndianAccessor;
 
 /**
  * @author izarooni
@@ -15,10 +15,10 @@ public final class ChangeMapSpecialEvent extends PacketEvent {
     private String startwp;
 
     @Override
-    public void process(SeekableLittleEndianAccessor slea) {
-        slea.skip(1);
-        startwp = slea.readMapleAsciiString();
-        slea.skip(2);
+    public void processInput(MaplePacketReader reader) {
+        reader.skip(1);
+        startwp = reader.readMapleAsciiString();
+        reader.skip(2);
     }
 
     @Override

@@ -295,7 +295,6 @@ public class MapleItemInformationProvider {
                 }
             }
         }
-        LOGGER.warn("Unable to find data file for item {}", itemId);
         return null;
     }
 

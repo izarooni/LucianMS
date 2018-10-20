@@ -4,10 +4,10 @@ import client.MapleCharacter;
 import client.MapleStat;
 import com.lucianms.discord.DiscordSession;
 import com.lucianms.discord.Headers;
+import com.lucianms.nio.receive.MaplePacketReader;
 import net.server.Server;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import tools.data.input.GenericLittleEndianAccessor;
 import tools.data.output.MaplePacketLittleEndianWriter;
 
 import java.sql.Connection;
@@ -22,10 +22,10 @@ public class HairChangeRequest extends DiscordRequest {
     private static final Logger LOGGER = LoggerFactory.getLogger(HairChangeRequest.class);
 
     @Override
-    public void handle(GenericLittleEndianAccessor lea) {
-        long channelId = lea.readLong();
-        String username = lea.readMapleAsciiString();
-        int hairId = lea.readInt();
+    public void handle(MaplePacketReader reader) {
+        long channelId = reader.readLong();
+        String username = reader.readMapleAsciiString();
+        int hairId = reader.readInt();
         LOGGER.info("Updating {}'s hair to {}", username, hairId);
 
         MaplePacketLittleEndianWriter writer = new MaplePacketLittleEndianWriter();
@@ -33,7 +33,7 @@ public class HairChangeRequest extends DiscordRequest {
         writer.writeLong(channelId);
         writer.writeMapleAsciiString(username);
 
-        MapleCharacter player = Server.getInstance().getWorld(0).getPlayerStorage().getCharacterByName(username);
+        MapleCharacter player = Server.getInstance().getWorld(0).getPlayerStorage().getPlayerByName(username);
         if (player != null) {
             player.setHair(hairId);
             player.updateSingleStat(MapleStat.HAIR, hairId);

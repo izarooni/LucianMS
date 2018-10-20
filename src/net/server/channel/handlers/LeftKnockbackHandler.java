@@ -23,16 +23,16 @@
 package net.server.channel.handlers;
 
 import client.MapleClient;
-import net.AbstractMaplePacketHandler;
+import net.PacketEvent;
 import tools.MaplePacketCreator;
-import tools.data.input.SeekableLittleEndianAccessor;
+import tools.data.input.LittleEndianReader;
 
 /**
  *
  * @author kevintjuh93
  */
-public class LeftKnockbackHandler extends AbstractMaplePacketHandler {
-        public void handlePacket(SeekableLittleEndianAccessor slea, final MapleClient c) {
+public class LeftKnockbackHandler extends PacketEvent {
+        public void handlePacket(LittleEndianReader slea, final MapleClient c) {
             c.announce(MaplePacketCreator.leftKnockBack());
             c.announce(MaplePacketCreator.enableActions());
         }

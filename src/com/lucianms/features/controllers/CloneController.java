@@ -4,7 +4,7 @@ import client.MapleCharacter;
 import com.lucianms.features.GenericEvent;
 import com.lucianms.features.PlayerBattle;
 import com.lucianms.lang.annotation.PacketWorker;
-import com.lucianms.server.events.channel.UseItemEvent;
+import com.lucianms.server.events.channel.PlayerItemUseEvent;
 import server.life.FakePlayer;
 import tools.MaplePacketCreator;
 
@@ -28,7 +28,7 @@ public class CloneController extends GenericEvent {
     }
 
     @PacketWorker
-    public void onItemUse(UseItemEvent event) {
+    public void onItemUse(PlayerItemUseEvent event) {
         MapleCharacter player = event.getClient().getPlayer();
         FakePlayer fPlayer = player.getFakePlayer();
         if (fPlayer == null) {

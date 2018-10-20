@@ -1,11 +1,11 @@
 package com.lucianms.discord.handlers;
 
-import tools.data.input.GenericLittleEndianAccessor;
+import com.lucianms.nio.receive.MaplePacketReader;
 
 /**
  * @author izarooni
  */
 public abstract class DiscordRequest {
 
-    public abstract void handle(GenericLittleEndianAccessor lea);
+    public abstract void handle(MaplePacketReader reader);
 }

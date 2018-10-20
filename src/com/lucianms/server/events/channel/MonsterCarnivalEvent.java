@@ -3,10 +3,11 @@ package com.lucianms.server.events.channel;
 import client.MapleCharacter;
 import client.status.MonsterStatus;
 import com.lucianms.features.GenericEvent;
+import com.lucianms.nio.receive.MaplePacketReader;
+import com.lucianms.server.events.PacketEvent;
 import com.lucianms.server.pqs.carnival.MCarnivalGame;
 import com.lucianms.server.pqs.carnival.MCarnivalPacket;
 import com.lucianms.server.pqs.carnival.MCarnivalTeam;
-import net.PacketEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import server.life.MapleLifeFactory;
@@ -16,7 +17,6 @@ import server.maps.MapleMap;
 import server.maps.MapleReactor;
 import server.maps.MapleReactorFactory;
 import tools.MaplePacketCreator;
-import tools.data.input.SeekableLittleEndianAccessor;
 
 import java.awt.*;
 import java.util.Optional;
@@ -33,10 +33,19 @@ public final class MonsterCarnivalEvent extends PacketEvent {
     private byte action;
     private int value;
 
+    public MonsterCarnivalEvent() {
+        onPost(new Runnable() {
+            @Override
+            public void run() {
+                getClient().announce(MaplePacketCreator.enableActions());
+            }
+        });
+    }
+
     @Override
-    public void process(SeekableLittleEndianAccessor slea) {
-        action = slea.readByte();
-        value = slea.readShort();
+    public void processInput(MaplePacketReader reader) {
+        action = reader.readByte();
+        value = reader.readShort();
     }
 
     @Override
@@ -130,12 +139,6 @@ public final class MonsterCarnivalEvent extends PacketEvent {
             }
         }
         return null;
-    }
-
-    @Override
-    public void post() {
-        // is this necessary?
-        getClient().announce(MaplePacketCreator.enableActions());
     }
 
     public int getMonster(int n) {

@@ -26,23 +26,23 @@ import client.MapleJob;
 import client.MapleStat;
 import client.Skill;
 import client.SkillFactory;
+import com.lucianms.nio.receive.MaplePacketReader;
 import constants.skills.BlazeWizard;
 import constants.skills.Brawler;
 import constants.skills.DawnWarrior;
 import constants.skills.Magician;
 import constants.skills.Warrior;
-import net.PacketEvent;
+import com.lucianms.server.events.PacketEvent;
 import tools.MaplePacketCreator;
-import tools.data.input.SeekableLittleEndianAccessor;
 
 public final class DistributeAPEvent extends PacketEvent {
 
     private int stat;
 
     @Override
-    public void process(SeekableLittleEndianAccessor slea) {
-        slea.readInt();
-        stat = slea.readInt();
+    public void processInput(MaplePacketReader reader) {
+        reader.readInt();
+        stat = reader.readInt();
     }
 
     @Override

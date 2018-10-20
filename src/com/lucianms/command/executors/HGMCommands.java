@@ -9,8 +9,8 @@ import com.lucianms.command.CommandWorker;
 import com.lucianms.io.scripting.npc.NPCScriptManager;
 import constants.ItemConstants;
 import net.server.Server;
-import net.server.channel.Channel;
-import net.server.world.World;
+import net.server.channel.MapleChannel;
+import net.server.world.MapleWorld;
 import server.MapleInventoryManipulator;
 import server.MapleItemInformationProvider;
 import server.MapleShop;
@@ -177,7 +177,7 @@ public class HGMCommands {
                 player.getMap().addMapObject(npc);
                 player.getMap().broadcastMessage(MaplePacketCreator.spawnNPC(npc));
                 if (permanent) {
-                    for (Channel channel : player.getClient().getWorldServer().getChannels()) {
+                    for (MapleChannel channel : player.getClient().getWorldServer().getChannels()) {
                         if (channel.isMapLoaded(player.getMapId())) {
                             channel.getMap(player.getMapId()).addMapObject(npc);
                             channel.getMap(player.getMapId()).broadcastMessage(MaplePacketCreator.spawnNPC(npc));
@@ -260,7 +260,7 @@ public class HGMCommands {
                     player.dropMessage(5, error);
                     return;
                 }
-                MapleCharacter target = player.getClient().getChannelServer().getPlayerStorage().getCharacterByName(username);
+                MapleCharacter target = player.getClient().getChannelServer().getPlayerStorage().getPlayerByName(username);
                 if (target != null) {
                     if (npcId >= 9901000 && npcId <= 9901909) {
                         player.createPlayerNPC(target, npcId, script);
@@ -336,8 +336,8 @@ public class HGMCommands {
                 player.dropMessage(5, "Usage: !onpc <npc_id/script>");
             }
         } else if (command.equals("saveall")) {
-            for (World worlds : Server.getInstance().getWorlds()) {
-                worlds.getPlayerStorage().getAllCharacters().forEach(MapleCharacter::saveToDB);
+            for (MapleWorld worlds : Server.getInstance().getWorlds()) {
+                worlds.getPlayerStorage().getAllPlayers().forEach(MapleCharacter::saveToDB);
             }
             player.dropMessage(6, "All characters saved!");
         } else if (command.equals("resetreactors")) {
@@ -345,7 +345,7 @@ public class HGMCommands {
             player.dropMessage("Reactors reset");
         } else if (command.equals("sudo")) {
             if (args.length() > 1) {
-                MapleCharacter target = client.getWorldServer().getPlayerStorage().getCharacterByName(args.get(0));
+                MapleCharacter target = client.getWorldServer().getPlayerStorage().getPlayerByName(args.get(0));
                 if (target != null) {
                     String cmd = args.concatFrom(1);
                     CommandWorker.process(target.getClient(), cmd, true);

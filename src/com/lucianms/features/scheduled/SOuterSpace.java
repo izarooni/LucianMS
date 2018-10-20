@@ -3,8 +3,8 @@ package com.lucianms.features.scheduled;
 import client.MapleCharacter;
 import com.lucianms.scheduler.Task;
 import com.lucianms.scheduler.TaskExecutor;
-import net.server.channel.Channel;
-import net.server.world.World;
+import net.server.channel.MapleChannel;
+import net.server.world.MapleWorld;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import server.life.MapleLifeFactory;
@@ -31,13 +31,13 @@ public class SOuterSpace extends SAutoEvent {
     private static final int MonsterId = 9895259;
     private static final int[][] PortalPositions = {{156, 880}, {2352, 881}, {3124, 581}, {3831, 821}};
 
-    private final World world;
+    private final MapleWorld world;
     private final boolean[] finished;
     private Task timeoutTask = null;
     private long start;
     private boolean open = false;
 
-    public SOuterSpace(World world) {
+    public SOuterSpace(MapleWorld world) {
         this.world = world;
         this.finished = new boolean[world.getChannels().size()];
     }
@@ -76,7 +76,7 @@ public class SOuterSpace extends SAutoEvent {
     @Override
     public void run() {
         setOpen(true);
-        for (Channel channel : world.getChannels()) {
+        for (MapleChannel channel : world.getChannels()) {
             MapleMap eventMap = channel.getMap(MapId);
             eventMap.killAllMonsters();
             eventMap.clearDrops();

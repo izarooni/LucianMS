@@ -3,12 +3,12 @@ package com.lucianms.discord.handlers;
 import client.MapleCharacter;
 import com.lucianms.discord.DiscordSession;
 import com.lucianms.discord.Headers;
+import com.lucianms.nio.receive.MaplePacketReader;
 import net.server.Server;
-import net.server.channel.Channel;
-import net.server.world.World;
+import net.server.channel.MapleChannel;
+import net.server.world.MapleWorld;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import tools.data.input.GenericLittleEndianAccessor;
 import tools.data.output.MaplePacketLittleEndianWriter;
 
 import java.util.List;
@@ -21,20 +21,20 @@ public class OnlineRequest extends DiscordRequest {
     private static final Logger LOGGER = LoggerFactory.getLogger(OnlineRequest.class);
 
     @Override
-    public void handle(GenericLittleEndianAccessor lea) {
+    public void handle(MaplePacketReader reader) {
         Server server = Server.getInstance();
-        List<World> worlds = server.getWorlds();
+        List<MapleWorld> worlds = server.getWorlds();
 
         MaplePacketLittleEndianWriter writer = new MaplePacketLittleEndianWriter();
         writer.write(Headers.Online.value);
-        writer.writeLong(lea.readLong()); // Channel_ID
+        writer.writeLong(reader.readLong()); // Channel_ID
         writer.write(worlds.size());
-        for (World world : worlds) {
-            List<Channel> channels = world.getChannels();
+        for (MapleWorld world : worlds) {
+            List<MapleChannel> channels = world.getChannels();
             writer.write(channels.size());
-            for (Channel channel : channels) {
+            for (MapleChannel channel : channels) {
                 writer.writeShort(channel.getPlayerStorage().size());
-                for (MapleCharacter players : channel.getPlayerStorage().getAllCharacters()) {
+                for (MapleCharacter players : channel.getPlayerStorage().getAllPlayers()) {
                     writer.writeMapleAsciiString(players.getName());
                 }
             }

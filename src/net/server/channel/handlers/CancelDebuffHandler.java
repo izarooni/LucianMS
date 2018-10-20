@@ -22,13 +22,13 @@
 package net.server.channel.handlers;
 
 import client.MapleClient;
-import net.AbstractMaplePacketHandler;
-import tools.data.input.SeekableLittleEndianAccessor;
+import net.PacketEvent;
+import tools.data.input.LittleEndianReader;
 
-public final class CancelDebuffHandler extends AbstractMaplePacketHandler {//TIP: BAD STUFF LOL!
+public final class CancelDebuffHandler extends PacketEvent {//TIP: BAD STUFF LOL!
 
     @Override
-    public final void handlePacket(SeekableLittleEndianAccessor slea, MapleClient c) {
+    public final void handlePacket(LittleEndianReader slea, MapleClient c) {
         /*List<MapleDisease> diseases = c.getPlayer().getDiseases();
          List<MapleDisease> diseases_ = new ArrayList<MapleDisease>();
          for (MapleDisease disease : diseases) {

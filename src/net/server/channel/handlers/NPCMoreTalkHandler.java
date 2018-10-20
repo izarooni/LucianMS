@@ -21,56 +21,67 @@
 */
 package net.server.channel.handlers;
 
-import client.MapleClient;
-import net.AbstractMaplePacketHandler;
 import com.lucianms.io.scripting.npc.NPCScriptManager;
 import com.lucianms.io.scripting.quest.QuestScriptManager;
-import tools.data.input.SeekableLittleEndianAccessor;
+import com.lucianms.nio.receive.MaplePacketReader;
+import com.lucianms.server.events.PacketEvent;
 
 /**
  * @author Matze
  */
-public class NPCMoreTalkHandler extends AbstractMaplePacketHandler {
+public class NPCMoreTalkHandler extends PacketEvent {
+
+    private String text = null;
+    private int selection = -1;
+    private byte dialogType;
+    private byte action;
 
     @Override
-    public void handlePacket(SeekableLittleEndianAccessor slea, MapleClient c) {
-        byte lastMsg = slea.readByte(); // 00 (last msg type I think)
-        byte action = slea.readByte(); // 00 = end chat, 01 == follow
-        if (lastMsg == 2) {
+    public void processInput(MaplePacketReader reader) {
+        dialogType = reader.readByte();
+        action = reader.readByte();
+        if (dialogType == 2) {
             if (action != 0) {
-                String returnText = slea.readMapleAsciiString();
-                if (c.getQM() != null) {
-                    c.getQM().setGetText(returnText);
-                    if (c.getQM().isStart()) {
-                        QuestScriptManager.start(c, action, lastMsg, -1);
+                text = reader.readMapleAsciiString();
+            }
+        } else if (reader.available() >= 4) {
+            selection = reader.readInt();
+        } else if (reader.available() > 0) {
+            selection = reader.readByte();
+        }
+    }
+
+    @Override
+    public Object onPacket() {
+        if (dialogType == 2) {
+            if (action != 0) {
+                if (getClient().getQM() != null) {
+                    getClient().getQM().setGetText(text);
+                    if (getClient().getQM().isStart()) {
+                        QuestScriptManager.start(getClient(), action, dialogType, -1);
                     } else {
-                        QuestScriptManager.end(c, action, lastMsg, -1);
+                        QuestScriptManager.end(getClient(), action, dialogType, -1);
                     }
                 } else {
-                    c.getCM().setGetText(returnText);
-                    NPCScriptManager.action(c, action, lastMsg, -1);
+                    getClient().getCM().setGetText(text);
+                    NPCScriptManager.action(getClient(), action, dialogType, -1);
                 }
-            } else if (c.getQM() != null) {
-                c.getQM().dispose();
+            } else if (getClient().getQM() != null) {
+                getClient().getQM().dispose();
             } else {
-                c.getCM().dispose();
+                getClient().getCM().dispose();
             }
         } else {
-            int selection = -1;
-            if (slea.available() >= 4) {
-                selection = slea.readInt();
-            } else if (slea.available() > 0) {
-                selection = slea.readByte();
-            }
-            if (c.getQM() != null) {
-                if (c.getQM().isStart()) {
-                    QuestScriptManager.start(c, action, lastMsg, selection);
+            if (getClient().getQM() != null) {
+                if (getClient().getQM().isStart()) {
+                    QuestScriptManager.start(getClient(), action, dialogType, selection);
                 } else {
-                    QuestScriptManager.end(c, action, lastMsg, selection);
+                    QuestScriptManager.end(getClient(), action, dialogType, selection);
                 }
-            } else if (c.getCM() != null) {
-                NPCScriptManager.action(c, action, lastMsg, selection);
+            } else if (getClient().getCM() != null) {
+                NPCScriptManager.action(getClient(), action, dialogType, selection);
             }
         }
+        return null;
     }
 }

@@ -2,13 +2,13 @@ package net.server.channel.handlers;
 
 import client.MapleCharacter;
 import client.MapleJob;
+import com.lucianms.nio.receive.MaplePacketReader;
 import constants.ServerConstants;
-import net.PacketEvent;
+import com.lucianms.server.events.PacketEvent;
 import net.server.world.MapleParty;
 import net.server.world.MaplePartyCharacter;
 import net.server.world.PartyOperation;
 import tools.MaplePacketCreator;
-import tools.data.input.SeekableLittleEndianAccessor;
 
 import java.util.Collection;
 
@@ -23,11 +23,11 @@ public class PartySearchStartHandler extends PacketEvent {
     private int jobs;
 
     @Override
-    public void process(SeekableLittleEndianAccessor slea) {
-        min = slea.readInt();
-        max = slea.readInt();
-        slea.readInt();
-        jobs = slea.readInt();
+    public void processInput(MaplePacketReader reader) {
+        min = reader.readInt();
+        max = reader.readInt();
+        reader.readInt();
+        jobs = reader.readInt();
         if (!ServerConstants.USE_PARTY_SEARCH) {
             setCanceled(true);
         }

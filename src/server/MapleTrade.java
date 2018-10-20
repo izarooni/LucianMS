@@ -144,7 +144,6 @@ public class MapleTrade {
             if (partner != null) {
                 partner.getChr().getClient().announce(MaplePacketCreator.getTradeMesoSet((byte) 1, this.meso));
             }
-        } else {
         }
     }
 
@@ -285,7 +284,10 @@ public class MapleTrade {
     }
 
     public static void visitTrade(MapleCharacter c1, MapleCharacter c2) {
-        if (c1.getTrade() != null && c1.getTrade().getPartner() == c2.getTrade() && c2.getTrade() != null && c2.getTrade().getPartner() == c1.getTrade()) {
+        if (c1.getTrade() != null
+                && c1.getTrade().getPartner() == c2.getTrade()
+                && c2.getTrade() != null
+                && c2.getTrade().getPartner() == c1.getTrade()) {
             c2.getClient().announce(MaplePacketCreator.getTradePartnerAdd(c1));
             c1.getClient().announce(MaplePacketCreator.getTradeStart(c1.getClient(), c1.getTrade(), (byte) 1));
             c1.getTrade().setFullTrade(true);

@@ -29,15 +29,15 @@ import client.inventory.Item;
 import client.inventory.MapleInventoryType;
 import client.inventory.MaplePet;
 import constants.ExpTable;
-import net.AbstractMaplePacketHandler;
+import net.PacketEvent;
 import tools.MaplePacketCreator;
 import tools.Randomizer;
-import tools.data.input.SeekableLittleEndianAccessor;
+import tools.data.input.LittleEndianReader;
 
-public final class PetCommandHandler extends AbstractMaplePacketHandler {
+public final class PetCommandHandler extends PacketEvent {
 
     @Override
-    public final void handlePacket(SeekableLittleEndianAccessor slea, MapleClient c) {
+    public final void handlePacket(LittleEndianReader slea, MapleClient c) {
         MapleCharacter chr = c.getPlayer();
         int petId = slea.readInt();
         byte petIndex = chr.getPetIndex(petId);

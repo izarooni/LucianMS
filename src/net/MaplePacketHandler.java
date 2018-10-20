@@ -24,7 +24,7 @@ package net;
 import client.MapleClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import tools.data.input.SeekableLittleEndianAccessor;
+import tools.data.input.LittleEndianReader;
 
 @Deprecated
 public interface MaplePacketHandler {
@@ -33,7 +33,7 @@ public interface MaplePacketHandler {
         return LoggerFactory.getLogger(getClass());
     }
 
-    void handlePacket(SeekableLittleEndianAccessor slea, MapleClient c);
+    void handlePacket(LittleEndianReader slea, MapleClient c);
 
     boolean validateState(MapleClient c);
 }

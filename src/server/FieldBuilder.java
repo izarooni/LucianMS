@@ -1,9 +1,7 @@
 package server;
 
-import com.lucianms.server.events.channel.ChangeMapEvent;
 import net.server.Server;
-import net.server.channel.Channel;
-import net.server.world.World;
+import net.server.channel.MapleChannel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import provider.MapleData;
@@ -12,7 +10,6 @@ import provider.MapleDataProviderFactory;
 import provider.MapleDataTool;
 import server.life.*;
 import server.maps.*;
-import tools.Database;
 import tools.StringUtil;
 
 import java.awt.*;
@@ -199,7 +196,7 @@ public class FieldBuilder {
     }
 
     private void obtainSpawns() {
-        Channel channel = Server.getInstance().getChannel(map.getWorld(), map.getChannel());
+        MapleChannel channel = Server.getInstance().getChannel(map.getWorld(), map.getChannel());
         try (Connection con = channel.getConnection();
              PreparedStatement ps = con.prepareStatement("SELECT * FROM spawns WHERE mid = ?")) {
             ps.setInt(1, map.getId());

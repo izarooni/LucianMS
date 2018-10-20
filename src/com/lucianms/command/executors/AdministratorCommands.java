@@ -2,7 +2,6 @@ package com.lucianms.command.executors;
 
 import client.*;
 import client.inventory.Equip;
-import client.meta.Achievement;
 import com.lucianms.command.CommandWorker;
 import com.lucianms.cquest.CQuestBuilder;
 import com.lucianms.features.auto.GAutoEvent;
@@ -14,9 +13,9 @@ import com.lucianms.io.scripting.map.MapScriptManager;
 import com.lucianms.io.scripting.portal.PortalScriptManager;
 import com.lucianms.io.scripting.reactor.ReactorScriptManager;
 import net.server.Server;
-import net.server.channel.Channel;
-import net.server.channel.handlers.RingActionHandler;
-import net.server.world.World;
+import net.server.channel.MapleChannel;
+import net.server.channel.handlers.PlayerRingActionEvent;
+import net.server.world.MapleWorld;
 import server.MapleInventoryManipulator;
 import server.MapleItemInformationProvider;
 import server.MapleShopFactory;
@@ -44,8 +43,8 @@ public class AdministratorCommands {
     public static void execute(MapleClient client, CommandWorker.Command command, CommandWorker.CommandArgs args) {
 
         MapleCharacter player = client.getPlayer();
-        World world = client.getWorldServer();
-        Channel ch = client.getChannelServer();
+        MapleWorld world = client.getWorldServer();
+        MapleChannel ch = client.getChannelServer();
 
         if (command.equals("admincommands")) {
             ArrayList<String> commands = new ArrayList<>();
@@ -62,6 +61,8 @@ public class AdministratorCommands {
             } finally {
                 commands.clear();
             }
+        } else if (command.equals("test")) {
+            player.sendMessage(5, "");
         } else if (command.equals("clearcache")) {
             if (args.length() == 1) {
                 switch (args.get(0)) {
@@ -157,7 +158,7 @@ public class AdministratorCommands {
                     GAutoEventManager.getCurrentEvent().stop();
                 }
                 try {
-                    GAutoEvent gEvent = event.getClazz().getDeclaredConstructor(World.class).newInstance(client.getWorldServer());
+                    GAutoEvent gEvent = event.getClazz().getDeclaredConstructor(MapleWorld.class).newInstance(client.getWorldServer());
                     gEvent.start();
                     GAutoEventManager.setCurrentEvent(gEvent);
                     player.dropMessage("Success!");
@@ -207,8 +208,8 @@ public class AdministratorCommands {
                 player.changeMap(player.getMap(), new Point(x, y));
             }
         } else if (command.equals("reloadevents")) {
-            for (World worlds : Server.getInstance().getWorlds()) {
-                for (Channel channels : worlds.getChannels()) {
+            for (MapleWorld worlds : Server.getInstance().getWorlds()) {
+                for (MapleChannel channels : worlds.getChannels()) {
                     channels.reloadEventScriptManager();
                 }
             }
@@ -216,7 +217,7 @@ public class AdministratorCommands {
         } else if (command.equals("reloadevent")) {
             if (args.length() == 1) {
                 String scriptName = args.get(0);
-                for (Channel channel : world.getChannels()) {
+                for (MapleChannel channel : world.getChannels()) {
                     EventManager manager = channel.getEventScriptManager().getManager(scriptName);
                     if (manager == null) {
                         player.dropMessage(5, "Could not find any event named '" + scriptName + "'");
@@ -255,7 +256,7 @@ public class AdministratorCommands {
                     player.sendMessage(5, args.getFirstError());
                     return;
                 }
-                MapleCharacter target = ch.getPlayerStorage().getCharacterByName(args.get(0));
+                MapleCharacter target = ch.getPlayerStorage().getPlayerByName(args.get(0));
                 if (target != null) {
                     target.setGM(GMLevel);
                     target.sendMessage(6, "Your GM level has been updated");
@@ -277,8 +278,8 @@ public class AdministratorCommands {
                     player.sendMessage(5, "Invalid engagement box ID");
                     return;
                 }
-                MapleCharacter target1 = ch.getPlayerStorage().getCharacterByName(args.get(1));
-                MapleCharacter target2 = ch.getPlayerStorage().getCharacterByName(args.get(2));
+                MapleCharacter target1 = ch.getPlayerStorage().getPlayerByName(args.get(1));
+                MapleCharacter target2 = ch.getPlayerStorage().getPlayerByName(args.get(2));
                 if (target1 == null) {
                     player.sendMessage(5, "Unable to find any player named '{}'", args.get(2));
                     return;
@@ -303,7 +304,7 @@ public class AdministratorCommands {
                 Relationship rltn = target1.getRelationship();
                 Relationship prltn = target2.getRelationship();
 
-                final int ringItemID = RingActionHandler.getWeddingRingForEngagementBox(engagementBoxID);
+                final int ringItemID = PlayerRingActionEvent.getWeddingRingForEngagementBox(engagementBoxID);
                 final int ringID = MapleRing.createRing(ringItemID, target1, target2);
                 Equip equip = new Equip(ringItemID, (short) 0);
                 equip.setRingId(ringID);

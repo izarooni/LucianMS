@@ -6,9 +6,9 @@ import com.lucianms.scheduler.TaskExecutor;
 import com.lucianms.server.events.channel.ChangeMapEvent;
 import constants.ExpTable;
 import constants.ServerConstants;
-import net.SendOpcode;
-import net.server.channel.Channel;
-import net.server.world.World;
+import com.lucianms.nio.SendOpcode;
+import net.server.channel.MapleChannel;
+import net.server.world.MapleWorld;
 import server.life.MapleLifeFactory;
 import server.life.MapleMonster;
 import server.life.MapleNPC;
@@ -57,7 +57,7 @@ public class AEmergencyTrial extends GAutoEvent {
         return mplew.getPacket();
     }
 
-    public AEmergencyTrial(World world) {
+    public AEmergencyTrial(MapleWorld world) {
         super(world, false);
         registerAnnotationPacketEvents(this);
     }
@@ -79,9 +79,9 @@ public class AEmergencyTrial extends GAutoEvent {
 
     @Override
     public void start() {
-        for (Channel channel : getWorld().getChannels()) {
+        for (MapleChannel channel : getWorld().getChannels()) {
             channel.removeMap(BossMapID);
-            for (MapleCharacter player : channel.getPlayerStorage().getAllCharacters()) {
+            for (MapleCharacter player : channel.getPlayerStorage().getAllPlayers()) {
                 MapleMap map = player.getMap();
                 if (!map.getMonsterSpawnPoints().isEmpty()) {
                     Integer objectID = spawnLocations.get(map.getId());
@@ -144,7 +144,7 @@ public class AEmergencyTrial extends GAutoEvent {
         return (int) ((ExpTable.getExpNeededForLevel(level) * 0.35) + bonusExperience);
     }
 
-    private void returnPlayers(Channel channel) {
+    private void returnPlayers(MapleChannel channel) {
         MapleMap map = channel.getMap(BossMapID);
         for (Integer playerID : new ArrayList<>(returnLocations.values())) {
             MapleCharacter player = map.getCharacterById(playerID);
@@ -156,7 +156,7 @@ public class AEmergencyTrial extends GAutoEvent {
     }
 
     private void summonBoss() {
-        for (Channel channel : getWorld().getChannels()) {
+        for (MapleChannel channel : getWorld().getChannels()) {
             final MapleMap map = channel.getMap(BossMapID);
             MapleMonster monster = MapleLifeFactory.getMonster(BossID);
             if (monster != null) {
@@ -194,7 +194,7 @@ public class AEmergencyTrial extends GAutoEvent {
 
     private void despawnDoors() {
         for (Map.Entry<Integer, Integer> entry : spawnLocations.entrySet()) {
-            for (Channel channel : getWorld().getChannels()) {
+            for (MapleChannel channel : getWorld().getChannels()) {
                 MapleMap map = channel.getMap(entry.getKey());
                 MapleMapObject object = map.removeMapObject(entry.getValue());
                 if (object != null) {

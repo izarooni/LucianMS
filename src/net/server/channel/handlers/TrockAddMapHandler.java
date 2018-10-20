@@ -23,17 +23,17 @@ package net.server.channel.handlers;
 
 import client.MapleCharacter;
 import client.MapleClient;
-import net.AbstractMaplePacketHandler;
+import net.PacketEvent;
 import server.maps.FieldLimit;
 import tools.MaplePacketCreator;
-import tools.data.input.SeekableLittleEndianAccessor;
+import tools.data.input.LittleEndianReader;
 
 /**
  *
  * @author kevintjuh93
  */
-public final class TrockAddMapHandler extends AbstractMaplePacketHandler {
-    public final void handlePacket(SeekableLittleEndianAccessor slea, MapleClient c) {
+public final class TrockAddMapHandler extends PacketEvent {
+    public final void handlePacket(LittleEndianReader slea, MapleClient c) {
         MapleCharacter chr = c.getPlayer();
         byte type = slea.readByte();
         boolean vip = slea.readByte() == 1;

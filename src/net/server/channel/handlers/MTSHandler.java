@@ -26,15 +26,15 @@ import client.MapleClient;
 import client.inventory.Equip;
 import client.inventory.Item;
 import client.inventory.MapleInventoryType;
-import net.AbstractMaplePacketHandler;
+import net.PacketEvent;
 import net.server.Server;
-import net.server.channel.Channel;
+import net.server.channel.MapleChannel;
 import server.MTSItemInfo;
 import server.MapleInventoryManipulator;
 import server.MapleItemInformationProvider;
 import tools.MaplePacketCreator;
 import tools.Pair;
-import tools.data.input.SeekableLittleEndianAccessor;
+import tools.data.input.LittleEndianReader;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -44,10 +44,10 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
-public final class MTSHandler extends AbstractMaplePacketHandler {
+public final class MTSHandler extends PacketEvent {
 
     @Override
-    public final void handlePacket(SeekableLittleEndianAccessor slea, MapleClient c) {
+    public final void handlePacket(LittleEndianReader slea, MapleClient c) {
         if (!c.getPlayer().getCashShop().isOpened()) {
             return;
         }
@@ -390,8 +390,8 @@ public final class MTSHandler extends AbstractMaplePacketHandler {
                                 int price = rs.getInt("price") + 100 + (int) (rs.getInt("price") * 0.1); //taxes
                                 if (c.getPlayer().getCashShop().getCash(4) >= price) { //FIX
                                     boolean alwaysnull = true;
-                                    for (Channel cserv : Server.getInstance().getAllChannels()) {
-                                        MapleCharacter victim = cserv.getPlayerStorage().getCharacterById(rs.getInt("seller"));
+                                    for (MapleChannel cserv : Server.getInstance().getAllChannels()) {
+                                        MapleCharacter victim = cserv.getPlayerStorage().getPlayerByID(rs.getInt("seller"));
                                         if (victim != null) {
                                             victim.getCashShop().gainCash(4, rs.getInt("price"));
                                             alwaysnull = false;
@@ -447,8 +447,8 @@ public final class MTSHandler extends AbstractMaplePacketHandler {
                             if (rs.next()) {
                                 int price = rs.getInt("price") + 100 + (int) (rs.getInt("price") * 0.1);
                                 if (c.getPlayer().getCashShop().getCash(4) >= price) {
-                                    for (Channel cserv : Server.getInstance().getAllChannels()) {
-                                        MapleCharacter victim = cserv.getPlayerStorage().getCharacterById(rs.getInt("seller"));
+                                    for (MapleChannel cserv : Server.getInstance().getAllChannels()) {
+                                        MapleCharacter victim = cserv.getPlayerStorage().getPlayerByID(rs.getInt("seller"));
                                         if (victim != null) {
                                             victim.getCashShop().gainCash(4, rs.getInt("price"));
                                         } else {

@@ -24,18 +24,18 @@ package net.server.channel.handlers;
 import constants.ServerConstants;
 import client.MapleCharacter;
 import client.MapleClient;
-import net.AbstractMaplePacketHandler;
-import net.SendOpcode;
-import tools.data.input.SeekableLittleEndianAccessor;
+import net.PacketEvent;
+import com.lucianms.nio.SendOpcode;
+import tools.data.input.LittleEndianReader;
 import tools.data.output.MaplePacketLittleEndianWriter;
 
 /**
  *
  * @author Moogra
  */
-public final class FamilyUseHandler extends AbstractMaplePacketHandler {
+public final class FamilyUseHandler extends PacketEvent {
     @Override
-    public final void handlePacket(SeekableLittleEndianAccessor slea, MapleClient c) {
+    public final void handlePacket(LittleEndianReader slea, MapleClient c) {
     	if (!ServerConstants.USE_FAMILY_SYSTEM){
     		return;
     	}
@@ -43,7 +43,7 @@ public final class FamilyUseHandler extends AbstractMaplePacketHandler {
         final int type = slea.readInt();
         MapleCharacter victim;
         if (type == 0 || type == 1) {
-            victim = c.getChannelServer().getPlayerStorage().getCharacterByName(slea.readMapleAsciiString());
+            victim = c.getChannelServer().getPlayerStorage().getPlayerByName(slea.readMapleAsciiString());
             if (victim != null) {
                 if (type == 0) {
                     c.getPlayer().changeMap(victim.getMap(), victim.getMap().getPortal(0));

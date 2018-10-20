@@ -79,7 +79,15 @@ public class MapleMap {
 
     private static final int MAX_CHANCE = 999999;
     private static final Logger LOGGER = LoggerFactory.getLogger(MapleMap.class);
-    private static final List<MapleMapObjectType> rangedMapobjectTypes = Arrays.asList(MapleMapObjectType.SHOP, MapleMapObjectType.ITEM, MapleMapObjectType.NPC, MapleMapObjectType.MONSTER, MapleMapObjectType.DOOR, MapleMapObjectType.SUMMON, MapleMapObjectType.REACTOR);
+    private static final List<MapleMapObjectType> rangedMapobjectTypes = Arrays.asList(
+            MapleMapObjectType.SHOP,
+            MapleMapObjectType.ITEM,
+            MapleMapObjectType.NPC,
+            MapleMapObjectType.MONSTER,
+            MapleMapObjectType.DOOR,
+            MapleMapObjectType.SUMMON,
+            MapleMapObjectType.REACTOR
+    );
 
     private ConcurrentHashMap<Integer, MapleCharacter> characters = new ConcurrentHashMap<>(100);
     private ConcurrentHashMap<Integer, MapleMapObject> mapobjects = new ConcurrentHashMap<>(100);
@@ -1319,7 +1327,9 @@ public class MapleMap {
     }
 
     public void addPlayer(final MapleCharacter chr) {
+        mapobjects.put(chr.getObjectId(), chr);
         characters.put(chr.getObjectId(), chr);
+
         chr.setMapId(mapid);
         if (onFirstUserEnter.length() != 0 && !chr.hasEntered(onFirstUserEnter, mapid) && MapScriptManager.getInstance().scriptExists(onFirstUserEnter, true)) {
             if (getAllPlayer().size() <= 1) {
@@ -1477,7 +1487,6 @@ public class MapleMap {
             chr.getClient().announce(MaplePacketCreator.coconutScore(0, 0));
             chr.getClient().announce(MaplePacketCreator.showForcedEquip(chr.getTeam()));
         }
-        mapobjects.put(chr.getObjectId(), chr);
         if (chr.getPlayerShop() != null) {
             addMapObject(chr.getPlayerShop());
         }
@@ -1719,7 +1728,11 @@ public class MapleMap {
 
     private void sendObjectPlacement(MapleClient mapleClient) {
         MapleCharacter chr = mapleClient.getPlayer();
+
         for (MapleMapObject o : getMapObjects()) {
+            if (o.getObjectId() == chr.getObjectId()) {
+                continue;
+            }
             if (o.getType() == MapleMapObjectType.SUMMON) {
                 MapleSummon summon = (MapleSummon) o;
                 if (summon.getOwner() == chr) {

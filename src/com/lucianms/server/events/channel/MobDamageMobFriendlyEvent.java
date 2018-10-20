@@ -1,12 +1,12 @@
 package com.lucianms.server.events.channel;
 
 import client.MapleCharacter;
-import net.PacketEvent;
+import com.lucianms.nio.receive.MaplePacketReader;
+import com.lucianms.server.events.PacketEvent;
 import com.lucianms.io.scripting.event.EventInstanceManager;
 import server.life.MapleMonster;
 import tools.MaplePacketCreator;
 import tools.Randomizer;
-import tools.data.input.SeekableLittleEndianAccessor;
 
 /**
  * @author Xotic & BubblesDev
@@ -19,10 +19,10 @@ public class MobDamageMobFriendlyEvent extends PacketEvent {
     private int damagedID;
 
     @Override
-    public void process(SeekableLittleEndianAccessor slea) {
-        attackerID = slea.readInt();
-        slea.skip(4);
-        damagedID = slea.readInt();
+    public void processInput(MaplePacketReader reader) {
+        attackerID = reader.readInt();
+        reader.skip(4);
+        damagedID = reader.readInt();
     }
 
     @Override

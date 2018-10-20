@@ -4,8 +4,8 @@ import client.MapleCharacter;
 import com.lucianms.lang.annotation.PacketWorker;
 import com.lucianms.scheduler.Task;
 import com.lucianms.scheduler.TaskExecutor;
-import com.lucianms.server.events.channel.AllChatEvent;
-import net.server.world.World;
+import com.lucianms.server.events.channel.PlayerAllChatEvent;
+import net.server.world.MapleWorld;
 import tools.MaplePacketCreator;
 
 import java.util.Hashtable;
@@ -22,7 +22,7 @@ public class AInfinityPurge extends GAutoEvent {
     private Task tEvent = null;
     private Hashtable<String, Integer> scores = new Hashtable<>(25);
 
-    public AInfinityPurge(World world) {
+    public AInfinityPurge(MapleWorld world) {
         super(world, true);
     }
 
@@ -67,7 +67,7 @@ public class AInfinityPurge extends GAutoEvent {
     }
 
     @PacketWorker
-    public void onALlChat(AllChatEvent event) {
+    public void onALlChat(PlayerAllChatEvent event) {
         if (!commandsEnabled) {
             return;
         }

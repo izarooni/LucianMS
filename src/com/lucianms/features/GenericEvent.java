@@ -2,7 +2,7 @@ package com.lucianms.features;
 
 import client.MapleCharacter;
 import com.lucianms.lang.annotation.PacketWorker;
-import net.PacketEvent;
+import com.lucianms.server.events.PacketEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import server.maps.MapleMap;

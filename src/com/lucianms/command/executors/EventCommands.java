@@ -5,10 +5,10 @@ import client.MapleClient;
 import client.MapleDisease;
 import com.lucianms.command.CommandWorker;
 import com.lucianms.features.ManualPlayerEvent;
-import net.server.channel.Channel;
+import net.server.channel.MapleChannel;
 import net.server.world.MapleParty;
 import net.server.world.MaplePartyCharacter;
-import net.server.world.World;
+import net.server.world.MapleWorld;
 import server.life.MapleLifeFactory;
 import server.life.MapleMonster;
 import server.life.MobSkill;
@@ -29,8 +29,8 @@ public class EventCommands {
     public static boolean execute(MapleClient client, CommandWorker.Command command, CommandWorker.CommandArgs args) {
 
         final MapleCharacter player = client.getPlayer();
-        final Channel ch = client.getChannelServer();
-        final World world = client.getWorldServer();
+        final MapleChannel ch = client.getChannelServer();
+        final MapleWorld world = client.getWorldServer();
         ManualPlayerEvent playerEvent = client.getWorldServer().getPlayerEvent();
 
         if (command.equals("eventcommands")) {
@@ -252,7 +252,7 @@ public class EventCommands {
                 if (args.length() > 0) {
                     for (int i = 0; i < args.length(); i++) {
                         String username = args.get(i);
-                        MapleCharacter target = ch.getPlayerStorage().getCharacterByName(username);
+                        MapleCharacter target = ch.getPlayerStorage().getPlayerByName(username);
                         if (target != null && !target.isGM()) {
                             target.giveDebuff(MapleDisease.SEAL, skill);
                         }
@@ -282,7 +282,7 @@ public class EventCommands {
                     } else {
                         for (int i = 1; i < args.length(); i++) {
                             String username = args.get(i);
-                            MapleCharacter target = ch.getPlayerStorage().getCharacterByName(username);
+                            MapleCharacter target = ch.getPlayerStorage().getPlayerByName(username);
                             if (target != null && !target.isGM()) {
                                 target.setChair(0);
                                 target.announce(MaplePacketCreator.cancelChair(-1));
@@ -323,7 +323,7 @@ public class EventCommands {
                     if (args.length() > 1) {
                         for (int i = 1; i < args.length(); i++) {
                             String username = args.get(i);
-                            MapleCharacter target = ch.getPlayerStorage().getCharacterByName(username);
+                            MapleCharacter target = ch.getPlayerStorage().getPlayerByName(username);
                             if (target != null) {
                                 target.giveDebuff(MapleDisease.SEDUCE, skill);
                             }

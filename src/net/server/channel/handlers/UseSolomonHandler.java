@@ -24,20 +24,20 @@ package net.server.channel.handlers;
 import client.MapleClient;
 import client.inventory.Item;
 import client.inventory.MapleInventoryType;
-import net.AbstractMaplePacketHandler;
+import net.PacketEvent;
 import server.MapleInventoryManipulator;
 import server.MapleItemInformationProvider;
 import tools.MaplePacketCreator;
-import tools.data.input.SeekableLittleEndianAccessor;
+import tools.data.input.LittleEndianReader;
 
 /**
  *
  * @author XoticStory; modified by kevintjuh93
  */
-public final class UseSolomonHandler extends AbstractMaplePacketHandler {
+public final class UseSolomonHandler extends PacketEvent {
 
     @Override
-    public final void handlePacket(SeekableLittleEndianAccessor slea, MapleClient c) {
+    public final void handlePacket(LittleEndianReader slea, MapleClient c) {
         slea.readInt();
         short slot = slea.readShort();
         int itemId = slea.readInt();

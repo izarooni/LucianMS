@@ -36,7 +36,7 @@ public enum FieldLimit {
     }
 
     public boolean check(int fieldLimit) {
-        return ((fieldLimit >> 1) & 1) == 1;
+        return ((fieldLimit >> i) & 1) != 1;
     }
 
     public int add(int fieldLimit, FieldLimit flag) {

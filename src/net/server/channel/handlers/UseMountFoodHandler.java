@@ -24,16 +24,16 @@ package net.server.channel.handlers;
 import client.MapleClient;
 import client.inventory.MapleInventoryType;
 import constants.ExpTable;
-import net.AbstractMaplePacketHandler;
+import net.PacketEvent;
 import server.MapleInventoryManipulator;
 import tools.MaplePacketCreator;
-import tools.data.input.SeekableLittleEndianAccessor;
+import tools.data.input.LittleEndianReader;
 
 /**
  * @author PurpleMadness
  */
-public final class UseMountFoodHandler extends AbstractMaplePacketHandler {
-    public final void handlePacket(SeekableLittleEndianAccessor slea, MapleClient c) {
+public final class UseMountFoodHandler extends PacketEvent {
+    public final void handlePacket(LittleEndianReader slea, MapleClient c) {
         slea.skip(6);
         int itemid = slea.readInt();
         if (c.getPlayer().getInventory(MapleInventoryType.USE).findById(itemid) != null) {

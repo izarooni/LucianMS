@@ -2,8 +2,8 @@ package com.lucianms.discord.handlers;
 
 import com.lucianms.discord.DiscordSession;
 import com.lucianms.discord.Headers;
+import com.lucianms.nio.receive.MaplePacketReader;
 import server.CashShop;
-import tools.data.input.GenericLittleEndianAccessor;
 import tools.data.output.MaplePacketLittleEndianWriter;
 
 /**
@@ -12,12 +12,12 @@ import tools.data.output.MaplePacketLittleEndianWriter;
 public class ReloadCSRequest extends DiscordRequest {
 
     @Override
-    public void handle(GenericLittleEndianAccessor lea) {
+    public void handle(MaplePacketReader reader) {
         CashShop.CashItemFactory.loadCommodities();
 
         MaplePacketLittleEndianWriter writer = new MaplePacketLittleEndianWriter();
         writer.write(Headers.ReloadCS.value);
-        writer.writeLong(lea.readLong());
+        writer.writeLong(reader.readLong());
         DiscordSession.sendPacket(writer.getPacket());
     }
 }

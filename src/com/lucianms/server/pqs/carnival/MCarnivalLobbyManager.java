@@ -1,6 +1,6 @@
 package com.lucianms.server.pqs.carnival;
 
-import net.server.channel.Channel;
+import net.server.channel.MapleChannel;
 
 import java.util.Collections;
 import java.util.LinkedHashMap;
@@ -13,7 +13,7 @@ public class MCarnivalLobbyManager {
 
     private LinkedHashMap<Integer, MCarnivalLobby> lobbies = new LinkedHashMap<>();
 
-    public MCarnivalLobbyManager(Channel channel) {
+    public MCarnivalLobbyManager(MapleChannel channel) {
         final int bMapId = 980000000;
         for (int i = 1; i < 7; i++) {
             int nMapId = bMapId + (i * 100);

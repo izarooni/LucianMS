@@ -4,8 +4,9 @@ import client.MapleCharacter;
 import client.MapleClient;
 import client.inventory.MapleInventoryType;
 import com.lucianms.features.GenericEvent;
+import com.lucianms.nio.receive.MaplePacketReader;
 import constants.ServerConstants;
-import net.PacketEvent;
+import com.lucianms.server.events.PacketEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import server.MapleInventoryManipulator;
@@ -13,7 +14,6 @@ import server.MaplePortal;
 import server.MapleTrade;
 import server.maps.MapleMap;
 import tools.MaplePacketCreator;
-import tools.data.input.SeekableLittleEndianAccessor;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
@@ -50,14 +50,14 @@ public class ChangeMapEvent extends PacketEvent {
     }
 
     @Override
-    public void process(SeekableLittleEndianAccessor slea) {
-        eCashShop = slea.available() == 0; // exit Cash shop
+    public void processInput(MaplePacketReader reader) {
+        eCashShop = reader.available() == 0; // exit Cash shop
         if (!eCashShop) {
-            slea.skip(1);
-            targetMapId = slea.readInt();
-            startwp = slea.readMapleAsciiString();
-            slea.skip(1);
-            wheelOfDestiny = slea.readShort() > 0;
+            reader.skip(1);
+            targetMapId = reader.readInt();
+            startwp = reader.readMapleAsciiString();
+            reader.skip(1);
+            wheelOfDestiny = reader.readShort() > 0;
         }
     }
 

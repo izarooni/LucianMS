@@ -1,8 +1,8 @@
 package net.server.channel.handlers;
 
-import net.PacketEvent;
-import net.SendOpcode;
-import tools.data.input.SeekableLittleEndianAccessor;
+import com.lucianms.nio.receive.MaplePacketReader;
+import com.lucianms.server.events.PacketEvent;
+import com.lucianms.nio.SendOpcode;
 import tools.data.output.MaplePacketLittleEndianWriter;
 
 /**
@@ -33,12 +33,12 @@ public class NpcMoveEvent extends PacketEvent {
     private byte v3, v4;
 
     @Override
-    public void process(SeekableLittleEndianAccessor slea) {
-        available = slea.available();
+    public void processInput(MaplePacketReader reader) {
+        available = reader.available();
         if (available == 6) {
-            objectID = slea.readInt();
-            v3 = slea.readByte();
-            v4 = slea.readByte();
+            objectID = reader.readInt();
+            v3 = reader.readByte();
+            v4 = reader.readByte();
         }
 //        else {
 //            byte[] b = slea.read((int) (available - 9));

@@ -28,17 +28,19 @@ import client.inventory.MapleInventoryType;
  */
 public final class ItemConstants {
 
-    public final static int LOCK = 0x01;
-    public final static int SPIKES = 0x02;
-    public final static int COLD = 0x04;
-    public final static int UNTRADEABLE = 0x08;
-    public final static int KARMA = 0x10;
-    public final static int PET_COME = 0x80;
-    public final static int ACCOUNT_SHARING = 0x100;
-    public final static float ITEM_ARMOR_EXP = 1 / 350000;
-    public static final float ITEM_WEAPON_EXP = 1 / 700000;
+    public static final int LOCK = 0x01;
+    public static final int SPIKES = 0x02;
+    public static final int COLD = 0x04;
+    public static final int UNTRADEABLE = 0x08;
+    public static final int KARMA = 0x10;
+    public static final int PET_COME = 0x80;
+    public static final int ACCOUNT_SHARING = 0x100;
+    public static final float ITEM_ARMOR_EXP = 1 / 350000f;
+    public static final float ITEM_WEAPON_EXP = 1 / 700000f;
 
-    public final static boolean EXPIRING_ITEMS = true;
+    public static final boolean EXPIRING_ITEMS = true;
+
+    public final static int ExpTicket = 2002031;
 
     public static int getFlagByInt(int type) {
         if (type == 128) {

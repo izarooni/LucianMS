@@ -2,7 +2,7 @@ package com.lucianms.features.summoning;
 
 import client.MapleCharacter;
 import client.inventory.Item;
-import com.lucianms.server.events.channel.ItemMoveEvent;
+import com.lucianms.server.events.channel.PlayerInventoryMoveEvent;
 import com.lucianms.server.events.channel.ItemPickupEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -72,7 +72,7 @@ public class ShenronSummoner extends GenericEvent {
     }
 
     @PacketWorker
-    public void onItemMove(ItemMoveEvent event) {
+    public void onItemMove(PlayerInventoryMoveEvent event) {
         if (summoning) {
             return;
         }

@@ -22,13 +22,13 @@
 package net.server.channel.handlers;
 
 import client.MapleClient;
-import net.AbstractMaplePacketHandler;
-import tools.data.input.SeekableLittleEndianAccessor;
+import net.PacketEvent;
+import tools.data.input.LittleEndianReader;
 
-public final class AdminLogHandler extends AbstractMaplePacketHandler {
+public final class AdminLogHandler extends PacketEvent {
 
     @Override
-    public final void handlePacket(SeekableLittleEndianAccessor slea, MapleClient c) {
+    public final void handlePacket(LittleEndianReader slea, MapleClient c) {
         //harhar
     }
 }

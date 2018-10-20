@@ -27,12 +27,12 @@ import client.inventory.Item;
 import client.inventory.ItemFactory;
 import client.inventory.MapleInventory;
 import client.inventory.MapleInventoryType;
-import net.AbstractMaplePacketHandler;
+import net.PacketEvent;
 import net.server.Server;
 import server.MapleInventoryManipulator;
 import tools.MaplePacketCreator;
 import tools.Pair;
-import tools.data.input.SeekableLittleEndianAccessor;
+import tools.data.input.LittleEndianReader;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -42,10 +42,10 @@ import java.util.List;
 /**
  * @author kevintjuh93
  */
-public class FredrickHandler extends AbstractMaplePacketHandler {
+public class FredrickHandler extends PacketEvent {
 
     @Override
-    public void handlePacket(SeekableLittleEndianAccessor slea, MapleClient c) {
+    public void handlePacket(LittleEndianReader slea, MapleClient c) {
         MapleCharacter chr = c.getPlayer();
         byte operation = slea.readByte();
 

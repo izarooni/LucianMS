@@ -3,6 +3,7 @@ package com.lucianms.discord.handlers;
 import client.inventory.MapleInventoryType;
 import com.lucianms.discord.DiscordSession;
 import com.lucianms.discord.Headers;
+import com.lucianms.nio.receive.MaplePacketReader;
 import constants.ItemConstants;
 import provider.MapleData;
 import provider.MapleDataProvider;
@@ -10,7 +11,6 @@ import provider.MapleDataProviderFactory;
 import provider.MapleDataTool;
 import server.MapleItemInformationProvider;
 import tools.Pair;
-import tools.data.input.GenericLittleEndianAccessor;
 import tools.data.output.MaplePacketLittleEndianWriter;
 
 import java.io.File;
@@ -26,10 +26,10 @@ public class SearchRequest extends DiscordRequest {
     private static final int SearchLimit = 2000;
 
     @Override
-    public void handle(GenericLittleEndianAccessor lea) {
-        final long channelID = lea.readLong();
-        String type = lea.readMapleAsciiString();
-        String search = lea.readMapleAsciiString().toLowerCase().trim();
+    public void handle(MaplePacketReader reader) {
+        final long channelID = reader.readLong();
+        String type = reader.readMapleAsciiString();
+        String search = reader.readMapleAsciiString().toLowerCase().trim();
 
         MaplePacketLittleEndianWriter writer = new MaplePacketLittleEndianWriter();
         writer.write(Headers.Search.value);

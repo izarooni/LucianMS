@@ -26,14 +26,14 @@ import com.lucianms.io.scripting.npc.NPCConversationManager;
 import com.lucianms.io.scripting.npc.NPCScriptManager;
 import com.lucianms.io.scripting.quest.QuestActionManager;
 import com.lucianms.io.scripting.quest.QuestScriptManager;
-import com.lucianms.scheduler.Task;
 import com.lucianms.scheduler.TaskExecutor;
+import io.netty.channel.Channel;
+import io.netty.util.AttributeKey;
 import net.server.Server;
-import net.server.channel.Channel;
+import net.server.channel.MapleChannel;
 import net.server.guild.MapleGuild;
 import net.server.guild.MapleGuildCharacter;
 import net.server.world.*;
-import org.apache.mina.core.session.IoSession;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import server.MapleMiniGame;
@@ -43,7 +43,10 @@ import server.maps.FieldLimit;
 import server.maps.HiredMerchant;
 import server.maps.MapleMap;
 import server.quest.MapleQuest;
-import tools.*;
+import tools.HexTool;
+import tools.MapleAESOFB;
+import tools.MaplePacketCreator;
+import tools.Pair;
 
 import javax.script.ScriptEngine;
 import java.io.IOException;
@@ -67,12 +70,12 @@ public class MapleClient {
     public static final int LOGIN_NOTLOGGEDIN = 0;
     public static final int LOGIN_SERVER_TRANSITION = 1;
     public static final int LOGIN_LOGGEDIN = 2;
-    public static final String CLIENT_KEY = "CLIENT";
+    public static final AttributeKey<MapleClient> CLIENT_KEY = AttributeKey.newInstance(MapleClient.class.getName());
 
     private final Lock mutex = new ReentrantLock(true);
     private MapleAESOFB send;
     private MapleAESOFB receive;
-    private IoSession session;
+    private Channel session;
     private MapleCharacter player;
     private int channel = 1;
     private int accId = 0;
@@ -85,7 +88,6 @@ public class MapleClient {
     private int gmlevel;
     private Set<String> macs = new HashSet<>();
     private Map<String, ScriptEngine> engines = new HashMap<>();
-    private Task idleTask = null;
     private byte characterSlots = 3;
     private byte loginattempt = 0;
     private String pin = null;
@@ -102,7 +104,7 @@ public class MapleClient {
     private long discordId = 0;
     private String discordKey = null;
 
-    public MapleClient(MapleAESOFB send, MapleAESOFB receive, IoSession session) {
+    public MapleClient(MapleAESOFB send, MapleAESOFB receive, Channel session) {
         this.send = send;
         this.receive = receive;
         this.session = session;
@@ -131,16 +133,20 @@ public class MapleClient {
         }
     }
 
-    public synchronized MapleAESOFB getReceiveCrypto() {
-        return receive;
-    }
-
-    public synchronized MapleAESOFB getSendCrypto() {
+    public MapleAESOFB getSendCrypto() {
         return send;
     }
 
-    public synchronized IoSession getSession() {
+    public MapleAESOFB getReceiveCrypto() {
+        return receive;
+    }
+
+    public Channel getSession() {
         return session;
+    }
+
+    public void setSession(Channel session) {
+        this.session = session;
     }
 
     public MapleCharacter getPlayer() {
@@ -152,7 +158,7 @@ public class MapleClient {
     }
 
     public void sendCharList(int server) {
-        this.session.write(MaplePacketCreator.getCharList(this, server));
+        announce(MaplePacketCreator.getCharList(this, server));
     }
 
     /**
@@ -225,7 +231,7 @@ public class MapleClient {
         boolean ret = false;
         try (Connection con = Server.getConnection();
              PreparedStatement ps = con.prepareStatement("SELECT COUNT(*) FROM ipbans WHERE ? LIKE CONCAT(ip, '%')")) {
-            ps.setString(1, session.getRemoteAddress().toString());
+            ps.setString(1, getRemoteAddress());
             try (ResultSet rs = ps.executeQuery()) {
                 if (rs.next() && rs.getInt(1) > 0) {
                     ret = true;
@@ -422,7 +428,7 @@ public class MapleClient {
     public boolean checkPin(String other) {
         pinattempt++;
         if (pinattempt > 5) {
-            getSession().closeNow();
+            getSession().close();
         }
         if (pin.equals(other)) {
             pinattempt = 0;
@@ -449,7 +455,7 @@ public class MapleClient {
     public boolean checkPic(String other) {
         picattempt++;
         if (picattempt > 5) {
-            getSession().closeNow();
+            getSession().close();
         }
         if (pic.equals(other)) {
             picattempt = 0;
@@ -459,7 +465,7 @@ public class MapleClient {
     }
 
     public int login(String login, String pwd) {
-        loginattempt++;
+//        loginattempt++;
         int loginok = 5;
         try (Connection con = Server.getConnection()) {
             try (PreparedStatement ps = con.prepareStatement("SELECT id, password, salt, gender, banned, gm, pin, pic, characterslots, tos, ip FROM accounts WHERE name = ?")) {
@@ -511,7 +517,7 @@ public class MapleClient {
                     e.printStackTrace();
                 }
             } else if (loginattempt > 4) {
-                getSession().closeNow();
+                getSession().close();
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -593,8 +599,8 @@ public class MapleClient {
         return accId;
     }
 
-    public void setAccID(int id) {
-        this.accId = id;
+    public void setAccID(int accId) {
+        this.accId = accId;
     }
 
     public void updateLoginState(int newstate) {
@@ -714,7 +720,7 @@ public class MapleClient {
         }
     }
 
-    public final void disconnect(boolean shutdown, boolean cashshop) {//once per MapleClient instance
+    public final void disconnect(boolean shutdown, boolean cashshop) {
         if (disconnecting) {
             return;
         }
@@ -734,12 +740,12 @@ public class MapleClient {
 
             removePlayer();
             player.saveCooldowns();
-            player.saveToDB();
+            player.saveToDB(true);
             if (channel == -1 || shutdown) {
                 player = null;
                 return;
             }
-            final World worlda = getWorldServer();
+            final MapleWorld worlda = getWorldServer();
             try {
                 if (!cashshop) {
                     if (!this.serverTransition) { // meaning not changing channels
@@ -814,10 +820,8 @@ public class MapleClient {
                         //endregion
                     }
                 }
-            } catch (final Exception e) {
-                e.printStackTrace();
             } finally {
-                LOGGER.info("Player {} logged-out", player.getName());
+                LOGGER.info("Player {} disconnected", player.getName());
                 getChannelServer().removePlayer(player);
                 if (!this.serverTransition) {
                     worlda.removePlayer(player);
@@ -831,8 +835,8 @@ public class MapleClient {
         }
         if (!serverTransition && isLoggedIn()) {
             updateLoginState(MapleClient.LOGIN_NOTLOGGEDIN);
-            session.removeAttribute(MapleClient.CLIENT_KEY); // prevents double dcing during login
-            session.closeNow(); // instead of using a deprecated method
+            session.attr(CLIENT_KEY).set(null); // prevents double dcing during login
+            session.close(); // instead of using a deprecated method
         }
     }
 
@@ -844,20 +848,20 @@ public class MapleClient {
         this.channel = channel;
     }
 
-    public Channel getChannelServer() {
+    public MapleChannel getChannelServer() {
         return Server.getInstance().getChannel(world, channel);
     }
 
-    public World getWorldServer() {
+    public MapleWorld getWorldServer() {
         return Server.getInstance().getWorld(world);
     }
 
-    public Channel getChannelServer(byte channel) {
+    public MapleChannel getChannelServer(byte channel) {
         return Server.getInstance().getChannel(world, channel);
     }
 
     public boolean deleteCharacter(int cid) {
-        MapleCharacter player = Server.getInstance().getWorld(0).getPlayerStorage().getCharacterById(cid);
+        MapleCharacter player = Server.getInstance().getWorld(0).getPlayerStorage().getPlayerByID(cid);
         if (player != null) {
             player.getClient().disconnect(false, false);
             disconnect(false, false);
@@ -904,8 +908,8 @@ public class MapleClient {
         return accountName;
     }
 
-    public void setAccountName(String a) {
-        this.accountName = a;
+    public void setAccountName(String accountName) {
+        this.accountName = accountName;
     }
 
     public int getWorld() {
@@ -927,13 +931,10 @@ public class MapleClient {
 
             @Override
             public void run() {
-                try {
-                    if (lastPong < then) {
-                        if (getSession() != null && getSession().isConnected()) {
-                            getSession().closeNow();
-                        }
+                if (lastPong < then) {
+                    if (getSession() != null && getSession().isActive()) {
+                        getSession().close();
                     }
-                } catch (NullPointerException ignored) {
                 }
             }
         }, 90000);
@@ -944,7 +945,7 @@ public class MapleClient {
     }
 
     public String getRemoteAddress() {
-        return session.getRemoteAddress().toString().substring(1).split(":")[0];
+        return session.remoteAddress().toString().substring(1).split(":")[0];
     }
 
     public String getHWID() {
@@ -969,14 +970,6 @@ public class MapleClient {
 
     public void removeEngine(String name) {
         engines.remove(name);
-    }
-
-    public Task getIdleTask() {
-        return idleTask;
-    }
-
-    public void setIdleTask(Task idleTask) {
-        this.idleTask = idleTask;
     }
 
     public NPCConversationManager getCM() {
@@ -1096,8 +1089,10 @@ public class MapleClient {
         }
     }
 
-    public synchronized void announce(final byte[] packet) {//MINA CORE IS A FUCKING BITCH AND I HATE IT <3
-        session.write(packet);
+    public void announce(byte[] packet) {
+        if (session != null && session.isActive()) {
+            session.writeAndFlush(packet);
+        }
     }
 
     public void changeChannel(int channel) {
@@ -1123,7 +1118,7 @@ public class MapleClient {
                 merchant.removeVisitor(getPlayer());
             }
         }
-        server.getPlayerBuffStorage().addBuffsToStorage(player.getId(), player.getAllBuffs());
+        server.getPlayerBuffStorage().put(player.getId(), player.getAllBuffs());
         player.cancelBuffEffects();
         player.cancelMagicDoor();
         player.saveCooldowns();

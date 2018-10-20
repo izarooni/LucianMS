@@ -2,10 +2,10 @@ package com.lucianms.server.events.channel;
 
 import client.MapleCharacter;
 import client.arcade.RPSGame;
-import net.PacketEvent;
-import net.SendOpcode;
+import com.lucianms.nio.receive.MaplePacketReader;
+import com.lucianms.server.events.PacketEvent;
+import com.lucianms.nio.SendOpcode;
 import tools.Randomizer;
-import tools.data.input.SeekableLittleEndianAccessor;
 import tools.data.output.MaplePacketLittleEndianWriter;
 
 /**
@@ -18,11 +18,11 @@ public class RockPaperScissorsEvent extends PacketEvent {
     private byte choice;
 
     @Override
-    public void process(SeekableLittleEndianAccessor slea) {
-        operation = slea.readByte();
+    public void processInput(MaplePacketReader reader) {
+        operation = reader.readByte();
         switch (operation) {
             case 0x1:
-                choice = slea.readByte();
+                choice = reader.readByte();
                 break;
         }
     }

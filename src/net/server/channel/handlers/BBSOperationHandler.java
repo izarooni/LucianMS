@@ -23,23 +23,23 @@ package net.server.channel.handlers;
 
 import client.MapleCharacter;
 import client.MapleClient;
-import net.AbstractMaplePacketHandler;
+import net.PacketEvent;
 import tools.MaplePacketCreator;
-import tools.data.input.SeekableLittleEndianAccessor;
+import tools.data.input.LittleEndianReader;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-public final class BBSOperationHandler extends AbstractMaplePacketHandler {
+public final class BBSOperationHandler extends PacketEvent {
 
     private String correctLength(String in, int maxSize) {
         return in.length() > maxSize ? in.substring(0, maxSize) : in;
     }
 
     @Override
-    public final void handlePacket(SeekableLittleEndianAccessor slea, MapleClient c) {
+    public final void handlePacket(LittleEndianReader slea, MapleClient c) {
         if (c.getPlayer().getGuildId() < 1) {
             return;
         }

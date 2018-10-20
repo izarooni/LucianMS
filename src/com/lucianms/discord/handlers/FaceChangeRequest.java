@@ -4,10 +4,10 @@ import client.MapleCharacter;
 import client.MapleStat;
 import com.lucianms.discord.DiscordSession;
 import com.lucianms.discord.Headers;
+import com.lucianms.nio.receive.MaplePacketReader;
 import net.server.Server;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import tools.data.input.GenericLittleEndianAccessor;
 import tools.data.output.MaplePacketLittleEndianWriter;
 
 import java.sql.Connection;
@@ -22,10 +22,10 @@ public class FaceChangeRequest extends DiscordRequest {
     private static final Logger LOGGER = LoggerFactory.getLogger(FaceChangeRequest.class);
 
     @Override
-    public void handle(GenericLittleEndianAccessor lea) {
-        long channelId = lea.readLong();
-        String username = lea.readMapleAsciiString();
-        int faceId = lea.readInt();
+    public void handle(MaplePacketReader reader) {
+        long channelId = reader.readLong();
+        String username = reader.readMapleAsciiString();
+        int faceId = reader.readInt();
         LOGGER.info("Updating {}'s face to {}", username, faceId);
 
         MaplePacketLittleEndianWriter writer = new MaplePacketLittleEndianWriter();
@@ -34,7 +34,7 @@ public class FaceChangeRequest extends DiscordRequest {
         writer.writeMapleAsciiString(username);
 
 
-        MapleCharacter player = Server.getInstance().getWorld(0).getPlayerStorage().getCharacterByName(username);
+        MapleCharacter player = Server.getInstance().getWorld(0).getPlayerStorage().getPlayerByName(username);
         if (player != null) {
             player.setFace(faceId);
             player.updateSingleStat(MapleStat.FACE, faceId);

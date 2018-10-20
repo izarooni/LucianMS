@@ -22,14 +22,14 @@
 package net.server.channel.handlers;
 
 import client.MapleClient;
-import net.AbstractMaplePacketHandler;
-import tools.data.input.SeekableLittleEndianAccessor;
+import net.PacketEvent;
+import tools.data.input.LittleEndianReader;
 
 /**
  * @author BubblesDev
  */
-public final class PetExcludeItemsHandler extends AbstractMaplePacketHandler {
-    public final void handlePacket(SeekableLittleEndianAccessor slea, MapleClient c) {
+public final class PetExcludeItemsHandler extends PacketEvent {
+    public final void handlePacket(LittleEndianReader slea, MapleClient c) {
         slea.readLong();
         byte amount = slea.readByte();
         for (int i = 0; i < amount; i++) {

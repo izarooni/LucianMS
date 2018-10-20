@@ -1,19 +1,19 @@
 package com.lucianms.server.events.login;
 
+import com.lucianms.nio.receive.MaplePacketReader;
 import com.lucianms.server.Whitelist;
-import net.PacketEvent;
+import com.lucianms.server.events.PacketEvent;
 import net.server.Server;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import tools.MaplePacketCreator;
-import tools.data.input.SeekableLittleEndianAccessor;
 
 import java.util.Calendar;
 
 /**
  * @author izarooni
  */
-public final class AccountLoginEvent extends PacketEvent {
+public class AccountLoginEvent extends PacketEvent {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(AccountLoginEvent.class);
 
@@ -26,9 +26,9 @@ public final class AccountLoginEvent extends PacketEvent {
     }
 
     @Override
-    public void process(SeekableLittleEndianAccessor slea) {
-        username = slea.readMapleAsciiString();
-        password = slea.readMapleAsciiString();
+    public void processInput(MaplePacketReader reader) {
+        username = reader.readMapleAsciiString();
+        password = reader.readMapleAsciiString();
     }
 
     @Override
@@ -39,7 +39,7 @@ public final class AccountLoginEvent extends PacketEvent {
             if (!Whitelist.hasAccount(getClient().getAccID())) {
                 LOGGER.warn("Attempted non-whitelist account login username: '{}' , accountID: '{}'", username, getClient().getAccID());
                 getClient().announce(MaplePacketCreator.getLoginFailed(5));
-                getClient().announce(MaplePacketCreator.serverNotice(1, "The server is unavailable for regular players at this time\r\nPlease contact an administrator if this is a mistake"));
+                getClient().announce(MaplePacketCreator.serverNotice(1, "The server is in whitelist mode! Only certain users will have access to the game right now."));
                 return null;
             }
         }

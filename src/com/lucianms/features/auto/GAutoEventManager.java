@@ -1,6 +1,6 @@
 package com.lucianms.features.auto;
 
-import net.server.world.World;
+import net.server.world.MapleWorld;
 import tools.Randomizer;
 
 import java.lang.reflect.InvocationTargetException;
@@ -51,9 +51,9 @@ public enum GAutoEventManager {
         this.lastInstantiate = lastInstantiate;
     }
 
-    public void startInstance(World world) {
+    public void startInstance(MapleWorld world) {
         try {
-            GAutoEvent gEvent = clazz.getDeclaredConstructor(World.class).newInstance(world);
+            GAutoEvent gEvent = clazz.getDeclaredConstructor(MapleWorld.class).newInstance(world);
             gEvent.start();
             setCurrentEvent(gEvent);
             setLastInstantiate(System.currentTimeMillis());
@@ -79,7 +79,7 @@ public enum GAutoEventManager {
      *
      * @param world the world the auto event will be hosted in
      */
-    public static void startRandomEvent(World world) {
+    public static void startRandomEvent(MapleWorld world) {
         if (getCurrentEvent() != null) {
             // maybe implement a force cancel function
             getCurrentEvent().stop();
@@ -100,7 +100,7 @@ public enum GAutoEventManager {
                 while (event == null) {
                     event = available.get(Randomizer.nextInt(available.size()));
                     try {
-                        GAutoEvent gEvent = event.clazz.getDeclaredConstructor(World.class).newInstance(world);
+                        GAutoEvent gEvent = event.clazz.getDeclaredConstructor(MapleWorld.class).newInstance(world);
                         gEvent.start();
                         setCurrentEvent(gEvent);
                         event.setLastInstantiate(System.currentTimeMillis());

@@ -24,22 +24,22 @@ package net.server.channel.handlers;
 import constants.ServerConstants;
 import client.MapleCharacter;
 import client.MapleClient;
-import net.AbstractMaplePacketHandler;
+import net.PacketEvent;
 import tools.MaplePacketCreator;
-import tools.data.input.SeekableLittleEndianAccessor;
+import tools.data.input.LittleEndianReader;
 
 /**
  *
  * @author Jay Estrella
  */
-public final class FamilyAddHandler extends AbstractMaplePacketHandler {
-    public final void handlePacket(SeekableLittleEndianAccessor slea, MapleClient c) {
+public final class FamilyAddHandler extends PacketEvent {
+    public final void handlePacket(LittleEndianReader slea, MapleClient c) {
     	if (!ServerConstants.USE_FAMILY_SYSTEM){
     		return;
     	}
         System.out.println(slea.toString());
         String toAdd = slea.readMapleAsciiString();
-        MapleCharacter addChr = c.getChannelServer().getPlayerStorage().getCharacterByName(toAdd);
+        MapleCharacter addChr = c.getChannelServer().getPlayerStorage().getPlayerByName(toAdd);
         if (addChr != null) {
             addChr.getClient().announce(MaplePacketCreator.sendFamilyInvite(c.getPlayer().getId(), toAdd));
             c.getPlayer().dropMessage("The invite has been sent.");

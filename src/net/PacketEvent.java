@@ -1,70 +1,33 @@
+/*
+	This file is part of the OdinMS Maple Story Server
+    Copyright (C) 2008 Patrick Huy <patrick.huy@frz.cc>
+		       Matthias Butz <matze@odinms.de>
+		       Jan Christian Meyer <vimes@odinms.de>
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU Affero General Public License as
+    published by the Free Software Foundation version 3 as published by
+    the Free Software Foundation. You may not use, modify or distribute
+    this program under any other version of the GNU Affero General Public
+    License.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU Affero General Public License for more details.
+
+    You should have received a copy of the GNU Affero General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+*/
 package net;
 
 import client.MapleClient;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import tools.data.input.SeekableLittleEndianAccessor;
 
-import java.util.ArrayDeque;
+@Deprecated
+public abstract class PacketEvent implements MaplePacketHandler {
 
-/**
- * Process packets so the data can be used in other ways then server handles (e.g. auto events, PQs, etc.)
- * <p>
- * Should they need to be canceled (not proceed to server handles), the other non-server handles can use the processed data and act accordingly
- * </p>
- *
- * @author izarooni
- */
-public abstract class PacketEvent {
-
-    private Logger LOGGER = null;
-    private MapleClient client;
-    private boolean canceled = false;
-    private ArrayDeque<Runnable> posts = new ArrayDeque<>(3);
-
-    public final Logger getLogger() {
-        if (LOGGER == null) {
-            LOGGER = LoggerFactory.getLogger(getClass());
-        }
-        return LOGGER;
+    @Override
+    public boolean validateState(MapleClient c) {
+        return c.isLoggedIn();
     }
-
-    final void setClient(MapleClient client) {
-        this.client = client;
-    }
-
-    public final MapleClient getClient() {
-        return client;
-    }
-
-    public final boolean isCanceled() {
-        return canceled;
-    }
-
-    public final void setCanceled(boolean canceled) {
-        this.canceled = canceled;
-    }
-
-    public boolean inValidState() {
-        return client.isLoggedIn();
-    }
-
-    public void exceptionCaught(Throwable t) {
-        t.printStackTrace();
-    }
-
-    public final void onPost(Runnable runnable) {
-        posts.add(runnable);
-    }
-
-    public void post() {
-        Runnable poll;
-        while ((poll = posts.poll()) != null) {
-            poll.run();
-        }
-    }
-
-    public abstract void process(SeekableLittleEndianAccessor slea);
-
-    public abstract Object onPacket();
 }

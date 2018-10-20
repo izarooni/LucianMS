@@ -5,7 +5,7 @@ import com.lucianms.features.GenericEvent;
 import com.lucianms.lang.annotation.PacketWorker;
 import com.lucianms.scheduler.TaskExecutor;
 import com.lucianms.server.events.channel.ChangeMapEvent;
-import com.lucianms.server.events.channel.TakeDamageEvent;
+import com.lucianms.server.events.channel.PlayerTakeDamageEvent;
 import server.FieldBuilder;
 import server.life.MapleLifeFactory;
 import server.life.MapleMonster;
@@ -16,8 +16,6 @@ import tools.MaplePacketCreator;
 import tools.StringUtil;
 
 import java.awt.*;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 
 /**
@@ -165,7 +163,7 @@ public abstract class BossPQ extends GenericEvent {
     }
 
     @PacketWorker
-    public void onPlayerHurt(TakeDamageEvent event) {
+    public void onPlayerHurt(PlayerTakeDamageEvent event) {
         // it's probably a bad idea to have monsters that 1-hit the player and is unavoidable
         // so if that total damage exceeds the player's health, just set the damage amount to (current_hp - 1)
         int nDamage = Math.min(event.getClient().getPlayer().getHp() - 1, (int) (event.getDamage() * getDamageMultiplier()));

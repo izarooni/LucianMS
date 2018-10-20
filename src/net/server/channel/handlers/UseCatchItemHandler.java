@@ -26,20 +26,20 @@ import client.MapleClient;
 import client.autoban.Cheater;
 import client.autoban.Cheats;
 import client.inventory.MapleInventoryType;
-import net.AbstractMaplePacketHandler;
+import net.PacketEvent;
 import server.MapleInventoryManipulator;
 import server.MapleItemInformationProvider;
 import server.life.MapleMonster;
 import tools.MaplePacketCreator;
-import tools.data.input.SeekableLittleEndianAccessor;
+import tools.data.input.LittleEndianReader;
 
 /**
  * @author kevintjuh93
  */
-public class UseCatchItemHandler extends AbstractMaplePacketHandler {
+public class UseCatchItemHandler extends PacketEvent {
 
     @Override
-    public void handlePacket(SeekableLittleEndianAccessor slea, MapleClient c) {
+    public void handlePacket(LittleEndianReader slea, MapleClient c) {
         MapleCharacter player = c.getPlayer();
         Cheater.CheatEntry entry = player.getCheater().getCheatEntry(Cheats.CatchItemUse);
         slea.readShort();

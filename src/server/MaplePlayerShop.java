@@ -27,7 +27,7 @@ import client.inventory.Item;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import net.SendOpcode;
+import com.lucianms.nio.SendOpcode;
 import server.maps.AbstractMapleMapObject;
 import server.maps.MapleMapObjectType;
 import tools.MaplePacketCreator;

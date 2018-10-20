@@ -24,13 +24,13 @@ package net.server.channel.handlers;
 import client.MapleClient;
 import client.inventory.Item;
 import client.inventory.MapleInventoryType;
-import net.AbstractMaplePacketHandler;
+import net.PacketEvent;
 import tools.MaplePacketCreator;
-import tools.data.input.SeekableLittleEndianAccessor;
+import tools.data.input.LittleEndianReader;
 
-public final class UseItemEffectHandler extends AbstractMaplePacketHandler {
+public final class UseItemEffectHandler extends PacketEvent {
     @Override
-    public final void handlePacket(SeekableLittleEndianAccessor slea, MapleClient c) {
+    public final void handlePacket(LittleEndianReader slea, MapleClient c) {
         Item toUse;
         int itemId = slea.readInt();
         if (itemId == 4290001 || itemId == 4290000) {

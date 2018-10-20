@@ -34,7 +34,6 @@ import net.server.guild.MapleAlliance;
 import net.server.guild.MapleGuild;
 import net.server.world.MapleParty;
 import net.server.world.MaplePartyCharacter;
-import org.apache.commons.net.chargen.CharGenTCPClient;
 import provider.MapleData;
 import provider.MapleDataProviderFactory;
 import server.MapleItemInformationProvider;
@@ -46,7 +45,6 @@ import server.maps.MapleMap;
 import server.partyquest.Pyramid;
 import server.partyquest.Pyramid.PyramidMode;
 import server.quest.MapleQuest;
-import tools.Database;
 import tools.MaplePacketCreator;
 
 import java.io.File;
@@ -193,6 +191,10 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
 
     public MapleJob getJob() {
         return getPlayer().getJob();
+    }
+
+    public boolean isQuestStarted(short id) {
+        return getPlayer().getQuest(MapleQuest.getInstance(id)).getStatus() == MapleQuestStatus.Status.STARTED;
     }
 
     public void startQuest(short id) {
@@ -441,7 +443,7 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
     }
 
     public MapleCharacter getMapleCharacter(String player) {
-        return getClient().getChannelServer().getPlayerStorage().getCharacterByName(player);
+        return getClient().getChannelServer().getPlayerStorage().getPlayerByName(player);
     }
 
     public void logLeaf(String prize) {

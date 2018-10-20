@@ -5,8 +5,8 @@ import com.lucianms.features.GenericEvent;
 import com.lucianms.lang.annotation.PacketWorker;
 import com.lucianms.scheduler.Task;
 import com.lucianms.scheduler.TaskExecutor;
-import com.lucianms.server.events.channel.UseItemEvent;
-import net.SendOpcode;
+import com.lucianms.server.events.channel.PlayerItemUseEvent;
+import com.lucianms.nio.SendOpcode;
 import server.life.MapleLifeFactory;
 import server.life.MapleNPC;
 import tools.data.output.MaplePacketLittleEndianWriter;
@@ -71,7 +71,7 @@ public class FlappyBirdController extends GenericEvent {
     }
 
     @PacketWorker
-    public void onItemUse(UseItemEvent event) {
+    public void onItemUse(PlayerItemUseEvent event) {
         int itemId = event.getItemId();
         if (itemId == 2002001) { // jump
             velocity.y = -JSpeed;

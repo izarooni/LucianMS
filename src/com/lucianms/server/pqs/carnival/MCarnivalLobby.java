@@ -2,7 +2,7 @@ package com.lucianms.server.pqs.carnival;
 
 import com.lucianms.scheduler.Task;
 import com.lucianms.scheduler.TaskExecutor;
-import net.server.channel.Channel;
+import net.server.channel.MapleChannel;
 import net.server.world.MapleParty;
 import net.server.world.MaplePartyCharacter;
 import tools.MaplePacketCreator;
@@ -24,7 +24,7 @@ public class MCarnivalLobby {
 
     private static final int M_Office = 980000000;
 
-    private final Channel channel;
+    private final MapleChannel channel;
     private final int maxPartySize;
     private final int mapId;
 
@@ -36,7 +36,7 @@ public class MCarnivalLobby {
 
     private Task waitingTask;
 
-    public MCarnivalLobby(Channel channel, int maxPartySize, int mapId) {
+    public MCarnivalLobby(MapleChannel channel, int maxPartySize, int mapId) {
         this.channel = channel;
         this.maxPartySize = maxPartySize;
         this.mapId = mapId;
@@ -51,7 +51,7 @@ public class MCarnivalLobby {
         }
     }
 
-    public Channel getChannel() {
+    public MapleChannel getChannel() {
         return channel;
     }
 

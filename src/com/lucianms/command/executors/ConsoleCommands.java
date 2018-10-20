@@ -10,8 +10,8 @@ import com.lucianms.io.scripting.Achievements;
 import com.lucianms.scheduler.TaskExecutor;
 import com.lucianms.server.Whitelist;
 import net.server.Server;
-import net.server.channel.Channel;
-import net.server.world.World;
+import net.server.channel.MapleChannel;
+import net.server.world.MapleWorld;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import server.CashShop;
@@ -93,8 +93,8 @@ public class ConsoleCommands {
                     LOGGER.warn(error);
                     return;
                 }
-                for (World world : Server.getInstance().getWorlds()) {
-                    for (Channel channel : world.getChannels()) {
+                for (MapleWorld world : Server.getInstance().getWorlds()) {
+                    for (MapleChannel channel : world.getChannels()) {
                         channel.reloadMap(mapID);
                         LOGGER.info("Reloading map {} in world {} channel {}", mapID, (world.getId() + 1), channel.getId());
                     }
@@ -147,14 +147,14 @@ public class ConsoleCommands {
                 LOGGER.info("Available operations: cs, whitelist, cquests, achievements, houses, config");
             }
         } else if (command.equals("online")) {
-            LOGGER.info("Managed LOGIN Sessions: " + Server.getInstance().getAcceptor().getManagedSessionCount());
             if (Server.getInstance().isOnline()) {
-                for (World worlds : Server.getInstance().getWorlds()) {
+                LOGGER.info("Server: " + Server.getServerHandler().getChannels().size());
+                for (MapleWorld worlds : Server.getInstance().getWorlds()) {
                     LOGGER.info("World {}:", (worlds.getId() + 1));
-                    for (Channel channels : worlds.getChannels()) {
+                    for (MapleChannel channels : worlds.getChannels()) {
                         StringBuilder sb = new StringBuilder();
                         sb.append("\tChannel {}: ");
-                        for (MapleCharacter players : channels.getPlayerStorage().getAllCharacters()) {
+                        for (MapleCharacter players : channels.getPlayerStorage().getAllPlayers()) {
                             sb.append(players.getName()).append(", ");
                         }
                         if (sb.length() > 2) {
@@ -175,10 +175,11 @@ public class ConsoleCommands {
         } else if (command.equals("crash")) {
             if (args.length() == 1) {
                 String username = args.get(0);
-                for (World world : Server.getInstance().getWorlds()) {
-                    MapleCharacter player = world.getPlayerStorage().getCharacterByName(username);
+                for (MapleWorld world : Server.getInstance().getWorlds()) {
+                    MapleCharacter player = world.getPlayerStorage().getPlayerByName(username);
                     if (player != null) {
                         player.getClient().disconnect(false, player.getCashShop().isOpened());
+                        world.removePlayer(player);
                         LOGGER.info("{} disconnected", player.getName());
                         return;
                     }

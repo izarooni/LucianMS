@@ -1,7 +1,6 @@
 package com.lucianms.server.events;
 
-import net.PacketEvent;
-import tools.data.input.SeekableLittleEndianAccessor;
+import com.lucianms.nio.receive.MaplePacketReader;
 
 /**
  * @author izarooni
@@ -14,7 +13,7 @@ public class PongEvent extends PacketEvent {
     }
 
     @Override
-    public void process(SeekableLittleEndianAccessor slea) {
+    public void processInput(MaplePacketReader reader) {
     }
 
     @Override
