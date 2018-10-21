@@ -1,8 +1,8 @@
 /* izarooni */
 
-let InventoryModifier = Java.type("server.MapleInventoryManipulator");
-let ItemConstants = Java.type("constants.ItemConstants");
-let InventoryType = Java.type("client.inventory.MapleInventoryType");
+let InventoryModifier = Java.type("com.lucianms.server.MapleInventoryManipulator");
+let ItemConstants = Java.type("com.lucianms.constants.ItemConstants");
+let InventoryType = Java.type("com.lucianms.client.inventory.MapleInventoryType");
 
 let StringUtil = Java.type("tools.StringUtil");
 
