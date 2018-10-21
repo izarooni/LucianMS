@@ -3,6 +3,7 @@ package com.lucianms.io.scripting.npc;
 import com.lucianms.client.MapleCharacter;
 import com.lucianms.client.MapleClient;
 import com.lucianms.client.SpamTracker;
+import com.lucianms.features.PlayerCreative;
 import com.lucianms.io.scripting.ScriptUtil;
 import com.lucianms.constants.PlayerToggles;
 import org.slf4j.Logger;
@@ -74,6 +75,12 @@ public class NPCScriptManager {
                 }
             }
             boolean revoked = player.getToggles().checkProperty(PlayerToggles.CommandNPCAccess, false);
+
+            // allow talking to the PlayerCreative NPC
+            if(player.getGenericEvents().stream().anyMatch((g) -> g instanceof PlayerCreative)) {
+                if(npc == 9899958) revoked = false;
+            }
+
             if (iv == null || revoked) {
                 if (revoked) {
                     player.sendMessage(5, PlayerToggles.ErrorMessage);
