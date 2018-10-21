@@ -943,7 +943,7 @@ public class GameMasterCommands {
             if (args.length() == 1) {
                 target = ch.getPlayerStorage().getPlayerByName(args.get(0));
                 if (target == null) {
-                    player.dropMessage(String.format("The player %s could not be found", args.get(0)));
+                    player.sendMessage(5, "Unable to find any player named '{}'", args.get(0));
                     return;
                 }
             }
