@@ -3,6 +3,7 @@ package com.lucianms.command;
 import com.lucianms.client.MapleCharacter;
 import com.lucianms.client.MapleClient;
 import com.lucianms.command.executors.*;
+import com.lucianms.helpers.JailManager;
 
 import java.util.regex.Pattern;
 
@@ -67,7 +68,9 @@ public class CommandWorker {
             return true;
         } else if (h == '@') {
             if (!player.isGM() && !noCheck) {
-                if (!command.equals("dispose", "quests")) {
+                if (JailManager.isJailed(player.getId())) {
+                    player.sendMessage(5, "You cannot use commands here.");
+                } else if (!command.equals("dispose", "quests")) {
                     if (player.getArcade() != null
                             || (player.getMapId() >= 90000000 && player.getMapId() <= 90000004)
                             || player.getMapId() == 80 || player.getMapId() == 81) {

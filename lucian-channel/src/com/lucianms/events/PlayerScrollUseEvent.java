@@ -5,10 +5,10 @@ import com.lucianms.client.SkillFactory;
 import com.lucianms.client.inventory.*;
 import com.lucianms.client.inventory.Equip.ScrollResult;
 import com.lucianms.nio.receive.MaplePacketReader;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import com.lucianms.server.MapleInventoryManipulator;
 import com.lucianms.server.MapleItemInformationProvider;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import tools.MaplePacketCreator;
 
 import java.util.ArrayList;
@@ -29,13 +29,14 @@ public final class PlayerScrollUseEvent extends PacketEvent {
     private boolean legendarySpirit;
 
     @Override
-    public void exceptionCaught(Throwable t) {
+    public boolean exceptionCaught(Throwable t) {
         MapleCharacter player = getClient().getPlayer();
         Item scroll = player.getInventory(MapleInventoryType.USE).getItem(slot);
         Item equip = player.getInventory(destination < 0 ? MapleInventoryType.EQUIP : MapleInventoryType.EQUIPPED).getItem(destination);
         LOGGER.warn("Unable to use scroll {} on item {}",
                 (scroll == null ? null : scroll.getItemId()),
                 (equip == null ? null : equip.getItemId()), t);
+        return false;
     }
 
     @Override

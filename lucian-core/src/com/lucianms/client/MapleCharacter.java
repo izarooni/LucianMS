@@ -1214,8 +1214,8 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
      * @param client new client to assign to the player
      */
     public void newClient(MapleClient client) {
+        client.setAccountName(this.client.getAccountName());
         this.client = client;
-        client.setAccountName(client.getAccountName());
         this.loggedIn = true;
 
         map = this.client.getChannelServer().getMap(getMapId());

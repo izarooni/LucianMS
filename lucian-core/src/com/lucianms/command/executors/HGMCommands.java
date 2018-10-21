@@ -53,11 +53,19 @@ public class HGMCommands {
             commands.add("!oshop <shopId> - Remotely open any shop");
             commands.add("!saveall - Save everything on the server");
             commands.add("!godmeup - Change values of all stats for all equips");
+            commands.add("!popup - Display a server wide notice");
             commands.add("!stalker - Open the player stalking NPC");
             commands.add("!setname - Change your username or another player");
             commands.sort(String::compareTo);
             commands.forEach(player::dropMessage);
             commands.clear();
+        } else if (command.equals("popup")) {
+            if (args.length() > 0) {
+                String content = args.concatFrom(0);
+                client.getWorldServer().broadcastPacket(MaplePacketCreator.serverNotice(0, content));
+            } else {
+                player.sendMessage(5, "You must type a message!");
+            }
         } else if (command.equals("setname")) {
             if (args.length() == 2) {
                 MapleCharacter target = client.getWorldServer().getPlayerStorage().getPlayerByName(args.get(0));

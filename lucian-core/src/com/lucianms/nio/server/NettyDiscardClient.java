@@ -23,7 +23,6 @@ public class NettyDiscardClient implements AutoCloseable {
     private final int port;
     private Class<? extends ByteToMessageDecoder> decoder;
     private Class<? extends MessageToByteEncoder> encoder;
-    private ChannelFuture channelFuture;
 
     public NettyDiscardClient(String address, int port, NioEventLoopGroup parentGroup, ChannelInboundHandlerAdapter serverInboundHandler, Class<? extends ByteToMessageDecoder> decoder, Class<? extends MessageToByteEncoder> encoder) {
         this.address = address;
@@ -54,14 +53,8 @@ public class NettyDiscardClient implements AutoCloseable {
         return bootstrap;
     }
 
-    public ChannelFuture getChannelFuture() {
-        return channelFuture;
-    }
-
     @Override
     public void close() throws Exception {
-        channelFuture.channel().close();
-        channelFuture.channel().closeFuture().sync();
         parentGroup.shutdownGracefully();
     }
 }

@@ -20,12 +20,13 @@ public class PlayerReactorHitEvent extends PacketEvent {
     private short stance;
 
     @Override
-    public void exceptionCaught(Throwable t) {
+    public boolean exceptionCaught(Throwable t) {
         super.exceptionCaught(t);
         MapleReactor reactor = getClient().getPlayer().getMap().getReactorById(objectId);
         if (reactor != null) {
             LOGGER.warn("An occurred occurred within the reactor '{}'", reactor.getId());
         }
+        return false;
     }
 
     @Override

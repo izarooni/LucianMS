@@ -66,8 +66,9 @@ public abstract class PacketEvent implements Cleaner.Cleanable {
         return client.isLoggedIn();
     }
 
-    public void exceptionCaught(Throwable t) {
+    public boolean exceptionCaught(Throwable t) {
         t.printStackTrace();
+        return false;
     }
 
     public abstract void processInput(MaplePacketReader reader);

@@ -4,7 +4,6 @@ import com.lucianms.client.MapleCharacter;
 import com.lucianms.client.MapleClient;
 import com.lucianms.constants.ServerConstants;
 import com.lucianms.events.PacketEvent;
-import com.lucianms.io.Config;
 import com.lucianms.nio.ReceivePacketManager;
 import com.lucianms.nio.ReceivePacketState;
 import com.lucianms.nio.receive.MaplePacketDecoder;
@@ -25,7 +24,9 @@ import org.slf4j.LoggerFactory;
 import tools.MapleAESOFB;
 import tools.MaplePacketCreator;
 
+import java.io.File;
 import java.io.IOException;
+import java.io.PrintStream;
 
 @ChannelHandler.Sharable
 public class MapleServerInboundHandler extends ChannelInboundHandlerAdapter {
@@ -133,7 +134,13 @@ public class MapleServerInboundHandler extends ChannelInboundHandlerAdapter {
                     packetEvent.onPacket();
                 }
             } catch (Exception e) {
-                packetEvent.exceptionCaught(e);
+                if (!packetEvent.exceptionCaught(e)) {
+                    try (PrintStream stream = new PrintStream(new File("errors.log"))) {
+                        e.printStackTrace(stream);
+                    } catch (Exception ex) {
+                        LOGGER.info("can't print exception to stream", ex);
+                    }
+                }
             } finally {
                 packetEvent.packetCompleted();
             }
@@ -147,7 +154,11 @@ public class MapleServerInboundHandler extends ChannelInboundHandlerAdapter {
         if (cause instanceof IOException) {
             return;
         }
-        cause.printStackTrace();
+        try (PrintStream stream = new PrintStream(new File("errors.log"))) {
+            cause.printStackTrace(stream);
+        } catch (Exception e) {
+            LOGGER.info("can't print exception to stream", e);
+        }
     }
 
     public ChannelGroup getChannels() {
