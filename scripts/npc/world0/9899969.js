@@ -19,7 +19,7 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 importPackage(Packages.tools);
-var LifeFactory = Java.type("server.life.MapleLifeFactory");
+var LifeFactory = Java.type("com.lucianms.server.life.MapleLifeFactory");
 /* venem */
 /* Outer Space Mini Boss and 4 planets entrance */
 var status = 0;

@@ -41,6 +41,7 @@ import tools.MaplePacketCreator;
 import tools.Randomizer;
 
 import java.awt.*;
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -88,13 +89,13 @@ public class ReactorActionManager extends AbstractPlayerInteraction {
 
     public void dropItems(boolean meso, int mesoChance, int minMeso, int maxMeso, int minItems) {
         List<ReactorDropEntry> chances = getDropChances();
-        List<ReactorDropEntry> items = new LinkedList<>();
+        List<ReactorDropEntry> items = new ArrayList<>();
         int numItems = 0;
         if (meso && Math.random() < (1 / (double) mesoChance)) {
             items.add(new ReactorDropEntry(0, mesoChance, -1));
         }
         for (ReactorDropEntry d : chances) {
-            if (Math.random() < (1 / (double) d.chance)) {
+            if (getPlayer().isDebug() || Math.random() < (1 / (double) d.chance)) {
                 numItems++;
                 items.add(d);
             }
@@ -132,7 +133,7 @@ public class ReactorActionManager extends AbstractPlayerInteraction {
                 if (ii.getInventoryType(d.itemId) != MapleInventoryType.EQUIP) {
                     drop = new Item(d.itemId, (short) 0, (short) 1);
                 } else {
-                    drop = ii.randomizeStats((Equip) ii.getEquipById(d.itemId));
+                    drop = ii.randomizeStats(ii.getEquipById(d.itemId));
                 }
                 reactor.getMap().spawnItemDrop(reactor, getPlayer(), drop, dropPos, false, false);
             }

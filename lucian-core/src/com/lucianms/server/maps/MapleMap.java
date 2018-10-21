@@ -945,11 +945,9 @@ public class MapleMap {
     }
 
     public MapleReactor getReactorByName(String name) {
-        for (MapleMapObject obj : getCharacters()) {
-            if (obj.getType() == MapleMapObjectType.REACTOR) {
-                if (((MapleReactor) obj).getName().equals(name)) {
-                    return (MapleReactor) obj;
-                }
+        for (MapleReactor reactor : getReactors()) {
+            if (reactor.getName().equalsIgnoreCase(name)) {
+                return reactor;
             }
         }
         return null;
@@ -963,6 +961,7 @@ public class MapleMap {
         SpawnPoint selected = spawnPoints.stream().filter(sp -> sp.getTeam() == team.getId()).findAny().orElse(null);
         if (selected == null) {
             LOGGER.warn("Cannot summon Monster Carnival mob because there are no matching spawn points");
+            return;
         }
         Point nPosition = selected.getPosition();
         monster.setPosition(nPosition);

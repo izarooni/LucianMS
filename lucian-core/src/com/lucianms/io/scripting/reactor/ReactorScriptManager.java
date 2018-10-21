@@ -64,7 +64,7 @@ public class ReactorScriptManager {
     public static List<ReactorDropEntry> getDrops(int rid) {
         List<ReactorDropEntry> ret = drops.get(rid);
         if (ret == null) {
-            ret = new LinkedList<>();
+            ret = new ArrayList<>();
             try {
                 try (Connection con = Server.getConnection();
                      PreparedStatement ps = con.prepareStatement("SELECT itemid, chance, questid FROM reactordrops WHERE reactorid = ? AND chance >= 0")) {

@@ -1,4 +1,4 @@
-const MapleInventoryType = Java.type("client.inventory.MapleInventoryType");
+const MapleInventoryType = Java.type("com.lucianms.client.inventory.MapleInventoryType");
 const MaplePacketCreator = Java.type("tools.MaplePacketCreator");
 const SporeItem = 2430014;
 /* izarooni */

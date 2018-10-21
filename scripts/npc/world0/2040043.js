@@ -1,5 +1,5 @@
 importPackage(Packages.tools);
-var LifeFactory = Java.type("server.life.MapleLifeFactory");
+var LifeFactory = Java.type("com.lucianms.server.life.MapleLifeFactory");
 var MPC = Java.type("tools.MaplePacketCreator");
 /* izarooni */
 var status = 0;

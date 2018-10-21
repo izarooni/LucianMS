@@ -2,7 +2,7 @@ const CQuests    = Java.type("com.lucianms.cquest.CQuestBuilder");
 const CQuestData = Java.type("com.lucianms.cquest.CQuestData");
 
 const UGiveaway = Java.type("tools.UniqueGiveaway");
-const Equip     = Java.type("client.inventory.Equip");
+const Equip = Java.type("com.lucianms.client.inventory.Equip");
 
 const Calendar  = Java.type("java.util.Calendar");
 const TimeZone  = Java.type("java.util.TimeZone");

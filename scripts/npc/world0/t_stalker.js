@@ -1,7 +1,7 @@
 /* izarooni */
-var InventoryType = Java.type("client.inventory.MapleInventoryType");
-var ItemConstants = Java.type("constants.ItemConstants");
-var InventoryManipulator = Java.type("server.MapleInventoryManipulator");
+var InventoryType = Java.type("com.lucianms.client.inventory.MapleInventoryType");
+var ItemConstants = Java.type("com.lucianms.constants.ItemConstants");
+var InventoryManipulator = Java.type("com.lucianms.server.MapleInventoryManipulator");
 
 var status = 0;
 var players = null;
@@ -219,7 +219,7 @@ function onlinePlayers(filter) {
     let ret = [];
     for (let i = 0; i < client.getWorldServer().getChannels().size(); i++) {
         let ch = client.getWorldServer().getChannel(i + 1);
-        let iter = ch.getPlayerStorage().getAllCharacters().iterator();
+        let iter = ch.getPlayerStorage().getAllPlayers().iterator();
         while (iter.hasNext()) {
             let p = iter.next();
             if (filter != null) {

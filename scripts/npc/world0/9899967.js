@@ -23,7 +23,7 @@
     Machine Apparatus
 */
 importPackage(Packages.tools);
-var LifeFactory = Java.type("server.life.MapleLifeFactory");
+var LifeFactory = Java.type("com.lucianms.server.life.MapleLifeFactory");
 var status = 0;
 
 function start() {

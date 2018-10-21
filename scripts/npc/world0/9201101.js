@@ -1,4 +1,4 @@
-const Occupation = Java.type("client.meta.Occupation");
+const Occupation = Java.type("com.lucianms.client.meta.Occupation");
 /* izarooni */
 let status = 0;
 let pocc = player.getOccupation();

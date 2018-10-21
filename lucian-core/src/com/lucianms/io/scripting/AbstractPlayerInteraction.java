@@ -183,19 +183,11 @@ public class AbstractPlayerInteraction {
     }
 
     public boolean isQuestCompleted(int quest) {
-        try {
-            return getQuestStatus(quest) == MapleQuestStatus.Status.COMPLETED;
-        } catch (NullPointerException e) {
-            return false;
-        }
+        return getQuestStatus(quest) == MapleQuestStatus.Status.COMPLETED;
     }
 
     public boolean isQuestStarted(int quest) {
-        try {
-            return getQuestStatus(quest) == MapleQuestStatus.Status.STARTED;
-        } catch (NullPointerException e) {
-            return false;
-        }
+        return getQuestStatus(quest) == MapleQuestStatus.Status.STARTED;
     }
 
     public int getQuestProgress(int qid) {

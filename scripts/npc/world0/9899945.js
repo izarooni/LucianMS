@@ -1,5 +1,5 @@
 var MaplePacketCreator = Java.type("tools.MaplePacketCreator");
-var LifeFactory = Java.type("server.life.MapleLifeFactory");
+var LifeFactory = Java.type("com.lucianms.server.life.MapleLifeFactory");
 
 /* izarooni */
 var status = 0;

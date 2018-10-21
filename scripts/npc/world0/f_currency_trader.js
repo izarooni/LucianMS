@@ -1,6 +1,6 @@
 load("scripts/util_imports.js");
 load("scripts/util_transaction.js");
-const Crystal = Java.type("constants.ServerConstants").CURRENCY;
+const Crystal = Java.type("com.lucianms.constants.ServerConstants").CURRENCY;
 const MesoRate = 100000; // how much will it cost for 1 Crystal
 const MaximumQuantity = 100; // maximum quantity per item stack
 /* izarooni */

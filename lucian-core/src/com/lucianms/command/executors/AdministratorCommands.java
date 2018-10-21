@@ -179,15 +179,18 @@ public class AdministratorCommands {
             if (args.length() == 1) {
                 Function<Point, String> readable = p -> String.format("Location{X:%d,Y:%d}", p.x, p.y);
                 if (args.get(0).equalsIgnoreCase("reactors")) {
+                    player.sendMessage("Listing reactors...");
                     for (MapleMapObject object : player.getMap().getReactors()) {
                         MapleReactor reactor = (MapleReactor) object;
                         player.sendMessage("{} / id:{} / oid:{} / name:{}", readable.apply(reactor.getPosition()), reactor.getId(), reactor.getObjectId(), reactor.getName());
                     }
                 } else if (args.get(0).equalsIgnoreCase("monsters")) {
+                    player.sendMessage("Listing monsters...");
                     for (MapleMonster monsters : player.getMap().getMonsters()) {
                         player.sendMessage("{} / id:{} / oid:{} / name:{} / HP:{}", readable.apply(monsters.getPosition()), monsters.getId(), monsters.getObjectId(), monsters.getName(), monsters.getHp());
                     }
                 } else if (args.get(0).equalsIgnoreCase("npcs")) {
+                    player.sendMessage("Listing npcs...");
                     for (MapleMapObject object : player.getMap().getMapObjects()) {
                         if (object instanceof MapleNPC) {
                             MapleNPC npc = ((MapleNPC) object);
@@ -197,6 +200,8 @@ public class AdministratorCommands {
                             player.sendMessage("{} / id:{} / oid:{} / name:{} / script:{}", readable.apply(npc.getPosition()), npc.getId(), npc.getObjectId(), npc.getName(), npc.getScript());
                         }
                     }
+                } else {
+                    player.sendMessage("Available types: reactors, monsters, npcs");
                 }
             }
         } else if (command.equals("wpos")) {
