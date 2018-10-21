@@ -60,7 +60,7 @@ public class InternalChannelCommunicationsHandler extends ChannelInboundHandlerA
     @Override
     public void channelActive(ChannelHandlerContext ctx) throws Exception {
         LOGGER.info("Connected to login server");
-        byte[] p = sendMessage("The server is now available.\r\nYou may now login.");
+        byte[] p = sendMessage("The server is now available.\r\nYou may login.");
         ctx.channel().writeAndFlush(p);
     }
 

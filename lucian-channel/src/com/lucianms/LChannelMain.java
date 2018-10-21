@@ -1,5 +1,6 @@
 package com.lucianms;
 
+import com.lucianms.discord.DiscordSession;
 import com.lucianms.events.*;
 import com.lucianms.io.Config;
 import com.lucianms.nio.ReceivePacketState;
@@ -68,7 +69,7 @@ public class LChannelMain {
             return;
         }
 
-//        DiscordSession.listen();
+        DiscordSession.listen();
 
         try (Connection con = Server.getConnection()) {
             Database.execute(con, "update accounts set loggedin = 0");

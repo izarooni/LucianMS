@@ -2,7 +2,9 @@ package com.lucianms.discord;
 
 import com.lucianms.discord.handlers.DiscordRequest;
 import com.lucianms.discord.handlers.DiscordRequestManager;
+import com.lucianms.nio.receive.DirectPacketDecoder;
 import com.lucianms.nio.receive.MaplePacketReader;
+import com.lucianms.nio.send.DirectPacketEncoder;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoopGroup;
@@ -10,8 +12,8 @@ import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import tools.data.input.ByteArrayByteStream;
-import tools.data.input.LittleEndianReader;
+
+import java.io.IOException;
 
 /**
  * Not much needs to be done here.
@@ -21,6 +23,7 @@ import tools.data.input.LittleEndianReader;
  *
  * @author izarooni
  */
+@ChannelHandler.Sharable
 public class DiscordServer extends ChannelInboundHandlerAdapter {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(DiscordServer.class);
@@ -36,7 +39,10 @@ public class DiscordServer extends ChannelInboundHandlerAdapter {
                 .childHandler(new ChannelInitializer<SocketChannel>() {
                     @Override
                     public void initChannel(SocketChannel ch) throws Exception {
-                        ch.pipeline().addLast(DiscordServer.this);
+                        ch.pipeline()
+                                .addLast("decoder", DirectPacketDecoder.class.getDeclaredConstructor().newInstance())
+                                .addLast("encoder", DirectPacketEncoder.class.getDeclaredConstructor().newInstance())
+                                .addLast(DiscordServer.this);
                     }
                 })
                 .option(ChannelOption.SO_BACKLOG, 128)
@@ -59,28 +65,27 @@ public class DiscordServer extends ChannelInboundHandlerAdapter {
 
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
-        if (msg instanceof byte[]) {
-            byte[] bytes = (byte[]) msg;
-            MaplePacketReader reader = new MaplePacketReader(bytes);
-            byte header = reader.readByte();
-            DiscordRequest request = DiscordRequestManager.getRequest(header);
-            if (request != null) {
-                try {
-                    request.handle(reader);
-                } catch (Throwable t) {
-                    LOGGER.error("Failed to handle packet 0x{}", Integer.toHexString(header));
-                    t.printStackTrace();
-                }
-            } else {
-                LOGGER.info("Packet header not handler 0x{}", Integer.toHexString(header));
+        byte[] bytes = (byte[]) msg;
+        MaplePacketReader reader = new MaplePacketReader(bytes);
+        byte header = reader.readByte();
+        DiscordRequest request = DiscordRequestManager.getRequest(header);
+        if (request != null) {
+            try {
+                request.handle(reader);
+            } catch (Throwable t) {
+                LOGGER.error("Failed to handle packet 0x{}", Integer.toHexString(header));
+                t.printStackTrace();
             }
         } else {
-            LOGGER.info("Unhandled message type {}\r\n{}", msg.getClass(), msg.toString());
+            LOGGER.info("Packet header not handler 0x{}", Integer.toHexString(header));
         }
     }
 
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
+        if (cause instanceof IOException) {
+            return;
+        }
         cause.printStackTrace();
     }
 }

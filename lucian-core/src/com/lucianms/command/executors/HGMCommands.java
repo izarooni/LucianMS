@@ -54,9 +54,28 @@ public class HGMCommands {
             commands.add("!saveall - Save everything on the server");
             commands.add("!godmeup - Change values of all stats for all equips");
             commands.add("!stalker - Open the player stalking NPC");
+            commands.add("!setname - Change your username or another player");
             commands.sort(String::compareTo);
             commands.forEach(player::dropMessage);
             commands.clear();
+        } else if (command.equals("setname")) {
+            if (args.length() == 2) {
+                MapleCharacter target = client.getWorldServer().getPlayerStorage().getPlayerByName(args.get(0));
+                if (target != null) {
+                    String oldName = target.getName();
+                    target.setName(args.get(0));
+                    target.sendMessage(5, "Your name has been changed to '{}'", target.getName());
+                    player.sendMessage("Changed '{}''s name to '{}'. Relog to make changes", oldName, target.getName());
+                } else {
+                    player.sendMessage(5, "Could not find any player named '{}'", args.get(0));
+                }
+            } else if (args.length() == 1) {
+                player.setName(args.get(0));
+                player.sendMessage("Your name has been changed to '{}'. Relog to make changes", player.getName());
+            } else {
+                player.sendMessage(5, "Syntax: !setname <username> - Change your own username");
+                player.sendMessage(5, "Syntax: !setname <target> <username> - Change another player's username");
+            }
         } else if (command.equals("clearskills")) {
             for (Map.Entry<Skill, MapleCharacter.SkillEntry> set : new HashMap<>(player.getSkills()).entrySet()) {
                 Skill sk = set.getKey();

@@ -46,7 +46,7 @@ public class EventScriptManager {
             } catch (NoSuchMethodException e) {
                 e.printStackTrace();
             } catch (ScriptException e) {
-                LOGGER.error("Unable to invoke 'init' script '{}'", manager.getScriptName(), e.getStackTrace()[0]);
+                LOGGER.error("Unable to invoke 'init' script '{}': {}", manager.getScriptName(), e.getStackTrace()[0]);
             }
         }
     }

@@ -52,7 +52,7 @@ public class DiscordSession {
             return;
         }
 
-        session.write(packet);
+        session.writeAndFlush(packet);
     }
 
     public static Channel getSession() {

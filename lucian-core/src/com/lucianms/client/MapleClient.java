@@ -27,22 +27,22 @@ import com.lucianms.io.scripting.npc.NPCScriptManager;
 import com.lucianms.io.scripting.quest.QuestActionManager;
 import com.lucianms.io.scripting.quest.QuestScriptManager;
 import com.lucianms.scheduler.TaskExecutor;
-import io.netty.channel.Channel;
-import io.netty.util.AttributeKey;
+import com.lucianms.server.MapleMiniGame;
+import com.lucianms.server.MaplePlayerShop;
+import com.lucianms.server.MapleTrade;
 import com.lucianms.server.Server;
 import com.lucianms.server.channel.MapleChannel;
 import com.lucianms.server.guild.MapleGuild;
 import com.lucianms.server.guild.MapleGuildCharacter;
-import com.lucianms.server.world.*;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import com.lucianms.server.MapleMiniGame;
-import com.lucianms.server.MaplePlayerShop;
-import com.lucianms.server.MapleTrade;
 import com.lucianms.server.maps.FieldLimit;
 import com.lucianms.server.maps.HiredMerchant;
 import com.lucianms.server.maps.MapleMap;
 import com.lucianms.server.quest.MapleQuest;
+import com.lucianms.server.world.*;
+import io.netty.channel.Channel;
+import io.netty.util.AttributeKey;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import tools.HexTool;
 import tools.MapleAESOFB;
 import tools.MaplePacketCreator;
@@ -834,8 +834,8 @@ public class MapleClient {
         }
         if (!serverTransition && isLoggedIn()) {
             updateLoginState(MapleClient.LOGIN_NOTLOGGEDIN);
-            session.attr(CLIENT_KEY).set(null); // prevents double dcing during login
-            session.close(); // instead of using a deprecated method
+            session.attr(CLIENT_KEY).set(null);
+            session.close();
         }
     }
 
@@ -1089,9 +1089,7 @@ public class MapleClient {
     }
 
     public void announce(byte[] packet) {
-        if (session != null && session.isActive()) {
-            session.writeAndFlush(packet);
-        }
+        session.writeAndFlush(packet);
     }
 
     public void changeChannel(int channel) {

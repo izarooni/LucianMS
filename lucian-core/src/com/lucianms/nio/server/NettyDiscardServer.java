@@ -40,13 +40,14 @@ public class NettyDiscardServer implements AutoCloseable {
                 .childHandler(new ChannelInitializer<SocketChannel>() {
                     @Override
                     public void initChannel(SocketChannel ch) throws Exception {
+
                         ch.pipeline()
                                 .addLast("decoder", decoder.getDeclaredConstructor().newInstance())
                                 .addLast("encoder", encoder.getDeclaredConstructor().newInstance())
                                 .addLast(serverInboundHandler);
                     }
                 })
-                .option(ChannelOption.SO_BACKLOG, 200)
+                .option(ChannelOption.SO_BACKLOG, 128)
                 .childOption(ChannelOption.TCP_NODELAY, true)
                 .childOption(ChannelOption.SO_KEEPALIVE, true);
 

@@ -1,10 +1,8 @@
 package com.lucianms.events;
 
 import com.lucianms.client.MapleCharacter;
-import com.lucianms.client.autoban.Cheater;
-import com.lucianms.client.autoban.Cheats;
+import com.lucianms.client.SpamTracker;
 import com.lucianms.nio.receive.MaplePacketReader;
-import com.lucianms.events.PacketEvent;
 import tools.MaplePacketCreator;
 
 /**
@@ -28,21 +26,20 @@ public class ChangeChannelEvent extends PacketEvent {
                 || player.getPlayerShop() != null) {
             setCanceled(true);
         }
-        Cheater.CheatEntry entry = player.getCheater().getCheatEntry(Cheats.FastChannelChange);
-        if (System.currentTimeMillis() - entry.latestOperationTimestamp < 1000) {
+        SpamTracker.SpamData spamTracker = player.getSpamTracker(SpamTracker.SpamOperation.ChangeChannel);
+        if (spamTracker.testFor(1000)) {
             getClient().announce(MaplePacketCreator.enableActions());
             setCanceled(true);
-        } else if (player.getMapId() == 98) { // outer space map
+        } else if (player.getMapId() == 98) {
             player.dropMessage(1, "You can't do it here in this map.");
             getClient().announce(MaplePacketCreator.enableActions());
             setCanceled(true);
         }
+        spamTracker.record();
     }
 
     @Override
     public Object onPacket() {
-        Cheater.CheatEntry entry = getClient().getPlayer().getCheater().getCheatEntry(Cheats.FastChannelChange);
-        entry.latestOperationTimestamp = System.currentTimeMillis();
         getClient().changeChannel(channelID);
         return null;
     }
