@@ -12,7 +12,7 @@ wz
 world.ini
 server-config.json
 whitelist.json
-start.bat
+*.bat
 hikari-db.properties
 
 #Ian's PC
