@@ -2510,6 +2510,9 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
 
     public void setFame(int fame) {
         this.fame = fame;
+        if (this.fame > Short.MAX_VALUE) {
+            this.fame = Short.MAX_VALUE;
+        }
     }
 
     public MapleFamily getFamily() {

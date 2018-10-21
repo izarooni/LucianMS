@@ -6,22 +6,21 @@ import com.lucianms.client.inventory.Item;
 import com.lucianms.client.inventory.MapleInventory;
 import com.lucianms.client.inventory.MapleInventoryType;
 import com.lucianms.command.CommandWorker;
-import com.lucianms.helpers.JailManager;
 import com.lucianms.constants.ItemConstants;
 import com.lucianms.constants.ServerConstants;
-import com.lucianms.server.Server;
+import com.lucianms.helpers.JailManager;
+import com.lucianms.server.MapleInventoryManipulator;
+import com.lucianms.server.MapleItemInformationProvider;
 import com.lucianms.server.channel.MapleChannel;
+import com.lucianms.server.maps.MapleMap;
+import com.lucianms.server.maps.MapleMapItem;
+import com.lucianms.server.maps.MapleMapObject;
+import com.lucianms.server.maps.MapleMapObjectType;
 import com.lucianms.server.world.MapleWorld;
 import provider.MapleData;
 import provider.MapleDataProvider;
 import provider.MapleDataProviderFactory;
 import provider.MapleDataTool;
-import com.lucianms.server.MapleInventoryManipulator;
-import com.lucianms.server.MapleItemInformationProvider;
-import com.lucianms.server.maps.MapleMap;
-import com.lucianms.server.maps.MapleMapItem;
-import com.lucianms.server.maps.MapleMapObject;
-import com.lucianms.server.maps.MapleMapObjectType;
 import tools.Database;
 import tools.MaplePacketCreator;
 import tools.Pair;
@@ -469,10 +468,10 @@ public class GameMasterCommands {
                 } else {
                     player.sendMessage(5, "Unable to find any player named '{}'", username);
                 }
-            } else if(args.length() >= 3) {
+            } else if (args.length() >= 3) {
                 String type = args.get(0);
                 Integer amount = args.parseNumber(1, int.class);
-                for(int i = 2; i < args.length(); i++) {
+                for (int i = 2; i < args.length(); i++) {
                     String username = args.get(i);
                     String error = args.getFirstError();
                     if (error != null) {
@@ -480,8 +479,8 @@ public class GameMasterCommands {
                         continue;
                     }
                     MapleCharacter target = world.getPlayerStorage().getPlayerByName(username);
-                    if(target != null) {
-                        if(target.addPoints(type, amount)) {
+                    if (target != null) {
+                        if (target.addPoints(type, amount)) {
                             player.dropMessage(6, target.getName() + " received " + amount + " " + type);
                         } else {
                             player.sendMessage(5, "'{}' is an invalid point type", type);
@@ -943,7 +942,7 @@ public class GameMasterCommands {
             if (args.length() == 1) {
                 target = ch.getPlayerStorage().getPlayerByName(args.get(0));
                 if (target == null) {
-                    player.dropMessage(String.format("The player %s could not be found", args.get(0)));
+                    player.sendMessage(5, "Unable to find any player named '{}'", args.get(0));
                     return;
                 }
             }
@@ -952,6 +951,31 @@ public class GameMasterCommands {
                 if (s != null) {
                     s.getEffect(s.getMaxLevel()).applyTo(target);
                 }
+            }
+        } else if (command.equals("fame")) {
+            if (args.length() > 0) {
+                Integer amount = args.parseNumber(0, int.class);
+                if (amount == null) {
+                    player.sendMessage(5, args.getFirstError());
+                } else if (amount < 0 || amount > 32767) {
+                    player.sendMessage(5, "You cannot give that much fame");
+                } else if (args.length() > 1) {
+                    for (int i = 1; i < args.length(); i++) {
+                        String username = args.get(i);
+                        MapleCharacter target = client.getChannelServer().getPlayerStorage().getPlayerByName(username);
+                        if (target != null) {
+                            target.setFame(amount);
+                            target.updateSingleStat(MapleStat.FAME, amount);
+                        } else {
+                            player.sendMessage(5, "Unable to find any player named '{}'", username);
+                        }
+                    }
+                } else {
+                    player.setFame(amount);
+                    player.updateSingleStat(MapleStat.FAME, amount);
+                }
+            } else {
+                player.sendMessage(5, "syntax: !fame <amount> [usernames...]");
             }
         } else if (command.equals("mesos")) {
             if (args.length() > 0) {
