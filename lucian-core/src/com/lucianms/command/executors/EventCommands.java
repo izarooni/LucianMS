@@ -240,11 +240,30 @@ public class EventCommands {
                 player.dropMessage("Use: '!event help' for a list of relevant commands.");
             }
             return true;
+        } else if (command.equals("dispel", "dispelm")) {
+            if (command.equals("dispelm")) {
+                for (MapleCharacter players : player.getMap().getCharacters()) {
+                    if (!players.isGM() || player.isDebug()) {
+                        players.dispelDebuffs();
+                    }
+                }
+            } else {
+                if (args.length() == 1) {
+                    MapleCharacter target = client.getChannelServer().getPlayerStorage().getPlayerByName(args.get(0));
+                    if (target != null) {
+                        target.dispelDebuffs();
+                    } else {
+                        player.sendMessage(5, "Unable to find any player named '{}'", args.get(0));
+                    }
+                } else {
+                    player.dispelDebuffs();
+                }
+            }
         } else if (command.equals("lock", "lockm")) {
             MobSkill skill = MobSkillFactory.getMobSkill(120, 1);
             if (command.equals("lockm")) {
                 for (MapleCharacter players : player.getMap().getCharacters()) {
-                    if (!players.isGM()) {
+                    if (!players.isGM() || player.isDebug()) {
                         player.giveDebuff(MapleDisease.SEAL, skill);
                     }
                 }
@@ -253,7 +272,7 @@ public class EventCommands {
                     for (int i = 0; i < args.length(); i++) {
                         String username = args.get(i);
                         MapleCharacter target = ch.getPlayerStorage().getPlayerByName(username);
-                        if (target != null && !target.isGM()) {
+                        if (target != null && (!target.isGM() || player.isDebug())) {
                             target.giveDebuff(MapleDisease.SEAL, skill);
                         }
                     }
@@ -275,7 +294,7 @@ public class EventCommands {
                     MobSkill skill = MobSkillFactory.getMobSkill(132, level);
                     if (map) {
                         for (MapleCharacter players : player.getMap().getCharacters()) {
-                            if (!players.isGM()) {
+                            if (!players.isGM() || player.isDebug()) {
                                 players.giveDebuff(MapleDisease.CONFUSE, skill);
                             }
                         }
@@ -283,7 +302,7 @@ public class EventCommands {
                         for (int i = 1; i < args.length(); i++) {
                             String username = args.get(i);
                             MapleCharacter target = ch.getPlayerStorage().getPlayerByName(username);
-                            if (target != null && !target.isGM()) {
+                            if (target != null && (!target.isGM() || player.isDebug())) {
                                 target.setChair(0);
                                 target.announce(MaplePacketCreator.cancelChair(-1));
                                 target.getMap().broadcastMessage(target, MaplePacketCreator.showChair(target.getId(), 0), false);
