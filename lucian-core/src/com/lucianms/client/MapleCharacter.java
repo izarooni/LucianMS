@@ -1467,19 +1467,6 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
                         new Pair<>(Corsair.WRATH_OF_THE_OCTOPI, 10),
                         new Pair<>(Corsair.RAPID_FIRE, 10));
                 break;
-            case 2100:
-                skills = Arrays.asList(
-                        new Pair<>(21000000, 10),
-                        new Pair<>(21001001, 20),
-                        new Pair<>(21001003, 20));
-                break;
-            case 2110:
-                skills = Arrays.asList(
-                        new Pair<>(21100000, 20),
-                        new Pair<>(21100002, 30),
-                        new Pair<>(21100004, 20),
-                        new Pair<>(21100005, 20));
-                break;
             case 2112:
                 skills = Arrays.asList(
                         new Pair<>(Aran.OVER_SWING, 10),

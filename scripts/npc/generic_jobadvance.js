@@ -1,4 +1,6 @@
-const MapleJob = Java.type('client.MapleJob');
+const MapleStat = Java.type('com.lucianms.client.MapleStat');
+const MapleJob = Java.type('com.lucianms.client.MapleJob');
+const SkillFactory = Java.type('com.lucianms.client.SkillFactory');
 /* izarooni */
 let status = 0;
 
@@ -88,10 +90,15 @@ const FirstAdvancement = function(selection) {
                     cm.gainItem(give[i][0], give[i][1]);
                 }
                 player.changeJob(MapleJob.getById(selection));
+<<<<<<< Updated upstream
                 let totalSP = (Math.min(30, player.getLevel()) - 10) * 3;
+=======
+                LearnSkills(nJob.skills);
+                let totalSP = 1 + (Math.min(30, player.getLevel()) - 10) * 3;
+>>>>>>> Stashed changes
                 if (totalSP > 0) {
                     player.setRemainingSp(totalSP);
-                    player.updateSingleStat(Packages.client.MapleStat.AVAILABLESP, totalSP);
+                    player.updateSingleStat(MapleStat.AVAILABLESP, totalSP);
                 }
             } else
                 cm.sendOk("You are not strong enough to make this advancement.\r\n" + nJob.failMessage);
@@ -119,6 +126,7 @@ const SecondAdvancement = function(selection) {
     } else if (status == 2) {
         let nJob = getByID(jobs.Second, selection);
         player.changeJob(MapleJob.getById(nJob.ID));
+        LearnSkills(nJob.skills);
         cm.dispose();
     }
 };
@@ -130,11 +138,13 @@ const ThirdAdvancement = function(selection) {
     } else if (status == 2) {
         let nJob = nextJob(jobs.Third, player.getJob().getId());
         player.changeJob(MapleJob.getById(nJob.ID));
+        LearnSkills(nJob.skills);
         cm.dispose();
     }
 };
 
 const FourthAdvancement = function(selection) {
+<<<<<<< Updated upstream
     if (status == 1)
         cm.sendSimple("#bThe mysterious force emitted by the door is weakened...\r\n#b#L0#Enter#l\r\n#L1#Nevermind#l", 2)
     else if (status == 2) {
@@ -142,4 +152,38 @@ const FourthAdvancement = function(selection) {
             cm.warp(551030804); // boss ID: 9895226
         cm.dispose();
     }
+=======
+    if (player.getJob().getId() / 100 > 11 && player.getJob() < 2000) {
+        cm.dispose();
+    } else if (status == 1) {
+        cm.sendNext("The end is near and you'll be the one to defeat it....right?");
+    } else if (status == 2) {
+        let nJob = nextJob(jobs.Fourth, player.getJob().getId());
+        if (nJob != null) {
+            player.changeJob(MapleJob.getById(nJob.ID));
+            LearnSkills(nJob.skills);
+        }
+        cm.dispose();
+    }
+    // if (status == 1)
+    //     cm.sendSimple("#bThe mysterious force emitted by the door is weakened...\r\n#b#L0#Enter#l\r\n#L1#Nevermind#l", 2)
+    // else if (status == 2) {
+    //     if (selection == 0)
+    //         cm.warp(551030804); // boss ID: 9895226
+    //     cm.dispose();
+    // }
+};
+
+const LearnSkills = function(skills) {
+    if (skills == null) return;
+    for (let i = 0; i < skills.length; i++) {
+        print(skills[i]);
+        let skillID = skills[i][0];
+        let maxLevel = skills[i][1];
+        let skill = SkillFactory.getSkill(skillID);
+        if (skill != null) {
+            player.changeSkillLevel(skill, 0, maxLevel, -1);
+        }
+    }
+>>>>>>> Stashed changes
 };

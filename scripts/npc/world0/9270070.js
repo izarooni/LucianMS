@@ -30,7 +30,7 @@ function action(mode, type, selection) {
             + "\r\n#L5#Make me immortal#l"
             + "\r\n#L6#Give me NX#l"
             + "\r\n#L7#Clone me#l"
-            + "\r\n#L8#Time Travel#l");
+            + "\r\n#L8#Give me more power#l");
     } else if (status == 2) {
         switch (selection) {
             case 0:
@@ -96,24 +96,16 @@ function action(mode, type, selection) {
                 }
                 break;
             case 8: {
-                let gain = (Math.random() < 0.5) ? 5 : -1;
-                if (gain > 0) {
-                    cm.sendOk("Wish granted. I shall give you #b5 free levels#k");
-                    if (player.getLevel() < 200) {
-                        for (let i = 0; i < (200 - player.getLevel()); i++) {
-                            player.levelUp(true);
-                            gain--;
-                        }
+            
+                let EXPToGain = (ExpTable.getExpNeededForLevel(cm.getPlayer().getLevel()));
+                
+                cm.sendOk("Wish granted. Take my power and make it your own.");
+                if (player.getLevel() < 200) {
+                     // give exp in 10 parts
+                    let partEXP = EXPToGain / 10;
+                    for(let i = 0; i < 10; i++) {
+                        cm.getPlayer().gainExp(partEXP, true, false);
                     }
-                    gain = Math.max(gain, 200 - player.getLevel());
-                    if (gain > 0) {
-                        player.setLevel(player.getLevel() + gain);
-                        player.updateSingleStat(MapleStat.LEVEL, player.getLevel());
-                    }
-                } else {
-                    cm.sendOk("Wish granted. I shall take away #b1 level#k from you");
-                    player.setLevel(player.getLevel() + gain);
-                    player.updateSingleStat(MapleStat.LEVEL, player.getLevel());
                 }
                 break;
             }

@@ -1,5 +1,5 @@
 //importPackage(server.maps);
-//importPackage(net.com.lucianms.server.events.channel);
+//importPackage(net.channel);
 //importPackage(tools);
 //
 //function enter(pi) {
