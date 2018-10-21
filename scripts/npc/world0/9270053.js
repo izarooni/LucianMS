@@ -42,7 +42,7 @@ function action(mode, type, selection) {
 		else
 			status--;
 		if (status == 0) {
-			cm.sendSimple("I cant hold it for much longer. Please be carefull!\r\n#b#L1#Enter Poral.#k#l\r\n\#r#L2#Wait a little.#k#l");
+			cm.sendSimple("I cant hold it for much longer, please be careful!\r\n#b#L1#Enter portal.#k#l\r\n\#r#L2#Wait a little.#k#l");
 		} else if (status == 1) {
 			if (selection == 1) {
 				cm.warp(99, 0);

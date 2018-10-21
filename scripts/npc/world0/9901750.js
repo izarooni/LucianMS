@@ -10,7 +10,7 @@ function action(mode, type, selection) {
         status++;
     }
      if (status == 1) {
-        cm.sendSimple("I sell mounts for #b5,000,00#k mesos each. Are you interested?\r\n#b#L0#I'll have a look#l");
+        cm.sendSimple("I sell mounts for #b5,000,000#k mesos each. Are you interested?\r\n#b#L0#I'll have a look#l");
     } else if (status == 2) {
             var selStr = "Let me know if you see something you'd like to buy!";
             for (var i = 0; i < items.length; i++){

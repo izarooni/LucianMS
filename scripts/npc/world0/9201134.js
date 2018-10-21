@@ -23,7 +23,7 @@
  * 
  * @Author Alan (SharpAceX)
  */
- importPackage(Packages.server.expeditions);
+importPackage(Packages.com.lucianms.server.expeditions);
  
 function start() {
     cm.sendYesNo("If you leave now, you won't be able to return. Are you sure you want to leave?");

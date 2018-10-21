@@ -35,10 +35,10 @@ function action(mode, type, selection) {
 		else
 			status--;
 		if (status == 0) {
-			cm.sendSimple("Do you have a#r Overwatch Loot Box #k?\r\n#L0#What is a \"Overwatch Loot Box\"?#l\r\n#L1#Item list#l\r\n\r\n#L2#Open my #r#z4011021##l");
+			cm.sendSimple("Do you have an#r Overwatch Loot Box #k?\r\n#L0#What is an \"Overwatch Loot Box\"?#l\r\n#L1#Item list#l\r\n\r\n#L2#Open my #r#z4011021##l");
 		} else if (status == 1) {
 			if (selection == 0) {
-				cm.sendOk("What is a #r#z4011021##k?\r\nThe Overwatch loot box can bought from the #bDonationPoints#k NPC! The loot box contains #rOverwatch#k related items.");
+				cm.sendOk("What is an #r#z4011021##k?\r\nThe Overwatch loot box can bought from the #bDonationPoints#k NPC! The loot box contains #rOverwatch#k related items.");
 				cm.dispose();
               } else if (selection == 1) {
                     cm.sendOk("   ------#rItems that can be unlocked through this loot box!#k------\r\n\r\n#z1008545#\r\n#z1008546#\r\n#z1008551#\r\n#z1011007#\r\n#z1902015#\r\n#z1103019#\r\n#z1012393#\r\n#z1008569#\r\n#z1332110#\r\n\r\n#bNew items coming soon!#k");

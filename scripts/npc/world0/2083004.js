@@ -25,9 +25,9 @@
 /*TODO 
  * ADD A CHECK TO SEE IF PLAYERS HAVE BADGE
  */
-importPackage(Packages.server.expeditions);
+importPackage(Packages.com.lucianms.server.expeditions);
 importPackage(Packages.tools);
-importPackage(Packages.scripting.event);
+importPackage(Packages.com.lucianms.scripting.event);
 
 var status = 0;
 var expedition;

@@ -18,7 +18,7 @@ function action(mode, type, selection) {
 		else
 			status--;
 		if (status == 0) {
-			cm.sendSimple("Are you interested in any of my offers?\r\n#b#L1#Mesos for Crystal#l\r\n\#L2#Meso to orb#l");
+			cm.sendSimple("Are you interested in any of my offers?\r\n#b#L1# 1B mesos for 1 Crystal#l\r\n\#L2# 500M mesos for 1 orb#l");
 		} else if (status == 1) {
 			if (selection == 1) {
 			if (cm.getMeso() >= 100000000) {

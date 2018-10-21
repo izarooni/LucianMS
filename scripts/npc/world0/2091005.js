@@ -25,7 +25,7 @@
 * @Name:   So Gong
 * @Map(s): Dojo Hall
 */
-importPackage(Packages.server.maps);
+importPackage(Packages.com.lucianms.server.maps);
 
 var disabled = false;
 var belts = Array(1132000, 1132001, 1132002, 1132003, 1132004);

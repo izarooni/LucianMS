@@ -21,7 +21,7 @@
 */
 
 importPackage(Packages.tools);
-importPackage(Packages.client);
+importPackage(Packages.com.lucianms.client);
 
 status = -1;
 var sel;
