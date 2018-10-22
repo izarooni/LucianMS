@@ -108,7 +108,7 @@ function action(mode, type, selection) {
             var text = "The following members make up your expedition (Click on them to expel them):\r\n";
             text += "\r\n\t\t1." + expedition.getLeader().getName();
             for (var i = 1; i < size; i++) {
-                text += "\r\n#b#L" + (i + 1) + "#" + (i + 1) + ". " + expedition.getMembers().get(i).getName() + "#l\n";
+                text += "\r\n#b#L" + (i) + "#" + (i + 1) + ". " + expedition.getMembers().get(i).getName() + "#l\n";
             }
             cm.sendSimple(text);
             status = 6;
@@ -136,7 +136,6 @@ function action(mode, type, selection) {
             cm.dispose();
             return;
         }
-        cm.sendOk("Good luck! All of Leafre is counting on you.");
         em.setProperty("channel", player.getClient().getChannel());
         em.startInstance(expedition);
         cm.dispose();

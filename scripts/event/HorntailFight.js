@@ -30,21 +30,14 @@ var exitMap;
 var minPlayers = 1;
 var fightTime = 60;
 
-var trial1; //Cave of Life - The Cave of Trial I
-var trial2; // Cave of Life - The Cave of Trial II
-var fightMap; // Cave of Life - Horntail's Cave
-var exitMap;
+var trial1 = 240060000; //Cave of Life - The Cave of Trial I
+var trial2 = 240060100; // Cave of Life - The Cave of Trial II
+var fightMap = 240060200; // Cave of Life - Horntail's Cave
+var exitMap = 240050400;
 	
 function init() {
     em.setProperty("shuffleReactors","false");
-	trial1 = em.getChannel().getMap(240060000); //Cave of Life - The Cave of Trial I
-	trial2 = em.getChannel().getMap(240060100); // Cave of Life - The Cave of Trial II
-	fightMap = em.getChannel().getMap(240060200); // Cave of Life - Horntail's Cave
-	exitMap = em.getChannel().getMap(211042300);
 }
-
-
-
 
 function setup() {
     var eim = em.newInstance("HorntailFight_" + em.getProperty("channel"));
@@ -55,17 +48,15 @@ function setup() {
 }
 
 function playerEntry(eim,player) {
-    var map = eim.getMapInstance(trial1.getId());
+    var map = eim.getMapInstance(trial1);
     player.changeMap(map,map.getPortal(0));
-    if (exitMap == null)
-        debug(eim,"The exit map was not properly linked.");
 }
 
 function playerRevive(eim,player) {
     player.setHp(500);
     player.setStance(0);
     eim.unregisterPlayer(player);
-    player.changeMap(exitMap, exitMap.getPortal(0));
+    player.changeMap(exitMap);
     var party = eim.getPlayers();
     if (party.size() < minPlayers)
         end(eim,"There are not enough players remaining, the Battle is over.");
@@ -100,7 +91,7 @@ function disbandParty(eim) {
 
 function playerExit(eim,player) {
     eim.unregisterPlayer(player);
-    player.changeMap(exitMap,exitMap.getPortal(0));
+    player.changeMap(exitMap);
     if (eim.getPlayers().size() < minPlayers)//not enough after someone left
         end(eim,"There are no longer enough players to continue, and those remaining shall be warped out.");
 }
@@ -112,7 +103,7 @@ function end(eim,msg) {
         player.getPlayer().dropMessage(6,msg);
         eim.unregisterPlayer(player);
         if (player != null)
-            player.changeMap(exitMap, exitMap.getPortal(0));
+            player.changeMap(exitMap);
     }
     eim.dispose();
 }
@@ -124,14 +115,22 @@ function removePlayer(eim,player) {
     player.setMap(exitMap);
 }
 
-function clearPQ(eim) {}
+function clearPQ(eim) {
+    var iter = eim.getPlayers().iterator();
+    while (iter.hasNext()) {
+        var player = iter.next();
+        eim.unregisterPlayer(player);
+        player.changeMap(exitMap);
+    }
+    eim.dispose();
+}
 
 function finish(eim) {
     var iter = eim.getPlayers().iterator();
     while (iter.hasNext()) {
         var player = iter.next();
         eim.unregisterPlayer(player);
-        player.changeMap(exitMap, exitMap.getPortal(0));
+        player.changeMap(exitMap);
     }
     eim.dispose();
 }
@@ -145,9 +144,6 @@ function cancelSchedule() {
 function timeOut() {
 }
 
-function debug(eim,msg) {
-    var iter = eim.getPlayers().iterator();
-    while (iter.hasNext()) {
-        iter.next().getClient().getSession().write(Packages.tools.MaplePacketCreator.serverNotice(6,msg));
-    }
+function dispose(eim) {
+    eim.getEventManager().removeInstance(eim.getName());
 }

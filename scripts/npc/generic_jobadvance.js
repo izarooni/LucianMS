@@ -164,7 +164,6 @@ const FourthAdvancement = function(selection) {
 const LearnSkills = function(skills) {
     if (skills == null) return;
     for (let i = 0; i < skills.length; i++) {
-        print(skills[i]);
         let skillID = skills[i][0];
         let maxLevel = skills[i][1];
         let skill = SkillFactory.getSkill(skillID);

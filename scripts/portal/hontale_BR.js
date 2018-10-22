@@ -27,16 +27,13 @@ function enter(pi) {
 		var targetPortal = target.getPortal("sp");
 		// only let people through if the eim is ready
 		var avail = eim.getProperty("head1");
+		print(eim.getProperties());
 		if (avail != "yes") {
 			// do nothing; send message to player
 			pi.getPlayer().dropMessage(6, "Horntail\'s Seal is Blocking this Door.");
 			return false;
 		}else {
 			pi.getPlayer().changeMap(target, targetPortal);
-			if (eim.getProperty("head2spawned") != "yes") {
-				eim.setProperty("head2spawned", "yes");
-				eim.schedule("headTwo", 5000);
-			}
 			return true;
 		}
 	} else if (pi.getPlayer().getMapId() == 240060100) {

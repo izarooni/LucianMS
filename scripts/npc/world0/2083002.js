@@ -33,7 +33,12 @@ function action(mode, type, selection) {
     if (mode < 1)
         cm.dispose();
     else {
-        cm.warp(240040700);
+        let event = player.getEventInstance();
+        if (event != null) {
+            event.removePlayer(player);
+        } else {
+            cm.warp(240040700);
+        }
         if (cm.getPlayer().getMap().getCharacters().size() < 2){
             cm.getPlayer().getMap().killAllMonsters();
             cm.getPlayer().getMap().resetReactors();
