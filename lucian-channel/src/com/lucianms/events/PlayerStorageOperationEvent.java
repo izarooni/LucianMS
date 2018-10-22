@@ -4,13 +4,12 @@ import com.lucianms.client.MapleCharacter;
 import com.lucianms.client.inventory.Item;
 import com.lucianms.client.inventory.MapleInventory;
 import com.lucianms.client.inventory.MapleInventoryType;
-import com.lucianms.nio.receive.MaplePacketReader;
-import com.lucianms.events.PacketEvent;
 import com.lucianms.constants.ItemConstants;
-import com.lucianms.server.Server;
+import com.lucianms.nio.receive.MaplePacketReader;
 import com.lucianms.server.MapleInventoryManipulator;
 import com.lucianms.server.MapleItemInformationProvider;
 import com.lucianms.server.MapleStorage;
+import com.lucianms.server.Server;
 import tools.MaplePacketCreator;
 
 /**
@@ -24,9 +23,9 @@ public class PlayerStorageOperationEvent extends PacketEvent {
     private int itemID;
     private int mesos;
     private short quantity;
+    private byte slot;
     private byte action;
     private byte type;
-    private byte slot;
 
     @Override
     public void processInput(MaplePacketReader reader) {
@@ -37,7 +36,7 @@ public class PlayerStorageOperationEvent extends PacketEvent {
                 slot = reader.readByte();
                 break;
             case 5:
-                slot = reader.readByte();
+                slot = (byte) reader.readShort(); // huh
                 itemID = reader.readInt();
                 quantity = reader.readShort();
                 break;
@@ -60,8 +59,8 @@ public class PlayerStorageOperationEvent extends PacketEvent {
             if (slot < 0 || slot > storage.getSlots()) { // removal starts at zero
                 return null;
             }
-            slot = storage.getSlot(MapleInventoryType.getByType(type), slot);
-            Item item = storage.getItem(slot);
+            slot = storage.getSlot(MapleInventoryType.getByType(type), (byte) slot);
+            Item item = storage.getItem((byte) slot);
             if (item != null) {
                 if (MapleItemInformationProvider.getInstance().isPickupRestricted(item.getItemId()) && player.getItemQuantity(item.getItemId(), true) > 0) {
                     getClient().announce(MaplePacketCreator.getStorageError((byte) 0x0C));
