@@ -205,7 +205,7 @@ function action(mode, type, selection) {
 function getPlayer(playerId) {
     for (let i = 0; i < client.getWorldServer().getChannels().size(); i++) {
         let ch = client.getWorldServer().getChannel(i + 1);
-        let chr = ch.getPlayerStorage().getCharacterById(playerId);
+        let chr = ch.getPlayerStorage().getPlayerByID(playerId);
         if (chr != null) {
             return chr;
         }
