@@ -156,14 +156,12 @@ public class PlayerCashShopOperationEvent extends PacketEvent {
                     getClient().announce(MaplePacketCreator.showCash(player));
                     return null;
                 }
-                if (ItemConstants.isPet(cItem.getItemId())) {
                     int itemID = cItem.getItemId();
-                    if (itemID == 5000014 || itemID == 5000022) {
+                    if (itemID == 5000011 || itemID == 5000014 || itemID == 5000022) {
                         getClient().announce(MaplePacketCreator.serverNotice(1, "These pets are available for our donors only!"));
                         getClient().announce(MaplePacketCreator.showCash(player));
                         return null;
                     }
-                }
                 if (action == 0x03) { // Item
                     Item item = cItem.toItem();
                     cs.addToInventory(item);
