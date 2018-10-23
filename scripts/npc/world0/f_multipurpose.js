@@ -11,6 +11,7 @@ let options = {
     "Monster Coin trader": {npc:2007,    script:"shop_monster_coin"},
     "Overwatch lootbox":   {npc:9270043, script:null},
     "Styler":              {npc:9900001, script:null},
+    "Skill Fixer":         {npc:2007,    script:"f_skill_fixer"},
     get: function(idx) {
         let cidx = 0;
         for (let o in options) {
