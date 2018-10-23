@@ -148,22 +148,20 @@ public class MapleGuild {
                     ps.setInt(11, capacity);
                     ps.setString(12, notice);
                     ps.setInt(13, this.id);
-                    ps.execute();
+                    ps.executeUpdate();
                 }
             } else {
                 try (PreparedStatement ps = con.prepareStatement("UPDATE characters SET guildid = 0, guildrank = 5 WHERE guildid = ?")) {
                     ps.setInt(1, this.id);
-                    ps.execute();
+                    ps.executeUpdate();
                 }
                 try (PreparedStatement ps = con.prepareStatement("DELETE FROM guilds WHERE guildid = ?")) {
                     ps.setInt(1, this.id);
-                    ps.execute();
+                    ps.executeUpdate();
                 }
             }
         } catch (SQLException e) {
             e.printStackTrace();
-        } finally {
-            broadcast(MaplePacketCreator.guildDisband(this.id));
         }
     }
 
