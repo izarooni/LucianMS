@@ -31,15 +31,16 @@ public class LChannelMain {
         Config config = Server.getConfig();
 
         for (MapleWorld world : Server.getWorlds()) {
+            HikariDataSource hikari = Database.createDataSource("hikari-world" + world.getId());
             for (MapleChannel channel : world.getChannels()) {
                 File eventFolder = new File("scripts/features");
                 if (!eventFolder.exists() && eventFolder.mkdirs()) {
                     LOGGER.info("Created folder 'scripts/features'");
                 }
-                File[] files = eventFolder.listFiles();
-                if (files == null) {
-                    files = new File[0];
-                }
+//                File[] files = eventFolder.listFiles();
+//                if (files == null) {
+//                    files = new File[0];
+//                }
 //                ScriptFeatureManager featureManager = new ScriptFeatureManager(channel, files);
 //                channel.setFeatureManager(featureManager);
 
@@ -47,7 +48,6 @@ public class LChannelMain {
                 int port = Integer.parseInt(split[1]);
                 try {
                     MapleServerInboundHandler handler = new MapleServerInboundHandler(ReceivePacketState.ChannelServer, split[0], port, new NioEventLoopGroup());
-                    HikariDataSource hikari = Database.createDataSource("hikari-channel" + channel.getId());
                     channel.setServerHandler(handler);
                     channel.setHikari(hikari);
                     channel.reloadEventScriptManager();
