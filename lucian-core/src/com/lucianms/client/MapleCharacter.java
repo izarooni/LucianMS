@@ -928,10 +928,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
     }
 
     public void addCooldown(int skillId, long startTime, long length, Task task) {
-        if (this.coolDowns.containsKey(skillId)) {
-            this.coolDowns.remove(skillId);
-        }
-        this.coolDowns.put(skillId, new MapleCoolDownValueHolder(skillId, startTime, length, task));
+        coolDowns.put(skillId, new MapleCoolDownValueHolder(skillId, startTime, length, task));
     }
 
     public void addCrushRing(MapleRing r) {
@@ -1159,7 +1156,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
     }
 
     public void cancelBuffStats(MapleBuffStat stat) {
-        List<MapleBuffStat> buffStatList = Arrays.asList(stat);
+        List<MapleBuffStat> buffStatList = Collections.singletonList(stat);
         deregisterBuffStats(buffStatList);
         cancelPlayerBuffs(buffStatList);
     }
@@ -1196,7 +1193,6 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
     }
 
     public void setLastCombo(long time) {
-        ;
         lastcombo = time;
     }
 
@@ -1326,11 +1322,11 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
                 if (getFakePlayer() != null) {
                     getMap().addFakePlayer(getFakePlayer());
                 }
-            } else if (hidden) {
+            } else {
                 if (!login) {
                     getMap().broadcastMessage(this, MaplePacketCreator.removePlayerFromMap(getId()), false);
                 }
-                List<Pair<MapleBuffStat, Integer>> dsstat = Collections.singletonList(new Pair<MapleBuffStat, Integer>(MapleBuffStat.DARKSIGHT, 0));
+                List<Pair<MapleBuffStat, Integer>> dsstat = Collections.singletonList(new Pair<>(MapleBuffStat.DARKSIGHT, 0));
                 getMap().broadcastGMMessage(this, MaplePacketCreator.spawnPlayerMapobject(this), false);
                 getMap().broadcastGMMessage(this, MaplePacketCreator.giveForeignBuff(id, dsstat), false);
                 for (MapleMonster mon : getControlledMonsters()) {
@@ -1652,9 +1648,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
         ManualPlayerEvent playerEvent = client.getWorldServer().getPlayerEvent();
         if (playerEvent != null) {
             if (to != playerEvent.getMap() && getMap() == playerEvent.getMap()) {
-                if (playerEvent.participants.containsKey(getId())) {
-                    playerEvent.participants.remove(getId());
-                }
+                playerEvent.participants.remove(getId());
             }
         }
         List<GenericEvent> gEvents = getGenericEvents();
@@ -3340,9 +3334,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
 
     public boolean hasEntered(String script, int mapId) {
         if (entered.containsKey(mapId)) {
-            if (entered.get(mapId).equals(script)) {
-                return true;
-            }
+            return entered.get(mapId).equals(script);
         }
         return false;
     }
@@ -3961,9 +3953,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
     }
 
     public void removeCooldown(int skillId) {
-        if (this.coolDowns.containsKey(skillId)) {
-            this.coolDowns.remove(skillId);
-        }
+        coolDowns.remove(skillId);
     }
 
     public void removePet(MaplePet pet, boolean shift_left) {
@@ -4048,15 +4038,11 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
     }
 
     public void resetEnteredScript() {
-        if (entered.containsKey(map.getId())) {
-            entered.remove(map.getId());
-        }
+        entered.remove(map.getId());
     }
 
     public void resetEnteredScript(int mapId) {
-        if (entered.containsKey(mapId)) {
-            entered.remove(mapId);
-        }
+        entered.remove(mapId);
     }
 
     public void resetEnteredScript(String script) {
@@ -4900,7 +4886,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
         if (qs.getQuest().getInfoNumber() > 0) {
             announce(MaplePacketCreator.updateQuest(qs, true));
         }
-        announce(MaplePacketCreator.updateQuestInfo((short) qs.getQuest().getId(), qs.getNpc()));
+        announce(MaplePacketCreator.updateQuestInfo(qs.getQuest().getId(), qs.getNpc()));
     }
 
     public void updateQuest(MapleQuestStatus quest) {
@@ -4910,9 +4896,9 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
             if (quest.getQuest().getInfoNumber() > 0) {
                 announce(MaplePacketCreator.updateQuest(quest, true));
             }
-            announce(MaplePacketCreator.updateQuestInfo((short) quest.getQuest().getId(), quest.getNpc()));
+            announce(MaplePacketCreator.updateQuestInfo(quest.getQuest().getId(), quest.getNpc()));
         } else if (quest.getStatus().equals(MapleQuestStatus.Status.COMPLETED)) {
-            announce(MaplePacketCreator.completeQuest((short) quest.getQuest().getId(), quest.getCompletionTime()));
+            announce(MaplePacketCreator.completeQuest(quest.getQuest().getId(), quest.getCompletionTime()));
         } else if (quest.getStatus().equals(MapleQuestStatus.Status.NOT_STARTED)) {
             announce(MaplePacketCreator.updateQuest(quest, false));
             if (quest.getQuest().getInfoNumber() > 0) {
@@ -5110,11 +5096,8 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
 
     public boolean isTrockMap(int id) {
         int index = trockmaps.indexOf(id);
-        if (index != -1) {
-            return true;
-        }
+        return index != -1;
 
-        return false;
     }
 
     public int getVipTrockSize() {
@@ -5143,11 +5126,8 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
 
     public boolean isVipTrockMap(int id) {
         int index = viptrockmaps.indexOf(id);
-        if (index != -1) {
-            return true;
-        }
+        return index != -1;
 
-        return false;
     }
 
     public byte getTeam() {
