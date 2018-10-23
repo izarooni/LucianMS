@@ -93,7 +93,7 @@ public class PlayerCashItemUseEvent extends PacketEvent implements Cleaner.Clean
                     content = reader.readMapleAsciiString();
                     break;
                 case 2: // super megaphone
-                    reader.readMapleAsciiString();
+                    content = reader.readMapleAsciiString();
                     whisperEnabled = reader.readByte() != 0;
                     break;
                 case 5: // maple tv
