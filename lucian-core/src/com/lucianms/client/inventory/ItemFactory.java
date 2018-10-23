@@ -138,7 +138,7 @@ public enum ItemFactory {
                     ps.setLong(11, item.getExpiration());
                     ps.setString(12, item.getGiftFrom());
                     ps.executeUpdate();
-                    try (PreparedStatement pse = con.prepareStatement("INSERT INTO `inventoryequipment` VALUES (DEFAULT, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)")) {
+                    try (PreparedStatement pse = con.prepareStatement("INSERT INTO `inventoryequipment` VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)")) {
                         if (mit == MapleInventoryType.EQUIP || mit == MapleInventoryType.EQUIPPED) {
                             try (ResultSet rs = ps.getGeneratedKeys()) {
                                 if (!rs.next()) {
