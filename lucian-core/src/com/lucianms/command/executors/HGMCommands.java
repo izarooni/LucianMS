@@ -62,7 +62,7 @@ public class HGMCommands {
         } else if (command.equals("popup")) {
             if (args.length() > 0) {
                 String content = args.concatFrom(0);
-                client.getWorldServer().broadcastPacket(MaplePacketCreator.serverNotice(0, content));
+                client.getWorldServer().broadcastPacket(MaplePacketCreator.serverNotice(1, content));
             } else {
                 player.sendMessage(5, "You must type a message!");
             }
