@@ -155,7 +155,6 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
     private int[] remainingSp = new int[10];
     //endregion
 
-    private long lastSave = 0;
     private long lastEmergency = 0;
     private long immortalTimestamp = 0;
     private long portaldelay = 0, lastcombo = 0;
@@ -4173,10 +4172,6 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
     }
 
     public void saveToDB(boolean force) {
-        if (!force && System.currentTimeMillis() - lastSave <= 1000 * 60 * 3) {
-            return; // why fuck me fuck fuck fuck
-        }
-        lastSave = System.currentTimeMillis();
         try (Connection con = client.getChannelServer().getConnection()) {
             con.setAutoCommit(false);
             try (PreparedStatement ps = con.prepareStatement("UPDATE characters SET level = ?, fame = ?, str = ?, dex = ?, luk = ?, `int` = ?, exp = ?, gachaexp = ?, hp = ?, mp = ?, maxhp = ?, maxmp = ?, sp = ?, ap = ?, gm = ?, skincolor = ?, gender = ?, job = ?, hair = ?, face = ?, map = ?, meso = ?, hpMpUsed = ?, spawnpoint = ?, party = ?, buddyCapacity = ?, messengerid = ?, messengerposition = ?, mountlevel = ?, mountexp = ?, mounttiredness= ?, equipslots = ?, useslots = ?, setupslots = ?, etcslots = ?,  monsterbookcover = ?, vanquisherStage = ?, dojoPoints = ?, lastDojoStage = ?, finishedDojoTutorial = ?, vanquisherKills = ?, matchcardwins = ?, matchcardlosses = ?, matchcardties = ?, omokwins = ?, omoklosses = ?, omokties = ?, dataString = ?, fishingpoints = ?, daily = ?, reborns = ?, eventpoints = ?, rebirthpoints = ?, occupation = ?, jumpquestpoints = ? WHERE id = ?", Statement.RETURN_GENERATED_KEYS)) {
