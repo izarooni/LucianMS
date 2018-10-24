@@ -95,8 +95,9 @@ public abstract class AbstractDealDamageEvent extends PacketEvent {
                 MapleCharacter player = getClient().getPlayer();
                 Occupation occupation = player.getOccupation();
                 if (occupation != null && occupation.getType() == Occupation.Type.Undead) {
-                    int gain = player.getMaxHp() * ((int) Math.floor(Math.random() * 0.3 + 0.1));
+                    int gain = (int) (player.getMaxHp() * Math.random() * 0.07 + 0.03);
                     player.addHP(gain);
+                    player.updateSingleStat(MapleStat.HP, player.getHp());
                 }
             }
         });
