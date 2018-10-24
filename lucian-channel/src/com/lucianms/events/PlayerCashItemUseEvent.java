@@ -47,7 +47,7 @@ public class PlayerCashItemUseEvent extends PacketEvent implements Cleaner.Clean
     private int pointFrom, pointTo;
     private int inventoryType;
     private int fieldID;
-    private short slot;
+    private short slot, itemSlot;
     private boolean whisperEnabled;
     private boolean isItem; // ? what
     private boolean isVIPRock;
@@ -122,7 +122,7 @@ public class PlayerCashItemUseEvent extends PacketEvent implements Cleaner.Clean
                     isItem = reader.readByte() == 1;
                     if (isItem) {
                         inventoryType = reader.readInt();
-                        itemID = reader.readInt();
+                        itemSlot = (short) reader.readInt();
                     }
                     break;
                 case 7: // triple megaphone
@@ -430,7 +430,7 @@ public class PlayerCashItemUseEvent extends PacketEvent implements Cleaner.Clean
                         String msg = medal + player.getName() + " : " + content;
                         Item item = null;
                         if (isItem) { //item
-                            item = player.getInventory(MapleInventoryType.getByType((byte) inventoryType)).getItem((short) itemID);
+                            item = player.getInventory(MapleInventoryType.getByType((byte) inventoryType)).getItem(itemSlot);
                             if (item == null) {
                                 return null;
                             } else if (ii.isDropRestricted(item.getItemId())) {
