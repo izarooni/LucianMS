@@ -89,16 +89,17 @@ function action(mode, type, selection) {
                         for (var i = 0; i < idNamePair.size(); i++) {
                             otherChars += idNamePair.get(i) + ", ";
                         }
-                        cm.sendPrev(
+                        cm.sendOk(
                             "#e" + this.stalk.name + "'s stats#n\r\n"
                             + "\r\nGM Level: " + t.gmLevel()
                             + "\r\nAccount Name: " + t.getClient().getAccountName()
                             + "\r\nAccount Id: " + t.getAccountID()
                             + "\r\nCharacter Id: " + t.getId()
                             + "\r\nOther characters: \r\n" + otherChars
-                            + "\r\n\r\nRemote address: " + t.getClient().getSession().getRemoteAddress().toString().substring(1).split(":")[0]
+                            + "\r\n\r\nRemote address: " + t.getClient().getRemoteAddress()
                             + "\r\n\r\nMACs: " + t.getClient().getMacs()
                             + "\r\nHWID: " + t.getClient().getHWID()
+                            + "\r\n\r\nCalcualted ATK: " + t.calculateMaxBaseDamage(t.getTotalWatk())
                             + "\r\nCrush rings: " + t.getCrushRings()
                             + "\r\nFriendship rings: " + t.getFriendshipRings());
                         cm.dispose();
@@ -163,7 +164,19 @@ function action(mode, type, selection) {
             text += "\r\n#L16#Remove#l";
             cm.sendSimple(text);
         } else { // giving item
-            cm.sendOk(cm.getText());
+            let itemID = parseInt(cm.getText());
+            if (!isNaN(itemID)) {
+                let target = getPlayer(this.stalk.id);
+                if (InventoryManipulator.checkSpace(target.getClient(), itemID, 1, "")) {
+                    InventoryManipulator.addById(target.getClient(), itemID, 1);
+                    player.sendMessage(5, `Given 1 of ${itemID} to player '${this.stalk.name}'`);
+                    target.sendMessage(5, `You have received an item from '${player.getName()} in your ${ItemConstants.getInventoryType(itemID).name()} inventory`);
+                } else {
+                    cm.sendOk("The player's inventory is full");
+                }
+            } else {
+                cm.sendOk(`#r${itemID}#k is not a number!`);
+            }
             cm.dispose();
         }
     } else if (status === 5) {
@@ -205,7 +218,7 @@ function action(mode, type, selection) {
 function getPlayer(playerId) {
     for (let i = 0; i < client.getWorldServer().getChannels().size(); i++) {
         let ch = client.getWorldServer().getChannel(i + 1);
-        let chr = ch.getPlayerStorage().getPlayerByID(playerId);
+        let chr = ch.getPlayerStorage().get(playerId);
         if (chr != null) {
             return chr;
         }
@@ -219,11 +232,11 @@ function onlinePlayers(filter) {
     let ret = [];
     for (let i = 0; i < client.getWorldServer().getChannels().size(); i++) {
         let ch = client.getWorldServer().getChannel(i + 1);
-        let iter = ch.getPlayerStorage().getAllPlayers().iterator();
+        let iter = ch.getPlayerStorage().values().iterator();
         while (iter.hasNext()) {
             let p = iter.next();
             if (filter != null) {
-                if (!p.getName().contains(filter)) {
+                if (!p.getName().toUpperCase().contains(filter.toUpperCase())) {
                     continue;
                 }
             }
