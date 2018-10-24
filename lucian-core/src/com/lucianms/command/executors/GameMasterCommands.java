@@ -130,9 +130,6 @@ public class GameMasterCommands {
                     MapleCharacter target = client.getWorldServer().getPlayerStorage().getPlayerByName(username);
                     boolean exact = command.getName().endsWith("x");
                     if (target != null && command.equals("warp", "wh", "whx")) { // !<warp_cmd> <username/map>
-                        if (target.getClient().getChannel() != client.getChannel()) {
-                            client.changeChannel(target.getClient().getChannel());
-                        }
                         if (args.length() == 1 && command.equals("warp", "wh", "whx")) { // !<warp_cmd> <username>
                             MapleCharacter warpie = (command.equals("warp") ? player : target); // person to warp
                             MapleCharacter warper = (command.equals("warp") ? target : player); // destination
@@ -152,12 +149,17 @@ public class GameMasterCommands {
                                     return;
                                 }
                             }
-                            MapleMap map = ch.getMap(mapId);
+                            MapleMap map = target.getClient().getChannelServer().getMap(mapId);
                             if (map != null) {
                                 target.changeMap(map);
+                                return;
                             } else {
                                 player.dropMessage(5, "That is an invalid map");
+                                return;
                             }
+                        }
+                        if (target.getClient().getChannel() != client.getChannel()) {
+                            client.changeChannel(target.getClient().getChannel());
                         }
                     } else if (command.equals("wm", "wmx")) {
                         MapleMap map = null;
