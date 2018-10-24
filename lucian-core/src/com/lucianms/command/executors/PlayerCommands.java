@@ -417,7 +417,7 @@ public class PlayerCommands {
                 if (target != null) {
                     client.getWorldServer().broadcastGMPacket(MaplePacketCreator.serverNotice(6, String.format("[REPORT] %s : (%s) %s", player.getName(), username, message)));
                 } else {
-                    player.dropMessage(5, String.format("Could not find any player named '%s'", username));
+                    player.dropMessage(5, String.format("Unable to find any player named '%s'", username));
                 }
             } else {
                 player.dropMessage(5, "You must specify a username and message");

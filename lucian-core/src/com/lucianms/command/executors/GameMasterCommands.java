@@ -117,7 +117,7 @@ public class GameMasterCommands {
                     if (target != null) {
                         target.getClient().disconnect(false, target.getCashShop().isOpened());
                     } else {
-                        player.dropMessage(5, String.format("Could not find any player named '%s'", username));
+                        player.dropMessage(5, String.format("Unable to find any player named '%s'", username));
                     }
                 }
             } else {
@@ -245,7 +245,7 @@ public class GameMasterCommands {
                     player.dropMessage(6, String.format("'%s' has been %s", username, mute ? "muted" : "unmuted"));
                     target.dropMessage(6, String.format("you have been %s", mute ? "muted" : "unmuted"));
                 } else {
-                    player.dropMessage(5, String.format("Could not find any player named '%s'", username));
+                    player.dropMessage(5, String.format("Unable to find any player named '%s'", username));
                 }
             } else {
                 player.dropMessage(5, "you must specify a username");
@@ -716,7 +716,7 @@ public class GameMasterCommands {
                                 usernames.add(rs.getString("name"));
                             }
                         } else {
-                            player.dropMessage(5, String.format("Could not find any player named '%s'", username));
+                            player.dropMessage(5, String.format("Unable to find any player named '%s'", username));
                             return;
                         }
                     }
@@ -996,7 +996,7 @@ public class GameMasterCommands {
                         if (chr != null) {
                             chr.gainMeso(mesos, true);
                         } else {
-                            player.dropMessage(String.format("Could not find any player named '%s'", username));
+                            player.dropMessage(String.format("Unable to find any player named '%s'", username));
                         }
                     }
                 } else {

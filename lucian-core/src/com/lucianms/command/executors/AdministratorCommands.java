@@ -228,7 +228,7 @@ public class AdministratorCommands {
                 for (MapleChannel channel : world.getChannels()) {
                     EventManager manager = channel.getEventScriptManager().getManager(scriptName);
                     if (manager == null) {
-                        player.dropMessage(5, "Could not find any event named '" + scriptName + "'");
+                        player.dropMessage(5, "Unable to find any event named '" + scriptName + "'");
                         return;
                     }
                     manager.getInstances().forEach(EventInstanceManager::disbandParty);
