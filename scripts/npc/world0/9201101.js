@@ -2,6 +2,9 @@ const Occupation = Java.type("com.lucianms.client.meta.Occupation");
 /* izarooni */
 let status = 0;
 let pocc = player.getOccupation();
+if (player.isDebug()) {
+    pocc = null;
+}
 
 function action(mode, type, selection) {
     if (mode < 1) {

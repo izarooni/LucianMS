@@ -63,8 +63,12 @@ public class AdministratorCommands {
                 commands.clear();
             }
         } else if (command.equals("test")) {
-            for (MapleCharacter players : player.getMap().getCharacters()) {
-                players.getClient().announce(MaplePacketCreator.getChatText(player.getId(), "test", false, 0));
+            if (args.length() == 1) {
+                Integer hp = args.parseNumber(0, int.class);
+                if (hp != null) {
+                    player.setHp(hp);
+                    player.updateSingleStat(MapleStat.HP, hp);
+                }
             }
         } else if (command.equals("clearcache")) {
             if (args.length() == 1) {
