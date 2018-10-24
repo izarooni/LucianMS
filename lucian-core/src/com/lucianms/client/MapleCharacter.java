@@ -3675,6 +3675,12 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
     private void playerDead() {
         cancelAllBuffs(false);
         dispelDebuffs();
+        ManualPlayerEvent playerEvent = getClient().getWorldServer().getPlayerEvent();
+        if (playerEvent != null) {
+            if (getMap() == playerEvent.getMap()) {
+                return;
+            }
+        }
         if (getEventInstance() != null) {
             getEventInstance().playerKilled(this);
         }
