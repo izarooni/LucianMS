@@ -375,7 +375,7 @@ public class MapleMap {
                     }
                 } else {
                     if (ItemConstants.getInventoryType(de.itemId) == MapleInventoryType.EQUIP) {
-                        idrop = ii.randomizeStats((Equip) ii.getEquipById(de.itemId));
+                        idrop = ii.randomizeStats(ii.getEquipById(de.itemId));
                     } else {
                         idrop = new Item(de.itemId, (short) 0, (short) (de.Maximum != 1 ? Randomizer.nextInt(de.Maximum - de.Minimum) + de.Minimum : 1));
                     }
@@ -399,7 +399,7 @@ public class MapleMap {
                     pos.x = mobpos + ((d % 2 == 0) ? (25 * (d + 1) / 2) : -(25 * (d / 2)));
                 }
                 if (ItemConstants.getInventoryType(de.itemId) == MapleInventoryType.EQUIP) {
-                    idrop = ii.randomizeStats((Equip) ii.getEquipById(de.itemId));
+                    idrop = ii.randomizeStats(ii.getEquipById(de.itemId));
                 } else {
                     idrop = new Item(de.itemId, (short) 0, (short) (de.Maximum != 1 ? Randomizer.nextInt(de.Maximum - de.Minimum) + de.Minimum : 1));
                 }
@@ -1007,7 +1007,7 @@ public class MapleMap {
                         MapleMap.this.riceCakes++;
                         MapleMap.this.broadcastMessage(MaplePacketCreator.serverNotice(6, "The Moon Bunny made rice cake number " + (MapleMap.this.riceCakes)));
                     }
-                    spawnItemDrop(m, (MapleCharacter) getAllPlayer().get(0), item, m.getPosition(), false, false);
+                    spawnItemDrop(m, getAllPlayer().get(0), item, m.getPosition(), false, false);
                 }
             }
         }, delay, delay);
@@ -1048,7 +1048,7 @@ public class MapleMap {
         }
         monster.setMap(this);
         if (!monster.getMap().getAllPlayer().isEmpty()) {
-            MapleCharacter chr = (MapleCharacter) getAllPlayer().get(0);
+            MapleCharacter chr = getAllPlayer().get(0);
             if (monster.getEventInstance() == null && chr.getEventInstance() != null) {
                 chr.getEventInstance().registerMonster(monster);
             }
@@ -1428,7 +1428,7 @@ public class MapleMap {
 
         if (mapid == 103040400) {
             if (chr.getEventInstance() != null) {
-                chr.getEventInstance().movePlayer(chr);
+                chr.getEventInstance().movePlayer(chr, this);
             }
         } else if (MapleMiniDungeon.isDungeonMap(mapid)) {
             final MapleMiniDungeon dungeon = MapleMiniDungeon.getDungeon(mapid);

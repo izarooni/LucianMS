@@ -28,11 +28,11 @@
  */
 
 importPackage(java.lang);
-importPackage(Packages.world);
+importPackage(Packages.com.lucianms.world);
 importPackage(Packages.com.lucianms.client);
-importPackage(Packages.server.maps);
-importPackage(Packages.server.life);
-importPackage(Packages.scripting.npc);
+importPackage(Packages.com.lucianms.server.maps);
+importPackage(Packages.com.lucianms.server.life);
+importPackage(Packages.com.lucianms.scripting.npc);
 
 var exitMap;
 var instanceId;

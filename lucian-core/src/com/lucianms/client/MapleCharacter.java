@@ -1586,39 +1586,17 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
     }
 
     public void changeMap(int map, int portal) {
-        MapleMap warpMap;
-        if (getEventInstance() != null) {
-            warpMap = getEventInstance().getMapInstance(map);
-            LOGGER.info("Player '{}' transfering to even map instance {}", getName(), map);
-        } else {
-            warpMap = client.getChannelServer().getMap(map);
-        }
-
-        changeMap(warpMap, warpMap.getPortal(portal));
+        MapleMap dest = client.getChannelServer().getMap(map);
+        changeMap(dest, dest.getPortal(portal));
     }
 
     public void changeMap(int map, String portal) {
-        MapleMap warpMap;
-        if (getEventInstance() != null) {
-            warpMap = getEventInstance().getMapInstance(map);
-            LOGGER.info("Player '{}' transfering to even map instance {}", getName(), map);
-        } else {
-            warpMap = client.getChannelServer().getMap(map);
-        }
-
-        changeMap(warpMap, warpMap.getPortal(portal));
+        MapleMap dest = client.getChannelServer().getMap(map);
+        changeMap(dest, dest.getPortal(portal));
     }
 
     public void changeMap(int map, MaplePortal portal) {
-        MapleMap warpMap;
-        if (getEventInstance() != null) {
-            warpMap = getEventInstance().getMapInstance(map);
-            LOGGER.info("Player '{}' transfering to even map instance {}", getName(), map);
-        } else {
-            warpMap = client.getChannelServer().getMap(map);
-        }
-
-        changeMap(warpMap, portal);
+        changeMap(client.getChannelServer().getMap(map), portal);
     }
 
     public void changeMap(MapleMap to) {
@@ -1669,6 +1647,11 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
                         return;
                     }
                 }
+            }
+        }
+        if (getEventInstance() != null) {
+            if (!eventInstance.movePlayer(this, to)) {
+                return;
             }
         }
         if (getFakePlayer() != null) {

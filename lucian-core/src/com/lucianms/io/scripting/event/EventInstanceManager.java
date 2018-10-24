@@ -18,6 +18,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.*;
+import java.util.function.Function;
 
 /**
  * @author izarooni
@@ -91,7 +92,7 @@ public class EventInstanceManager {
     }
 
     public Collection<MapleCharacter> getPlayers() {
-        return Collections.unmodifiableCollection(concurrentMapStorage.values());
+        return concurrentMapStorage.values();
     }
 
     public void registerMonster(MapleMonster monster) {
@@ -101,12 +102,13 @@ public class EventInstanceManager {
         }
     }
 
-    public void movePlayer(MapleCharacter player) {
+    public boolean movePlayer(MapleCharacter player, MapleMap map) {
         try {
-            eventManager.getInvocable().invokeFunction("moveMap", this, player);
+            return (boolean) eventManager.getInvocable().invokeFunction("moveMap", this, player, map);
         } catch (ScriptException | NoSuchMethodException e) {
             LOGGER.error("Unable to invoke function 'moveMap' with player '{}' in event instance '{}'", player.getName(), getName(), e);
         }
+        return true;
     }
 
     public void monsterKilled(MapleMonster monster) {
@@ -165,6 +167,7 @@ public class EventInstanceManager {
         } catch (ScriptException | NoSuchMethodException e) {
             LOGGER.error("Unable to invoke function 'dispose' in event instance '{}'", getName(), e);
         }
+
         concurrentMapStorage.values().forEach(this::removePlayer);
         concurrentMapStorage.clear();
 
@@ -202,6 +205,14 @@ public class EventInstanceManager {
 
     public MapleMap removeMapInstance(int mapID) {
         return maps.remove(mapID);
+    }
+
+    public MapleMap getMapInstance(int mapID, Function<FieldBuilder, MapleMap> consumer) {
+        MapleMap map = maps.computeIfAbsent(mapID, id -> consumer.apply(new FieldBuilder(eventManager.getChannel().getWorld(), eventManager.getChannel().getId(), mapID)));
+        if (eventManager.getProperty("shuffleReactors") != null && eventManager.getProperty("shuffleReactors").equals("true")) {
+            map.shuffleReactors();
+        }
+        return map;
     }
 
     public MapleMap getMapInstance(int mapID) {
@@ -250,6 +261,7 @@ public class EventInstanceManager {
 
     public void removePlayer(MapleCharacter player) {
         try {
+            unregisterPlayer(player);
             eventManager.getInvocable().invokeFunction("playerExit", this, player);
         } catch (ScriptException | NoSuchMethodException e) {
             LOGGER.error("Unable to invoke function 'playerExit' with player '{}' in event instance '{}'", player.getName(), getName(), e);

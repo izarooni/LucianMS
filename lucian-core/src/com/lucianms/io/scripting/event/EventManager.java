@@ -127,7 +127,7 @@ public class EventManager extends GenericEvent {
     }
 
     public Collection<EventInstanceManager> getInstances() {
-        return Collections.unmodifiableCollection(instances.values());
+        return instances.values();
     }
 
     public EventInstanceManager newInstance(String name) {
@@ -140,10 +140,7 @@ public class EventManager extends GenericEvent {
     }
 
     public void removeInstance(String name) {
-        EventInstanceManager remove = instances.remove(name);
-        if (remove != null) {
-            remove.dispose();
-        }
+        instances.remove(name);
     }
 
     public String getProperty(String key) {
