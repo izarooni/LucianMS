@@ -140,13 +140,14 @@ public class EventCommands {
                                 playerEvent.setGateTime(time);
                                 player.dropMessage(String.format("Event time is now set to %d seconds", time));
                             } else {
-                                player.dropMessage(5, "You must specify a time (in seconds) to set your gate timer.");
+                                player.dropMessage(5, "You must specify a time (in seconds) to set your gate timer");
                             }
                             break;
                         }
                         case "close": {
                             if (playerEvent.isOpen()) {
                                 playerEvent.setOpen(false);
+                                world.broadcastMessage(6, "[Event] The gates are now closed");
                                 if (playerEvent.getGateTime() == 0) {
                                     // manual gate closing
                                     playerEvent.broadcastMessage("The gate is now closed");

@@ -256,24 +256,28 @@ public class PlayerCommands {
             boolean join = command.equals("joinevent");
             ManualPlayerEvent playerEvent = client.getWorldServer().getPlayerEvent();
             if (playerEvent != null) {
+                if (!playerEvent.isOpen()) {
+                    player.sendMessage(5, "The event is no longer open");
+                    return;
+                }
                 if (join) {
                     if (player.getMap() != playerEvent.getMap() && !playerEvent.participants.containsKey(player.getId())) {
                         ManualPlayerEvent.Participant p = new ManualPlayerEvent.Participant(player.getId(), player.getMapId());
                         playerEvent.participants.put(player.getId(), p);
                         player.changeMap(playerEvent.getMap(), playerEvent.getSpawnPoint());
                     } else {
-                        player.dropMessage("You are already in the event!");
+                        player.sendMessage(5, "You are already in the event!");
                     }
                 } else {
                     ManualPlayerEvent.Participant p = playerEvent.participants.get(player.getId());
                     if (p != null) {
                         player.changeMap(p.returnMapId);
                     } else {
-                        player.dropMessage("You are not in an event");
+                        player.sendMessage(5, "You are not in an event");
                     }
                 }
             } else {
-                player.dropMessage("There is no event going on right now");
+                player.sendMessage(5, "There is no event going on right now");
             }
         } else if (command.equals("jautoevent", "lautoevent")) {
             boolean join = command.equals("jautoevent");

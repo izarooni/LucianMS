@@ -63,6 +63,7 @@ public class ManualPlayerEvent extends GenericEvent {
      * @param c    numbers to announce
      */
     public int openGates(final int from, int... c) {
+        setOpen(true);
         return (gateTask = TaskExecutor.createTask(new Runnable() {
             @Override
             public void run() {
