@@ -4,6 +4,7 @@ import com.lucianms.client.MapleCharacter;
 import com.lucianms.client.MapleClient;
 import com.lucianms.client.MapleDisease;
 import com.lucianms.command.CommandWorker;
+import com.lucianms.constants.ServerConstants;
 import com.lucianms.features.ManualPlayerEvent;
 import com.lucianms.server.channel.MapleChannel;
 import com.lucianms.server.life.MapleLifeFactory;
@@ -371,6 +372,29 @@ public class EventCommands {
                 }
             }
             return true;
+        } else if (command.equals("warpout")) {
+            if (args.length() > 1) {
+                Integer fieldID = args.parseNumber(0, int.class);
+                if (fieldID == null) {
+                    if (args.get(0).equalsIgnoreCase("home")) {
+                        fieldID = ServerConstants.HOME_MAP;
+                    } else {
+                        player.sendMessage(5, args.getFirstError());
+                        return false;
+                    }
+                }
+                for (int i = 1; i < args.length(); i++) {
+                    String s = args.get(i);
+                    MapleCharacter target = player.getMap().getCharacterByName(s);
+                    if (target != null) {
+                        target.changeMap(fieldID);
+                    } else {
+                        player.sendMessage(5, "Unable to find any player named '{}'", s);
+                    }
+                }
+            } else {
+                player.sendMessage(5, "syntax: !{} <map> <usernames...>", command.getName());
+            }
         }
         return false;
     }
