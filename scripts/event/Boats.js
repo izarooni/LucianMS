@@ -1,4 +1,4 @@
-importPackage(Packages.client);
+importPackage(Packages.com.lucianms.client);
 importPackage(Packages.tools);
 importPackage(Packages.server.life);
 

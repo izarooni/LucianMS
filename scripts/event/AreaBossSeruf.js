@@ -28,7 +28,7 @@
 
 **/
 
-importPackage(Packages.client);
+importPackage(Packages.com.lucianms.client);
 
 function init() {
     if (em.getChannel().getMap(230020100) == null) {

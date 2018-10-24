@@ -29,7 +29,7 @@
 
 importPackage(java.lang);
 importPackage(Packages.world);
-importPackage(Packages.client);
+importPackage(Packages.com.lucianms.client);
 importPackage(Packages.server.maps);
 importPackage(Packages.server.life);
 importPackage(Packages.scripting.npc);

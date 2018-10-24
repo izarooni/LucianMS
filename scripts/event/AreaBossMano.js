@@ -26,7 +26,7 @@
 	ThreeStep (based on xQuasar's King Clang spawner)
 **/
 
-importPackage(Packages.client);
+importPackage(Packages.com.lucianms.client);
 
 function init() {
     scheduleNew();

@@ -1,7 +1,7 @@
 /*
  * Cygnus 1st Job advancement - Night Walker
  */
-importPackage(Packages.client);
+importPackage(Packages.com.lucianms.client);
 
 var status = -1;
 

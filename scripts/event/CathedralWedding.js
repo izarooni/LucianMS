@@ -27,7 +27,7 @@
 importPackage(java.lang);
 
 importPackage(Packages.world);
-importPackage(Packages.client);
+importPackage(Packages.com.lucianms.client);
 importPackage(Packages.server.maps);
 
 var exitMap;
