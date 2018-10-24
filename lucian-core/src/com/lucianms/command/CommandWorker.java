@@ -70,6 +70,7 @@ public class CommandWorker {
             if (!player.isGM() && !noCheck) {
                 if (JailManager.isJailed(player.getId())) {
                     player.sendMessage(5, "You cannot use commands here.");
+                    return true;
                 } else if (!command.equals("dispose", "quests")) {
                     if (player.getArcade() != null
                             || (player.getMapId() >= 90000000 && player.getMapId() <= 90000004)
