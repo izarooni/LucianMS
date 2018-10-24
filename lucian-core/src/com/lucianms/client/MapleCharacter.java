@@ -4171,7 +4171,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
     public void saveToDB(boolean force) {
         try (Connection con = client.getChannelServer().getConnection()) {
             con.setAutoCommit(false);
-            try (PreparedStatement ps = con.prepareStatement("UPDATE characters SET level = ?, fame = ?, str = ?, dex = ?, luk = ?, `int` = ?, exp = ?, gachaexp = ?, hp = ?, mp = ?, maxhp = ?, maxmp = ?, sp = ?, ap = ?, gm = ?, skincolor = ?, gender = ?, job = ?, hair = ?, face = ?, map = ?, meso = ?, hpMpUsed = ?, spawnpoint = ?, party = ?, buddyCapacity = ?, messengerid = ?, messengerposition = ?, mountlevel = ?, mountexp = ?, mounttiredness= ?, equipslots = ?, useslots = ?, setupslots = ?, etcslots = ?,  monsterbookcover = ?, vanquisherStage = ?, dojoPoints = ?, lastDojoStage = ?, finishedDojoTutorial = ?, vanquisherKills = ?, matchcardwins = ?, matchcardlosses = ?, matchcardties = ?, omokwins = ?, omoklosses = ?, omokties = ?, dataString = ?, fishingpoints = ?, daily = ?, reborns = ?, eventpoints = ?, rebirthpoints = ?, occupation = ?, jumpquestpoints = ?, chattype = ? WHERE id = ?", Statement.RETURN_GENERATED_KEYS)) {
+            try (PreparedStatement ps = con.prepareStatement("UPDATE characters SET level = ?, fame = ?, str = ?, dex = ?, luk = ?, `int` = ?, exp = ?, gachaexp = ?, hp = ?, mp = ?, maxhp = ?, maxmp = ?, sp = ?, ap = ?, gm = ?, skincolor = ?, gender = ?, job = ?, hair = ?, face = ?, map = ?, meso = ?, hpMpUsed = ?, spawnpoint = ?, party = ?, buddyCapacity = ?, messengerid = ?, messengerposition = ?, mountlevel = ?, mountexp = ?, mounttiredness= ?, equipslots = ?, useslots = ?, setupslots = ?, etcslots = ?,  monsterbookcover = ?, vanquisherStage = ?, dojoPoints = ?, lastDojoStage = ?, finishedDojoTutorial = ?, vanquisherKills = ?, matchcardwins = ?, matchcardlosses = ?, matchcardties = ?, omokwins = ?, omoklosses = ?, omokties = ?, dataString = ?, fishingpoints = ?, daily = ?, reborns = ?, eventpoints = ?, rebirthpoints = ?, occupation = ?, jumpquestpoints = ?, chattype = ?, name = ? WHERE id = ?", Statement.RETURN_GENERATED_KEYS)) {
                 if (gmLevel < 1 && level > 199) {
                     ps.setInt(1, isCygnus() ? 120 : 200);
                 } else {
@@ -4272,7 +4272,8 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
                 ps.setInt(54, (occupation == null) ? -1 : occupation.getType().ordinal());
                 ps.setInt(55, jumpQuestPoints);
                 ps.setInt(56, chatType.ordinal());
-                ps.setInt(57, id);
+                ps.setString(57, name);
+                ps.setInt(58, id);
 
                 int updateRows = ps.executeUpdate();
                 if (updateRows < 1) {
