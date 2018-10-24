@@ -441,8 +441,8 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
         }
     }
 
-    public MapleCharacter getMapleCharacter(String player) {
-        return getClient().getChannelServer().getPlayerStorage().getPlayerByName(player);
+    public MapleCharacter getMapleCharacter(String username) {
+        return getClient().getChannelServer().getPlayerStorage().find(p -> p.getName().equalsIgnoreCase(username));
     }
 
     public boolean createPyramid(String mode, boolean party) {//lol

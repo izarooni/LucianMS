@@ -123,6 +123,7 @@ public class MapleStatEffect {
                     && !ret.isPoison()
                     && !ret.isMagicDoor()
                     && !ret.isDs()
+                    && ret.isEnergy()
                     && sourceid != Sniper.PUPPET && sourceid != Ranger.PUPPET
                     && sourceid != Pirate.DASH && sourceid != ThunderBreaker.DASH
                     && sourceid != Shadower.NINJA_AMBUSH
@@ -552,6 +553,10 @@ public class MapleStatEffect {
         statups.trimToSize();
         ret.statups = statups;
         return ret;
+    }
+
+    private boolean isEnergy() {
+        return sourceid == ThunderBreaker.ENERGY_CHARGE || sourceid == Buccaneer.ENERGY_ORB;
     }
 
     /**

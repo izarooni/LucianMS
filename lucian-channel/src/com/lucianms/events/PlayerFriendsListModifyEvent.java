@@ -4,7 +4,6 @@ import com.lucianms.client.*;
 import com.lucianms.client.BuddyList.BuddyAddResult;
 import com.lucianms.client.BuddyList.BuddyOperation;
 import com.lucianms.nio.receive.MaplePacketReader;
-import com.lucianms.events.PacketEvent;
 import com.lucianms.server.world.MapleWorld;
 import tools.MaplePacketCreator;
 
@@ -97,7 +96,7 @@ public class PlayerFriendsListModifyEvent extends PacketEvent {
                         MapleWorld world = getClient().getWorldServer();
                         CharacterIdNameBuddyCapacity charWithId;
                         int channel;
-                        MapleCharacter otherChar = getClient().getChannelServer().getPlayerStorage().getPlayerByName(username);
+                        MapleCharacter otherChar = getClient().getChannelServer().getPlayerStorage().find(p -> p.getName().equalsIgnoreCase(username));
                         if (otherChar != null) {
                             channel = getClient().getChannel();
                             charWithId = new CharacterIdNameBuddyCapacity(otherChar.getId(), otherChar.getName(), otherChar.getBuddylist().getCapacity());
@@ -165,7 +164,7 @@ public class PlayerFriendsListModifyEvent extends PacketEvent {
                 if (!buddylist.isFull()) {
                     int channel = getClient().getWorldServer().find(playerID);
                     String otherName = null;
-                    MapleCharacter otherChar = getClient().getChannelServer().getPlayerStorage().getPlayerByID(playerID);
+                    MapleCharacter otherChar = getClient().getChannelServer().getPlayerStorage().get(playerID);
                     if (otherChar == null) {
                         try (Connection con = getClient().getChannelServer().getConnection();
                              PreparedStatement ps = con.prepareStatement("SELECT name FROM characters WHERE id = ?")) {

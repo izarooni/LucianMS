@@ -268,7 +268,7 @@ public class AdministratorCommands {
                     player.sendMessage(5, args.getFirstError());
                     return;
                 }
-                MapleCharacter target = ch.getPlayerStorage().getPlayerByName(args.get(0));
+                MapleCharacter target = ch.getPlayerStorage().find(p -> p.getName().equalsIgnoreCase(args.get(0)));
                 if (target != null) {
                     target.setGM(GMLevel);
                     target.sendMessage(6, "Your GM level has been updated");
@@ -290,8 +290,8 @@ public class AdministratorCommands {
                     player.sendMessage(5, "Invalid engagement box ID");
                     return;
                 }
-                MapleCharacter target1 = ch.getPlayerStorage().getPlayerByName(args.get(1));
-                MapleCharacter target2 = ch.getPlayerStorage().getPlayerByName(args.get(2));
+                MapleCharacter target1 = ch.getPlayerStorage().find(p -> p.getName().equalsIgnoreCase(args.get(1)));
+                MapleCharacter target2 = ch.getPlayerStorage().find(p -> p.getName().equalsIgnoreCase(args.get(2)));
                 if (target1 == null) {
                     player.sendMessage(5, "Unable to find any player named '{}'", args.get(2));
                     return;

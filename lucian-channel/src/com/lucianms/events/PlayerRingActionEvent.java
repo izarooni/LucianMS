@@ -6,7 +6,6 @@ import com.lucianms.client.inventory.Item;
 import com.lucianms.client.inventory.MapleInventoryType;
 import com.lucianms.nio.SendOpcode;
 import com.lucianms.nio.receive.MaplePacketReader;
-import com.lucianms.events.PacketEvent;
 import com.lucianms.server.channel.MapleChannel;
 import com.lucianms.server.MapleInventoryManipulator;
 import tools.MaplePacketCreator;
@@ -86,7 +85,7 @@ public class PlayerRingActionEvent extends PacketEvent {
         Relationship prltn = null; // partner relationship
         int partnerId = (rltn.getGroomId() == player.getId()) ? rltn.getBrideId() : rltn.getGroomId();
         if (partnerId > 0) {
-            pplayer = getClient().getWorldServer().getPlayerStorage().getPlayerByID(partnerId);
+            pplayer = getClient().getWorldServer().getPlayer(partnerId);
             if (pplayer != null) {
                 prltn = pplayer.getRelationship();
             }
@@ -108,7 +107,7 @@ public class PlayerRingActionEvent extends PacketEvent {
                         getLogger().warn("'{}' attempting to propose with an invalid item ({})", player.getName(), itemID);
                         return null;
                     }
-                    pplayer = ch.getPlayerStorage().getPlayerByName(username);
+                    pplayer = ch.getPlayerStorage().find(p -> p.getName().equalsIgnoreCase(username));
                     if (pplayer != null) {
                         prltn = pplayer.getRelationship();
                         if (pplayer.getMapId() != player.getMapId()) {

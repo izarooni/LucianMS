@@ -25,7 +25,6 @@ import com.lucianms.client.MapleCharacter;
 import com.lucianms.client.MapleClient;
 import com.lucianms.client.inventory.Item;
 import com.lucianms.nio.receive.MaplePacketReader;
-import com.lucianms.events.PacketEvent;
 import com.lucianms.server.world.MaplePartyCharacter;
 import com.lucianms.io.scripting.item.ItemScriptManager;
 import com.lucianms.server.MapleInventoryManipulator;
@@ -136,7 +135,7 @@ ItemPickupEvent extends PacketEvent {
                             }
                             for (MaplePartyCharacter partymem : chr.getParty().getMembers()) {
                                 if (partymem.isOnline() && partymem.getMapId() == chr.getMap().getId()) {
-                                    MapleCharacter somecharacter = getClient().getChannelServer().getPlayerStorage().getPlayerByID(partymem.getId());
+                                    MapleCharacter somecharacter = getClient().getChannelServer().getPlayerStorage().get(partymem.getId());
                                     if (somecharacter != null) {
                                         somecharacter.gainMeso(mesosamm / partynum, true, true, false);
                                     }

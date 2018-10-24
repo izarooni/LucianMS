@@ -397,7 +397,7 @@ public class PlayerCashItemUseEvent extends PacketEvent implements Cleaner.Clean
                         MapleCharacter victim = null;
                         if (type != 1) {
                             if (type != 4) {
-                                victim = ch.getPlayerStorage().getPlayerByName(username);
+                                victim = ch.getPlayerStorage().find(p -> p.getName().equalsIgnoreCase(username));
                             }
                         }
                         ArrayList<String> messages = new ArrayList<>();
@@ -498,7 +498,7 @@ public class PlayerCashItemUseEvent extends PacketEvent implements Cleaner.Clean
                         getClient().announce(MaplePacketCreator.enableActions());
                     }
                 } else {
-                    MapleCharacter victim = ch.getPlayerStorage().getPlayerByName(username);
+                    MapleCharacter victim = ch.getPlayerStorage().find(p -> p.getName().equalsIgnoreCase(username));
                     if (victim != null) {
                         MapleMap target = victim.getMap();
                         if (ch.getMap(victim.getMapId()).getForcedReturnId() == 999999999 || victim.getMapId() < 100000000) {

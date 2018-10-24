@@ -99,7 +99,7 @@ public class PlayerPartyOperationEvent extends PacketEvent {
                 break;
             }
             case 4: { // invite
-                MapleCharacter invited = world.getPlayerStorage().getPlayerByName(username);
+                MapleCharacter invited = world.findPlayer(p -> p.getName().equalsIgnoreCase(username));
                 if (invited != null) {
                     if (invited.getLevel() < 10) { //min requirement is level 10
                         getClient().announce(MaplePacketCreator.serverNotice(5, "The player you have invited does not meet the requirements."));

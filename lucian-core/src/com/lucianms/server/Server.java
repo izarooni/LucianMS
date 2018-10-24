@@ -482,13 +482,15 @@ public class Server {
 
     public static void reloadGuildCharacters(int world) {
         MapleWorld worlda = getWorld(world);
-        for (MapleCharacter mc : worlda.getPlayerStorage().getAllPlayers()) {
-            if (mc.getGuildId() > 0) {
-                setGuildMemberOnline(mc.getMGC(), true, worlda.getId());
-                memberLevelJobUpdate(mc.getMGC());
+        for (MapleChannel channel : worlda.getChannels()) {
+            for (MapleCharacter mc : channel.getPlayerStorage().values()) {
+                if (mc.getGuildId() > 0) {
+                    setGuildMemberOnline(mc.getMGC(), true, worlda.getId());
+                    memberLevelJobUpdate(mc.getMGC());
+                }
             }
+            worlda.reloadGuildSummary();
         }
-        worlda.reloadGuildSummary();
     }
 
     public static void broadcastMessage(final byte[] packet) {

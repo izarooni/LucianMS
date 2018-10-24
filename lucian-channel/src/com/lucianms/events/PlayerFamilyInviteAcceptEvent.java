@@ -23,7 +23,7 @@ public class PlayerFamilyInviteAcceptEvent extends PacketEvent {
         if (!ServerConstants.USE_FAMILY_SYSTEM) {
             return null;
         }
-        MapleCharacter inviter = getClient().getWorldServer().getPlayerStorage().getPlayerByID(playerID);
+        MapleCharacter inviter = getClient().getWorldServer().getPlayer(playerID);
         if (inviter != null) {
             inviter.getClient().announce(MaplePacketCreator.sendFamilyJoinResponse(true, getClient().getPlayer().getName()));
         }

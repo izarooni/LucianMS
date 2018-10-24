@@ -113,7 +113,7 @@ public class GameMasterCommands {
                     }
                     player.dropMessage(6, "Done!");
                 } else {
-                    MapleCharacter target = client.getWorldServer().getPlayerStorage().getPlayerByName(username);
+                    MapleCharacter target = client.getWorldServer().findPlayer(p -> p.getName().equalsIgnoreCase(username));
                     if (target != null) {
                         target.getClient().disconnect(false, target.getCashShop().isOpened());
                     } else {
@@ -127,7 +127,7 @@ public class GameMasterCommands {
             try {
                 if (args.length() > 0) {
                     String username = args.get(0);
-                    MapleCharacter target = client.getWorldServer().getPlayerStorage().getPlayerByName(username);
+                    MapleCharacter target = client.getWorldServer().findPlayer(p -> p.getName().equalsIgnoreCase(username));
                     boolean exact = command.getName().endsWith("x");
                     if (target != null && command.equals("warp", "wh", "whx")) { // !<warp_cmd> <username/map>
                         if (args.length() == 1 && command.equals("warp", "wh", "whx")) { // !<warp_cmd> <username>
@@ -239,7 +239,7 @@ public class GameMasterCommands {
             if (args.length() == 1) {
                 boolean mute = command.equals("mute");
                 String username = args.get(0);
-                MapleCharacter target = ch.getPlayerStorage().getPlayerByName(username);
+                MapleCharacter target = ch.getPlayerStorage().find(p -> p.getName().equalsIgnoreCase(username));
                 if (target != null) {
                     target.setMuted(mute);
                     player.dropMessage(6, String.format("'%s' has been %s", username, mute ? "muted" : "unmuted"));
@@ -266,7 +266,7 @@ public class GameMasterCommands {
                 if (args.length() > 1) {
                     for (int i = 1; i < args.length(); i++) {
                         String username = args.get(i);
-                        MapleCharacter target = ch.getPlayerStorage().getPlayerByName(username);
+                        MapleCharacter target = ch.getPlayerStorage().find(p -> p.getName().equalsIgnoreCase(username));
                         if (target != null) {
                             target.setJob(job);
                             target.updateSingleStat(MapleStat.JOB, job.getId());
@@ -362,7 +362,7 @@ public class GameMasterCommands {
                 if (args.length() > 1) {
                     for (int i = 1; i < args.length(); i++) {
                         String username = args.get(i);
-                        MapleCharacter target = ch.getPlayerStorage().getPlayerByName(username);
+                        MapleCharacter target = ch.getPlayerStorage().find(p -> p.getName().equalsIgnoreCase(username));
                         if (target != null) {
                             target.setLevel(level);
                             target.setExp(0);
@@ -385,7 +385,7 @@ public class GameMasterCommands {
         } else if (command.equals("ban")) {
             if (args.length() > 1) {
                 String username = args.get(0);
-                MapleCharacter target = client.getWorldServer().getPlayerStorage().getPlayerByName(username);
+                MapleCharacter target = client.getWorldServer().findPlayer(p -> p.getName().equalsIgnoreCase(username));
                 MapleCharacter.ban(username, args.concatFrom(1), false);
                 if (target != null) {
                     target.getClient().disconnect(false, target.getCashShop().isOpened());
@@ -429,7 +429,7 @@ public class GameMasterCommands {
             } else if (args.length() > 0) {
                 for (int i = 0; i < args.length(); i++) {
                     String username = args.get(i);
-                    MapleCharacter target = ch.getPlayerStorage().getPlayerByName(username);
+                    MapleCharacter target = ch.getPlayerStorage().find(p -> p.getName().equalsIgnoreCase(username));
                     if (target != null) {
                         target.setHp(target.getMaxHp());
                         target.setMp(target.getMaxMp());
@@ -462,7 +462,7 @@ public class GameMasterCommands {
                     player.dropMessage(5, error);
                     return;
                 }
-                MapleCharacter target = world.getPlayerStorage().getPlayerByName(username);
+                MapleCharacter target = world.findPlayer(p -> p.getName().equalsIgnoreCase(username));
                 if (target != null) {
                     if (target.addPoints(type, amount)) {
                         player.dropMessage(6, target.getName() + " received " + amount + " " + type);
@@ -482,7 +482,7 @@ public class GameMasterCommands {
                         player.dropMessage(5, error);
                         continue;
                     }
-                    MapleCharacter target = world.getPlayerStorage().getPlayerByName(username);
+                    MapleCharacter target = world.findPlayer(p -> p.getName().equalsIgnoreCase(username));
                     if (target != null) {
                         if (target.addPoints(type, amount)) {
                             player.dropMessage(6, target.getName() + " received " + amount + " " + type);
@@ -510,7 +510,7 @@ public class GameMasterCommands {
                 if (args.length() > 0) {
                     for (int i = 0; i < args.length(); i++) {
                         String username = args.get(i);
-                        MapleCharacter target = ch.getPlayerStorage().getPlayerByName(username);
+                        MapleCharacter target = ch.getPlayerStorage().find(p -> p.getName().equalsIgnoreCase(username));
                         if (target != null) {
                             target.setHpMp(0);
                         }
@@ -527,7 +527,7 @@ public class GameMasterCommands {
                     if (args.length() > 0) {
                         for (int i = 0; i < args.length(); i++) {
                             String username = args.get(i);
-                            MapleCharacter target = world.getPlayerStorage().getPlayerByName(username);
+                            MapleCharacter target = world.findPlayer(p -> p.getName().equalsIgnoreCase(username));
                             if (target != null) {
                                 target.getClient().disconnect(false, target.getCashShop().isOpened());
                             }
@@ -654,7 +654,7 @@ public class GameMasterCommands {
                 } else {
                     for (int i = 0; i < args.length(); i++) {
                         String username = args.get(i);
-                        MapleCharacter target = ch.getPlayerStorage().getPlayerByName(username);
+                        MapleCharacter target = ch.getPlayerStorage().find(p -> p.getName().equalsIgnoreCase(username));
                         if (target != null) {
                             target.dispelDebuffs();
                         }
@@ -668,7 +668,7 @@ public class GameMasterCommands {
             for (MapleChannel channel : client.getWorldServer().getChannels()) {
                 int count = 0;
                 StringBuilder sb = new StringBuilder();
-                for (MapleCharacter players : channel.getPlayerStorage().getAllPlayers()) {
+                for (MapleCharacter players : channel.getPlayerStorage().values()) {
                     if (!players.isGM() || players.getHidingLevel() <= player.getHidingLevel()) {
                         count++;
                         sb.append(players.getName()).append(", ");
@@ -734,7 +734,7 @@ public class GameMasterCommands {
             }
         } else if (command.equals("jail")) {
             if (args.length() >= 2) {
-                MapleCharacter target = world.getPlayerStorage().getPlayerByName(args.get(0));
+                MapleCharacter target = world.findPlayer(p -> p.getName().equalsIgnoreCase(args.get(0)));
                 if (target != null) {
                     String reason = args.concatFrom(1);
                     if (!reason.isEmpty()) {
@@ -760,7 +760,7 @@ public class GameMasterCommands {
             }
         } else if (command.equals("unjail")) {
             if (args.length() == 1) {
-                MapleCharacter target = world.getPlayerStorage().getPlayerByName(args.get(0));
+                MapleCharacter target = world.findPlayer(p -> p.getName().equalsIgnoreCase(args.get(0)));
                 if (target != null) {
                     JailManager.removeJail(target.getId());
                     if (JailManager.isJailField(target.getMapId())) {
@@ -918,7 +918,8 @@ public class GameMasterCommands {
                 }
                 if (args.length() > 1) {
                     for (int i = 1; i < args.length(); i++) {
-                        MapleCharacter target = ch.getPlayerStorage().getPlayerByName(args.get(i));
+                        final String username = args.get(i);
+                        MapleCharacter target = ch.getPlayerStorage().find(p -> p.getName().equalsIgnoreCase(username));
                         if (target != null) {
                             if (ap) {
                                 target.setRemainingAp(amount);
@@ -944,7 +945,7 @@ public class GameMasterCommands {
             int[] skills = {1001003, 2001002, 1101006, 1101007, 1301007, 2201001, 2121004, 2111005, 2311003, 1121002, 4211005, 3121002, 1121000, 2311003, 1101004, 1101006, 4101004, 4111001, 2111005, 1111002, 2321005, 3201002, 4101003, 4201002, 5101006, 1321010, 1121002, 1120003};
             MapleCharacter target = player;
             if (args.length() == 1) {
-                target = ch.getPlayerStorage().getPlayerByName(args.get(0));
+                target = ch.getPlayerStorage().find(p -> p.getName().equalsIgnoreCase(args.get(0)));
                 if (target == null) {
                     player.sendMessage(5, "Unable to find any player named '{}'", args.get(0));
                     return;
@@ -966,7 +967,7 @@ public class GameMasterCommands {
                 } else if (args.length() > 1) {
                     for (int i = 1; i < args.length(); i++) {
                         String username = args.get(i);
-                        MapleCharacter target = client.getChannelServer().getPlayerStorage().getPlayerByName(username);
+                        MapleCharacter target = client.getChannelServer().getPlayerStorage().find(p -> p.getName().equalsIgnoreCase(username));
                         if (target != null) {
                             target.setFame(amount);
                             target.updateSingleStat(MapleStat.FAME, amount);
@@ -992,7 +993,7 @@ public class GameMasterCommands {
                 if (args.length() > 1) {
                     for (int i = 1; i < args.length(); i++) {
                         String username = args.get(i);
-                        MapleCharacter chr = ch.getPlayerStorage().getPlayerByName(username);
+                        MapleCharacter chr = ch.getPlayerStorage().find(p -> p.getName().equalsIgnoreCase(username));
                         if (chr != null) {
                             chr.gainMeso(mesos, true);
                         } else {
@@ -1007,7 +1008,7 @@ public class GameMasterCommands {
             }
         } else if (command.equals("gender")) {
             if (args.length() == 2) {
-                MapleCharacter target = ch.getPlayerStorage().getPlayerByName(args.get(0));
+                MapleCharacter target = ch.getPlayerStorage().find(p -> p.getName().equalsIgnoreCase(args.get(0)));
                 int gender = -1;
                 switch (args.get(1)) {
                     case "male":
@@ -1043,7 +1044,7 @@ public class GameMasterCommands {
                 }
                 MapleCharacter target = player;
                 if (args.length() == 2) {
-                    target = ch.getPlayerStorage().getPlayerByName(args.get(1));
+                    target = ch.getPlayerStorage().find(p -> p.getName().equalsIgnoreCase(args.get(1)));
                     if (target == null) {
                         player.dropMessage(String.format("Unable to find any player named '%s'", args.get(1)));
                         return;

@@ -31,7 +31,7 @@ public class PlayerSpouseChatEvent extends PacketEvent {
             }
         }
         if (rltn.getStatus() == Relationship.Status.Married) {
-            MapleCharacter target = getClient().getWorldServer().getPlayerStorage().getPlayerByName(username);
+            MapleCharacter target = getClient().getWorldServer().findPlayer(p -> p.getName().equalsIgnoreCase(username));
             if (target != null && target.getId() == player.getMarriageRing().getPartnerChrId()) {
                 getClient().announce(MaplePacketCreator.sendSpouseChat(target, content, false));
                 target.announce(MaplePacketCreator.sendSpouseChat(player, content, true));

@@ -826,7 +826,7 @@ public class MapleMonster extends AbstractLoadedMapleLife {
             return false;
         }
         for (Pair<Integer, Integer> skill : usedSkills) {
-            if (skill.getLeft() == toUse.getSkillId() && skill.getRight() == toUse.getSkillLevel()) {
+            if (skill != null && skill.getLeft() == toUse.getSkillId() && skill.getRight() == toUse.getSkillLevel()) {
                 return false;
             }
         }

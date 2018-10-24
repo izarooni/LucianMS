@@ -266,8 +266,8 @@ public class MapleGuild {
     public void guildMessage(final byte[] serverNotice) {
         for (MapleGuildCharacter mgc : members) {
             for (MapleChannel cs : Server.getChannelsFromWorld(world)) {
-                if (cs.getPlayerStorage().getPlayerByID(mgc.getId()) != null) {
-                    cs.getPlayerStorage().getPlayerByID(mgc.getId()).getClient().announce(serverNotice);
+                if (cs.getPlayerStorage().get(mgc.getId()) != null) {
+                    cs.getPlayerStorage().get(mgc.getId()).getClient().announce(serverNotice);
                     break;
                 }
             }
@@ -487,7 +487,7 @@ public class MapleGuild {
     }
 
     public static MapleGuildResponse sendInvite(MapleClient c, String targetName) {
-        MapleCharacter mc = c.getChannelServer().getPlayerStorage().getPlayerByName(targetName);
+        MapleCharacter mc = c.getChannelServer().getPlayerStorage().find(p -> p.getName().equalsIgnoreCase(targetName));
         if (mc == null) {
             return MapleGuildResponse.NOT_IN_CHANNEL;
         }

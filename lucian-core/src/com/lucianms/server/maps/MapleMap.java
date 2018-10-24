@@ -32,12 +32,18 @@ import com.lucianms.client.inventory.MapleInventoryType;
 import com.lucianms.client.inventory.MaplePet;
 import com.lucianms.client.status.MonsterStatus;
 import com.lucianms.client.status.MonsterStatusEffect;
+import com.lucianms.constants.GameConstants;
+import com.lucianms.constants.ItemConstants;
+import com.lucianms.constants.ServerConstants;
 import com.lucianms.cquest.CQuestData;
 import com.lucianms.cquest.requirement.CQuestItemRequirement;
 import com.lucianms.cquest.requirement.CQuestKillRequirement;
 import com.lucianms.events.gm.*;
 import com.lucianms.features.MonsterPark;
 import com.lucianms.features.PlayerBattle;
+import com.lucianms.features.carnival.MCarnivalGame;
+import com.lucianms.features.carnival.MCarnivalPacket;
+import com.lucianms.features.carnival.MCarnivalTeam;
 import com.lucianms.features.emergency.Emergency;
 import com.lucianms.features.emergency.EmergencyAttack;
 import com.lucianms.features.emergency.EmergencyDuel;
@@ -46,22 +52,13 @@ import com.lucianms.features.summoning.ShenronSummoner;
 import com.lucianms.io.scripting.map.MapScriptManager;
 import com.lucianms.scheduler.Task;
 import com.lucianms.scheduler.TaskExecutor;
-import com.lucianms.features.carnival.MCarnivalGame;
-import com.lucianms.features.carnival.MCarnivalPacket;
-import com.lucianms.features.carnival.MCarnivalTeam;
-import com.lucianms.constants.GameConstants;
-import com.lucianms.constants.ItemConstants;
-import com.lucianms.constants.ServerConstants;
-import com.lucianms.server.Server;
-import com.lucianms.server.world.MaplePartyCharacter;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import com.lucianms.server.MapleItemInformationProvider;
-import com.lucianms.server.MaplePortal;
-import com.lucianms.server.MapleStatEffect;
+import com.lucianms.server.*;
 import com.lucianms.server.life.*;
 import com.lucianms.server.life.MapleLifeFactory.SelfDestruction;
 import com.lucianms.server.partyquest.Pyramid;
+import com.lucianms.server.world.MaplePartyCharacter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import tools.MaplePacketCreator;
 import tools.Pair;
 import tools.Randomizer;
@@ -70,7 +67,6 @@ import java.awt.*;
 import java.util.*;
 import java.util.List;
 import java.util.Map.Entry;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
@@ -89,8 +85,9 @@ public class MapleMap {
             MapleMapObjectType.REACTOR
     );
 
-    private ConcurrentHashMap<Integer, MapleCharacter> characters = new ConcurrentHashMap<>(100);
-    private ConcurrentHashMap<Integer, MapleMapObject> mapobjects = new ConcurrentHashMap<>(100);
+    // this is gonna be weird for a bit
+    private ConcurrentMapStorage<Integer, MapleCharacter> characters = new ConcurrentMapStorage<>();
+    private ConcurrentMapStorage<Integer, MapleMapObject> mapobjects = new ConcurrentMapStorage<>();
     private Map<Integer, MaplePortal> portals = new HashMap<>();
     private Map<Integer, Integer> backgroundTypes = new HashMap<>();
     private ArrayList<Rectangle> areas = new ArrayList<>();
@@ -281,12 +278,11 @@ public class MapleMap {
         if (runningOid.incrementAndGet() > 2000000000) {
             runningOid.set(1000);
         }
-        if (mapobjects.containsKey(runningOid.get())) {
-            while (mapobjects.containsKey(runningOid.incrementAndGet())) {
-                ;
-            }
+        int uoid = runningOid.getAndIncrement();
+        if (mapobjects.get(uoid) != null) {
+            return getUsableOID();
         }
-        return runningOid.get();
+        return uoid;
     }
 
     public MapleMapObject removeMapObject(int num) {
@@ -1737,7 +1733,7 @@ public class MapleMap {
                 MapleSummon summon = (MapleSummon) o;
                 if (summon.getOwner() == chr) {
                     if (chr.getSummons().isEmpty() || !chr.getSummons().containsValue(summon)) {
-                        mapobjects.remove(o);
+                        mapobjects.remove(o.getObjectId());
                         continue;
                     }
                 }

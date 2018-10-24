@@ -68,7 +68,7 @@ public class HGMCommands {
             }
         } else if (command.equals("setname")) {
             if (args.length() == 2) {
-                MapleCharacter target = client.getWorldServer().getPlayerStorage().getPlayerByName(args.get(0));
+                MapleCharacter target = client.getWorldServer().findPlayer(p -> p.getName().equalsIgnoreCase(args.get(0)));
                 if (target != null) {
                     String oldName = target.getName();
                     target.setName(args.get(1));
@@ -87,7 +87,7 @@ public class HGMCommands {
         } else if (command.equals("clearskills")) {
             MapleCharacter target = player;
             if (args.length() == 1) {
-                target = client.getChannelServer().getPlayerStorage().getPlayerByName(args.get(0));
+                target = client.getChannelServer().getPlayerStorage().find(p -> p.getName().equalsIgnoreCase(args.get(0)));
                 if (target == null) {
                     player.sendMessage(5, "Unable to find any player named '{}'", args.get(0));
                     return;
@@ -298,7 +298,7 @@ public class HGMCommands {
                     player.dropMessage(5, error);
                     return;
                 }
-                MapleCharacter target = player.getClient().getChannelServer().getPlayerStorage().getPlayerByName(username);
+                MapleCharacter target = player.getClient().getChannelServer().getPlayerStorage().find(p -> p.getName().equalsIgnoreCase(username));
                 if (target != null) {
                     if (npcId >= 9901000 && npcId <= 9901909) {
                         player.createPlayerNPC(target, npcId, script);
@@ -377,7 +377,7 @@ public class HGMCommands {
             }
         } else if (command.equals("saveall")) {
             for (MapleWorld worlds : Server.getWorlds()) {
-                worlds.getPlayerStorage().getAllPlayers().forEach(MapleCharacter::saveToDB);
+                worlds.getChannels().forEach(ch -> ch.getPlayerStorage().values().forEach(MapleCharacter::saveToDB));
             }
             player.dropMessage(6, "All characters saved!");
         } else if (command.equals("resetreactors")) {
@@ -385,7 +385,7 @@ public class HGMCommands {
             player.dropMessage("Reactors reset");
         } else if (command.equals("sudo")) {
             if (args.length() > 1) {
-                MapleCharacter target = client.getWorldServer().getPlayerStorage().getPlayerByName(args.get(0));
+                MapleCharacter target = client.getWorldServer().findPlayer(p -> p.getName().equalsIgnoreCase(args.get(0)));
                 if (target != null) {
                     String cmd = args.concatFrom(1);
                     CommandWorker.process(target.getClient(), cmd, true);

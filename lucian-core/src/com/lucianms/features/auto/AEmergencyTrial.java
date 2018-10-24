@@ -81,7 +81,7 @@ public class AEmergencyTrial extends GAutoEvent {
     public void start() {
         for (MapleChannel channel : getWorld().getChannels()) {
             channel.removeMap(BossMapID);
-            for (MapleCharacter player : channel.getPlayerStorage().getAllPlayers()) {
+            for (MapleCharacter player : channel.getPlayerStorage().values()) {
                 MapleMap map = player.getMap();
                 if (!map.getMonsterSpawnPoints().isEmpty()) {
                     Integer objectID = spawnLocations.get(map.getId());

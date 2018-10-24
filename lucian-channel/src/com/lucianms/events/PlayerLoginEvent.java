@@ -47,7 +47,7 @@ public class PlayerLoginEvent extends PacketEvent {
 
     @Override
     public Object onPacket() {
-        MapleCharacter player = getClient().getWorldServer().getPlayerStorage().getPlayerByID(playerID);
+        MapleCharacter player = getClient().getWorldServer().getPlayer(playerID);
         boolean firstLogin = player == null;
         if (player == null) {
             try (Connection con = getClient().getChannelServer().getConnection()) {
@@ -131,7 +131,6 @@ public class PlayerLoginEvent extends PacketEvent {
         }
 
         MapleWorld world = getClient().getWorldServer();
-        world.getPlayerStorage().addPlayer(player);
 
         //region friends list
         int buddyIds[] = player.getBuddylist().getBuddyIds();

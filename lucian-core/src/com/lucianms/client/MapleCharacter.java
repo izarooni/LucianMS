@@ -1370,7 +1370,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
     }
 
     private void cancelPlayerBuffs(List<MapleBuffStat> buffstats) {
-        if (client.getChannelServer().getPlayerStorage().getPlayerByID(getId()) != null) {
+        if (client.getChannelServer().getPlayerStorage().get(getId()) != null) {
             recalcLocalStats();
             enforceMaxHpMp();
             client.announce(MaplePacketCreator.cancelBuff(buffstats));
@@ -1676,7 +1676,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
         }
         client.announce(warpPacket);
         map.removePlayer(this);
-        if (client.getChannelServer().getPlayerStorage().getPlayerByID(getId()) != null) {
+        if (client.getChannelServer().getPlayerStorage().get(getId()) != null) {
             map = to;
             setPosition(pos);
             if (getFakePlayer() != null) {
@@ -3885,7 +3885,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
             int channel = client.getChannel();
             for (MaplePartyCharacter partychar : party.getMembers()) {
                 if (partychar.getMapId() == getMapId() && partychar.getChannel() == channel) {
-                    MapleCharacter other = Server.getWorld(world).getChannel(channel).getPlayerStorage().getPlayerByName(partychar.getName());
+                    MapleCharacter other = Server.getWorld(world).getChannel(channel).getPlayerStorage().find(p->p.getName().equalsIgnoreCase(partychar.getName()));
                     if (other != null) {
                         client.announce(MaplePacketCreator.updatePartyMemberHP(other.getId(), other.getHp(), other.getCurrentMaxHp()));
                     }
@@ -4876,7 +4876,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
             int channel = client.getChannel();
             for (MaplePartyCharacter partychar : party.getMembers()) {
                 if (partychar.getMapId() == getMapId() && partychar.getChannel() == channel) {
-                    MapleCharacter other = Server.getWorld(world).getChannel(channel).getPlayerStorage().getPlayerByName(partychar.getName());
+                    MapleCharacter other = Server.getWorld(world).getChannel(channel).getPlayerStorage().find(p -> p.getName().equalsIgnoreCase(partychar.getName()));
                     if (other != null) {
                         other.client.announce(MaplePacketCreator.updatePartyMemberHP(getId(), this.hp, maxhp));
                     }

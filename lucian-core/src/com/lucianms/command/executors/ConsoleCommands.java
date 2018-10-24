@@ -156,7 +156,7 @@ public class ConsoleCommands {
                 for (MapleChannel channels : worlds.getChannels()) {
                     StringBuilder sb = new StringBuilder();
                     sb.append("\tChannel {}: ");
-                    for (MapleCharacter players : channels.getPlayerStorage().getAllPlayers()) {
+                    for (MapleCharacter players : channels.getPlayerStorage().values()) {
                         sb.append(players.getName()).append(", ");
                     }
                     if (sb.length() > 2) {
@@ -175,7 +175,7 @@ public class ConsoleCommands {
             if (args.length() == 1) {
                 String username = args.get(0);
                 for (MapleWorld world : Server.getWorlds()) {
-                    MapleCharacter player = world.getPlayerStorage().getPlayerByName(username);
+                    MapleCharacter player = world.findPlayer(p -> p.getName().equalsIgnoreCase(username));
                     if (player != null) {
                         player.getClient().disconnect(false, player.getCashShop().isOpened());
                         world.removePlayer(player);

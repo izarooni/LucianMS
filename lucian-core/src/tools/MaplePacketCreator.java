@@ -4733,7 +4733,7 @@ public class MaplePacketCreator {
                 mplew.writeInt(item.getPrice());
                 mplew.writeInt(hm.getOwnerId());
                 mplew.write(hm.getFreeSlot() == -1 ? 1 : 0);
-                MapleCharacter chr = c.getChannelServer().getPlayerStorage().getPlayerByID(hm.getOwnerId());
+                MapleCharacter chr = c.getChannelServer().getPlayerStorage().get(hm.getOwnerId());
                 if ((chr != null) && (c.getChannel() == hm.getChannel())) {
                     mplew.write(1);
                 } else {

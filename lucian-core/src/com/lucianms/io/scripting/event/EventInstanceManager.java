@@ -3,15 +3,15 @@ package com.lucianms.io.scripting.event;
 import com.lucianms.client.MapleCharacter;
 import com.lucianms.scheduler.Task;
 import com.lucianms.scheduler.TaskExecutor;
-import com.lucianms.server.PlayerStorage;
-import com.lucianms.server.world.MapleParty;
-import com.lucianms.server.world.MaplePartyCharacter;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import com.lucianms.server.ConcurrentMapStorage;
 import com.lucianms.server.FieldBuilder;
 import com.lucianms.server.expeditions.MapleExpedition;
 import com.lucianms.server.life.MapleMonster;
 import com.lucianms.server.maps.MapleMap;
+import com.lucianms.server.world.MapleParty;
+import com.lucianms.server.world.MaplePartyCharacter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.script.ScriptException;
 import java.sql.Connection;
@@ -30,7 +30,7 @@ public class EventInstanceManager {
     private final String name;
     private final Properties props = new Properties();
 
-    private PlayerStorage playerStorage = new PlayerStorage();
+    private ConcurrentMapStorage<Integer, MapleCharacter> concurrentMapStorage = new ConcurrentMapStorage<>();
     private HashMap<Integer, MapleMap> maps = new HashMap<>(15);
     private HashMap<Integer, MapleMonster> monsters = new HashMap<>(); // <ObjectID, Monster>
     private Map<Integer, Integer> killCount = new HashMap<>(); // <PlayerID, Count>
@@ -61,7 +61,7 @@ public class EventInstanceManager {
             return;
         }
         try {
-            playerStorage.addPlayer(player);
+            concurrentMapStorage.put(player.getId(), player);
             player.setEventInstance(this);
             eventManager.getInvocable().invokeFunction("playerEntry", this, player);
         } catch (ScriptException | NoSuchMethodException e) {
@@ -83,15 +83,15 @@ public class EventInstanceManager {
 
     public void unregisterPlayer(MapleCharacter player) {
         player.setEventInstance(null);
-        playerStorage.removePlayer(player.getId());
+        concurrentMapStorage.remove(player.getId());
     }
 
     public int getPlayerCount() {
-        return playerStorage.size();
+        return concurrentMapStorage.size();
     }
 
     public Collection<MapleCharacter> getPlayers() {
-        return Collections.unmodifiableCollection(playerStorage.getAllPlayers());
+        return Collections.unmodifiableCollection(concurrentMapStorage.values());
     }
 
     public void registerMonster(MapleMonster monster) {
@@ -165,8 +165,8 @@ public class EventInstanceManager {
         } catch (ScriptException | NoSuchMethodException e) {
             LOGGER.error("Unable to invoke function 'dispose' in event instance '{}'", getName(), e);
         }
-        playerStorage.getAllPlayers().forEach(this::removePlayer);
-        playerStorage.clear();
+        concurrentMapStorage.values().forEach(this::removePlayer);
+        concurrentMapStorage.clear();
 
         if (monsters != null) monsters.clear();
         monsters = null;

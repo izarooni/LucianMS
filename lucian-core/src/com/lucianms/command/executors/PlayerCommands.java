@@ -95,7 +95,7 @@ public class PlayerCommands {
             MapleCharacter target = player;
             if (command.equals("spy")) {
                 if (args.length() == 1) {
-                    target = ch.getPlayerStorage().getPlayerByName(args.get(0));
+                    target = ch.getPlayerStorage().find(p -> p.getName().equalsIgnoreCase(args.get(0)));
                     if (target == null) {
                         player.sendMessage("Unable to find any player named '{}'", args.get(0));
                         return;
@@ -106,7 +106,7 @@ public class PlayerCommands {
                 }
             }
             player.sendMessage("================ '{}''s Stats ================", target.getName());
-            player.sendMessage("EXP {}x, MESO {}x, DROP {}x", player.getExpRate(), player.getMesoRate(), player.getDropRate());
+            player.sendMessage("EXP {}x, MESO {}x, DROP {}x", target.getExpRate(), target.getMesoRate(), target.getDropRate());
             //   player.sendMessage("Rebirths: {}", player.getRebirths());
             player.sendMessage("Mesos: {}", StringUtil.formatNumber(target.getMeso()));
             player.sendMessage("Ability Power: {}", StringUtil.formatNumber(target.getRemainingAp()));
@@ -116,8 +116,8 @@ public class PlayerCommands {
             player.sendMessage("Occupation: {}", (occupation == null) ? "N/A" : occupation.getType().name());
             player.sendMessage("Fishing Points: {}", StringUtil.formatNumber(target.getFishingPoints()));
             player.sendMessage("Event Points" + StringUtil.formatNumber(target.getEventPoints()));
-            player.sendMessage("Donor Points: {}", StringUtil.formatNumber(client.getDonationPoints()));
-            player.sendMessage("Vote points: {}", StringUtil.formatNumber(client.getVotePoints()));
+            player.sendMessage("Donor Points: {}", StringUtil.formatNumber(target.getClient().getDonationPoints()));
+            player.sendMessage("Vote points: {}", StringUtil.formatNumber(target.getClient().getVotePoints()));
         } else if (command.matches("^reset(stats|str|dex|int|luk)$")) {
             String statName = command.getName().substring(5);
 
@@ -166,7 +166,7 @@ public class PlayerCommands {
             player.dropMessage(6, "Done!");
         } else if (command.equals("afk", "away")) {
             if (args.length() >= 1) {
-                MapleCharacter target = ch.getPlayerStorage().getPlayerByName(args.get(0));
+                MapleCharacter target = ch.getPlayerStorage().find(p -> p.getName().equalsIgnoreCase(args.get(0)));
                 if (target != null) {
                     player.dropMessage(String.format("%s is currently %s", target.getName(), (target.getClient().getSession().isActive() ? "AFK" : "not AFK")));
                 } else {
@@ -334,7 +334,7 @@ public class PlayerCommands {
         } else if (command.equals("online")) {
             for (MapleChannel channel : client.getWorldServer().getChannels()) {
                 StringBuilder sb = new StringBuilder();
-                for (MapleCharacter players : channel.getPlayerStorage().getAllPlayers()) {
+                for (MapleCharacter players : channel.getPlayerStorage().values()) {
                     if (!players.isGM()) {
                         sb.append(players.getName()).append(" ");
                     }
@@ -413,7 +413,7 @@ public class PlayerCommands {
             if (args.length() > 1) {
                 String username = args.get(0);
                 String message = args.concatFrom(1);
-                MapleCharacter target = client.getWorldServer().getPlayerStorage().getPlayerByName(username);
+                MapleCharacter target = client.getWorldServer().findPlayer(p -> p.getName().equalsIgnoreCase(username));
                 if (target != null) {
                     client.getWorldServer().broadcastGMPacket(MaplePacketCreator.serverNotice(6, String.format("[REPORT] %s : (%s) %s", player.getName(), username, message)));
                 } else {

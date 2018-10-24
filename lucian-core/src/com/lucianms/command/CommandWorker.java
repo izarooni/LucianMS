@@ -196,7 +196,6 @@ public class CommandWorker {
          * Join args from specified index to end of array as one String
          *
          * @param index index to begin concatenation
-         * @return
          */
         public String concatFrom(int index) {
             StringBuilder sb = new StringBuilder();

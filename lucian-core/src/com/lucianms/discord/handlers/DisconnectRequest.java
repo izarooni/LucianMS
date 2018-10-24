@@ -50,7 +50,7 @@ public class DisconnectRequest extends DiscordRequest {
                 try (ResultSet rs = ps.executeQuery()) {
                     while (rs.next()) {
                         for (MapleWorld world : Server.getWorlds()) {
-                            MapleCharacter target = world.getPlayerStorage().getPlayerByID(rs.getInt("id"));
+                            MapleCharacter target = world.getPlayer(rs.getInt("id"));
                             if (target != null) {
                                 world.removePlayer(target);
                                 target.getClient().disconnect(false, target.getCashShop().isOpened());
@@ -84,7 +84,7 @@ public class DisconnectRequest extends DiscordRequest {
         writer.writeLong(channelID);
 
         for (MapleWorld world : Server.getWorlds()) {
-            MapleCharacter player = world.getPlayerStorage().getPlayerByName(username);
+            MapleCharacter player = world.findPlayer(p -> p.getName().equalsIgnoreCase(username));
             if (player != null) {
                 online = true;
                 player.getClient().disconnect(false, false);
