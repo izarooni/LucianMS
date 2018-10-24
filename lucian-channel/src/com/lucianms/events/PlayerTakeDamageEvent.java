@@ -72,6 +72,16 @@ public final class PlayerTakeDamageEvent extends PacketEvent {
     }
 
     @Override
+    public void packetCompleted() {
+        MapleCharacter player = getClient().getPlayer();
+        if (monsterIdFrom == 9400551) { // Bob
+            if (!player.isGM() || player.isDebug()) {
+                player.setHpMp(0);
+            }
+        }
+    }
+
+    @Override
     public Object onPacket() {
         MapleCharacter player = getClient().getPlayer();
 
