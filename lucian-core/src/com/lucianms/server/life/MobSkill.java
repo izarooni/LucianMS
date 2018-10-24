@@ -35,7 +35,6 @@ import java.util.*;
 import java.util.List;
 
 /**
- *
  * @author Danny (Leifde)
  */
 public class MobSkill {
@@ -259,7 +258,7 @@ public class MobSkill {
                 int i = 0;
                 for (MapleCharacter character : getPlayersInRange(monster, player)) {
                     if (!character.isActiveBuffedValue(2321005)) {
-                        if (disease.equals(MapleDisease.SEDUCE)) {
+                        if (disease == MapleDisease.SEDUCE) {
                             if (i < 10) {
                                 character.giveDebuff(MapleDisease.SEDUCE, this);
                                 i++;

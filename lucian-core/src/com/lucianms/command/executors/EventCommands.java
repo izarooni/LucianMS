@@ -6,13 +6,13 @@ import com.lucianms.client.MapleDisease;
 import com.lucianms.command.CommandWorker;
 import com.lucianms.features.ManualPlayerEvent;
 import com.lucianms.server.channel.MapleChannel;
-import com.lucianms.server.world.MapleParty;
-import com.lucianms.server.world.MaplePartyCharacter;
-import com.lucianms.server.world.MapleWorld;
 import com.lucianms.server.life.MapleLifeFactory;
 import com.lucianms.server.life.MapleMonster;
 import com.lucianms.server.life.MobSkill;
 import com.lucianms.server.life.MobSkillFactory;
+import com.lucianms.server.world.MapleParty;
+import com.lucianms.server.world.MaplePartyCharacter;
+import com.lucianms.server.world.MapleWorld;
 import tools.MaplePacketCreator;
 
 import java.awt.*;
@@ -240,6 +240,18 @@ public class EventCommands {
                 player.dropMessage("Use: '!event help' for a list of relevant commands.");
             }
             return true;
+        } else if (command.equals("stun", "stunm")) {
+            giveDebuff(player, command, args, MobSkillFactory.getMobSkill(123, 1));
+            return true;
+        } else if (command.equals("lock", "lockm")) {
+            giveDebuff(player, command, args, MobSkillFactory.getMobSkill(120, 1));
+            return true;
+        } else if (command.equals("reverse", "rev", "reversem", "revm")) {
+            giveDebuff(player, command, args, MobSkillFactory.getMobSkill(132, 1));
+            return true;
+        } else if (command.equals("seduce", "sed", "seducem", "sedm")) {
+            giveDebuff(player, command, args, MobSkillFactory.getMobSkill(128, 1));
+            return true;
         } else if (command.equals("dispel", "dispelm")) {
             if (command.equals("dispelm")) {
                 for (MapleCharacter players : player.getMap().getCharacters()) {
@@ -248,116 +260,19 @@ public class EventCommands {
                     }
                 }
             } else {
-                if (args.length() == 1) {
-                    MapleCharacter target = client.getChannelServer().getPlayerStorage().getPlayerByName(args.get(0));
-                    if (target != null) {
-                        target.dispelDebuffs();
-                    } else {
-                        player.sendMessage(5, "Unable to find any player named '{}'", args.get(0));
+                if (args.length() > 0) {
+                    for (int i = 0; i < args.length(); i++) {
+                        String s = args.get(i);
+                        MapleCharacter target = player.getMap().getCharacterByName(s);
+                        if (target != null) {
+                            target.dispelDebuffs();
+                        } else {
+                            player.sendMessage("Unable to find any player named '{}'", s);
+                        }
                     }
                 } else {
                     player.dispelDebuffs();
                 }
-            }
-        } else if (command.equals("lock", "lockm")) {
-            MobSkill skill = MobSkillFactory.getMobSkill(120, 1);
-            if (command.equals("lockm")) {
-                for (MapleCharacter players : player.getMap().getCharacters()) {
-                    if (!players.isGM() || player.isDebug()) {
-                        player.giveDebuff(MapleDisease.SEAL, skill);
-                    }
-                }
-            } else {
-                if (args.length() > 0) {
-                    for (int i = 0; i < args.length(); i++) {
-                        String username = args.get(i);
-                        MapleCharacter target = ch.getPlayerStorage().getPlayerByName(username);
-                        if (target != null && (!target.isGM() || player.isDebug())) {
-                            target.giveDebuff(MapleDisease.SEAL, skill);
-                        }
-                    }
-                    player.dropMessage(6, "Done");
-                } else {
-                    player.dropMessage(5, "You must specify at least 1 username");
-                }
-            }
-            return true;
-        } else if (command.equals("reverse", "reversemap", "rev", "revm")) {
-            boolean map = command.equals("reversemap", "revm");
-            try {
-                if (args.length() > 0) {
-                    Integer level = args.parseNumber(0, 2, int.class);
-                    String error = args.getFirstError();
-                    if (error != null) {
-                        player.dropMessage(5, error);
-                    }
-                    MobSkill skill = MobSkillFactory.getMobSkill(132, level);
-                    if (map) {
-                        for (MapleCharacter players : player.getMap().getCharacters()) {
-                            if (!players.isGM() || player.isDebug()) {
-                                players.giveDebuff(MapleDisease.CONFUSE, skill);
-                            }
-                        }
-                    } else {
-                        for (int i = 1; i < args.length(); i++) {
-                            String username = args.get(i);
-                            MapleCharacter target = ch.getPlayerStorage().getPlayerByName(username);
-                            if (target != null && (!target.isGM() || player.isDebug())) {
-                                target.setChair(0);
-                                target.announce(MaplePacketCreator.cancelChair(-1));
-                                target.getMap().broadcastMessage(target, MaplePacketCreator.showChair(target.getId(), 0), false);
-                                target.giveDebuff(MapleDisease.CONFUSE, skill);
-                            }
-                        }
-                        player.dropMessage(6, "Done!");
-                    }
-                } else {
-                    if (map) {
-                        player.sendMessage(5, "Syntax: !{} <mode>", command.getName());
-                    } else {
-                        player.sendMessage(5, "Syntax: !{} <mode> <usernames>", command.getName());
-                    }
-                }
-            } catch (NullPointerException e) {
-                player.dropMessage(5, "An unknown error occurred, but we're too lazy to fix it. Fuck you!");
-            }
-            return true;
-        } else if (command.equals("seduce", "sed", "seducem", "sedm")) {
-            boolean map = command.equals("sedm", "seducem");
-            if (args.length() > 0) {
-                String direction = args.get(0);
-                int level;
-                if (direction.equalsIgnoreCase("right")) {
-                    level = 2;
-                } else if (direction.equalsIgnoreCase("down")) {
-                    level = 7;
-                } else if (direction.equalsIgnoreCase("left")) {
-                    level = 1;
-                } else {
-                    player.dropMessage(5, "The only seduces available are: right, left and down");
-                    return true;
-                }
-                MobSkill skill = MobSkillFactory.getMobSkill(128, level);
-                if (!map) { // !<cmd_name> <direction> <usernames>
-                    if (args.length() > 1) {
-                        for (int i = 1; i < args.length(); i++) {
-                            String username = args.get(i);
-                            MapleCharacter target = ch.getPlayerStorage().getPlayerByName(username);
-                            if (target != null) {
-                                target.giveDebuff(MapleDisease.SEDUCE, skill);
-                            }
-                        }
-                        player.dropMessage(6, "Done!");
-                    } else {
-                        player.dropMessage(5, "Syntax: !" + command.getName() + " <left/right/down> <usernames>");
-                    }
-                } else { // !<cmd_name> <direction>
-                    for (MapleCharacter players : player.getMap().getCharacters()) {
-                        players.giveDebuff(MapleDisease.SEDUCE, skill);
-                    }
-                }
-            } else {
-                player.dropMessage(5, "Syntax: !" + command.getName() + " <direction>" + (!map ? " <usernames>" : ""));
             }
             return true;
         } else if (command.equals("partycheck")) {
@@ -458,5 +373,111 @@ public class EventCommands {
             return true;
         }
         return false;
+    }
+
+    private static void giveDebuff(MapleCharacter player, CommandWorker.Command command, CommandWorker.CommandArgs args, MobSkill skill) {
+        boolean map = command.getName().endsWith("m");
+        MapleDisease disease;
+        switch (skill.getSkillId()) {
+            default:
+                return;
+            case 120:
+                disease = MapleDisease.SEAL;
+                break;
+            case 121:
+                disease = MapleDisease.DARKNESS;
+                break;
+            case 122:
+                disease = MapleDisease.WEAKEN;
+                break;
+            case 123:
+                disease = MapleDisease.STUN;
+                break;
+            case 124:
+                disease = MapleDisease.CURSE;
+                break;
+            case 125:
+                disease = MapleDisease.POISON;
+                break;
+            case 126:
+                disease = MapleDisease.SLOW;
+                break;
+            case 128:
+                disease = MapleDisease.SEDUCE;
+                if (args.length() > 1) {
+                    String direction = args.get(1);
+                    if (direction.equalsIgnoreCase("right")) {
+                        skill = MobSkillFactory.getMobSkill(128, 2);
+                    } else if (direction.equalsIgnoreCase("left")) {
+                        skill = MobSkillFactory.getMobSkill(128, 1);
+                    } else {
+                        player.sendMessage(5, "The only seduces available are 'left' and 'right'");
+                        return;
+                    }
+                } else {
+                    player.sendMessage(5, "syntax: !{} <duration (seconds)> <direction> {}", command.getName(), (map ? "" : "<usernames...>"));
+                    return;
+                }
+                break;
+            case 132:
+                disease = MapleDisease.CONFUSE;
+                break;
+        }
+        skill.setDuration(5000); // default duration
+        if (map) {
+            if (args.length() > 0) {
+                Integer number = args.parseNumber(0, int.class);
+                if (number == null) {
+                    player.sendMessage(5, args.getFirstError());
+                    return;
+                }
+                skill.setDuration(number * 1000);
+            }
+            for (MapleCharacter players : player.getMap().getCharacters()) {
+                if (!players.isGM() || players.isDebug()) {
+                    if (skill.getSkillId() == 128) { // seduce
+                        players.setChair(0);
+                        players.announce(MaplePacketCreator.cancelChair(-1));
+                        players.getMap().broadcastMessage(players, MaplePacketCreator.showChair(players.getId(), 0), false);
+                    }
+
+                    players.giveDebuff(disease, skill);
+                }
+            }
+            return;
+        } else if (args.length() > 0) {
+            for (int i = 0; i < args.length(); i++) {
+                String s = args.get(i);
+                if (s.startsWith("-")) {
+                    Integer number = args.parseNumber(0, int.class);
+                    if (number == null) {
+                        player.sendMessage(5, args.getFirstError());
+                        return;
+                    }
+                    skill.setDuration(number * 1000);
+                } else {
+                    MapleCharacter target = player.getMap().getCharacterByName(s);
+                    if (target != null) {
+                        if (!target.isGM() || target.isDebug()) {
+                            if (skill.getSkillId() == 128) { // seduce
+                                target.setChair(0);
+                                target.announce(MaplePacketCreator.cancelChair(-1));
+                                target.getMap().broadcastMessage(target, MaplePacketCreator.showChair(target.getId(), 0), false);
+                            }
+
+                            target.giveDebuff(disease, skill);
+                        } else {
+                            player.sendMessage(5, "You cannot debuff the player '{}'", s);
+                        }
+                    } else {
+                        player.sendMessage(5, "Unable to find any player named '{}'", s);
+                    }
+                }
+            }
+            return;
+        }
+        player.sendMessage(5, "syntax: !{} [-duration (seconds)] <usernames...>", command.getName());
+        player.sendMessage(5, "when specifying length, duration must be prefixed with a dash to prevent conflict with players using numbers for a username");
+        player.sendMessage(5, "example: '!{} -3 {}' - to stun for 3 seconds", command.getName(), player.getName());
     }
 }

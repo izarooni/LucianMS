@@ -163,6 +163,10 @@ public class CommandWorker {
             return args[index];
         }
 
+        public void set(int index, String value) {
+            args[index] = value;
+        }
+
         /**
          * @return length of the args array
          */

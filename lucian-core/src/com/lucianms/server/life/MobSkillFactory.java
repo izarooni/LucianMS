@@ -68,7 +68,7 @@ public class MobSkillFactory {
                         if (skillData.getChildByPath(String.valueOf(i)) == null) {
                             break;
                         }
-                        toSummon.add(Integer.valueOf(MapleDataTool.getInt(skillData.getChildByPath(String.valueOf(i)), 0)));
+                        toSummon.add(MapleDataTool.getInt(skillData.getChildByPath(String.valueOf(i)), 0));
                     }
                     int effect = MapleDataTool.getInt("summonEffect", skillData, 0);
                     int hp = MapleDataTool.getInt("hp", skillData, 100);
@@ -77,7 +77,7 @@ public class MobSkillFactory {
                     long duration = MapleDataTool.getInt("time", skillData, 0) * 1000;
                     long cooltime = MapleDataTool.getInt("interval", skillData, 0) * 1000;
                     int iprop = MapleDataTool.getInt("prop", skillData, 100);
-                    float prop = iprop / 100;
+                    float prop = iprop / 100f;
                     int limit = MapleDataTool.getInt("limit", skillData, 0);
                     MapleData ltd = skillData.getChildByPath("lt");
                     Point lt = null;
