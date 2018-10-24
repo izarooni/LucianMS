@@ -1,149 +1,111 @@
-/* 
- * This file is part of the OdinMS Maple Story Server
-    Copyright (C) 2008 Patrick Huy <patrick.huy@frz.cc> 
-                       Matthias Butz <matze@odinms.de>
-                       Jan Christian Meyer <vimes@odinms.de>
+const MaplePacketCreator = Java.type('tools.MaplePacketCreator');
+const ExpeditionType = Java.type('com.lucianms.server.expeditions.MapleExpeditionType');
 
-    This program is free software: you can redistribute it and/or modify
-    it under the terms of the GNU Affero General Public License version 3
-    as published by the Free Software Foundation. You may not use, modify
-    or distribute this program under any other version of the
-    GNU Affero General Public License.
+const FightTime = 60;
+const EventName = "Horntail-" + em.getChannel().getId();
+const Fields = {
+    TrialOne: 240060000, // Cave of Life - The Cave of Trial I
+    TrialTwo: 240060100, // Cave of Life - The Cave of Trial II
+    Horntail: 240060200, // Cave of Life - Horntail's Cave
+    Entrance: 240050400
+};
 
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU Affero General Public License for more details.
+// -------- EventInstanceManager functions --------
 
-    You should have received a copy of the GNU Affero General Public License
-    along with this program.  If not, see <http://www.gnu.org/licenses/>.
- */
+function setup(eim) {
+    eim.setProperty("registering", "true");
 
-/*
- * @Author SharpAceX(Alan)
- * Horntail fight
- */
-
-importPackage(Packages.server.expeditions);
-
-var exitMap;
-var minPlayers = 1;
-var fightTime = 60;
-
-var trial1 = 240060000; //Cave of Life - The Cave of Trial I
-var trial2 = 240060100; // Cave of Life - The Cave of Trial II
-var fightMap = 240060200; // Cave of Life - Horntail's Cave
-var exitMap = 240050400;
-	
-function init() {
-    em.setProperty("shuffleReactors","false");
+    eim.schedule("timeOut", 1000 * 60 * (FightTime + 10));
+    eim.startEventTimer(1000 * 60 * FightTime);
 }
 
-function setup() {
-    var eim = em.newInstance("HorntailFight_" + em.getProperty("channel"));
-	var timer = 1000 * 60 * fightTime;
-    em.schedule("timeOut", eim, timer);
-    eim.startEventTimer(timer);
-	return eim;
+function playerEntry(eim, player) {
+    let map = eim.getMapInstance(Fields.TrialOne);
+    player.changeMap(map, map.getPortal(0));
 }
 
-function playerEntry(eim,player) {
-    var map = eim.getMapInstance(trial1);
-    player.changeMap(map,map.getPortal(0));
+function moveMap(eim, player, map) {
+    if (!map.isInstanced()) {
+        eim.unregisterPlayer(player);
+        if (eim.getPlayers().isEmpty()) {
+            eim.dispose();
+        }
+    }
+    return true;
 }
 
-function playerRevive(eim,player) {
+function playerDead(eim, player) {
+}
+
+function playerRevive(eim, player) {
+    eim.unregisterPlayer(player);
+
     player.setHp(500);
     player.setStance(0);
-    eim.unregisterPlayer(player);
-    player.changeMap(exitMap);
-    var party = eim.getPlayers();
-    if (party.size() < minPlayers)
-        end(eim,"There are not enough players remaining, the Battle is over.");
+    player.changeMap(Fields.Entrance);
+    if (eim.isEmpty()) {
+        eim.dispose();
+    }
     return false;
 }
 
-function playerDead(eim,player) {
-}
-
-function playerDisconnected(eim,player) {
-    var party = eim.getPlayers();
-    if (player.getName().equals(eim.getProperty("leader"))) {
-        // tell members
-        var iter = party.iterator();
-        while (iter.hasNext())
-            iter.next().getPlayer().dropMessage(6,"The leader of the instance has disconnected.");
+function playerDisconnected(eim, player) {
+    let players = eim.getPlayers();
+    if (eim.getProperty("leader") == player.getName()) {
+        eim.broadcastMessage(6, "The leader of the expedition has disconnected.");
     }
-    // and, if the party is too small
-    if (party.size() < minPlayers) {
-        end(eim,"There are not enough players remaining. The Battle is over.");
+    if (players.isEmpty()) {
+        eim.dispose();
     }
 }
 
-function monsterValue(eim, mobId) {
+function monsterValue(eim, player, monster) {
     return 1;
 }
 
-function leftParty(eim,player) {
+function dispose(eim) {
+    eim.getEventManager().removeInstance(eim.getName());
 }
+
 function disbandParty(eim) {
 }
 
-function playerExit(eim,player) {
-    eim.unregisterPlayer(player);
-    player.changeMap(exitMap);
-    if (eim.getPlayers().size() < minPlayers)//not enough after someone left
-        end(eim,"There are no longer enough players to continue, and those remaining shall be warped out.");
-}
-
-function end(eim,msg) {
-    var iter = eim.getPlayers().iterator();
-    while (iter.hasNext()) {
-        var player = iter.next();
-        player.getPlayer().dropMessage(6,msg);
-        eim.unregisterPlayer(player);
-        if (player != null)
-            player.changeMap(exitMap);
-    }
-    eim.dispose();
-}
-
-// for offline folk
-function removePlayer(eim,player) {
-    eim.unregisterPlayer(player);
-    player.getMap().removePlayer(player);
-    player.setMap(exitMap);
-}
-
 function clearPQ(eim) {
-    var iter = eim.getPlayers().iterator();
-    while (iter.hasNext()) {
-        var player = iter.next();
-        eim.unregisterPlayer(player);
-        player.changeMap(exitMap);
-    }
     eim.dispose();
 }
 
-function finish(eim) {
-    var iter = eim.getPlayers().iterator();
-    while (iter.hasNext()) {
-        var player = iter.next();
-        eim.unregisterPlayer(player);
-        player.changeMap(exitMap);
+function playerExit(eim, player) {
+    eim.unregisterPlayer(player);
+    player.changeMap(Fields.Entrance);
+    if (eim.getPlayers().isEmpty()) {
+        eim.dispose();
     }
-    eim.dispose();
 }
 
 function allMonstersDead(eim) {
 }
 
+function closeRegistration(eim, map, time) {
+    if (time > 0) {
+        map.broadcastMessage(MaplePacketCreator.getClock(time / 1000));
+        em.schedule("closeRegistration", time, eim, map, 0);
+    } else {
+        map.broadcastMessage(MaplePacketCreator.serverNotice(6, "Time limit has been reached. Ehe expedition has been disbanded."));
+        eim.dispose();
+    }
+}
+
+function timeout(eim) {
+    eim.dispose();
+}
+
+// -------- EventManager functions --------
+
 function cancelSchedule() {
 }
 
-function timeOut() {
-}
+// -------- Script functions --------
 
-function dispose(eim) {
-    eim.getEventManager().removeInstance(eim.getName());
+function init() {
+    em.setProperty("shuffleReactors", "false");
 }

@@ -9,6 +9,7 @@ import com.lucianms.command.CommandWorker;
 import com.lucianms.constants.ItemConstants;
 import com.lucianms.constants.ServerConstants;
 import com.lucianms.helpers.JailManager;
+import com.lucianms.io.scripting.npc.NPCScriptManager;
 import com.lucianms.server.MapleInventoryManipulator;
 import com.lucianms.server.MapleItemInformationProvider;
 import com.lucianms.server.channel.MapleChannel;
@@ -98,9 +99,12 @@ public class GameMasterCommands {
             commands.add("!sp <amount> - Give yourself or another player SP");
             commands.add("!setall <number> [username] - Set all stats for yourself or a player");
             commands.add("!gender <username> <male/female/uni> - Change the gender of a specified player");
+            commands.add(("!stalker - Go through any player inventory"));
             commands.sort(String::compareTo);
             commands.forEach(player::dropMessage);
             commands.clear();
+        } else if (command.equals("stalker")) {
+            NPCScriptManager.start(client, 10200, "t_stalker");
         } else if (command.equals("dc")) {
             if (args.length() == 1) {
                 String username = args.get(0);
@@ -133,10 +137,17 @@ public class GameMasterCommands {
                         if (args.length() == 1 && command.equals("warp", "wh", "whx")) { // !<warp_cmd> <username>
                             MapleCharacter warpie = (command.equals("warp") ? player : target); // person to warp
                             MapleCharacter warper = (command.equals("warp") ? target : player); // destination
-                            if (exact || command.equals("warp")) {
-                                warpie.changeMap(warper.getMap(), warper.getPosition());
+
+                            if (target.getClient().getChannel() != client.getChannel()) {
+                                warpie.setMap(warper.getMap());
+                                warpie.setPosition(warper.getPosition().getLocation());
+                                client.changeChannel(target.getClient().getChannel());
                             } else {
-                                warpie.changeMap(warper.getMap());
+                                if (exact || command.equals("warp")) {
+                                    warpie.changeMap(warper.getMap(), warper.getPosition());
+                                } else {
+                                    warpie.changeMap(warper.getMap());
+                                }
                             }
                         } else if (args.length() == 2) { // !<warp_cmd> <username> <map_ID>
                             Integer mapId = args.parseNumber(1, int.class);
@@ -158,9 +169,7 @@ public class GameMasterCommands {
                                 return;
                             }
                         }
-                        if (target.getClient().getChannel() != client.getChannel()) {
-                            client.changeChannel(target.getClient().getChannel());
-                        }
+
                     } else if (command.equals("wm", "wmx")) {
                         MapleMap map = null;
                         if (args.length() == 1) { // !<warp_cmd> <map_ID>

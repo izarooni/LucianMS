@@ -1623,7 +1623,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
         changeMap(map_, map_.getPortal(portal));
     }
 
-    private void changeMapInternal(final MapleMap to, final Point pos, final byte[] warpPacket) {
+    private void changeMapInternal(MapleMap to, final Point pos, final byte[] warpPacket) {
         if (getTrade() != null) {
             MapleTrade.cancelTrade(this);
         }
@@ -1633,7 +1633,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
         }
         ManualPlayerEvent playerEvent = client.getWorldServer().getPlayerEvent();
         if (playerEvent != null) {
-            if (to != playerEvent.getMap() && getMap() == playerEvent.getMap()) {
+            if (to != playerEvent.getMap()) {
                 playerEvent.participants.remove(getId());
             }
         }
