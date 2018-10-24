@@ -259,6 +259,9 @@ public class PlayerCommands {
                 if (!playerEvent.isOpen()) {
                     player.sendMessage(5, "The event is no longer open");
                     return;
+                } else if (client.getChannel() != playerEvent.getChannel().getId()) {
+                    player.sendMessage(5, "The event is being hosted ein channel {}", playerEvent.getChannel().getId());
+                    return;
                 }
                 if (join) {
                     if (player.getMap() != playerEvent.getMap() && !playerEvent.participants.containsKey(player.getId())) {
