@@ -71,7 +71,7 @@ public class HGMCommands {
                 MapleCharacter target = client.getWorldServer().getPlayerStorage().getPlayerByName(args.get(0));
                 if (target != null) {
                     String oldName = target.getName();
-                    target.setName(args.get(0));
+                    target.setName(args.get(1));
                     target.sendMessage(5, "Your name has been changed to '{}'", target.getName());
                     player.sendMessage("Changed '{}''s name to '{}'. Relog to make changes", oldName, target.getName());
                 } else {
