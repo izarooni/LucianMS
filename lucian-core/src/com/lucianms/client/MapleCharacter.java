@@ -27,12 +27,22 @@ import com.lucianms.client.autoban.Cheater;
 import com.lucianms.client.inventory.*;
 import com.lucianms.client.meta.Achievement;
 import com.lucianms.client.meta.Occupation;
+import com.lucianms.constants.ExpTable;
+import com.lucianms.constants.GameConstants;
+import com.lucianms.constants.ItemConstants;
+import com.lucianms.constants.ServerConstants;
+import com.lucianms.constants.skills.*;
 import com.lucianms.cquest.CQuestBuilder;
 import com.lucianms.cquest.CQuestData;
+import com.lucianms.events.MapleEvents;
+import com.lucianms.events.RescueGaga;
+import com.lucianms.events.gm.MapleFitness;
+import com.lucianms.events.gm.MapleOla;
 import com.lucianms.features.GenericEvent;
 import com.lucianms.features.ManualPlayerEvent;
 import com.lucianms.features.PlayerBattle;
 import com.lucianms.features.PlayerTitles;
+import com.lucianms.features.carnival.MCarnivalPacket;
 import com.lucianms.features.controllers.JumpQuestController;
 import com.lucianms.features.summoning.ShenronSummoner;
 import com.lucianms.io.scripting.Achievements;
@@ -40,36 +50,22 @@ import com.lucianms.io.scripting.event.EventInstanceManager;
 import com.lucianms.lang.GProperties;
 import com.lucianms.scheduler.Task;
 import com.lucianms.scheduler.TaskExecutor;
-import com.lucianms.features.carnival.MCarnivalPacket;
-import com.lucianms.constants.ExpTable;
-import com.lucianms.constants.GameConstants;
-import com.lucianms.constants.ItemConstants;
-import com.lucianms.constants.ServerConstants;
-import com.lucianms.constants.skills.*;
-import com.lucianms.server.PlayerBuffValueHolder;
-import com.lucianms.server.PlayerCoolDownValueHolder;
-import com.lucianms.server.PlayerDiseaseValueHolder;
-import com.lucianms.server.Server;
+import com.lucianms.server.*;
 import com.lucianms.server.channel.MapleChannel;
 import com.lucianms.server.guild.MapleGuild;
 import com.lucianms.server.guild.MapleGuildCharacter;
-import com.lucianms.server.world.*;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.slf4j.helpers.MessageFormatter;
-import provider.MapleData;
-import provider.MapleDataProviderFactory;
-import com.lucianms.server.*;
-import com.lucianms.events.MapleEvents;
-import com.lucianms.events.RescueGaga;
-import com.lucianms.events.gm.MapleFitness;
-import com.lucianms.events.gm.MapleOla;
 import com.lucianms.server.life.FakePlayer;
 import com.lucianms.server.life.MapleMonster;
 import com.lucianms.server.life.MobSkill;
 import com.lucianms.server.maps.*;
 import com.lucianms.server.partyquest.PartyQuest;
 import com.lucianms.server.quest.MapleQuest;
+import com.lucianms.server.world.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.slf4j.helpers.MessageFormatter;
+import provider.MapleData;
+import provider.MapleDataProviderFactory;
 import tools.*;
 
 import java.awt.*;
@@ -322,38 +318,63 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
         return ret;
     }
 
-    public static boolean ban(String id, String reason, boolean accountId) {
+    public static boolean ban(String username, String reason, boolean isAccountName) {
         try (Connection con = Server.getConnection()) {
-            if (id.matches("/[0-9]{1,3}\\..*")) {
-                try (PreparedStatement ps = con.prepareStatement("INSERT INTO ipbans VALUES (DEFAULT, ?)")) {
-                    ps.setString(1, id);
-                    ps.executeUpdate();
-                }
-                return true;
-            }
-            String query;
-            if (accountId) {
-                query = "SELECT id FROM accounts WHERE name = ?";
-            } else {
-                query = "SELECT accountid FROM characters WHERE name = ?";
-            }
-
-            boolean ret = false;
-            try (PreparedStatement ps = con.prepareStatement(query)) {
-                ps.setString(1, id);
+            int accountID;
+            // get account id from character username
+            try (PreparedStatement ps = con.prepareStatement("select accountid from characters where name = ?")) {
+                ps.setString(1, username);
                 try (ResultSet rs = ps.executeQuery()) {
                     if (rs.next()) {
-                        try (PreparedStatement psb = con.prepareStatement("UPDATE accounts SET banned = 1, banreason = ? WHERE id = ?")) {
-                            psb.setString(1, reason);
-                            psb.setInt(2, rs.getInt(1));
-                            psb.executeUpdate();
-                        }
-                        return true;
+                        accountID = rs.getInt("accountid");
+                    } else {
+                        return false;
                     }
                 }
             }
+
+            // ban the associated account
+            try (PreparedStatement ps = con.prepareStatement("update accounts set banned = 1, banreason = ? where id = ?")) {
+                ps.setString(1, username);
+                ps.setInt(2, accountID);
+                if (ps.executeUpdate() == 0) {
+                    return false;
+                }
+            }
+
+            // ban the ips, hwid and macs associated with the account
+            try (PreparedStatement ps = con.prepareStatement("select ip, hwid, macs from accounts where id = ?")) {
+                ps.setInt(1, accountID);
+                try (ResultSet rs = ps.executeQuery()) {
+                    if (rs.next()) {
+                        String IP = rs.getString("ip");
+                        String hwid = rs.getString("hwid");
+                        String mac = rs.getString("macs").split(", ")[0];
+
+                        if (IP != null && !IP.isEmpty() && !IP.equals("127.0.0.1")) {
+                            try (PreparedStatement ip = con.prepareStatement("insert into ipbans values (?)")) {
+                                ip.setString(1, IP);
+                                ip.executeUpdate();
+                            }
+                        }
+                        if (!hwid.isEmpty()) {
+                            try (PreparedStatement h = con.prepareStatement("insert into hwidbans values (?)")) {
+                                h.setString(1, hwid);
+                                h.executeUpdate();
+                            }
+                        }
+                        if (!mac.isEmpty()) {
+                            try (PreparedStatement m = con.prepareStatement("insert into macbans values (?)")) {
+                                m.setString(1, mac);
+                                m.executeUpdate();
+                            }
+                        }
+                    }
+                }
+            }
+            return true;
         } catch (SQLException e) {
-            e.printStackTrace();
+            LOGGER.error("Unable to ban character '{}''s account", username);
         }
         return false;
     }
@@ -1091,19 +1112,6 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
 
     public void addVisibleMapObject(MapleMapObject mo) {
         visibleMapObjects.putIfAbsent(mo.getObjectId(), mo);
-    }
-
-    public void ban(String reason) {
-        this.isbanned = true;
-        try (Connection con = Server.getConnection();
-             PreparedStatement ps = con.prepareStatement("UPDATE accounts SET banned = 1, banreason = ? WHERE id = ?")) {
-            ps.setString(1, reason);
-            ps.setInt(2, accountid);
-            ps.executeUpdate();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
     }
 
     public int calculateMaxBaseDamage(int watk) {
@@ -5029,18 +5037,6 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
 
     public Map<Short, String> getAreaInfos() {
         return area_info;
-    }
-
-    public void autoban(String reason) {
-        this.ban(reason);
-        announce(MaplePacketCreator.sendPolice(String.format("You have been blocked by the#b %s Police for HACK reason.#k", "LucianMS")));
-        TaskExecutor.createTask(new Runnable() {
-            @Override
-            public void run() {
-                client.disconnect(false, false);
-            }
-        }, 5000);
-        Server.broadcastGMMessage(MaplePacketCreator.serverNotice(6, MapleCharacter.makeMapleReadable(this.name) + " was autobanned for " + reason));
     }
 
     public void block(int reason, int days, String desc) {

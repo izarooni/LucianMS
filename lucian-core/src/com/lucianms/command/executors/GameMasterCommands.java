@@ -382,12 +382,12 @@ public class GameMasterCommands {
             if (args.length() > 1) {
                 String username = args.get(0);
                 MapleCharacter target = client.getWorldServer().getPlayerStorage().getPlayerByName(username);
+                MapleCharacter.ban(username, args.concatFrom(1), false);
                 if (target != null) {
-                    target.ban(args.concatFrom(1));
                     target.getClient().disconnect(false, target.getCashShop().isOpened());
                     player.sendMessage(6, "'{}' has been banned", username);
                 } else {
-                    player.sendMessage(5, "Unable to find any player named '{}'", username);
+                    player.sendMessage(6, "Offline banned '{}'", username);
                 }
             } else {
                 player.dropMessage(5, "You must specify a username and a reason");
