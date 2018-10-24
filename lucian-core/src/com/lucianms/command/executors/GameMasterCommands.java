@@ -235,17 +235,30 @@ public class GameMasterCommands {
             } else {
                 player.dropMessage(5, "You must specify a time");
             }
+        } else if (command.equals("mutemap", "mutem", "unmutem", "unmutemap")) {
+            boolean mute = command.equals("mutemap", "mutem");
+            String muteText = (mute ? "muted" : "unmuted");
+            for (MapleCharacter players : player.getMap().getCharacters()) {
+                if (!players.isGM() || player.isDebug()) {
+                    players.setMuted(mute);
+                    players.sendMessage(5, "You have been {}", muteText);
+                }
+            }
+            player.sendMessage(5, "The map has been {}", (mute ? "muted" : "unmuted"));
         } else if (command.equals("mute", "unmute")) {
-            if (args.length() == 1) {
+            if (args.length() > 0) {
                 boolean mute = command.equals("mute");
-                String username = args.get(0);
-                MapleCharacter target = ch.getPlayerStorage().find(p -> p.getName().equalsIgnoreCase(username));
-                if (target != null) {
-                    target.setMuted(mute);
-                    player.dropMessage(6, String.format("'%s' has been %s", username, mute ? "muted" : "unmuted"));
-                    target.dropMessage(6, String.format("you have been %s", mute ? "muted" : "unmuted"));
-                } else {
-                    player.dropMessage(5, String.format("Unable to find any player named '%s'", username));
+                String muteText = (mute ? "muted" : "unmuted");
+                for (int i = 0; i < args.length(); i++) {
+                    final String username = args.get(i);
+                    MapleCharacter target = ch.getPlayerStorage().find(p -> p.getName().equalsIgnoreCase(username));
+                    if (target != null) {
+                        target.setMuted(mute);
+                        player.sendMessage(6, "'{}' has been {}", target.getName(), muteText);
+                        target.sendMessage(6, "You have been {}", muteText);
+                    } else {
+                        player.dropMessage(5, String.format("Unable to find any player named '%s'", username));
+                    }
                 }
             } else {
                 player.dropMessage(5, "you must specify a username");

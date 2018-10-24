@@ -50,7 +50,7 @@ public class PlayerAllChatEvent extends PacketEvent {
             }
             return null;
         }
-        if (!player.isMuted()) {
+        if (!player.isMuted() || player.isGM()) {
             if (CommandWorker.isCommand(content)) {
                 if (CommandWorker.process(getClient(), content, false)) {
                     return null;
