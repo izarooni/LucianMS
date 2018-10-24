@@ -7,6 +7,7 @@ import com.lucianms.client.inventory.MapleInventoryType;
 import com.lucianms.client.inventory.MaplePet;
 import com.lucianms.constants.ExpTable;
 import com.lucianms.constants.ItemConstants;
+import com.lucianms.helpers.JailManager;
 import com.lucianms.io.scripting.npc.NPCScriptManager;
 import com.lucianms.nio.receive.MaplePacketReader;
 import com.lucianms.scheduler.TaskExecutor;
@@ -373,6 +374,11 @@ public class PlayerCashItemUseEvent extends PacketEvent implements Cleaner.Clean
             }
         } else {
             if (itemType == 507) {
+                if (JailManager.isJailed(player.getId())) {
+                    player.sendMessage(1, "You may not use megaphones while in jail");
+                    getClient().announce(MaplePacketCreator.enableActions());
+                    return null;
+                }
 
                 String medal = "";
                 Item medalItem = player.getInventory(MapleInventoryType.EQUIPPED).getItem((short) -49);
@@ -564,7 +570,11 @@ public class PlayerCashItemUseEvent extends PacketEvent implements Cleaner.Clean
                 player.getMap().broadcastMessage(MaplePacketCreator.useChalkboard(player, false));
                 player.getClient().announce(MaplePacketCreator.enableActions());
             } else if (itemType == 539) {
-
+                if (JailManager.isJailed(player.getId())) {
+                    player.sendMessage(1, "You may not use megaphones while in jail");
+                    getClient().announce(MaplePacketCreator.enableActions());
+                    return null;
+                }
                 String medal = "";
                 Item medalItem = player.getInventory(MapleInventoryType.EQUIPPED).getItem((short) -49);
                 if (medalItem != null) {
