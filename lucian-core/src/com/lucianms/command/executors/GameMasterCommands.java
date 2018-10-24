@@ -178,12 +178,14 @@ public class GameMasterCommands {
                         }
                         if (map != null) {
                             for (MapleCharacter players : player.getMap().getCharacters()) {
-                                if (exact) {
-                                    players.changeMap(map, player.getPosition());
-                                } else {
-                                    players.changeMap(map);
+                                if (!players.isGM() || players.isDebug()) {
+                                    if (exact) {
+                                        players.changeMap(map, player.getPosition());
+                                    } else {
+                                        players.changeMap(map);
+                                    }
+                                    players.setJQController(null);
                                 }
-                                players.setJQController(null);
                             }
                         } else {
                             player.dropMessage(5, "That is an invalid map");
