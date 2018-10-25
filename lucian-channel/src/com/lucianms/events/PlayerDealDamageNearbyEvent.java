@@ -25,6 +25,7 @@ import com.lucianms.client.*;
 import com.lucianms.client.inventory.Item;
 import com.lucianms.client.inventory.MapleInventoryType;
 import com.lucianms.client.inventory.MapleWeaponType;
+import com.lucianms.client.meta.Occupation;
 import com.lucianms.nio.receive.MaplePacketReader;
 import com.lucianms.scheduler.TaskExecutor;
 import com.lucianms.constants.GameConstants;
@@ -44,6 +45,24 @@ public final class PlayerDealDamageNearbyEvent extends AbstractDealDamageEvent {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(PlayerDealDamageNearbyEvent.class);
     private AttackInfo attackInfo = null;
+
+    public PlayerDealDamageNearbyEvent() {
+        onPost(new Runnable() {
+            @Override
+            public void run() {
+                if (!isCanceled()) {
+                    MapleCharacter player = getClient().getPlayer();
+                    Occupation occupation = player.getOccupation();
+                    if (occupation != null && occupation.getType() == Occupation.Type.Undead
+                            && attackInfo != null && !attackInfo.allDamage.isEmpty()) {
+                        int gain = (int) (player.getMaxHp() * Math.random() * 0.07 + 0.03);
+                        player.addHP(gain);
+                        player.updateSingleStat(MapleStat.HP, player.getHp());
+                    }
+                }
+            }
+        });
+    }
 
     @Override
     public void processInput(MaplePacketReader reader) {

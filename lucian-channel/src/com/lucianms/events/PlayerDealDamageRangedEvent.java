@@ -23,14 +23,16 @@ package com.lucianms.events;
 
 import com.lucianms.client.MapleBuffStat;
 import com.lucianms.client.MapleCharacter;
+import com.lucianms.client.MapleStat;
 import com.lucianms.client.SkillFactory;
 import com.lucianms.client.inventory.Item;
 import com.lucianms.client.inventory.MapleInventory;
 import com.lucianms.client.inventory.MapleInventoryType;
 import com.lucianms.client.inventory.MapleWeaponType;
-import com.lucianms.nio.receive.MaplePacketReader;
+import com.lucianms.client.meta.Occupation;
 import com.lucianms.constants.ItemConstants;
 import com.lucianms.constants.skills.*;
+import com.lucianms.nio.receive.MaplePacketReader;
 import com.lucianms.scheduler.TaskExecutor;
 import com.lucianms.server.MapleInventoryManipulator;
 import com.lucianms.server.MapleItemInformationProvider;
@@ -42,6 +44,24 @@ import tools.Randomizer;
 public final class PlayerDealDamageRangedEvent extends AbstractDealDamageEvent {
 
     private AttackInfo attackInfo;
+
+    public PlayerDealDamageRangedEvent() {
+        onPost(new Runnable() {
+            @Override
+            public void run() {
+                if (!isCanceled()) {
+                    MapleCharacter player = getClient().getPlayer();
+                    Occupation occupation = player.getOccupation();
+                    if (occupation != null && occupation.getType() == Occupation.Type.Undead
+                            && attackInfo != null && !attackInfo.allDamage.isEmpty()) {
+                        int gain = (int) (player.getMaxHp() * Math.random() * 0.07 + 0.03);
+                        player.addHP(gain);
+                        player.updateSingleStat(MapleStat.HP, player.getHp());
+                    }
+                }
+            }
+        });
+    }
 
     @Override
     public void processInput(MaplePacketReader reader) {
