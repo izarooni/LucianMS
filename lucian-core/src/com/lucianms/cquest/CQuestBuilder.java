@@ -70,9 +70,21 @@ public class CQuestBuilder {
      * @return the data of the quest if it exists, null otherewise
      */
     public static CQuestData beginQuest(MapleCharacter player, int questId) {
+        return  beginQuest(player, questId, false);
+    }
+
+    /**
+     * Initiate a new quest for the specified player
+     *
+     * @param player  A player that is beginning the specified quest
+     * @param questId ID of the quest to begin
+     * @param silent If completion check should occur
+     * @return the data of the quest if it exists, null otherewise
+     */
+    public static CQuestData beginQuest(MapleCharacter player, int questId, boolean silent) {
         CQuestData qData = quests.get(questId);
         if (qData != null) {
-            return qData.beginNew(player);
+            return qData.beginNew(player, silent);
         }
         throw new NullPointerException(String.format("Unable to begin quest; Invalid quest ID specified '%d'", questId));
     }

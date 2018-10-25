@@ -787,7 +787,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
                 ps.setInt(1, ret.id);
                 try (ResultSet rs = ps.executeQuery()) {
                     while (rs.next()) {
-                        CQuestData cQuest = CQuestBuilder.beginQuest(ret, rs.getInt("questid"), true);
+                        CQuestData cQuest = CQuestBuilder.beginQuest(ret, rs.getInt("questid"));
                         if (cQuest != null) {
                             if (rs.getInt("completed") == 0) {
                                 try (PreparedStatement stmt = con.prepareStatement("SELECT * FROM cquestdata WHERE qtableid = ?")) {
