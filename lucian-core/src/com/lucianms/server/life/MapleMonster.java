@@ -454,7 +454,12 @@ public class MapleMonster extends AbstractLoadedMapleLife {
                 eventInstance.monsterKilled(this);
             }
         }
-        new ArrayList<>(listeners).forEach(listener -> listener.monsterKilled(getAnimationTime("die1")));
+        ArrayList<MonsterListener> temp = new ArrayList<>(listeners);
+        try {
+            temp.forEach(listener -> listener.monsterKilled(killer, getAnimationTime("die1")));
+        } finally {
+            temp.clear();
+        }
         MapleCharacter looter = map.getCharacterById(getHighestDamagerId());
         if (killer != null) {
             Achievements.testFor(killer, getId());

@@ -1,5 +1,6 @@
 package com.lucianms.server.life;
 
+import com.lucianms.client.MapleCharacter;
 import com.lucianms.scheduler.TaskExecutor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -80,7 +81,7 @@ public final class SpawnPoint {
         }
         monster.getListeners().add(new MonsterListener() {
             @Override
-            public void monsterKilled(int animationTime) {
+            public void monsterKilled(MapleCharacter player, int animationTime) {
                 if (spawnedMonsters.get() > 0) {
                     spawnedMonsters.decrementAndGet();
                 }

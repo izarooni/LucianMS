@@ -153,7 +153,7 @@ public class AHeartlessWall extends GAutoEvent {
             monster.setOverrideStats(stats);
             monster.getListeners().add(new MonsterListener() {
                 @Override
-                public void monsterKilled(int aniTime) {
+                public void monsterKilled(MapleCharacter player, int aniTime) {
                     timeoutTask.cancel();
                     distributeRewards();
                     stop();

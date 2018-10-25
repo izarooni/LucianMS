@@ -1,6 +1,8 @@
 package com.lucianms.server.life;
 
+import com.lucianms.client.MapleCharacter;
+
 public interface MonsterListener {
 
-    void monsterKilled(int aniTime);
+    void monsterKilled(MapleCharacter player, int aniTime);
 }

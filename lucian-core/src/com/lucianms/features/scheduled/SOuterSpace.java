@@ -93,7 +93,7 @@ public class SOuterSpace extends SAutoEvent {
             if (monster != null) {
                 MonsterListener DeathListener = new MonsterListener() {
                     @Override
-                    public void monsterKilled(int aniTime) {
+                    public void monsterKilled(MapleCharacter player, int aniTime) {
                         if (timeoutTask != null) {
                             timeoutTask.cancel();
                             timeoutTask = null;

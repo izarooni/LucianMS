@@ -1674,6 +1674,17 @@ public class MapleMap {
         }
     }
 
+    //region message broadcast
+    public void broadcastMessage(int type, String message, Object... args) {
+        getCharacters().forEach(p -> p.sendMessage(type, message, args));
+    }
+
+    public void broadcastGMMessage(int type, String message, Object... args) {
+        getCharacters().stream().filter(MapleCharacter::isGM).forEach(p -> p.sendMessage(type, message, args));
+    }
+    //endregion
+
+    //region packet broadcast
     public void broadcastMessage(final byte[] packet) {
         broadcastMessage(null, packet, Double.POSITIVE_INFINITY, null);
     }
@@ -1711,6 +1722,7 @@ public class MapleMap {
             }
         }
     }
+    //endregion
 
     private boolean isNonRangedType(MapleMapObjectType type) {
         switch (type) {

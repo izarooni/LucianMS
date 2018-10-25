@@ -7,14 +7,12 @@ import com.lucianms.command.CommandWorker;
 import com.lucianms.constants.ServerConstants;
 import com.lucianms.features.ManualPlayerEvent;
 import com.lucianms.server.channel.MapleChannel;
-import com.lucianms.server.life.MapleLifeFactory;
-import com.lucianms.server.life.MapleMonster;
-import com.lucianms.server.life.MobSkill;
-import com.lucianms.server.life.MobSkillFactory;
+import com.lucianms.server.life.*;
 import com.lucianms.server.world.MapleParty;
 import com.lucianms.server.world.MaplePartyCharacter;
 import com.lucianms.server.world.MapleWorld;
 import tools.MaplePacketCreator;
+import tools.Randomizer;
 
 import java.awt.*;
 import java.util.ArrayList;
@@ -240,6 +238,37 @@ public class EventCommands {
             } else {
                 player.dropMessage("Use: '!event new' to begin configuring your event.");
                 player.dropMessage("Use: '!event help' for a list of relevant commands.");
+            }
+            return true;
+        } else if (command.equals("bod")) {
+            if (args.length() == 2) {
+                Integer lowHP = args.parseNumber(0, int.class);
+                Integer maxHP = args.parseNumber(1, int.class);
+                if (lowHP == null || maxHP == null) {
+                    player.sendMessage(args.getFirstError());
+                    return false;
+                }
+                MapleMonster monster = MapleLifeFactory.getMonster(9500365);
+                if (monster != null) {
+                    MapleMonsterStats stats = new MapleMonsterStats(monster.getStats());
+                    stats.setExp(0);
+                    stats.setHp(Randomizer.rand(lowHP, maxHP));
+                    monster.setOverrideStats(stats);
+                    monster.getListeners().add(new MonsterListener() {
+                        @Override
+                        public void monsterKilled(MapleCharacter player, int aniTime) {
+                            if (player != null) {
+                                monster.getMap().broadcastMessage(5, "Box killed by '{}'", player.getName());
+                            }
+                        }
+                    });
+                    player.getMap().spawnMonsterOnGroudBelow(monster, player.getPosition());
+                    player.getMap().broadcastGMMessage(5, "Box spawned with {} HP", stats.getHp());
+                } else {
+                    player.sendMessage(5, "Invalid monster");
+                }
+            } else {
+                player.sendMessage(5, "syntax: !{} <min health> <max health>", command.getName());
             }
             return true;
         } else if (command.equals("stun", "stunm")) {
