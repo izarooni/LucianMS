@@ -3,8 +3,8 @@ load("scripts/util_transaction.js");
 /* izarooni */
 let status = 0;
 let selections = [
-	[1000000000, [1, 4260002]],
-	[500000000, [1, 4011022]]
+	[1000000000, [4260002, 1]],
+	[500000000, [4011022, 1]]
 ];
 let playerChoice;
 
@@ -21,23 +21,23 @@ function action(mode, type, selection) {
 			let cost = selections[i][0];
 			let offer = selections[i][1];
 			let readable = StringUtil.formatNumber(cost);
-			content += `\r\n#L${i}#${readable} mesos for ${offer[0]} #z${offer[1]}##l`;
+			content += `\r\n#L${i}#${readable} mesos for ${offer[1]} #z${offer[0]}##l`;
 		}
 		cm.sendSimple(content);
 	} else if (status == 2) {
 		playerChoice = selections[selection];
 		let cost = StringUtil.formatNumber(playerChoice[0]);
 		let offer = playerChoice[1];
-		cm.sendNext(`Are you sure you want to trade\r\n#b${cost}#k mesos for ${offer[0]} #b#z${offer[1]}##k?`);
+		cm.sendNext(`Are you sure you want to trade\r\n#b${cost}#k mesos for ${offer[1]} #b#z${offer[0]}##k?`);
 	} else if (status == 3) {
 		let cost = playerChoice[0];
 		let offer = playerChoice[1];
 		if (player.getMeso() >= cost) {
-			if (InventoryModifier.checkSpace(client, offer[1], offer[0], "")) {
-				cm.gainItem(offer[1], offer[0], true);
+			if (InventoryModifier.checkSpace(client, offer[0], offer[1], "")) {
+				cm.gainItem(offer[0], offer[1], true);
 				cm.gainMeso(-cost);
 
-				let log = `${player.getName()} traded ${cost} mesos for ${offer[0]} of ${offer[1]}`;
+				let log = `${player.getName()} traded ${cost} mesos for ${offer[1]} of ${offer[0]}`;
 				let transactionId = createTransaction(cm.getDatabaseConnection(), player.getId(), log);
 				if (transactionId == -1) {
 					print("Error creating transaction log...");

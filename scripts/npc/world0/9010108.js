@@ -114,7 +114,6 @@ function RedirectQuest() {
 }
 
 function Available() {
-    print(this.metadata.getMinimumLevel());
     if (player.getLevel() < this.metadata.getMinimumLevel()) {
         cm.sendOk("Unfortunately you must be at least #blevel " + this.metadata.getMinimumLevel() + "#k to accept this quest");
         cm.dispose();
