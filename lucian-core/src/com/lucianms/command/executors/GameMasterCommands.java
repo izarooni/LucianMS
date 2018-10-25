@@ -157,8 +157,10 @@ public class GameMasterCommands {
                             Integer mapId = args.parseNumber(1, int.class);
                             String error = args.getFirstError();
                             if (error != null) {
-                                if (args.get(0).equalsIgnoreCase("ox")) {
+                                if (args.get(1).equalsIgnoreCase("ox")) {
                                     mapId = 109020001;
+                                } else if (args.get(1).equalsIgnoreCase("home")) {
+                                    mapId = ServerConstants.HOME_MAP;
                                 } else {
                                     player.dropMessage(5, error);
                                     return;
@@ -174,16 +176,18 @@ public class GameMasterCommands {
                             }
                         }
 
-                    } else if (command.equals("wm", "wmx")) {
+                    } else if (command.equals("warpmap", "wm", "wmx")) {
                         MapleMap map = null;
                         if (args.length() == 1) { // !<warp_cmd> <map_ID>
                             Integer mapId = args.parseNumber(0, int.class);
                             String error = args.getFirstError();
                             if (error != null) {
-                                if (args.get(0).equalsIgnoreCase("here")) {
+                                if (username.equalsIgnoreCase("here")) {
                                     mapId = player.getMapId();
-                                } else if (args.get(0).equalsIgnoreCase("ox")) {
+                                } else if (username.equalsIgnoreCase("ox")) {
                                     mapId = 109020001;
+                                } else if (username.equalsIgnoreCase("home")) {
+                                    mapId = ServerConstants.HOME_MAP;
                                 } else {
                                     player.dropMessage(5, error);
                                     return;
@@ -211,8 +215,10 @@ public class GameMasterCommands {
                         Integer portal = args.parseNumber(1, 0, int.class);
                         String error = args.getFirstError();
                         if (error != null) {
-                            if (args.get(0).equalsIgnoreCase("ox")) {
+                            if (username.equalsIgnoreCase("ox")) {
                                 mapId = 109020001;
+                            } else if (username.equalsIgnoreCase("home")) {
+                                mapId = ServerConstants.HOME_MAP;
                             } else {
                                 player.dropMessage(5, error);
                                 return;
