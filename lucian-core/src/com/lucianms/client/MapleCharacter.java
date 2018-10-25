@@ -634,7 +634,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
         if (channelserver) {
             ret.map = client.getChannelServer().getMap(ret.mapid);
             if (ret.map == null) {
-                LOGGER.info("'{}' logged-in to an invalid map {}", ret.mapid);
+                LOGGER.info("'{}' logged-in to an invalid map {}", ret.name, ret.mapid);
                 ret.map = client.getChannelServer().getMap(ServerConstants.HOME_MAP);
                 ret.dropMessage(5, "You were returned to the home map due to the map being obstructed");
             }
@@ -642,7 +642,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
             if (portal == null) {
                 portal = ret.map.getPortal(0);
                 if (portal == null) {
-                    LOGGER.info("'{}' logged-in to a map with no portals");
+                    LOGGER.info("'{}' logged-in to a map with no portals", ret.name);
                     ret.map = client.getChannelServer().getMap(ServerConstants.HOME_MAP);
                     portal = ret.map.getPortal(0);
                     ret.dropMessage(5, "You were returned to the home map due to the map being obstructed");

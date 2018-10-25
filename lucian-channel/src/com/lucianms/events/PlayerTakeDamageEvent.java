@@ -100,6 +100,9 @@ public final class PlayerTakeDamageEvent extends PacketEvent {
         if (damageFrom != -3 && damageFrom != -4) {
             MapleMapObject mapObject = map.getMapObject(objectId);
             if (!(mapObject instanceof MapleMonster)) {
+                if (mapObject == null) {
+                    return null;
+                }
                 throw new ClassCastException(String.format("'%s' took damage from map object %s in map %d", player.getName(), mapObject.getType().name(), player.getMapId()));
             }
             attacker = (MapleMonster) mapObject;
