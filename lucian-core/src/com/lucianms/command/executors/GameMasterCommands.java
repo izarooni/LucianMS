@@ -100,12 +100,15 @@ public class GameMasterCommands {
             commands.add("!sp <amount> - Give yourself or another player SP");
             commands.add("!setall <number> [username] - Set all stats for yourself or a player");
             commands.add("!gender <username> <male/female/uni> - Change the gender of a specified player");
-            commands.add(("!stalker - Go through any player inventory"));
+            commands.add("!stalker - Go through any player inventory");
+            commands.add("!gmmap - Warps you to the GM headquarters");
             commands.sort(String::compareTo);
             commands.forEach(player::dropMessage);
             commands.clear();
         } else if (command.equals("stalker")) {
             NPCScriptManager.start(client, 10200, "t_stalker");
+        } else if (command.equals("gmmap")) {
+            player.changeMap(331001000, 0);
         } else if (command.equals("dc")) {
             if (args.length() == 1) {
                 String username = args.get(0);
