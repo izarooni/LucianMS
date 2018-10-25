@@ -19,8 +19,8 @@ import javax.script.ScriptException;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Properties;
-import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * @author izarooni
@@ -33,7 +33,7 @@ public class EventManager extends GenericEvent {
     private final String scriptName;
     private Invocable invocable;
 
-    private ConcurrentHashMap<String, EventInstanceManager> instances = new ConcurrentHashMap<>();
+    private HashMap<String, EventInstanceManager> instances = new HashMap<>();
     private Properties props = new Properties();
 
     public EventManager(MapleChannel channel, String scriptName) {
@@ -127,7 +127,7 @@ public class EventManager extends GenericEvent {
     }
 
     public Collection<EventInstanceManager> getInstances() {
-        return Collections.unmodifiableCollection(instances.values());
+        return instances.values();
     }
 
     public EventInstanceManager newInstance(String name) {
@@ -140,10 +140,7 @@ public class EventManager extends GenericEvent {
     }
 
     public void removeInstance(String name) {
-        EventInstanceManager remove = instances.remove(name);
-        if (remove != null) {
-            remove.dispose();
-        }
+        instances.remove(name);
     }
 
     public String getProperty(String key) {

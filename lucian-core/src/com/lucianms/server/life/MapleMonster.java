@@ -185,6 +185,9 @@ public class MapleMonster extends AbstractLoadedMapleLife {
     }
 
     public MapleMonsterStats getStats() {
+        if (overrideStats != null) {
+            return overrideStats;
+        }
         return stats;
     }
 
@@ -264,7 +267,7 @@ public class MapleMonster extends AbstractLoadedMapleLife {
         return takenDamage.containsKey(chr.getId());
     }
 
-    private void distributeExperienceToParty(int pid, int exp, int killer, Map<Integer, Integer> expDist) {
+    private void distributeExperienceToParty(int pid, int exp, int killer) {
         ArrayList<MapleCharacter> members = new ArrayList<>();
 
         Collection<MapleCharacter> chrs = map.getCharacters();
@@ -298,14 +301,15 @@ public class MapleMonster extends AbstractLoadedMapleLife {
         for (MapleCharacter mc : members) {
             int id = mc.getId();
             int level = mc.getLevel();
-            if (expDist.containsKey(id) || level >= leechMinLevel) {
+            if (level >= leechMinLevel) {
                 boolean isKiller = killer == id;
                 boolean mostDamage = mostDamageCid == id;
                 int xp = (int) (exp * 0.80f * level / partyLevel);
                 if (mostDamage) {
                     xp += (exp * 0.20f);
                 }
-                giveExpToCharacter(mc, xp * Math.max(4, members.size()), isKiller, leechCount);
+                int memberSize = members.size();
+                giveExpToCharacter(mc, xp * Math.min(4, memberSize), isKiller, leechCount);
             }
         }
     }
@@ -316,32 +320,30 @@ public class MapleMonster extends AbstractLoadedMapleLife {
         }
         int exp = getExp();
         int totalHealth = getMaxHp();
-        Map<Integer, Integer> expDist = new HashMap<>();
         Map<Integer, Integer> partyExp = new HashMap<>();
         // 80% of pool is split amongst all the damagers
         for (Entry<Integer, AtomicInteger> damage : takenDamage.entrySet()) {
-            expDist.put(damage.getKey(), (int) (0.80f * exp * damage.getValue().get() / totalHealth));
-        }
-        Collection<MapleCharacter> chrs = map.getCharacters();
-        for (MapleCharacter mc : chrs) {
-            Integer xp = expDist.get(mc.getId());
-            if (xp != null) {
-                boolean isKiller = mc.getId() == killerId;
-                if (isKiller) {
-                    xp += exp / 5;
+            MapleCharacter mc = getMap().getCharacterById(damage.getKey());
+            int xp = (int) (0.80f * exp * damage.getValue().get() / totalHealth);
+            boolean isKiller = mc.getId() == killerId;
+            if (isKiller) {
+                xp += exp / 5;
+            }
+            MapleParty p = mc.getParty();
+            if (p != null) {
+                for (MaplePartyCharacter member : p.getMembers()) {
+                    if (member.isOnline() && member.getPlayer().getMap() == getMap()) {
+                        int pID = p.getId();
+                        int pXP = xp + (partyExp.getOrDefault(pID, 0));
+                        partyExp.put(pID, pXP);
+                    }
                 }
-                MapleParty p = mc.getParty();
-                if (p != null && p.getMembers().stream().filter(m -> m.getMapId() == getMap().getId()).mapToInt(v -> 1).sum() > 1) {
-                    int pID = p.getId();
-                    int pXP = xp + (partyExp.getOrDefault(pID, 0));
-                    partyExp.put(pID, pXP);
-                } else {
-                    giveExpToCharacter(mc, xp, isKiller, 1);
-                }
+            } else {
+                giveExpToCharacter(mc, xp, isKiller, 1);
             }
         }
         for (Entry<Integer, Integer> party : partyExp.entrySet()) {
-            distributeExperienceToParty(party.getKey(), party.getValue(), killerId, expDist);
+            distributeExperienceToParty(party.getKey(), party.getValue(), killerId);
         }
     }
 
@@ -450,7 +452,12 @@ public class MapleMonster extends AbstractLoadedMapleLife {
                 eventInstance.monsterKilled(this);
             }
         }
-        new ArrayList<>(listeners).forEach(listener -> listener.monsterKilled(getAnimationTime("die1")));
+        ArrayList<MonsterListener> temp = new ArrayList<>(listeners);
+        try {
+            temp.forEach(listener -> listener.monsterKilled(killer, getAnimationTime("die1")));
+        } finally {
+            temp.clear();
+        }
         MapleCharacter looter = map.getCharacterById(getHighestDamagerId());
         if (killer != null) {
             Achievements.testFor(killer, getId());
@@ -826,7 +833,7 @@ public class MapleMonster extends AbstractLoadedMapleLife {
             return false;
         }
         for (Pair<Integer, Integer> skill : usedSkills) {
-            if (skill.getLeft() == toUse.getSkillId() && skill.getRight() == toUse.getSkillLevel()) {
+            if (skill != null && skill.getLeft() == toUse.getSkillId() && skill.getRight() == toUse.getSkillLevel()) {
                 return false;
             }
         }

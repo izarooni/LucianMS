@@ -27,12 +27,22 @@ import com.lucianms.client.autoban.Cheater;
 import com.lucianms.client.inventory.*;
 import com.lucianms.client.meta.Achievement;
 import com.lucianms.client.meta.Occupation;
+import com.lucianms.constants.ExpTable;
+import com.lucianms.constants.GameConstants;
+import com.lucianms.constants.ItemConstants;
+import com.lucianms.constants.ServerConstants;
+import com.lucianms.constants.skills.*;
 import com.lucianms.cquest.CQuestBuilder;
 import com.lucianms.cquest.CQuestData;
+import com.lucianms.events.MapleEvents;
+import com.lucianms.events.RescueGaga;
+import com.lucianms.events.gm.MapleFitness;
+import com.lucianms.events.gm.MapleOla;
 import com.lucianms.features.GenericEvent;
 import com.lucianms.features.ManualPlayerEvent;
 import com.lucianms.features.PlayerBattle;
 import com.lucianms.features.PlayerTitles;
+import com.lucianms.features.carnival.MCarnivalPacket;
 import com.lucianms.features.controllers.JumpQuestController;
 import com.lucianms.features.summoning.ShenronSummoner;
 import com.lucianms.io.scripting.Achievements;
@@ -40,36 +50,22 @@ import com.lucianms.io.scripting.event.EventInstanceManager;
 import com.lucianms.lang.GProperties;
 import com.lucianms.scheduler.Task;
 import com.lucianms.scheduler.TaskExecutor;
-import com.lucianms.features.carnival.MCarnivalPacket;
-import com.lucianms.constants.ExpTable;
-import com.lucianms.constants.GameConstants;
-import com.lucianms.constants.ItemConstants;
-import com.lucianms.constants.ServerConstants;
-import com.lucianms.constants.skills.*;
-import com.lucianms.server.PlayerBuffValueHolder;
-import com.lucianms.server.PlayerCoolDownValueHolder;
-import com.lucianms.server.PlayerDiseaseValueHolder;
-import com.lucianms.server.Server;
+import com.lucianms.server.*;
 import com.lucianms.server.channel.MapleChannel;
 import com.lucianms.server.guild.MapleGuild;
 import com.lucianms.server.guild.MapleGuildCharacter;
-import com.lucianms.server.world.*;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.slf4j.helpers.MessageFormatter;
-import provider.MapleData;
-import provider.MapleDataProviderFactory;
-import com.lucianms.server.*;
-import com.lucianms.events.MapleEvents;
-import com.lucianms.events.RescueGaga;
-import com.lucianms.events.gm.MapleFitness;
-import com.lucianms.events.gm.MapleOla;
 import com.lucianms.server.life.FakePlayer;
 import com.lucianms.server.life.MapleMonster;
 import com.lucianms.server.life.MobSkill;
 import com.lucianms.server.maps.*;
 import com.lucianms.server.partyquest.PartyQuest;
 import com.lucianms.server.quest.MapleQuest;
+import com.lucianms.server.world.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.slf4j.helpers.MessageFormatter;
+import provider.MapleData;
+import provider.MapleDataProviderFactory;
 import tools.*;
 
 import java.awt.*;
@@ -155,7 +151,6 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
     private int[] remainingSp = new int[10];
     //endregion
 
-    private long lastSave = 0;
     private long lastEmergency = 0;
     private long immortalTimestamp = 0;
     private long portaldelay = 0, lastcombo = 0;
@@ -323,38 +318,63 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
         return ret;
     }
 
-    public static boolean ban(String id, String reason, boolean accountId) {
+    public static boolean ban(String username, String reason, boolean isAccountName) {
         try (Connection con = Server.getConnection()) {
-            if (id.matches("/[0-9]{1,3}\\..*")) {
-                try (PreparedStatement ps = con.prepareStatement("INSERT INTO ipbans VALUES (DEFAULT, ?)")) {
-                    ps.setString(1, id);
-                    ps.executeUpdate();
-                }
-                return true;
-            }
-            String query;
-            if (accountId) {
-                query = "SELECT id FROM accounts WHERE name = ?";
-            } else {
-                query = "SELECT accountid FROM characters WHERE name = ?";
-            }
-
-            boolean ret = false;
-            try (PreparedStatement ps = con.prepareStatement(query)) {
-                ps.setString(1, id);
+            int accountID;
+            // get account id from character username
+            try (PreparedStatement ps = con.prepareStatement("select accountid from characters where name = ?")) {
+                ps.setString(1, username);
                 try (ResultSet rs = ps.executeQuery()) {
                     if (rs.next()) {
-                        try (PreparedStatement psb = con.prepareStatement("UPDATE accounts SET banned = 1, banreason = ? WHERE id = ?")) {
-                            psb.setString(1, reason);
-                            psb.setInt(2, rs.getInt(1));
-                            psb.executeUpdate();
-                        }
-                        return true;
+                        accountID = rs.getInt("accountid");
+                    } else {
+                        return false;
                     }
                 }
             }
+
+            // ban the associated account
+            try (PreparedStatement ps = con.prepareStatement("update accounts set banned = 1, banreason = ? where id = ?")) {
+                ps.setString(1, username);
+                ps.setInt(2, accountID);
+                if (ps.executeUpdate() == 0) {
+                    return false;
+                }
+            }
+
+            // ban the ips, hwid and macs associated with the account
+            try (PreparedStatement ps = con.prepareStatement("select ip, hwid, macs from accounts where id = ?")) {
+                ps.setInt(1, accountID);
+                try (ResultSet rs = ps.executeQuery()) {
+                    if (rs.next()) {
+                        String IP = rs.getString("ip");
+                        String hwid = rs.getString("hwid");
+                        String mac = rs.getString("macs").split(", ")[0];
+
+                        if (IP != null && !IP.isEmpty() && !IP.equals("127.0.0.1")) {
+                            try (PreparedStatement ip = con.prepareStatement("insert into ipbans values (?)")) {
+                                ip.setString(1, IP);
+                                ip.executeUpdate();
+                            }
+                        }
+                        if (!hwid.isEmpty()) {
+                            try (PreparedStatement h = con.prepareStatement("insert into hwidbans values (?)")) {
+                                h.setString(1, hwid);
+                                h.executeUpdate();
+                            }
+                        }
+                        if (!mac.isEmpty()) {
+                            try (PreparedStatement m = con.prepareStatement("insert into macbans values (?)")) {
+                                m.setString(1, mac);
+                                m.executeUpdate();
+                            }
+                        }
+                    }
+                }
+            }
+            return true;
         } catch (SQLException e) {
-            e.printStackTrace();
+            LOGGER.error("Unable to ban character '{}''s account", username);
         }
         return false;
     }
@@ -562,6 +582,9 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
                 ret.rebirthPoints = rs.getInt("rebirthpoints");
                 ret.eventPoints = rs.getInt("eventpoints");
                 ret.jumpQuestPoints = rs.getInt("jumpquestpoints");
+                if (channelserver) {
+                    ret.chatType = ChatType.values()[rs.getInt("chattype")];
+                }
                 int oOrdinal = rs.getInt("occupation");
                 if (oOrdinal > -1) {
                     ret.occupation = new Occupation(Occupation.Type.fromValue(oOrdinal));
@@ -595,7 +618,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
                                 }
                                 if (ring.getItemId() >= 1112803 && ring.getItemId() <= 1112809) {
                                     ret.setMarriageRing(ring);
-                                } else if (ring.getItemId() > 1112015) {
+                                } else if (ring.getItemId() > 1112015 || ring.getItemId() == 1049000) {
                                     ret.addFriendshipRing(ring);
                                 } else {
                                     ret.addCrushRing(ring);
@@ -611,12 +634,19 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
         if (channelserver) {
             ret.map = client.getChannelServer().getMap(ret.mapid);
             if (ret.map == null) {
+                LOGGER.info("'{}' logged-in to an invalid map {}", ret.name, ret.mapid);
                 ret.map = client.getChannelServer().getMap(ServerConstants.HOME_MAP);
                 ret.dropMessage(5, "You were returned to the home map due to the map being obstructed");
             }
             MaplePortal portal = ret.map.getPortal(ret.initialSpawnPoint);
             if (portal == null) {
                 portal = ret.map.getPortal(0);
+                if (portal == null) {
+                    LOGGER.info("'{}' logged-in to a map with no portals", ret.name);
+                    ret.map = client.getChannelServer().getMap(ServerConstants.HOME_MAP);
+                    portal = ret.map.getPortal(0);
+                    ret.dropMessage(5, "You were returned to the home map due to the map being obstructed");
+                }
                 ret.initialSpawnPoint = 0;
             }
             ret.setPosition(portal.getPosition());
@@ -757,7 +787,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
                 ps.setInt(1, ret.id);
                 try (ResultSet rs = ps.executeQuery()) {
                     while (rs.next()) {
-                        CQuestData cQuest = CQuestBuilder.beginQuest(ret, rs.getInt("questid"));
+                        CQuestData cQuest = CQuestBuilder.beginQuest(ret, rs.getInt("questid"), true);
                         if (cQuest != null) {
                             if (rs.getInt("completed") == 0) {
                                 try (PreparedStatement stmt = con.prepareStatement("SELECT * FROM cquestdata WHERE qtableid = ?")) {
@@ -926,10 +956,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
     }
 
     public void addCooldown(int skillId, long startTime, long length, Task task) {
-        if (this.coolDowns.containsKey(skillId)) {
-            this.coolDowns.remove(skillId);
-        }
-        this.coolDowns.put(skillId, new MapleCoolDownValueHolder(skillId, startTime, length, task));
+        coolDowns.put(skillId, new MapleCoolDownValueHolder(skillId, startTime, length, task));
     }
 
     public void addCrushRing(MapleRing r) {
@@ -1094,19 +1121,6 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
         visibleMapObjects.putIfAbsent(mo.getObjectId(), mo);
     }
 
-    public void ban(String reason) {
-        this.isbanned = true;
-        try (Connection con = Server.getConnection();
-             PreparedStatement ps = con.prepareStatement("UPDATE accounts SET banned = 1, banreason = ? WHERE id = ?")) {
-            ps.setString(1, reason);
-            ps.setInt(2, accountid);
-            ps.executeUpdate();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-    }
-
     public int calculateMaxBaseDamage(int watk) {
         int maxbasedamage;
         Item weapon_item = getInventory(MapleInventoryType.EQUIPPED).getItem((short) -11);
@@ -1157,7 +1171,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
     }
 
     public void cancelBuffStats(MapleBuffStat stat) {
-        List<MapleBuffStat> buffStatList = Arrays.asList(stat);
+        List<MapleBuffStat> buffStatList = Collections.singletonList(stat);
         deregisterBuffStats(buffStatList);
         cancelPlayerBuffs(buffStatList);
     }
@@ -1194,7 +1208,6 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
     }
 
     public void setLastCombo(long time) {
-        ;
         lastcombo = time;
     }
 
@@ -1324,11 +1337,11 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
                 if (getFakePlayer() != null) {
                     getMap().addFakePlayer(getFakePlayer());
                 }
-            } else if (hidden) {
+            } else {
                 if (!login) {
                     getMap().broadcastMessage(this, MaplePacketCreator.removePlayerFromMap(getId()), false);
                 }
-                List<Pair<MapleBuffStat, Integer>> dsstat = Collections.singletonList(new Pair<MapleBuffStat, Integer>(MapleBuffStat.DARKSIGHT, 0));
+                List<Pair<MapleBuffStat, Integer>> dsstat = Collections.singletonList(new Pair<>(MapleBuffStat.DARKSIGHT, 0));
                 getMap().broadcastGMMessage(this, MaplePacketCreator.spawnPlayerMapobject(this), false);
                 getMap().broadcastGMMessage(this, MaplePacketCreator.giveForeignBuff(id, dsstat), false);
                 for (MapleMonster mon : getControlledMonsters()) {
@@ -1364,7 +1377,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
     }
 
     private void cancelPlayerBuffs(List<MapleBuffStat> buffstats) {
-        if (client.getChannelServer().getPlayerStorage().getPlayerByID(getId()) != null) {
+        if (client.getChannelServer().getPlayerStorage().get(getId()) != null) {
             recalcLocalStats();
             enforceMaxHpMp();
             client.announce(MaplePacketCreator.cancelBuff(buffstats));
@@ -1580,39 +1593,17 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
     }
 
     public void changeMap(int map, int portal) {
-        MapleMap warpMap;
-        if (getEventInstance() != null) {
-            warpMap = getEventInstance().getMapInstance(map);
-            LOGGER.info("Player '{}' transfering to even map instance {}", getName(), map);
-        } else {
-            warpMap = client.getChannelServer().getMap(map);
-        }
-
-        changeMap(warpMap, warpMap.getPortal(portal));
+        MapleMap dest = client.getChannelServer().getMap(map);
+        changeMap(dest, dest.getPortal(portal));
     }
 
     public void changeMap(int map, String portal) {
-        MapleMap warpMap;
-        if (getEventInstance() != null) {
-            warpMap = getEventInstance().getMapInstance(map);
-            LOGGER.info("Player '{}' transfering to even map instance {}", getName(), map);
-        } else {
-            warpMap = client.getChannelServer().getMap(map);
-        }
-
-        changeMap(warpMap, warpMap.getPortal(portal));
+        MapleMap dest = client.getChannelServer().getMap(map);
+        changeMap(dest, dest.getPortal(portal));
     }
 
     public void changeMap(int map, MaplePortal portal) {
-        MapleMap warpMap;
-        if (getEventInstance() != null) {
-            warpMap = getEventInstance().getMapInstance(map);
-            LOGGER.info("Player '{}' transfering to even map instance {}", getName(), map);
-        } else {
-            warpMap = client.getChannelServer().getMap(map);
-        }
-
-        changeMap(warpMap, portal);
+        changeMap(client.getChannelServer().getMap(map), portal);
     }
 
     public void changeMap(MapleMap to) {
@@ -1639,19 +1630,19 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
         changeMap(map_, map_.getPortal(portal));
     }
 
-    private void changeMapInternal(final MapleMap to, final Point pos, final byte[] warpPacket) {
+    private void changeMapInternal(MapleMap to, final Point pos, final byte[] warpPacket) {
         if (getTrade() != null) {
             MapleTrade.cancelTrade(this);
         }
-        // yeet
         if (getArcade() != null && to.getId() != getArcade().getMapId()) {
-            getArcade().fail(); // fail upon changing the map.
+            getArcade().fail();
         }
         ManualPlayerEvent playerEvent = client.getWorldServer().getPlayerEvent();
         if (playerEvent != null) {
-            if (to != playerEvent.getMap() && getMap() == playerEvent.getMap()) {
-                if (playerEvent.participants.containsKey(getId())) {
-                    playerEvent.participants.remove(getId());
+            if (to != playerEvent.getMap()) {
+                ManualPlayerEvent.Participant remove = playerEvent.participants.remove(getId());
+                if (remove != null) {
+                    to = client.getChannelServer().getMap(remove.returnMapId);
                 }
             }
         }
@@ -1667,12 +1658,17 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
                 }
             }
         }
+        if (getEventInstance() != null) {
+            if (!eventInstance.movePlayer(this, to)) {
+                return;
+            }
+        }
         if (getFakePlayer() != null) {
             map.removeFakePlayer(getFakePlayer());
         }
         client.announce(warpPacket);
         map.removePlayer(this);
-        if (client.getChannelServer().getPlayerStorage().getPlayerByID(getId()) != null) {
+        if (client.getChannelServer().getPlayerStorage().get(getId()) != null) {
             map = to;
             setPosition(pos);
             if (getFakePlayer() != null) {
@@ -3338,9 +3334,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
 
     public boolean hasEntered(String script, int mapId) {
         if (entered.containsKey(mapId)) {
-            if (entered.get(mapId).equals(script)) {
-                return true;
-            }
+            return entered.get(mapId).equals(script);
         }
         return false;
     }
@@ -3673,6 +3667,12 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
     private void playerDead() {
         cancelAllBuffs(false);
         dispelDebuffs();
+        ManualPlayerEvent playerEvent = getClient().getWorldServer().getPlayerEvent();
+        if (playerEvent != null) {
+            if (getMap() == playerEvent.getMap()) {
+                return;
+            }
+        }
         if (getEventInstance() != null) {
             getEventInstance().playerKilled(this);
         }
@@ -3877,7 +3877,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
             int channel = client.getChannel();
             for (MaplePartyCharacter partychar : party.getMembers()) {
                 if (partychar.getMapId() == getMapId() && partychar.getChannel() == channel) {
-                    MapleCharacter other = Server.getWorld(world).getChannel(channel).getPlayerStorage().getPlayerByName(partychar.getName());
+                    MapleCharacter other = Server.getWorld(world).getChannel(channel).getPlayerStorage().find(p -> p.getName().equalsIgnoreCase(partychar.getName()));
                     if (other != null) {
                         client.announce(MaplePacketCreator.updatePartyMemberHP(other.getId(), other.getHp(), other.getCurrentMaxHp()));
                     }
@@ -3959,9 +3959,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
     }
 
     public void removeCooldown(int skillId) {
-        if (this.coolDowns.containsKey(skillId)) {
-            this.coolDowns.remove(skillId);
-        }
+        coolDowns.remove(skillId);
     }
 
     public void removePet(MaplePet pet, boolean shift_left) {
@@ -4046,15 +4044,11 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
     }
 
     public void resetEnteredScript() {
-        if (entered.containsKey(map.getId())) {
-            entered.remove(map.getId());
-        }
+        entered.remove(map.getId());
     }
 
     public void resetEnteredScript(int mapId) {
-        if (entered.containsKey(mapId)) {
-            entered.remove(mapId);
-        }
+        entered.remove(mapId);
     }
 
     public void resetEnteredScript(String script) {
@@ -4173,13 +4167,9 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
     }
 
     public void saveToDB(boolean force) {
-        if (!force && System.currentTimeMillis() - lastSave <= 1000 * 60 * 3) {
-            return; // why fuck me fuck fuck fuck
-        }
-        lastSave = System.currentTimeMillis();
         try (Connection con = client.getChannelServer().getConnection()) {
             con.setAutoCommit(false);
-            try (PreparedStatement ps = con.prepareStatement("UPDATE characters SET level = ?, fame = ?, str = ?, dex = ?, luk = ?, `int` = ?, exp = ?, gachaexp = ?, hp = ?, mp = ?, maxhp = ?, maxmp = ?, sp = ?, ap = ?, gm = ?, skincolor = ?, gender = ?, job = ?, hair = ?, face = ?, map = ?, meso = ?, hpMpUsed = ?, spawnpoint = ?, party = ?, buddyCapacity = ?, messengerid = ?, messengerposition = ?, mountlevel = ?, mountexp = ?, mounttiredness= ?, equipslots = ?, useslots = ?, setupslots = ?, etcslots = ?,  monsterbookcover = ?, vanquisherStage = ?, dojoPoints = ?, lastDojoStage = ?, finishedDojoTutorial = ?, vanquisherKills = ?, matchcardwins = ?, matchcardlosses = ?, matchcardties = ?, omokwins = ?, omoklosses = ?, omokties = ?, dataString = ?, fishingpoints = ?, daily = ?, reborns = ?, eventpoints = ?, rebirthpoints = ?, occupation = ?, jumpquestpoints = ? WHERE id = ?", Statement.RETURN_GENERATED_KEYS)) {
+            try (PreparedStatement ps = con.prepareStatement("UPDATE characters SET level = ?, fame = ?, str = ?, dex = ?, luk = ?, `int` = ?, exp = ?, gachaexp = ?, hp = ?, mp = ?, maxhp = ?, maxmp = ?, sp = ?, ap = ?, gm = ?, skincolor = ?, gender = ?, job = ?, hair = ?, face = ?, map = ?, meso = ?, hpMpUsed = ?, spawnpoint = ?, party = ?, buddyCapacity = ?, messengerid = ?, messengerposition = ?, mountlevel = ?, mountexp = ?, mounttiredness= ?, equipslots = ?, useslots = ?, setupslots = ?, etcslots = ?,  monsterbookcover = ?, vanquisherStage = ?, dojoPoints = ?, lastDojoStage = ?, finishedDojoTutorial = ?, vanquisherKills = ?, matchcardwins = ?, matchcardlosses = ?, matchcardties = ?, omokwins = ?, omoklosses = ?, omokties = ?, dataString = ?, fishingpoints = ?, daily = ?, reborns = ?, eventpoints = ?, rebirthpoints = ?, occupation = ?, jumpquestpoints = ?, chattype = ?, name = ? WHERE id = ?", Statement.RETURN_GENERATED_KEYS)) {
                 if (gmLevel < 1 && level > 199) {
                     ps.setInt(1, isCygnus() ? 120 : 200);
                 } else {
@@ -4279,7 +4269,9 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
                 ps.setInt(53, rebirthPoints);
                 ps.setInt(54, (occupation == null) ? -1 : occupation.getType().ordinal());
                 ps.setInt(55, jumpQuestPoints);
-                ps.setInt(56, id);
+                ps.setInt(56, chatType.ordinal());
+                ps.setString(57, name);
+                ps.setInt(58, id);
 
                 int updateRows = ps.executeUpdate();
                 if (updateRows < 1) {
@@ -4876,7 +4868,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
             int channel = client.getChannel();
             for (MaplePartyCharacter partychar : party.getMembers()) {
                 if (partychar.getMapId() == getMapId() && partychar.getChannel() == channel) {
-                    MapleCharacter other = Server.getWorld(world).getChannel(channel).getPlayerStorage().getPlayerByName(partychar.getName());
+                    MapleCharacter other = Server.getWorld(world).getChannel(channel).getPlayerStorage().find(p -> p.getName().equalsIgnoreCase(partychar.getName()));
                     if (other != null) {
                         other.client.announce(MaplePacketCreator.updatePartyMemberHP(getId(), this.hp, maxhp));
                     }
@@ -4901,7 +4893,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
         if (qs.getQuest().getInfoNumber() > 0) {
             announce(MaplePacketCreator.updateQuest(qs, true));
         }
-        announce(MaplePacketCreator.updateQuestInfo((short) qs.getQuest().getId(), qs.getNpc()));
+        announce(MaplePacketCreator.updateQuestInfo(qs.getQuest().getId(), qs.getNpc()));
     }
 
     public void updateQuest(MapleQuestStatus quest) {
@@ -4911,9 +4903,9 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
             if (quest.getQuest().getInfoNumber() > 0) {
                 announce(MaplePacketCreator.updateQuest(quest, true));
             }
-            announce(MaplePacketCreator.updateQuestInfo((short) quest.getQuest().getId(), quest.getNpc()));
+            announce(MaplePacketCreator.updateQuestInfo(quest.getQuest().getId(), quest.getNpc()));
         } else if (quest.getStatus().equals(MapleQuestStatus.Status.COMPLETED)) {
-            announce(MaplePacketCreator.completeQuest((short) quest.getQuest().getId(), quest.getCompletionTime()));
+            announce(MaplePacketCreator.completeQuest(quest.getQuest().getId(), quest.getCompletionTime()));
         } else if (quest.getStatus().equals(MapleQuestStatus.Status.NOT_STARTED)) {
             announce(MaplePacketCreator.updateQuest(quest, false));
             if (quest.getQuest().getInfoNumber() > 0) {
@@ -5046,18 +5038,6 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
         return area_info;
     }
 
-    public void autoban(String reason) {
-        this.ban(reason);
-        announce(MaplePacketCreator.sendPolice(String.format("You have been blocked by the#b %s Police for HACK reason.#k", "LucianMS")));
-        TaskExecutor.createTask(new Runnable() {
-            @Override
-            public void run() {
-                client.disconnect(false, false);
-            }
-        }, 5000);
-        Server.broadcastGMMessage(MaplePacketCreator.serverNotice(6, MapleCharacter.makeMapleReadable(this.name) + " was autobanned for " + reason));
-    }
-
     public void block(int reason, int days, String desc) {
         Calendar cal = Calendar.getInstance();
         cal.add(Calendar.DATE, days);
@@ -5111,11 +5091,8 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
 
     public boolean isTrockMap(int id) {
         int index = trockmaps.indexOf(id);
-        if (index != -1) {
-            return true;
-        }
+        return index != -1;
 
-        return false;
     }
 
     public int getVipTrockSize() {
@@ -5144,11 +5121,8 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
 
     public boolean isVipTrockMap(int id) {
         int index = viptrockmaps.indexOf(id);
-        if (index != -1) {
-            return true;
-        }
+        return index != -1;
 
-        return false;
     }
 
     public byte getTeam() {

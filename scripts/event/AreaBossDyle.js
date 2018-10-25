@@ -26,7 +26,7 @@
 	ThreeStep (based on xQuasar's King Clang spawner)
 
 **/
-importPackage(Packages.server.life);
+importPackage(Packages.com.lucianms.server.life);
 importPackage(Packages.tools);
 
 function init() {

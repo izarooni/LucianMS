@@ -148,22 +148,20 @@ public class MapleGuild {
                     ps.setInt(11, capacity);
                     ps.setString(12, notice);
                     ps.setInt(13, this.id);
-                    ps.execute();
+                    ps.executeUpdate();
                 }
             } else {
                 try (PreparedStatement ps = con.prepareStatement("UPDATE characters SET guildid = 0, guildrank = 5 WHERE guildid = ?")) {
                     ps.setInt(1, this.id);
-                    ps.execute();
+                    ps.executeUpdate();
                 }
                 try (PreparedStatement ps = con.prepareStatement("DELETE FROM guilds WHERE guildid = ?")) {
                     ps.setInt(1, this.id);
-                    ps.execute();
+                    ps.executeUpdate();
                 }
             }
         } catch (SQLException e) {
             e.printStackTrace();
-        } finally {
-            broadcast(MaplePacketCreator.guildDisband(this.id));
         }
     }
 
@@ -268,8 +266,8 @@ public class MapleGuild {
     public void guildMessage(final byte[] serverNotice) {
         for (MapleGuildCharacter mgc : members) {
             for (MapleChannel cs : Server.getChannelsFromWorld(world)) {
-                if (cs.getPlayerStorage().getPlayerByID(mgc.getId()) != null) {
-                    cs.getPlayerStorage().getPlayerByID(mgc.getId()).getClient().announce(serverNotice);
+                if (cs.getPlayerStorage().get(mgc.getId()) != null) {
+                    cs.getPlayerStorage().get(mgc.getId()).getClient().announce(serverNotice);
                     break;
                 }
             }
@@ -489,7 +487,7 @@ public class MapleGuild {
     }
 
     public static MapleGuildResponse sendInvite(MapleClient c, String targetName) {
-        MapleCharacter mc = c.getChannelServer().getPlayerStorage().getPlayerByName(targetName);
+        MapleCharacter mc = c.getChannelServer().getPlayerStorage().find(p -> p.getName().equalsIgnoreCase(targetName));
         if (mc == null) {
             return MapleGuildResponse.NOT_IN_CHANNEL;
         }

@@ -21,7 +21,7 @@ public class PlayerGuildInviteDenyEvent extends PacketEvent {
 
     @Override
     public Object onPacket() {
-        MapleCharacter sourcePlayer = getClient().getChannelServer().getPlayerStorage().getPlayerByName(username);
+        MapleCharacter sourcePlayer = getClient().getChannelServer().getPlayerStorage().find(p -> p.getName().equalsIgnoreCase(username));
         if (sourcePlayer != null) {
             sourcePlayer.getClient().announce(MaplePacketCreator.denyGuildInvitation(getClient().getPlayer().getName()));
         }

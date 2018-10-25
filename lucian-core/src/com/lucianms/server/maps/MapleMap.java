@@ -32,36 +32,35 @@ import com.lucianms.client.inventory.MapleInventoryType;
 import com.lucianms.client.inventory.MaplePet;
 import com.lucianms.client.status.MonsterStatus;
 import com.lucianms.client.status.MonsterStatusEffect;
+import com.lucianms.constants.GameConstants;
+import com.lucianms.constants.ItemConstants;
+import com.lucianms.constants.ServerConstants;
 import com.lucianms.cquest.CQuestData;
 import com.lucianms.cquest.requirement.CQuestItemRequirement;
 import com.lucianms.cquest.requirement.CQuestKillRequirement;
 import com.lucianms.events.gm.*;
 import com.lucianms.features.MonsterPark;
 import com.lucianms.features.PlayerBattle;
+import com.lucianms.features.carnival.MCarnivalGame;
+import com.lucianms.features.carnival.MCarnivalPacket;
+import com.lucianms.features.carnival.MCarnivalTeam;
 import com.lucianms.features.emergency.Emergency;
 import com.lucianms.features.emergency.EmergencyAttack;
 import com.lucianms.features.emergency.EmergencyDuel;
 import com.lucianms.features.summoning.BlackMageSummoner;
 import com.lucianms.features.summoning.ShenronSummoner;
+import com.lucianms.io.scripting.event.EventInstanceManager;
 import com.lucianms.io.scripting.map.MapScriptManager;
+import com.lucianms.lang.GProperties;
 import com.lucianms.scheduler.Task;
 import com.lucianms.scheduler.TaskExecutor;
-import com.lucianms.features.carnival.MCarnivalGame;
-import com.lucianms.features.carnival.MCarnivalPacket;
-import com.lucianms.features.carnival.MCarnivalTeam;
-import com.lucianms.constants.GameConstants;
-import com.lucianms.constants.ItemConstants;
-import com.lucianms.constants.ServerConstants;
-import com.lucianms.server.Server;
-import com.lucianms.server.world.MaplePartyCharacter;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import com.lucianms.server.MapleItemInformationProvider;
-import com.lucianms.server.MaplePortal;
-import com.lucianms.server.MapleStatEffect;
+import com.lucianms.server.*;
 import com.lucianms.server.life.*;
 import com.lucianms.server.life.MapleLifeFactory.SelfDestruction;
 import com.lucianms.server.partyquest.Pyramid;
+import com.lucianms.server.world.MaplePartyCharacter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import tools.MaplePacketCreator;
 import tools.Pair;
 import tools.Randomizer;
@@ -70,7 +69,6 @@ import java.awt.*;
 import java.util.*;
 import java.util.List;
 import java.util.Map.Entry;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
@@ -89,8 +87,9 @@ public class MapleMap {
             MapleMapObjectType.REACTOR
     );
 
-    private ConcurrentHashMap<Integer, MapleCharacter> characters = new ConcurrentHashMap<>(100);
-    private ConcurrentHashMap<Integer, MapleMapObject> mapobjects = new ConcurrentHashMap<>(100);
+    // this is gonna be weird for a bit
+    private ConcurrentMapStorage<Integer, MapleCharacter> characters = new ConcurrentMapStorage<>();
+    private ConcurrentMapStorage<Integer, MapleMapObject> mapobjects = new ConcurrentMapStorage<>();
     private Map<Integer, MaplePortal> portals = new HashMap<>();
     private Map<Integer, Integer> backgroundTypes = new HashMap<>();
     private ArrayList<Rectangle> areas = new ArrayList<>();
@@ -123,6 +122,7 @@ public class MapleMap {
     private boolean isOxQuiz = false;
     private boolean summonState = true; // All maps should have this true at the beginning
     private boolean respawnEnabled = true;
+    private boolean instanced = false;
     private MapleMapEffect mapEffect = null;
     private MapleOxQuiz ox;
     private Task mapMonitor = null;
@@ -139,7 +139,7 @@ public class MapleMap {
     private MapleSnowball snowball0 = null;
     private MapleSnowball snowball1 = null;
     private MapleCoconut coconut;
-    private Point autoKillPosition = null;
+    private GProperties<Point> autoKillPositions = new GProperties<>();
     //endregion
 
     public MapleMap(int mapid, int world, int channel, int returnMapId, float monsterRate) {
@@ -281,12 +281,11 @@ public class MapleMap {
         if (runningOid.incrementAndGet() > 2000000000) {
             runningOid.set(1000);
         }
-        if (mapobjects.containsKey(runningOid.get())) {
-            while (mapobjects.containsKey(runningOid.incrementAndGet())) {
-                ;
-            }
+        int uoid = runningOid.getAndIncrement();
+        if (mapobjects.get(uoid) != null) {
+            return getUsableOID();
         }
-        return runningOid.get();
+        return uoid;
     }
 
     public MapleMapObject removeMapObject(int num) {
@@ -379,7 +378,7 @@ public class MapleMap {
                     }
                 } else {
                     if (ItemConstants.getInventoryType(de.itemId) == MapleInventoryType.EQUIP) {
-                        idrop = ii.randomizeStats((Equip) ii.getEquipById(de.itemId));
+                        idrop = ii.randomizeStats(ii.getEquipById(de.itemId));
                     } else {
                         idrop = new Item(de.itemId, (short) 0, (short) (de.Maximum != 1 ? Randomizer.nextInt(de.Maximum - de.Minimum) + de.Minimum : 1));
                     }
@@ -403,7 +402,7 @@ public class MapleMap {
                     pos.x = mobpos + ((d % 2 == 0) ? (25 * (d + 1) / 2) : -(25 * (d / 2)));
                 }
                 if (ItemConstants.getInventoryType(de.itemId) == MapleInventoryType.EQUIP) {
-                    idrop = ii.randomizeStats((Equip) ii.getEquipById(de.itemId));
+                    idrop = ii.randomizeStats(ii.getEquipById(de.itemId));
                 } else {
                     idrop = new Item(de.itemId, (short) 0, (short) (de.Maximum != 1 ? Randomizer.nextInt(de.Maximum - de.Minimum) + de.Minimum : 1));
                 }
@@ -684,6 +683,7 @@ public class MapleMap {
         if (monster.getId() == 9895253 && getId() == 97) { // Black Mage
             List<MapleCharacter> warp = new ArrayList<>(getCharacters());
             TaskExecutor.createTask(() -> warp.forEach(c -> c.changeMap(333)), 2500);
+            warp.clear();
         }
         spawnedMonstersOnMap.decrementAndGet();
         monster.setHp(0);
@@ -889,12 +889,12 @@ public class MapleMap {
         }
     }
 
-    public ArrayList<MapleMapObject> getMapObjects() {
-        return new ArrayList<>(mapobjects.values());
+    public Collection<MapleMapObject> getMapObjects() {
+        return mapobjects.values();
     }
 
-    public ArrayList<MapleCharacter> getCharacters() {
-        return new ArrayList<>(characters.values());
+    public Collection<MapleCharacter> getCharacters() {
+        return characters.values();
     }
 
     public boolean containsNPC(int npcid) {
@@ -1007,7 +1007,7 @@ public class MapleMap {
                         MapleMap.this.riceCakes++;
                         MapleMap.this.broadcastMessage(MaplePacketCreator.serverNotice(6, "The Moon Bunny made rice cake number " + (MapleMap.this.riceCakes)));
                     }
-                    spawnItemDrop(m, (MapleCharacter) getAllPlayer().get(0), item, m.getPosition(), false, false);
+                    spawnItemDrop(m, getAllPlayer().get(0), item, m.getPosition(), false, false);
                 }
             }
         }, delay, delay);
@@ -1048,7 +1048,7 @@ public class MapleMap {
         }
         monster.setMap(this);
         if (!monster.getMap().getAllPlayer().isEmpty()) {
-            MapleCharacter chr = (MapleCharacter) getAllPlayer().get(0);
+            MapleCharacter chr = getAllPlayer().get(0);
             if (monster.getEventInstance() == null && chr.getEventInstance() != null) {
                 chr.getEventInstance().registerMonster(monster);
             }
@@ -1426,9 +1426,11 @@ public class MapleMap {
         }
         //endregion
 
+        EventInstanceManager eim = chr.getEventInstance();
+
         if (mapid == 103040400) {
-            if (chr.getEventInstance() != null) {
-                chr.getEventInstance().movePlayer(chr);
+            if (eim != null) {
+                eim.movePlayer(chr, this);
             }
         } else if (MapleMiniDungeon.isDungeonMap(mapid)) {
             final MapleMiniDungeon dungeon = MapleMiniDungeon.getDungeon(mapid);
@@ -1515,8 +1517,8 @@ public class MapleMap {
         if (mapid == 914000200 || mapid == 914000210 || mapid == 914000220) {
             chr.getClient().announce(MaplePacketCreator.aranGodlyStats());
         }
-        if (chr.getEventInstance() != null && chr.getEventInstance().isTimerStarted()) {
-            chr.getClient().announce(MaplePacketCreator.getClock((int) (chr.getEventInstance().getTimeLeft() / 1000)));
+        if (eim != null && eim.isTimerStarted()) {
+            chr.getClient().announce(MaplePacketCreator.getClock((int) (eim.getTimeLeft() / 1000)));
         }
         if (chr.getFitness() != null && chr.getFitness().isTimerStarted()) {
             chr.getClient().announce(MaplePacketCreator.getClock((int) (chr.getFitness().getTimeLeft() / 1000)));
@@ -1571,7 +1573,7 @@ public class MapleMap {
                         || ((System.currentTimeMillis() > nextEmergency)
                         && Randomizer.nextInt(25) == 0
                         && chr.getGenericEvents().isEmpty()
-                        && chr.getEventInstance() == null
+                        && eim == null
                         && chr.getArcade() == null)) {
                     Emergency event = Randomizer.nextBoolean() && chr.getLevel() >= 30 ? new EmergencyDuel(chr) : new EmergencyAttack(chr);
                     TaskExecutor.createTask(new Runnable() {
@@ -1670,6 +1672,17 @@ public class MapleMap {
         }
     }
 
+    //region message broadcast
+    public void broadcastMessage(int type, String message, Object... args) {
+        getCharacters().forEach(p -> p.sendMessage(type, message, args));
+    }
+
+    public void broadcastGMMessage(int type, String message, Object... args) {
+        getCharacters().stream().filter(MapleCharacter::isGM).forEach(p -> p.sendMessage(type, message, args));
+    }
+    //endregion
+
+    //region packet broadcast
     public void broadcastMessage(final byte[] packet) {
         broadcastMessage(null, packet, Double.POSITIVE_INFINITY, null);
     }
@@ -1707,6 +1720,7 @@ public class MapleMap {
             }
         }
     }
+    //endregion
 
     private boolean isNonRangedType(MapleMapObjectType type) {
         switch (type) {
@@ -1733,7 +1747,7 @@ public class MapleMap {
                 MapleSummon summon = (MapleSummon) o;
                 if (summon.getOwner() == chr) {
                     if (chr.getSummons().isEmpty() || !chr.getSummons().containsValue(summon)) {
-                        mapobjects.remove(o);
+                        mapobjects.remove(o.getObjectId());
                         continue;
                     }
                 }
@@ -1860,12 +1874,7 @@ public class MapleMap {
     }
 
     public MapleCharacter getCharacterById(int id) {
-        for (MapleCharacter c : getCharacters()) {
-            if (c.getId() == id) {
-                return c;
-            }
-        }
-        return null;
+        return characters.get(id);
     }
 
     private void updateMapObjectVisibility(MapleCharacter chr, MapleMapObject mo) {
@@ -1893,15 +1902,19 @@ public class MapleMap {
     public void movePlayer(MapleCharacter player, Point newPosition) {
         player.setPosition(newPosition);
         Collection<MapleMapObject> visibleObjects = player.getVisibleMapObjects();
-        MapleMapObject[] visibleObjectsNow = visibleObjects.toArray(new MapleMapObject[visibleObjects.size()]);
-        for (MapleMapObject mo : visibleObjectsNow) {
-            if (mo != null) {
-                if (mapobjects.get(mo.getObjectId()) == mo) {
-                    updateMapObjectVisibility(player, mo);
-                } else {
-                    player.removeVisibleMapObject(mo);
+        try {
+            MapleMapObject[] visibleObjectsNow = visibleObjects.toArray(new MapleMapObject[0]);
+            for (MapleMapObject mo : visibleObjectsNow) {
+                if (mo != null) {
+                    if (mapobjects.get(mo.getObjectId()) == mo) {
+                        updateMapObjectVisibility(player, mo);
+                    } else {
+                        player.removeVisibleMapObject(mo);
+                    }
                 }
             }
+        } finally {
+            visibleObjects.clear();
         }
         for (MapleMapObject mo : getMapObjectsInRange(player.getPosition(), 722500, rangedMapobjectTypes)) {
             if (!player.isMapObjectVisible(mo)) {
@@ -2090,14 +2103,6 @@ public class MapleMap {
         }
     }
 
-    public void broadcastNONGMMessage(MapleCharacter source, final byte[] packet, boolean repeatToSource) {
-        for (MapleCharacter chr : getCharacters()) {
-            if (chr != source && !chr.isGM()) {
-                chr.getClient().announce(packet);
-            }
-        }
-    }
-
     public MapleOxQuiz getOx() {
         return ox;
     }
@@ -2120,6 +2125,14 @@ public class MapleMap {
 
     public void setRespawnEnabled(boolean respawnEnabled) {
         this.respawnEnabled = respawnEnabled;
+    }
+
+    public boolean isInstanced() {
+        return instanced;
+    }
+
+    public void setInstanced(boolean instanced) {
+        this.instanced = instanced;
     }
 
     public String getOnUserEnter() {
@@ -2206,7 +2219,12 @@ public class MapleMap {
     }
 
     public void warpEveryone(int to) {
-        getCharacters().forEach(p -> p.changeMap(to));
+        ArrayList<MapleCharacter> characters = new ArrayList<>(getCharacters());
+        try {
+            characters.forEach(p -> p.changeMap(to));
+        } finally {
+            characters.clear();
+        }
     }
 
     // BEGIN EVENTS
@@ -2248,13 +2266,16 @@ public class MapleMap {
 
     public void warpOutByTeam(int team, int mapid) {
         List<MapleCharacter> chars = new ArrayList<>(getCharacters());
-
-        for (MapleCharacter chr : chars) {
-            if (chr != null) {
-                if (chr.getTeam() == team) {
-                    chr.changeMap(mapid);
+        try {
+            for (MapleCharacter chr : chars) {
+                if (chr != null) {
+                    if (chr.getTeam() == team) {
+                        chr.changeMap(mapid);
+                    }
                 }
             }
+        } finally {
+            chars.clear();
         }
     }
 
@@ -2360,20 +2381,16 @@ public class MapleMap {
         this.monsterRate = monsterRate;
     }
 
-    public Point getAutoKillPosition() {
-        return autoKillPosition;
+    public GProperties<Point> getAutoKillPositions() {
+        return autoKillPositions;
     }
 
-    public void setAutoKillPosition(Point autoKillPosition) {
-        this.autoKillPosition = autoKillPosition;
-    }
-
-    private static interface DelayedPacketCreation {
+    private interface DelayedPacketCreation {
 
         void sendPackets(MapleClient c);
     }
 
-    private static interface SpawnCondition {
+    private interface SpawnCondition {
 
         boolean canSpawn(MapleCharacter chr);
     }

@@ -1,9 +1,6 @@
 package com.lucianms.command.executors;
 
-import com.lucianms.client.MapleCharacter;
-import com.lucianms.client.MapleClient;
-import com.lucianms.client.MapleStat;
-import com.lucianms.client.Skill;
+import com.lucianms.client.*;
 import com.lucianms.client.inventory.*;
 import com.lucianms.command.CommandWorker;
 import com.lucianms.constants.ItemConstants;
@@ -62,20 +59,20 @@ public class HGMCommands {
         } else if (command.equals("popup")) {
             if (args.length() > 0) {
                 String content = args.concatFrom(0);
-                client.getWorldServer().broadcastPacket(MaplePacketCreator.serverNotice(0, content));
+                client.getWorldServer().broadcastPacket(MaplePacketCreator.serverNotice(1, content));
             } else {
                 player.sendMessage(5, "You must type a message!");
             }
         } else if (command.equals("setname")) {
             if (args.length() == 2) {
-                MapleCharacter target = client.getWorldServer().getPlayerStorage().getPlayerByName(args.get(0));
+                MapleCharacter target = client.getWorldServer().findPlayer(p -> p.getName().equalsIgnoreCase(args.get(0)));
                 if (target != null) {
                     String oldName = target.getName();
-                    target.setName(args.get(0));
+                    target.setName(args.get(1));
                     target.sendMessage(5, "Your name has been changed to '{}'", target.getName());
                     player.sendMessage("Changed '{}''s name to '{}'. Relog to make changes", oldName, target.getName());
                 } else {
-                    player.sendMessage(5, "Could not find any player named '{}'", args.get(0));
+                    player.sendMessage(5, "Unable to find any player named '{}'", args.get(0));
                 }
             } else if (args.length() == 1) {
                 player.setName(args.get(0));
@@ -85,11 +82,28 @@ public class HGMCommands {
                 player.sendMessage(5, "Syntax: !setname <target> <username> - Change another player's username");
             }
         } else if (command.equals("clearskills")) {
-            for (Map.Entry<Skill, MapleCharacter.SkillEntry> set : new HashMap<>(player.getSkills()).entrySet()) {
+            MapleCharacter target;
+            if (args.length() == 1) {
+                target = client.getChannelServer().getPlayerStorage().find(p -> p.getName().equalsIgnoreCase(args.get(0)));
+                if (target == null) {
+                    player.sendMessage(5, "Unable to find any player named '{}'", args.get(0));
+                    return;
+                }
+            } else if (args.length() > 1) {
+                player.sendMessage("One username  at a time please!");
+                return;
+            } else {
+                target = player;
+            }
+            int totalSP = 0;
+            for (Map.Entry<Skill, MapleCharacter.SkillEntry> set : new HashMap<>(target.getSkills()).entrySet()) {
                 Skill sk = set.getKey();
                 MapleCharacter.SkillEntry entry = set.getValue();
-                player.changeSkillLevel(sk, (byte) (sk.isHidden() ? -1 : 0), sk.isHidden() ? 0 : entry.masterlevel, entry.expiration);
+                totalSP += set.getValue().skillevel;
+                target.changeSkillLevel(sk, (byte) (sk.isHidden() ? -1 : 0), sk.isHidden() ? 0 : entry.masterlevel, entry.expiration);
             }
+            target.setRemainingSp(totalSP);
+            target.updateSingleStat(MapleStat.AVAILABLESP, totalSP);
         } else if (command.equals("hpmp")) {
             if (args.length() == 1) {
                 Integer value = args.parseNumber(0, int.class);
@@ -283,7 +297,7 @@ public class HGMCommands {
                     player.dropMessage(5, error);
                     return;
                 }
-                MapleCharacter target = player.getClient().getChannelServer().getPlayerStorage().getPlayerByName(username);
+                MapleCharacter target = player.getClient().getChannelServer().getPlayerStorage().find(p -> p.getName().equalsIgnoreCase(username));
                 if (target != null) {
                     if (npcId >= 9901000 && npcId <= 9901909) {
                         player.createPlayerNPC(target, npcId, script);
@@ -291,7 +305,7 @@ public class HGMCommands {
                         player.dropMessage(5, "Player NPCs ID must be between 9901000 and 9901909");
                     }
                 } else {
-                    player.dropMessage(5, String.format("Could not find any player named '%s'", username));
+                    player.dropMessage(5, String.format("Unable to find any player named '%s'", username));
                 }
             } else {
                 player.dropMessage(5, "Syntax: !playernpc <npc_id> <username> [script_name]");
@@ -362,7 +376,7 @@ public class HGMCommands {
             }
         } else if (command.equals("saveall")) {
             for (MapleWorld worlds : Server.getWorlds()) {
-                worlds.getPlayerStorage().getAllPlayers().forEach(MapleCharacter::saveToDB);
+                worlds.getChannels().forEach(ch -> ch.getPlayerStorage().values().forEach(MapleCharacter::saveToDB));
             }
             player.dropMessage(6, "All characters saved!");
         } else if (command.equals("resetreactors")) {
@@ -370,7 +384,7 @@ public class HGMCommands {
             player.dropMessage("Reactors reset");
         } else if (command.equals("sudo")) {
             if (args.length() > 1) {
-                MapleCharacter target = client.getWorldServer().getPlayerStorage().getPlayerByName(args.get(0));
+                MapleCharacter target = client.getWorldServer().findPlayer(p -> p.getName().equalsIgnoreCase(args.get(0)));
                 if (target != null) {
                     String cmd = args.concatFrom(1);
                     CommandWorker.process(target.getClient(), cmd, true);
@@ -427,6 +441,25 @@ public class HGMCommands {
                 player.getMap().spawnItemDrop(player, player, item, position, true, true);
             }
             player.dropMessage("Don't forget to !cleardrops when you're done");
+        } else if (command.equals("ring")) {
+            if (args.length() == 2) {
+                MapleCharacter partner = client.getChannelServer().getPlayerStorage().find(p -> p.getName().equalsIgnoreCase(args.get(0)));
+                if (partner == null) {
+                    player.sendMessage(5, "Unable to find any player named '{}'", args.get(0));
+                    return;
+                }
+                Integer ringItemID = args.parseNumber(1, int.class);
+                final int ringID = MapleRing.createRing(ringItemID, player, partner);
+                Equip equip = new Equip(ringItemID, (short) 0);
+                equip.setRingId(ringID);
+                MapleInventoryManipulator.addFromDrop(player.getClient(), equip, true);
+
+                equip = new Equip(ringItemID, (short) 0);
+                equip.setRingId(ringID + 1);
+                MapleInventoryManipulator.addFromDrop(partner.getClient(), equip, true);
+            } else {
+                player.sendMessage(5, "usage: !ring <partner> <itemid>");
+            }
         }
     }
 }

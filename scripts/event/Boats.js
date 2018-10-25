@@ -1,6 +1,6 @@
-importPackage(Packages.client);
+importPackage(Packages.com.lucianms.client);
 importPackage(Packages.tools);
-importPackage(Packages.server.life);
+importPackage(Packages.com.lucianms.server.life);
 
 //Time Setting is in millisecond
 var closeTime = 50 * 1000; //The time to close the gate

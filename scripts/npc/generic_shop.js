@@ -133,7 +133,7 @@ function getPoints(s) {
 
 function gainPoints(s, amt) {
     if (typeof s == 'number') {
-        cm.gainItem(s, -amt, true);
+        cm.gainItem(s, amt, true);
         return true;
     }
     switch (s) {

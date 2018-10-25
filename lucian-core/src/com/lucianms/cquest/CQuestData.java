@@ -48,8 +48,9 @@ public class CQuestData {
      * </p>
      *
      * @param player A player to begin the quest
+     * @param silent If completion check should occur
      */
-    CQuestData beginNew(MapleCharacter player) {
+    CQuestData beginNew(MapleCharacter player, boolean silent) {
         CQuestData ret = new CQuestData(id, name, daily);
         ret.rewards.addAll(rewards); // rewards don't have any changeable variables so we can use the same Objects
         // ID and requirement don't change but reset progress then add to new QuestData
@@ -57,8 +58,10 @@ public class CQuestData {
         toCollect.getItems().forEach((e, v) -> ret.toCollect.add(new CQuestItemRequirement.CQuestItem(v.getItemId(), v.getRequirement(), v.isUnique())));
 
         player.getCustomQuests().put(ret.getId(), ret);
-        player.dropMessage(5, String.format("New quest started : '%s'", ret.getName()));
-        player.announce(MaplePacketCreator.getShowQuestCompletion(0));
+        if (!silent) {
+            player.dropMessage(5, String.format("New quest started : '%s'", ret.getName()));
+            player.announce(MaplePacketCreator.getShowQuestCompletion(0));
+        }
 
         // update progress of item requirements using the player's inventory
         for (Integer itemId : ret.toCollect.getItems().keySet()) {
@@ -70,7 +73,7 @@ public class CQuestData {
         the needed items. It's only worth checking if there are no monster kill requirements because in this case,
         the quest can be finished as soon as it's started
          */
-        if (toKill.isEmpty() && !toCollect.isEmpty()) {
+        if (!silent && toKill.isEmpty()) {
             if (checkRequirements()) { // requirements are met
                 player.announce(MaplePacketCreator.getShowQuestCompletion(1));
                 player.announce(MaplePacketCreator.earnTitleMessage(String.format("Quest '%s' completed!", getName())));

@@ -70,6 +70,7 @@ public class CommandWorker {
             if (!player.isGM() && !noCheck) {
                 if (JailManager.isJailed(player.getId())) {
                     player.sendMessage(5, "You cannot use commands here.");
+                    return true;
                 } else if (!command.equals("dispose", "quests")) {
                     if (player.getArcade() != null
                             || (player.getMapId() >= 90000000 && player.getMapId() <= 90000004)
@@ -163,6 +164,10 @@ public class CommandWorker {
             return args[index];
         }
 
+        public void set(int index, String value) {
+            args[index] = value;
+        }
+
         /**
          * @return length of the args array
          */
@@ -191,7 +196,6 @@ public class CommandWorker {
          * Join args from specified index to end of array as one String
          *
          * @param index index to begin concatenation
-         * @return
          */
         public String concatFrom(int index) {
             StringBuilder sb = new StringBuilder();

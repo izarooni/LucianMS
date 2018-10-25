@@ -29,13 +29,14 @@ import com.lucianms.client.status.MonsterStatus;
 import com.lucianms.client.status.MonsterStatusEffect;
 import com.lucianms.constants.ItemConstants;
 import com.lucianms.constants.skills.*;
-import com.lucianms.server.world.MaplePartyCharacter;
-import provider.MapleData;
-import provider.MapleDataTool;
 import com.lucianms.scheduler.Task;
 import com.lucianms.scheduler.TaskExecutor;
 import com.lucianms.server.life.MapleMonster;
 import com.lucianms.server.maps.*;
+import com.lucianms.server.world.MaplePartyCharacter;
+import provider.MapleData;
+import provider.MapleDataTool;
+import provider.wz.XMLDomMapleData;
 import tools.ArrayMap;
 import tools.MaplePacketCreator;
 import tools.Pair;
@@ -104,6 +105,10 @@ public class MapleStatEffect {
         ret.repeatEffect = MapleDataTool.getInt("repeatEffect", source, 0) > 0;
 
         ret.sourceid = sourceid;
+
+        XMLDomMapleData parent = (XMLDomMapleData) source.getParent().getParent();
+        MapleData summon = parent.getChildByPath("summon");
+
         ret.skill = skill;
         if (!ret.skill && ret.duration > -1) {
             ret.overTime = true;
@@ -118,9 +123,11 @@ public class MapleStatEffect {
                     && !ret.isPoison()
                     && !ret.isMagicDoor()
                     && !ret.isDs()
+                    && ret.isEnergy()
                     && sourceid != Sniper.PUPPET && sourceid != Ranger.PUPPET
                     && sourceid != Pirate.DASH && sourceid != ThunderBreaker.DASH
-                    && sourceid != Shadower.NINJA_AMBUSH)) {
+                    && sourceid != Shadower.NINJA_AMBUSH
+                    && summon == null)) {
                 ret.duration = Integer.MAX_VALUE;
             }
             ret.overTime = overTime;
@@ -546,6 +553,10 @@ public class MapleStatEffect {
         statups.trimToSize();
         ret.statups = statups;
         return ret;
+    }
+
+    private boolean isEnergy() {
+        return sourceid == ThunderBreaker.ENERGY_CHARGE || sourceid == Buccaneer.ENERGY_ORB;
     }
 
     /**

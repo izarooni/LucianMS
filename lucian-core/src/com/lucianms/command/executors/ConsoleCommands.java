@@ -81,9 +81,11 @@ public class ConsoleCommands {
 
     private static void execute(CommandWorker.Command command, CommandWorker.CommandArgs args) {
         if (command.equals("stop", "exit")) {
-            MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-            mplew.write(Headers.Shutdown.value);
-            DiscordSession.sendPacket(mplew.getPacket());
+            if (DiscordSession.getSession() != null) {
+                MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
+                mplew.write(Headers.Shutdown.value);
+                DiscordSession.sendPacket(mplew.getPacket());
+            }
 
             reading = false;
             System.exit(0);
@@ -154,7 +156,7 @@ public class ConsoleCommands {
                 for (MapleChannel channels : worlds.getChannels()) {
                     StringBuilder sb = new StringBuilder();
                     sb.append("\tChannel {}: ");
-                    for (MapleCharacter players : channels.getPlayerStorage().getAllPlayers()) {
+                    for (MapleCharacter players : channels.getPlayerStorage().values()) {
                         sb.append(players.getName()).append(", ");
                     }
                     if (sb.length() > 2) {
@@ -173,7 +175,7 @@ public class ConsoleCommands {
             if (args.length() == 1) {
                 String username = args.get(0);
                 for (MapleWorld world : Server.getWorlds()) {
-                    MapleCharacter player = world.getPlayerStorage().getPlayerByName(username);
+                    MapleCharacter player = world.findPlayer(p -> p.getName().equalsIgnoreCase(username));
                     if (player != null) {
                         player.getClient().disconnect(false, player.getCashShop().isOpened());
                         world.removePlayer(player);

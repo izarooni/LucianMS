@@ -1,5 +1,6 @@
 package com.lucianms.server.life;
 
+import com.lucianms.client.MapleCharacter;
 import com.lucianms.scheduler.TaskExecutor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -41,7 +42,7 @@ public final class SpawnPoint {
         this.monsterID = monster.getId();
         Point nPos = map.calcPointBelow(monster.getPosition());
         this.pos = (nPos == null) ? monster.getPosition() : nPos.getLocation();
-        this.mobTime = (mobTime <= 0) ? 8 : mobTime;
+        this.mobTime = (mobTime <= 0) ? 6 : mobTime;
         this.team = team;
         this.f = monster.getF();
         this.fh = monster.getFh();
@@ -80,14 +81,14 @@ public final class SpawnPoint {
         }
         monster.getListeners().add(new MonsterListener() {
             @Override
-            public void monsterKilled(int animationTime) {
+            public void monsterKilled(MapleCharacter player, int animationTime) {
                 if (spawnedMonsters.get() > 0) {
                     spawnedMonsters.decrementAndGet();
                 }
                 nextPossibleSpawn = System.currentTimeMillis();
                 nextPossibleSpawn += (mobTime > 0) ? (mobTime * 1000) : animationTime;
 
-                long delay = Math.max(3000, (nextPossibleSpawn - System.currentTimeMillis()));
+                long delay = Math.max(1000, (nextPossibleSpawn - System.currentTimeMillis()));
                 attemptMonsterSummon(delay);
             }
         });

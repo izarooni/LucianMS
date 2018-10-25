@@ -23,9 +23,9 @@
 package com.lucianms.server.expeditions;
 
 import com.lucianms.client.MapleCharacter;
-import com.lucianms.server.Server;
 import com.lucianms.scheduler.Task;
 import com.lucianms.scheduler.TaskExecutor;
+import com.lucianms.server.Server;
 import com.lucianms.server.maps.MapleMap;
 import tools.MaplePacketCreator;
 
@@ -35,6 +35,7 @@ import java.util.List;
 /**
  * @author SharpAceX(Alan)
  */
+@Deprecated
 public class MapleExpedition {
 
     private static final int[] EXPEDITION_BOSSES = {

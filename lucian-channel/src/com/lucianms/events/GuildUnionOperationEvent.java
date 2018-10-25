@@ -96,7 +96,7 @@ public class GuildUnionOperationEvent extends PacketEvent {
                 if (channel == -1) {
                     player.dropMessage("The player is not online.");
                 } else {
-                    MapleCharacter victim = Server.getChannel(getClient().getWorld(), channel).getPlayerStorage().getPlayerByName(username);
+                    MapleCharacter victim = Server.getChannel(getClient().getWorld(), channel).getPlayerStorage().find(p -> p.getName().equalsIgnoreCase(username));
                     if (victim == null) {
                         player.dropMessage("The person could not be found");
                     } else if (victim.getGuildId() == 0) {

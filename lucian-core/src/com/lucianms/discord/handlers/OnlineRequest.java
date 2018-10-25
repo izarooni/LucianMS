@@ -33,7 +33,7 @@ public class OnlineRequest extends DiscordRequest {
             writer.write(channels.size());
             for (MapleChannel channel : channels) {
                 writer.writeShort(channel.getPlayerStorage().size());
-                for (MapleCharacter players : channel.getPlayerStorage().getAllPlayers()) {
+                for (MapleCharacter players : channel.getPlayerStorage().values()) {
                     writer.writeMapleAsciiString(players.getName());
                 }
             }

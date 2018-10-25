@@ -35,7 +35,6 @@ import java.util.*;
 import java.util.List;
 
 /**
- *
  * @author Danny (Leifde)
  */
 public class MobSkill {
@@ -209,7 +208,7 @@ public class MobSkill {
                             case 8510100: //Pianus bomb
                                 if (Math.ceil(Math.random() * 5) == 1) {
                                     ypos = 78;
-                                    xpos = (int) Randomizer.nextInt(5) + (Randomizer.nextInt(2) == 1 ? 180 : 0);
+                                    xpos = Randomizer.nextInt(5) + (Randomizer.nextInt(2) == 1 ? 180 : 0);
                                 } else {
                                     xpos = (int) (monster.getPosition().getX() + Randomizer.nextInt(1000) - 500);
                                 }
@@ -259,7 +258,7 @@ public class MobSkill {
                 int i = 0;
                 for (MapleCharacter character : getPlayersInRange(monster, player)) {
                     if (!character.isActiveBuffedValue(2321005)) {
-                        if (disease.equals(MapleDisease.SEDUCE)) {
+                        if (disease == MapleDisease.SEDUCE) {
                             if (i < 10) {
                                 character.giveDebuff(MapleDisease.SEDUCE, this);
                                 i++;

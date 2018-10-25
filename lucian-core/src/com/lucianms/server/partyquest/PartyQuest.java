@@ -50,7 +50,7 @@ public class PartyQuest {
         int mapid = leader.getMapId();
         for (MaplePartyCharacter pchr : party.getMembers()) {
             if (pchr.getChannel() == channel && pchr.getMapId() == mapid) {
-                MapleCharacter chr = Server.getWorld(world).getChannel(channel).getPlayerStorage().getPlayerByID(pchr.getId());
+                MapleCharacter chr = Server.getWorld(world).getChannel(channel).getPlayerStorage().get(pchr.getId());
                 if (chr != null) {
                     this.participants.add(chr);
                 }

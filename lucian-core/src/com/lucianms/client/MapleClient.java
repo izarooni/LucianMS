@@ -860,7 +860,7 @@ public class MapleClient {
     }
 
     public boolean deleteCharacter(int cid) {
-        MapleCharacter player = Server.getWorld(0).getPlayerStorage().getPlayerByID(cid);
+        MapleCharacter player = Server.getWorld(0).getPlayer(cid);
         if (player != null) {
             player.getClient().disconnect(false, false);
             disconnect(false, false);

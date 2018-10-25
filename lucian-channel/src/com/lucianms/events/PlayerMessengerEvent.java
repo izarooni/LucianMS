@@ -74,7 +74,7 @@ public class PlayerMessengerEvent extends PacketEvent {
                 break;
             case 0x03:
                 if (messenger.getMembers().size() < 3) {
-                    MapleCharacter target = channel.getPlayerStorage().getPlayerByName(content);
+                    MapleCharacter target = channel.getPlayerStorage().find(p -> p.getName().equalsIgnoreCase(content));
                     if (target != null) {
                         if (target.getMessenger() == null) {
                             target.getClient().announce(MaplePacketCreator.messengerInvite(player.getName(), messenger.getId()));
@@ -94,7 +94,7 @@ public class PlayerMessengerEvent extends PacketEvent {
                 }
                 break;
             case 0x05:
-                MapleCharacter target = channel.getPlayerStorage().getPlayerByName(username);
+                MapleCharacter target = channel.getPlayerStorage().find(p -> p.getName().equalsIgnoreCase(username));
                 if (target != null) {
                     if (target.getMessenger() != null) {
                         target.getClient().announce(MaplePacketCreator.messengerNote(player.getName(), 5, 0));

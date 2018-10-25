@@ -126,6 +126,9 @@ public class PlayerInteractionEvent extends PacketEvent {
                 break;
             case INVITE:
                 playerID = reader.readInt();
+                if (playerID == getClient().getPlayer().getId()) {
+                    setCanceled(true);
+                }
                 break;
             case DECLINE:
                 break;
@@ -142,8 +145,6 @@ public class PlayerInteractionEvent extends PacketEvent {
                     } else {
                         setCanceled(true);
                     }
-                } else {
-                    setCanceled(true);
                 }
                 break;
             case ROOM:
@@ -339,9 +340,6 @@ public class PlayerInteractionEvent extends PacketEvent {
             }
             case INVITE: {
                 MapleCharacter target = player.getMap().getCharacterById(playerID);
-                if (player.getId() == target.getId()) {
-                    return null;
-                }
                 MapleTrade.inviteTrade(player, target);
                 break;
             }

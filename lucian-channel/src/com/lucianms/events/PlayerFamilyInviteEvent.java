@@ -27,7 +27,7 @@ public class PlayerFamilyInviteEvent extends PacketEvent {
         if (!ServerConstants.USE_FAMILY_SYSTEM){
     		return null;
     	}
-        MapleCharacter target = getClient().getChannelServer().getPlayerStorage().getPlayerByName(username);
+        MapleCharacter target = getClient().getChannelServer().getPlayerStorage().find(p -> p.getName().equalsIgnoreCase(username));
         if (target != null) {
             target.getClient().announce(MaplePacketCreator.sendFamilyInvite(player.getId(), username));
             player.dropMessage("The invite has been sent.");

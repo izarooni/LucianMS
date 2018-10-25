@@ -13,8 +13,8 @@ MANIFEST.MF
 *.code-workspace
 
 #Server files
+/wz
 bin
-wz
 world.ini
 server-config.json
 whitelist.json

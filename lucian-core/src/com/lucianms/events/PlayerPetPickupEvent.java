@@ -72,7 +72,7 @@ public class PlayerPetPickupEvent extends PacketEvent {
                     }
                     for (MaplePartyCharacter partymem : player.getParty().getMembers()) {
                         if (partymem.isOnline() && partymem.getMapId() == player.getMap().getId()) {
-                            MapleCharacter somecharacter = getClient().getChannelServer().getPlayerStorage().getPlayerByID(partymem.getId());
+                            MapleCharacter somecharacter = getClient().getChannelServer().getPlayerStorage().get(partymem.getId());
                             if (somecharacter != null)
                                 somecharacter.gainMeso(mesosamm / partynum, true, true, false);
                         }

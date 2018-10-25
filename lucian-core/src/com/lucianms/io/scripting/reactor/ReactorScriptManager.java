@@ -24,14 +24,15 @@ package com.lucianms.io.scripting.reactor;
 import com.lucianms.client.MapleClient;
 import com.lucianms.io.scripting.ScriptUtil;
 import com.lucianms.server.Server;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import com.lucianms.server.maps.MapleReactor;
 import com.lucianms.server.maps.ReactorDropEntry;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import tools.Pair;
 
 import javax.script.Invocable;
 import javax.script.ScriptException;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -48,16 +49,23 @@ public class ReactorScriptManager {
     private static Map<Integer, List<ReactorDropEntry>> drops = new HashMap<>();
 
     public static void act(MapleClient c, MapleReactor reactor) {
+        ReactorActionManager rm = new ReactorActionManager(c, reactor);
+        Invocable iv = null;
         try {
-            ReactorActionManager rm = new ReactorActionManager(c, reactor);
-            Invocable iv = ScriptUtil.eval(c, "reactor/" + reactor.getId() + ".js", Collections.singleton(new Pair<>("rm", rm)));
-            if (iv == null) {
-                LOGGER.warn("Unable to find script for reactor ID:{}, Name:'{}'", reactor.getId(), reactor.getName());
-                return;
-            }
-            iv.invokeFunction("act");
-        } catch (ScriptException | NoSuchMethodException | NullPointerException | IOException e) {
+            iv = ScriptUtil.eval(c, "reactor/" + reactor.getId() + ".js", Collections.singleton(new Pair<>("rm", rm)));
+        } catch (FileNotFoundException e) {
+            rm.dropItems();
+        } catch (IOException | ScriptException e) {
             e.printStackTrace();
+        }
+        if (iv == null) {
+            LOGGER.warn("Unable to find script for reactor ID:{}, Name:'{}'", reactor.getId(), reactor.getName());
+            return;
+        }
+        try {
+            iv.invokeFunction("act");
+        } catch (ScriptException | NoSuchMethodException e) {
+            LOGGER.error("unable to execute 'act' reactor: {} map {}", reactor.getId(), reactor.getMap().getId());
         }
     }
 

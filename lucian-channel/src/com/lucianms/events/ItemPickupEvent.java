@@ -24,18 +24,19 @@ package com.lucianms.events;
 import com.lucianms.client.MapleCharacter;
 import com.lucianms.client.MapleClient;
 import com.lucianms.client.inventory.Item;
-import com.lucianms.nio.receive.MaplePacketReader;
-import com.lucianms.events.PacketEvent;
-import com.lucianms.server.world.MaplePartyCharacter;
+import com.lucianms.cquest.CQuestData;
+import com.lucianms.cquest.requirement.CQuestItemRequirement;
 import com.lucianms.io.scripting.item.ItemScriptManager;
+import com.lucianms.nio.receive.MaplePacketReader;
 import com.lucianms.server.MapleInventoryManipulator;
 import com.lucianms.server.MapleItemInformationProvider;
 import com.lucianms.server.MapleItemInformationProvider.scriptedItem;
 import com.lucianms.server.maps.MapleMapItem;
 import com.lucianms.server.maps.MapleMapObject;
-import com.lucianms.cquest.CQuestData;
-import com.lucianms.cquest.requirement.CQuestItemRequirement;
+import com.lucianms.server.world.MaplePartyCharacter;
 import tools.MaplePacketCreator;
+
+import java.util.Collection;
 
 /**
  * @author Matze
@@ -92,7 +93,7 @@ ItemPickupEvent extends PacketEvent {
                             chr.getMap().removeMapObject(ob);
                             mapitem.setPickedUp(true);
                             if (chr.getArcade() != null) {
-                                if(chr.getArcade().getId() == 4) {
+                                if (chr.getArcade().getId() == 4) {
                                     if (!chr.getArcade().fail()) {
                                         chr.getArcade().add();
                                     }
@@ -136,7 +137,7 @@ ItemPickupEvent extends PacketEvent {
                             }
                             for (MaplePartyCharacter partymem : chr.getParty().getMembers()) {
                                 if (partymem.isOnline() && partymem.getMapId() == chr.getMap().getId()) {
-                                    MapleCharacter somecharacter = getClient().getChannelServer().getPlayerStorage().getPlayerByID(partymem.getId());
+                                    MapleCharacter somecharacter = getClient().getChannelServer().getPlayerStorage().get(partymem.getId());
                                     if (somecharacter != null) {
                                         somecharacter.gainMeso(mesosamm / partynum, true, true, false);
                                     }
@@ -226,14 +227,20 @@ ItemPickupEvent extends PacketEvent {
         if (id / 1000000 == 2) {
             MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
             if (ii.isConsumeOnPickup(id)) {
+                MapleCharacter player = c.getPlayer();
                 if (id > 2022430 && id < 2022434) {
-                    for (MapleCharacter mc : c.getPlayer().getMap().getCharacters()) {
-                        if (mc.getParty() == c.getPlayer().getParty()) {
-                            ii.getItemEffect(id).applyTo(mc);
+                    Collection<MapleCharacter> characters = player.getMap().getCharacters();
+                    try {
+                        for (MapleCharacter mc : characters) {
+                            if (mc.getParty() == player.getParty()) {
+                                ii.getItemEffect(id).applyTo(mc);
+                            }
                         }
+                    } finally {
+                        characters.clear();
                     }
                 } else {
-                    ii.getItemEffect(id).applyTo(c.getPlayer());
+                    ii.getItemEffect(id).applyTo(player);
                 }
                 return true;
             }

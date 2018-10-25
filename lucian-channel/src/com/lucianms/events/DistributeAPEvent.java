@@ -21,18 +21,9 @@
 */
 package com.lucianms.events;
 
-import com.lucianms.client.MapleCharacter;
-import com.lucianms.client.MapleJob;
-import com.lucianms.client.MapleStat;
-import com.lucianms.client.Skill;
-import com.lucianms.client.SkillFactory;
+import com.lucianms.client.*;
+import com.lucianms.constants.skills.*;
 import com.lucianms.nio.receive.MaplePacketReader;
-import com.lucianms.constants.skills.BlazeWizard;
-import com.lucianms.constants.skills.Brawler;
-import com.lucianms.constants.skills.DawnWarrior;
-import com.lucianms.constants.skills.Magician;
-import com.lucianms.constants.skills.Warrior;
-import com.lucianms.events.PacketEvent;
 import tools.MaplePacketCreator;
 
 public final class DistributeAPEvent extends PacketEvent {
@@ -49,15 +40,16 @@ public final class DistributeAPEvent extends PacketEvent {
     public Object onPacket() {
         MapleCharacter player = getClient().getPlayer();
         if (player.getRemainingAp() > 0) {
-            addStat(player, stat);
-            player.setRemainingAp(player.getRemainingAp() - 1);
-            player.updateSingleStat(MapleStat.AVAILABLEAP, player.getRemainingAp());
+            if (addStat(player, stat)) {
+                player.setRemainingAp(player.getRemainingAp() - 1);
+                player.updateSingleStat(MapleStat.AVAILABLEAP, player.getRemainingAp());
+            }
         }
         player.announce(MaplePacketCreator.enableActions());
         return null;
     }
 
-    public static void addStat(MapleCharacter player, int stat) {
+    static boolean addStat(MapleCharacter player, int stat) {
         switch (stat) {
             case 64: // Str
                 if (player.getStr() < Short.MAX_VALUE) {
@@ -85,10 +77,12 @@ public final class DistributeAPEvent extends PacketEvent {
             case 8192: // MP
 //                addMP(player, addMP(player));
                 player.dropMessage(1, "Distributing AP into HP and MP is currently disabled");
-                break;
+                return false;
             default:
                 player.announce(MaplePacketCreator.updatePlayerStats(MaplePacketCreator.EMPTY_STATUPDATE, true, player));
+                break;
         }
+        return true;
     }
 
     private static int addHP(MapleCharacter player) {
@@ -100,10 +94,10 @@ public final class DistributeAPEvent extends PacketEvent {
         if (job.isA(MapleJob.WARRIOR) || job.isA(MapleJob.DAWNWARRIOR1) || job.isA(MapleJob.ARAN1)) {
             Skill increaseHP = SkillFactory.getSkill(job.isA(MapleJob.DAWNWARRIOR1) ? DawnWarrior.MAX_HP_ENHANCEMENT : Warrior.IMPROVED_MAXHP_INCREASE);
             int sLvl = player.getSkillLevel(increaseHP);
-            
-            if(sLvl > 0)
+
+            if (sLvl > 0)
                 MaxHP += increaseHP.getEffect(sLvl).getY();
-            
+
             MaxHP += 20;
         } else if (job.isA(MapleJob.MAGICIAN) || job.isA(MapleJob.BLAZEWIZARD1)) {
             MaxHP += 6;
@@ -112,10 +106,10 @@ public final class DistributeAPEvent extends PacketEvent {
         } else if (job.isA(MapleJob.PIRATE) || job.isA(MapleJob.THUNDERBREAKER1)) {
             Skill increaseHP = SkillFactory.getSkill(Brawler.IMPROVE_MAXHP);
             int sLvl = player.getSkillLevel(increaseHP);
-            
-            if(sLvl > 0)
+
+            if (sLvl > 0)
                 MaxHP += increaseHP.getEffect(sLvl).getY();
-            
+
             MaxHP += 18;
         } else {
             MaxHP += 8;
@@ -134,8 +128,8 @@ public final class DistributeAPEvent extends PacketEvent {
         } else if (job.isA(MapleJob.MAGICIAN) || job.isA(MapleJob.BLAZEWIZARD1)) {
             Skill increaseMP = SkillFactory.getSkill(job.isA(MapleJob.BLAZEWIZARD1) ? BlazeWizard.INCREASING_MAX_MP : Magician.IMPROVED_MAXMP_INCREASE);
             int sLvl = player.getSkillLevel(increaseMP);
-            
-            if(sLvl > 0) {
+
+            if (sLvl > 0) {
                 MaxMP += increaseMP.getEffect(sLvl).getY();
             }
             MaxMP += 18;

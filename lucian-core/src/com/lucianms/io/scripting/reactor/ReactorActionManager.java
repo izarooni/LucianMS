@@ -90,55 +90,58 @@ public class ReactorActionManager extends AbstractPlayerInteraction {
     public void dropItems(boolean meso, int mesoChance, int minMeso, int maxMeso, int minItems) {
         List<ReactorDropEntry> chances = getDropChances();
         List<ReactorDropEntry> items = new ArrayList<>();
-        int numItems = 0;
-        if (meso && Math.random() < (1 / (double) mesoChance)) {
-            items.add(new ReactorDropEntry(0, mesoChance, -1));
-        }
-        for (ReactorDropEntry d : chances) {
-            if (getPlayer().isDebug() || Math.random() < (1 / (double) d.chance)) {
-                numItems++;
-                items.add(d);
+        try {
+            int numItems = 0;
+            if (meso && Math.random() < (1 / (double) mesoChance)) {
+                items.add(new ReactorDropEntry(0, mesoChance, -1));
             }
-        }
-        for (CQuestData qData : client.getPlayer().getCustomQuests().values()) {
-            if (!qData.isCompleted()) {
-                for (CQuestItemRequirement.CQuestItem qItem : qData.getToCollect().getItems().values()) {
-                    if (qItem.getReactorId() == reactor.getId()) {
-                        if (Randomizer.nextInt(100) < qItem.getChance()) {
-                            int quantity = Randomizer.rand(qItem.getMinQuantity(), qItem.getMaxQuantity());
-                            for (int i = 0; i < quantity; i++) {
-                                items.add(new ReactorDropEntry(qItem.getItemId(), 0, -1));
+            for (ReactorDropEntry d : chances) {
+                if (getPlayer().isDebug() || Math.random() < (1 / (double) d.chance)) {
+                    numItems++;
+                    items.add(d);
+                }
+            }
+            for (CQuestData qData : client.getPlayer().getCustomQuests().values()) {
+                if (!qData.isCompleted()) {
+                    for (CQuestItemRequirement.CQuestItem qItem : qData.getToCollect().getItems().values()) {
+                        if (qItem.getReactorId() == reactor.getId()) {
+                            if (Randomizer.nextInt(100) < qItem.getChance()) {
+                                int quantity = Randomizer.rand(qItem.getMinQuantity(), qItem.getMaxQuantity());
+                                for (int i = 0; i < quantity; i++) {
+                                    items.add(new ReactorDropEntry(qItem.getItemId(), 0, -1));
+                                }
                             }
                         }
                     }
                 }
             }
-        }
-        while (items.size() < minItems) {
-            items.add(new ReactorDropEntry(0, mesoChance, -1));
-            numItems++;
-        }
-        java.util.Collections.shuffle(items);
-        final Point dropPos = reactor.getPosition();
-        dropPos.x -= (12 * numItems);
-        for (ReactorDropEntry d : items) {
-            if (d.itemId == 0) {
-                int range = maxMeso - minMeso;
-                int displayDrop = (int) (Math.random() * range) + minMeso;
-                int mesoDrop = (displayDrop * client.getWorldServer().getMesoRate());
-                reactor.getMap().spawnMesoDrop(mesoDrop, dropPos, reactor, client.getPlayer(), false, (byte) 0);
-            } else {
-                Item drop;
-                MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
-                if (ii.getInventoryType(d.itemId) != MapleInventoryType.EQUIP) {
-                    drop = new Item(d.itemId, (short) 0, (short) 1);
-                } else {
-                    drop = ii.randomizeStats(ii.getEquipById(d.itemId));
-                }
-                reactor.getMap().spawnItemDrop(reactor, getPlayer(), drop, dropPos, false, false);
+            while (items.size() < minItems) {
+                items.add(new ReactorDropEntry(0, mesoChance, -1));
+                numItems++;
             }
-            dropPos.x += 25;
-
+            java.util.Collections.shuffle(items);
+            final Point dropPos = reactor.getPosition();
+            dropPos.x -= (12 * numItems);
+            for (ReactorDropEntry d : items) {
+                if (d.itemId == 0) {
+                    int range = maxMeso - minMeso;
+                    int displayDrop = (int) (Math.random() * range) + minMeso;
+                    int mesoDrop = (displayDrop * client.getWorldServer().getMesoRate());
+                    reactor.getMap().spawnMesoDrop(mesoDrop, dropPos, reactor, client.getPlayer(), false, (byte) 0);
+                } else {
+                    Item drop;
+                    MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
+                    if (ii.getInventoryType(d.itemId) != MapleInventoryType.EQUIP) {
+                        drop = new Item(d.itemId, (short) 0, (short) 1);
+                    } else {
+                        drop = ii.randomizeStats(ii.getEquipById(d.itemId));
+                    }
+                    reactor.getMap().spawnItemDrop(reactor, getPlayer(), drop, dropPos, false, false);
+                }
+                dropPos.x += 25;
+            }
+        } finally {
+            items.clear();
         }
     }
 

@@ -37,7 +37,7 @@ public final class PlayerWhisperEvent extends PacketEvent {
                     return null;
                 }
             }
-            MapleCharacter target = getClient().getChannelServer().getPlayerStorage().getPlayerByName(username);
+            MapleCharacter target = getClient().getChannelServer().getPlayerStorage().find(p -> p.getName().equalsIgnoreCase(username));
             if (target != null) {
                 target.getClient().announce(MaplePacketCreator.getWhisper(getClient().getPlayer().getName(), getClient().getChannel(), content));
 
@@ -51,7 +51,7 @@ public final class PlayerWhisperEvent extends PacketEvent {
                 if (world.isConnected(username)) {
                     world.whisper(getClient().getPlayer().getName(), username, getClient().getChannel(), content);
 
-                    target = world.getPlayerStorage().getPlayerByName(username);
+                    target = world.findPlayer(p -> p.getName().equalsIgnoreCase(username));
                     if (target != null && target.isHidden() && target.gmLevel() > getClient().getPlayer().gmLevel())
                         getClient().announce(MaplePacketCreator.getWhisperReply(username, (byte) 0));
                     else
@@ -61,7 +61,7 @@ public final class PlayerWhisperEvent extends PacketEvent {
                 }
             }
         } else if (action == 5 || action == 0x44) { // - /find
-            MapleCharacter target = getClient().getChannelServer().getPlayerStorage().getPlayerByName(username);
+            MapleCharacter target = getClient().getChannelServer().getPlayerStorage().find(p -> p.getName().equalsIgnoreCase(username));
             if (action == 0x44 && target != null) {
                 if (player.getBuddylist().containsVisible(target.getId()) && target.getBuddylist().containsVisible(player.getId())) {
                     // only find if they are mutual friends

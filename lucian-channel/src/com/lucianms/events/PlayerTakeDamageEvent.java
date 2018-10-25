@@ -32,16 +32,16 @@ import com.lucianms.client.inventory.MapleInventoryType;
 import com.lucianms.client.meta.Occupation;
 import com.lucianms.client.status.MonsterStatus;
 import com.lucianms.client.status.MonsterStatusEffect;
-import com.lucianms.nio.receive.MaplePacketReader;
 import com.lucianms.constants.skills.Aran;
 import com.lucianms.constants.skills.Corsair;
-import com.lucianms.events.PacketEvent;
+import com.lucianms.nio.receive.MaplePacketReader;
 import com.lucianms.server.MapleInventoryManipulator;
 import com.lucianms.server.MapleItemInformationProvider;
 import com.lucianms.server.MapleStatEffect;
 import com.lucianms.server.life.*;
 import com.lucianms.server.life.MapleLifeFactory.LoseItem;
 import com.lucianms.server.maps.MapleMap;
+import com.lucianms.server.maps.MapleMapObject;
 import tools.MaplePacketCreator;
 import tools.Randomizer;
 
@@ -72,6 +72,16 @@ public final class PlayerTakeDamageEvent extends PacketEvent {
     }
 
     @Override
+    public void packetCompleted() {
+        MapleCharacter player = getClient().getPlayer();
+        if (monsterIdFrom == 9400551) { // Bob
+            if (!player.isGM() || player.isDebug()) {
+                player.setHpMp(0);
+            }
+        }
+    }
+
+    @Override
     public Object onPacket() {
         MapleCharacter player = getClient().getPlayer();
 
@@ -88,7 +98,14 @@ public final class PlayerTakeDamageEvent extends PacketEvent {
         MapleMonster attacker = null;
         final MapleMap map = player.getMap();
         if (damageFrom != -3 && damageFrom != -4) {
-            attacker = (MapleMonster) map.getMapObject(objectId);
+            MapleMapObject mapObject = map.getMapObject(objectId);
+            if (!(mapObject instanceof MapleMonster)) {
+                if (mapObject == null) {
+                    return null;
+                }
+                throw new ClassCastException(String.format("'%s' took damage from map object %s in map %d", player.getName(), mapObject.getType().name(), player.getMapId()));
+            }
+            attacker = (MapleMonster) mapObject;
             List<LoseItem> loseItems;
             if (attacker != null) {
                 if (attacker.isBuffed(MonsterStatus.NEUTRALISE)) {

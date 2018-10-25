@@ -50,9 +50,9 @@ public class PlayerGuildBoardInteractionEvent extends PacketEvent {
                 break;
             case 2:
                 start = reader.readInt();
-                localThreadID = reader.readInt();
                 break;
             case 4:
+                localThreadID = reader.readInt();
                 content = reader.readMapleAsciiString();
                 break;
             case 5:

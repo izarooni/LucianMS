@@ -60,7 +60,7 @@ public class MonsterPark extends GenericEvent {
                         overrides.setExp((int) (ExpTable.getExpNeededForLevel(baseLevel) * (Math.random() * 0.01) + 0.01));
                         monster.getListeners().add(new MonsterListener() {
                             @Override
-                            public void monsterKilled(int aniTime) {
+                            public void monsterKilled(MapleCharacter player, int aniTime) {
                                 totalExp.addAndGet(monster.getExp());
                                 if (instanceMap.getMonsters().stream().noneMatch(m -> m.getHp() > 0)) {
                                     if (portal != null) {

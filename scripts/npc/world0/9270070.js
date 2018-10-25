@@ -12,13 +12,17 @@ function action(mode, type, selection) {
     } else {
         status++;
     }
-    var optional = player.getGenericEvents().stream().filter(function(e) {
-        return e instanceof ShenronSummon;
-    }).findFirst();
-    if (!player.isDebug() && (optional.isPresent() && !optional.get().isWishing())) {
-        cm.sendOk("Who are you? You didn't summon me");
-        cm.dispose();
-        return;
+    var shenron = player.getGenericEvents().stream().filter(e => e instanceof ShenronSummon).findFirst().orElse(null);
+    if (!player.isDebug()) {
+        if (shenron == null) {
+            cm.sendOk("Where am I? Why did you bring me here?");
+            cm.dispose();
+            return;
+        } else if (!player.isGM() && !shenron.isWishing()) {
+            cm.sendOk("Who are you? You didn't summon me");
+            cm.dispose();
+            return;
+        }
     }
     if (status == 1) {
         cm.sendSimple("I am Shenron, I shall grant you any wish. Now speak!\r\n#b"
@@ -110,19 +114,21 @@ function action(mode, type, selection) {
                 break;
             }
         }
-        if (!player.isDebug() && optional.isPresent()) optional.get().wish(player);
+        if ((!player.isGM() || player.isDebug()) && shenron != null) shenron.wish(player);
         cm.dispose();
     } else if (status == 3) {
-        let username = cm.getText();
+        var username = cm.getText();
         if (username == null || username.length == 0) {
             usernameError = "#r#eYou must specify a username!#k#n";
         } else {
-            var target = ch.getPlayerStorage().getCharacterByName(username);
+            let target = ch.getPlayerStorage().find((p) => p.getName().equalsIgnoreCase(username));
             if (target != null && !target.isGM()) {
                 target.setHp(0);
-                target.updateSingleStat(Packages.client.MapleStat.HP, 0);
+                target.updateSingleStat(MapleStat.HP, 0);
+                target.sendMessage(5, "'{}' decided to kill you with their Shenron wish!", player.getName());
+                cm.sendOk("");
                 cm.dispose();
-                optional.get().wish(player);
+                shenron.wish(player);
                 return;
             } else {
                 usernameError = "#r#eCould not find any player named \"#b" + username + "#r#e\"#k#n";

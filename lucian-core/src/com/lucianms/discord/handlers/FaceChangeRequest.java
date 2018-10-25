@@ -34,7 +34,7 @@ public class FaceChangeRequest extends DiscordRequest {
         writer.writeMapleAsciiString(username);
 
 
-        MapleCharacter player = Server.getWorld(0).getPlayerStorage().getPlayerByName(username);
+        MapleCharacter player = Server.getWorld(0).findPlayer(p -> p.getName().equalsIgnoreCase(username));
         if (player != null) {
             player.setFace(faceId);
             player.updateSingleStat(MapleStat.FACE, faceId);

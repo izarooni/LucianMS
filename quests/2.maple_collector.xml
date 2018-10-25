@@ -15,7 +15,7 @@
             <int name="amount" value="99"/>
         </imgdir>
         <imgdir name="2">
-            <int name="monsterId" value="210101"/>
+            <int name="monsterId" value="1210101"/>
             <int name="amount" value="50"/>
         </imgdir>
         <imgdir name="3">

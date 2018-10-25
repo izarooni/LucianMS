@@ -28,9 +28,9 @@ function action(mode, type, selection) {
         let metadata = CQuests.getMetaData(QuestID[0]);
         testFor(pquest, 6); // the status to jump to if true
         if (status == 1) { // quest beginning
-            cm.sendNext("It seems that our world somehow has been attacked by darkness and we might need a hand. Do you have a moment? First we need to make sure to get rid of the #rkPhantom Wolves#k. Kill 100 #rPhantom Wolves#k and report back to me!");
+            cm.sendNext("It seems that our world somehow has been attacked by darkness and we might need a hand.");
         } else if (status == 2) {
-            cm.sendNext("Seems you have completed task 1. Let us continue then. For now the world is a bit safer but lets not celebrate just yet.. Kill 250 #rPhantom Wolves#k and report back to me!");
+            cm.sendNext("Do you have a moment? First we need to make sure to get rid of the #rPhantom Wolves#k.");
         } else if (status == 3) { // quest progress
             DisplaySummary(metadata); 
         } else if (status == 4) {

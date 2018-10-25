@@ -81,7 +81,7 @@ public class AEmergencyTrial extends GAutoEvent {
     public void start() {
         for (MapleChannel channel : getWorld().getChannels()) {
             channel.removeMap(BossMapID);
-            for (MapleCharacter player : channel.getPlayerStorage().getAllPlayers()) {
+            for (MapleCharacter player : channel.getPlayerStorage().values()) {
                 MapleMap map = player.getMap();
                 if (!map.getMonsterSpawnPoints().isEmpty()) {
                     Integer objectID = spawnLocations.get(map.getId());
@@ -177,7 +177,7 @@ public class AEmergencyTrial extends GAutoEvent {
 
                 monster.getListeners().add(new MonsterListener() {
                     @Override
-                    public void monsterKilled(int aniTime) {
+                    public void monsterKilled(MapleCharacter player, int aniTime) {
                         map.broadcastMessage(MaplePacketCreator.showEffect("PSO2/stuff/5"));
                         map.broadcastMessage(MaplePacketCreator.playSound("PSO2/Completed"));
                         summonEndNPC(map);

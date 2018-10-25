@@ -1,7 +1,7 @@
-importPackage(Packages.client);
-importPackage(Packages.server.life);
+importPackage(Packages.com.lucianms.client);
+importPackage(Packages.com.lucianms.server.life);
 importPackage(Packages.tools);
-importPackage(Packages.client.inventory);
+importPackage(Packages.com.lucianms.client.inventory);
 
 function init() {
 }

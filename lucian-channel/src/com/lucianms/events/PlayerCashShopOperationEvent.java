@@ -156,14 +156,12 @@ public class PlayerCashShopOperationEvent extends PacketEvent {
                     getClient().announce(MaplePacketCreator.showCash(player));
                     return null;
                 }
-                if (ItemConstants.isPet(cItem.getItemId())) {
                     int itemID = cItem.getItemId();
-                    if (itemID == 5000014 || itemID == 5000022) {
+                    if (itemID == 5000011 || itemID == 5000014 || itemID == 5000022) {
                         getClient().announce(MaplePacketCreator.serverNotice(1, "These pets are available for our donors only!"));
                         getClient().announce(MaplePacketCreator.showCash(player));
                         return null;
                     }
-                }
                 if (action == 0x03) { // Item
                     Item item = cItem.toItem();
                     cs.addToInventory(item);
@@ -205,7 +203,7 @@ public class PlayerCashShopOperationEvent extends PacketEvent {
                 cs.gainCash(4, -cItem.getPrice());
                 getClient().announce(MaplePacketCreator.showCash(player));
                 player.sendNote(recipient.get("name"), player.getName() + " has sent you a gift! Go check out the Cash Shop.", (byte) 0); //fame or not
-                MapleCharacter receiver = getClient().getChannelServer().getPlayerStorage().getPlayerByName(recipient.get("name"));
+                MapleCharacter receiver = getClient().getChannelServer().getPlayerStorage().find(p -> p.getName().equalsIgnoreCase(recipient.get("name")));
                 if (receiver != null) receiver.showNote();
                 break;
             }
@@ -319,7 +317,7 @@ public class PlayerCashShopOperationEvent extends PacketEvent {
                     getClient().announce(MaplePacketCreator.showCash(player));
                     return null;
                 }
-                MapleCharacter partner = getClient().getChannelServer().getPlayerStorage().getPlayerByName(username);
+                MapleCharacter partner = getClient().getChannelServer().getPlayerStorage().find(p -> p.getName().equalsIgnoreCase(username));
                 if (partner == null) {
                     player.getClient().announce(MaplePacketCreator.serverNotice(1, "The partner you specified cannot be found.\r\nPlease make sure your partner is online and in the same channel."));
                 } else {
@@ -362,7 +360,7 @@ public class PlayerCashShopOperationEvent extends PacketEvent {
                     getClient().announce(MaplePacketCreator.showCash(player));
                     return null;
                 }
-                MapleCharacter partner = getClient().getChannelServer().getPlayerStorage().getPlayerByName(username);
+                MapleCharacter partner = getClient().getChannelServer().getPlayerStorage().find(p -> p.getName().equalsIgnoreCase(username));
                 if (partner == null) {
                     player.dropMessage("The partner you specified cannot be found.\r\nPlease make sure your partner is online and in the same channel.");
                 } else {

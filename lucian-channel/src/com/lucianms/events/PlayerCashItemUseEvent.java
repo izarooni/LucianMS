@@ -7,6 +7,7 @@ import com.lucianms.client.inventory.MapleInventoryType;
 import com.lucianms.client.inventory.MaplePet;
 import com.lucianms.constants.ExpTable;
 import com.lucianms.constants.ItemConstants;
+import com.lucianms.helpers.JailManager;
 import com.lucianms.io.scripting.npc.NPCScriptManager;
 import com.lucianms.nio.receive.MaplePacketReader;
 import com.lucianms.scheduler.TaskExecutor;
@@ -47,7 +48,7 @@ public class PlayerCashItemUseEvent extends PacketEvent implements Cleaner.Clean
     private int pointFrom, pointTo;
     private int inventoryType;
     private int fieldID;
-    private short slot;
+    private short slot, itemSlot;
     private boolean whisperEnabled;
     private boolean isItem; // ? what
     private boolean isVIPRock;
@@ -93,7 +94,7 @@ public class PlayerCashItemUseEvent extends PacketEvent implements Cleaner.Clean
                     content = reader.readMapleAsciiString();
                     break;
                 case 2: // super megaphone
-                    reader.readMapleAsciiString();
+                    content = reader.readMapleAsciiString();
                     whisperEnabled = reader.readByte() != 0;
                     break;
                 case 5: // maple tv
@@ -122,7 +123,7 @@ public class PlayerCashItemUseEvent extends PacketEvent implements Cleaner.Clean
                     isItem = reader.readByte() == 1;
                     if (isItem) {
                         inventoryType = reader.readInt();
-                        itemID = reader.readInt();
+                        itemSlot = (short) reader.readInt();
                     }
                     break;
                 case 7: // triple megaphone
@@ -373,6 +374,11 @@ public class PlayerCashItemUseEvent extends PacketEvent implements Cleaner.Clean
             }
         } else {
             if (itemType == 507) {
+                if (JailManager.isJailed(player.getId())) {
+                    player.sendMessage(1, "You may not use megaphones while in jail");
+                    getClient().announce(MaplePacketCreator.enableActions());
+                    return null;
+                }
 
                 String medal = "";
                 Item medalItem = player.getInventory(MapleInventoryType.EQUIPPED).getItem((short) -49);
@@ -397,7 +403,7 @@ public class PlayerCashItemUseEvent extends PacketEvent implements Cleaner.Clean
                         MapleCharacter victim = null;
                         if (type != 1) {
                             if (type != 4) {
-                                victim = ch.getPlayerStorage().getPlayerByName(username);
+                                victim = ch.getPlayerStorage().find(p -> p.getName().equalsIgnoreCase(username));
                             }
                         }
                         ArrayList<String> messages = new ArrayList<>();
@@ -430,7 +436,7 @@ public class PlayerCashItemUseEvent extends PacketEvent implements Cleaner.Clean
                         String msg = medal + player.getName() + " : " + content;
                         Item item = null;
                         if (isItem) { //item
-                            item = player.getInventory(MapleInventoryType.getByType((byte) inventoryType)).getItem((short) itemID);
+                            item = player.getInventory(MapleInventoryType.getByType((byte) inventoryType)).getItem(itemSlot);
                             if (item == null) {
                                 return null;
                             } else if (ii.isDropRestricted(item.getItemId())) {
@@ -498,7 +504,7 @@ public class PlayerCashItemUseEvent extends PacketEvent implements Cleaner.Clean
                         getClient().announce(MaplePacketCreator.enableActions());
                     }
                 } else {
-                    MapleCharacter victim = ch.getPlayerStorage().getPlayerByName(username);
+                    MapleCharacter victim = ch.getPlayerStorage().find(p -> p.getName().equalsIgnoreCase(username));
                     if (victim != null) {
                         MapleMap target = victim.getMap();
                         if (ch.getMap(victim.getMapId()).getForcedReturnId() == 999999999 || victim.getMapId() < 100000000) {
@@ -564,7 +570,11 @@ public class PlayerCashItemUseEvent extends PacketEvent implements Cleaner.Clean
                 player.getMap().broadcastMessage(MaplePacketCreator.useChalkboard(player, false));
                 player.getClient().announce(MaplePacketCreator.enableActions());
             } else if (itemType == 539) {
-
+                if (JailManager.isJailed(player.getId())) {
+                    player.sendMessage(1, "You may not use megaphones while in jail");
+                    getClient().announce(MaplePacketCreator.enableActions());
+                    return null;
+                }
                 String medal = "";
                 Item medalItem = player.getInventory(MapleInventoryType.EQUIPPED).getItem((short) -49);
                 if (medalItem != null) {

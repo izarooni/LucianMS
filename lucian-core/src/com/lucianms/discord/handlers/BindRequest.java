@@ -76,7 +76,7 @@ public class BindRequest extends DiscordRequest {
 
                             for (MapleWorld world : Server.getWorlds()) {
                                 for (MapleChannel channel : world.getChannels()) {
-                                    MapleCharacter player = channel.getPlayerStorage().getPlayerByID(rs.getInt("id"));
+                                    MapleCharacter player = channel.getPlayerStorage().get(rs.getInt("id"));
                                     if (player != null) {
                                         player.getClient().setDiscordId(authorId);
                                         player.getClient().setDiscordKey(key);

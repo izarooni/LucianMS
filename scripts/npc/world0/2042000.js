@@ -1,6 +1,6 @@
 const MaplePacketCreator = Java.type("tools.MaplePacketCreator");
 const Lobby = client.getChannelServer().getCarnivalLobbyManager();
-const LobbyState = Java.type("com.lucianms.server.pqs.carnival.MCarnivalLobby.State");
+const LobbyState = Java.type("com.lucianms.features.carnival.MCarnivalLobby.State");
 /* izarooni */
 const M_Office = 980000000;
 let status = 0;

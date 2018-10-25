@@ -19,7 +19,7 @@ import java.util.regex.Pattern;
 public class PlayerGuildOperationEvent extends PacketEvent {
 
     private boolean isGuildNameAcceptable(String name) {
-        return name.matches(Pattern.compile("[a-zA-Z0-9]{4,13}]").pattern());
+        return name.matches(Pattern.compile("[a-zA-Z0-9]{4,13}").pattern());
     }
 
     private void respawnPlayer(MapleCharacter mc) {
