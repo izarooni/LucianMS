@@ -1,4 +1,4 @@
-const MapleInventoryType = Java.type("com.lucianms.client.inventory.MapleInventoryType");
+const MapleInventoryType = Java.type("client.inventory.MapleInventoryType");
 /* izarooni */
 const Rewards = [500, 1500, 3000, 4500, 5000, 6999, 10000];
 
