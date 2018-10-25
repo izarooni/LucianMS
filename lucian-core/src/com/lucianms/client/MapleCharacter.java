@@ -1634,14 +1634,16 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
         if (getTrade() != null) {
             MapleTrade.cancelTrade(this);
         }
-        // yeet
         if (getArcade() != null && to.getId() != getArcade().getMapId()) {
-            getArcade().fail(); // fail upon changing the map.
+            getArcade().fail();
         }
         ManualPlayerEvent playerEvent = client.getWorldServer().getPlayerEvent();
         if (playerEvent != null) {
             if (to != playerEvent.getMap()) {
-                playerEvent.participants.remove(getId());
+                ManualPlayerEvent.Participant remove = playerEvent.participants.remove(getId());
+                if (remove != null) {
+                    to = client.getChannelServer().getMap(remove.returnMapId);
+                }
             }
         }
         List<GenericEvent> gEvents = getGenericEvents();

@@ -413,6 +413,23 @@ public class EventCommands {
                 }
             }
             return true;
+        } else if (command.equals("warpoxmiddle", "warpoxright", "warpoxleft")) {
+            if (player.getMapId() != 109020001) {
+                player.sendMessage(5, "You cannot use this command here");
+                return false;
+            }
+            for (MapleCharacter players : player.getMap().getCharacters()) {
+                if (!players.isGM() || player.isDebug()) {
+                    Point location = players.getPosition().getLocation();
+                    if (location.x >= -142 && command.equals("warpoxright")) {
+                        players.changeMap(ServerConstants.HOME_MAP);
+                    } else if (location.x >= -307 && location.x <= -143 && command.equals("warpoxmiddle")) {
+                        players.changeMap(ServerConstants.HOME_MAP);
+                    } else if (location.x <= -308 && command.equals("warpoxleft")) {
+                        players.changeMap(ServerConstants.HOME_MAP);
+                    }
+                }
+            }
         } else if (command.equals("warpout")) {
             if (args.length() > 1) {
                 Integer fieldID = args.parseNumber(0, int.class);
