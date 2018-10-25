@@ -82,7 +82,7 @@ public class HGMCommands {
                 player.sendMessage(5, "Syntax: !setname <target> <username> - Change another player's username");
             }
         } else if (command.equals("clearskills")) {
-            MapleCharacter target = player;
+            MapleCharacter target;
             if (args.length() == 1) {
                 target = client.getChannelServer().getPlayerStorage().find(p -> p.getName().equalsIgnoreCase(args.get(0)));
                 if (target == null) {
@@ -92,6 +92,8 @@ public class HGMCommands {
             } else if (args.length() > 1) {
                 player.sendMessage("One username  at a time please!");
                 return;
+            } else {
+                target = player;
             }
             int totalSP = 0;
             for (Map.Entry<Skill, MapleCharacter.SkillEntry> set : new HashMap<>(target.getSkills()).entrySet()) {
@@ -100,8 +102,8 @@ public class HGMCommands {
                 totalSP += set.getValue().skillevel;
                 target.changeSkillLevel(sk, (byte) (sk.isHidden() ? -1 : 0), sk.isHidden() ? 0 : entry.masterlevel, entry.expiration);
             }
-            player.setRemainingSp(totalSP);
-            player.updateSingleStat(MapleStat.AVAILABLESP, totalSP);
+            target.setRemainingSp(totalSP);
+            target.updateSingleStat(MapleStat.AVAILABLESP, totalSP);
         } else if (command.equals("hpmp")) {
             if (args.length() == 1) {
                 Integer value = args.parseNumber(0, int.class);
