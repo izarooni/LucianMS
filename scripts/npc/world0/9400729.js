@@ -1,46 +1,57 @@
-var status = 0;
-
-function start() {
-	status = -1;
-	action(1, 0, 0);
-}
+load('scripts/util_imports.js');
+load("scripts/util_transaction.js");
+/* izarooni */
+let status = 0;
+let selections = [
+	[1000000000, [1, 4260002]],
+	[500000000, [1, 4011022]]
+];
+let playerChoice;
 
 function action(mode, type, selection) {
-	if (mode == -1) {
+	if (mode < 1) {
 		cm.dispose();
+		return;
 	} else {
-		if (mode == 0 && status == 0) {
-			cm.dispose();
-			return;
+		status++;
+	}
+	if (status == 1) {
+		let content = "Are you interested in any of my offers?\r\n#b";
+		for (let i = 0; i < selections.length; i++) {
+			let cost = selections[i][0];
+			let offer = selections[i][1];
+			let readable = StringUtil.formatNumber(cost);
+			content += `\r\n#L${i}#${readable} mesos for ${offer[0]} #z${offer[1]}##l`;
 		}
-		if (mode == 1)
-			status++;
-		else
-			status--;
-		if (status == 0) {
-			cm.sendSimple("Are you interested in any of my offers?\r\n#b#L1# 1B mesos for 1 #z4260002##l\r\n\#L2# 500M mesos for 1 #z4011022##l");
-		} else if (status == 1) {
-			if (selection == 1) {
-			if (cm.getMeso() >= 100000000) {
-                cm.gainMeso(-100000000);
-                cm.gainItem(4260002, 1);
-				cm.sendOk("Congrats! You received a crystal!");
-                cm.dispose();
-            } else {
-                cm.sendOk("Sorry, but you have to offer me more than that!");
-                cm.dispose();
-            }
-			} else if (selection == 2) {
-			if (cm.getMeso() >= 50000000) {
-                cm.gainMeso(-50000000);
-                cm.gainItem(4011022, 1);
-				cm.sendOk("Congrats!");
-                cm.dispose();
-            } else {
-                cm.sendOk("Sorry, but you have to offer me more than that!");
-                cm.dispose();
-            }
+		cm.sendSimple(content);
+	} else if (status == 2) {
+		playerChoice = selections[selection];
+		let cost = StringUtil.formatNumber(playerChoice[0]);
+		let offer = playerChoice[1];
+		cm.sendNext(`Are you sure you want to trade\r\n#b${cost}#k mesos for ${offer[0]} #b#z${offer[1]}##k?`);
+	} else if (status == 3) {
+		let cost = playerChoice[0];
+		let offer = playerChoice[1];
+		if (player.getMeso() >= cost) {
+			if (InventoryModifier.checkSpace(client, offer[1], offer[0], "")) {
+				cm.gainItem(offer[1], offer[0], true);
+				cm.gainMeso(-cost);
+
+				let log = `${player.getName()} traded ${cost} mesos for ${offer[0]} of ${offer[1]}`;
+				let transactionId = createTransaction(cm.getDatabaseConnection(), player.getId(), log);
+				if (transactionId == -1) {
+					print("Error creating transaction log...");
+					print(log);
+				}
+
+				cm.sendOk("Enjoy!\r\n#kHere is your transaction ID : #b" + transactionId)
+				cm.dispose();
+			} else {
+				cm.sendOk("Please make space in your inventory before making trades!");
 			}
+		} else {
+			cm.sendOk("You do not have enough mesos to make this purchase");
 		}
+		cm.dispose();
 	}
 }
