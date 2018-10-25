@@ -1,10 +1,9 @@
 package com.lucianms.events;
 
 import com.lucianms.client.MapleCharacter;
-import com.lucianms.client.MapleStat;
+import com.lucianms.lang.GProperties;
 import com.lucianms.nio.receive.MaplePacketReader;
 import com.lucianms.scheduler.TaskExecutor;
-import com.lucianms.events.PacketEvent;
 import com.lucianms.server.life.FakePlayer;
 import com.lucianms.server.movement.LifeMovementFragment;
 import com.lucianms.server.movement.MovementPacketHelper;
@@ -58,10 +57,20 @@ public final class PlayerMoveEvent extends PacketEvent {
             }, 100);
         }
 
-        if ((!player.isGM() || (player.isGM() && player.isDebug())) && player.getMap().getAutoKillPosition() != null) {
-            if (player.getPosition().getY() >= player.getMap().getAutoKillPosition().getY()) {
-                player.setHp(0);
-                player.updateSingleStat(MapleStat.HP, 0);
+        if ((!player.isGM() || (player.isGM() && player.isDebug()))) {
+            GProperties<Point> akp = player.getMap().getAutoKillPositions();
+            Point position;
+            if ((position = akp.get("left")) != null && clientPosition.x <= position.x) {
+                player.setHpMp(0);
+            }
+            if ((position = akp.get("right")) != null && clientPosition.x >= position.x) {
+                player.setHpMp(0);
+            }
+            if ((position = akp.get("up")) != null && clientPosition.y <= position.y) {
+                player.setHpMp(0);
+            }
+            if ((position = akp.get("down")) != null && clientPosition.y >= position.y) {
+                player.setHpMp(0);
             }
         }
         return null;

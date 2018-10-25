@@ -51,6 +51,7 @@ import com.lucianms.features.summoning.BlackMageSummoner;
 import com.lucianms.features.summoning.ShenronSummoner;
 import com.lucianms.io.scripting.event.EventInstanceManager;
 import com.lucianms.io.scripting.map.MapScriptManager;
+import com.lucianms.lang.GProperties;
 import com.lucianms.scheduler.Task;
 import com.lucianms.scheduler.TaskExecutor;
 import com.lucianms.server.*;
@@ -138,7 +139,7 @@ public class MapleMap {
     private MapleSnowball snowball0 = null;
     private MapleSnowball snowball1 = null;
     private MapleCoconut coconut;
-    private Point autoKillPosition = null;
+    private GProperties<Point> autoKillPositions = new GProperties<>();
     //endregion
 
     public MapleMap(int mapid, int world, int channel, int returnMapId, float monsterRate) {
@@ -2384,20 +2385,16 @@ public class MapleMap {
         this.monsterRate = monsterRate;
     }
 
-    public Point getAutoKillPosition() {
-        return autoKillPosition;
+    public GProperties<Point> getAutoKillPositions() {
+        return autoKillPositions;
     }
 
-    public void setAutoKillPosition(Point autoKillPosition) {
-        this.autoKillPosition = autoKillPosition;
-    }
-
-    private static interface DelayedPacketCreation {
+    private interface DelayedPacketCreation {
 
         void sendPackets(MapleClient c);
     }
 
-    private static interface SpawnCondition {
+    private interface SpawnCondition {
 
         boolean canSpawn(MapleCharacter chr);
     }

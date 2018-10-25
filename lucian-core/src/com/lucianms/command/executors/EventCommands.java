@@ -6,6 +6,7 @@ import com.lucianms.client.MapleDisease;
 import com.lucianms.command.CommandWorker;
 import com.lucianms.constants.ServerConstants;
 import com.lucianms.features.ManualPlayerEvent;
+import com.lucianms.lang.GProperties;
 import com.lucianms.server.channel.MapleChannel;
 import com.lucianms.server.life.*;
 import com.lucianms.server.world.MapleParty;
@@ -339,17 +340,27 @@ public class EventCommands {
             return true;
         } else if (command.equals("ak")) {
             if (args.length() == 1) {
-                if (args.get(0).equalsIgnoreCase("reset")) {
-                    player.getMap().setAutoKillPosition(null);
-                    player.dropMessage(6, "Auto kill position removed");
-                } else {
-                    player.dropMessage(5, "To remove the auto kill for this map, use: '!ak reset");
+                final String action = args.get(0);
+                GProperties<Point> akp = player.getMap().getAutoKillPositions();
+                switch (action) {
+                    case "left":
+                    case "right":
+                    case "up":
+                    case "down":
+                        Point location = player.getPosition().getLocation();
+                        akp.put(action, location);
+                        player.sendMessage(5, "Auto-kill {} position set to [{}, {}]", action, location.x, location.y);
+                        return true;
+                    case "reset":
+                    case "clear":
+                        akp.clear();
+                        player.sendMessage(5, "Auto-kill positions cleared");
+                        return true;
                 }
-                return true;
             }
-            player.getMap().setAutoKillPosition(player.getPosition().getLocation());
-            Point ak = player.getMap().getAutoKillPosition();
-            player.sendMessage(6, "Auto kill location set to x:{}, y:{}", ak.x, ak.y);
+            player.sendMessage(5, "Available directions: left, right, up and down");
+            player.sendMessage(5, "To clear all auto-kill positions use: !{} reset", command.getName());
+            return false;
         } else if (command.equals("bomb", "bombmap", "bombm")) {
             if (command.equals("bombmap", "bombm")) {
                 for (MapleCharacter players : player.getMap().getCharacters()) {
