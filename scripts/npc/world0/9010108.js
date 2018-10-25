@@ -34,7 +34,7 @@ for (var i = 0; i < quests.length; i++) {
 
 function appendQuest(questId) {
     var meta = CQuests.getMetaData(questId);
-    if (meta == null) {
+    if (meta == null || meta.getMinimumLevel() > player.getLevel()) {
         return;
     }
     var quest = player.getCustomQuest(questId);
@@ -114,6 +114,7 @@ function RedirectQuest() {
 }
 
 function Available() {
+    print(this.metadata.getMinimumLevel());
     if (player.getLevel() < this.metadata.getMinimumLevel()) {
         cm.sendOk("Unfortunately you must be at least #blevel " + this.metadata.getMinimumLevel() + "#k to accept this quest");
         cm.dispose();
