@@ -57,6 +57,9 @@ function action(mode, type, selection) {
                 if (cm.getPlayer().getGuildId() < 1 || cm.getPlayer().getGuildRank() != 1) {
                     cm.sendOk("You can only increase your Guild's capacity if you are the leader.");
                     cm.dispose();
+                } else if (cm.getPlayer().getGuild().getCapacity() >= 100) {
+                    cm.sendOk("Your guild has already reached maximum capacity.");
+                    cm.dispose();
                 } else
                     cm.sendYesNo("Increasing your Guild capacity by #b5#k costs #b " + cm.getPlayer().getGuild().getIncreaseGuildCost(cm.getPlayer().getGuild().getCapacity()) +" mesos#k, are you sure you want to continue?");
             }
