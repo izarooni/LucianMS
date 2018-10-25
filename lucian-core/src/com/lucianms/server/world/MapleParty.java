@@ -1,6 +1,6 @@
 package com.lucianms.server.world;
 
-import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 
 /**
@@ -58,8 +58,8 @@ public class MapleParty {
         return members.values().stream().filter(m -> m.getId() == id).findFirst().orElse(null);
     }
 
-    public ArrayList<MaplePartyCharacter> getMembers() {
-        return new ArrayList<>(members.values());
+    public Collection<MaplePartyCharacter> getMembers() {
+        return members.values();
     }
 
     public void broadcastPacket(byte[] packet) {

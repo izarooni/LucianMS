@@ -17,6 +17,7 @@ import tools.Randomizer;
 
 import java.awt.*;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Map;
 
 /**
@@ -418,17 +419,22 @@ public class EventCommands {
                 player.sendMessage(5, "You cannot use this command here");
                 return false;
             }
-            for (MapleCharacter players : player.getMap().getCharacters()) {
-                if (!players.isGM() || player.isDebug()) {
-                    Point location = players.getPosition().getLocation();
-                    if (location.x >= -142 && command.equals("warpoxright")) {
-                        players.changeMap(ServerConstants.HOME_MAP);
-                    } else if (location.x >= -307 && location.x <= -143 && command.equals("warpoxmiddle")) {
-                        players.changeMap(ServerConstants.HOME_MAP);
-                    } else if (location.x <= -308 && command.equals("warpoxleft")) {
-                        players.changeMap(ServerConstants.HOME_MAP);
+            Collection<MapleCharacter> characters = new ArrayList<>(player.getMap().getCharacters());
+            try {
+                for (MapleCharacter players : characters) {
+                    if (!players.isGM() || player.isDebug()) {
+                        Point location = players.getPosition().getLocation();
+                        if (location.x >= -142 && command.equals("warpoxright")) {
+                            players.changeMap(ServerConstants.HOME_MAP);
+                        } else if (location.x >= -307 && location.x <= -143 && command.equals("warpoxmiddle")) {
+                            players.changeMap(ServerConstants.HOME_MAP);
+                        } else if (location.x <= -308 && command.equals("warpoxleft")) {
+                            players.changeMap(ServerConstants.HOME_MAP);
+                        }
                     }
                 }
+            } finally {
+                characters.clear();
             }
         } else if (command.equals("warpout")) {
             if (args.length() > 1) {

@@ -33,10 +33,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.DateFormat;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 import java.util.function.BiPredicate;
 
 /**
@@ -114,10 +111,15 @@ public class GameMasterCommands {
                 String username = args.get(0);
                 if (username.equalsIgnoreCase("map")) {
                     player.dropMessage("Disconnecting players in the map...");
-                    for (MapleCharacter players : player.getMap().getCharacters()) {
-                        if (!players.isGM()) {
-                            players.getClient().disconnect(false, players.getCashShop().isOpened());
+                    Collection<MapleCharacter> characters = new ArrayList<>(player.getMap().getCharacters());
+                    try {
+                        for (MapleCharacter players : characters) {
+                            if (!players.isGM()) {
+                                players.getClient().disconnect(false, players.getCashShop().isOpened());
+                            }
                         }
+                    } finally {
+                        characters.clear();
                     }
                     player.dropMessage(6, "Done!");
                 } else {
@@ -196,15 +198,20 @@ public class GameMasterCommands {
                             map = ch.getMap(mapId);
                         }
                         if (map != null) {
-                            for (MapleCharacter players : player.getMap().getCharacters()) {
-                                if (!players.isGM() || players.isDebug()) {
-                                    if (exact) {
-                                        players.changeMap(map, player.getPosition());
-                                    } else {
-                                        players.changeMap(map);
+                            Collection<MapleCharacter> characters = new ArrayList<>(player.getMap().getCharacters());
+                            try {
+                                for (MapleCharacter players : characters) {
+                                    if (!players.isGM() || players.isDebug()) {
+                                        if (exact) {
+                                            players.changeMap(map, player.getPosition());
+                                        } else {
+                                            players.changeMap(map);
+                                        }
+                                        players.setJQController(null);
                                     }
-                                    players.setJQController(null);
                                 }
+                            } finally {
+                                characters.clear();
                             }
                         } else {
                             player.dropMessage(5, "That is an invalid map");
@@ -554,7 +561,12 @@ public class GameMasterCommands {
         } else if (command.equals("dc")) {
             if (args.length() > 0) {
                 if (args.get(0).equalsIgnoreCase("map")) {
-                    player.getMap().getCharacters().stream().filter(p -> !player.isGM()).forEach(p -> p.getClient().disconnect(false, p.getCashShop().isOpened()));
+                    ArrayList<MapleCharacter> characters = new ArrayList<>(player.getMap().getCharacters());
+                    try {
+                        characters.stream().filter(p -> !p.isGM()).forEach(p -> p.getClient().disconnect(false, p.getCashShop().isOpened()));
+                    } finally {
+                        characters.clear();
+                    }
                 } else {
                     if (args.length() > 0) {
                         for (int i = 0; i < args.length(); i++) {

@@ -687,6 +687,7 @@ public class MapleMap {
         if (monster.getId() == 9895253 && getId() == 97) { // Black Mage
             List<MapleCharacter> warp = new ArrayList<>(getCharacters());
             TaskExecutor.createTask(() -> warp.forEach(c -> c.changeMap(333)), 2500);
+            warp.clear();
         }
         spawnedMonstersOnMap.decrementAndGet();
         monster.setHp(0);
@@ -896,8 +897,8 @@ public class MapleMap {
         return mapobjects.values();
     }
 
-    public ArrayList<MapleCharacter> getCharacters() {
-        return new ArrayList<>(characters.values());
+    public Collection<MapleCharacter> getCharacters() {
+        return characters.values();
     }
 
     public boolean containsNPC(int npcid) {
@@ -1877,12 +1878,7 @@ public class MapleMap {
     }
 
     public MapleCharacter getCharacterById(int id) {
-        for (MapleCharacter c : getCharacters()) {
-            if (c.getId() == id) {
-                return c;
-            }
-        }
-        return null;
+        return characters.get(id);
     }
 
     private void updateMapObjectVisibility(MapleCharacter chr, MapleMapObject mo) {
@@ -1910,15 +1906,19 @@ public class MapleMap {
     public void movePlayer(MapleCharacter player, Point newPosition) {
         player.setPosition(newPosition);
         Collection<MapleMapObject> visibleObjects = player.getVisibleMapObjects();
-        MapleMapObject[] visibleObjectsNow = visibleObjects.toArray(new MapleMapObject[visibleObjects.size()]);
-        for (MapleMapObject mo : visibleObjectsNow) {
-            if (mo != null) {
-                if (mapobjects.get(mo.getObjectId()) == mo) {
-                    updateMapObjectVisibility(player, mo);
-                } else {
-                    player.removeVisibleMapObject(mo);
+        try {
+            MapleMapObject[] visibleObjectsNow = visibleObjects.toArray(new MapleMapObject[visibleObjects.size()]);
+            for (MapleMapObject mo : visibleObjectsNow) {
+                if (mo != null) {
+                    if (mapobjects.get(mo.getObjectId()) == mo) {
+                        updateMapObjectVisibility(player, mo);
+                    } else {
+                        player.removeVisibleMapObject(mo);
+                    }
                 }
             }
+        } finally {
+            visibleObjects.clear();
         }
         for (MapleMapObject mo : getMapObjectsInRange(player.getPosition(), 722500, rangedMapobjectTypes)) {
             if (!player.isMapObjectVisible(mo)) {
@@ -2107,14 +2107,6 @@ public class MapleMap {
         }
     }
 
-    public void broadcastNONGMMessage(MapleCharacter source, final byte[] packet, boolean repeatToSource) {
-        for (MapleCharacter chr : getCharacters()) {
-            if (chr != source && !chr.isGM()) {
-                chr.getClient().announce(packet);
-            }
-        }
-    }
-
     public MapleOxQuiz getOx() {
         return ox;
     }
@@ -2231,7 +2223,12 @@ public class MapleMap {
     }
 
     public void warpEveryone(int to) {
-        getCharacters().forEach(p -> p.changeMap(to));
+        ArrayList<MapleCharacter> characters = new ArrayList<>(getCharacters());
+        try {
+            characters.forEach(p -> p.changeMap(to));
+        } finally {
+            characters.clear();
+        }
     }
 
     // BEGIN EVENTS
@@ -2273,13 +2270,16 @@ public class MapleMap {
 
     public void warpOutByTeam(int team, int mapid) {
         List<MapleCharacter> chars = new ArrayList<>(getCharacters());
-
-        for (MapleCharacter chr : chars) {
-            if (chr != null) {
-                if (chr.getTeam() == team) {
-                    chr.changeMap(mapid);
+        try {
+            for (MapleCharacter chr : chars) {
+                if (chr != null) {
+                    if (chr.getTeam() == team) {
+                        chr.changeMap(mapid);
+                    }
                 }
             }
+        } finally {
+            chars.clear();
         }
     }
 
