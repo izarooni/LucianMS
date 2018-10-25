@@ -7,6 +7,7 @@ import com.lucianms.cquest.CQuestBuilder;
 import com.lucianms.events.PlayerRingActionEvent;
 import com.lucianms.features.auto.GAutoEvent;
 import com.lucianms.features.auto.GAutoEventManager;
+import com.lucianms.features.scheduled.SAutoEvent;
 import com.lucianms.io.scripting.Achievements;
 import com.lucianms.io.scripting.event.EventManager;
 import com.lucianms.io.scripting.map.MapScriptManager;
@@ -61,8 +62,14 @@ public class AdministratorCommands {
                 commands.clear();
             }
         } else if (command.equals("test")) {
-            player.sendMessage(5, "instanced: " + player.getMap().isInstanced());
-            player.sendMessage(5, "EIM null: " + (player.getEventInstance() == null));
+            if (args.length() == 1) {
+                SAutoEvent sAutoEvent = world.getScheduledEvents().get(args.get(0));
+                if (sAutoEvent != null) {
+                    sAutoEvent.run();
+                } else {
+                    player.sendMessage(5, "Unable to find any schedule auto event '{}'", args.get(0));
+                }
+            }
         } else if (command.equals("sethp")) {
             if (args.length() == 1) {
                 Integer hp = args.parseNumber(0, int.class);

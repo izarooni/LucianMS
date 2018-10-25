@@ -88,8 +88,8 @@ public class MapleWorld {
         TaskExecutor.createRepeatingTask(event::run, event.getInterval(), event.getInterval());
     }
 
-    public HashMap<String, SAutoEvent> getScheduledEvents() {
-        return new HashMap<>(scheduledEvents);
+    public Map<String, SAutoEvent> getScheduledEvents() {
+        return scheduledEvents;
     }
 
     public List<MapleChannel> getChannels() {

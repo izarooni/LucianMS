@@ -88,6 +88,7 @@ public class MapleMonsterStats {
         skills.addAll(stats.skills);
         revives.addAll(stats.revives);
         if (stats.loseItem != null) {
+            loseItem = new ArrayList<>();
             loseItem.addAll(stats.loseItem);
         }
         //endregion

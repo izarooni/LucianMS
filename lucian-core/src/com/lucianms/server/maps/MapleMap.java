@@ -891,8 +891,8 @@ public class MapleMap {
         }
     }
 
-    public ArrayList<MapleMapObject> getMapObjects() {
-        return new ArrayList<>(mapobjects.values());
+    public Collection<MapleMapObject> getMapObjects() {
+        return mapobjects.values();
     }
 
     public ArrayList<MapleCharacter> getCharacters() {

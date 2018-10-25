@@ -6,6 +6,7 @@ import com.lucianms.scheduler.TaskExecutor;
 import com.lucianms.server.channel.MapleChannel;
 import com.lucianms.server.life.MapleLifeFactory;
 import com.lucianms.server.life.MapleMonster;
+import com.lucianms.server.life.MapleMonsterStats;
 import com.lucianms.server.life.MonsterListener;
 import com.lucianms.server.maps.MapleMap;
 import com.lucianms.server.maps.SavedLocationType;
@@ -77,9 +78,12 @@ public class SOuterSpace extends SAutoEvent {
     public void run() {
         setOpen(true);
         for (MapleChannel channel : world.getChannels()) {
-            MapleMap eventMap = channel.getMap(MapId);
-            eventMap.killAllMonsters();
-            eventMap.clearDrops();
+            final int channelID = channel.getId();
+            final MapleMap eventMap = channel.getMap(MapId);
+            MapleMonster slime = eventMap.getMonsterById(MonsterId);
+            if (slime != null) {
+                eventMap.killMonster(slime, null, false);
+            }
 
             final int PPIndex = Randomizer.nextInt(PortalPositions.length);
             int[] ipos = PortalPositions[PPIndex];
@@ -94,19 +98,24 @@ public class SOuterSpace extends SAutoEvent {
                             timeoutTask.cancel();
                             timeoutTask = null;
                         }
-                        finished[channel.getId() - 1] = true;
+                        finished[channelID - 1] = true;
                         if (monster.getController() != null) {
                             // damaged -- because this is also invoked by MapleMap#killAllMonsters
-                            channel.broadcastPacket(MaplePacketCreator.serverNotice(0, "The Space Slime has been defeated!"));
+                            channel.broadcastPacket(MaplePacketCreator.serverNotice(0, "The channel " + channelID + " Space Slime has been defeated!"));
                         }
                     }
                 };
-                start = System.currentTimeMillis();
+                finished[channelID - 1] = false;
+
+                MapleMonsterStats stats = new MapleMonsterStats(monster.getStats());
+                stats.setRemoveAfter(0);
+                monster.setOverrideStats(stats);
                 monster.getListeners().add(DeathListener);
-                finished[channel.getId() - 1] = false;
+
                 eventMap.spawnMonsterOnGroudBelow(monster, pos);
+                start = System.currentTimeMillis();
                 channel.broadcastPacket(MaplePacketCreator.serverNotice(0, "The Space Slime has spawned in the Outer Space, Planet Lucian"));
-                LOGGER.info("spawned at {} in channel {}", Arrays.toString(ipos), channel.getId());
+                LOGGER.info("spawned at {} in channel {}", Arrays.toString(ipos), channelID);
 
                 timeoutTask = TaskExecutor.createTask(new Runnable() {
                     @Override

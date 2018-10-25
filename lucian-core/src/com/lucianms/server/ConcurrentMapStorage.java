@@ -4,6 +4,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.function.Predicate;
 
 /**
@@ -101,6 +102,15 @@ public final class ConcurrentMapStorage<K, V> {
             return storage.isEmpty();
         } finally {
             rLock.unlock();
+        }
+    }
+
+    public V computeIfAbsent(K key, Function<? super K, ? extends V> mappingFunction) {
+        wLock.lock();
+        try {
+            return storage.computeIfAbsent(key, mappingFunction);
+        } finally {
+            wLock.unlock();
         }
     }
 }

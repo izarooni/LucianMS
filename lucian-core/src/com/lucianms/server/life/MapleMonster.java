@@ -185,6 +185,9 @@ public class MapleMonster extends AbstractLoadedMapleLife {
     }
 
     public MapleMonsterStats getStats() {
+        if (overrideStats != null) {
+            return overrideStats;
+        }
         return stats;
     }
 
