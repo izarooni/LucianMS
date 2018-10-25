@@ -9,6 +9,8 @@ import com.lucianms.command.CommandWorker;
 import com.lucianms.constants.ItemConstants;
 import com.lucianms.constants.ServerConstants;
 import com.lucianms.helpers.JailManager;
+import com.lucianms.io.scripting.npc.NPCScriptManager;
+import com.lucianms.server.ConcurrentMapStorage;
 import com.lucianms.server.MapleInventoryManipulator;
 import com.lucianms.server.MapleItemInformationProvider;
 import com.lucianms.server.channel.MapleChannel;
@@ -98,9 +100,12 @@ public class GameMasterCommands {
             commands.add("!sp <amount> - Give yourself or another player SP");
             commands.add("!setall <number> [username] - Set all stats for yourself or a player");
             commands.add("!gender <username> <male/female/uni> - Change the gender of a specified player");
+            commands.add(("!stalker - Go through any player inventory"));
             commands.sort(String::compareTo);
             commands.forEach(player::dropMessage);
             commands.clear();
+        } else if (command.equals("stalker")) {
+            NPCScriptManager.start(client, 10200, "t_stalker");
         } else if (command.equals("dc")) {
             if (args.length() == 1) {
                 String username = args.get(0);
@@ -133,10 +138,17 @@ public class GameMasterCommands {
                         if (args.length() == 1 && command.equals("warp", "wh", "whx")) { // !<warp_cmd> <username>
                             MapleCharacter warpie = (command.equals("warp") ? player : target); // person to warp
                             MapleCharacter warper = (command.equals("warp") ? target : player); // destination
-                            if (exact || command.equals("warp")) {
-                                warpie.changeMap(warper.getMap(), warper.getPosition());
+
+                            if (target.getClient().getChannel() != client.getChannel()) {
+                                warpie.setMap(warper.getMap());
+                                warpie.setPosition(warper.getPosition().getLocation());
+                                client.changeChannel(target.getClient().getChannel());
                             } else {
-                                warpie.changeMap(warper.getMap());
+                                if (exact || command.equals("warp")) {
+                                    warpie.changeMap(warper.getMap(), warper.getPosition());
+                                } else {
+                                    warpie.changeMap(warper.getMap());
+                                }
                             }
                         } else if (args.length() == 2) { // !<warp_cmd> <username> <map_ID>
                             Integer mapId = args.parseNumber(1, int.class);
@@ -158,9 +170,7 @@ public class GameMasterCommands {
                                 return;
                             }
                         }
-                        if (target.getClient().getChannel() != client.getChannel()) {
-                            client.changeChannel(target.getClient().getChannel());
-                        }
+
                     } else if (command.equals("wm", "wmx")) {
                         MapleMap map = null;
                         if (args.length() == 1) { // !<warp_cmd> <map_ID>
@@ -235,17 +245,30 @@ public class GameMasterCommands {
             } else {
                 player.dropMessage(5, "You must specify a time");
             }
+        } else if (command.equals("mutemap", "mutem", "unmutem", "unmutemap")) {
+            boolean mute = command.equals("mutemap", "mutem");
+            String muteText = (mute ? "muted" : "unmuted");
+            for (MapleCharacter players : player.getMap().getCharacters()) {
+                if (!players.isGM() || player.isDebug()) {
+                    players.setMuted(mute);
+                    players.sendMessage(5, "You have been {}", muteText);
+                }
+            }
+            player.sendMessage(5, "The map has been {}", (mute ? "muted" : "unmuted"));
         } else if (command.equals("mute", "unmute")) {
-            if (args.length() == 1) {
+            if (args.length() > 0) {
                 boolean mute = command.equals("mute");
-                String username = args.get(0);
-                MapleCharacter target = ch.getPlayerStorage().find(p -> p.getName().equalsIgnoreCase(username));
-                if (target != null) {
-                    target.setMuted(mute);
-                    player.dropMessage(6, String.format("'%s' has been %s", username, mute ? "muted" : "unmuted"));
-                    target.dropMessage(6, String.format("you have been %s", mute ? "muted" : "unmuted"));
-                } else {
-                    player.dropMessage(5, String.format("Unable to find any player named '%s'", username));
+                String muteText = (mute ? "muted" : "unmuted");
+                for (int i = 0; i < args.length(); i++) {
+                    final String username = args.get(i);
+                    MapleCharacter target = ch.getPlayerStorage().find(p -> p.getName().equalsIgnoreCase(username));
+                    if (target != null) {
+                        target.setMuted(mute);
+                        player.sendMessage(6, "'{}' has been {}", target.getName(), muteText);
+                        target.sendMessage(6, "You have been {}", muteText);
+                    } else {
+                        player.dropMessage(5, String.format("Unable to find any player named '%s'", username));
+                    }
                 }
             } else {
                 player.dropMessage(5, "you must specify a username");
@@ -665,20 +688,22 @@ public class GameMasterCommands {
                 player.dropMessage(5, "Syntax: !debuff <usernames/map>");
             }
         } else if (command.equals("online")) {
+            StringBuilder sb = new StringBuilder();
             for (MapleChannel channel : client.getWorldServer().getChannels()) {
-                int count = 0;
-                StringBuilder sb = new StringBuilder();
-                for (MapleCharacter players : channel.getPlayerStorage().values()) {
+                ConcurrentMapStorage<Integer, MapleCharacter> storage = channel.getPlayerStorage();
+                sb.append("#echannel ").append(channel.getId()).append(" - ").append(storage.size()).append(" players#n\r\n");
+                for (MapleCharacter players : storage.values()) {
                     if (!players.isGM() || players.getHidingLevel() <= player.getHidingLevel()) {
-                        count++;
                         sb.append(players.getName()).append(", ");
                     }
                 }
                 if (sb.length() > 2) {
                     sb.setLength(sb.length() - 2);
                 }
-                player.dropMessage(String.format("Channel %d (%d): %s", channel.getId(), count, sb.toString()));
+                sb.append("\r\n");
             }
+            client.announce(MaplePacketCreator.getNPCTalk(10200, (byte) 0, sb.toString(), "00 00", (byte) 0));
+            sb.setLength(0);
         } else if (command.equals("!")) {
             if (args.length() > 0) {
                 String message = args.concatFrom(0);
@@ -725,6 +750,7 @@ public class GameMasterCommands {
                     usernames.forEach(s -> sb.append(s).append(", "));
                     sb.setLength(sb.length() - 2);
                     player.dropMessage(sb.toString());
+                    sb.setLength(0);
                 } catch (SQLException e) {
                     e.printStackTrace();
                     player.dropMessage(5, "An error occurred");
@@ -906,6 +932,7 @@ public class GameMasterCommands {
                     sb.append("\r\n").append(type.ordinal()).append(" - ").append(type.name().toLowerCase());
                 }
                 player.dropMessage(1, sb.toString());
+                sb.setLength(0);
             }
         } else if (command.equals("ap", "sp")) {
             boolean ap = command.equals("ap");

@@ -87,6 +87,7 @@ public class DisconnectRequest extends DiscordRequest {
             MapleCharacter player = world.findPlayer(p -> p.getName().equalsIgnoreCase(username));
             if (player != null) {
                 online = true;
+                world.removePlayer(player);
                 player.getClient().disconnect(false, false);
             }
         }

@@ -49,6 +49,7 @@ import com.lucianms.features.emergency.EmergencyAttack;
 import com.lucianms.features.emergency.EmergencyDuel;
 import com.lucianms.features.summoning.BlackMageSummoner;
 import com.lucianms.features.summoning.ShenronSummoner;
+import com.lucianms.io.scripting.event.EventInstanceManager;
 import com.lucianms.io.scripting.map.MapScriptManager;
 import com.lucianms.scheduler.Task;
 import com.lucianms.scheduler.TaskExecutor;
@@ -120,6 +121,7 @@ public class MapleMap {
     private boolean isOxQuiz = false;
     private boolean summonState = true; // All maps should have this true at the beginning
     private boolean respawnEnabled = true;
+    private boolean instanced = false;
     private MapleMapEffect mapEffect = null;
     private MapleOxQuiz ox;
     private Task mapMonitor = null;
@@ -889,8 +891,8 @@ public class MapleMap {
         }
     }
 
-    public ArrayList<MapleMapObject> getMapObjects() {
-        return new ArrayList<>(mapobjects.values());
+    public Collection<MapleMapObject> getMapObjects() {
+        return mapobjects.values();
     }
 
     public ArrayList<MapleCharacter> getCharacters() {
@@ -1426,9 +1428,11 @@ public class MapleMap {
         }
         //endregion
 
+        EventInstanceManager eim = chr.getEventInstance();
+
         if (mapid == 103040400) {
-            if (chr.getEventInstance() != null) {
-                chr.getEventInstance().movePlayer(chr, this);
+            if (eim != null) {
+                eim.movePlayer(chr, this);
             }
         } else if (MapleMiniDungeon.isDungeonMap(mapid)) {
             final MapleMiniDungeon dungeon = MapleMiniDungeon.getDungeon(mapid);
@@ -1515,8 +1519,8 @@ public class MapleMap {
         if (mapid == 914000200 || mapid == 914000210 || mapid == 914000220) {
             chr.getClient().announce(MaplePacketCreator.aranGodlyStats());
         }
-        if (chr.getEventInstance() != null && chr.getEventInstance().isTimerStarted()) {
-            chr.getClient().announce(MaplePacketCreator.getClock((int) (chr.getEventInstance().getTimeLeft() / 1000)));
+        if (eim != null && eim.isTimerStarted()) {
+            chr.getClient().announce(MaplePacketCreator.getClock((int) (eim.getTimeLeft() / 1000)));
         }
         if (chr.getFitness() != null && chr.getFitness().isTimerStarted()) {
             chr.getClient().announce(MaplePacketCreator.getClock((int) (chr.getFitness().getTimeLeft() / 1000)));
@@ -1571,7 +1575,7 @@ public class MapleMap {
                         || ((System.currentTimeMillis() > nextEmergency)
                         && Randomizer.nextInt(25) == 0
                         && chr.getGenericEvents().isEmpty()
-                        && chr.getEventInstance() == null
+                        && eim == null
                         && chr.getArcade() == null)) {
                     Emergency event = Randomizer.nextBoolean() && chr.getLevel() >= 30 ? new EmergencyDuel(chr) : new EmergencyAttack(chr);
                     TaskExecutor.createTask(new Runnable() {
@@ -2120,6 +2124,14 @@ public class MapleMap {
 
     public void setRespawnEnabled(boolean respawnEnabled) {
         this.respawnEnabled = respawnEnabled;
+    }
+
+    public boolean isInstanced() {
+        return instanced;
+    }
+
+    public void setInstanced(boolean instanced) {
+        this.instanced = instanced;
     }
 
     public String getOnUserEnter() {

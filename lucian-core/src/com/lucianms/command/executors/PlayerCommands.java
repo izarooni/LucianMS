@@ -13,6 +13,7 @@ import com.lucianms.features.PlayerBattle;
 import com.lucianms.features.auto.GAutoEvent;
 import com.lucianms.features.auto.GAutoEventManager;
 import com.lucianms.io.scripting.npc.NPCScriptManager;
+import com.lucianms.server.ConcurrentMapStorage;
 import com.lucianms.server.Server;
 import com.lucianms.server.channel.MapleChannel;
 import com.lucianms.server.maps.MapleMap;
@@ -259,6 +260,9 @@ public class PlayerCommands {
                 if (!playerEvent.isOpen()) {
                     player.sendMessage(5, "The event is no longer open");
                     return;
+                } else if (client.getChannel() != playerEvent.getChannel().getId()) {
+                    player.sendMessage(5, "The event is being hosted ein channel {}", playerEvent.getChannel().getId());
+                    return;
                 }
                 if (join) {
                     if (player.getMap() != playerEvent.getMap() && !playerEvent.participants.containsKey(player.getId())) {
@@ -328,19 +332,20 @@ public class PlayerCommands {
             player.dropMessage("Main Website: http://lucianms.com");
             player.dropMessage("Voting resets every 24th hours!");
             player.dropMessage("Have Fun and consider to donate for more customs!");
-        } else if (command.equals("update")) {
-            player.dropMessage("Last Server WZ revision: October 13, 2018");
-            player.dropMessage("New customs added every 2nd month!");
         } else if (command.equals("online")) {
+            StringBuilder sb = new StringBuilder();
             for (MapleChannel channel : client.getWorldServer().getChannels()) {
-                StringBuilder sb = new StringBuilder();
-                for (MapleCharacter players : channel.getPlayerStorage().values()) {
+                ConcurrentMapStorage<Integer, MapleCharacter> storage = channel.getPlayerStorage();
+                sb.append("#echannel ").append(channel.getId()).append(" - ").append(storage.size()).append(" players#n\r\n");
+                for (MapleCharacter players : storage.values()) {
                     if (!players.isGM()) {
                         sb.append(players.getName()).append(" ");
                     }
                 }
-                player.dropMessage(6, String.format("Channel(%d): %s", channel.getId(), sb.toString()));
+                sb.append("\r\n");
             }
+            client.announce(MaplePacketCreator.getNPCTalk(10200, (byte) 0, sb.toString(), "00 00", (byte) 0));
+            sb.setLength(0);
         } else if (command.equals("go")) {
             WeakHashMap<String, Integer> maps = new WeakHashMap<>();
             // @formatter:off

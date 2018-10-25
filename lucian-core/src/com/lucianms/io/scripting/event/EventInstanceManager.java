@@ -3,7 +3,6 @@ package com.lucianms.io.scripting.event;
 import com.lucianms.client.MapleCharacter;
 import com.lucianms.scheduler.Task;
 import com.lucianms.scheduler.TaskExecutor;
-import com.lucianms.server.ConcurrentMapStorage;
 import com.lucianms.server.FieldBuilder;
 import com.lucianms.server.expeditions.MapleExpedition;
 import com.lucianms.server.life.MapleMonster;
@@ -12,6 +11,7 @@ import com.lucianms.server.world.MapleParty;
 import com.lucianms.server.world.MaplePartyCharacter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import tools.MaplePacketCreator;
 
 import javax.script.ScriptException;
 import java.sql.Connection;
@@ -31,8 +31,8 @@ public class EventInstanceManager {
     private final String name;
     private final Properties props = new Properties();
 
-    private ConcurrentMapStorage<Integer, MapleCharacter> concurrentMapStorage = new ConcurrentMapStorage<>();
     private HashMap<Integer, MapleMap> maps = new HashMap<>(15);
+    private HashMap<Integer, MapleCharacter> players = new HashMap<>();
     private HashMap<Integer, MapleMonster> monsters = new HashMap<>(); // <ObjectID, Monster>
     private Map<Integer, Integer> killCount = new HashMap<>(); // <PlayerID, Count>
     private ArrayList<Integer> tasks = new ArrayList<>(); // <TaskID>
@@ -46,8 +46,27 @@ public class EventInstanceManager {
         this.name = name;
     }
 
+    public Object invokeFunction(String function, Object... args) {
+        try {
+            return eventManager.getInvocable().invokeFunction(function, args);
+        } catch (NoSuchMethodException e) {
+            LOGGER.warn("Missing function '{}' in event '{}'", function, eventManager.getScriptName());
+        } catch (ScriptException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
     public EventManager getEventManager() {
         return eventManager;
+    }
+
+    public void broadcastPacket(byte[] packet) {
+        getPlayers().forEach(p -> p.announce(packet));
+    }
+
+    public void broadcastMessage(byte type, String content) {
+        broadcastPacket(MaplePacketCreator.serverNotice(type, content));
     }
 
     public Task schedule(final String function, long delay) {
@@ -61,13 +80,8 @@ public class EventInstanceManager {
             LOGGER.warn("Unable to register null player into event instance '{}'", getName());
             return;
         }
-        try {
-            concurrentMapStorage.put(player.getId(), player);
-            player.setEventInstance(this);
-            eventManager.getInvocable().invokeFunction("playerEntry", this, player);
-        } catch (ScriptException | NoSuchMethodException e) {
-            LOGGER.error("Unable to register player '{}' into event instance '{}'", player.getName(), getName(), e);
-        }
+        addPlayer(player);
+        invokeFunction("playerEntry", this, player);
     }
 
     public void registerParty(MapleParty party, MapleMap map) {
@@ -82,17 +96,26 @@ public class EventInstanceManager {
         registerPlayer(exped.getLeader());
     }
 
+    public void addPlayer(MapleCharacter player) {
+        player.setEventInstance(this);
+        players.put(player.getId(), player);
+    }
+
     public void unregisterPlayer(MapleCharacter player) {
         player.setEventInstance(null);
-        concurrentMapStorage.remove(player.getId());
+        players.remove(player.getId());
+    }
+
+    public boolean containsPlayer(int playerID) {
+        return players.get(playerID) != null;
     }
 
     public int getPlayerCount() {
-        return concurrentMapStorage.size();
+        return players.size();
     }
 
     public Collection<MapleCharacter> getPlayers() {
-        return concurrentMapStorage.values();
+        return players.values();
     }
 
     public void registerMonster(MapleMonster monster) {
@@ -103,58 +126,32 @@ public class EventInstanceManager {
     }
 
     public boolean movePlayer(MapleCharacter player, MapleMap map) {
-        try {
-            return (boolean) eventManager.getInvocable().invokeFunction("moveMap", this, player, map);
-        } catch (ScriptException | NoSuchMethodException e) {
-            LOGGER.error("Unable to invoke function 'moveMap' with player '{}' in event instance '{}'", player.getName(), getName(), e);
-        }
-        return true;
+        return (boolean) invokeFunction("moveMap", this, player, map);
     }
 
     public void monsterKilled(MapleMonster monster) {
         monsters.remove(monster.getObjectId());
         if (monsters.isEmpty()) {
-            try {
-                eventManager.getInvocable().invokeFunction("allMonstersDead", this);
-            } catch (ScriptException | NoSuchMethodException e) {
-                LOGGER.error("Unable to invoke function 'allMonstersDead' with monster '{}' in event instance '{}'", monster.getId(), getName(), e);
-            }
+            invokeFunction("allMonstersDead", this);
         }
     }
 
     public void playerKilled(MapleCharacter player) {
-        try {
-            eventManager.getInvocable().invokeFunction("playerDead", this, player);
-        } catch (ScriptException | NoSuchMethodException e) {
-            LOGGER.error("Unable to invoke function 'playerDead' with player '{}' in event instance '{}'", player.getName(), getName(), e);
-        }
+        invokeFunction("playerDead", this, player);
     }
 
     public boolean revivePlayer(MapleCharacter player) {
-        try {
-            return (boolean) eventManager.getInvocable().invokeFunction("playerRevive", this, player);
-        } catch (ScriptException | NoSuchMethodException e) {
-            LOGGER.error("Unable to invoke function 'playerRevive' with player '{}' in event instance '{}'", player.getName(), getName(), e);
-        }
-        return true;
+        return (boolean) invokeFunction("playerRevive", this, player);
     }
 
     public void playerDisconnected(MapleCharacter player) {
-        try {
-            eventManager.getInvocable().invokeFunction("playerDisconnected", this, player);
-        } catch (ScriptException | NoSuchMethodException e) {
-            LOGGER.error("Unable to invoke function 'playerDisconnected' with player '{}' in event instance '{}'", player.getName(), getName(), e);
-        }
+        invokeFunction("playerDisconnected", this, player);
     }
 
     public void monsterKilled(MapleCharacter player, MapleMonster monster) {
-        try {
-            Integer kc = killCount.getOrDefault(player.getId(), 0);
-            kc += (int) eventManager.getInvocable().invokeFunction("monsterValue", this, player, monster);
-            killCount.put(player.getId(), kc);
-        } catch (ScriptException | NoSuchMethodException e) {
-            LOGGER.error("Unable to invoke function 'monsterValue' with player '{}' and monster '{}' in event instance '{}'", player.getName(), monster.getId(), getName(), e);
-        }
+        Integer kc = killCount.getOrDefault(player.getId(), 0);
+        kc += (int) invokeFunction("monsterValue", this, player, monster);
+        killCount.put(player.getId(), kc);
     }
 
     public int getKillCount(MapleCharacter player) {
@@ -162,14 +159,9 @@ public class EventInstanceManager {
     }
 
     public void dispose() {
-        try {
-            eventManager.getInvocable().invokeFunction("dispose", this);
-        } catch (ScriptException | NoSuchMethodException e) {
-            LOGGER.error("Unable to invoke function 'dispose' in event instance '{}'", getName(), e);
-        }
+        invokeFunction("dispose", this);
 
-        concurrentMapStorage.values().forEach(this::removePlayer);
-        concurrentMapStorage.clear();
+        players.clear();
 
         if (monsters != null) monsters.clear();
         monsters = null;
@@ -184,6 +176,7 @@ public class EventInstanceManager {
         }
 
         maps.clear();
+        props.clear();
     }
 
     public String getName() {
@@ -212,6 +205,7 @@ public class EventInstanceManager {
         if (eventManager.getProperty("shuffleReactors") != null && eventManager.getProperty("shuffleReactors").equals("true")) {
             map.shuffleReactors();
         }
+        map.setInstanced(true);
         return map;
     }
 
@@ -220,6 +214,7 @@ public class EventInstanceManager {
         if (eventManager.getProperty("shuffleReactors") != null && eventManager.getProperty("shuffleReactors").equals("true")) {
             map.shuffleReactors();
         }
+        map.setInstanced(true);
         return map;
     }
 
@@ -236,36 +231,20 @@ public class EventInstanceManager {
     }
 
     public void leftParty(MapleCharacter player) {
-        try {
-            eventManager.getInvocable().invokeFunction("leftParty", this, player);
-        } catch (ScriptException | NoSuchMethodException e) {
-            LOGGER.error("Unable to invoke function 'leftParty' with player '{}' in event instance '{}'", player.getName(), getName(), e);
-        }
+        invokeFunction("leftParty", this, player);
     }
 
     public void disbandParty() {
-        try {
-            eventManager.getInvocable().invokeFunction("disbandParty", this);
-        } catch (ScriptException | NoSuchMethodException e) {
-            LOGGER.error("Unable to invoke function 'disbandParty' in event instance '{}'", getName(), e);
-        }
+        invokeFunction("disbandParty", this);
     }
 
     public void finishPQ() {
-        try {
-            eventManager.getInvocable().invokeFunction("clearPQ", this);
-        } catch (ScriptException | NoSuchMethodException e) {
-            LOGGER.error("Unable to invoke function 'clearPQ' in event instance '{}'", getName(), e);
-        }
+        invokeFunction("clearPQ", this);
     }
 
     public void removePlayer(MapleCharacter player) {
-        try {
-            unregisterPlayer(player);
-            eventManager.getInvocable().invokeFunction("playerExit", this, player);
-        } catch (ScriptException | NoSuchMethodException e) {
-            LOGGER.error("Unable to invoke function 'playerExit' with player '{}' in event instance '{}'", player.getName(), getName(), e);
-        }
+        unregisterPlayer(player);
+        invokeFunction("playerExit", this, player);
     }
 
     public boolean isLeader(MapleCharacter chr) {

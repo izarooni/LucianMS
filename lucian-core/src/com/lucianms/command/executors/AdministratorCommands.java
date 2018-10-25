@@ -7,8 +7,8 @@ import com.lucianms.cquest.CQuestBuilder;
 import com.lucianms.events.PlayerRingActionEvent;
 import com.lucianms.features.auto.GAutoEvent;
 import com.lucianms.features.auto.GAutoEventManager;
+import com.lucianms.features.scheduled.SAutoEvent;
 import com.lucianms.io.scripting.Achievements;
-import com.lucianms.io.scripting.event.EventInstanceManager;
 import com.lucianms.io.scripting.event.EventManager;
 import com.lucianms.io.scripting.map.MapScriptManager;
 import com.lucianms.io.scripting.portal.PortalScriptManager;
@@ -26,7 +26,6 @@ import com.lucianms.server.maps.MapleMapObject;
 import com.lucianms.server.maps.MapleReactor;
 import com.lucianms.server.maps.PlayerNPC;
 import com.lucianms.server.world.MapleWorld;
-import tools.MaplePacketCreator;
 
 import javax.script.ScriptException;
 import java.awt.*;
@@ -63,6 +62,15 @@ public class AdministratorCommands {
                 commands.clear();
             }
         } else if (command.equals("test")) {
+            if (args.length() == 1) {
+                SAutoEvent sAutoEvent = world.getScheduledEvents().get(args.get(0));
+                if (sAutoEvent != null) {
+                    sAutoEvent.run();
+                } else {
+                    player.sendMessage(5, "Unable to find any schedule auto event '{}'", args.get(0));
+                }
+            }
+        } else if (command.equals("sethp")) {
             if (args.length() == 1) {
                 Integer hp = args.parseNumber(0, int.class);
                 if (hp != null) {
@@ -232,20 +240,21 @@ public class AdministratorCommands {
                 for (MapleChannel channel : world.getChannels()) {
                     EventManager manager = channel.getEventScriptManager().getManager(scriptName);
                     if (manager == null) {
-                        player.dropMessage(5, "Unable to find any event named '" + scriptName + "'");
+                        player.sendMessage(5, "Unable to find any event named '{}'", scriptName);
                         return;
                     }
-                    manager.getInstances().forEach(EventInstanceManager::disbandParty);
+                    manager.cancel();
                     channel.getEventScriptManager().putManager(scriptName);
                     try {
                         EventManager em = channel.getEventScriptManager().getManager(scriptName);
                         try {
                             em.getInvocable().invokeFunction("init", (Object) null);
                         } catch (ScriptException | NoSuchMethodException e) {
-                            player.dropMessage("An error occurred");
                             e.printStackTrace();
+                            player.dropMessage("An error occurred");
                         }
                     } catch (RuntimeException e) {
+                        e.printStackTrace();
                         player.dropMessage("Unable to restart event due to an error");
                     }
                 }

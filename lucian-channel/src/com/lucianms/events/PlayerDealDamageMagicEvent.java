@@ -22,11 +22,12 @@
 package com.lucianms.events;
 
 import com.lucianms.client.*;
-import com.lucianms.nio.receive.MaplePacketReader;
+import com.lucianms.client.meta.Occupation;
 import com.lucianms.constants.skills.Bishop;
 import com.lucianms.constants.skills.Evan;
 import com.lucianms.constants.skills.FPArchMage;
 import com.lucianms.constants.skills.ILArchMage;
+import com.lucianms.nio.receive.MaplePacketReader;
 import com.lucianms.scheduler.TaskExecutor;
 import com.lucianms.server.MapleStatEffect;
 import com.lucianms.server.life.FakePlayer;
@@ -35,6 +36,22 @@ import tools.MaplePacketCreator;
 public class PlayerDealDamageMagicEvent extends AbstractDealDamageEvent {
 
     private AttackInfo attackInfo;
+
+    public PlayerDealDamageMagicEvent() {
+        onPost(new Runnable() {
+            @Override
+            public void run() {
+                MapleCharacter player = getClient().getPlayer();
+                Occupation occupation = player.getOccupation();
+                if (occupation != null && occupation.getType() == Occupation.Type.Undead
+                        && attackInfo != null && !attackInfo.allDamage.isEmpty()) {
+                    int gain = (int) (player.getMaxHp() * Math.random() * 0.07 + 0.03);
+                    player.addHP(gain);
+                    player.updateSingleStat(MapleStat.HP, player.getHp());
+                }
+            }
+        });
+    }
 
     @Override
     public void processInput(MaplePacketReader reader) {

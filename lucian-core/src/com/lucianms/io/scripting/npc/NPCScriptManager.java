@@ -3,15 +3,14 @@ package com.lucianms.io.scripting.npc;
 import com.lucianms.client.MapleCharacter;
 import com.lucianms.client.MapleClient;
 import com.lucianms.client.SpamTracker;
+import com.lucianms.constants.PlayerToggles;
 import com.lucianms.features.PlayerCreative;
 import com.lucianms.io.scripting.ScriptUtil;
-import com.lucianms.constants.PlayerToggles;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import tools.Pair;
 
 import javax.script.Invocable;
-import javax.script.ScriptException;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.concurrent.ConcurrentHashMap;
@@ -42,43 +41,30 @@ public class NPCScriptManager {
         if (spamTracker.testFor(1000)) {
             return;
         }
-
+        final String path = "npc/world" + client.getWorld() + "/" + (fileName == null ? npc : fileName) + ".js";
         try {
             if (storage.containsKey(client.getAccID())) {
                 dispose(client);
-                return;
             }
             NPCConversationManager cm = new NPCConversationManager(client, objectID, npc, fileName);
-            String path = "npc/world" + client.getWorld() + "/" + (fileName == null ? npc : fileName) + ".js";
             ArrayList<Pair<String, Object>> binds = new ArrayList<>();
             binds.add(new Pair<>("client", client));
             binds.add(new Pair<>("player", player));
             binds.add(new Pair<>("ch", client.getChannelServer()));
             binds.add(new Pair<>("cm", cm));
 
-            Invocable iv = null;
+            Invocable iv;
             try {
                 iv = ScriptUtil.eval(client, path, binds);
             } catch (FileNotFoundException e) {
-                cm.sendOk("Hey! I don't have a purpose right now\r\nThis is my ID: #b" + npc + "");
-            } catch (Exception e) {
-                String response = "An error occurred in this NPC";
-                if (fileName != null) {
-                    response += "\r\nName: " + fileName;
-                }
-                response += "\r\nNPC ID: " + npc;
-                player.dropMessage(1, response);
-                if (e instanceof ScriptException) {
-                    LOGGER.error("Unable to execute script '{}' npc '{}' using player '{}': {}", path, npc, player.getName(), e.getMessage());
-                } else {
-                    LOGGER.error("Unable to execute script '{}' npc '{}' using player '{}'", path, npc, player.getName(), e);
-                }
+                dispose(client);
+                return;
             }
-            boolean revoked = player.getToggles().checkProperty(PlayerToggles.CommandNPCAccess, false);
 
+            boolean revoked = player.getToggles().checkProperty(PlayerToggles.CommandNPCAccess, false);
             // allow talking to the PlayerCreative NPC
-            if(player.getGenericEvents().stream().anyMatch((g) -> g instanceof PlayerCreative)) {
-                if(npc == 9899958) revoked = false;
+            if (player.getGenericEvents().stream().anyMatch((g) -> g instanceof PlayerCreative)) {
+                if (npc == 9899958) revoked = false;
             }
 
             if (iv == null || revoked) {
@@ -91,28 +77,24 @@ public class NPCScriptManager {
             spamTracker.record();
             storage.put(client.getAccID(), new Pair<>(iv, cm));
             try {
+                iv.invokeFunction("start");
+            } catch (NoSuchMethodException e1) {
                 try {
-                    iv.invokeFunction("start");
-                } catch (NoSuchMethodException e1) {
-                    try {
-                        iv.invokeFunction("action", 1, 0, -1);
-                    } catch (NoSuchMethodException e3) {
-                        LOGGER.warn("No initializer function for script '{}' npc '{}' using player '{}'", fileName, npc, player.getName());
-                        dispose(client);
-                    }
+                    iv.invokeFunction("action", 1, 0, -1);
+                } catch (NoSuchMethodException e3) {
+                    LOGGER.warn("No initializer function for script '{}' npc '{}' using player '{}'", fileName, npc, player.getName());
+                    dispose(client);
                 }
-            } catch (ScriptException e) {
-                String response = "An error occurred in this NPC";
-                if (fileName != null) {
-                    response += "\r\nName: " + fileName;
-                }
-                response += "\r\nNPC ID: " + npc;
-                player.dropMessage(1, response);
-                dispose(client);
-                LOGGER.error("Unable to invoke initializer function for script '{}' npc '{}' using player '{}'", fileName, npc, player, e);
             }
         } catch (Exception e) {
             e.printStackTrace();
+            String response = "An error occurred in this NPC";
+            if (fileName != null) {
+                response += "\r\nName: " + fileName;
+            }
+            response += "\r\nNPC ID: " + npc;
+            player.dropMessage(1, response);
+            LOGGER.error("Unable to execute script '{}' npc '{}' using player '{}'", path, npc, player.getName(), e.getMessage());
             dispose(client);
         }
     }

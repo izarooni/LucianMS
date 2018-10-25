@@ -88,21 +88,6 @@ public abstract class AbstractDealDamageEvent extends PacketEvent {
         }
     }
 
-    AbstractDealDamageEvent() {
-        onPost(new Runnable() {
-            @Override
-            public void run() {
-                MapleCharacter player = getClient().getPlayer();
-                Occupation occupation = player.getOccupation();
-                if (occupation != null && occupation.getType() == Occupation.Type.Undead) {
-                    int gain = (int) (player.getMaxHp() * Math.random() * 0.07 + 0.03);
-                    player.addHP(gain);
-                    player.updateSingleStat(MapleStat.HP, player.getHp());
-                }
-            }
-        });
-    }
-
     synchronized void applyAttack(MapleCharacter player, AttackInfo attack, int attackCount) {
         Skill theSkill = null;
         MapleStatEffect attackEffect = null;

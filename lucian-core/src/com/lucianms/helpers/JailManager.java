@@ -47,8 +47,8 @@ public class JailManager {
     }
 
     public static boolean isJailed(int playerId) {
-        try (Connection con = Server.getConnection()
-             ; PreparedStatement ps = con.prepareStatement("select * from jails where playerid = ?")) {
+        try (Connection con = Server.getConnection();
+             PreparedStatement ps = con.prepareStatement("select * from jails where playerid = ?")) {
             ps.setInt(1, playerId);
             try (ResultSet rs = ps.executeQuery()) {
                 if (rs.next()) {

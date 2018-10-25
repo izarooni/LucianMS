@@ -6,7 +6,7 @@ let ID = 0
 function playerEntry(eim, player) {
 }
 
-function moveMap(eim, player) {
+function moveMap(eim, player, map) {
 }
 
 function playerDead(eim, player) {

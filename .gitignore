@@ -14,7 +14,6 @@ MANIFEST.MF
 
 #Server files
 bin
-wz
 world.ini
 server-config.json
 whitelist.json

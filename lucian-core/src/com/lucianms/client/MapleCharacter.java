@@ -618,7 +618,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
                                 }
                                 if (ring.getItemId() >= 1112803 && ring.getItemId() <= 1112809) {
                                     ret.setMarriageRing(ring);
-                                } else if (ring.getItemId() > 1112015) {
+                                } else if (ring.getItemId() > 1112015 || ring.getItemId() == 1049000) {
                                     ret.addFriendshipRing(ring);
                                 } else {
                                     ret.addCrushRing(ring);
@@ -634,12 +634,19 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
         if (channelserver) {
             ret.map = client.getChannelServer().getMap(ret.mapid);
             if (ret.map == null) {
+                LOGGER.info("'{}' logged-in to an invalid map {}", ret.mapid);
                 ret.map = client.getChannelServer().getMap(ServerConstants.HOME_MAP);
                 ret.dropMessage(5, "You were returned to the home map due to the map being obstructed");
             }
             MaplePortal portal = ret.map.getPortal(ret.initialSpawnPoint);
             if (portal == null) {
                 portal = ret.map.getPortal(0);
+                if (portal == null) {
+                    LOGGER.info("'{}' logged-in to a map with no portals");
+                    ret.map = client.getChannelServer().getMap(ServerConstants.HOME_MAP);
+                    portal = ret.map.getPortal(0);
+                    ret.dropMessage(5, "You were returned to the home map due to the map being obstructed");
+                }
                 ret.initialSpawnPoint = 0;
             }
             ret.setPosition(portal.getPosition());
@@ -1623,7 +1630,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
         changeMap(map_, map_.getPortal(portal));
     }
 
-    private void changeMapInternal(final MapleMap to, final Point pos, final byte[] warpPacket) {
+    private void changeMapInternal(MapleMap to, final Point pos, final byte[] warpPacket) {
         if (getTrade() != null) {
             MapleTrade.cancelTrade(this);
         }
@@ -1633,7 +1640,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
         }
         ManualPlayerEvent playerEvent = client.getWorldServer().getPlayerEvent();
         if (playerEvent != null) {
-            if (to != playerEvent.getMap() && getMap() == playerEvent.getMap()) {
+            if (to != playerEvent.getMap()) {
                 playerEvent.participants.remove(getId());
             }
         }
@@ -3868,7 +3875,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
             int channel = client.getChannel();
             for (MaplePartyCharacter partychar : party.getMembers()) {
                 if (partychar.getMapId() == getMapId() && partychar.getChannel() == channel) {
-                    MapleCharacter other = Server.getWorld(world).getChannel(channel).getPlayerStorage().find(p->p.getName().equalsIgnoreCase(partychar.getName()));
+                    MapleCharacter other = Server.getWorld(world).getChannel(channel).getPlayerStorage().find(p -> p.getName().equalsIgnoreCase(partychar.getName()));
                     if (other != null) {
                         client.announce(MaplePacketCreator.updatePartyMemberHP(other.getId(), other.getHp(), other.getCurrentMaxHp()));
                     }

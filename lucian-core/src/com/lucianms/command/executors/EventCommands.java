@@ -435,8 +435,10 @@ public class EventCommands {
                         skill = MobSkillFactory.getMobSkill(128, 2);
                     } else if (direction.equalsIgnoreCase("left")) {
                         skill = MobSkillFactory.getMobSkill(128, 1);
+                    } else if (direction.equalsIgnoreCase("down")) {
+                        skill = MobSkillFactory.getMobSkill(128, 11);
                     } else {
-                        player.sendMessage(5, "The only seduces available are 'left' and 'right'");
+                        player.sendMessage(5, "The only seduces available are 'left', 'right' and 'down'");
                         return;
                     }
                 } else {
@@ -471,38 +473,36 @@ public class EventCommands {
             }
             return;
         } else if (args.length() > 0) {
-            for (int i = 0; i < args.length(); i++) {
-                String s = args.get(i);
-                if (s.startsWith("-")) {
-                    Integer number = args.parseNumber(0, int.class);
-                    if (number == null) {
-                        player.sendMessage(5, args.getFirstError());
-                        return;
-                    }
-                    skill.setDuration(number * 1000);
-                } else {
-                    MapleCharacter target = player.getMap().getCharacterByName(s);
-                    if (target != null) {
-                        if (!target.isGM() || target.isDebug()) {
-                            if (skill.getSkillId() == 128) { // seduce
-                                target.setChair(0);
-                                target.announce(MaplePacketCreator.cancelChair(-1));
-                                target.getMap().broadcastMessage(target, MaplePacketCreator.showChair(target.getId(), 0), false);
-                            }
 
-                            target.giveDebuff(disease, skill);
-                        } else {
-                            player.sendMessage(5, "You cannot debuff the player '{}'", s);
+            Integer duration = args.parseNumber(0, int.class);
+            if (duration == null) {
+                player.sendMessage(5, args.getFirstError() + " - please specify a duration for the debuff");
+                return;
+            }
+            skill.setDuration(duration * 1000);
+
+            for (int i = (disease == MapleDisease.SEDUCE ? 2 : 1); i < args.length(); i++) {
+                String s = args.get(i);
+                MapleCharacter target = player.getMap().getCharacterByName(s);
+                if (target != null) {
+                    if (!target.isGM() || target.isDebug()) {
+                        if (skill.getSkillId() == 128) { // seduce
+                            target.setChair(0);
+                            target.announce(MaplePacketCreator.cancelChair(-1));
+                            target.getMap().broadcastMessage(target, MaplePacketCreator.showChair(target.getId(), 0), false);
                         }
+
+                        target.giveDebuff(disease, skill);
                     } else {
-                        player.sendMessage(5, "Unable to find any player named '{}'", s);
+                        player.sendMessage(5, "You cannot debuff the player '{}'", s);
                     }
+                } else {
+                    player.sendMessage(5, "Unable to find any player named '{}'", s);
                 }
             }
             return;
         }
-        player.sendMessage(5, "syntax: !{} [-duration (seconds)] <usernames...>", command.getName());
-        player.sendMessage(5, "when specifying length, duration must be prefixed with a dash to prevent conflict with players using numbers for a username");
-        player.sendMessage(5, "example: '!{} -3 {}' - to stun for 3 seconds", command.getName(), player.getName());
+        player.sendMessage(5, "syntax: !{} [duration (seconds)] <usernames...>", command.getName());
+        player.sendMessage(5, "example: '!{} 3 {}' - to stun for 3 seconds", command.getName(), player.getName());
     }
 }

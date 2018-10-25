@@ -27,7 +27,6 @@ function enter(pi) {
 		var targetPortal = target.getPortal("sp");
 		// only let people through if the eim is ready
 		var avail = eim.getProperty("head1");
-		print(eim.getProperties());
 		if (avail != "yes") {
 			// do nothing; send message to player
 			pi.getPlayer().dropMessage(6, "Horntail\'s Seal is Blocking this Door.");

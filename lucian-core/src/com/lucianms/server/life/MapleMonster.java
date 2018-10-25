@@ -185,6 +185,9 @@ public class MapleMonster extends AbstractLoadedMapleLife {
     }
 
     public MapleMonsterStats getStats() {
+        if (overrideStats != null) {
+            return overrideStats;
+        }
         return stats;
     }
 
@@ -305,7 +308,8 @@ public class MapleMonster extends AbstractLoadedMapleLife {
                 if (mostDamage) {
                     xp += (exp * 0.20f);
                 }
-                giveExpToCharacter(mc, xp * Math.max(4, members.size()), isKiller, leechCount);
+                int memberSize = members.size();
+                giveExpToCharacter(mc, xp * Math.min(4, memberSize), isKiller, leechCount);
             }
         }
     }

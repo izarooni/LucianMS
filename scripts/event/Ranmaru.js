@@ -27,10 +27,7 @@ function playerEntry(eim, player) {
 }
 
 function moveMap(eim, player, map) {
-    let instanceMap = eim.getMapInstance(Fields.Battle);
-    print("match1: " + (player.getMap() == instanceMap));
-    print("match2: " + (map != instanceMap));
-    if (player.getMap() == instanceMap && map != instanceMap) {
+    if (!map.isInstanced()) {
         eim.removePlayer(player);
         return false;
     }

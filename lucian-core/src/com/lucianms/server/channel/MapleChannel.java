@@ -33,10 +33,10 @@ public final class MapleChannel {
     private static final Logger LOGGER = LoggerFactory.getLogger(MapleChannel.class);
 
     private MapleServerInboundHandler serverHandler;
-    private ConcurrentMapStorage<Integer, MapleCharacter> players = new ConcurrentMapStorage<>();
     private int world, channel;
     private String ip, serverMessage;
-    private ConcurrentHashMap<Integer, MapleMap> maps = new ConcurrentHashMap<>(100);
+    private ConcurrentMapStorage<Integer, MapleCharacter> players = new ConcurrentMapStorage<>();
+    private ConcurrentMapStorage<Integer, MapleMap> maps = new ConcurrentMapStorage<>();
     private EventScriptManager eventScriptManager;
     private Map<Integer, HiredMerchant> hiredMerchants = new HashMap<>();
     private final Map<Integer, Integer> storedVars = new HashMap<>();
@@ -126,7 +126,7 @@ public final class MapleChannel {
     }
 
     public boolean isMapLoaded(int mapID) {
-        return maps.containsKey(mapID);
+        return maps.get(mapID) != null;
     }
 
     public MapleMap getMap(int mapID) {
