@@ -10,6 +10,7 @@ import com.lucianms.constants.ItemConstants;
 import com.lucianms.constants.ServerConstants;
 import com.lucianms.helpers.JailManager;
 import com.lucianms.io.scripting.npc.NPCScriptManager;
+import com.lucianms.server.ConcurrentMapStorage;
 import com.lucianms.server.MapleInventoryManipulator;
 import com.lucianms.server.MapleItemInformationProvider;
 import com.lucianms.server.channel.MapleChannel;
@@ -687,20 +688,22 @@ public class GameMasterCommands {
                 player.dropMessage(5, "Syntax: !debuff <usernames/map>");
             }
         } else if (command.equals("online")) {
+            StringBuilder sb = new StringBuilder();
             for (MapleChannel channel : client.getWorldServer().getChannels()) {
-                int count = 0;
-                StringBuilder sb = new StringBuilder();
-                for (MapleCharacter players : channel.getPlayerStorage().values()) {
+                ConcurrentMapStorage<Integer, MapleCharacter> storage = channel.getPlayerStorage();
+                sb.append("#echannel ").append(channel.getId()).append(" - ").append(storage.size()).append(" players#n\r\n");
+                for (MapleCharacter players : storage.values()) {
                     if (!players.isGM() || players.getHidingLevel() <= player.getHidingLevel()) {
-                        count++;
                         sb.append(players.getName()).append(", ");
                     }
                 }
                 if (sb.length() > 2) {
                     sb.setLength(sb.length() - 2);
                 }
-                player.dropMessage(String.format("Channel %d (%d): %s", channel.getId(), count, sb.toString()));
+                sb.append("\r\n");
             }
+            client.announce(MaplePacketCreator.getNPCTalk(10200, (byte) 0, sb.toString(), "00 00", (byte) 0));
+            sb.setLength(0);
         } else if (command.equals("!")) {
             if (args.length() > 0) {
                 String message = args.concatFrom(0);
@@ -747,6 +750,7 @@ public class GameMasterCommands {
                     usernames.forEach(s -> sb.append(s).append(", "));
                     sb.setLength(sb.length() - 2);
                     player.dropMessage(sb.toString());
+                    sb.setLength(0);
                 } catch (SQLException e) {
                     e.printStackTrace();
                     player.dropMessage(5, "An error occurred");
@@ -928,6 +932,7 @@ public class GameMasterCommands {
                     sb.append("\r\n").append(type.ordinal()).append(" - ").append(type.name().toLowerCase());
                 }
                 player.dropMessage(1, sb.toString());
+                sb.setLength(0);
             }
         } else if (command.equals("ap", "sp")) {
             boolean ap = command.equals("ap");
