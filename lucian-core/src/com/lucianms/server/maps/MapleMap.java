@@ -1907,7 +1907,7 @@ public class MapleMap {
         player.setPosition(newPosition);
         Collection<MapleMapObject> visibleObjects = player.getVisibleMapObjects();
         try {
-            MapleMapObject[] visibleObjectsNow = visibleObjects.toArray(new MapleMapObject[visibleObjects.size()]);
+            MapleMapObject[] visibleObjectsNow = visibleObjects.toArray(new MapleMapObject[0]);
             for (MapleMapObject mo : visibleObjectsNow) {
                 if (mo != null) {
                     if (mapobjects.get(mo.getObjectId()) == mo) {
