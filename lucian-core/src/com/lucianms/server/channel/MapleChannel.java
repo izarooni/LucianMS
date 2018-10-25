@@ -24,7 +24,6 @@ import java.io.File;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock.WriteLock;
 
@@ -141,12 +140,17 @@ public final class MapleChannel {
         MapleMap fOld, fNew;
         if ((fOld = maps.remove(mapID)) != null) {
             fNew = getMap(mapID);
-            for (MapleMapObject object : fOld.getMapObjects()) {
-                if (object instanceof MapleCharacter) {
-                    MapleCharacter player = (MapleCharacter) object;
-                    fOld.removeMapObject(player);
-                    player.changeMap(fNew);
+            Collection<MapleMapObject> mapObjects = new ArrayList<>(fOld.getMapObjects());
+            try {
+                for (MapleMapObject object : mapObjects) {
+                    if (object instanceof MapleCharacter) {
+                        MapleCharacter player = (MapleCharacter) object;
+                        fOld.removeMapObject(player);
+                        player.changeMap(fNew);
+                    }
                 }
+            } finally {
+                mapObjects.clear();
             }
             maps.put(mapID, fNew);
         }
