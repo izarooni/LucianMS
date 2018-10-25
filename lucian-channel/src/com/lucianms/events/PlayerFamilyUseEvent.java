@@ -2,7 +2,6 @@ package com.lucianms.events;
 
 import com.lucianms.client.MapleCharacter;
 import com.lucianms.constants.ServerConstants;
-import com.lucianms.events.PacketEvent;
 import com.lucianms.nio.SendOpcode;
 import com.lucianms.nio.receive.MaplePacketReader;
 import tools.data.output.MaplePacketLittleEndianWriter;
@@ -32,7 +31,7 @@ public class PlayerFamilyUseEvent extends PacketEvent {
         MapleCharacter player = getClient().getPlayer();
         int[] repCost = {3, 5, 7, 8, 10, 12, 15, 20, 25, 40, 50};
         if (action == 0 || action == 1) {
-            MapleCharacter target = getClient().getChannelServer().getPlayerStorage().getPlayerByName(username);
+            MapleCharacter target = getClient().getChannelServer().getPlayerStorage().find(p -> p.getName().equalsIgnoreCase(username));
             if (target == null) {
                 return null;
             }
