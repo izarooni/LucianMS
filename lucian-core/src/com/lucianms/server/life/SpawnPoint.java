@@ -42,7 +42,7 @@ public final class SpawnPoint {
         this.monsterID = monster.getId();
         Point nPos = map.calcPointBelow(monster.getPosition());
         this.pos = (nPos == null) ? monster.getPosition() : nPos.getLocation();
-        this.mobTime = (mobTime <= 0) ? 8 : mobTime;
+        this.mobTime = (mobTime <= 0) ? 6 : mobTime;
         this.team = team;
         this.f = monster.getF();
         this.fh = monster.getFh();
@@ -88,7 +88,7 @@ public final class SpawnPoint {
                 nextPossibleSpawn = System.currentTimeMillis();
                 nextPossibleSpawn += (mobTime > 0) ? (mobTime * 1000) : animationTime;
 
-                long delay = Math.max(3000, (nextPossibleSpawn - System.currentTimeMillis()));
+                long delay = Math.max(1000, (nextPossibleSpawn - System.currentTimeMillis()));
                 attemptMonsterSummon(delay);
             }
         });
