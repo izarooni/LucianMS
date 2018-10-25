@@ -123,6 +123,10 @@ public class PlayerLoginEvent extends PacketEvent {
         player.sendKeymap();
         player.sendMacros();
 
+        if (!player.isHidden()) {
+            player.toggleHide();
+        }
+
         if (player.getKeymap().get(91) != null) {
             player.announce(MaplePacketCreator.sendAutoHpPot(player.getKeymap().get(91).getAction()));
         }
