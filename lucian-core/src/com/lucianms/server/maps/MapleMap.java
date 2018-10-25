@@ -527,9 +527,7 @@ public class MapleMap {
                                         receive = (int) (monster.getLevel() * ServerConstants.LEVEL_TO_NX_MULTIPLIER) / chr.getParty().getMembers().size();
                                         for (MaplePartyCharacter players : chr.getParty().getMembers()) {
                                             if (players.isOnline()) {
-                                                if (players.getPlayer().getLevel() - chr.getLevel() < -10) {
-                                                    players.getPlayer().getCashShop().gainCash(1, receive);
-                                                }
+                                                players.getPlayer().getCashShop().gainCash(1, receive);
                                                 if (receive >= 1) {
                                                     players.getPlayer().announce(MaplePacketCreator.earnTitleMessage("You gained " + receive + " NX cash"));
                                                 }
@@ -547,9 +545,7 @@ public class MapleMap {
                                         receive = (int) (monster.getLevel() * ServerConstants.LEVEL_TO_NX_MULTIPLIER + random - (random / 2)) / chr.getParty().getMembers().size();
                                         for (MaplePartyCharacter players : chr.getParty().getMembers()) {
                                             if (players.isOnline()) {
-                                                if (players.getPlayer().getLevel() - chr.getLevel() < -10) {
-                                                    players.getPlayer().getCashShop().gainCash(1, receive);
-                                                }
+                                                players.getPlayer().getCashShop().gainCash(1, receive);
                                                 if (receive >= 1) {
                                                     players.getPlayer().announce(MaplePacketCreator.earnTitleMessage("You gained " + receive + " NX cash"));
                                                 }
