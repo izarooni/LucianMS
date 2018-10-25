@@ -1,9 +1,6 @@
 package com.lucianms.command.executors;
 
-import com.lucianms.client.MapleCharacter;
-import com.lucianms.client.MapleClient;
-import com.lucianms.client.MapleStat;
-import com.lucianms.client.Skill;
+import com.lucianms.client.*;
 import com.lucianms.client.inventory.*;
 import com.lucianms.command.CommandWorker;
 import com.lucianms.constants.ItemConstants;
@@ -442,6 +439,25 @@ public class HGMCommands {
                 player.getMap().spawnItemDrop(player, player, item, position, true, true);
             }
             player.dropMessage("Don't forget to !cleardrops when you're done");
+        } else if (command.equals("ring")) {
+            if (args.length() == 2) {
+                MapleCharacter partner = client.getChannelServer().getPlayerStorage().find(p -> p.getName().equalsIgnoreCase(args.get(0)));
+                if (partner == null) {
+                    player.sendMessage(5, "Unable to find any player named '{}'", args.get(0));
+                    return;
+                }
+                Integer ringItemID = args.parseNumber(1, int.class);
+                final int ringID = MapleRing.createRing(ringItemID, player, partner);
+                Equip equip = new Equip(ringItemID, (short) 0);
+                equip.setRingId(ringID);
+                MapleInventoryManipulator.addFromDrop(player.getClient(), equip, true);
+
+                equip = new Equip(ringItemID, (short) 0);
+                equip.setRingId(ringID + 1);
+                MapleInventoryManipulator.addFromDrop(partner.getClient(), equip, true);
+            } else {
+                player.sendMessage(5, "usage: !ring <partner> <itemid>");
+            }
         }
     }
 }
