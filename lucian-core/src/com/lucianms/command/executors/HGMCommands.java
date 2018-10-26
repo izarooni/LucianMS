@@ -173,7 +173,7 @@ public class HGMCommands {
                     player.dropMessage(5, error);
                     return;
                 }
-                for (int i = 0; i < amount; i++) {
+                for (int i = 0; i < Math.min(500, amount); i++) {
                     MapleMonster monster = MapleLifeFactory.getMonster(monsterId);
                     if (monster == null) {
                         player.dropMessage(5, String.format("'%d' is not a valid monster", monsterId));
