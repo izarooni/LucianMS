@@ -29,7 +29,6 @@ import com.lucianms.client.autoban.Cheater;
 import com.lucianms.client.autoban.Cheats;
 import com.lucianms.client.inventory.Item;
 import com.lucianms.client.inventory.MapleInventoryType;
-import com.lucianms.client.meta.Occupation;
 import com.lucianms.client.status.MonsterStatus;
 import com.lucianms.client.status.MonsterStatusEffect;
 import com.lucianms.constants.skills.Aran;
@@ -147,10 +146,8 @@ public final class PlayerTakeDamageEvent extends PacketEvent {
                 }
                 mpattack += attackInfo.getMpBurn();
                 MobSkill skill = MobSkillFactory.getMobSkill(attackInfo.getDiseaseSkill(), attackInfo.getDiseaseLevel());
-                if (player.getOccupation() == null || player.getOccupation().getType() != Occupation.Type.Demon) {
-                    if (skill != null && damage > 0) {
-                        skill.applyEffect(player, attacker, false);
-                    }
+                if (skill != null && damage > 0) {
+                    skill.applyEffect(player, attacker, false);
                 }
 
                 attacker.setMp(attacker.getMp() - attackInfo.getMpCon());

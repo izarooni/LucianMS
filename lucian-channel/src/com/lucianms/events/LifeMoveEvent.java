@@ -22,8 +22,8 @@
 package com.lucianms.events;
 
 import com.lucianms.client.MapleCharacter;
+import com.lucianms.client.meta.Occupation;
 import com.lucianms.nio.receive.MaplePacketReader;
-import com.lucianms.events.PacketEvent;
 import com.lucianms.server.life.MapleMonster;
 import com.lucianms.server.life.MobSkill;
 import com.lucianms.server.life.MobSkillFactory;
@@ -87,6 +87,9 @@ public final class LifeMoveEvent extends PacketEvent {
             Pair<Integer, Integer> skillToUse = monster.getSkills().get(random);
             toUse = MobSkillFactory.getMobSkill(skillToUse.getLeft(), skillToUse.getRight());
             int percHpLeft = (monster.getHp() / monster.getMaxHp()) * 100;
+            if (player.getOccupation() != null && player.getOccupation().getType() == Occupation.Type.Demon) {
+                toUse = null;
+            }
             if (toUse != null && (toUse.getHP() < percHpLeft || !monster.canUseSkill(toUse))) {
                 toUse = null;
             }
