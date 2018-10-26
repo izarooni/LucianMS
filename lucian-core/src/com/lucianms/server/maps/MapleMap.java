@@ -1159,7 +1159,7 @@ public class MapleMap {
     }
 
     public List<MapleCharacter> getPlayersInRange(Rectangle box, List<MapleCharacter> chr) {
-        List<MapleCharacter> inRange = new LinkedList<>();
+        List<MapleCharacter> inRange = new ArrayList<>();
         for (MapleCharacter a : getCharacters()) {
             if (chr.contains(a)) {
                 if (box.contains(a.getPosition())) {
@@ -1778,15 +1778,20 @@ public class MapleMap {
     }
 
     public List<MapleMapObject> getMapObjectsInRange(Point from, double rangeSq, List<MapleMapObjectType> types) {
-        List<MapleMapObject> ret = new LinkedList<>();
-        for (MapleMapObject l : getMapObjects()) {
-            if (types.contains(l.getType())) {
-                if (from.distanceSq(l.getPosition()) <= rangeSq) {
-                    ret.add(l);
+        ArrayList<MapleMapObject> ret = new ArrayList<>();
+        ArrayList<MapleMapObject> objects = new ArrayList<>(getMapObjects());
+        try {
+            for (MapleMapObject l : objects) {
+                if (types.contains(l.getType())) {
+                    if (from.distanceSq(l.getPosition()) <= rangeSq) {
+                        ret.add(l);
+                    }
                 }
             }
+            return ret;
+        } finally {
+            objects.clear();
         }
-        return ret;
     }
 
     public <T> ArrayList<T> getMapObjects(Class<T> t) {
@@ -1795,7 +1800,7 @@ public class MapleMap {
         }
         ArrayList<T> ret = new ArrayList<>();
         for (MapleMapObject object : getMapObjects()) {
-            if (object.getClass() == t) {
+            if (object.getClass().isAssignableFrom(t)) {
                 ret.add((T) object);
             }
         }
@@ -1803,13 +1808,18 @@ public class MapleMap {
     }
 
     public List<MapleMapObject> getMapObjectsInBox(Rectangle box, List<MapleMapObjectType> types) {
-        List<MapleMapObject> ret = new LinkedList<>();
-        for (MapleMapObject l : getMapObjects()) {
-            if (types.contains(l.getType())) {
-                if (box.contains(l.getPosition())) {
-                    ret.add(l);
+        ArrayList<MapleMapObject> ret = new ArrayList<>();
+        ArrayList<MapleMapObject> objects = getMapObjects(MapleMapObject.class);
+        try {
+            for (MapleMapObject l : objects) {
+                if (types.contains(l.getType())) {
+                    if (box.contains(l.getPosition())) {
+                        ret.add(l);
+                    }
                 }
             }
+        } finally {
+            objects.clear();
         }
         return ret;
     }
@@ -1905,7 +1915,7 @@ public class MapleMap {
 
     public void movePlayer(MapleCharacter player, Point newPosition) {
         player.setPosition(newPosition);
-        Collection<MapleMapObject> visibleObjects = player.getVisibleMapObjects();
+        ArrayList<MapleMapObject> visibleObjects = new ArrayList<>(player.getVisibleMapObjects());
         try {
             MapleMapObject[] visibleObjectsNow = visibleObjects.toArray(new MapleMapObject[0]);
             for (MapleMapObject mo : visibleObjectsNow) {
