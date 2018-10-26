@@ -58,6 +58,7 @@ public class GameMasterCommands {
             commands.add("!warphere <username> - warp a player to your map");
             commands.add("!goto <mapid> - another way to warp to a map by ID");
             commands.add("!heal [username] - Heal yourself, or a player.");
+            commands.add("!levelup <username> <levels> - Levels the specified player X times");
             commands.add("!notice <message> - Send a notice to the server");
             commands.add("!mute <username> - cancel a player from chatting");
             commands.add("!clock <time> - add a clock timer for an amount of seconds");
@@ -390,6 +391,25 @@ public class GameMasterCommands {
                     }
                     break;
             }
+        } else if (command.equals("levelup")) {
+            if (args.length() == 2) {
+                Integer levels = args.parseNumber(1, int.class);
+                if (levels == null) {
+                    player.sendMessage(args.getFirstError());
+                    return;
+                }
+                MapleCharacter target = world.findPlayer(p -> p.getName().equalsIgnoreCase(args.get(0)));
+                if (target != null) {
+                    for (int i = 0; i < levels; i++) {
+                        target.levelUp(false);
+                    }
+                    player.sendMessage(5, "'{}' has leveled up {} times", target.getName(), levels);
+                } else {
+                    player.sendMessage(5, "Unable to find any player named '{}'", args.get(0));
+                }
+            } else {
+                player.sendMessage(5, "syntax: !{} <username> <levels>", command.getName());
+            }
         } else if (command.equals("level")) {
             if (args.length() > 0) {
                 Integer level = args.parseNumber(0, int.class);
@@ -444,12 +464,14 @@ public class GameMasterCommands {
                     return;
                 }
                 TagRange = range;
-                player.dropMessage(6, "Tag ranged changed to " + range);
+                player.sendMessage("Tag range set to {}", TagRange);
+            } else {
+                player.sendMessage("The tag range is currently set to {}", TagRange);
             }
         } else if (command.equals("tag")) {
             for (MapleMapObject obj : player.getMap().getMapObjectsInRange(player.getPosition(), TagRange, Collections.singletonList(MapleMapObjectType.PLAYER))) {
                 MapleCharacter chrs = (MapleCharacter) obj;
-                if (chrs != player && !chrs.isGM()) {
+                if (chrs != player && !chrs. isGM()) {
                     chrs.setHpMp(0);
                     chrs.dropMessage(6, "You have been tagged!");
                 }
