@@ -16,6 +16,7 @@ import com.lucianms.io.scripting.npc.NPCScriptManager;
 import com.lucianms.server.ConcurrentMapStorage;
 import com.lucianms.server.Server;
 import com.lucianms.server.channel.MapleChannel;
+import com.lucianms.server.life.MapleMonster;
 import com.lucianms.server.maps.MapleMap;
 import com.lucianms.server.maps.SavedLocationType;
 import tools.MaplePacketCreator;
@@ -349,12 +350,11 @@ public class PlayerCommands {
         } else if (command.equals("go")) {
             WeakHashMap<String, Integer> maps = new WeakHashMap<>();
             // @formatter:off
-            maps.put("quay",       541000000);
-            maps.put("magatia",    261000000);
-            maps.put("elnath",     211000000);
             maps.put("shenron",    908);
-            maps.put("nlc",        600000000);
-            maps.put("fm",         910000000);
+            maps.put("arcade",     978);
+
+            maps.put("quay",       541000000);
+            maps.put("boatquay",   541000000);
             maps.put("henesys",    100000000);
             maps.put("maya",       100000001);
             maps.put("ellinia",    101000000);
@@ -362,20 +362,27 @@ public class PlayerCommands {
             maps.put("kerning",    103000000);
             maps.put("lith",       104000000);
             maps.put("harbor",     104000000);
+            maps.put("lithharbor", 104000000);
             maps.put("florina",    110000000);
             maps.put("nautilus",   120000000);
             maps.put("ereve",      130000000);
             maps.put("rien",       140000000);
             maps.put("orbis",      200000000);
+            maps.put("elnath",     211000000);
             maps.put("ludi",       220000000);
             maps.put("aqua",       230000000);
             maps.put("leafre",     240000000);
             maps.put("mulung",     250000000);
+            maps.put("herb",       251000000);
+            maps.put("herbtown",   251000000);
             maps.put("ariant",     260000000);
             maps.put("timetemple", 270000000);
+            maps.put("magatia",    261000000);
             maps.put("ellin",      300000000);
+            maps.put("nlc",        600000000);
+            maps.put("amoria",     680000000);
             maps.put("home",       910000000);
-            maps.put("arcade",     978);
+            maps.put("fm",         910000000);
             // @formatter:on
             if (args.length() == 1) {
                 String name = args.get(0).toLowerCase(Locale.ROOT);
@@ -450,6 +457,14 @@ public class PlayerCommands {
         } else if (command.equals("fixexp", "expfix")) {
             player.setExp(0);
             player.updateSingleStat(MapleStat.EXP, 0);
+        } else if (command.equals("bosshp")) {
+            for (MapleMonster monster : player.getMap().getMonsters()) {
+                if (monster.isBoss()) {
+                    player.sendMessage(5, "Name: '{}', Level: {}, HP: {} / {}",
+                            monster.getName(), monster.getLevel(),
+                            StringUtil.formatNumber(monster.getHp()), StringUtil.formatNumber(monster.getMaxHp()));
+                }
+            }
         } else {
             player.dropMessage("Use @help for a list of our available commands");
         }
