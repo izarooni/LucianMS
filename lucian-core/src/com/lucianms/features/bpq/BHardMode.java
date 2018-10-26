@@ -12,10 +12,10 @@ public class BHardMode extends BossPQ {
 
     public static final int[] bosses = new int[]{7220005, 8220011, 8220010, 8800002, 8810000, 8810001, 9400518, 9001010, 9001009, 9300158};
 
-    private static final Point mSpawnPoint = new Point(-391, -386);
+    private static final Point mSpawnPoint = new Point(0, -42);
 
     public BHardMode(int channel) {
-        super(channel, 802, bosses);
+        super(channel, 270050100, bosses);
         setCashWinnings(12 * bosses.length);
         setDamageMultiplier(1.5f);
         setHealthMultiplier(1.6f);

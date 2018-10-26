@@ -12,10 +12,10 @@ public class BEasyMode extends BossPQ {
 
     public static final int[] bosses = new int[]{4300013, 5220002, 5220000, 5220004, 9300039, 9300211, 9300212, 9300204};
 
-    private static final Point mSpawnPoint = new Point(-391, -386);
+    private static final Point mSpawnPoint = new Point(0, -42);
 
     public BEasyMode(int channel) {
-        super(channel, 800, bosses);
+        super(channel, 270050100, bosses);
         setCashWinnings(5 * bosses.length);
         setPoints(15);
         setDamageMultiplier(0.7f);
