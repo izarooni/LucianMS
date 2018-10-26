@@ -81,6 +81,9 @@ public class AccountPlayerCreateEvent extends PacketEvent {
         weapon = reader.readInt();
         gender = reader.readByte();
 
+        if (weapon == 1442079) {
+            weapon = 1302000;
+        }
 
         int[] items = new int[]{weapon, top, bottom, shoes, hair, face};
         for (int item : items) {
