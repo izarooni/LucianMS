@@ -1,6 +1,7 @@
 load("scripts/util_imports.js");
 const ShenronSummon = Java.type("com.lucianms.features.summoning.ShenronSummoner");
 const MapleStat = Java.type("com.lucianms.client.MapleStat");
+const FakePlayer = Java.type("com.lucianms.server.life.FakePlayer");
 /* izarooni */
 let status = 0;
 let usernameError = "";
@@ -80,7 +81,7 @@ function action(mode, type, selection) {
                 break;
             case 7:
                 if (player.getFakePlayer() == null) {
-                    let fake = new Packages.server.life.FakePlayer(player.getName() +"'s Toy");
+                    let fake = new FakePlayer(player.getName() +"'s Toy");
                     fake.setMap(player.getMap());
                     fake.clonePlayer(player);
                     player.setFakePlayer(fake);
