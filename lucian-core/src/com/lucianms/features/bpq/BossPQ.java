@@ -1,6 +1,7 @@
 package com.lucianms.features.bpq;
 
 import com.lucianms.client.MapleCharacter;
+import com.lucianms.constants.ServerConstants;
 import com.lucianms.events.ChangeMapEvent;
 import com.lucianms.events.PlayerTakeDamageEvent;
 import com.lucianms.features.GenericEvent;
@@ -16,6 +17,7 @@ import tools.MaplePacketCreator;
 import tools.StringUtil;
 
 import java.awt.*;
+import java.util.ArrayList;
 import java.util.HashMap;
 
 /**
@@ -49,7 +51,9 @@ public abstract class BossPQ extends GenericEvent {
     public abstract void giveRewards(MapleCharacter player);
 
     public MapleMap getMapInstance(int mapId) {
-        return maps.computeIfAbsent(mapId, i -> new FieldBuilder(0, channelID, mapId).loadAll().loadMonsters().build());
+        MapleMap map = maps.computeIfAbsent(mapId, i -> new FieldBuilder(0, channelID, mapId).loadAll().loadMonsters().build());
+        map.setInstanced(true);
+        return map;
     }
 
     private void broadcastPacket(byte[] packet) {
@@ -71,7 +75,7 @@ public abstract class BossPQ extends GenericEvent {
         player.removeGenericEvent(this);
         int ReturnMap = player.getSavedLocation("OTHER");
         if (ReturnMap == -1) {
-            ReturnMap = 240070101;
+            ReturnMap = ServerConstants.HOME_MAP;
         }
         player.changeMap(ReturnMap);
         MapleMap mapInstance = maps.get(mapId);
@@ -90,9 +94,14 @@ public abstract class BossPQ extends GenericEvent {
     private void complete() {
         MapleMap map = getMapInstance(mapId);
         if (map != null) {
-            for (MapleCharacter players : map.getCharacters()) {
-                giveRewards(players);
-                unregisterPlayer(players);
+            ArrayList<MapleCharacter> chars = new ArrayList<>(map.getCharacters());
+            try {
+                for (MapleCharacter players : chars) {
+                    giveRewards(players);
+                    unregisterPlayer(players);
+                }
+            } finally {
+                chars.clear();
             }
         }
     }
@@ -102,12 +111,7 @@ public abstract class BossPQ extends GenericEvent {
         if (round >= bosses.length) {
             mapInstance.startMapEffect("Congrats on defeating all of the bosses!", 5120009);
             mapInstance.broadcastMessage(MaplePacketCreator.serverNotice(6, "You will be warped out in 10 seconds."));
-            TaskExecutor.createTask(new Runnable() {
-                @Override
-                public void run() {
-                    complete();
-                }
-            }, 10000);
+            TaskExecutor.createTask(this::complete, 10000);
         } else {
             broadcastPacket(MaplePacketCreator.getClock(8));
             TaskExecutor.createTask(new Runnable() {
@@ -187,6 +191,15 @@ public abstract class BossPQ extends GenericEvent {
     @Override
     public void onPlayerDisconnect(MapleCharacter player) {
         unregisterPlayer(player);
+    }
+
+    @Override
+    public boolean onPlayerChangeMapInternal(MapleCharacter player, MapleMap destination) {
+        if (!destination.isInstanced()) {
+            unregisterPlayer(player);
+            return false;
+        }
+        return true;
     }
 
     public int getMapId() {
