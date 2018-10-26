@@ -324,22 +324,24 @@ public class MapleMonster extends AbstractLoadedMapleLife {
         // 80% of pool is split amongst all the damagers
         for (Entry<Integer, AtomicInteger> damage : takenDamage.entrySet()) {
             MapleCharacter mc = getMap().getCharacterById(damage.getKey());
-            int xp = (int) (0.80f * exp * damage.getValue().get() / totalHealth);
-            boolean isKiller = mc.getId() == killerId;
-            if (isKiller) {
-                xp += exp / 5;
-            }
-            MapleParty p = mc.getParty();
-            if (p != null) {
-                for (MaplePartyCharacter member : p.getMembers()) {
-                    if (member.isOnline() && member.getPlayer().getMap() == getMap()) {
-                        int pID = p.getId();
-                        int pXP = xp + (partyExp.getOrDefault(pID, 0));
-                        partyExp.put(pID, pXP);
-                    }
+            if (mc != null) {
+                int xp = (int) (0.80f * exp * damage.getValue().get() / totalHealth);
+                boolean isKiller = mc.getId() == killerId;
+                if (isKiller) {
+                    xp += exp / 5;
                 }
-            } else {
-                giveExpToCharacter(mc, xp, isKiller, 1);
+                MapleParty p = mc.getParty();
+                if (p != null) {
+                    for (MaplePartyCharacter member : p.getMembers()) {
+                        if (member.isOnline() && member.getPlayer().getMap() == getMap()) {
+                            int pID = p.getId();
+                            int pXP = xp + (partyExp.getOrDefault(pID, 0));
+                            partyExp.put(pID, pXP);
+                        }
+                    }
+                } else {
+                    giveExpToCharacter(mc, xp, isKiller, 1);
+                }
             }
         }
         for (Entry<Integer, Integer> party : partyExp.entrySet()) {

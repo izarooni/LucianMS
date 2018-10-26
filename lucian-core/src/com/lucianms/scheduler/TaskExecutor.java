@@ -10,8 +10,6 @@ import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * @author izarooni
@@ -30,26 +28,20 @@ public final class TaskExecutor {
     });
 
     private static AtomicInteger atomicInteger = new AtomicInteger(1);
-    private static Lock lock = new ReentrantLock(true);
 
     private static Task setupTask(ScheduledFuture<?> future) {
-        lock.lock();
-        try {
-            final int id = atomicInteger.getAndIncrement();
-            Task task = new Task(future) {
-                @Override
-                public int getId() {
-                    return id;
-                }
-            };
-            if (!TASKS.containsKey(id)) {
-                TASKS.put(id, task);
-                return task;
+        final int id = atomicInteger.getAndIncrement();
+        Task task = new Task(future) {
+            @Override
+            public int getId() {
+                return id;
             }
-            throw new RuntimeException(String.format("Created task with already existing id(%d)", id));
-        } finally {
-            lock.unlock();
+        };
+        if (!TASKS.containsKey(id)) {
+            TASKS.put(id, task);
+            return task;
         }
+        throw new RuntimeException(String.format("Created task with already existing id(%d)", id));
     }
 
     public static List<Runnable> shutdownNow() {
@@ -122,22 +114,12 @@ public final class TaskExecutor {
      * @param id the id of the task to cancel
      */
     public static void cancelTask(int id) {
-        lock.lock();
-        try {
-            if (TASKS.containsKey(id)) {
-                TASKS.get(id).cancel();
-            }
-        } finally {
-            lock.unlock();
+        if (TASKS.containsKey(id)) {
+            TASKS.get(id).cancel();
         }
     }
 
     public static Task getTask(int id) {
-        lock.lock();
-        try {
-            return TASKS.get(id);
-        } finally {
-            lock.unlock();
-        }
+        return TASKS.get(id);
     }
 }
