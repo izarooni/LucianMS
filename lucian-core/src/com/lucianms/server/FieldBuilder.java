@@ -1,5 +1,6 @@
 package com.lucianms.server;
 
+import com.lucianms.constants.GameConstants;
 import com.lucianms.server.channel.MapleChannel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -202,6 +203,9 @@ public class FieldBuilder {
             try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
                     int id = rs.getInt("idd");
+                    if (GameConstants.isMapleTV(id)) {
+                        continue;
+                    }
                     int f = rs.getInt("f");
                     boolean hide = rs.getInt("hidden") == 1;
                     String type = rs.getString("type");
@@ -251,6 +255,10 @@ public class FieldBuilder {
             }
             AbstractLoadedMapleLife myLife = MapleLifeFactory.getLife(Integer.parseInt(id), type);
             if (myLife != null) {
+                if (GameConstants.isMapleTV(myLife.getId())) {
+                    continue;
+                }
+
                 myLife.setCy(MapleDataTool.getInt(life.getChildByPath("cy")));
                 MapleData dF = life.getChildByPath("f");
                 if (dF != null) {

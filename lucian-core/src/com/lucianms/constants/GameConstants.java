@@ -11,6 +11,11 @@ public class GameConstants {
     private GameConstants() {
     }
 
+    public static boolean isMapleTV(int npcID) {
+        return npcID == 9250023 || npcID == 9250024 || npcID == 9250025 || npcID == 9250026 || npcID == 9250042 ||
+                npcID == 9250043 || npcID == 9250044 || npcID == 9250045 || npcID == 9250046;
+    }
+
     public static int getHiddenSkill(final int skill) {
         switch (skill) {
             case Aran.HIDDEN_FULL_SWING_DOUBLE:
@@ -52,7 +57,7 @@ public class GameConstants {
     }
 
     public static boolean isPqSkill(final int skill) {
-        return skill >= 20001013 && skill <= 20000018 || skill % 10000000 == 1020 || skill == 10000013 || skill % 10000000 >= 1009 && skill % 10000000 <= 1011;
+        return skill % 10000000 == 1020 || skill == 10000013 || skill % 10000000 >= 1009 && skill % 10000000 <= 1011;
     }
 
     public static boolean bannedBindSkills(final int skill) {
