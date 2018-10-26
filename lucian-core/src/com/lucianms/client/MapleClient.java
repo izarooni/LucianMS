@@ -936,7 +936,7 @@ public class MapleClient {
                     }
                 }
             }
-        }, 90000);
+        }, 1000 * 60 * 3);
     }
 
     public String getLastKnownIP() {
