@@ -523,13 +523,12 @@ public class MapleMap {
                                 if (random < ServerConstants.BELOW_LEVERANGEL_NX_CHANCE) {
                                     int receive = monster.getLevel() * 4 / random;
                                     if (chr.getParty() != null) {
-                                        receive = (int) (monster.getLevel() * ServerConstants.LEVEL_TO_NX_MULTIPLIER) / chr.getParty().getMembers().size();
-                                        for (MaplePartyCharacter players : chr.getParty().getMembers()) {
-                                            if (players.isOnline()) {
-                                                players.getPlayer().getCashShop().gainCash(1, receive);
-                                                if (receive >= 1) {
-                                                    players.getPlayer().announce(MaplePacketCreator.earnTitleMessage("You gained " + receive + " NX cash"));
-                                                }
+                                        List<MaplePartyCharacter> collect = chr.getParty().getMembers().stream().filter(m -> m.isOnline() && m.getPlayer().getMap() == this).collect(Collectors.toList());
+                                        receive = (int) (monster.getLevel() * ServerConstants.LEVEL_TO_NX_MULTIPLIER) / collect.size();
+                                        for (MaplePartyCharacter players : collect) {
+                                            players.getPlayer().getCashShop().gainCash(1, receive);
+                                            if (receive >= 1) {
+                                                players.getPlayer().announce(MaplePacketCreator.earnTitleMessage("You gained " + receive + " NX cash"));
                                             }
                                         }
                                     } else if (receive > 0) {
@@ -541,24 +540,19 @@ public class MapleMap {
                                 if (random < ServerConstants.BELOW_LEVERANGEL_NX_CHANCE) {
                                     int receive = (int) (monster.getLevel() * ServerConstants.LEVEL_TO_NX_MULTIPLIER + random);
                                     if (chr.getParty() != null) {
-                                        receive = (int) (monster.getLevel() * ServerConstants.LEVEL_TO_NX_MULTIPLIER + random - (random / 2)) / chr.getParty().getMembers().size();
-                                        for (MaplePartyCharacter players : chr.getParty().getMembers()) {
-                                            if (players.isOnline()) {
-                                                players.getPlayer().getCashShop().gainCash(1, receive);
-                                                if (receive >= 1) {
-                                                    players.getPlayer().announce(MaplePacketCreator.earnTitleMessage("You gained " + receive + " NX cash"));
-                                                }
+                                        List<MaplePartyCharacter> collect = chr.getParty().getMembers().stream().filter(m -> m.isOnline() && m.getPlayer().getMap() == this).collect(Collectors.toList());
+                                        receive = (int) (monster.getLevel() * ServerConstants.LEVEL_TO_NX_MULTIPLIER + random - (random / 2)) / collect.size();
+                                        for (MaplePartyCharacter players : collect) {
+                                            players.getPlayer().getCashShop().gainCash(1, receive);
+                                            if (receive >= 1) {
+                                                players.getPlayer().announce(MaplePacketCreator.earnTitleMessage("You gained " + receive + " NX cash"));
                                             }
                                         }
                                     } else if (receive > 0) {
                                         chr.getCashShop().gainCash(1, receive);
-                                        if (receive >= 1) {
-                                            chr.announce(MaplePacketCreator.earnTitleMessage("You gained " + receive + " NX cash"));
-                                        }
+                                        chr.announce(MaplePacketCreator.earnTitleMessage("You gained " + receive + " NX cash"));
                                     }
-
                                 }
-
                             }
                         }
                         //endregion

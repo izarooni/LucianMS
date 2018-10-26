@@ -65,5 +65,4 @@ public class MapleParty {
     public void broadcastPacket(byte[] packet) {
         members.values().stream().filter(MaplePartyCharacter::isOnline).map(MaplePartyCharacter::getPlayer).forEach(m -> m.announce(packet));
     }
-
 }
