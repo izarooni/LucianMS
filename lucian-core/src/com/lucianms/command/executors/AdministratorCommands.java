@@ -18,10 +18,7 @@ import com.lucianms.server.MapleItemInformationProvider;
 import com.lucianms.server.MapleShopFactory;
 import com.lucianms.server.Server;
 import com.lucianms.server.channel.MapleChannel;
-import com.lucianms.server.life.MapleLifeFactory;
-import com.lucianms.server.life.MapleMonster;
-import com.lucianms.server.life.MapleMonsterInformationProvider;
-import com.lucianms.server.life.MapleNPC;
+import com.lucianms.server.life.*;
 import com.lucianms.server.maps.MapleMapObject;
 import com.lucianms.server.maps.MapleReactor;
 import com.lucianms.server.maps.PlayerNPC;
@@ -60,15 +57,6 @@ public class AdministratorCommands {
                 commands.forEach(player::dropMessage);
             } finally {
                 commands.clear();
-            }
-        } else if (command.equals("test")) {
-            if (args.length() == 1) {
-                SAutoEvent sAutoEvent = world.getScheduledEvents().get(args.get(0));
-                if (sAutoEvent != null) {
-                    sAutoEvent.run();
-                } else {
-                    player.sendMessage(5, "Unable to find any schedule auto event '{}'", args.get(0));
-                }
             }
         } else if (command.equals("sethp")) {
             if (args.length() == 1) {

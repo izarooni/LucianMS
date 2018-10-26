@@ -1630,10 +1630,11 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
         changeMap(map_, map_.getPortal(portal));
     }
 
-    private void changeMapInternal(MapleMap to, final Point pos, final byte[] warpPacket) {
+    private void changeMapInternal(final MapleMap to, final Point pos, final byte[] warpPacket) {
         if (getTrade() != null) {
             MapleTrade.cancelTrade(this);
         }
+
         if (getArcade() != null && to.getId() != getArcade().getMapId()) {
             getArcade().fail();
         }
@@ -1642,7 +1643,9 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
             if (to != playerEvent.getMap()) {
                 ManualPlayerEvent.Participant remove = playerEvent.participants.remove(getId());
                 if (remove != null) {
-                    to = client.getChannelServer().getMap(remove.returnMapId);
+                    sendMessage(5, "You have been returned to your original map.");
+                    changeMap(client.getChannelServer().getMap(remove.returnMapId));
+                    return;
                 }
             }
         }
@@ -1666,6 +1669,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
         if (getFakePlayer() != null) {
             map.removeFakePlayer(getFakePlayer());
         }
+
         client.announce(warpPacket);
         map.removePlayer(this);
         if (client.getChannelServer().getPlayerStorage().get(getId()) != null) {
@@ -3234,7 +3238,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
     }
 
     public Collection<MapleMapObject> getVisibleMapObjects() {
-        return new ArrayList<>(visibleMapObjects.values());
+        return visibleMapObjects.values();
     }
 
     public int getWorld() {
