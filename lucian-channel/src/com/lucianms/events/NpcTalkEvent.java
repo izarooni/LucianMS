@@ -45,10 +45,6 @@ public class NpcTalkEvent extends PacketEvent {
                         npc.sendShop(getClient());
                     }
                 } else {
-                    if (getClient().getCM() != null || getClient().getQM() != null) {
-                        player.announce(MaplePacketCreator.enableActions());
-                        return null;
-                    }
                     if (npc.getId() >= 9100100 && npc.getId() <= 9100200) {
                         // Custom handling for gachapon scripts to reduce the amount of scripts needed.
                         NPCScriptManager.start(getClient(), npc.getId(), "gachapon");
