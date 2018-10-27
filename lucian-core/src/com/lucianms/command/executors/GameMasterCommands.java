@@ -100,9 +100,36 @@ public class GameMasterCommands {
             commands.add("!gender <username> <male/female/uni> - Change the gender of a specified player");
             commands.add("!stalker - Go through any player inventory");
             commands.add("!gmmap - Warps you to the GM headquarters");
+            commands.add("!itemq <itemid> <morethan> - Check what online players have more than of an item id");
             commands.sort(String::compareTo);
             commands.forEach(player::dropMessage);
             commands.clear();
+        }  else if(command.equals("itemq")) {
+            if(args.length() == 2) {
+                StringBuilder sb = new StringBuilder();
+                int itemId = args.parseNumber(1, Integer.class);
+                int qnty = args.parseNumber(2, Integer.class);
+                if(args.getFirstError() == null) {
+                    for(MapleCharacter target : ch.getPlayerStorage().values()) {
+                        int actualQuantity = target.getItemQuantity(itemId, true);
+                        if(actualQuantity >= qnty) {
+                            sb.append("account id ").append(target.getAccountID()).append(" | ")
+                                    .append(target.getName()).append(" has ")
+                                    .append(actualQuantity).append(" of ").append("#v")
+                                    .append(itemId).append("#\r\n");
+                        }
+                    }
+                } else {
+                    player.dropMessage(5, "Correct syntax: !itemq <itemid> <morethan>");
+                    return;
+                }
+                if(!(sb.length() == 0)) {
+                    client.announce(MaplePacketCreator.getNPCTalk(10200, (byte) 0, sb.toString(), "00 00", (byte) 0));
+                    sb.setLength(0);
+                }
+            } else {
+                player.dropMessage(5, "Correct syntax: !itemq <itemid> <morethan>");
+            }
         } else if (command.equals("stalker")) {
             NPCScriptManager.start(client, 10200, "t_stalker");
         } else if (command.equals("gmmap")) {
