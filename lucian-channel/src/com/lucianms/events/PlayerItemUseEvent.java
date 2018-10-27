@@ -5,14 +5,16 @@ import com.lucianms.client.MapleClient;
 import com.lucianms.client.MapleDisease;
 import com.lucianms.client.inventory.Item;
 import com.lucianms.client.inventory.MapleInventoryType;
-import com.lucianms.nio.receive.MaplePacketReader;
 import com.lucianms.constants.ExpTable;
 import com.lucianms.constants.ItemConstants;
-import com.lucianms.events.PacketEvent;
 import com.lucianms.io.scripting.npc.NPCScriptManager;
+import com.lucianms.nio.receive.MaplePacketReader;
 import com.lucianms.server.MapleInventoryManipulator;
 import com.lucianms.server.MapleItemInformationProvider;
+import tools.EntryLimits;
 import tools.MaplePacketCreator;
+
+import java.util.concurrent.TimeUnit;
 
 /**
  * @author Matze
@@ -42,6 +44,14 @@ public class PlayerItemUseEvent extends PacketEvent {
         Item toUse = player.getInventory(MapleInventoryType.USE).getItem(slot);
         if (toUse != null && toUse.getQuantity() > 0 && toUse.getItemId() == itemId) {
             if (itemId == ItemConstants.ExpTicket) { // [custom] exp ticket
+                EntryLimits.Entry entry = EntryLimits.getEntries(player.getId(), "exp_ticket");
+                if (entry != null && entry.Entries >= 3) {
+                    if (System.currentTimeMillis() - entry.LastEntry <= TimeUnit.DAYS.toMillis(1)) {
+                        player.sendMessage(5, "You may only use 3 EXP tickets per day.");
+                        return null;
+                    }
+                }
+                EntryLimits.incrementEntry(player.getId(), "exp_ticket");
                 int needed = ExpTable.getExpNeededForLevel(player.getLevel());
                 double scale = (needed / 100d);
                 double gain;
