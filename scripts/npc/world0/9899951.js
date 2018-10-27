@@ -19,7 +19,7 @@ function action(mode, type, selection) {
                 status = nStatus;
             } else {
                 if (status == 1) status = 3;
-                else if (status == 6) status = 8;
+                else if (status == 4) status = 7;
             }
         }
     };
@@ -32,7 +32,7 @@ function action(mode, type, selection) {
         } else if (status == 2) {
             cm.sendNext("Do you have a moment? First we need to make sure to get rid of the #rPhantom Wolves#k.");
         } else if (status == 3) { // quest progress
-            DisplaySummary(metadata); 
+            DisplaySummary(metadata);
         } else if (status == 4) {
             cm.sendAcceptDecline("Will you give me a hand at completing this task?");
         } else if (status == 5) {
@@ -44,14 +44,17 @@ function action(mode, type, selection) {
             } else {
                 cm.sendOk("You must accept my rewards! Please clear up some space in your inventory and speak to me again.");
             }
+        } else if (status == 7) {
+            cm.sendOk("Remember, you can check your progress anytime using the < #d@quests#k > command!");
+            cm.dispose();
         } else cm.dispose();
     } else if ((pquest = player.getCustomQuest(QuestID[1])) == null || !pquest.isCompleted()) {
         let metadata = CQuests.getMetaData(QuestID[1]);
         testFor(pquest, 6); // jump
         if  (status == 1) { // quest beginning
-            cm.sendNext("Placeholder 1 -- Quest 2");
+            cm.sendNext("Kofuku must have opened a vent, there are so many phantom wolves have appeared throughout this land.");
         } else if (status == 2) {
-            cm.sendNext("Placeholder 2 -- Quest 2");
+            cm.sendNext("Keep on eliminiating them while I find out the cause for this outburst!");
         } else if (status == 3) { // quest progress
             DisplaySummary(metadata);
         } else if (status == 4) {
@@ -70,14 +73,14 @@ function action(mode, type, selection) {
     } else if ((pquest = player.getCustomQuest(QuestID[2])) == null || !pquest.isCompleted()) {
         let metadata = CQuests.getMetaData(QuestID[2]);
         testFor(pquest, 6); // jump
-        if  (status == 1) { // quest begeining
-            cm.sendNext("Placeholder 1 -- Quest 3");
+        if (status == 1) { // quest begeining
+            cm.sendNext("Hurry, come with me I found the problem. We must visit a person I used to work with. Things may get rough.");
         } else if (status == 2) {
-            cm.sendNext("Placeholder 2 -- Quest 3");
+           action(1, 0, -1);
         } else if (status == 3) { // quest progress
             DisplaySummary(metadata);
         } else if (status == 4) {
-            cm.sendAcceptDecline("Where are they coming from? I have never seen so many appear at once...\r\nWe must put an end to this before it's too late");
+            cm.sendAcceptDecline("Finish defeating these last few phantoms and follow me...\r\nWe must put an end to this before it's too late");
         } else if (status == 5) {
             CQuests.beginQuest(player, QuestID[2]);
             cm.dispose();

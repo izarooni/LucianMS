@@ -18,6 +18,8 @@
 
     <imgdir name="rewards">
 
+        <float name="exp" value="30"/>
+
         <imgdir name="items">
 
             <!-- Todo: Set to Yato's Scarf item -->
