@@ -107,8 +107,8 @@ public class GameMasterCommands {
         }  else if(command.equals("itemq")) {
             if(args.length() == 2) {
                 StringBuilder sb = new StringBuilder();
-                int itemId = args.parseNumber(1, int.class);
-                int qnty = args.parseNumber(2, int.class);
+                int itemId = args.parseNumber(0, int.class);
+                int qnty = args.parseNumber(1, int.class);
                 if(args.getFirstError() == null) {
                     for(MapleCharacter target : ch.getPlayerStorage().values()) {
                         int actualQuantity = target.getItemQuantity(itemId, true);
@@ -126,6 +126,8 @@ public class GameMasterCommands {
                 if(!(sb.length() == 0)) {
                     client.announce(MaplePacketCreator.getNPCTalk(10200, (byte) 0, sb.toString(), "00 00", (byte) 0));
                     sb.setLength(0);
+                } else {
+                    player.dropMessage(5, "Nobody found online with more than this amount.");
                 }
             } else {
                 player.dropMessage(5, "Correct syntax: !itemq <itemid> <morethan>");

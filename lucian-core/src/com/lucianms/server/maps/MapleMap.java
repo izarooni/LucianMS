@@ -462,7 +462,7 @@ public class MapleMap {
             }
             return null;
         } finally {
-            mapobjects.clear();
+            mapObjects.clear();
         }
     }
 
