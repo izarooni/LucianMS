@@ -1,16 +1,10 @@
 package com.lucianms.cquest;
 
 import com.lucianms.cquest.requirement.CQuestItemRequirement;
-import com.lucianms.cquest.reward.CQuestExpReward;
-import com.lucianms.cquest.reward.CQuestItemReward;
-import com.lucianms.cquest.reward.CQuestMesoReward;
-import com.lucianms.cquest.reward.CQuestReward;
+import com.lucianms.cquest.reward.*;
 import tools.Pair;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @author izarooni
@@ -28,7 +22,9 @@ public final class CQuestMetaData {
         return String.format("CQuestMetaData{ID=%d, Name=%s}", quest.getId(), quest.getName());
     }
 
-    public int getQuestId() { return quest.getId(); }
+    public int getQuestId() {
+        return quest.getId();
+    }
 
     /**
      * Obtain the prerequisite quest ID that's needed to begin the specified quest
@@ -39,7 +35,9 @@ public final class CQuestMetaData {
         return quest.getPreQuestId();
     }
 
-    public int[] getPreQuestIDs() { return quest.getPreQuestIds(); }
+    public int[] getPreQuestIDs() {
+        return quest.getPreQuestIds();
+    }
 
     public int getMinimumLevel() {
         return quest.getMinimumLevel();
@@ -68,19 +66,21 @@ public final class CQuestMetaData {
      *
      * @return a {@code Map} of item IDs to quantity requirement
      */
-    public HashMap<Integer, CQuestItemRequirement.CQuestItem> getToCollect() {
-        Map<Integer, CQuestItemRequirement.CQuestItem> to = quest.getToCollect().getItems();
-        return new HashMap<>(to); // should this be unmodifiable?
+    public Map<Integer, CQuestItemRequirement.CQuestItem> getToCollect() {
+        return Collections.unmodifiableMap(quest.getToCollect().getItems());
     }
 
     public HashMap<String, List<CQuestReward>> getRewards() {
         HashMap<String, List<CQuestReward>> rewards = new HashMap<>(quest.rewards.size());
         rewards.put("exp", new ArrayList<>());
+        rewards.put("expp", new ArrayList<>());
         rewards.put("meso", new ArrayList<>());
         rewards.put("items", new ArrayList<>());
         for (CQuestReward reward : quest.rewards) {
             if (reward instanceof CQuestExpReward) {
                 rewards.get("exp").add(reward);
+            } else if (reward instanceof CQuestExpPercentageReward) {
+                rewards.get("expp").add(reward);
             } else if (reward instanceof CQuestMesoReward) {
                 rewards.get("meso").add(reward);
             } else if (reward instanceof CQuestItemReward) {

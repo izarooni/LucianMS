@@ -1,6 +1,11 @@
 package com.lucianms.cquest;
 
 import com.lucianms.client.MapleCharacter;
+import com.lucianms.cquest.requirement.CQuestItemRequirement;
+import com.lucianms.cquest.reward.CQuestExpPercentageReward;
+import com.lucianms.cquest.reward.CQuestExpReward;
+import com.lucianms.cquest.reward.CQuestItemReward;
+import com.lucianms.cquest.reward.CQuestMesoReward;
 import com.lucianms.lang.DuplicateEntryException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -9,10 +14,6 @@ import provider.MapleData;
 import provider.MapleDataTool;
 import provider.wz.MapleDataType;
 import provider.wz.XMLDomMapleData;
-import com.lucianms.cquest.requirement.CQuestItemRequirement;
-import com.lucianms.cquest.reward.CQuestExpReward;
-import com.lucianms.cquest.reward.CQuestItemReward;
-import com.lucianms.cquest.reward.CQuestMesoReward;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -70,7 +71,7 @@ public class CQuestBuilder {
      * @return the data of the quest if it exists, null otherewise
      */
     public static CQuestData beginQuest(MapleCharacter player, int questId) {
-        return  beginQuest(player, questId, false);
+        return beginQuest(player, questId, false);
     }
 
     /**
@@ -78,7 +79,7 @@ public class CQuestBuilder {
      *
      * @param player  A player that is beginning the specified quest
      * @param questId ID of the quest to begin
-     * @param silent If completion check should occur
+     * @param silent  If completion check should occur
      * @return the data of the quest if it exists, null otherewise
      */
     public static CQuestData beginQuest(MapleCharacter player, int questId, boolean silent) {
@@ -172,6 +173,10 @@ public class CQuestBuilder {
                             qData.rewards.add(new CQuestMesoReward(MapleDataTool.getInt(rewards)));
                         } else if (rewards.getName().equalsIgnoreCase("exp")) {
                             qData.rewards.add(new CQuestExpReward(MapleDataTool.getInt(rewards)));
+                        }
+                    } else if (rewards.getType() == MapleDataType.FLOAT) {
+                        if (rewards.getName().equalsIgnoreCase("exp")) {
+                            qData.rewards.add(new CQuestExpPercentageReward(MapleDataTool.getFloat(rewards)));
                         }
                     }
                 }
