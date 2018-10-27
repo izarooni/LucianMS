@@ -136,10 +136,10 @@ public class GameMasterCommands {
             }
         } else if (command.equals("map", "warp", "warpmap", "warpmapx", "wm", "wmx", "wh", "whx")) {
             try {
+                boolean exact = command.getName().endsWith("x");
                 if (args.length() > 0) {
                     String username = args.get(0);
                     MapleCharacter target = client.getWorldServer().findPlayer(p -> p.getName().equalsIgnoreCase(username));
-                    boolean exact = command.getName().endsWith("x");
                     if (target != null && command.equals("warp", "wh", "whx")) { // !<warp_cmd> <username/map>
                         if (args.length() == 1 && command.equals("warp", "wh", "whx")) { // !<warp_cmd> <username>
                             MapleCharacter warpie = (command.equals("warp") ? player : target); // person to warp
@@ -148,7 +148,7 @@ public class GameMasterCommands {
                             if (target.getClient().getChannel() != client.getChannel()) {
                                 warpie.setMap(warper.getMap());
                                 warpie.setPosition(warper.getPosition().getLocation());
-                                client.changeChannel(target.getClient().getChannel());
+                                warpie.getClient().changeChannel(warper.getClient().getChannel());
                             } else {
                                 if (exact || command.equals("warp")) {
                                     warpie.changeMap(warper.getMap(), warper.getPosition());
@@ -178,69 +178,71 @@ public class GameMasterCommands {
                                 return;
                             }
                         }
-
-                    } else if (command.equals("warpmap", "wm", "wmx")) {
-                        MapleMap map = null;
-                        if (args.length() == 1) { // !<warp_cmd> <map_ID>
-                            Integer mapId = args.parseNumber(0, int.class);
-                            String error = args.getFirstError();
-                            if (error != null) {
-                                if (username.equalsIgnoreCase("here")) {
-                                    mapId = player.getMapId();
-                                } else if (username.equalsIgnoreCase("ox")) {
-                                    mapId = 109020001;
-                                } else if (username.equalsIgnoreCase("home")) {
-                                    mapId = ServerConstants.HOME_MAP;
-                                } else {
-                                    player.dropMessage(5, error);
-                                    return;
-                                }
-                            }
-                            map = ch.getMap(mapId);
-                        }
-                        if (map != null) {
-                            Collection<MapleCharacter> characters = new ArrayList<>(player.getMap().getCharacters());
-                            try {
-                                for (MapleCharacter players : characters) {
-                                    if (!players.isGM() || players.isDebug()) {
-                                        if (exact) {
-                                            players.changeMap(map, player.getPosition());
-                                        } else {
-                                            players.changeMap(map);
-                                        }
-                                        players.setJQController(null);
-                                    }
-                                }
-                            } finally {
-                                characters.clear();
-                            }
-                        } else {
-                            player.dropMessage(5, "That is an invalid map");
-                        }
-                    } else { // !<warp_cmd> <map_ID> [portal_ID]
-                        // map, warp
+                    } else {
+                        player.dropMessage(5, "You must specify a map ID");
+                    }
+                }
+                if (command.equals("warpmap", "wm", "wmx")) {
+                    MapleMap map = player.getMap();
+                    if (args.length() == 1) { // !<warp_cmd> <map_ID>
                         Integer mapId = args.parseNumber(0, int.class);
-                        Integer portal = args.parseNumber(1, 0, int.class);
                         String error = args.getFirstError();
                         if (error != null) {
-                            if (username.equalsIgnoreCase("ox")) {
+                            String target = args.get(0);
+                            if (target.equalsIgnoreCase("here")) {
+                                mapId = player.getMapId();
+                            } else if (target.equalsIgnoreCase("ox")) {
                                 mapId = 109020001;
-                            } else if (username.equalsIgnoreCase("home")) {
+                            } else if (target.equalsIgnoreCase("home")) {
                                 mapId = ServerConstants.HOME_MAP;
                             } else {
                                 player.dropMessage(5, error);
                                 return;
                             }
                         }
-                        MapleMap map = ch.getMap(mapId);
-                        if (map == null) {
-                            player.dropMessage(5, "That map doesn't exist");
+                        map = ch.getMap(mapId);
+                    }
+                    if (map != null) {
+                        Collection<MapleCharacter> characters = new ArrayList<>(player.getMap().getCharacters());
+                        try {
+                            for (MapleCharacter players : characters) {
+                                if (!players.isGM() || players.isDebug()) {
+                                    if (exact) {
+                                        players.changeMap(map, player.getPosition());
+                                    } else {
+                                        players.changeMap(map);
+                                    }
+                                    players.setJQController(null);
+                                }
+                            }
+                        } finally {
+                            characters.clear();
+                        }
+                    } else {
+                        player.dropMessage(5, "That is an invalid map");
+                    }
+                } else { // !<warp_cmd> <map_ID> [portal_ID]
+                    // map, warp
+                    Integer mapId = args.parseNumber(0, int.class);
+                    Integer portal = args.parseNumber(1, 0, int.class);
+                    String error = args.getFirstError();
+                    if (error != null) {
+                        String target = args.get(0);
+                        if (target.equalsIgnoreCase("ox")) {
+                            mapId = 109020001;
+                        } else if (target.equalsIgnoreCase("home")) {
+                            mapId = ServerConstants.HOME_MAP;
+                        } else {
+                            player.dropMessage(5, error);
                             return;
                         }
-                        player.changeMap(map, map.getPortal(portal));
                     }
-                } else {
-                    player.dropMessage(5, "You must specify a map ID");
+                    MapleMap map = ch.getMap(mapId);
+                    if (map == null) {
+                        player.dropMessage(5, "That map doesn't exist");
+                        return;
+                    }
+                    player.changeMap(map, map.getPortal(portal));
                 }
             } catch (NullPointerException e) {
                 player.dropMessage(5, "That map does not exist.");
@@ -471,7 +473,7 @@ public class GameMasterCommands {
         } else if (command.equals("tag")) {
             for (MapleMapObject obj : player.getMap().getMapObjectsInRange(player.getPosition(), TagRange, Collections.singletonList(MapleMapObjectType.PLAYER))) {
                 MapleCharacter chrs = (MapleCharacter) obj;
-                if (chrs != player && !chrs. isGM()) {
+                if (chrs != player && !chrs.isGM()) {
                     chrs.setHpMp(0);
                     chrs.dropMessage(6, "You have been tagged!");
                 }
