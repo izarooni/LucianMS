@@ -76,6 +76,7 @@ public class PlayerCommands {
             commands.add("@time - Display the current server time");
             commands.add("@house - Display the house manager NPC");
             commands.add("@jobs - Display a list of job modifications");
+            commands.add("@chalktalk - Display a chalkboard with specified text");
 //            commands.add("@rebirth - Reset your player level to earn more AP");
             commands.sort(String::compareTo);
             if (npc) {
@@ -87,6 +88,15 @@ public class PlayerCommands {
                 player.dropMessage("If you'd like to view this list in an NPC window, use the command < @help npc >");
             }
             commands.clear();
+        } else if (command.equals("chalktalk")) {
+            if (args.length() > 0) {
+                String content = args.concatFrom(0);
+                player.setChalkboard(content);
+                player.getMap().broadcastMessage(MaplePacketCreator.useChalkboard(player, false));
+            } else {
+                player.setChalkboard(null);
+                player.getMap().broadcastMessage(MaplePacketCreator.useChalkboard(player, true));
+            }
         } else if (command.equals("house")) {
             NPCScriptManager.start(client, 2007, "f_house_manager");
         } else if (command.equals("time")) {
