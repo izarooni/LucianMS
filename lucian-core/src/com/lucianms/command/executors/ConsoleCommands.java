@@ -177,8 +177,8 @@ public class ConsoleCommands {
                 for (MapleWorld world : Server.getWorlds()) {
                     MapleCharacter player = world.findPlayer(p -> p.getName().equalsIgnoreCase(username));
                     if (player != null) {
-                        player.getClient().disconnect(false, player.getCashShop().isOpened());
                         world.removePlayer(player);
+                        player.getClient().disconnect(false, player.getCashShop().isOpened());
                         LOGGER.info("{} disconnected", player.getName());
                         return;
                     }
