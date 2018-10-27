@@ -107,8 +107,8 @@ public class GameMasterCommands {
         }  else if(command.equals("itemq")) {
             if(args.length() == 2) {
                 StringBuilder sb = new StringBuilder();
-                int itemId = args.parseNumber(1, Integer.class);
-                int qnty = args.parseNumber(2, Integer.class);
+                int itemId = args.parseNumber(1, int.class);
+                int qnty = args.parseNumber(2, int.class);
                 if(args.getFirstError() == null) {
                     for(MapleCharacter target : ch.getPlayerStorage().values()) {
                         int actualQuantity = target.getItemQuantity(itemId, true);
