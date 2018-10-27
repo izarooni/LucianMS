@@ -28,9 +28,9 @@ function action(mode, type, selection) {
         let metadata = CQuests.getMetaData(QuestID[0]);
         testFor(pquest, 6); // the status to jump to if true
         if (status == 1) { // quest beginning
-            cm.sendNext(`Placeholder text 1.0 #b${metadata.getName()}#k`);
+            cm.sendNext(`Have you noticed the influx of #bflying#k phantoms in the area?`);
         } else if (status == 2) {
-            cm.sendNext(`Placeholder text 2.0 #b${metadata.getName()}#k`);
+            cm.sendNext(`I need you to defeat some as they are interfering with my work`);
         } else if (status == 3) { // quest progress
             DisplaySummary(metadata);
         } else if (status == 4) {
@@ -49,9 +49,9 @@ function action(mode, type, selection) {
         let metadata = CQuests.getMetaData(QuestID[1]);
         testFor(pquest, 6); // jump
         if (status == 1) { // quest beginning
-            cm.sendNext(`Placeholder text 1.1 #b${metadata.getName()}#k`);
+            cm.sendNext(``);
         } else if (status == 2) {
-            cm.sendNext(`Placeholder text 2.1 #b${metadata.getName()}#k`);
+            cm.sendNext(``);
         } else if (status == 3) { // quest progress
             DisplaySummary(metadata);
         } else if (status == 4) {

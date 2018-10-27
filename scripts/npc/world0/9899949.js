@@ -31,19 +31,21 @@ function action(mode, type, selection) {
         cm.sendOk("I don't need help. I'm very busy right now.");
         cm.dispose();
     } else if (status == 1) { // quest begining
-        cm.sendNext("Placeholder 1");
+        cm.sendNext("I lost it! I lost it! I'm so irresponsible how could I lose it...");
     } else if (status == 2) {
-        cm.sendNext("Placeholder 2");
+        cm.sendNext("Hey you! #b#h ##k, can you help me find something? It's around here somewhere. I know it is!");
     } else if (status == 3) { // quest progress
         DisplaySummary(metadata);
     } else if (status == 4) {
-        cm.sendAcceptDecline("uwu");
+        cm.sendAcceptDecline("I'm not gonna find it anytime soon alone...");
     } else if (status == 5) {
         CQuests.beginQuest(player, QuestID);
         cm.dispose();
     } else if (status == 6) { // quest complete
-        if (quest.complete(player)) {
-            cm.sendOk("Complete!");
+        if (quest.isCompleted()) {
+            cm.sendOk("I wonder where Yato is.");
+        } else if (quest.complete(player)) {
+            cm.sendOk("You found it? You did! Thank you so much I'll never lose it again. I promise!");
         } else {
             cm.sendOk("Check if your inventory is full, you must accept my rewards!");
         }

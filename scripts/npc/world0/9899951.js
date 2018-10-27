@@ -74,13 +74,13 @@ function action(mode, type, selection) {
         let metadata = CQuests.getMetaData(QuestID[2]);
         testFor(pquest, 6); // jump
         if (status == 1) { // quest begeining
-            cm.sendNext("Hurry, come with me I found the problem. We must visit a person I used to work with. Things may get rough.");
+            cm.sendNext("Are you even doing anything? I can't do anything when there are so many phantoms freely roaming.");
         } else if (status == 2) {
            action(1, 0, -1);
         } else if (status == 3) { // quest progress
             DisplaySummary(metadata);
         } else if (status == 4) {
-            cm.sendAcceptDecline("Finish defeating these last few phantoms and follow me...\r\nWe must put an end to this before it's too late");
+            cm.sendAcceptDecline("Finish defeating these last few phantoms and follow me...\r\nI'll put an end to this before it's too late");
         } else if (status == 5) {
             CQuests.beginQuest(player, QuestID[2]);
             cm.dispose();
@@ -93,7 +93,7 @@ function action(mode, type, selection) {
             cm.dispose();
         } else cm.dispose();
     } else {
-        cm.sendOk("---- NOT COMPLETE ----\r\nFind Hiyori and deliver her this letter!");
+        cm.sendOk("You've done enough. Go speak to #bHiyori#k, she most likely needs assistance right now.");
         cm.dispose();
     }
 }

@@ -24,8 +24,8 @@
 
             <!-- Todo: Set to Yato's Scarf item -->
             <imgdir name="0">
-                <int name="itemId" value="1302000"/>
-                <int name="quantity" value="1"/>
+                <int name="itemId" value="2022457"/>
+                <int name="quantity" value="25"/>
             </imgdir>
         </imgdir>
     </imgdir>
