@@ -848,15 +848,17 @@ public class MapleMonster extends AbstractLoadedMapleLife {
             }
         }
         if (toUse.getSkillId() == 200) {
-            Collection<MapleMapObject> mmo = getMap().getMapObjects();
-            int i = 0;
-            for (MapleMapObject mo : mmo) {
-                if (mo.getType() == MapleMapObjectType.MONSTER) {
-                    i++;
+            Collection<MapleMapObject> mmo = new ArrayList<>(getMap().getMapObjects());
+            try {
+                int i = 0;
+                for (MapleMapObject mo : mmo) {
+                    if (mo.getType() == MapleMapObjectType.MONSTER) {
+                        i++;
+                    }
                 }
-            }
-            if (i > 100) {
-                return false;
+                return i <= 100;
+            } finally {
+                mmo.clear();
             }
         }
         return true;

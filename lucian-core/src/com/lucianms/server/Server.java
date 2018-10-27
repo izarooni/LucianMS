@@ -222,7 +222,7 @@ public class Server {
             return;
         }
 
-        ConsoleCommands.beginReading();
+//        ConsoleCommands.beginReading();
     }
 
     public static void reloadConfig() throws FileNotFoundException {

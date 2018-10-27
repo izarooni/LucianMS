@@ -143,7 +143,6 @@ public final class MapleChannel {
             Collection<MapleCharacter> chars = new ArrayList<>(fOld.getCharacters());
             try {
                 for (MapleCharacter player : chars) {
-                    fOld.removeMapObject(player);
                     player.changeMap(fNew);
                 }
             } finally {

@@ -451,14 +451,19 @@ public class MapleMap {
     }
 
     public MapleMonster getMonsterById(int id) {
-        for (MapleMapObject obj : getMapObjects()) {
-            if (obj.getType() == MapleMapObjectType.MONSTER) {
-                if (((MapleMonster) obj).getId() == id) {
-                    return (MapleMonster) obj;
+        Collection<MapleMapObject> mapObjects = new ArrayList<>(getMapObjects());
+        try {
+            for (MapleMapObject obj : mapObjects) {
+                if (obj.getType() == MapleMapObjectType.MONSTER) {
+                    if (((MapleMonster) obj).getId() == id) {
+                        return (MapleMonster) obj;
+                    }
                 }
             }
+            return null;
+        } finally {
+            mapobjects.clear();
         }
-        return null;
     }
 
     public int countMonster(int id) {
@@ -524,7 +529,7 @@ public class MapleMap {
                                     int receive = monster.getLevel() * 4 / random;
                                     if (chr.getParty() != null) {
                                         List<MaplePartyCharacter> collect = chr.getParty().getMembers().stream().filter(m -> m.isOnline() && m.getPlayer().getMap() == this).collect(Collectors.toList());
-                                        receive = (int) (monster.getLevel() * ServerConstants.LEVEL_TO_NX_MULTIPLIER) / collect.size();
+                                        receive = (int) (monster.getLevel() * ServerConstants.LEVEL_TO_NX_MULTIPLIER) / Math.min(collect.size(), 1);
                                         for (MaplePartyCharacter players : collect) {
                                             players.getPlayer().getCashShop().gainCash(1, receive);
                                             if (receive >= 1) {
@@ -541,7 +546,7 @@ public class MapleMap {
                                     int receive = (int) (monster.getLevel() * ServerConstants.LEVEL_TO_NX_MULTIPLIER + random);
                                     if (chr.getParty() != null) {
                                         List<MaplePartyCharacter> collect = chr.getParty().getMembers().stream().filter(m -> m.isOnline() && m.getPlayer().getMap() == this).collect(Collectors.toList());
-                                        receive = (int) (monster.getLevel() * ServerConstants.LEVEL_TO_NX_MULTIPLIER + random - (random / 2)) / collect.size();
+                                        receive = (int) (monster.getLevel() * ServerConstants.LEVEL_TO_NX_MULTIPLIER + random - (random / 2)) / Math.min(collect.size(), 1);
                                         for (MaplePartyCharacter players : collect) {
                                             players.getPlayer().getCashShop().gainCash(1, receive);
                                             if (receive >= 1) {
@@ -731,12 +736,17 @@ public class MapleMap {
     }
 
     public void killMonster(int monsId) {
-        for (MapleMapObject mmo : getMapObjects()) {
-            if (mmo instanceof MapleMonster) {
-                if (((MapleMonster) mmo).getId() == monsId) {
-                    this.killMonster((MapleMonster) mmo, getAllPlayer().get(0), false);
+        Collection<MapleMapObject> mapObjects = new ArrayList<>(getMapObjects());
+        try {
+            for (MapleMapObject mmo : mapObjects) {
+                if (mmo instanceof MapleMonster) {
+                    if (((MapleMonster) mmo).getId() == monsId) {
+                        this.killMonster((MapleMonster) mmo, getAllPlayer().get(0), false);
+                    }
                 }
             }
+        } finally {
+            mapobjects.clear();
         }
     }
 
@@ -1849,7 +1859,7 @@ public class MapleMap {
     public void addMonsterSpawn(MapleMonster monster, int mobTime, int team) {
         Point newpos = calcPointBelow(monster.getPosition());
         if (newpos == null) {
-            LOGGER.warn("No foothold for monster {} at x:{},y:{} in map {}", monster.getId(), monster.getPosition().x, monster.getPosition().y, getId());
+            LOGGER.warn("No foothold for monster {} at [{}, {}] map {}", monster.getId(), monster.getPosition().x, monster.getPosition().y, getId());
             return;
         }
         newpos.y -= 1;
@@ -1860,7 +1870,7 @@ public class MapleMap {
             spawnPoint.summonMonster();
             spawnPoints.add(spawnPoint);
         } else {
-            LOGGER.info("Unable to summon invalid monster {} in map {} via SpawnPoint", monster.getId(), getId());
+            LOGGER.info("Invalid monster summon {} in {} via SpawnPoint", monster.getId(), getId());
         }
     }
 
