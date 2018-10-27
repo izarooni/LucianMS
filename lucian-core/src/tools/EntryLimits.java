@@ -29,6 +29,17 @@ public class EntryLimits {
     private EntryLimits() {
     }
 
+    public static void reset(int playerID, String type) {
+        try (Connection con = Server.getConnection();
+             PreparedStatement ps = con.prepareStatement("delete from entry_limit where playerid = ? and type = ?")) {
+            ps.setInt(1, playerID);
+            ps.setString(2, type);
+            ps.executeUpdate();
+        } catch (SQLException e) {
+            LOGGER.error("Unable to reset player {}: {}", playerID, e.getMessage());
+        }
+    }
+
     public static Entry getEntries(int playerID, String type) {
         try (Connection con = Server.getConnection();
              PreparedStatement ps = con.prepareStatement("select entries, last_entry from entry_limit where playerid = ? and type = ?")) {

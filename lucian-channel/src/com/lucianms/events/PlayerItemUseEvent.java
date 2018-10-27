@@ -3,6 +3,7 @@ package com.lucianms.events;
 import com.lucianms.client.MapleCharacter;
 import com.lucianms.client.MapleClient;
 import com.lucianms.client.MapleDisease;
+import com.lucianms.client.SpamTracker;
 import com.lucianms.client.inventory.Item;
 import com.lucianms.client.inventory.MapleInventoryType;
 import com.lucianms.constants.ExpTable;
@@ -44,11 +45,18 @@ public class PlayerItemUseEvent extends PacketEvent {
         Item toUse = player.getInventory(MapleInventoryType.USE).getItem(slot);
         if (toUse != null && toUse.getQuantity() > 0 && toUse.getItemId() == itemId) {
             if (itemId == ItemConstants.ExpTicket) { // [custom] exp ticket
+                SpamTracker.SpamData spamTracker = player.getSpamTracker(SpamTracker.SpamOperation.ItemUse);
+                if (spamTracker.testFor(1000)) {
+                    return null;
+                }
+                spamTracker.record();
                 EntryLimits.Entry entry = EntryLimits.getEntries(player.getId(), "exp_ticket");
                 if (entry != null && entry.Entries >= 3) {
                     if (System.currentTimeMillis() - entry.LastEntry <= TimeUnit.DAYS.toMillis(1)) {
                         player.sendMessage(5, "You may only use 3 EXP tickets per day.");
                         return null;
+                    } else {
+                        EntryLimits.reset(player.getId(), "exp_ticket");
                     }
                 }
                 EntryLimits.incrementEntry(player.getId(), "exp_ticket");
