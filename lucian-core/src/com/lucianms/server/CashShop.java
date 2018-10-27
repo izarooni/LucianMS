@@ -219,7 +219,7 @@ public class CashShop {
         this.accountId = accountId;
         this.characterId = characterId;
 
-        if (jobType == 0) {
+        if (jobType == 0 || jobType == 4) {
             factory = ItemFactory.CASH_EXPLORER;
         } else if (jobType == 1) {
             factory = ItemFactory.CASH_CYGNUS;
