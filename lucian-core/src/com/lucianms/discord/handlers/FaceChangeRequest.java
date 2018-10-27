@@ -59,6 +59,6 @@ public class FaceChangeRequest extends DiscordRequest {
                 LOGGER.info("The player {} could not be found", username);
             }
         }
-        DiscordSession.getSession().write(writer.getPacket());
+        DiscordSession.sendPacket(writer.getPacket());
     }
 }

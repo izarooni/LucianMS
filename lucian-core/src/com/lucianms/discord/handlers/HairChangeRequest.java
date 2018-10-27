@@ -54,9 +54,8 @@ public class HairChangeRequest extends DiscordRequest {
                 }
             } else {
                 writer.write(0);
-                LOGGER.info("The player {} could not be found", username);
             }
         }
-        DiscordSession.getSession().write(writer.getPacket());
+        DiscordSession.sendPacket(writer.getPacket());
     }
 }

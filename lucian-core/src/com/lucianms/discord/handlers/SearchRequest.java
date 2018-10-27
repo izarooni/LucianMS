@@ -1,15 +1,15 @@
 package com.lucianms.discord.handlers;
 
 import com.lucianms.client.inventory.MapleInventoryType;
+import com.lucianms.constants.ItemConstants;
 import com.lucianms.discord.DiscordSession;
 import com.lucianms.discord.Headers;
 import com.lucianms.nio.receive.MaplePacketReader;
-import com.lucianms.constants.ItemConstants;
+import com.lucianms.server.MapleItemInformationProvider;
 import provider.MapleData;
 import provider.MapleDataProvider;
 import provider.MapleDataProviderFactory;
 import provider.MapleDataTool;
-import com.lucianms.server.MapleItemInformationProvider;
 import tools.Pair;
 import tools.data.output.MaplePacketLittleEndianWriter;
 
@@ -102,13 +102,19 @@ public class SearchRequest extends DiscordRequest {
             }
             EncodeData(writer, retItems);
             retItems.clear();
+        } else {
+            writer.writeInt(-1);
+            writer.writeMapleAsciiString("You must specify a search type");
         }
         DiscordSession.sendPacket(writer.getPacket());
         System.gc();
     }
 
     private void EncodeData(MaplePacketLittleEndianWriter writer, List<String> array) {
-        if (array.stream().mapToInt(String::length).sum() >= SearchLimit) {
+        if (array.isEmpty()) {
+            writer.writeInt(-1);
+            writer.writeMapleAsciiString("No results found");
+        } else if (array.stream().mapToInt(String::length).sum() >= SearchLimit) {
             writer.writeInt(-1);
             writer.writeMapleAsciiString("There are too many results to display. Please be more specific with your search query");
         } else {
