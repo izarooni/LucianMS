@@ -101,10 +101,18 @@ public class GameMasterCommands {
             commands.add("!stalker - Go through any player inventory");
             commands.add("!gmmap - Warps you to the GM headquarters");
             commands.add("!itemq <itemid> <morethan> - Check what online players have more than of an item id");
+            commands.add("!killed - Find out who last died in the map.");
             commands.sort(String::compareTo);
             commands.forEach(player::dropMessage);
             commands.clear();
-        }  else if(command.equals("itemq")) {
+        } else if(command.equals("killed")) {
+            if(player.getMap().getLastPlayerDiedInMap() != null) {
+                player.dropMessage(6, "The last player who died on this map is " + player.getMap().getLastPlayerDiedInMap());
+            } else {
+                player.dropMessage(5, "Nobody died here.. yet. Perhaps you should try dying yourself?");
+            }
+        }
+        else if(command.equals("itemq")) {
             if(args.length() == 2) {
                 StringBuilder sb = new StringBuilder();
                 int itemId = args.parseNumber(0, int.class);

@@ -128,9 +128,11 @@ public class MapleMap {
     private Task mapMonitor = null;
     private Pair<Integer, String> timeMob = null;
     private long nextEmergency = 0L;
+    private String lastPlayerDiedInMap = ""; // THIS IS HOW YOU'RE SUPPOSED TO FUCKING DO VARIABLES - also no nullpointers >:(
 
     //region Henesys PQ
     private int riceCakes = 0;
+
     private int bunnyDamage = 0;
     //endregion
 
@@ -2267,6 +2269,14 @@ public class MapleMap {
 
     public MapleCoconut getCoconut() {
         return coconut;
+    }
+
+    public String getLastPlayerDiedInMap() {
+        return lastPlayerDiedInMap;
+    }
+
+    public void setLastPlayerDiedInMap(String lastPlayerDiedInMap) {
+        this.lastPlayerDiedInMap = lastPlayerDiedInMap;
     }
 
     public void setCoconut(MapleCoconut nut) {
