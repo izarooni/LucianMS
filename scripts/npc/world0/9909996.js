@@ -17,6 +17,7 @@ jobs = {
         Aran: { ID: 2100, req: (p) => true,
             equips: [[1442000, 1]], skills: [[21000000, 10], [21001001, 20], [21001003, 20]]},
         Valkyrie: { ID: 1100, req: (p) => p.getStr() >= 35,
+            failMessage: "Make sure you have at least #b35#k points in your #bSTR#k stat.",
             equips: [[1302007, 1]] }
     },
     Second: {
