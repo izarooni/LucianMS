@@ -140,17 +140,14 @@ public final class MapleChannel {
         MapleMap fOld, fNew;
         if ((fOld = maps.remove(mapID)) != null) {
             fNew = getMap(mapID);
-            Collection<MapleMapObject> mapObjects = new ArrayList<>(fOld.getMapObjects());
+            Collection<MapleCharacter> chars = new ArrayList<>(fOld.getCharacters());
             try {
-                for (MapleMapObject object : mapObjects) {
-                    if (object instanceof MapleCharacter) {
-                        MapleCharacter player = (MapleCharacter) object;
-                        fOld.removeMapObject(player);
-                        player.changeMap(fNew);
-                    }
+                for (MapleCharacter player : chars) {
+                    fOld.removeMapObject(player);
+                    player.changeMap(fNew);
                 }
             } finally {
-                mapObjects.clear();
+                chars.clear();
             }
             maps.put(mapID, fNew);
         }

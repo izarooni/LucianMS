@@ -656,7 +656,7 @@ public class MapleMap {
         if (monster.getStats().getLevel() >= chr.getLevel() + 30 && !chr.isGM()) {
             Cheater.CheatEntry entry = chr.getCheater().getCheatEntry(Cheats.UnderLevelAttack);
             entry.incrementCheatCount();
-            entry.announce(chr.getClient(), 8000, "[{}] {} (level {}) attacked a monster ({}) too high of level (level {})", entry.cheatCount, chr.getName(), chr.getLevel(), monster.getId(), monster.getStats().getLevel());
+            entry.announce(chr.getClient(), (1000 * 20), "[{}] {} (level {}) attacked a monster ({}) level (level {})", entry.cheatCount, chr.getName(), chr.getLevel(), monster.getId(), monster.getStats().getLevel());
         }
         int buff = monster.getBuffToGive();
         if (buff > -1) {
@@ -1769,19 +1769,14 @@ public class MapleMap {
 
     public List<MapleMapObject> getMapObjectsInRange(Point from, double rangeSq, List<MapleMapObjectType> types) {
         ArrayList<MapleMapObject> ret = new ArrayList<>();
-        ArrayList<MapleMapObject> objects = new ArrayList<>(getMapObjects());
-        try {
-            for (MapleMapObject l : objects) {
-                if (types.contains(l.getType())) {
-                    if (from.distanceSq(l.getPosition()) <= rangeSq) {
-                        ret.add(l);
-                    }
+        for (MapleMapObject l : getMapObjects()) {
+            if (types.contains(l.getType())) {
+                if (from.distanceSq(l.getPosition()) <= rangeSq) {
+                    ret.add(l);
                 }
             }
-            return ret;
-        } finally {
-            objects.clear();
         }
+        return ret;
     }
 
     public <T> ArrayList<T> getMapObjects(Class<T> t) {

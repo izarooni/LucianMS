@@ -63,7 +63,7 @@ public final class TaskExecutor {
      * @param a the time in milliseconds of when to execute the task
      * @return A {@code Task} object which is a wrapper for the {@link ScheduledFuture} object
      */
-    public static Task runAt(Runnable r, long a) {
+    public synchronized static Task runAt(Runnable r, long a) {
         return setupTask(EXECUTOR.schedule(r, a - System.currentTimeMillis(), TimeUnit.MILLISECONDS));
     }
 
@@ -74,7 +74,7 @@ public final class TaskExecutor {
      * @param d the delay before the task begins execution
      * @return A {@code Task} object which is a wrapper for the {@link ScheduledFuture} object
      */
-    public static Task createTask(Runnable r, long d) {
+    public synchronized static Task createTask(Runnable r, long d) {
         return setupTask(EXECUTOR.schedule(r, d, TimeUnit.MILLISECONDS));
     }
 
@@ -86,7 +86,7 @@ public final class TaskExecutor {
      * @param d the time between each execution
      * @return A {@code Task} object which is a wrapper for the {@link ScheduledFuture} object
      */
-    public static Task createRepeatingTask(Runnable r, long i, long d) {
+    public synchronized static Task createRepeatingTask(Runnable r, long i, long d) {
         return setupTask(EXECUTOR.scheduleWithFixedDelay(r, i, d, TimeUnit.MILLISECONDS));
     }
 
@@ -97,11 +97,11 @@ public final class TaskExecutor {
      * @param t the interval time and delay in milliseconds the task will execute
      * @return a {@code Task} object which is a wrapper for the {@link ScheduledFuture} object
      */
-    public static Task createRepeatingTask(Runnable r, long t) {
+    public synchronized static Task createRepeatingTask(Runnable r, long t) {
         return setupTask(EXECUTOR.scheduleWithFixedDelay(r, t, t, TimeUnit.MILLISECONDS));
     }
 
-    public static Task cancelTask(Task task) {
+    public synchronized static Task cancelTask(Task task) {
         if (task != null) {
             cancelTask(task.getId());
         }
@@ -113,13 +113,14 @@ public final class TaskExecutor {
      *
      * @param id the id of the task to cancel
      */
-    public static void cancelTask(int id) {
-        if (TASKS.containsKey(id)) {
-            TASKS.get(id).cancel();
+    public synchronized static void cancelTask(int id) {
+        Task remove = TASKS.remove(id);
+        if (remove != null) {
+            remove.cancel();
         }
     }
 
-    public static Task getTask(int id) {
+    public synchronized static Task getTask(int id) {
         return TASKS.get(id);
     }
 }
