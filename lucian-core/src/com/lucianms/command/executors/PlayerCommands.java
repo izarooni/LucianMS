@@ -111,7 +111,8 @@ public class PlayerCommands {
             player.sendMessage("EXP {}x, MESO {}x, DROP {}x", target.getExpRate(), target.getMesoRate(), target.getDropRate());
             //   player.sendMessage("Rebirths: {}", player.getRebirths());
             player.sendMessage("Mesos: {}", StringUtil.formatNumber(target.getMeso()));
-            player.sendMessage("Ability Power: {}", StringUtil.formatNumber(target.getRemainingAp()));
+            player.sendMessage("Ability Points: {}", StringUtil.formatNumber(target.getRemainingAp()));
+            player.sendMessage("Skill Points: {}", StringUtil.formatNumber(target.getRemainingSp()));
             player.sendMessage("Hair / Face: {} / {}", target.getHair(), target.getFace());
             player.sendMessage("Crystals: {}", target.getItemQuantity(ServerConstants.CURRENCY, false));
             Occupation occupation = target.getOccupation();
