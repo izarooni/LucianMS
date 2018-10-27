@@ -155,6 +155,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
     private long immortalTimestamp = 0;
     private long portaldelay = 0, lastcombo = 0;
     private long dojoFinish, lastfametime, lastHealed;
+    private long createDate;
     private boolean muted = false;
     private boolean debug = false;
     private boolean isbanned = false;
@@ -576,18 +577,19 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
                 ret.dojoPoints = rs.getInt("dojoPoints");
                 ret.dojoStage = rs.getInt("lastDojoStage");
                 ret.dataString = rs.getString("dataString");
-                ret.fishingPoints = rs.getInt("fishingpoints");
-                ret.daily = rs.getTimestamp("daily");
-                ret.rebirths = rs.getInt("reborns");
-                ret.rebirthPoints = rs.getInt("rebirthpoints");
-                ret.eventPoints = rs.getInt("eventpoints");
-                ret.jumpQuestPoints = rs.getInt("jumpquestpoints");
                 if (channelserver) {
+                    ret.createDate = rs.getTimestamp("createdate").getTime();
+                    ret.fishingPoints = rs.getInt("fishingpoints");
+                    ret.daily = rs.getTimestamp("daily");
+                    ret.rebirths = rs.getInt("reborns");
+                    ret.rebirthPoints = rs.getInt("rebirthpoints");
+                    ret.eventPoints = rs.getInt("eventpoints");
+                    ret.jumpQuestPoints = rs.getInt("jumpquestpoints");
                     ret.chatType = ChatType.values()[rs.getInt("chattype")];
-                }
-                int oOrdinal = rs.getInt("occupation");
-                if (oOrdinal > -1) {
-                    ret.occupation = new Occupation(Occupation.Type.fromValue(oOrdinal));
+                    int oOrdinal = rs.getInt("occupation");
+                    if (oOrdinal > -1) {
+                        ret.occupation = new Occupation(Occupation.Type.fromValue(oOrdinal));
+                    }
                 }
                 if (ret.guildid > 0) {
                     ret.mgc = new MapleGuildCharacter(ret);
@@ -1201,6 +1203,10 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
         if (count > 0) {
             announce(MaplePacketCreator.showCombo(combocounter));
         }
+    }
+
+    public long getCreateDate() {
+        return createDate;
     }
 
     public long getLastCombo() {
