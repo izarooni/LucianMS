@@ -36,12 +36,13 @@ public class MonsterPark extends GenericEvent {
     private Task timeout = null;
     private Hashtable<Integer, Integer> returnMaps = new Hashtable<>();
 
-    public MonsterPark(int worldID, int channelID, int mapID, int baseLevel) {
+    public MonsterPark(int worldID, int channelID, final int mapID, int baseLevel) {
         this.mapId = mapID;
 
         for (int i = mapID; i <= (mapID + (Stages * Increment)); i += Increment) {
             MapleMap instanceMap = new FieldBuilder(worldID, channelID, i).loadFootholds().loadPortals().build();
             if (instanceMap != null) {
+                instanceMap.setInstanced(true);
                 instanceMap.setRespawnEnabled(false);
                 maps.put(i, instanceMap);
                 final MaplePortal portal;
@@ -72,8 +73,7 @@ public class MonsterPark extends GenericEvent {
                                         TaskExecutor.createTask(new Runnable() {
                                             @Override
                                             public void run() {
-                                                for (int i = mapID; i < (mapID + Stages); i++) {
-                                                    MapleMap instanceMap = maps.get(i);
+                                                for (MapleMap instanceMap : maps.values()) {
                                                     if (instanceMap != null) {
                                                         instanceMap.getAllPlayer().forEach(MonsterPark.this::unregisterPlayer);
                                                     }
@@ -101,6 +101,7 @@ public class MonsterPark extends GenericEvent {
     @Override
     public void registerPlayer(MapleCharacter player) {
         if (player.addGenericEvent(this)) {
+            player.sendMessage(5, "You may leave at any time using a warp command.");
             if (timeout == null) { // initialization
                 timeout = TaskExecutor.createTask(() -> returnMaps.forEach((p, m) -> unregisterPlayer(player)), 1000 * 60 * 20);
                 timestampStart = System.currentTimeMillis();
@@ -126,7 +127,7 @@ public class MonsterPark extends GenericEvent {
 
     @Override
     public boolean onPlayerChangeMapInternal(MapleCharacter player, MapleMap destination) {
-        if (player.getMapId() / 1000000 == 95) {
+        if (!destination.isInstanced()) {
             NPCScriptManager.start(player.getClient(), 9071000, "f_monster_park_quit");
             return false;
         }
