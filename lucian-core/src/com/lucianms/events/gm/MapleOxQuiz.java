@@ -64,7 +64,7 @@ public final class MapleOxQuiz {
     public void sendQuestion() {
         int gm = 0;
         for (MapleCharacter mc : map.getCharacters()) {
-            if (mc.gmLevel() > 0) {
+            if (mc.getGMLevel() > 0) {
                 gm++;
             }
         }

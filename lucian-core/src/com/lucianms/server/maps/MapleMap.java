@@ -169,7 +169,7 @@ public class MapleMap {
 
     public void broadcastGMMessage(MapleCharacter source, final byte[] packet) {
         getCharacters().stream()
-                .filter(c -> c.getId() != source.getId() && c.gmLevel() > source.gmLevel())
+                .filter(c -> c.getId() != source.getId() && c.getGMLevel() > source.getGMLevel())
                 .forEach(c -> c.getClient().announce(packet));
     }
 
@@ -748,7 +748,7 @@ public class MapleMap {
                 }
             }
         } finally {
-            mapobjects.clear();
+            mapObjects.clear();
         }
     }
 

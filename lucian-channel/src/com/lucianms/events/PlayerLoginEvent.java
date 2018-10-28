@@ -116,16 +116,18 @@ public class PlayerLoginEvent extends PacketEvent {
         } catch (SQLException e) {
             e.printStackTrace();
         }
+
+        if (player.isGM() && !player.isHidden()) {
+            player.setHidingLevel(player.getGMLevel());
+            player.setHide(true);
+        }
+
         getClient().announce(MaplePacketCreator.getCharInfo(player));
         getClient().announce(MaplePacketCreator.updateGender(player));
         getClient().announce(MaplePacketCreator.enableReport());
         player.getMap().addPlayer(player);
         player.sendKeymap();
         player.sendMacros();
-
-        if (!player.isHidden()) {
-            player.toggleHide();
-        }
 
         if (player.getKeymap().get(91) != null) {
             player.announce(MaplePacketCreator.sendAutoHpPot(player.getKeymap().get(91).getAction()));

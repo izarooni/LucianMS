@@ -50,14 +50,14 @@ public class CommandWorker {
 
         if (h == '!' && (player.isGM() || noCheck)) {
             try {
-                if ((noCheck || player.gmLevel() >= 1) && !EventCommands.execute(client, command, args)) {
-                    if (noCheck || player.gmLevel() >= 6) {
+                if ((noCheck || player.getGMLevel() >= 1) && !EventCommands.execute(client, command, args)) {
+                    if (noCheck || player.getGMLevel() >= 6) {
                         AdministratorCommands.execute(client, command, args);
                     }
-                    if (noCheck || player.gmLevel() >= 3) {
+                    if (noCheck || player.getGMLevel() >= 3) {
                         HGMCommands.execute(client, command, args);
                     }
-                    if (noCheck || player.gmLevel() >= 2) {
+                    if (noCheck || player.getGMLevel() >= 2) {
                         GameMasterCommands.execute(client, command, args);
                     }
                 }

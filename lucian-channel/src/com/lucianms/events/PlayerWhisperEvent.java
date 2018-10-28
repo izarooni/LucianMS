@@ -3,7 +3,6 @@ package com.lucianms.events;
 import com.lucianms.client.MapleCharacter;
 import com.lucianms.command.CommandWorker;
 import com.lucianms.nio.receive.MaplePacketReader;
-import com.lucianms.events.PacketEvent;
 import com.lucianms.server.world.MapleWorld;
 import tools.MaplePacketCreator;
 
@@ -41,7 +40,7 @@ public final class PlayerWhisperEvent extends PacketEvent {
             if (target != null) {
                 target.getClient().announce(MaplePacketCreator.getWhisper(getClient().getPlayer().getName(), getClient().getChannel(), content));
 
-                if (target.isHidden() && target.gmLevel() > getClient().getPlayer().gmLevel()) {
+                if (target.isHidden() && target.getGMLevel() > getClient().getPlayer().getGMLevel()) {
                     getClient().announce(MaplePacketCreator.getWhisperReply(username, (byte) 0));
                 } else {
                     getClient().announce(MaplePacketCreator.getWhisperReply(username, (byte) 1));
@@ -52,7 +51,7 @@ public final class PlayerWhisperEvent extends PacketEvent {
                     world.whisper(getClient().getPlayer().getName(), username, getClient().getChannel(), content);
 
                     target = world.findPlayer(p -> p.getName().equalsIgnoreCase(username));
-                    if (target != null && target.isHidden() && target.gmLevel() > getClient().getPlayer().gmLevel())
+                    if (target != null && target.isHidden() && target.getGMLevel() > getClient().getPlayer().getGMLevel())
                         getClient().announce(MaplePacketCreator.getWhisperReply(username, (byte) 0));
                     else
                         getClient().announce(MaplePacketCreator.getWhisperReply(username, (byte) 1));
@@ -67,7 +66,7 @@ public final class PlayerWhisperEvent extends PacketEvent {
                     // only find if they are mutual friends
                     getClient().announce(MaplePacketCreator.getBuddyFindResult(target, (byte) (target.getClient().getChannel() == getClient().getChannel() ? 1 : 3)));
                 }
-            } else if (target != null && getClient().getPlayer().gmLevel() >= target.gmLevel()) {
+            } else if (target != null && getClient().getPlayer().getGMLevel() >= target.getGMLevel()) {
                 if (target.getCashShop().isOpened()) {
                     getClient().announce(MaplePacketCreator.getFindReply(target.getName(), -1, 2));
                 } else {
