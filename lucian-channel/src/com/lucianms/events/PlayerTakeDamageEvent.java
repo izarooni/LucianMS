@@ -113,7 +113,7 @@ public final class PlayerTakeDamageEvent extends PacketEvent {
                 return null;
             }
             if (damage > 0) {
-                loseItems = map.getMonsterById(monsterIdFrom).getStats().loseItem();
+                loseItems = attacker.getStats().loseItem();
                 if (loseItems != null) {
                     MapleInventoryType type;
                     final int xPosition = player.getPosition().x;
