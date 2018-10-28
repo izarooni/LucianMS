@@ -383,17 +383,15 @@ public class MapleGuild {
     public void changeRank(int cid, int newRank) {
         for (MapleGuildCharacter mgc : members) {
             if (cid == mgc.getId()) {
-                try {
-                    if (mgc.isOnline()) {
-                        Server.getWorld(mgc.getWorld()).setGuildAndRank(cid, this.id, newRank);
-                    } else {
-                        Server.getWorld(mgc.getWorld()).setOfflineGuildStatus((short) this.id, (byte) newRank, cid);
-                    }
-                } catch (Exception re) {
-                    re.printStackTrace();
-                    return;
+                if (mgc.isOnline()) {
+                    Server.getWorld(mgc.getWorld()).setGuildAndRank(cid, this.id, newRank);
+                } else {
+                    Server.getWorld(mgc.getWorld()).setOfflineGuildStatus((short) this.id, (byte) newRank, cid);
                 }
                 mgc.setGuildRank(newRank);
+                if (newRank == 1) {
+                    leader = cid;
+                }
                 this.broadcast(MaplePacketCreator.changeRank(mgc));
                 return;
             }

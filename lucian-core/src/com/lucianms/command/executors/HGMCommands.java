@@ -7,6 +7,8 @@ import com.lucianms.constants.ItemConstants;
 import com.lucianms.io.scripting.npc.NPCScriptManager;
 import com.lucianms.server.*;
 import com.lucianms.server.channel.MapleChannel;
+import com.lucianms.server.guild.MapleGuild;
+import com.lucianms.server.guild.MapleGuildCharacter;
 import com.lucianms.server.life.MapleLifeFactory;
 import com.lucianms.server.life.MapleMonster;
 import com.lucianms.server.life.MapleMonsterStats;
@@ -56,6 +58,31 @@ public class HGMCommands {
             commands.sort(String::compareTo);
             commands.forEach(player::dropMessage);
             commands.clear();
+        } else if (command.equals("guildrank")) {
+            if (args.length() == 2) {
+                String username = args.get(0);
+                Integer newRank = args.parseNumber(1, int.class);
+                if (newRank == null) {
+                    player.sendMessage(args.getFirstError());
+                    return;
+                } else if (newRank < 1 || newRank > 5) {
+                    player.sendMessage(5, "Guild rank must be between 1 (master) and 5 (lowest member)");
+                    return;
+                }
+                MapleGuild guild = player.getGuild();
+                if (guild != null) {
+                    for (MapleGuildCharacter member : guild.getMembers()) {
+                        if (member.getName().equalsIgnoreCase(username)) {
+                            guild.changeRank(member.getId(), newRank);
+                            break;
+                        }
+                    }
+                } else {
+                    player.sendMessage(5, "You must be in a guild!");
+                }
+            } else {
+                player.sendMessage(5, "syntax: !{} <username> <new rank>", command.getName());
+            }
         } else if (command.equals("popup")) {
             if (args.length() > 0) {
                 String content = args.concatFrom(0);
