@@ -184,9 +184,9 @@ public class GameMasterCommands {
                             MapleCharacter warper = (command.equals("warp") ? target : player); // destination
 
                             if (target.getClient().getChannel() != client.getChannel()) {
-                                warpie.setMap(warper.getMap());
                                 warpie.setPosition(warper.getPosition().getLocation());
                                 warpie.getClient().changeChannel(warper.getClient().getChannel());
+                                warpie.setMap(warper.getMap());
                             } else {
                                 if (exact || command.equals("warp")) {
                                     warpie.changeMap(warper.getMap(), warper.getPosition());
