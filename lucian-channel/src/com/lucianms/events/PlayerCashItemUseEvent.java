@@ -508,7 +508,7 @@ public class PlayerCashItemUseEvent extends PacketEvent implements Cleaner.Clean
                     if (victim != null) {
                         MapleMap target = victim.getMap();
                         if (ch.getMap(victim.getMapId()).getForcedReturnId() == 999999999 || victim.getMapId() < 100000000) {
-                            if (victim.gmLevel() <= player.gmLevel()) {
+                            if (victim.getGMLevel() <= player.getGMLevel()) {
                                 if (itemID == VIPTeleportRock || victim.getMapId() / player.getMapId() == 1) { // viprock & same continent
                                     player.changeMap(target, target.findClosestSpawnpoint(victim.getPosition()));
                                     remove(getClient(), itemID);

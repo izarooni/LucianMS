@@ -1330,9 +1330,13 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
         }
     }
 
+    public void setHide(boolean hide) {
+        this.hidden = hide;
+    }
+
     public void setHidden(boolean hidden, boolean login) {
         if (isGM()) {
-            this.hidden = hidden;
+            setHide(hidden);
             announce(MaplePacketCreator.getGMEffect(0x10, (byte) (hidden ? 1 : 0)));
             if (!hidden) {
                 List<MapleBuffStat> dsstat = Collections.singletonList(MapleBuffStat.DARKSIGHT);
@@ -3267,7 +3271,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
         }
     }
 
-    public int gmLevel() {
+    public int getGMLevel() {
         return gmLevel;
     }
 
@@ -3677,6 +3681,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
     }
 
     private void playerDead() {
+        getMap().setLastPlayerDiedInMap(getName());
         cancelAllBuffs(false);
         dispelDebuffs();
         ManualPlayerEvent playerEvent = getClient().getWorldServer().getPlayerEvent();
@@ -4969,7 +4974,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
 
     @Override
     public void sendSpawnData(MapleClient client) {
-        if (!this.isHidden() || client.getPlayer().gmLevel() > 0) {
+        if (!this.isHidden() || client.getPlayer().getGMLevel() >= this.getHidingLevel()) {
             client.announce(MaplePacketCreator.spawnPlayerMapobject(this));
         }
 

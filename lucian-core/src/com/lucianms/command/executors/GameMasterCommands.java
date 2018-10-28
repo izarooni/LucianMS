@@ -73,6 +73,7 @@ public class GameMasterCommands {
             commands.add("!maxstats - max your stats");
             commands.add("!maxskills - max your skills");
             commands.add("!hide - change who can see you in hide");
+            commands.add("!sethide - toggles hide on/off, equivalent of using hide skill");
             commands.add("!clearinv <inventory> - clear all items in the specified inventory");
             commands.add("!debuff <usernames/map> - remove disease from specified players, or everybody in the map");
             commands.add("!lock <usernames> - prevent players from using skills");
@@ -101,14 +102,22 @@ public class GameMasterCommands {
             commands.add("!stalker - Go through any player inventory");
             commands.add("!gmmap - Warps you to the GM headquarters");
             commands.add("!itemq <itemid> <morethan> - Check what online players have more than of an item id");
+            commands.add("!killed - Find out who last died in the map.");
             commands.sort(String::compareTo);
             commands.forEach(player::dropMessage);
             commands.clear();
-        }  else if(command.equals("itemq")) {
+        } else if(command.equals("killed")) {
+            if(player.getMap().getLastPlayerDiedInMap() != null) {
+                player.dropMessage(6, "The last player who died on this map is " + player.getMap().getLastPlayerDiedInMap());
+            } else {
+                player.dropMessage(5, "Nobody died here.. yet. Perhaps you should try dying yourself?");
+            }
+        }
+        else if(command.equals("itemq")) {
             if(args.length() == 2) {
                 StringBuilder sb = new StringBuilder();
-                int itemId = args.parseNumber(1, int.class);
-                int qnty = args.parseNumber(2, int.class);
+                int itemId = args.parseNumber(0, int.class);
+                int qnty = args.parseNumber(1, int.class);
                 if(args.getFirstError() == null) {
                     for(MapleCharacter target : ch.getPlayerStorage().values()) {
                         int actualQuantity = target.getItemQuantity(itemId, true);
@@ -126,6 +135,8 @@ public class GameMasterCommands {
                 if(!(sb.length() == 0)) {
                     client.announce(MaplePacketCreator.getNPCTalk(10200, (byte) 0, sb.toString(), "00 00", (byte) 0));
                     sb.setLength(0);
+                } else {
+                    player.dropMessage(5, "Nobody found online with more than this amount.");
                 }
             } else {
                 player.dropMessage(5, "Correct syntax: !itemq <itemid> <morethan>");
@@ -715,8 +726,8 @@ public class GameMasterCommands {
                     player.dropMessage(5, error);
                     return;
                 }
-                if (hLevel < 1 || hLevel > player.gmLevel()) {
-                    player.dropMessage(6, "You may only enter a value between " + 1 + " and " + player.gmLevel());
+                if (hLevel < 1 || hLevel > player.getGMLevel()) {
+                    player.dropMessage(6, "You may only enter a value between " + 1 + " and " + player.getGMLevel());
                     return;
                 }
                 player.setHidingLevel(hLevel);
@@ -724,6 +735,8 @@ public class GameMasterCommands {
             } else {
                 player.dropMessage(6, "Your hiding value is " + player.getHidingLevel());
             }
+        } else if (command.equals("sethide")) {
+            player.toggleHide();
         } else if (command.equals("maxstats")) {
             player.setStr(32767);
             player.setDex(32767);

@@ -128,9 +128,11 @@ public class MapleMap {
     private Task mapMonitor = null;
     private Pair<Integer, String> timeMob = null;
     private long nextEmergency = 0L;
+    private String lastPlayerDiedInMap = ""; // THIS IS HOW YOU'RE SUPPOSED TO FUCKING DO VARIABLES - also no nullpointers >:(
 
     //region Henesys PQ
     private int riceCakes = 0;
+
     private int bunnyDamage = 0;
     //endregion
 
@@ -167,7 +169,7 @@ public class MapleMap {
 
     public void broadcastGMMessage(MapleCharacter source, final byte[] packet) {
         getCharacters().stream()
-                .filter(c -> c.getId() != source.getId() && c.gmLevel() > source.gmLevel())
+                .filter(c -> c.getId() != source.getId() && c.getGMLevel() > source.getGMLevel())
                 .forEach(c -> c.getClient().announce(packet));
     }
 
@@ -462,7 +464,7 @@ public class MapleMap {
             }
             return null;
         } finally {
-            mapobjects.clear();
+            mapObjects.clear();
         }
     }
 
@@ -746,7 +748,7 @@ public class MapleMap {
                 }
             }
         } finally {
-            mapobjects.clear();
+            mapObjects.clear();
         }
     }
 
@@ -2267,6 +2269,14 @@ public class MapleMap {
 
     public MapleCoconut getCoconut() {
         return coconut;
+    }
+
+    public String getLastPlayerDiedInMap() {
+        return lastPlayerDiedInMap;
+    }
+
+    public void setLastPlayerDiedInMap(String lastPlayerDiedInMap) {
+        this.lastPlayerDiedInMap = lastPlayerDiedInMap;
     }
 
     public void setCoconut(MapleCoconut nut) {

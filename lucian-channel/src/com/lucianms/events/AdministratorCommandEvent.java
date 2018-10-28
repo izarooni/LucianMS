@@ -15,7 +15,7 @@ public class AdministratorCommandEvent extends PacketEvent {
 
     @Override
     public void processInput(MaplePacketReader reader) {
-        if (getClient().getPlayer().gmLevel() < 5) {
+        if (getClient().getPlayer().getGMLevel() < 5) {
             return;
         }
         action = reader.readByte();
