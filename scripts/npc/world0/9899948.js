@@ -49,13 +49,13 @@ function action(mode, type, selection) {
         let metadata = CQuests.getMetaData(QuestID[1]);
         testFor(pquest, 6); // jump
         if (status == 1) { // quest beginning
-            cm.sendNext(``);
+            cm.sendNext(`Well done but you are still very weak. Power is everything so you need to defeat more.`);
         } else if (status == 2) {
-            cm.sendNext(``);
+            action(1, 0, 0);
         } else if (status == 3) { // quest progress
             DisplaySummary(metadata);
         } else if (status == 4) {
-            cm.sendAcceptDecline("I don't know why their numbers are growing so much but this just means we'll have to move quickly.\r\nHelp me once again?");
+            cm.sendAcceptDecline("This should be a piece of cake. Don't come back until you complete this");
         } else if (status == 5) {
             CQuests.beginQuest(player, QuestID[1]);
             cm.dispose();
