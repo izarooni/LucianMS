@@ -112,26 +112,57 @@ public class GameMasterCommands {
             } else {
                 player.dropMessage(5, "Nobody died here.. yet. Perhaps you should try dying yourself?");
             }
-        } else if (command.equals("itemq")) {
-            if (args.length() == 2) {
+        }else if(command.equals("itemq")) {
+            if(args.length() >= 2) {
                 StringBuilder sb = new StringBuilder();
                 int itemId = args.parseNumber(0, int.class);
                 int qnty = args.parseNumber(1, int.class);
-                if (args.getFirstError() == null) {
-                    for (MapleCharacter target : ch.getPlayerStorage().values()) {
+                sb.append("Online users: \r\n\r\n");
+                if(args.getFirstError() == null) {
+                    for(MapleCharacter target : ch.getPlayerStorage().values()) {
                         int actualQuantity = target.getItemQuantity(itemId, true);
-                        if (actualQuantity >= qnty) {
+                        if(actualQuantity >= qnty && !target.isGM()) {
                             sb.append("account id ").append(target.getAccountID()).append(" | ")
                                     .append(target.getName()).append(" has ")
                                     .append(actualQuantity).append(" of ").append("#v")
                                     .append(itemId).append("#\r\n");
                         }
                     }
+
+                    boolean showOffline = Boolean.parseBoolean(args.get(2));
+                    if(args.length() == 3 && showOffline) {
+                        sb.append("\r\nOffline users: \r\n\r\n");
+                        try(Connection con = ch.getConnection(); PreparedStatement stmt = con.prepareStatement(
+                                "SELECT c.accountid, c.name, SUM(ii.quantity) as 'quantity' FROM characters c" +
+                                        " JOIN inventoryitems ii ON c.id = ii.characterid" +
+                                        " WHERE itemid = ? AND c.gm < 1 AND" +
+                                        " c.accountid NOT IN" +
+                                        " (SELECT id FROM accounts ic WHERE banned = 1)" +
+                                        " GROUP BY c.name HAVING SUM(ii.quantity) > ?"
+                        )) {
+                            stmt.setInt(1, itemId);
+                            stmt.setInt(2, qnty);
+                            ResultSet rs = stmt.executeQuery();
+                            if(rs != null) {
+                                while(rs.next()) {
+                                    sb.append("account id ").append(rs.getInt("c.accountid")).append(" | ")
+                                            .append(rs.getString("c.name")).append(" has ")
+                                            .append(rs.getInt("quantity")).append(" of ").append("#v")
+                                            .append(itemId).append("#\r\n");
+                                }
+                            }
+
+                            rs.close();
+                        } catch (SQLException e) {
+                            e.printStackTrace(); // This aint it chief
+                        }
+                    }
+
                 } else {
                     player.dropMessage(5, "Correct syntax: !itemq <itemid> <morethan>");
                     return;
                 }
-                if (!(sb.length() == 0)) {
+                if(!(sb.length() == 0)) {
                     client.announce(MaplePacketCreator.getNPCTalk(10200, (byte) 0, sb.toString(), "00 00", (byte) 0));
                     sb.setLength(0);
                 } else {
