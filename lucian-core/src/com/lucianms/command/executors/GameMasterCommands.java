@@ -106,22 +106,21 @@ public class GameMasterCommands {
             commands.sort(String::compareTo);
             commands.forEach(player::dropMessage);
             commands.clear();
-        } else if(command.equals("killed")) {
-            if(player.getMap().getLastPlayerDiedInMap() != null) {
+        } else if (command.equals("killed")) {
+            if (player.getMap().getLastPlayerDiedInMap() != null) {
                 player.dropMessage(6, "The last player who died on this map is " + player.getMap().getLastPlayerDiedInMap());
             } else {
                 player.dropMessage(5, "Nobody died here.. yet. Perhaps you should try dying yourself?");
             }
-        }
-        else if(command.equals("itemq")) {
-            if(args.length() == 2) {
+        } else if (command.equals("itemq")) {
+            if (args.length() == 2) {
                 StringBuilder sb = new StringBuilder();
                 int itemId = args.parseNumber(0, int.class);
                 int qnty = args.parseNumber(1, int.class);
-                if(args.getFirstError() == null) {
-                    for(MapleCharacter target : ch.getPlayerStorage().values()) {
+                if (args.getFirstError() == null) {
+                    for (MapleCharacter target : ch.getPlayerStorage().values()) {
                         int actualQuantity = target.getItemQuantity(itemId, true);
-                        if(actualQuantity >= qnty) {
+                        if (actualQuantity >= qnty) {
                             sb.append("account id ").append(target.getAccountID()).append(" | ")
                                     .append(target.getName()).append(" has ")
                                     .append(actualQuantity).append(" of ").append("#v")
@@ -132,7 +131,7 @@ public class GameMasterCommands {
                     player.dropMessage(5, "Correct syntax: !itemq <itemid> <morethan>");
                     return;
                 }
-                if(!(sb.length() == 0)) {
+                if (!(sb.length() == 0)) {
                     client.announce(MaplePacketCreator.getNPCTalk(10200, (byte) 0, sb.toString(), "00 00", (byte) 0));
                     sb.setLength(0);
                 } else {
@@ -216,8 +215,6 @@ public class GameMasterCommands {
                                 return;
                             }
                         }
-                    } else {
-                        player.dropMessage(5, "You must specify a map ID");
                     }
                 }
                 if (command.equals("warpmap", "wm", "wmx")) {
@@ -653,7 +650,12 @@ public class GameMasterCommands {
                 String error = args.getFirstError();
                 if (error != null) {
                     player.dropMessage(5, error);
-                    return;
+                    MapleCharacter target = client.getWorldServer().findPlayer(p -> p.getName().equalsIgnoreCase(args.get(0)));
+                    if (target != null) {
+                        mapId = target.getMapId();
+                    } else {
+                        return;
+                    }
                 }
                 for (MapleChannel channel : client.getWorldServer().getChannels()) {
                     channel.reloadMap(mapId);
