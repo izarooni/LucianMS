@@ -1,6 +1,7 @@
 package com.lucianms.features.scheduled;
 
 import com.lucianms.client.MapleCharacter;
+import com.lucianms.constants.ServerConstants;
 import com.lucianms.scheduler.Task;
 import com.lucianms.scheduler.TaskExecutor;
 import com.lucianms.server.channel.MapleChannel;
@@ -33,7 +34,8 @@ public class SOuterSpace extends SAutoEvent {
     private static final int[][] PortalPositions = {{156, 880}, {2352, 881}, {3124, 581}, {3831, 821}};
 
     private final MapleWorld world;
-    private final boolean[] finished;
+    private boolean[] finished;
+    private int[] parties;
     private Task timeoutTask = null;
     private long start;
     private boolean open = false;
@@ -41,6 +43,7 @@ public class SOuterSpace extends SAutoEvent {
     public SOuterSpace(MapleWorld world) {
         this.world = world;
         this.finished = new boolean[world.getChannels().size()];
+        this.parties = new int[world.getChannels().size()];
     }
 
     public boolean isOpen() {
@@ -60,6 +63,12 @@ public class SOuterSpace extends SAutoEvent {
         return true;
     }
 
+    /**
+     * Used in NPC script 2040043
+     *
+     * @param i the channel ID of the player
+     * @return true if the slime has been killed in the specified channel
+     */
     public boolean isFinished(int i) {
         return finished[i];
     }
@@ -77,6 +86,9 @@ public class SOuterSpace extends SAutoEvent {
     @Override
     public void run() {
         setOpen(true);
+        finished = new boolean[world.getChannels().size()];
+        parties = new int[world.getChannels().size()];
+
         for (MapleChannel channel : world.getChannels()) {
             final int channelID = channel.getId();
             final MapleMap eventMap = channel.getMap(MapId);
@@ -85,6 +97,7 @@ public class SOuterSpace extends SAutoEvent {
                 eventMap.killMonster(slime, null, false);
             }
 
+            // spawn at a random set position in the map
             final int PPIndex = Randomizer.nextInt(PortalPositions.length);
             int[] ipos = PortalPositions[PPIndex];
             Point pos = new Point(ipos[0], ipos[1]);
@@ -103,10 +116,17 @@ public class SOuterSpace extends SAutoEvent {
                             // damaged -- because this is also invoked by MapleMap#killAllMonsters
                             channel.broadcastPacket(MaplePacketCreator.serverNotice(0, "The channel " + channelID + " Space Slime has been defeated!"));
                         }
+                        eventMap.broadcastMessage(MaplePacketCreator.getClock(30));
+                        TaskExecutor.createTask(new Runnable() {
+                            @Override
+                            public void run() {
+                                eventMap.warpEveryone(ServerConstants.HOME_MAP);
+                            }
+                        }, (1000 * 30));
                     }
                 };
-                finished[channelID - 1] = false;
 
+                // anders didn't remove the removeAfter property from the monster
                 MapleMonsterStats stats = new MapleMonsterStats(monster.getStats());
                 stats.setRemoveAfter(0);
                 monster.setOverrideStats(stats);
@@ -120,6 +140,7 @@ public class SOuterSpace extends SAutoEvent {
                 timeoutTask = TaskExecutor.createTask(new Runnable() {
                     @Override
                     public void run() {
+                        eventMap.warpEveryone(ServerConstants.HOME_MAP);
                         eventMap.killMonster(monster.getId());
                         setOpen(false);
                     }
@@ -137,28 +158,48 @@ public class SOuterSpace extends SAutoEvent {
 
     @Override
     public void registerPlayer(MapleCharacter player) {
-        player.saveLocation("OTHER");
-        player.changeMap(98);
-        player.announce(MaplePacketCreator.showEffect("event/space/boss"));
-        long endTime = start + (1000 * 60 * 5);
-        long remainingTime = (long) ((endTime - System.currentTimeMillis()) / 1000d);
-        if (remainingTime > 0) {
-            player.announce(MaplePacketCreator.getClock((int) remainingTime));
+        MapleChannel channelServer = player.getClient().getChannelServer();
+        int channelID = channelServer.getId();
+        int reserve = (player.getParty() == null) ? player.getId() : player.getParty().getId();
+        if (parties[channelID] == reserve || parties[channelID] == 0) {
+            parties[channelID] = reserve;
+            long endTime = start + (1000 * 60 * 5);
+            long remainingTime = (long) ((endTime - System.currentTimeMillis()) / 1000d);
+            if (remainingTime > 0) {
+                player.saveLocation("OTHER");
+                player.changeMap(98);
+                player.announce(MaplePacketCreator.showEffect("event/space/boss"));
+                player.announce(MaplePacketCreator.getClock((int) remainingTime));
+                player.addGenericEvent(this);
+            } else {
+                LOGGER.info("Player '{}' entering Outer Space when it has ended", player.getName());
+            }
         } else {
-            LOGGER.info("Player '{}' entering Outer Space when it has ended", player.getName());
+            player.sendMessage(5, "Another party is already fighting the Space Slime in this channel");
         }
     }
 
     @Override
     public void unregisterPlayer(MapleCharacter player) {
-        if (player.getMapId() == MapId) {
-            int returnMap = player.getSavedLocation("OTHER");
-            if (returnMap == -1) {
-                returnMap = 100000000;
-                player.dropMessage("Your return map was obstructed");
-            }
-            player.changeMap(returnMap);
-            player.clearSavedLocation(SavedLocationType.OTHER);
+        player.removeGenericEvent(this);
+
+        int channelID = player.getClient().getChannel();
+        parties[channelID] = 0;
+
+        int returnMap = player.getSavedLocation("OTHER");
+        if (returnMap == -1) {
+            returnMap = 100000000;
+            player.dropMessage("Your return map was obstructed");
         }
+        player.changeMap(returnMap);
+        player.clearSavedLocation(SavedLocationType.OTHER);
+    }
+
+    @Override
+    public boolean onPlayerChangeMapInternal(MapleCharacter player, MapleMap destination) {
+        if (destination.getId() != MapId) {
+            unregisterPlayer(player);
+        }
+        return false;
     }
 }

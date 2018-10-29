@@ -2231,11 +2231,8 @@ public class MapleMap {
 
     public void warpEveryone(int to) {
         ArrayList<MapleCharacter> characters = new ArrayList<>(getCharacters());
-        try {
-            characters.forEach(p -> p.changeMap(to));
-        } finally {
-            characters.clear();
-        }
+        characters.forEach(p -> p.changeMap(to));
+        characters.clear();
     }
 
     // BEGIN EVENTS
