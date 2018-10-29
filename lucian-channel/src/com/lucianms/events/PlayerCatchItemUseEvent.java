@@ -1,10 +1,8 @@
 package com.lucianms.events;
 
 import com.lucianms.client.MapleCharacter;
-import com.lucianms.client.autoban.Cheater;
-import com.lucianms.client.autoban.Cheats;
+import com.lucianms.client.SpamTracker;
 import com.lucianms.client.inventory.MapleInventoryType;
-import com.lucianms.events.PacketEvent;
 import com.lucianms.nio.receive.MaplePacketReader;
 import com.lucianms.server.MapleInventoryManipulator;
 import com.lucianms.server.MapleItemInformationProvider;
@@ -30,13 +28,10 @@ public class PlayerCatchItemUseEvent extends PacketEvent {
     @Override
     public Object onPacket() {
         MapleCharacter player = getClient().getPlayer();
-        Cheater.CheatEntry entry = player.getCheater().getCheatEntry(Cheats.CatchItemUse);
+        SpamTracker.SpamData spamTracker = player.getSpamTracker(SpamTracker.SpamOperation.CatchItem);
 
         MapleMonster mob = player.getMap().getMonsterByOid(monsterID);
-        if (player.getInventory(MapleItemInformationProvider.getInstance().getInventoryType(itemID)).countById(itemID) <= 0) {
-            return null;
-        }
-        if (mob == null) {
+        if (mob == null || player.getInventory(MapleItemInformationProvider.getInstance().getInventoryType(itemID)).countById(itemID) <= 0) {
             return null;
         }
         switch (itemID) {
@@ -47,40 +42,41 @@ public class PlayerCatchItemUseEvent extends PacketEvent {
                     MapleInventoryManipulator.removeById(getClient(), MapleInventoryType.USE, itemID, 1, true, true);
                     MapleInventoryManipulator.addById(getClient(), 1902000, (short) 1, "", -1);
                 }
-                getClient().announce(MaplePacketCreator.enableActions());
                 break;
             case 2270001:
+                if (spamTracker.testFor(1500)) {
+                    break;
+                }
+                spamTracker.record();
                 if (mob.getId() == 9500197) {
-                    if (System.currentTimeMillis() - entry.latestOperationTimestamp > 1500) {
-                        if (mob.getHp() < ((mob.getMaxHp() / 10) * 4)) {
-                            player.getMap().broadcastMessage(MaplePacketCreator.catchMonster(monsterID, itemID, (byte) 1));
-                            mob.getMap().killMonster(mob, null, false);
-                            MapleInventoryManipulator.removeById(getClient(), MapleInventoryType.USE, itemID, 1, true, true);
-                            MapleInventoryManipulator.addById(getClient(), 4031830, (short) 1, "", -1);
-                        } else {
-                            getClient().announce(MaplePacketCreator.catchMessage(0));
-                        }
+                    if (mob.getHp() < ((mob.getMaxHp() / 10) * 4)) {
+                        player.getMap().broadcastMessage(MaplePacketCreator.catchMonster(monsterID, itemID, (byte) 1));
+                        mob.getMap().killMonster(mob, null, false);
+                        MapleInventoryManipulator.removeById(getClient(), MapleInventoryType.USE, itemID, 1, true, true);
+                        MapleInventoryManipulator.addById(getClient(), 4031830, (short) 1, "", -1);
+                    } else {
+                        getClient().announce(MaplePacketCreator.catchMessage(0));
                     }
-                    getClient().announce(MaplePacketCreator.enableActions());
                 }
                 break;
             case 2270002:
+                if (spamTracker.testFor(800)) {
+                    break;
+                }
+                spamTracker.record();
                 if (mob.getId() == 9300157) {
-                    if (System.currentTimeMillis() - entry.latestOperationTimestamp > 800) {
-                        if (mob.getHp() < ((mob.getMaxHp() / 10) * 4)) {
-                            if (Math.random() < 0.5) { // 50% chance
-                                player.getMap().broadcastMessage(MaplePacketCreator.catchMonster(monsterID, itemID, (byte) 1));
-                                mob.getMap().killMonster(mob, null, false);
-                                MapleInventoryManipulator.removeById(getClient(), MapleInventoryType.USE, itemID, 1, true, true);
-                                MapleInventoryManipulator.addById(getClient(), 4031868, (short) 1, "", -1);
-                            } else {
-                                player.getMap().broadcastMessage(MaplePacketCreator.catchMonster(monsterID, itemID, (byte) 0));
-                            }
+                    if (mob.getHp() < ((mob.getMaxHp() / 10) * 4)) {
+                        if (Math.random() < 0.5) { // 50% chance
+                            player.getMap().broadcastMessage(MaplePacketCreator.catchMonster(monsterID, itemID, (byte) 1));
+                            mob.getMap().killMonster(mob, null, false);
+                            MapleInventoryManipulator.removeById(getClient(), MapleInventoryType.USE, itemID, 1, true, true);
+                            MapleInventoryManipulator.addById(getClient(), 4031868, (short) 1, "", -1);
                         } else {
-                            getClient().announce(MaplePacketCreator.catchMessage(0));
+                            player.getMap().broadcastMessage(MaplePacketCreator.catchMonster(monsterID, itemID, (byte) 0));
                         }
+                    } else {
+                        getClient().announce(MaplePacketCreator.catchMessage(0));
                     }
-                    getClient().announce(MaplePacketCreator.enableActions());
                 }
                 break;
             case 2270003:
@@ -94,7 +90,6 @@ public class PlayerCatchItemUseEvent extends PacketEvent {
                         getClient().announce(MaplePacketCreator.catchMessage(0));
                     }
                 }
-                getClient().announce(MaplePacketCreator.enableActions());
                 break;
             case 2270005:
                 if (mob.getId() == 9300187) {
@@ -107,7 +102,6 @@ public class PlayerCatchItemUseEvent extends PacketEvent {
                         getClient().announce(MaplePacketCreator.catchMessage(0));
                     }
                 }
-                getClient().announce(MaplePacketCreator.enableActions());
                 break;
             case 2270006:
                 if (mob.getId() == 9300189) {
@@ -120,7 +114,6 @@ public class PlayerCatchItemUseEvent extends PacketEvent {
                         getClient().announce(MaplePacketCreator.catchMessage(0));
                     }
                 }
-                getClient().announce(MaplePacketCreator.enableActions());
                 break;
             case 2270007:
                 if (mob.getId() == 9300191) {
@@ -133,7 +126,6 @@ public class PlayerCatchItemUseEvent extends PacketEvent {
                         getClient().announce(MaplePacketCreator.catchMessage(0));
                     }
                 }
-                getClient().announce(MaplePacketCreator.enableActions());
                 break;
             case 2270004:
                 if (mob.getId() == 9300175) {
@@ -146,22 +138,22 @@ public class PlayerCatchItemUseEvent extends PacketEvent {
                         getClient().announce(MaplePacketCreator.catchMessage(0));
                     }
                 }
-                getClient().announce(MaplePacketCreator.enableActions());
                 break;
             case 2270008:
+                if (spamTracker.testFor(3000)) {
+                    player.message("You cannot use the Fishing Net yet.");
+                    break;
+                }
+                spamTracker.record();
                 if (mob.getId() == 9500336) {
-                    if (System.currentTimeMillis() - entry.latestOperationTimestamp > 3000) {
-                        player.getMap().broadcastMessage(MaplePacketCreator.catchMonster(monsterID, itemID, (byte) 1));
-                        mob.getMap().killMonster(mob, null, false);
-                        MapleInventoryManipulator.removeById(getClient(), MapleInventoryType.USE, itemID, 1, true, true);
-                        MapleInventoryManipulator.addById(getClient(), 2022323, (short) 1, "", -1);
-                    } else {
-                        player.message("You cannot use the Fishing Net yet.");
-                    }
-                    getClient().announce(MaplePacketCreator.enableActions());
+                    player.getMap().broadcastMessage(MaplePacketCreator.catchMonster(monsterID, itemID, (byte) 1));
+                    mob.getMap().killMonster(mob, null, false);
+                    MapleInventoryManipulator.removeById(getClient(), MapleInventoryType.USE, itemID, 1, true, true);
+                    MapleInventoryManipulator.addById(getClient(), 2022323, (short) 1, "", -1);
                 }
                 break;
         }
+        getClient().announce(MaplePacketCreator.enableActions());
         return null;
     }
 }

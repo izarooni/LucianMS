@@ -174,17 +174,17 @@ public final class PlayerTakeDamageEvent extends PacketEvent {
             fake = 4020002 + (player.getJob().getId() / 10 - 40) * 100000;
         }
 
-        Cheater.CheatEntry entry = player.getCheater().getCheatEntry(Cheats.GodMode);
-        if (damage == 0 && !player.isGM()) {
-            entry.spamCount++;
-            if (entry.spamCount % 15 == 0) {
-                entry.incrementCheatCount();
-                entry.announce(player.getClient(), 10000, "[{}] {} has {} consecutive misses (possible god mode)", entry.cheatCount, player.getName(), entry.spamCount);
+        Cheater.CheatEntry cheatEntry = player.getCheater().getCheatEntry(Cheats.GodMode);
+        if (!player.isGM()) {
+            if (damage == 0) {
+                if (cheatEntry.getCheatCount() % 15 == 0) {
+                    cheatEntry.announce(player.getClient(), 25000, "{} has {} consecutive misses (possible god mode)", player.getName(), cheatEntry.getCheatCount());
+                }
+            } else {
+                cheatEntry.resetCheatCount();
             }
-            entry.latestOperationTimestamp = System.currentTimeMillis();
-        } else {
-            entry.spamCount = 0;
         }
+        cheatEntry.record();
         if (damage > 0 && !player.isHidden()) {
             if (attacker != null && damageFrom == -1 && player.getBuffedValue(MapleBuffStat.POWERGUARD) != null) { // PG works on bosses, but only at half of the rate.
                 int bouncedamage = (int) (damage * (player.getBuffedValue(MapleBuffStat.POWERGUARD).doubleValue() / (attacker.isBoss() ? 200 : 100)));

@@ -2,14 +2,14 @@ package com.lucianms.server;
 
 import com.lucianms.constants.GameConstants;
 import com.lucianms.server.channel.MapleChannel;
+import com.lucianms.server.life.*;
+import com.lucianms.server.maps.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import provider.MapleData;
 import provider.MapleDataProvider;
 import provider.MapleDataProviderFactory;
 import provider.MapleDataTool;
-import com.lucianms.server.life.*;
-import com.lucianms.server.maps.*;
 import tools.StringUtil;
 
 import java.awt.*;
@@ -112,6 +112,7 @@ public class FieldBuilder {
         map.setFieldType(MapleDataTool.getIntConvert("info/fieldType", mapData, 0));
         map.setHPDecProtect(MapleDataTool.getIntConvert("info/protectItem", mapData, 0));
         map.setFieldLimit(MapleDataTool.getInt(mapData.getChildByPath("info/fieldLimit"), 0));
+        map.setSwimEnabled(MapleDataTool.getInt(mapData.getChildByPath("info/swim"), 0) == 1);
         map.setOnUserEnter(MapleDataTool.getString(mapData.getChildByPath("info/onUserEnter"), Integer.toString(map.getId())));
         map.setForcedReturnMap(MapleDataTool.getInt(mapData.getChildByPath("info/forcedReturn"), 999999999));
         map.setOnFirstUserEnter(MapleDataTool.getString(mapData.getChildByPath("info/onFirstUserEnter"), Integer.toString(map.getId())));

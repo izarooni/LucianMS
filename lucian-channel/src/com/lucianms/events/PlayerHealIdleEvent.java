@@ -1,10 +1,9 @@
 package com.lucianms.events;
 
 import com.lucianms.client.MapleCharacter;
-import com.lucianms.client.autoban.Cheater;
-import com.lucianms.client.autoban.Cheats;
+import com.lucianms.client.SpamTracker;
 import com.lucianms.nio.receive.MaplePacketReader;
-import com.lucianms.events.PacketEvent;
+import tools.MaplePacketCreator;
 
 /**
  * @author izaroooni
@@ -35,25 +34,16 @@ public class PlayerHealIdleEvent extends PacketEvent {
     @Override
     public Object onPacket() {
         MapleCharacter player = getClient().getPlayer();
-        Cheater.CheatEntry entry = player.getCheater().getCheatEntry(Cheats.HealOvertime);
-
-        if (System.currentTimeMillis() - entry.latestOperationTimestamp < 200) {
-            entry.spamCount++;
+        SpamTracker.SpamData spamTracker = player.getSpamTracker(SpamTracker.SpamOperation.IdleHeal);
+        if (spamTracker.testFor(1000) && spamTracker.getTriggers() > 10) {
+            getClient().announce(MaplePacketCreator.enableActions());
             return null;
-        } else {
-            entry.spamCount = 0;
         }
-        entry.latestOperationTimestamp = System.currentTimeMillis();
-
+        spamTracker.record();
         if (incHealth != 0) {
             int abHeal = 500;
             if (player.getMapId() == 105040401 || player.getMapId() == 105040402 || player.getMapId() == 809000101 || player.getMapId() == 809000201) {
                 abHeal += 40; // Sleepywood sauna and showa spa...
-            }
-            if (incHealth > abHeal) {
-                entry.cheatCount++;
-                entry.latestCheatTimestamp = System.currentTimeMillis();
-                entry.announce(getClient(), 5000, "{} now has {} cheat points for fast healing", player.getName(), entry.cheatCount);
             }
             player.addHP(incHealth);
             player.checkBerserk();

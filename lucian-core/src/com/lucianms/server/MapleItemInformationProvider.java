@@ -25,8 +25,6 @@ import com.lucianms.client.MapleCharacter;
 import com.lucianms.client.MapleClient;
 import com.lucianms.client.MapleJob;
 import com.lucianms.client.SkillFactory;
-import com.lucianms.client.autoban.Cheater;
-import com.lucianms.client.autoban.Cheats;
 import com.lucianms.client.inventory.*;
 import com.lucianms.constants.EquipSlot;
 import com.lucianms.constants.ItemConstants;
@@ -1063,9 +1061,6 @@ public class MapleItemInformationProvider {
 
         if (islot != null && !islot.isEmpty() && !EquipSlot.getFromTextSlot(islot).isAllowed(dst, isCash(id))) {
             equip.wear(false);
-            Cheater.CheatEntry entry = chr.getCheater().getCheatEntry(Cheats.ForcedEquip);
-            entry.incrementCheatCount();
-            entry.announce(chr.getClient(), 3000, "[{}] {} attempted to force equip item {}", getClass().getSimpleName(), chr.getName(), id);
             return false;
         }
 

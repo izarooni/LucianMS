@@ -24,8 +24,6 @@ package com.lucianms.server.maps;
 import com.lucianms.client.MapleBuffStat;
 import com.lucianms.client.MapleCharacter;
 import com.lucianms.client.MapleClient;
-import com.lucianms.client.autoban.Cheater;
-import com.lucianms.client.autoban.Cheats;
 import com.lucianms.client.inventory.Equip;
 import com.lucianms.client.inventory.Item;
 import com.lucianms.client.inventory.MapleInventoryType;
@@ -117,6 +115,7 @@ public class MapleMap {
     private boolean town;
     private boolean clock;
     private boolean docked;
+    private boolean swimEnabled;
     private boolean dropsOn = true;
     private boolean everlast = false;
     private boolean isOxQuiz = false;
@@ -659,11 +658,6 @@ public class MapleMap {
             if (weapon != null) {
                 weapon.setEliminations(weapon.getEliminations() + 1);
             }
-        }
-        if (monster.getStats().getLevel() >= chr.getLevel() + 30 && !chr.isGM()) {
-            Cheater.CheatEntry entry = chr.getCheater().getCheatEntry(Cheats.UnderLevelAttack);
-            entry.incrementCheatCount();
-            entry.announce(chr.getClient(), (1000 * 20), "[{}] {} (level {}) attacked a monster ({}) level (level {})", entry.cheatCount, chr.getName(), chr.getLevel(), monster.getId(), monster.getStats().getLevel());
         }
         int buff = monster.getBuffToGive();
         if (buff > -1) {
@@ -1913,20 +1907,17 @@ public class MapleMap {
     public void movePlayer(MapleCharacter player, Point newPosition) {
         player.setPosition(newPosition);
         ArrayList<MapleMapObject> visibleObjects = new ArrayList<>(player.getVisibleMapObjects());
-        try {
-            MapleMapObject[] visibleObjectsNow = visibleObjects.toArray(new MapleMapObject[0]);
-            for (MapleMapObject mo : visibleObjectsNow) {
-                if (mo != null) {
-                    if (mapobjects.get(mo.getObjectId()) == mo) {
-                        updateMapObjectVisibility(player, mo);
-                    } else {
-                        player.removeVisibleMapObject(mo);
-                    }
+        MapleMapObject[] visibleObjectsNow = visibleObjects.toArray(new MapleMapObject[0]);
+        for (MapleMapObject mo : visibleObjectsNow) {
+            if (mo != null) {
+                if (mapobjects.get(mo.getObjectId()) == mo) {
+                    updateMapObjectVisibility(player, mo);
+                } else {
+                    player.removeVisibleMapObject(mo);
                 }
             }
-        } finally {
-            visibleObjects.clear();
         }
+        visibleObjects.clear();
         for (MapleMapObject mo : getMapObjectsInRange(player.getPosition(), 722500, rangedMapobjectTypes)) {
             if (!player.isMapObjectVisible(mo)) {
                 mo.sendSpawnData(player.getClient());
@@ -2094,6 +2085,14 @@ public class MapleMap {
 
     public void setDocked(boolean isDocked) {
         this.docked = isDocked;
+    }
+
+    public boolean isSwimEnabled() {
+        return swimEnabled;
+    }
+
+    public void setSwimEnabled(boolean swimEnabled) {
+        this.swimEnabled = swimEnabled;
     }
 
     public void broadcastGMMessage(MapleCharacter source, final byte[] packet, boolean repeatToSource) {

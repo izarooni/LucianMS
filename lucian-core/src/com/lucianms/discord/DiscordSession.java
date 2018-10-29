@@ -1,5 +1,6 @@
 package com.lucianms.discord;
 
+import com.lucianms.nio.send.MaplePacketWriter;
 import com.zaxxer.hikari.HikariDataSource;
 import io.netty.channel.Channel;
 import org.slf4j.Logger;
@@ -61,5 +62,13 @@ public class DiscordSession {
 
     public static void setSession(Channel session) {
         DiscordSession.session = session;
+    }
+
+    public static void sendMessage(long channelID, String content) {
+        MaplePacketWriter writer = new MaplePacketWriter();
+        writer.write(Headers.MessageChannel.value);
+        writer.writeLong(channelID);
+        writer.writeMapleString(content);
+        sendPacket(writer.getPacket());
     }
 }

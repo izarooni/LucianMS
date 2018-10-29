@@ -35,7 +35,7 @@ public class SpamTracker {
 
     public enum SpamOperation {
         PlayerCommands, NpcTalk, PortalScripts, SkillUsage, MoneyDrop, CashItemUse, PetFeeding, InventorySort, ChangeChannel,
-        ItemUse, InventoryMove
+        ItemUse, InventoryMove, IdleHeal, CatchItem
     }
 
     private final ConcurrentHashMap<SpamOperation, SpamData> tracker = new ConcurrentHashMap<>();

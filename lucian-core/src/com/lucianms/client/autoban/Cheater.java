@@ -1,8 +1,10 @@
 package com.lucianms.client.autoban;
 
 import com.lucianms.client.MapleClient;
+import com.lucianms.discord.DiscordSession;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.slf4j.helpers.MessageFormatter;
 
 import java.util.HashMap;
 
@@ -13,15 +15,24 @@ public class Cheater {
 
     public static class CheatEntry {
 
-        public int cheatCount = 0; // amount of cheat operations
-        public long latestCheatTimestamp = 0; // last recorded time of cheat operation
-
-        public int spamCount = 0; // amount of times an operation was executed too fast
-        public long latestOperationTimestamp = 0; // last recorded time of cheat operation
+        private int cheatCount = 0; // amount of cheat operations
+        private long latestCheatTimestamp = 0; // last recorded time of cheat operation
 
         private long latestAnnouncement = 0; // prevents spam messages
 
-        public void incrementCheatCount() {
+        public int getCheatCount() {
+            return cheatCount;
+        }
+
+        public void resetCheatCount() {
+            cheatCount = 0;
+        }
+
+        public boolean testFor(long cooldown) {
+            return System.currentTimeMillis() - latestCheatTimestamp <= cooldown;
+        }
+
+        public void record() {
             cheatCount++;
             latestCheatTimestamp = System.currentTimeMillis();
         }
@@ -30,9 +41,11 @@ public class Cheater {
             if (System.currentTimeMillis() - latestAnnouncement < cooldown) {
                 return;
             }
-            LOGGER.error(message, args);
-//            if (!client.getPlayer().isGM()) {
-//            }
+            if (!client.getPlayer().isGM()) {
+                String content = MessageFormatter.arrayFormat(message, args).getMessage();
+                LOGGER.info(content);
+                DiscordSession.sendMessage(502056472461443072L, content);
+            }
             latestAnnouncement = System.currentTimeMillis();
         }
     }

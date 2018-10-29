@@ -22,21 +22,17 @@
 package com.lucianms.events;
 
 import com.lucianms.client.*;
-import com.lucianms.client.autoban.Cheater;
-import com.lucianms.client.autoban.Cheats;
 import com.lucianms.client.inventory.Equip;
 import com.lucianms.client.inventory.Item;
 import com.lucianms.client.inventory.MapleInventoryType;
-import com.lucianms.client.meta.Occupation;
 import com.lucianms.client.status.MonsterStatus;
 import com.lucianms.client.status.MonsterStatusEffect;
-import com.lucianms.nio.receive.MaplePacketReader;
-import com.lucianms.scheduler.TaskExecutor;
-import com.lucianms.events.PacketEvent;
 import com.lucianms.constants.GameConstants;
 import com.lucianms.constants.ItemConstants;
 import com.lucianms.constants.ServerConstants;
 import com.lucianms.constants.skills.*;
+import com.lucianms.nio.receive.MaplePacketReader;
+import com.lucianms.scheduler.TaskExecutor;
 import com.lucianms.server.MapleItemInformationProvider;
 import com.lucianms.server.MapleStatEffect;
 import com.lucianms.server.life.*;
@@ -102,12 +98,6 @@ public abstract class AbstractDealDamageEvent extends PacketEvent {
                 if (attackEffect == null) {
                     player.getClient().announce(MaplePacketCreator.enableActions());
                     return;
-                }
-
-                if (player.getMp() < attackEffect.getMpCon()) {
-                    Cheater.CheatEntry entry = player.getCheater().getCheatEntry(Cheats.InsufficientMana);
-                    entry.incrementCheatCount();
-                    entry.announce(player.getClient(), 5000, "[{}] {} insufficient MP to use skill {}", entry.cheatCount, player.getName(), attack.skill);
                 }
 
                 if (attack.skill != Cleric.HEAL) {

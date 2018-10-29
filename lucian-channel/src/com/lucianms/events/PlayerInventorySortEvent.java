@@ -1,13 +1,11 @@
 package com.lucianms.events;
 
 import com.lucianms.client.MapleCharacter;
-import com.lucianms.client.autoban.Cheater;
-import com.lucianms.client.autoban.Cheats;
+import com.lucianms.client.SpamTracker;
 import com.lucianms.client.inventory.MapleInventory;
 import com.lucianms.client.inventory.MapleInventoryType;
-import com.lucianms.nio.receive.MaplePacketReader;
 import com.lucianms.constants.ServerConstants;
-import com.lucianms.events.PacketEvent;
+import com.lucianms.nio.receive.MaplePacketReader;
 import com.lucianms.server.MapleInventoryManipulator;
 import tools.MaplePacketCreator;
 
@@ -27,16 +25,12 @@ public class PlayerInventorySortEvent extends PacketEvent {
     @Override
     public Object onPacket() {
         MapleCharacter player = getClient().getPlayer();
-        Cheater.CheatEntry cheat = player.getCheater().getCheatEntry(Cheats.FastInventorySort);
-
-        if (System.currentTimeMillis() - cheat.latestOperationTimestamp < 300) {
-            cheat.spamCount++;
+        SpamTracker.SpamData spamTracker = player.getSpamTracker(SpamTracker.SpamOperation.InventorySort);
+        if (spamTracker.testFor(100)) {
             getClient().announce(MaplePacketCreator.enableActions());
             return null;
-        } else {
-            cheat.spamCount = 0;
         }
-        cheat.latestOperationTimestamp = System.currentTimeMillis();
+        spamTracker.record();
 
         MapleInventoryType inventoryType = MapleInventoryType.getByType(this.inventoryType);
         if (inventoryType == null || inventoryType == MapleInventoryType.UNDEFINED || player.getInventory(inventoryType).isFull()) {

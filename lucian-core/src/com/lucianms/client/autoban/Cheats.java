@@ -5,14 +5,8 @@ package com.lucianms.client.autoban;
  */
 public enum Cheats {
 
-    HealOvertime,
-    PetFeeding,
+    FastWalk,
+    Swim,
     CatchItemUse,
-    UnderLevelAttack,
-    InsufficientMana,
-    ConcurrentAttacks,
-    ForcedEquip,
-    FastChannelChange,
-    FastInventorySort,
     GodMode
 }

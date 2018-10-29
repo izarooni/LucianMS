@@ -41,7 +41,7 @@ public class PlayerInventoryMoveEvent extends PacketEvent {
     public Object onPacket() {
         MapleCharacter player = getClient().getPlayer();
         SpamTracker.SpamData spamTracker = player.getSpamTracker(SpamTracker.SpamOperation.InventoryMove);
-        if (spamTracker.testFor(100) && spamTracker.getTriggers() > 4) {
+        if (spamTracker.testFor(100) && spamTracker.getTriggers() > 2) {
             getClient().announce(MaplePacketCreator.enableActions());
             return null;
         }

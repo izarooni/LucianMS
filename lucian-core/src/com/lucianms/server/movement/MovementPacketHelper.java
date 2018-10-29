@@ -1,6 +1,9 @@
 package com.lucianms.server.movement;
 
+import com.lucianms.client.MapleCharacter;
 import com.lucianms.client.MapleClient;
+import com.lucianms.client.autoban.Cheater;
+import com.lucianms.client.autoban.Cheats;
 import com.lucianms.nio.receive.MaplePacketReader;
 import com.lucianms.server.maps.AnimatedMapleMapObject;
 
@@ -30,6 +33,24 @@ public final class MovementPacketHelper {
                     alm.setUnk(unk);
                     alm.setPixelsPerSecond(new Point(xwobble, ywobble));
                     res.add(alm);
+
+                    if (client != null) {
+                        MapleCharacter player = client.getPlayer();
+                        if (player != null) {
+                            if (Math.abs(xwobble) > 1500) {
+                                Cheater.CheatEntry cheatEntry = player.getCheater().getCheatEntry(Cheats.FastWalk);
+                                if (cheatEntry.testFor(1000 * 60)) {
+                                    cheatEntry.announce(client, 1000 * 60, "'{}' is fast walking (speed: {})", player.getName(), xwobble);
+                                }
+                            }
+                            if (newstate == 13 && !player.getMap().isSwimEnabled()) {
+                                Cheater.CheatEntry cheatEntry = player.getCheater().getCheatEntry(Cheats.Swim);
+                                if (cheatEntry.testFor(1000 * 60)) {
+                                    cheatEntry.announce(client, 1000 * 60, "'{}' is swimming in a swim disabled map {}", player.getName(), player.getMapId());
+                                }
+                            }
+                        }
+                    }
                     break;
                 }
                 case 1:

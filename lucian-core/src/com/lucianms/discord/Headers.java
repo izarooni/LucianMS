@@ -13,7 +13,8 @@ public enum Headers {
     Bind       ((byte) 0x4),
     Search     ((byte) 0x5),
     Disconnect ((byte) 0x6),
-    ReloadCS   ((byte) 0x7);
+    ReloadCS   ((byte) 0x7),
+    MessageChannel((byte) 0x8);
     // @formatter:on
     public final byte value;
 
