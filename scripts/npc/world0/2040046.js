@@ -59,7 +59,7 @@ function action(mode, type, selection) {
 		cm.sendYesNo("Alright, good call! It's not that expensive actually. #b240,000 mesos and I'll add 5 more slots to your buddy list#k. And no, I won't be selling them individually. Once you buy it, it's going to be permanently on your buddy list. So if you're one of those that needs more space there, then you might as well do it. What do you think? Will you spend 240,000 mesos for it?");
 	} else if (status == 2) {
 		var capacity = cm.getPlayer().getBuddylist().getCapacity();
-		if (capacity >= 50 || cm.getMeso() < 240000){
+		if (capacity >= 100 || cm.getMeso() < 240000){
 			cm.sendNext("Hey... are you sure you have #b240,000 mesos#k? If so, then check and see if you have extended your buddy list to the max. Even if you pay up, the most you can have on your buddy list is #b50#k.");
             cm.dispose();
 		} else {
