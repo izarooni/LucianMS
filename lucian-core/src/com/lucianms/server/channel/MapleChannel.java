@@ -5,13 +5,13 @@ import com.lucianms.events.gm.MapleEvent;
 import com.lucianms.features.carnival.MCarnivalLobbyManager;
 import com.lucianms.io.scripting.event.EventScriptManager;
 import com.lucianms.nio.server.MapleServerInboundHandler;
+import com.lucianms.scheduler.TaskExecutor;
 import com.lucianms.server.ConcurrentMapStorage;
 import com.lucianms.server.FieldBuilder;
 import com.lucianms.server.Server;
 import com.lucianms.server.expeditions.MapleExpedition;
 import com.lucianms.server.maps.HiredMerchant;
 import com.lucianms.server.maps.MapleMap;
-import com.lucianms.server.maps.MapleMapObject;
 import com.lucianms.server.world.MapleParty;
 import com.lucianms.server.world.MaplePartyCharacter;
 import com.zaxxer.hikari.HikariDataSource;
@@ -51,6 +51,10 @@ public final class MapleChannel {
         carnivalLobbyManager = new MCarnivalLobbyManager(this);
         final int port = (7575 + (this.channel - 1)) + (world * 100);
         ip = Server.getConfig().getString("ServerHost") + ":" + port;
+
+        if (Server.getRunningOperation() == Server.RunningOperation.Channel) {
+            TaskExecutor.createRepeatingTask(() -> maps.forEach(MapleMap::respawn), 10000);
+        }
     }
 
     public MapleServerInboundHandler getServerHandler() {

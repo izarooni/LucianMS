@@ -1,10 +1,9 @@
 package com.lucianms.server.life;
 
 import com.lucianms.client.MapleCharacter;
-import com.lucianms.scheduler.TaskExecutor;
+import com.lucianms.server.maps.MapleMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import com.lucianms.server.maps.MapleMap;
 
 import java.awt.*;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -42,7 +41,7 @@ public final class SpawnPoint {
         this.monsterID = monster.getId();
         Point nPos = map.calcPointBelow(monster.getPosition());
         this.pos = (nPos == null) ? monster.getPosition() : nPos.getLocation();
-        this.mobTime = (mobTime <= 0) ? 6 : mobTime;
+        this.mobTime = (mobTime <= 0) ? 5 : mobTime;
         this.team = team;
         this.f = monster.getF();
         this.fh = monster.getFh();
@@ -87,26 +86,16 @@ public final class SpawnPoint {
                 }
                 nextPossibleSpawn = System.currentTimeMillis();
                 nextPossibleSpawn += (mobTime > 0) ? (mobTime * 1000) : animationTime;
-
-                long delay = Math.max(1000, (nextPossibleSpawn - System.currentTimeMillis()));
-                attemptMonsterSummon(delay);
             }
         });
         return monster;
     }
 
-    private void attemptMonsterSummon(long delay) {
-        TaskExecutor.createTask(new Runnable() {
-            @Override
-            public void run() {
-                if (canSpawn(false)) {
-                    getMonster();
-                    summonMonster();
-                } else {
-                    attemptMonsterSummon(delay);
-                }
-            }
-        }, delay);
+    public void attemptMonsterSummon() {
+        if (canSpawn(false)) {
+            getMonster();
+            summonMonster();
+        }
     }
 
     public void summonMonster() {

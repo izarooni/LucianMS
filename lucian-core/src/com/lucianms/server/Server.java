@@ -55,6 +55,7 @@ public class Server {
     public static final long Uptime = System.currentTimeMillis();
 
     private static Task dailyTask = null;
+    private static RunningOperation runningOperation;
     private static final PlayerBuffStorage buffStorage = new PlayerBuffStorage();
     private static final ArrayList<MapleWorld> worlds = new ArrayList<>();
     private static final ArrayList<Map<Integer, String>> channels = new ArrayList<>();
@@ -65,6 +66,10 @@ public class Server {
 
     private static HikariDataSource hikari = Database.createDataSource("hikari-server");
     private static Config config = null;
+
+    public static RunningOperation getRunningOperation() {
+        return runningOperation;
+    }
 
     public static Connection getConnection() throws SQLException {
         return hikari.getConnection();
@@ -119,7 +124,7 @@ public class Server {
     }
 
     public static void createServer(RunningOperation operation) {
-        final long beginning = System.currentTimeMillis();
+        Server.runningOperation = operation;
         long timeToTake;
 
         Properties p = new Properties();

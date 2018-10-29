@@ -2047,16 +2047,7 @@ public class MapleMap {
         } else if (characters.isEmpty()) {
             return;
         }
-        int respawns = (spawnPoints.size() - spawnedMonstersOnMap.get());
-        if (respawns > 0) {
-            List<SpawnPoint> spawns = spawnPoints.stream().filter(s -> s.canSpawn(true)).collect(Collectors.toList());
-            for (SpawnPoint spawn : spawns) {
-                if (spawn.canSpawn(true)) {
-                    spawn.getMonster();
-                    spawn.summonMonster();
-                }
-            }
-        }
+        spawnPoints.stream().filter(sp -> sp.canSpawn(false)).forEach(SpawnPoint::attemptMonsterSummon);
     }
 
     public int getHPDec() {

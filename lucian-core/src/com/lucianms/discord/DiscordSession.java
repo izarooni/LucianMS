@@ -48,7 +48,7 @@ public class DiscordSession {
     }
 
     public static void sendPacket(byte[] packet) {
-        if (discordServer == null) {
+        if (session == null) {
             LOGGER.error("Currently not connected to the server");
             return;
         }

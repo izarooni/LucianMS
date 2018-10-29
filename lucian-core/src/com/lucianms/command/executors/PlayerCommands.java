@@ -260,6 +260,7 @@ public class PlayerCommands {
                 player.dropMessage(5, String.format("Syntax: @%s <amount>", command.getName()));
             }
         } else if (command.equals("rates")) {
+            player.setRates();
             player.dropMessage(6, "EXP rate: " + player.getExpRate());
             player.dropMessage(6, "Drop rate: " + player.getDropRate());
             player.dropMessage(6, "Meso rate: " + player.getMesoRate());
