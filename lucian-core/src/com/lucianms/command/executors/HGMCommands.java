@@ -448,6 +448,8 @@ public class HGMCommands {
                             eq.setAcc(stat);
                             eq.setWatk(stat);
                             eq.setMatk(stat);
+                            eq.setSpeed(stat);
+                            eq.setJump(stat);
                         }
                         mods.add(new ModifyInventory(3, eq));
                         mods.add(new ModifyInventory(0, eq));
