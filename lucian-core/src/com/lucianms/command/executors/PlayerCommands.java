@@ -7,6 +7,7 @@ import com.lucianms.client.SpamTracker;
 import com.lucianms.client.meta.Occupation;
 import com.lucianms.command.CommandWorker;
 import com.lucianms.constants.ServerConstants;
+import com.lucianms.discord.DiscordSession;
 import com.lucianms.events.RockPaperScissorsEvent;
 import com.lucianms.features.ManualPlayerEvent;
 import com.lucianms.features.PlayerBattle;
@@ -423,7 +424,9 @@ public class PlayerCommands {
             if (args.length() > 0) {
                 String message = args.concatFrom(0);
                 if (!message.isEmpty()) {
-                    client.getWorldServer().broadcastGMPacket(MaplePacketCreator.serverNotice(6, String.format("[GM_CALL] %s: %s", player.getName(), message)));
+                    String content = String.format("%s: %s", player.getName(), message);
+                    client.getWorldServer().broadcastGMPacket(MaplePacketCreator.serverNotice(6, "[GM_CALL] " + content));
+                    DiscordSession.sendMessage(502056539251671040L, content);
                     player.dropMessage(6, "Help message sent");
                 } else {
                     player.dropMessage(5, "You must specify a message");

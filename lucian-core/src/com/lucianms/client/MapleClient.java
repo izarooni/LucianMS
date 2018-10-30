@@ -740,7 +740,7 @@ public class MapleClient {
 
             removePlayer();
             player.saveCooldowns();
-            player.saveToDB(true);
+            player.saveToDB();
             if (channel == -1 || shutdown) {
                 player = null;
                 return;

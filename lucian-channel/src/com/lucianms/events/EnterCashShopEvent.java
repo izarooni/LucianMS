@@ -2,7 +2,6 @@ package com.lucianms.events;
 
 import com.lucianms.client.MapleCharacter;
 import com.lucianms.nio.receive.MaplePacketReader;
-import com.lucianms.events.PacketEvent;
 import com.lucianms.server.Server;
 import tools.MaplePacketCreator;
 
@@ -31,7 +30,7 @@ public class EnterCashShopEvent extends PacketEvent {
 
         getClient().announce(MaplePacketCreator.openCashShop(getClient(), false));
 
-        player.saveToDB(true);
+        player.saveToDB();
         player.getCashShop().open(true);
 
         if (player.getFakePlayer() != null) {

@@ -53,7 +53,7 @@ public final class MapleChannel {
         ip = Server.getConfig().getString("ServerHost") + ":" + port;
 
         if (Server.getRunningOperation() == Server.RunningOperation.Channel) {
-            TaskExecutor.createRepeatingTask(() -> maps.forEach(MapleMap::respawn), 10000);
+            TaskExecutor.createRepeatingTask(() -> maps.forEach(MapleMap::respawn), 5000);
         }
     }
 
@@ -104,6 +104,7 @@ public final class MapleChannel {
             if (eventScriptManager != null) {
                 eventScriptManager.close();
             }
+            getPlayerStorage().forEach(MapleCharacter::saveToDB);
             closeAllMerchants();
             LOGGER.info("Shut down world {} channel {}", world, channel);
         } catch (Exception e) {

@@ -91,7 +91,7 @@ function action(mode, type, selection) {
                         }
                         cm.sendOk(
                             "#e" + this.stalk.name + "'s stats#n\r\n"
-                            + "\r\nGM Level: " + t.gmLevel()
+                            + "\r\nGM Level: " + t.getGMLevel()
                             + "\r\nAccount Name: " + t.getClient().getAccountName()
                             + "\r\nAccount Id: " + t.getAccountID()
                             + "\r\nCharacter Id: " + t.getId()
@@ -100,6 +100,7 @@ function action(mode, type, selection) {
                             + "\r\n\r\nMACs: " + t.getClient().getMacs()
                             + "\r\nHWID: " + t.getClient().getHWID()
                             + "\r\n\r\nCalcualted ATK: " + t.calculateMaxBaseDamage(t.getTotalWatk())
+                            + "\r\nEXP, Meso, Drop rate: " + `${t.getExpRate()}x, ${t.getMesoRate()}x, ${t.getDropRate()}x`
                             + "\r\nCrush rings: " + t.getCrushRings()
                             + "\r\nFriendship rings: " + t.getFriendshipRings());
                         cm.dispose();
