@@ -128,9 +128,8 @@ public class GameMasterCommands {
                                     .append(itemId).append("#\r\n");
                         }
                     }
-
-                    boolean showOffline = Boolean.parseBoolean(args.get(2));
-                    if (args.length() == 3 && showOffline) {
+                    
+                    if (args.length() == 3 && Boolean.parseBoolean(args.get(2))) {
                         sb.append("\r\nOffline users: \r\n\r\n");
                         try (Connection con = ch.getConnection();
                              PreparedStatement stmt = con.prepareStatement(
