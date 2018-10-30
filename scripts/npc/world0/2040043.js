@@ -14,12 +14,8 @@ function action(mode, type, selection) {
         var event = client.getWorldServer().getScheduledEvent("SOuterSpace");
         if (event != null) {
             if (event.isOpen()) {
-                if (!event.isFinished(client.getChannel() - 1)) {
-                    event.registerPlayer(player);
-                    cm.dispose();
-                } else {
-                    cm.sendOk("The threat has already been eliminated on this channel");
-                }
+                event.registerPlayer(player);
+                cm.dispose();
             } else {
                 cm.sendOk("Oh, well it seems the threat is no longer present on the planet. There's no need for you to go there right now");
             }

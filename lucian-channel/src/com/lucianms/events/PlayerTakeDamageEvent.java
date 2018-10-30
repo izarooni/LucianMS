@@ -177,7 +177,7 @@ public final class PlayerTakeDamageEvent extends PacketEvent {
         Cheater.CheatEntry cheatEntry = player.getCheater().getCheatEntry(Cheats.GodMode);
         if (!player.isGM()) {
             if (damage == 0) {
-                if (cheatEntry.getCheatCount() % 15 == 0) {
+                if (cheatEntry.getCheatCount() > 0 && cheatEntry.getCheatCount() % 15 == 0) {
                     cheatEntry.announce(player.getClient(), 25000, "{} has {} consecutive misses (possible god mode)", player.getName(), cheatEntry.getCheatCount());
                 }
             } else {

@@ -18,7 +18,10 @@ import com.lucianms.server.MapleItemInformationProvider;
 import com.lucianms.server.MapleShopFactory;
 import com.lucianms.server.Server;
 import com.lucianms.server.channel.MapleChannel;
-import com.lucianms.server.life.*;
+import com.lucianms.server.life.MapleLifeFactory;
+import com.lucianms.server.life.MapleMonster;
+import com.lucianms.server.life.MapleMonsterInformationProvider;
+import com.lucianms.server.life.MapleNPC;
 import com.lucianms.server.maps.MapleMapObject;
 import com.lucianms.server.maps.MapleReactor;
 import com.lucianms.server.maps.PlayerNPC;
@@ -128,18 +131,10 @@ public class AdministratorCommands {
                 world.updateRates();
                 world.broadcastMessage(6, "The Exp, Meso and Drop rate have changed to {}x {}x and {}x respectively", expRate, mesoRate, dropRate);
             }
-        } else if (command.equals("autoevent")) {
+        } else if (command.equals("sae")) {
             if (args.length() == 1) {
-                try {
-                    GAutoEventManager auto = GAutoEventManager.valueOf(args.get(0));
-                    auto.startInstance(world);
-                } catch (IllegalArgumentException e) {
-                    if (args.get(0).equals("stop")) {
-                        GAutoEventManager.getCurrentEvent().stop();
-                    } else {
-                        player.sendMessage(5, "Unable to find any auto event named '{}'", args.get(0));
-                    }
-                }
+                SAutoEvent scheduledEvent = world.getScheduledEvent(args.get(0));
+                scheduledEvent.run();
             } else {
                 player.sendMessage(5, "Usage: !autoevent <event_name>");
             }
