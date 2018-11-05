@@ -68,7 +68,6 @@ public class PlayerCommands {
             commands.add("@maxskills - Max your skills");
             commands.add("@spy <player> - Check another player's stats");
             commands.add("@fixexp - Reset EXP");
-            commands.add("@serverinfo - Displays server information");
             commands.add("@shenron - Warp to the Shenron summoning map");
             commands.add("@quests - List your quests currently in-progress");
             commands.add("@afk <ign> - Check if someone is AFK");
