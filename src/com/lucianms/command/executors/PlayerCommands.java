@@ -61,10 +61,11 @@ public class PlayerCommands {
             commands.add("@report <bug> - report a bug, give as much detail as possible.");
             commands.add("@rps - Start a game of rock paper scissors vs a bot");
             commands.add("@arcade - Warp to the arcade map");
-            commands.add("@update - display latest WZ revision");
+            commands.add("@rebirth - Rebirths your character");
             commands.add("@reset<str/dex/int/luk/stats> - Reset assigned AP");
             commands.add("@<str/dex/int/luk> - Assign any available AP to a specified stat");
             commands.add("@checkme - Check your stats");
+            commands.add("@maxskills - Max your skills");
             commands.add("@spy <player> - Check another player's stats");
             commands.add("@fixexp - Reset EXP");
             commands.add("@serverinfo - Displays server information");
@@ -297,13 +298,13 @@ public class PlayerCommands {
             } else {
                 player.dropMessage("There is not auto event going on right now");
             }
-//        } else if (command.equals("rebirth")) {
-//            if (player.getLevel() >= player.getMaxLevel()) {
-//                player.doRebirth();
-//                player.sendMessage("You now have {} rebirths!", player.getRebirths());
-//            } else {
-//                player.sendMessage("You must be at least level {} before you can rebirth", player.getMaxLevel());
-//            }
+        } else if (command.equals("rebirth")) {
+            if (player.getLevel() >= player.getMaxLevel()) {
+                player.doRebirth();
+                player.sendMessage("You now have {} rebirths!", player.getRebirths());
+            } else {
+               player.sendMessage("You must be at least level {} before you can rebirth", player.getMaxLevel());
+           }
         } else if (command.equals("dispose")) {
             NPCScriptManager.dispose(client);
             player.announce(MaplePacketCreator.enableActions());
@@ -314,20 +315,36 @@ public class PlayerCommands {
         } else if (command.equals("home")) {
             player.saveLocation(SavedLocationType.FREE_MARKET.name());
             player.changeMap(ServerConstants.HOME_MAP);
-        } else if (command.equals("serverinfo")) {
-            // why is this a command, seriously?
-            player.dropMessage("Version: 83");
-            player.dropMessage("Rates: 10x | 10x | 2x");
-            player.dropMessage("Owner: Venem");
-            player.dropMessage("Developers: izarooni");
-            player.dropMessage("Staff: Kill | Evan | Joey | Jackie | Luckedy | Bryan");
-            player.dropMessage("Home Command: @home or @go fm");
-            player.dropMessage("Main Website: http://lucianms.com");
-            player.dropMessage("Voting resets every 24th hours!");
-            player.dropMessage("Have Fun and consider to donate for more customs!");
-        } else if (command.equals("update")) {
-            player.dropMessage("Last Server WZ revision: October 13, 2018");
-            player.dropMessage("New customs added every 2nd month!");
+        } else if (command.equals("maxskills")) {
+              player.maxSkills();
+            player.dropMessage(6, "Your skills are now maxed!");
+        } else if (command.equals("heal", "healmap")) {
+            if (command.equals("healmap")) {
+                for (MapleCharacter players : player.getMap().getCharacters()) {
+                    players.setHp(Math.max(players.getMaxHp(), players.getCurrentMaxHp()));
+                    players.setMp(Math.max(players.getMaxMp(), players.getCurrentMaxMp()));
+                    players.updateSingleStat(MapleStat.HP, players.getHp());
+                    players.updateSingleStat(MapleStat.MP, players.getMp());
+                }
+            } else if (args.length() > 0) {
+                for (int i = 0; i < args.length(); i++) {
+                    String username = args.get(i);
+                    MapleCharacter target = ch.getPlayerStorage().getCharacterByName(username);
+                    if (target != null) {
+                        target.setHp(target.getMaxHp());
+                        target.setMp(target.getMaxMp());
+                        target.updateSingleStat(MapleStat.HP, target.getHp());
+                        target.updateSingleStat(MapleStat.MP, target.getMp());
+                    }
+                }
+            } else {
+                player.setHp(player.getMaxHp());
+                player.setMp(player.getMaxMp());
+                player.updateSingleStat(MapleStat.HP, player.getHp());
+                player.updateSingleStat(MapleStat.MP, player.getMp());
+                player.dispelDebuffs();
+                player.dropMessage(6, "Healed");
+            }
         } else if (command.equals("online")) {
             for (Channel channel : client.getWorldServer().getChannels()) {
                 StringBuilder sb = new StringBuilder();
