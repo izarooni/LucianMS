@@ -27,7 +27,7 @@
 
 **/
 
-importPackage(Packages.client);
+importPackage(Packages.com.lucianms.client);
 
 function init() {
     scheduleNew();

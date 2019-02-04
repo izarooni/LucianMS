@@ -1,4 +1,4 @@
-const ObjectType = Java.type("server.maps.MapleMapObjectType");
+const ObjectType = Java.type("com.lucianms.server.maps.MapleMapObjectType");
 /* izarooni */
 var status = 0;
 

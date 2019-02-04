@@ -9,5 +9,6 @@ function action(mode, type, selection) {
         status++;
     }
     if (status == 1) {
+        cm.dispose();
     }
 }

@@ -1,4 +1,4 @@
-const MapleInventoryType = Java.type("client.inventory.MapleInventoryType");
+const MapleInventoryType = Java.type("com.lucianms.client.inventory.MapleInventoryType");
 const StringUtil = Java.type("tools.StringUtil");
 /* izarooni */
 let status = 0;

@@ -1,6 +1,6 @@
 const GAEventManager = Java.type("com.lucianms.features.auto.GAutoEventManager");
 const ETrial         = Java.type("com.lucianms.features.auto.AEmergencyTrial");
-const ExpTable       = Java.type("constants.ExpTable");
+const ExpTable = Java.type("com.lucianms.constants.ExpTable");
 /* izarooni */
 let status = 0;
 let currentEvent = GAEventManager.getCurrentEvent();

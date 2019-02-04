@@ -47,11 +47,12 @@ function action(mode, type, selection) {
         } else if (selection == 1) {
             if (cm.getParty() != null) {
                 if (cm.isLeader()) {
-                    let iter = cm.getParty().getMembers().iterator();
+                    let iter = cm.getPartyMembers().iterator();
+                    let map = player.getMap();
                     while (iter.hasNext()) {
                         let n = iter.next();
-                        if (player.getMap().getCharacterById(n.getId()) != null) {
-                            selectedMode.pq.registerPlayer(n.getPlayer());
+                        if (map.getCharacterById(n.getId()) != null) {
+                            selectedMode.pq.registerPlayer(n);
                         }
                     }
                     selectedMode.pq.begin();

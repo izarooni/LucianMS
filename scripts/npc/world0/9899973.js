@@ -4,7 +4,7 @@
  
  */
 importPackage(Packages.tools);
-var LifeFactory = Java.type("server.life.MapleLifeFactory");
+var LifeFactory = Java.type("com.lucianms.server.life.MapleLifeFactory");
 var item1 = 4011019;
 var item2 = 4011018;
 var item3 = 4011017;

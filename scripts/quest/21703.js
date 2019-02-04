@@ -1,5 +1,5 @@
 
-importPackage(Packages.client);
+importPackage(Packages.com.lucianms.client);
 var status = -1;
 
 

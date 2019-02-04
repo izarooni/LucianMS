@@ -76,7 +76,7 @@ function action(mode, type, selection) {
 
             var achieve = player.getAchievement("Win both casino games");
             achieve.setCasino1Completed(true);
-            Java.type("scripting.Achievements").testFor(player, -1);
+            Java.type("com.lucianms.io.scripting.Achievements").testFor(player, -1);
         } else {
             player.announce(MaplePacketCreator.showEffect("quest/carnival/lose"));
             player.dropMessage("[LOSE] You lost " + StringUtil.formatNumber(this.cash_in) + " mesos");

@@ -21,9 +21,9 @@
 */
 //@Author FateJiki
 //@Author Even (modifier)
-importPackage(Packages.server.expeditions);
+importPackage(Packages.com.lucianms.server.expeditions);
 importPackage(Packages.tools);
-importPackage(Packages.scripting.event);
+importPackage(Packages.com.lucianms.scripting.event);
 
 
 var status = 0;

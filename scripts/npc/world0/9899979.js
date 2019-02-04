@@ -4,7 +4,7 @@
  
  */
  importPackage(Packages.tools);
-var LifeFactory = Java.type("server.life.MapleLifeFactory");
+var LifeFactory = Java.type("com.lucianms.server.life.MapleLifeFactory");
  var sections = {};
  var method = null;
  var status = 0;

@@ -13,7 +13,8 @@ let maps = [
     [211060010, "#bLion King Castle"],
     [219000000, "#dCokeTown#k"],
     [951000000, "#rMonster Park#k"],
-	[808, "#eSandbox#k"]
+    [808, "#eSandbox#k"],
+    [599000006, "#rUltimate Mushroom#k"]
 ];
 
 function action(mode, type, selection) {

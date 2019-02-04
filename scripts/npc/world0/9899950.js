@@ -31,9 +31,9 @@ function action(mode, type, selection) {
         cm.sendOk("I don't need help. I'm very busy right now.");
         cm.dispose();
     } else if (status == 1) { // quest beginning
-        cm.sendNext("Placeholder 1");
+        cm.sendNext("");
     } else if (status == 2) {
-        cm.sendNext("Placeholder 2");
+        cm.sendNext("");
     } else if (status == 3) { // quest progress
         DisplaySummary(metadata);
     } else if (status == 4) {

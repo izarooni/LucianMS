@@ -1,6 +1,6 @@
 load("scripts/npc/generic_shop.js");
 
-var pointsType = Java.type("constants.ServerConstants").CURRENCY;
+var pointsType = Java.type("com.lucianms.constants.ServerConstants").CURRENCY;
 
 try {
     var file = new java.io.File("resources/data-tier2.json");

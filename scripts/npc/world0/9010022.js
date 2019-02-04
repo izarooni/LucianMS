@@ -1,5 +1,5 @@
-importPackage(Packages.client);
-importPackage(Packages.server.maps);
+importPackage(Packages.com.lucianms.client);
+importPackage(Packages.com.lucianms.server.maps);
 
 var status;
 var sel;

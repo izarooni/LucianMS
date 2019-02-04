@@ -1,5 +1,5 @@
 const HouseManager = Java.type("com.lucianms.helpers.HouseManager");
-const MapleCharacter = Java.type("client.MapleCharacter");
+const MapleCharacter = Java.type("com.lucianms.client.MapleCharacter");
 const StringUtil = Java.type("tools.StringUtil");
 
 const FEE_INITIAL = 3000000;

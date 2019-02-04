@@ -6,7 +6,7 @@ var MSG_2 = "The gate of #rOrichalcos#k is told to bare the soul of a lost comma
 var MSG_NO_ITEM = "You don't have the required item, or the boss is already summoned.";
 var MSG_BYE = "#e#kOk, see you next time!";
 
-var MapleLifeFactory = Java.type('server.life.MapleLifeFactory');
+var MapleLifeFactory = Java.type('com.lucianms.server.life.MapleLifeFactory');
 var status = 0;
 
 function start() {

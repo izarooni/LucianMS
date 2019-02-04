@@ -1,14 +1,20 @@
 #Project files
-.idea
-.vs
 out
 classes
-Harambae source.iml
-src/META-INF/MANIFEST.MF
+
+*.iml
+*.MF
+
+MANIFEST.MF
+.idea
+*.iml
+.vs
+
+*.code-workspace
 
 #Server files
+/wz
 bin
-wz
 world.ini
 server-config.json
 whitelist.json
@@ -16,4 +22,4 @@ whitelist.json
 hikari-db.properties
 
 #Ian's PC
-Backups
+backups

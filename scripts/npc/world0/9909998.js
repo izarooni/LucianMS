@@ -13,15 +13,17 @@ jobs = {
             equips: [[1452002, 1], [2060000, 2000]] }
     },
     Second: {
-        Mercedes       : { ID: 310 },
+        Mercedes: { ID: 310 },
         "Crossbow Man" : { ID: 320 }
     },
     Third: {
-        Mercedes : { ID: 311 },
-        "Sniper" : { ID: 321 }
+        Mercedes: { ID: 311 },
+        "Sniper": { ID: 321 }
     },
     Fourth: {
-        Mercedes   : { ID: 312 },
-        "Marksman" : { ID: 322 }
+        Mercedes: { ID: 312,
+            skills: [[3121000, 30], [3121003, 30], [3121004, 30], [3121006, 30], [3121008, 30], [3121009, 5]] },
+        "Marksman": { ID: 322,
+            skills: [[3221000, 30], [3221001, 30], [3221003, 30], [3221005, 30], [3221007, 30], [3221008, 30], [4121000, 30]] }
     }
 };

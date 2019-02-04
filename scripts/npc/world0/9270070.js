@@ -1,7 +1,8 @@
 load("scripts/util_imports.js");
 const ShenronSummon = Java.type("com.lucianms.features.summoning.ShenronSummoner");
-const MapleStat     = Java.type("com.lucianms.client.MapleStat");
-const ExpTable      = Java.type("com.lucianms.constants.ExpTable");
+const MapleStat = Java.type("com.lucianms.client.MapleStat");
+const FakePlayer = Java.type("com.lucianms.server.life.FakePlayer");
+const ExpTable = Java.type("com.lucianms.constants.ExpTable");
 /* izarooni */
 let status = 0;
 let usernameError = "";
@@ -13,13 +14,17 @@ function action(mode, type, selection) {
     } else {
         status++;
     }
-    var optional = player.getGenericEvents().stream().filter(function(e) {
-        return e instanceof ShenronSummon;
-    }).findFirst();
-    if (!player.isDebug() && (optional.isPresent() && !optional.get().isWishing())) {
-        cm.sendOk("Who are you? You didn't summon me");
-        cm.dispose();
-        return;
+    var shenron = player.getGenericEvents().stream().filter(e => e instanceof ShenronSummon).findFirst().orElse(null);
+    if (!player.isDebug()) {
+        if (shenron == null) {
+            cm.sendOk("Where am I? Why did you bring me here?");
+            cm.dispose();
+            return;
+        } else if (!player.isGM() && !shenron.isWishing()) {
+            cm.sendOk("Who are you? You didn't summon me");
+            cm.dispose();
+            return;
+        }
     }
     if (status == 1) {
         cm.sendSimple("I am Shenron, I shall grant you any wish. Now speak!\r\n#b"
@@ -31,7 +36,7 @@ function action(mode, type, selection) {
             + "\r\n#L5#Make me immortal#l"
             + "\r\n#L6#Give me NX#l"
             + "\r\n#L7#Clone me#l"
-            + "\r\n#L8#Grant me more power#l");
+            + "\r\n#L8#Give me more power#l");
     } else if (status == 2) {
         switch (selection) {
             case 0:
@@ -77,7 +82,7 @@ function action(mode, type, selection) {
                 break;
             case 7:
                 if (player.getFakePlayer() == null) {
-                    let fake = new Packages.server.life.FakePlayer(player.getName() +"'s Toy");
+                    let fake = new FakePlayer(player.getName() +"'s Toy");
                     fake.setMap(player.getMap());
                     fake.clonePlayer(player);
                     player.setFakePlayer(fake);
@@ -112,19 +117,21 @@ function action(mode, type, selection) {
                 break;
             }
         }
-        if (!player.isDebug() && optional.isPresent()) optional.get().wish(player);
+        if ((!player.isGM() || player.isDebug()) && shenron != null) shenron.wish(player);
         cm.dispose();
     } else if (status == 3) {
-        let username = cm.getText();
+        var username = cm.getText();
         if (username == null || username.length == 0) {
             usernameError = "#r#eYou must specify a username!#k#n";
         } else {
-            var target = ch.getPlayerStorage().getCharacterByName(username);
+            let target = ch.getPlayerStorage().find((p) => p.getName().equalsIgnoreCase(username));
             if (target != null && !target.isGM()) {
                 target.setHp(0);
-                target.updateSingleStat(Packages.client.MapleStat.HP, 0);
+                target.updateSingleStat(MapleStat.HP, 0);
+                target.sendMessage(5, "'{}' decided to kill you with their Shenron wish!", player.getName());
+                cm.sendOk("");
                 cm.dispose();
-                optional.get().wish(player);
+                shenron.wish(player);
                 return;
             } else {
                 usernameError = "#r#eCould not find any player named \"#b" + username + "#r#e\"#k#n";

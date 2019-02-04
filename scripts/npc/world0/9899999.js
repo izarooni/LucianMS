@@ -2,7 +2,7 @@ load("nashorn:mozilla_compat.js");
 load("scripts/util_imports.js");
 var cqb = Java.type("com.lucianms.cquest.CQuestBuilder");
 
-importPackage(Packages.server.quest.custom.reward);
+importPackage(Packages.com.lucianms.server.quest.custom.reward);
 
 /* izarooni */
 var DAILY_PROP = "npc.daily_quest_npc.quest_id";

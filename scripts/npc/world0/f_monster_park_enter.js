@@ -1,9 +1,10 @@
 /* izarooni */
 // npc: 9071000
-// map: 951000000
 const MonsterPark = Java.type("com.lucianms.features.MonsterPark");
 const EntryLimits = Java.type("tools.EntryLimits");
 const ENTRY_TYPE = "m_park";
+const ONE_DAY = (1000 * 60 * 60 * 24);
+const MonsterParkFieldID = 951000000;
 
 const minParticpants = 2;
 const areas = {
@@ -31,7 +32,7 @@ function action(mode, type, selection) {
     } else if (status == 2) {
         let canEnter = true;
         if (!player.isGM()) {
-            if (cm.getParty() == null || partyMembers.size() <= minParticpants) {
+            if (cm.getParty() == null || partyMembers.size() < minParticpants) {
                 cm.sendOk("You must be in a party with at least #b" + minParticpants + " members#k to enter ths monster park");
                 cm.dispose();
                 return;
@@ -42,8 +43,13 @@ function action(mode, type, selection) {
             }
             if (partyMembers != null) {
                 partyMembers.forEach(function(member) {
-                    if (EntryLimits.getEntries(member.getId(), ENTRY_TYPE) > 3) {
-                        canEnter = false;
+                    let entry = EntryLimits.getEntries(member.getId(), ENTRY_TYPE);
+                    if (entry != null && entry.Entries >= 3) {
+                        if (Date.now() - entry.LastEntry <= ONE_DAY) {
+                            canEnter = false;
+                        } else {
+                            EntryLimits.reset(member.getId(), ENTRY_TYPE);
+                        }
                     }
                 });
             }
@@ -71,7 +77,7 @@ function action(mode, type, selection) {
             cm.dispose();
             return;
         } else if (!canEnter) {
-            cm.sendOk("Some members of your party do not meet the level range of this Monster Park.");
+            cm.sendOk("Some members of your party do not meet the level range of this Monster Park.\r\n\t#b- Level Range: " + range.min + " ~ " + range.max);
             cm.dispose();
             return;
         } else {
@@ -89,7 +95,7 @@ function action(mode, type, selection) {
             var park = new MonsterPark(client.getWorld(), client.getChannel(), selection, level);
             if (cm.getParty() != null) {
                 partyMembers.forEach(function(member) {
-                    if (member.getMapId() == player.getMapId()) {
+                    if (member.getClient().getChannel() == client.getChannel() && member.getMapId() == MonsterParkFieldID) {
                         park.registerPlayer(member);
                         EntryLimits.incrementEntry(member.getId(), ENTRY_TYPE);
                     }

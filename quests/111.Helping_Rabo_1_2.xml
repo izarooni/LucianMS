@@ -8,15 +8,15 @@
     <imgdir name="toKill">
         <imgdir name="0">
             <int name="monsterId" value="9895242"/>
-            <int name="amount" value="250"/>
+            <int name="amount" value="150"/>
         </imgdir>
         <imgdir name="1">
             <int name="monsterId" value="9895238"/>
-            <int name="amount" value="250"/>
+            <int name="amount" value="150"/>
         </imgdir>
         <imgdir name="2">
             <int name="monsterId" value="9895244"/>
-            <int name="amount" value="250"/>
+            <int name="amount" value="150"/>
         </imgdir>
     </imgdir>
 
@@ -24,5 +24,6 @@
     </imgdir>
     
     <imgdir name="rewards">
+        <float name="exp" value="30"/>
     </imgdir>
 </imgdir>

@@ -1,7 +1,7 @@
 /* izarooni */
 
-var MapleJob = Java.type("client.MapleJob");
-var MapleStat = Java.type("client.MapleStat");
+var MapleJob = Java.type("com.lucianms.client.MapleJob");
+var MapleStat = Java.type("com.lucianms.client.MapleStat");
 
 var status = 0;
 var cjobs = [];

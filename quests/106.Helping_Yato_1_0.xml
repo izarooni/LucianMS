@@ -9,7 +9,7 @@
 
         <imgdir name="0">
             <int name="monsterId" value="9895244"/>
-            <int name="amount" value="100"/>
+            <int name="amount" value="50"/>
         </imgdir>
     </imgdir>
 
@@ -17,5 +17,6 @@
     </imgdir>
     
     <imgdir name="rewards">
+        <float name="exp" value ="20"/>
     </imgdir>
 </imgdir>

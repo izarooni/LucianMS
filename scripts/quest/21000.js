@@ -26,7 +26,7 @@
 	Quest ID : 		21000
 */
 
-importPackage(Packages.client);
+importPackage(Packages.com.lucianms.client);
 
 var status = -1;
 

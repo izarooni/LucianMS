@@ -10,8 +10,8 @@ function action(mode, type, selection) {
         status++;
     }
     if (status == 1) {
-        var content = "Starting the transmission. Click #bNext#k whenever you are ready to go.";
-        cm.sendNext(content);
+        var content = "Starting the transmission. Click #bYes#k whenever you are ready to go.\r\n\r\nRequirements:\r\n1x   #v4011034#   per person";
+        cm.sendYesNo(content);
     } else if (status == 2) {
         // You should probably only let the party leader talk in case there's a party and party play is enabled.
         var dungeon = DungeonBuilder.prepare(cm.getPlayer(), 599000003);
@@ -32,7 +32,7 @@ function action(mode, type, selection) {
         .attachRequirements(4011034) // ETC items you need to have to go in
         .attachSpawns(1210103, 1210103, 1210103, 1210103, 1210103) // add spawns
         .enter()) { // go into map Silver Key
-            cm.sendOk("Some problems have occurred." + dungeon.getAreLacking()); // give feedback on what went wrong to talker
+            cm.sendOk("Some problems have occurred. " + dungeon.getAreLacking()); // give feedback on what went wrong to talker
         }
         cm.dispose();
     }

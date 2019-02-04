@@ -33,10 +33,6 @@ function enter(pi) {
 			return false;
 		}else {
 			pi.getPlayer().changeMap(target, targetPortal);
-			if (eim.getProperty("head2spawned") != "yes") {
-				eim.setProperty("head2spawned", "yes");
-				eim.schedule("headTwo", 5000);
-			}
 			return true;
 		}
 	} else if (pi.getPlayer().getMapId() == 240060100) {

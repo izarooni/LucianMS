@@ -18,5 +18,6 @@
     </imgdir>
     
     <imgdir name="rewards">
+        <float name="exp" value="35"/>
     </imgdir>
 </imgdir>

@@ -1,6 +1,0 @@
-Manifest-Version: 1.0
-Class-Path: commons-io-2.6.jar commons-net-3.6.jar HikariCP-3.2.0.jar 
- mariadb-java-client-2.3.0.jar mina-core-2.0.19.jar slf4j-api-1.7.25.j
- ar slf4j-simple-1.7.25.jar
-Main-Class: net.server.Server
-

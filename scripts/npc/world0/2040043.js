@@ -1,6 +1,3 @@
-importPackage(Packages.tools);
-var LifeFactory = Java.type("server.life.MapleLifeFactory");
-var MPC = Java.type("tools.MaplePacketCreator");
 /* izarooni */
 var status = 0;
 
@@ -16,10 +13,8 @@ function action(mode, type, selection) {
     } else if (status == 2) {
         var event = client.getWorldServer().getScheduledEvent("SOuterSpace");
         if (event != null) {
-            if (event.isOpen() && !event.isFinished(client.getChannel() - 1)) {
+            if (event.isOpen()) {
                 event.registerPlayer(player);
-                client.getWorldServer().broadcastMessage(0, "{} in channel {} used a compass to travel to Planet Lucian", player.getName(), client.getChannel());
-				cm.getPlayer().getMap().broadcastMessage(MaplePacketCreator.showEffect("quest/party/clear2"));
                 cm.dispose();
             } else {
                 cm.sendOk("Oh, well it seems the threat is no longer present on the planet. There's no need for you to go there right now");

@@ -29,8 +29,8 @@ var exitMap;
 var waitingListCurrent = 0;
  
 importPackage(Packages.world);
-importPackage(Packages.client);
-importPackage(Packages.server.maps);
+importPackage(Packages.com.lucianms.client);
+importPackage(Packages.com.lucianms.server.maps);
 importPackage(java.lang);
 
 function init() {

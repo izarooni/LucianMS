@@ -6,7 +6,7 @@
 
 //TODO test
 
-importPackage(Packages.client.arcade);
+importPackage(Packages.com.lucianms.client.arcade);
 
  var sections = {};
  var method = null;

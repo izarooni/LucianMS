@@ -1,7 +1,7 @@
-const Equip = Java.type("client.inventory.Equip");
+const Equip = Java.type("com.lucianms.client.inventory.Equip");
 const MaplePacketCreator = Java.type("tools.MaplePacketCreator");
-const MapleInventoryType = Java.type("client.inventory.MapleInventoryType");
-const MapleInventoryManipulator = Java.type("server.MapleInventoryManipulator");
+const MapleInventoryType = Java.type("com.lucianms.client.inventory.MapleInventoryType");
+const MapleInventoryManipulator = Java.type("com.lucianms.server.MapleInventoryManipulator");
 /* izarooni */
 const features = [];
 let feature = null;

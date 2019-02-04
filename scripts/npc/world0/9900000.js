@@ -1,24 +1,24 @@
 function action(mode, type, selection) {
-    cm.sendOk("#dYou view me anytime using the < @jobs > command!\r\n\r\n"
-        + "\t\t\t\t\t\t\t\t\t\t#bJob List#k\r\n"
-        + "\r\n#eHero#k - Uchiha"
-        + "\r\n#ePaladin#k - Rashoumon"
-        + "\r\n#eDark Knight#k - Dragoon"
-        + "\r\n#eDawn Warrior#k - Android\r\n"
+    cm.sendOk("\t#dYou view me anytime using the < @jobs > command!\r\n\r\n"
+        + "\t\t\t\t\t\t\t\t\t\t\t #bJob List#k\r\n"
+        + "\r\n\t\t\t\t\t\t\t\t\t\t#eHero#k - Uchiha"
+        + "\r\n\t\t\t\t\t\t\t\t#ePaladin#k - Rashoumon"
+        + "\r\n\t\t\t\t\t\t\t\t#eDark Knight#k - Dragoon"
+        + "\r\n\t\t\t\t\t\t\t   #eDawn Warrior#k - Valkryie\r\n"
 
-        + "\r\n#eArchmage (Fire/Poison)#k - Phantom"
-        + "\r\n#eArchmage (Ice/Lightning)#k - Luminous"
-        + "\r\n#eBishop#k - Evan\r\n"
+        + "\r\n\t\t\t\t\t  #eArchmage (Fire/Poison)#k - Phantom"
+        + "\r\n\t\t\t\t\t#eArchmage (Ice/Lightning)#k - Luminous"
+        + "\r\n\t\t\t\t\t\t\t\t\t\t#eBishop#k - Evan\r\n"
 
-        + "\r\n#eBowmaster#k - Mercedes"
-        + "\r\n#eMarksman#k - Marksman\r\n"
+        + "\r\n\t\t\t\t\t\t\t   #eBowmaster#k - Mercedes"
+        + "\r\n\t\t\t\t\t\t\t   #eMarksman#k - Marksman\r\n"
 
-        + "\r\n#eNight Lord#k - Shade"
-        + "\r\n#eShadower#k - Dual Blader\r\n"
+        + "\r\n\t\t\t\t\t\t\t\t\t#eNight Lord#k - Shade"
+        + "\r\n\t\t\t\t\t\t\t\t#eShadower#k - Dual Blader\r\n"
 
-        + "\r\n#eBuccaneer#k - Pink Bean"
-        + "\r\n#eCorsair#k - Mechanic\r\n"
+        + "\r\n\t\t\t\t\t\t\t\t\t#eBuccaneer#k - Ark"
+        + "\r\n\t\t\t\t\t\t\t\t   #eCorsair#k - Mechanic\r\n"
 
-        + "\r\n#eAran#k - Aran");
+        + "\r\n\t\t\t\t\t\t\t\t\t\t   #eAran#k - Aran");
     cm.dispose();
 }
