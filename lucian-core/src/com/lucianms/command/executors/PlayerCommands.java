@@ -63,13 +63,13 @@ public class PlayerCommands {
             commands.add("@report <bug> - report a bug, give as much detail as possible.");
             commands.add("@rps - Start a game of rock paper scissors vs a bot");
             commands.add("@arcade - Warp to the arcade map");
-            commands.add("@update - display latest WZ revision");
+            commands.add("@rebirth - Rebirths your character");
             commands.add("@reset<str/dex/int/luk/stats> - Reset assigned AP");
             commands.add("@<str/dex/int/luk> - Assign any available AP to a specified stat");
             commands.add("@checkme - Check your stats");
+            commands.add("@maxskills - Max your skills");
             commands.add("@spy <player> - Check another player's stats");
             commands.add("@fixexp - Reset EXP");
-            commands.add("@serverinfo - Displays server information");
             commands.add("@shenron - Warp to the Shenron summoning map");
             commands.add("@quests - List your quests currently in-progress");
             commands.add("@afk <ign> - Check if someone is AFK");
@@ -318,13 +318,13 @@ public class PlayerCommands {
             } else {
                 player.dropMessage("There is not auto event going on right now");
             }
-//        } else if (command.equals("rebirth")) {
-//            if (player.getLevel() >= player.getMaxLevel()) {
-//                player.doRebirth();
-//                player.sendMessage("You now have {} rebirths!", player.getRebirths());
-//            } else {
-//                player.sendMessage("You must be at least level {} before you can rebirth", player.getMaxLevel());
-//            }
+        } else if (command.equals("rebirth")) {
+            if (player.getLevel() >= player.getMaxLevel()) {
+                player.doRebirth();
+                player.sendMessage("You now have {} rebirths!", player.getRebirths());
+            } else {
+               player.sendMessage("You must be at least level {} before you can rebirth", player.getMaxLevel());
+           }
         } else if (command.equals("dispose")) {
             NPCScriptManager.dispose(client);
             player.announce(MaplePacketCreator.enableActions());

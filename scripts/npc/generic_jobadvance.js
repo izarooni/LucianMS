@@ -171,4 +171,11 @@ const LearnSkills = function(skills) {
             player.changeSkillLevel(skill, 0, maxLevel, -1);
         }
     }
+    // if (status == 1)
+    //     cm.sendSimple("#bThe mysterious force emitted by the door is weakened...\r\n#b#L0#Enter#l\r\n#L1#Nevermind#l", 2)
+    // else if (status == 2) {
+    //     if (selection == 0)
+    //         cm.warp(551030804); // boss ID: 9895226
+    //     cm.dispose();
+    // }
 };

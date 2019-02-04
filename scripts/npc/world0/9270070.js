@@ -113,6 +113,7 @@ function action(mode, type, selection) {
                         cm.getPlayer().gainExp(partEXP, true, false);
                     }
                 }
+        
                 break;
             }
         }

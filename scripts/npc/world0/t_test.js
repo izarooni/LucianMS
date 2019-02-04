@@ -31,6 +31,7 @@ function ListMonsters(selection) {
             content += `\r\nID: ${obj.getId()}`;
             content += `\r\nOID: ${obj.getObjectId()}`;
             content += `\r\nHP: ${obj.getHp()}`;
+            content += `\r\nLEVEL: ${obj.getLevel()}`;
             cm.sendOk(content);
             status = 0;
         } else {
