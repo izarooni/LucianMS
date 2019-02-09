@@ -38,15 +38,6 @@ import com.lucianms.cquest.requirement.CQuestItemRequirement;
 import com.lucianms.cquest.requirement.CQuestKillRequirement;
 import com.lucianms.events.gm.*;
 import com.lucianms.features.MonsterPark;
-import com.lucianms.features.PlayerBattle;
-import com.lucianms.features.carnival.MCarnivalGame;
-import com.lucianms.features.carnival.MCarnivalPacket;
-import com.lucianms.features.carnival.MCarnivalTeam;
-import com.lucianms.features.emergency.Emergency;
-import com.lucianms.features.emergency.EmergencyAttack;
-import com.lucianms.features.emergency.EmergencyDuel;
-import com.lucianms.features.summoning.BlackMageSummoner;
-import com.lucianms.features.summoning.ShenronSummoner;
 import com.lucianms.io.scripting.event.EventInstanceManager;
 import com.lucianms.io.scripting.map.MapScriptManager;
 import com.lucianms.lang.GProperties;
@@ -64,10 +55,9 @@ import tools.Pair;
 import tools.Randomizer;
 
 import java.awt.*;
-import java.util.*;
 import java.util.List;
+import java.util.*;
 import java.util.Map.Entry;
-import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
@@ -686,13 +676,6 @@ public class MapleMap {
         // if (monster.getStats().selfDestruction() == null) {//FUU BOMBS D:
         removeMapObject(monster);
         // }
-        MCarnivalGame carnivalGame = (MCarnivalGame) chr.getGenericEvents().stream().filter(o -> o instanceof MCarnivalGame).findFirst().orElse(null);
-        if (monster.getCP() > 0 && carnivalGame != null) {
-            carnivalGame.getTeam(chr.getTeam()).addCarnivalPoints(chr, monster.getCP());
-            chr.announce(MCarnivalPacket.getMonsterCarnivalPointsUpdate(chr.getCP(), chr.getObtainedCP()));
-            broadcastMessage(MCarnivalPacket.getMonsterCarnivalPointsUpdateParty(carnivalGame.getTeam(chr.getTeam())));
-            // they drop items too ):
-        }
         if (monster.getId() >= 8800003 && monster.getId() <= 8800010) {
             boolean makeZakReal = true;
             Collection<MapleMapObject> objects = getMapObjects();
@@ -949,19 +932,19 @@ public class MapleMap {
         return null;
     }
 
-    public void addCarnivalMonster(MapleMonster monster, MCarnivalTeam team) {
+    public void addCarnivalMonster(MapleMonster monster, int team) {
         if (spawnPoints.isEmpty()) {
             LOGGER.warn("Cannot summon Monster Carnival mob due to empty spawn points");
             return;
         }
-        SpawnPoint selected = spawnPoints.stream().filter(sp -> sp.getTeam() == team.getId()).findAny().orElse(null);
+        SpawnPoint selected = spawnPoints.stream().filter(sp -> sp.getTeam() == team).findAny().orElse(null);
         if (selected == null) {
             LOGGER.warn("Cannot summon Monster Carnival mob because there are no matching spawn points");
             return;
         }
         Point nPosition = selected.getPosition();
         monster.setPosition(nPosition);
-        SpawnPoint spawnPoint = new SpawnPoint(this, monster, false, 1, team.getId());
+        SpawnPoint spawnPoint = new SpawnPoint(this, monster, false, 1, team);
         addMonsterSpawnPoint(spawnPoint);
 
         spawnPoint.getMonster();
@@ -1444,10 +1427,6 @@ public class MapleMap {
                     }
                 }
             }, 30 * 60 * 1000);
-        } else if (mapid == 97) {
-            new BlackMageSummoner().registerPlayer(chr);
-        } else if (mapid == 908) {
-            new ShenronSummoner().registerPlayer(chr);
         }
         MaplePet[] pets = chr.getPets();
         for (int i = 0; i < chr.getPets().length; i++) {
@@ -1532,72 +1511,52 @@ public class MapleMap {
             chr.announce(MaplePacketCreator.rollSnowBall(true, 0, null, null));
         }
 
-        //region PvP enabled maps
-        {
-            PlayerBattle battle = chr.getPlayerBattle();
-            if (Arrays.binarySearch(
-                    Server.getConfig().getIntArray("PvPEnabled"), getId()) > -1) {
-                if (battle == null) {
-                    new PlayerBattle().registerPlayer(chr);
-                    chr.sendMessage(6, "You have entered a PvP map");
-                }
-            } else if (battle != null) {
-                if (battle.getLastAttack() < 5) {
-                    chr.sendMessage(6, "You remain in combat mode due to attacking or being attacked too recently");
-                } else {
-                    battle.unregisterPlayer(chr);
-                    chr.sendMessage(6, "You are no longer in PvP mode");
-                }
-            }
-        }
-        //endregion
-
         //region emergency attack
         // empty map or contains only party members
-        if (characters.size() == 1
-                || (chr.getPartyId() > 0 && getCharacters().stream().allMatch(p -> p.getPartyId() == chr.getPartyId()))) {
-            /*
-            May only activate under the following conditions:
-            Contains monster spawn points,
-            Contains no boss-type monsters,
-            Map is a non-town type,
-            Is not explicity excluded via server configuration
-             */
-            // must be a map that contains monster spawnpoints, contains no boss entity and is a hutning field
-            if (!isTown()
-                    && spawnPoints.stream().noneMatch(sp -> sp.getMonster().isBoss() || chr.getLevel() - sp.getMonster().getLevel() > 30)
-                    && !spawnPoints.isEmpty()
-                    && Arrays.binarySearch(Server.getConfig().getIntArray("EmergencyExcludes"), getId()) < 0) {
-                // 1/25 chance to trigger emergency
-                if ((chr.isGM() && chr.isDebug())
-                        || ((System.currentTimeMillis() > nextEmergency)
-                        && Randomizer.nextInt(25) == 0
-                        && chr.getGenericEvents().isEmpty()
-                        && eim == null
-                        && chr.getArcade() == null)) {
-                    Emergency event = Randomizer.nextBoolean() && chr.getLevel() >= 30 ? new EmergencyDuel(chr) : new EmergencyAttack(chr);
-                    TaskExecutor.createTask(new Runnable() {
-                        @Override
-                        public void run() {
-                            event.registerPlayer(chr);
-                            if (!event.isCanceled()) {
-                                nextEmergency = System.currentTimeMillis() + TimeUnit.MINUTES.toMillis(8);
-                            }
-                        }
-                    }, 1500);
-                } else {
-                    nextEmergency = System.currentTimeMillis() + TimeUnit.SECONDS.toMillis(15);
-                }
-            }
-        }
-        //endregion
-
-        MCarnivalGame carnivalGame = (MCarnivalGame) chr.getGenericEvents().stream().filter(o -> o instanceof MCarnivalGame).findFirst().orElse(null);
-        if (carnivalGame != null && (mapid == 980000101 || mapid == 980000201 || mapid == 980000301 || mapid == 980000401 || mapid == 980000501 || mapid == 980000601)) {
-            chr.announce(MaplePacketCreator.getClock((int) (carnivalGame.getTimeLeft() / 1000)));
-            chr.announce(MCarnivalPacket.getMonsterCarnivalStart(chr, carnivalGame));
-            chr.announce(MaplePacketCreator.showForcedEquip(chr.getTeam()));
-        }
+//        if (characters.size() == 1
+//                || (chr.getPartyId() > 0 && getCharacters().stream().allMatch(p -> p.getPartyId() == chr.getPartyId()))) {
+//            /*
+//            May only activate under the following conditions:
+//            Contains monster spawn points,
+//            Contains no boss-type monsters,
+//            Map is a non-town type,
+//            Is not explicity excluded via server configuration
+//             */
+//            // must be a map that contains monster spawnpoints, contains no boss entity and is a hutning field
+//            if (!isTown()
+//                    && spawnPoints.stream().noneMatch(sp -> sp.getMonster().isBoss() || chr.getLevel() - sp.getMonster().getLevel() > 30)
+//                    && !spawnPoints.isEmpty()
+//                    && Arrays.binarySearch(Server.getConfig().getIntArray("EmergencyExcludes"), getId()) < 0) {
+//                // 1/25 chance to trigger emergency
+//                if ((chr.isGM() && chr.isDebug())
+//                        || ((System.currentTimeMillis() > nextEmergency)
+//                        && Randomizer.nextInt(25) == 0
+//                        && chr.getGenericEvents().isEmpty()
+//                        && eim == null
+//                        && chr.getArcade() == null)) {
+//                    Emergency event = Randomizer.nextBoolean() && chr.getLevel() >= 30 ? new EmergencyDuel(chr) : new EmergencyAttack(chr);
+//                    TaskExecutor.createTask(new Runnable() {
+//                        @Override
+//                        public void run() {
+//                            event.registerPlayer(chr);
+//                            if (!event.isCanceled()) {
+//                                nextEmergency = System.currentTimeMillis() + TimeUnit.MINUTES.toMillis(8);
+//                            }
+//                        }
+//                    }, 1500);
+//                } else {
+//                    nextEmergency = System.currentTimeMillis() + TimeUnit.SECONDS.toMillis(15);
+//                }
+//            }
+//        }
+//        //endregion
+//
+//        MCarnivalGame carnivalGame = (MCarnivalGame) chr.getGenericEvents().stream().filter(o -> o instanceof MCarnivalGame).findFirst().orElse(null);
+//        if (carnivalGame != null && (mapid == 980000101 || mapid == 980000201 || mapid == 980000301 || mapid == 980000401 || mapid == 980000501 || mapid == 980000601)) {
+//            chr.announce(MaplePacketCreator.getClock((int) (carnivalGame.getTimeLeft() / 1000)));
+//            chr.announce(MCarnivalPacket.getMonsterCarnivalStart(chr, carnivalGame));
+//            chr.announce(MaplePacketCreator.showForcedEquip(chr.getTeam()));
+//        }
         if (hasClock()) {
             Calendar cal = Calendar.getInstance();
             chr.getClient().announce((MaplePacketCreator.getClockTime(cal.get(Calendar.HOUR_OF_DAY), cal.get(Calendar.MINUTE), cal.get(Calendar.SECOND))));

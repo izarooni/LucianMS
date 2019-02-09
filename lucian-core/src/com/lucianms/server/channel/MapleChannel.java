@@ -2,7 +2,6 @@ package com.lucianms.server.channel;
 
 import com.lucianms.client.MapleCharacter;
 import com.lucianms.events.gm.MapleEvent;
-import com.lucianms.features.carnival.MCarnivalLobbyManager;
 import com.lucianms.io.scripting.event.EventScriptManager;
 import com.lucianms.nio.server.MapleServerInboundHandler;
 import com.lucianms.scheduler.TaskExecutor;
@@ -41,14 +40,12 @@ public final class MapleChannel {
     private final Map<Integer, Integer> storedVars = new HashMap<>();
     private ReentrantReadWriteLock merchant_lock = new ReentrantReadWriteLock(true);
     private List<MapleExpedition> expeditions = new ArrayList<>();
-    private MCarnivalLobbyManager carnivalLobbyManager;
     private MapleEvent event;
     private HikariDataSource hikari;
 
     public MapleChannel(final int world, final int channel) {
         this.world = world;
         this.channel = channel;
-        carnivalLobbyManager = new MCarnivalLobbyManager(this);
         final int port = (7575 + (this.channel - 1)) + (world * 100);
         ip = Server.getConfig().getString("ServerHost") + ":" + port;
 
@@ -75,10 +72,6 @@ public final class MapleChannel {
 
     public Connection getConnection() throws SQLException {
         return hikari.getConnection();
-    }
-
-    public MCarnivalLobbyManager getCarnivalLobbyManager() {
-        return carnivalLobbyManager;
     }
 
     public void reloadEventScriptManager() {

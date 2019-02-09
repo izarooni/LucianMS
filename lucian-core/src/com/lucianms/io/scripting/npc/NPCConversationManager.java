@@ -27,7 +27,6 @@ import com.lucianms.client.inventory.ItemFactory;
 import com.lucianms.client.inventory.MapleInventoryType;
 import com.lucianms.client.inventory.MaplePet;
 import com.lucianms.constants.ExpTable;
-import com.lucianms.events.NpcMoveEvent;
 import com.lucianms.events.gm.MapleEvent;
 import com.lucianms.io.scripting.AbstractPlayerInteraction;
 import com.lucianms.server.MapleItemInformationProvider;
@@ -182,7 +181,7 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
     }
 
     public void showAnimation(byte action) {
-        getClient().announce(NpcMoveEvent.getNpcAction(objectID, action));
+        getClient().announce(MaplePacketCreator.getNpcAction(objectID, action));
     }
 
     public int getJobId() {

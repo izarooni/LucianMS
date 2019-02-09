@@ -274,7 +274,6 @@ public class GameMasterCommands {
                                     } else {
                                         players.changeMap(map);
                                     }
-                                    players.setJQController(null);
                                 }
                             }
                         } finally {
@@ -308,9 +307,6 @@ public class GameMasterCommands {
                 }
             } catch (NullPointerException e) {
                 player.dropMessage(5, "That map does not exist.");
-            }
-            if (player.getJQController() != null) {
-                player.setJQController(null);
             }
         } else if (command.equals("clock")) {
             if (args.length() == 1) {

@@ -2,10 +2,13 @@ package com.lucianms;
 
 import com.lucianms.discord.DiscordSession;
 import com.lucianms.events.*;
+import com.lucianms.features.auto.GAutoEventManager;
+import com.lucianms.features.scheduled.SOuterSpace;
 import com.lucianms.io.Config;
 import com.lucianms.nio.ReceivePacketState;
 import com.lucianms.nio.RecvOpcode;
 import com.lucianms.nio.server.MapleServerInboundHandler;
+import com.lucianms.scheduler.TaskExecutor;
 import com.lucianms.server.Server;
 import com.lucianms.server.channel.MapleChannel;
 import com.lucianms.server.world.MapleWorld;
@@ -37,12 +40,6 @@ public class LChannelMain {
                 if (!eventFolder.exists() && eventFolder.mkdirs()) {
                     LOGGER.info("Created folder 'scripts/features'");
                 }
-//                File[] files = eventFolder.listFiles();
-//                if (files == null) {
-//                    files = new File[0];
-//                }
-//                ScriptFeatureManager featureManager = new ScriptFeatureManager(channel, files);
-//                channel.setFeatureManager(featureManager);
 
                 String[] split = channel.getIP().split(":");
                 int port = Integer.parseInt(split[1]);
@@ -56,6 +53,9 @@ public class LChannelMain {
                     System.exit(0);
                     return;
                 }
+                final long repeat = (1000 * 60 * 60) * 4;
+                TaskExecutor.createRepeatingTask(() -> GAutoEventManager.startRandomEvent(world), repeat);
+                world.addScheduledEvent(new SOuterSpace(world));
                 LOGGER.info("World {} channel {} bound to port {}", (world.getId() + 1), (channel.getId()), port);
             }
         }

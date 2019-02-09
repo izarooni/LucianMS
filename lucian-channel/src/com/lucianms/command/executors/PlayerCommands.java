@@ -9,6 +9,7 @@ import com.lucianms.command.CommandWorker;
 import com.lucianms.constants.ServerConstants;
 import com.lucianms.discord.DiscordSession;
 import com.lucianms.events.RockPaperScissorsEvent;
+import com.lucianms.features.GenericEvent;
 import com.lucianms.features.ManualPlayerEvent;
 import com.lucianms.features.PlayerBattle;
 import com.lucianms.features.auto.GAutoEvent;
@@ -323,8 +324,8 @@ public class PlayerCommands {
                 player.doRebirth();
                 player.sendMessage("You now have {} rebirths!", player.getRebirths());
             } else {
-               player.sendMessage("You must be at least level {} before you can rebirth", player.getMaxLevel());
-           }
+                player.sendMessage("You must be at least level {} before you can rebirth", player.getMaxLevel());
+            }
         } else if (command.equals("dispose")) {
             NPCScriptManager.dispose(client);
             player.announce(MaplePacketCreator.enableActions());
@@ -402,9 +403,6 @@ public class PlayerCommands {
                 if (maps.containsKey(name)) {
                     MapleMap map = ch.getMap(maps.get(name));
                     if (map != null) {
-                        if (player.getJQController() != null) {
-                            player.setJQController(null);
-                        }
                         player.changeMap(map);
                     } else {
                         player.dropMessage(5, "Unable to warp to map " + name);
@@ -450,8 +448,9 @@ public class PlayerCommands {
                 player.dropMessage(5, "You must specify a username and message");
             }
         } else if (command.equals("pvp")) {
-            PlayerBattle battle = player.getPlayerBattle();
-            if (battle != null) {
+            Optional<GenericEvent> opt = player.getGenericEvents().stream().filter(g -> g instanceof PlayerBattle).findFirst();
+            if (opt.isPresent()) {
+                PlayerBattle battle = (PlayerBattle) opt.get();
                 if (battle.getLastAttack() > 5) {
                     battle.unregisterPlayer(player);
                     player.sendMessage(6, "You are no longer in PvP mode");

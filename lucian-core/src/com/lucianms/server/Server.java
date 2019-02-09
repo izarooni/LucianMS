@@ -3,11 +3,8 @@ package com.lucianms.server;
 import com.lucianms.Whitelist;
 import com.lucianms.client.MapleCharacter;
 import com.lucianms.client.SkillFactory;
-import com.lucianms.command.executors.ConsoleCommands;
 import com.lucianms.constants.ServerConstants;
 import com.lucianms.cquest.CQuestBuilder;
-import com.lucianms.features.auto.GAutoEventManager;
-import com.lucianms.features.scheduled.SOuterSpace;
 import com.lucianms.helpers.DailyWorker;
 import com.lucianms.helpers.HouseManager;
 import com.lucianms.helpers.RankingWorker;
@@ -209,10 +206,6 @@ public class Server {
                     channels.get(i).put(channelId, channel.getIP());
                 }
                 world.setServerMessage(sMessage);
-
-                final long repeat = (1000 * 60 * 60) * 4;
-                TaskExecutor.createRepeatingTask(() -> GAutoEventManager.startRandomEvent(world), repeat);
-                world.addScheduledEvent(new SOuterSpace(world));
                 LOGGER.info("World {} created {} channels in {}s", (world.getId() + 1), world.getChannels().size(), ((System.currentTimeMillis() - timeToTake) / 1000d));
             }
 
@@ -224,10 +217,7 @@ public class Server {
         } catch (Exception e) {
             e.printStackTrace();// For those who get errors
             System.exit(0);
-            return;
         }
-
-//        ConsoleCommands.beginReading();
     }
 
     public static void reloadConfig() throws FileNotFoundException {
@@ -523,19 +513,11 @@ public class Server {
             @Override
             public void run() {
                 LOGGER.info("Shutdown hook invoked");
-
                 LOGGER.info("Login server closed");
-
                 getWorlds().forEach(MapleWorld::shutdown);
-
                 TaskExecutor.cancelTask(dailyTask);
                 TaskExecutor.shutdownNow();
-
                 LOGGER.info("Worlds & channels are now offline");
-
-                ConsoleCommands.stopReading();
-
-//                DiscordSession.getDiscordServer().close(); // todo shutdown
             }
         };
     }

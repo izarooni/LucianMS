@@ -40,11 +40,7 @@ import com.lucianms.events.gm.MapleFitness;
 import com.lucianms.events.gm.MapleOla;
 import com.lucianms.features.GenericEvent;
 import com.lucianms.features.ManualPlayerEvent;
-import com.lucianms.features.PlayerBattle;
 import com.lucianms.features.PlayerTitles;
-import com.lucianms.features.carnival.MCarnivalPacket;
-import com.lucianms.features.controllers.JumpQuestController;
-import com.lucianms.features.summoning.ShenronSummoner;
 import com.lucianms.io.scripting.Achievements;
 import com.lucianms.io.scripting.event.EventInstanceManager;
 import com.lucianms.lang.GProperties;
@@ -72,8 +68,8 @@ import java.awt.*;
 import java.io.File;
 import java.lang.ref.WeakReference;
 import java.sql.*;
-import java.util.*;
 import java.util.List;
+import java.util.*;
 import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -257,7 +253,6 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
     private MapleDragon dragon = null;
     private PlayerTitles title = null;
     private Relationship relationship = new Relationship();
-    private JumpQuestController JQController;
     private RPSGame RPSGame = null;
     private Occupation occupation = null;
     private final SpamTracker spamTracker = new SpamTracker();
@@ -1664,12 +1659,8 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
         List<GenericEvent> gEvents = getGenericEvents();
         if (!gEvents.isEmpty()) {
             for (GenericEvent gEvent : gEvents) {
-                if (gEvent instanceof ShenronSummoner) {
-                    gEvent.unregisterPlayer(this);
-                } else {
-                    if (!gEvent.onPlayerChangeMapInternal(this, to)) {
-                        return;
-                    }
+                if (!gEvent.onPlayerChangeMapInternal(this, to)) {
+                    return;
                 }
             }
         }
@@ -3710,7 +3701,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
         } else if (mapid > 925020000 && mapid < 925030000) {
             this.dojoStage = 0;
         } else if (mapid > 980000100 && mapid < 980000700) {
-            getMap().broadcastMessage(this, MCarnivalPacket.getMonsterCarnivalPlayerDeath(this));
+//            getMap().broadcastMessage(this, MCarnivalPacket.getMonsterCarnivalPlayerDeath(this));
         } else if (getJob() != MapleJob.BEGINNER) {
             if (getOccupation() != null && getOccupation().getType() == Occupation.Type.Undead) {
                 return;
@@ -5607,14 +5598,6 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
         return spamTracker.getData(operation);
     }
 
-    public JumpQuestController getJQController() {
-        return this.JQController;
-    }
-
-    public void setJQController(JumpQuestController controller) {
-        this.JQController = controller;
-    }
-
     public Cheater getCheater() {
         return cheater;
     }
@@ -5652,10 +5635,6 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
 
     public void removeGenericEvent(GenericEvent event) {
         genericEvents.remove(event);
-    }
-
-    public PlayerBattle getPlayerBattle() {
-        return (PlayerBattle) getGenericEvents().stream().filter(g -> g instanceof PlayerBattle).findFirst().orElse(null);
     }
 
     public int getRiceCakes() {

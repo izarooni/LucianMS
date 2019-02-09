@@ -1,32 +1,12 @@
 package com.lucianms.events;
 
 import com.lucianms.nio.receive.MaplePacketReader;
-import com.lucianms.events.PacketEvent;
-import com.lucianms.nio.SendOpcode;
-import tools.data.output.MaplePacketLittleEndianWriter;
+import tools.MaplePacketCreator;
 
 /**
  * @author izarooni
  */
 public class NpcMoveEvent extends PacketEvent {
-
-    public static byte[] getNpcChat(int objectID, byte chat) {
-        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(SendOpcode.NPC_ACTION.getValue());
-        mplew.writeInt(objectID);
-        mplew.write(-1);
-        mplew.write(chat);
-        return mplew.getPacket();
-    }
-
-    public static byte[] getNpcAction(int objectID, byte action) {
-        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(SendOpcode.NPC_ACTION.getValue());
-        mplew.writeInt(objectID);
-        mplew.write(action);
-        mplew.write(0xFF);
-        return mplew.getPacket();
-    }
 
     private long available;
     private int objectID;
@@ -53,9 +33,9 @@ public class NpcMoveEvent extends PacketEvent {
     public Object onPacket() {
         if (available == 6) {
             if (v3 == -1) {
-                getClient().announce(getNpcChat(objectID, v4));
+                getClient().announce(MaplePacketCreator.getNpcChat(objectID, v4));
             } else {
-                getClient().announce(getNpcAction(objectID, v3));
+                getClient().announce(MaplePacketCreator.getNpcAction(objectID, v3));
             }
         }
         return null;
