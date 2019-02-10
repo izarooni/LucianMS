@@ -242,35 +242,8 @@ public class MapleClient {
         return ret;
     }
 
-    public int getVoteTime() {
-        if (voteTime != -1) {
-            return voteTime;
-        }
-        try (Connection con = Server.getConnection();
-             PreparedStatement ps = con.prepareStatement("SELECT date FROM bit_votingrecords WHERE UPPER(account) = UPPER(?)")) {
-            ps.setString(1, accountName);
-            try (ResultSet rs = ps.executeQuery()) {
-                if (!rs.next()) {
-                    return -1;
-                }
-                voteTime = rs.getInt("date");
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-            return -1;
-        }
-        return voteTime;
-    }
-
     public void resetVoteTime() {
         voteTime = -1;
-    }
-
-    public boolean hasVotedAlready() {
-        Date currentDate = new Date();
-        int timeNow = (int) (currentDate.getTime() / 1000);
-        int difference = (timeNow - getVoteTime());
-        return difference < 86400 && difference > 0;
     }
 
     public boolean hasBannedHWID() {

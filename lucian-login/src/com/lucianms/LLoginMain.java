@@ -42,7 +42,7 @@ public class LLoginMain {
             LOGGER.info("Internal login on {}:{}", address, port);
 
             serverHandler = new MapleServerInboundHandler(ReceivePacketState.LoginServer, address, port.intValue(), new NioEventLoopGroup());
-            LOGGER.info("Server login on {}:{}", address, port);
+            LOGGER.info("Login server created on {}:{}", address, port);
         } catch (Exception e) {
             e.printStackTrace();
             System.exit(0);

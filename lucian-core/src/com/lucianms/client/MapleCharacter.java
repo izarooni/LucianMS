@@ -35,7 +35,6 @@ import com.lucianms.constants.skills.*;
 import com.lucianms.cquest.CQuestBuilder;
 import com.lucianms.cquest.CQuestData;
 import com.lucianms.events.MapleEvents;
-import com.lucianms.events.RescueGaga;
 import com.lucianms.events.gm.MapleFitness;
 import com.lucianms.events.gm.MapleOla;
 import com.lucianms.features.GenericEvent;
@@ -711,17 +710,6 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
             try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
                     ret.area_info.put(rs.getShort("area"), rs.getString("info"));
-                }
-            }
-        }
-        try (PreparedStatement ps = con.prepareStatement("SELECT `name`,`info` FROM eventstats WHERE characterid = ?")) {
-            ps.setInt(1, ret.id);
-            try (ResultSet rs = ps.executeQuery()) {
-                while (rs.next()) {
-                    String name = rs.getString("name");
-                    if (rs.getString("name").equals("rescueGaga")) {
-                        ret.events.put(name, new RescueGaga(rs.getInt("info")));
-                    }
                 }
             }
         }
@@ -4412,7 +4400,6 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
                 }
                 ps.executeBatch();
             }
-            deleteWhereCharacterId(con, "DELETE FROM eventstats WHERE characterid = ?");
             try (PreparedStatement stmt = con.prepareStatement("SELECT count(*) AS total FROM cquest WHERE characterid = ?")) {
                 stmt.setInt(1, getId());
                 try (ResultSet rs = stmt.executeQuery()) {

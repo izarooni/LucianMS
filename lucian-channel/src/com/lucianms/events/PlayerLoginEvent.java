@@ -5,7 +5,6 @@ import com.lucianms.client.inventory.MapleInventory;
 import com.lucianms.client.inventory.MapleInventoryType;
 import com.lucianms.helpers.JailManager;
 import com.lucianms.io.scripting.Achievements;
-import com.lucianms.io.scripting.npc.NPCScriptManager;
 import com.lucianms.nio.receive.MaplePacketReader;
 import com.lucianms.server.PlayerBuffValueHolder;
 import com.lucianms.server.Server;
@@ -53,7 +52,7 @@ public class PlayerLoginEvent extends PacketEvent {
             try (Connection con = getClient().getChannelServer().getConnection()) {
                 player = MapleCharacter.loadCharFromDB(con, playerID, getClient(), true);
             } catch (SQLException e) {
-                getLogger().error("Unable to load player '{}", MapleCharacter.getNameById(playerID));
+                getLogger().error("Unable to load player '{}", MapleCharacter.getNameById(playerID), e);
                 getClient().getSession().close();
                 return null;
             }
@@ -219,11 +218,6 @@ public class PlayerLoginEvent extends PacketEvent {
         player.checkBerserk();
         player.expirationTask();
         player.setRates();
-        if (firstLogin && !getClient().hasVotedAlready()) {
-            player.announce(MaplePacketCreator.earnTitleMessage("You can vote now! Vote and earn a vote point!"));
-            NPCScriptManager.start(getClient(), 2007, "f_daily_login");
-        }
-
         Achievements.testFor(player, -1);
         return null;
     }

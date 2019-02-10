@@ -35,6 +35,11 @@ public class LChannelMain {
 
         for (MapleWorld world : Server.getWorlds()) {
             HikariDataSource hikari = Database.createDataSource("hikari-world" + world.getId());
+
+            final long repeat = (1000 * 60 * 60) * 4;
+            TaskExecutor.createRepeatingTask(() -> GAutoEventManager.startRandomEvent(world), repeat);
+            world.addScheduledEvent(new SOuterSpace(world));
+
             for (MapleChannel channel : world.getChannels()) {
                 File eventFolder = new File("scripts/features");
                 if (!eventFolder.exists() && eventFolder.mkdirs()) {
@@ -53,9 +58,6 @@ public class LChannelMain {
                     System.exit(0);
                     return;
                 }
-                final long repeat = (1000 * 60 * 60) * 4;
-                TaskExecutor.createRepeatingTask(() -> GAutoEventManager.startRandomEvent(world), repeat);
-                world.addScheduledEvent(new SOuterSpace(world));
                 LOGGER.info("World {} channel {} bound to port {}", (world.getId() + 1), (channel.getId()), port);
             }
         }
