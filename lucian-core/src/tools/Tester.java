@@ -24,8 +24,7 @@ public class Tester {
     private static Config config = null;
 
     public static void main(String[] args) {
-        System.setProperty("wzpath", "wz");
-
+//        System.setProperty("wzpath", "wz");
 //        initConfig();
 //        HikariDataSource hikari = Database.createDataSource("test");
 //        for (int i = 0; i < 1000; i++) {
