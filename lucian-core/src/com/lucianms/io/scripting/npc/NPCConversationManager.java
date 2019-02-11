@@ -356,7 +356,7 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
         if (name.isEmpty() || name.contains(" ") || name.length() > 12) {
             return false;
         }
-        try (Connection con = getClient().getChannelServer().getConnection();
+        try (Connection con = getClient().getWorldServer().getConnection();
              PreparedStatement ps = con.prepareStatement("SELECT name FROM alliance WHERE name = ?")) {
             ps.setString(1, name);
             try (ResultSet rs = ps.executeQuery()) {
@@ -374,7 +374,7 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
         int id;
         int guild1 = chr1.getGuildId();
         int guild2 = chr2.getGuildId();
-        try (Connection con = chr1.getClient().getChannelServer().getConnection();
+        try (Connection con = chr1.getClient().getWorldServer().getConnection();
              PreparedStatement ps = con.prepareStatement("INSERT INTO `alliance` (`name`, `guild1`, `guild2`) VALUES (?, ?, ?)", PreparedStatement.RETURN_GENERATED_KEYS)) {
             ps.setString(1, name);
             ps.setInt(2, guild1);
@@ -405,7 +405,7 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
     }
 
     public boolean hasMerchantItems() {
-        try (Connection con = getClient().getChannelServer().getConnection()) {
+        try (Connection con = getClient().getWorldServer().getConnection()) {
             if (!ItemFactory.MERCHANT.loadItems(con, getPlayer().getId(), false).isEmpty()) {
                 return true;
             }

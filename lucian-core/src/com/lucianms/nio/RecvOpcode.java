@@ -1,9 +1,6 @@
 package com.lucianms.nio;
 
-import com.lucianms.events.IgnoredPacketEvent;
-import com.lucianms.events.PacketEvent;
-import com.lucianms.events.PlayerUpdateEvent;
-import com.lucianms.events.PongEvent;
+import com.lucianms.events.*;
 
 public enum RecvOpcode {
 
@@ -27,7 +24,7 @@ public enum RecvOpcode {
     CREATE_CHAR             (0x0016, ReceivePacketState.LoginServer),
     DELETE_CHAR             (0x0017, ReceivePacketState.LoginServer),
     PONG                    (0x0018, ReceivePacketState.Both, PongEvent.class),
-    CLIENT_START_ERROR      (0x0019, ReceivePacketState.LoginServer),
+    CLIENT_START_ERROR      (0x0019, ReceivePacketState.LoginServer, ClientCrashReportEvent.class),
     CLIENT_ERROR            (0x001A, ReceivePacketState.LoginServer),
     STRANGE_DATA            (0x001B, ReceivePacketState.Both),
     RELOG                   (0x001C, ReceivePacketState.LoginServer),

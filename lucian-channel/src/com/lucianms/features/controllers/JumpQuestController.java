@@ -42,7 +42,7 @@ public class JumpQuestController {
 
     public int getHighscore() {
         int highscore = 0;
-        try (Connection con = player.getClient().getChannelServer().getConnection();
+        try (Connection con = player.getClient().getWorldServer().getConnection();
              PreparedStatement stmnt = con.prepareStatement("SELECT time FROM jq_scores WHERE charid = ? AND id = ?")) {
             stmnt.setInt(1, player.getId());
             stmnt.setInt(2, id);
@@ -93,7 +93,7 @@ public class JumpQuestController {
 
     public void end() {
         int score = getHighscore();
-        try (Connection c = player.getClient().getChannelServer().getConnection();
+        try (Connection c = player.getClient().getWorldServer().getConnection();
              PreparedStatement stmnt = c.prepareStatement("INSERT INTO jq_scores (id, charid, time) VALUES (?, ?, ?) ON DUPLICATE KEY UPDATE time = ?")) {
             int time = (int) ((System.currentTimeMillis() - timeStarted) / 1000);
             time = (score >= time ? time : score);

@@ -39,7 +39,7 @@ public class PlayerAllChatEvent extends PacketEvent {
             DiscordSession.sendPacket(writer.getPacket());
             BindRequest.keys.remove(getClient().getDiscordKey());
             getClient().setDiscordKey(null);
-            try (Connection con = getClient().getChannelServer().getConnection();
+            try (Connection con = getClient().getWorldServer().getConnection();
                  PreparedStatement ps = con.prepareStatement("update accounts set discord_id = ? where id = ?")) {
                 ps.setLong(1, getClient().getDiscordId());
                 ps.setInt(2, player.getAccountID());

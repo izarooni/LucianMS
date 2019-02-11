@@ -26,13 +26,13 @@ import com.lucianms.client.MapleClient;
 import com.lucianms.client.inventory.Item;
 import com.lucianms.client.inventory.ItemFactory;
 import com.lucianms.client.inventory.MapleInventoryType;
+import com.lucianms.constants.ItemConstants;
 import com.lucianms.scheduler.Task;
 import com.lucianms.scheduler.TaskExecutor;
-import com.lucianms.constants.ItemConstants;
-import com.lucianms.server.Server;
 import com.lucianms.server.MapleInventoryManipulator;
 import com.lucianms.server.MapleItemInformationProvider;
 import com.lucianms.server.MaplePlayerShopItem;
+import com.lucianms.server.Server;
 import tools.MaplePacketCreator;
 import tools.Pair;
 
@@ -230,7 +230,7 @@ public class HiredMerchant extends AbstractMapleMapObject {
         if (player != null) {
             player.setHasMerchant(false);
         } else {
-            try (Connection con = c.getChannelServer().getConnection();
+            try (Connection con = c.getWorldServer().getConnection();
                  PreparedStatement ps = con.prepareStatement("UPDATE characters SET HasMerchant = 0 WHERE id = ?", PreparedStatement.RETURN_GENERATED_KEYS)) {
                 ps.setInt(1, ownerId);
                 ps.executeUpdate();

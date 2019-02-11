@@ -49,7 +49,7 @@ public class PlayerLoginEvent extends PacketEvent {
         MapleCharacter player = getClient().getWorldServer().getPlayer(playerID);
         boolean firstLogin = player == null;
         if (player == null) {
-            try (Connection con = getClient().getChannelServer().getConnection()) {
+            try (Connection con = getClient().getWorldServer().getConnection()) {
                 player = MapleCharacter.loadCharFromDB(con, playerID, getClient(), true);
             } catch (SQLException e) {
                 getLogger().error("Unable to load player '{}", MapleCharacter.getNameById(playerID), e);
@@ -99,7 +99,7 @@ public class PlayerLoginEvent extends PacketEvent {
             player.silentGiveBuffs(buffs);
             buffs.clear();
         }
-        try (Connection con = getClient().getChannelServer().getConnection()) {
+        try (Connection con = getClient().getWorldServer().getConnection()) {
             try (PreparedStatement ps = con.prepareStatement("SELECT Mesos FROM dueypackages WHERE RecieverId = ? AND Checked = 1")) {
                 ps.setInt(1, player.getId());
                 try (ResultSet rs = ps.executeQuery()) {

@@ -55,7 +55,7 @@ public class PlayerPetSummonEvent extends PacketEvent {
                 if (petId == -1) {
                     return null;
                 }
-                try (Connection con = getClient().getChannelServer().getConnection()) {
+                try (Connection con = getClient().getWorldServer().getConnection()) {
                     try (PreparedStatement ps = con.prepareStatement("DELETE FROM pets WHERE `petid` = ?")) {
                         ps.setInt(1, pet.getUniqueId());
                         ps.executeUpdate();

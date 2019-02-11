@@ -92,7 +92,7 @@ public class PlayerFriendsListModifyEvent extends PacketEvent {
                 } else if (buddylist.isFull() && ble == null) {
                     player.sendMessage(1, "Your buddylist is already full");
                 } else if (ble == null) {
-                    try (Connection con = getClient().getChannelServer().getConnection()) {
+                    try (Connection con = getClient().getWorldServer().getConnection()) {
                         MapleWorld world = getClient().getWorldServer();
                         CharacterIdNameBuddyCapacity charWithId;
                         int channel;
@@ -166,7 +166,7 @@ public class PlayerFriendsListModifyEvent extends PacketEvent {
                     String otherName = null;
                     MapleCharacter otherChar = getClient().getChannelServer().getPlayerStorage().get(playerID);
                     if (otherChar == null) {
-                        try (Connection con = getClient().getChannelServer().getConnection();
+                        try (Connection con = getClient().getWorldServer().getConnection();
                              PreparedStatement ps = con.prepareStatement("SELECT name FROM characters WHERE id = ?")) {
                             ps.setInt(1, playerID);
                             try (ResultSet rs = ps.executeQuery()) {

@@ -3,8 +3,6 @@ package com.lucianms.scheduler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.HashMap;
-import java.util.List;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.ThreadFactory;
@@ -17,7 +15,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 public final class TaskExecutor {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(TaskExecutor.class);
-    private static final HashMap<Integer, Task> TASKS = new HashMap<>();
     private static final ScheduledThreadPoolExecutor EXECUTOR = new ScheduledThreadPoolExecutor(Runtime.getRuntime().availableProcessors(), new ThreadFactory() {
         private int threadId = 0;
 
@@ -31,21 +28,16 @@ public final class TaskExecutor {
 
     private static Task setupTask(ScheduledFuture<?> future) {
         final int id = atomicInteger.getAndIncrement();
-        Task task = new Task(future) {
+        return new Task(future) {
             @Override
             public int getId() {
                 return id;
             }
         };
-        if (!TASKS.containsKey(id)) {
-            TASKS.put(id, task);
-            return task;
-        }
-        throw new RuntimeException(String.format("Created task with already existing id(%d)", id));
     }
 
-    public static List<Runnable> shutdownNow() {
-        return EXECUTOR.shutdownNow();
+    public static ScheduledThreadPoolExecutor getExecutor() {
+        return EXECUTOR;
     }
 
     public static void prestartAllCoreThreads() {
@@ -101,26 +93,10 @@ public final class TaskExecutor {
         return setupTask(EXECUTOR.scheduleWithFixedDelay(r, t, t, TimeUnit.MILLISECONDS));
     }
 
-    public synchronized static Task cancelTask(Task task) {
+    public static Task cancelTask(Task task) {
         if (task != null) {
-            cancelTask(task.getId());
+            task.cancel();
         }
         return null;
-    }
-
-    /**
-     * Cancels the specified task
-     *
-     * @param id the id of the task to cancel
-     */
-    public synchronized static void cancelTask(int id) {
-        Task remove = TASKS.remove(id);
-        if (remove != null) {
-            remove.cancel();
-        }
-    }
-
-    public synchronized static Task getTask(int id) {
-        return TASKS.get(id);
     }
 }

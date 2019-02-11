@@ -3,8 +3,8 @@ package com.lucianms.client.arcade;
 import com.lucianms.client.MapleCharacter;
 import com.lucianms.scheduler.Task;
 import com.lucianms.scheduler.TaskExecutor;
-import com.lucianms.server.Server;
 import com.lucianms.server.FieldBuilder;
+import com.lucianms.server.Server;
 import com.lucianms.server.life.MapleLifeFactory;
 import com.lucianms.server.life.MapleMonster;
 import tools.MaplePacketCreator;
@@ -78,7 +78,7 @@ public abstract class Arcade {
 
     public boolean saveData(int score) {
         if (score > Arcade.getHighscore(arcadeId, player)) {
-            try (Connection con = player.getClient().getChannelServer().getConnection();
+            try (Connection con = player.getClient().getWorldServer().getConnection();
                  PreparedStatement stmnt = con.prepareStatement("INSERT INTO arcade (id, charid, highscore) VALUES (?, ?, ?) ON DUPLICATE KEY UPDATE highscore = ?")) {
                 stmnt.setInt(1, arcadeId);
                 stmnt.setInt(2, player.getId());
@@ -97,7 +97,7 @@ public abstract class Arcade {
 
     public static int getHighscore(int arcadeId, MapleCharacter player) {
         int highscore = 0;
-        try (Connection con = player.getClient().getChannelServer().getConnection();
+        try (Connection con = player.getClient().getWorldServer().getConnection();
              PreparedStatement stmnt = con.prepareStatement("SELECT highscore FROM arcade WHERE charid = ? AND id = ?")) {
             stmnt.setInt(1, player.getId());
             stmnt.setInt(2, arcadeId);

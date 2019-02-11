@@ -1907,7 +1907,7 @@ public class MaplePacketCreator {
         mplew.skip(5);
         mplew.writeInt(chr.getMerchantMeso());
         mplew.write(0);
-        try (Connection con = chr.getClient().getChannelServer().getConnection()) {
+        try (Connection con = chr.getClient().getWorldServer().getConnection()) {
             List<Pair<Item, MapleInventoryType>> items = ItemFactory.MERCHANT.loadItems(con, chr.getId(), false);
             mplew.write(items.size());
 

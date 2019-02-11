@@ -14,9 +14,6 @@ import org.slf4j.LoggerFactory;
 import tools.MaplePacketCreator;
 
 import javax.script.ScriptException;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
 import java.util.*;
 import java.util.function.Function;
 
@@ -35,7 +32,7 @@ public class EventInstanceManager {
     private HashMap<Integer, MapleCharacter> players = new HashMap<>();
     private HashMap<Integer, MapleMonster> monsters = new HashMap<>(); // <ObjectID, Monster>
     private Map<Integer, Integer> killCount = new HashMap<>(); // <PlayerID, Count>
-    private ArrayList<Integer> tasks = new ArrayList<>(); // <TaskID>
+    private ArrayList<Task> tasks = new ArrayList<>(); // <TaskID>
 
     private long timeStarted = 0;
     private long eventTime = 0;
@@ -71,7 +68,7 @@ public class EventInstanceManager {
 
     public Task schedule(final String function, long delay) {
         Task task = eventManager.schedule(function, this, delay);
-        tasks.add(task.getId());
+        tasks.add(task);
         return task;
     }
 
@@ -181,19 +178,6 @@ public class EventInstanceManager {
 
     public String getName() {
         return name;
-    }
-
-    public void saveWinner(MapleCharacter chr) {
-        try (Connection con = eventManager.getChannel().getConnection();
-             PreparedStatement ps = con.prepareStatement("INSERT INTO eventstats (event, instance, characterid, channel) VALUES (?, ?, ?, ?)")) {
-            ps.setString(1, eventManager.getScriptName());
-            ps.setString(2, getName());
-            ps.setInt(3, chr.getId());
-            ps.setInt(4, chr.getClient().getChannel());
-            ps.executeUpdate();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
     }
 
     public MapleMap removeMapInstance(int mapID) {

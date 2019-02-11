@@ -3,7 +3,6 @@ package com.lucianms.events;
 import com.lucianms.client.MapleCharacter;
 import com.lucianms.client.inventory.ItemFactory;
 import com.lucianms.nio.receive.MaplePacketReader;
-import com.lucianms.events.PacketEvent;
 import com.lucianms.server.maps.MapleMapObjectType;
 import tools.MaplePacketCreator;
 
@@ -27,7 +26,7 @@ public class HiredMerchantEvent extends PacketEvent {
         if (player.getMap().getMapObjectsInRange(player.getPosition(), 23000, Collections.singletonList(MapleMapObjectType.HIRED_MERCHANT)).isEmpty()
                 && player.getMapId() > 910000000 && player.getMapId() < 910000023) {
             if (!player.hasMerchant()) {
-                try (Connection con = getClient().getChannelServer().getConnection()) {
+                try (Connection con = getClient().getWorldServer().getConnection()) {
                     if (ItemFactory.MERCHANT.loadItems(con, player.getId(), false).isEmpty() && player.getMerchantMeso() == 0) {
                         getClient().announce(MaplePacketCreator.hiredMerchantBox());
                     } else {

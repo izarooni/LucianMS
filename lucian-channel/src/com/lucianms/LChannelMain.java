@@ -4,6 +4,7 @@ import com.lucianms.discord.DiscordSession;
 import com.lucianms.events.*;
 import com.lucianms.features.auto.GAutoEventManager;
 import com.lucianms.features.scheduled.SOuterSpace;
+import com.lucianms.helpers.DailyWorker;
 import com.lucianms.io.Config;
 import com.lucianms.nio.ReceivePacketState;
 import com.lucianms.nio.RecvOpcode;
@@ -15,6 +16,7 @@ import com.lucianms.server.world.MapleWorld;
 import com.lucianms.service.InternalChannelCommunicationsHandler;
 import com.zaxxer.hikari.HikariDataSource;
 import io.netty.channel.nio.NioEventLoopGroup;
+import io.netty.util.concurrent.DefaultThreadFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import tools.Database;
@@ -22,6 +24,9 @@ import tools.Database;
 import java.io.File;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.Calendar;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 public class LChannelMain {
 
@@ -33,12 +38,23 @@ public class LChannelMain {
         Server.createServer(Server.RunningOperation.Channel);
         Config config = Server.getConfig();
 
+        // schedule a daily task
+        Calendar tmrw = Calendar.getInstance();
+        tmrw.set(Calendar.DATE, tmrw.get(Calendar.DATE) + 1);
+        tmrw.set(Calendar.HOUR_OF_DAY, 2);
+        tmrw.set(Calendar.MINUTE, 0);
+        tmrw.set(Calendar.SECOND, 0);
+        tmrw.set(Calendar.MILLISECOND, 0);
+        Executors.newSingleThreadScheduledExecutor(new DefaultThreadFactory("DailyWorker")).schedule(new DailyWorker(), tmrw.getTimeInMillis() - System.currentTimeMillis(), TimeUnit.MILLISECONDS);
+        LOGGER.info("Daily worker schedule in {}s", (tmrw.getTimeInMillis() - System.currentTimeMillis()));
+
         for (MapleWorld world : Server.getWorlds()) {
             HikariDataSource hikari = Database.createDataSource("hikari-world" + world.getId());
 
             final long repeat = (1000 * 60 * 60) * 4;
             TaskExecutor.createRepeatingTask(() -> GAutoEventManager.startRandomEvent(world), repeat);
             world.addScheduledEvent(new SOuterSpace(world));
+            world.setHikari(hikari);
 
             for (MapleChannel channel : world.getChannels()) {
                 File eventFolder = new File("scripts/features");
@@ -51,7 +67,6 @@ public class LChannelMain {
                 try {
                     MapleServerInboundHandler handler = new MapleServerInboundHandler(ReceivePacketState.ChannelServer, split[0], port, new NioEventLoopGroup());
                     channel.setServerHandler(handler);
-                    channel.setHikari(hikari);
                     channel.reloadEventScriptManager();
                 } catch (Exception e) {
                     e.printStackTrace();

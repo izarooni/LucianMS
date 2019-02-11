@@ -1,6 +1,7 @@
 package com.lucianms.features;
 
 import com.lucianms.client.MapleCharacter;
+import com.lucianms.scheduler.Task;
 import com.lucianms.scheduler.TaskExecutor;
 import com.lucianms.server.Server;
 import com.lucianms.server.channel.MapleChannel;
@@ -38,7 +39,7 @@ public class ManualPlayerEvent extends GenericEvent {
     public final HashMap<Integer, Participant> participants = new HashMap<>();
     private HashMap<String, Integer> winners = new HashMap<>();
 
-    private int gateTask = 0;
+    private Task gateTask;
 
     public ManualPlayerEvent(MapleCharacter host) {
         this.host = host;
@@ -62,9 +63,9 @@ public class ManualPlayerEvent extends GenericEvent {
      * @param from a number to start counting down from
      * @param c    numbers to announce
      */
-    public int openGates(final int from, int... c) {
+    public Task openGates(final int from, int... c) {
         setOpen(true);
-        return (gateTask = TaskExecutor.createTask(new Runnable() {
+        return gateTask = TaskExecutor.createTask(new Runnable() {
             @Override
             public void run() {
                 if (from == 0) {
@@ -80,13 +81,13 @@ public class ManualPlayerEvent extends GenericEvent {
                 }
                 gateTask = openGates(from - 1, c);
             }
-        }, 1000).getId());
+        }, 1000);
     }
 
     public void garbage() {
         channel = null;
-        if (gateTask > 0) {
-            TaskExecutor.cancelTask(gateTask);
+        if (gateTask != null) {
+            gateTask = TaskExecutor.cancelTask(gateTask);
         }
     }
 

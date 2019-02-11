@@ -497,7 +497,7 @@ public class MapleGuild {
     }
 
     public static void displayGuildRanks(MapleClient c, int npcid) {
-        try (Connection con = c.getChannelServer().getConnection(); PreparedStatement ps = con.prepareStatement("SELECT `name`, `GP`, `logoBG`, `logoBGColor`, `logo`, `logoColor` FROM guilds WHERE NOT `guildid` = '1' ORDER BY `GP` DESC LIMIT 50")) {
+        try (Connection con = c.getWorldServer().getConnection(); PreparedStatement ps = con.prepareStatement("SELECT `name`, `GP`, `logoBG`, `logoBGColor`, `logo`, `logoColor` FROM guilds WHERE NOT `guildid` = '1' ORDER BY `GP` DESC LIMIT 50")) {
             try (ResultSet rs = ps.executeQuery()) {
                 if (rs.next()) {
                     c.announce(MaplePacketCreator.showGuildRanks(npcid, rs));

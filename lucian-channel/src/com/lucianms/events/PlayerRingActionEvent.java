@@ -6,8 +6,8 @@ import com.lucianms.client.inventory.Item;
 import com.lucianms.client.inventory.MapleInventoryType;
 import com.lucianms.nio.SendOpcode;
 import com.lucianms.nio.receive.MaplePacketReader;
-import com.lucianms.server.channel.MapleChannel;
 import com.lucianms.server.MapleInventoryManipulator;
+import com.lucianms.server.channel.MapleChannel;
 import tools.MaplePacketCreator;
 import tools.Pair;
 import tools.StringUtil;
@@ -188,7 +188,7 @@ public class PlayerRingActionEvent extends PacketEvent {
                             MapleInventoryManipulator.addById(pplayer.getClient(), p.getLeft(), (short) 1); // (empty) engagement box
                             MapleInventoryManipulator.addById(getClient(), p.getRight(), (short) 1); // engagement ring
 
-                            try (Connection con = player.getClient().getChannelServer().getConnection()) {
+                            try (Connection con = player.getClient().getWorldServer().getConnection()) {
                                 rltn.save(con);
                             } catch (SQLException e) {
                                 getLogger().warn("Unable to save relationship data for player '{}': {}", player.getName(), e.getMessage());

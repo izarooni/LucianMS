@@ -5,7 +5,6 @@ import com.lucianms.client.inventory.Item;
 import com.lucianms.client.inventory.ItemFactory;
 import com.lucianms.client.inventory.MapleInventory;
 import com.lucianms.client.inventory.MapleInventoryType;
-import com.lucianms.events.PacketEvent;
 import com.lucianms.nio.receive.MaplePacketReader;
 import com.lucianms.server.MapleInventoryManipulator;
 import com.lucianms.server.Server;
@@ -40,7 +39,7 @@ public class PlayerFredrickInteractionEvent extends PacketEvent {
                 break;
             case 26:
                 List<Pair<Item, MapleInventoryType>> items;
-                try (Connection con = getClient().getChannelServer().getConnection()) {
+                try (Connection con = getClient().getWorldServer().getConnection()) {
                     items = ItemFactory.MERCHANT.loadItems(con, player.getId(), false);
                     if (!check(player, items)) {
                         getClient().announce(MaplePacketCreator.fredrickMessage((byte) 0x21));
@@ -81,7 +80,7 @@ public class PlayerFredrickInteractionEvent extends PacketEvent {
     }
 
     private static boolean deleteItems(MapleCharacter chr) {
-        try (Connection con = chr.getClient().getChannelServer().getConnection();
+        try (Connection con = chr.getClient().getWorldServer().getConnection();
              PreparedStatement ps = con.prepareStatement("DELETE FROM `inventoryitems` WHERE `type` = ? AND `characterid` = ?")) {
             ps.setInt(1, ItemFactory.MERCHANT.getValue());
             ps.setInt(2, chr.getId());

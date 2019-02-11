@@ -51,7 +51,7 @@ public class MapleRing implements Comparable<MapleRing> {
             return -1;
         }
         int[] ringID = new int[2];
-        try (Connection con = partner1.getClient().getChannelServer().getConnection()) {
+        try (Connection con = partner1.getClient().getWorldServer().getConnection()) {
             try (PreparedStatement ps = con.prepareStatement("INSERT INTO rings (itemid, partnerChrId, partnername) VALUES (?, ?, ?)", Statement.RETURN_GENERATED_KEYS)) {
                 ps.setInt(1, itemid);
                 ps.setInt(2, partner2.getId());

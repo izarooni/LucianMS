@@ -2,7 +2,6 @@ package com.lucianms.events;
 
 import com.lucianms.client.MapleCharacter;
 import com.lucianms.client.MapleClient;
-import com.lucianms.events.PacketEvent;
 import com.lucianms.nio.receive.MaplePacketReader;
 import tools.MaplePacketCreator;
 
@@ -107,7 +106,7 @@ public class PlayerGuildBoardInteractionEvent extends PacketEvent {
     }
 
     private static void listBBSThreads(MapleClient c, int start) {
-        try (Connection con = c.getChannelServer().getConnection();
+        try (Connection con = c.getWorldServer().getConnection();
              PreparedStatement ps = con.prepareStatement("SELECT * FROM bbs_threads WHERE guildid = ? ORDER BY localthreadid DESC")) {
             ps.setInt(1, c.getPlayer().getGuildId());
             try (ResultSet rs = ps.executeQuery()) {
@@ -122,7 +121,7 @@ public class PlayerGuildBoardInteractionEvent extends PacketEvent {
         if (c.getPlayer().getGuildId() <= 0) {
             return;
         }
-        try (Connection con = c.getChannelServer().getConnection()) {
+        try (Connection con = c.getWorldServer().getConnection()) {
             int threadid;
             try (PreparedStatement ps = con.prepareStatement("SELECT threadid FROM bbs_threads WHERE guildid = ? AND localthreadid = ?")) {
                 ps.setInt(1, c.getPlayer().getGuildId());
@@ -156,7 +155,7 @@ public class PlayerGuildBoardInteractionEvent extends PacketEvent {
         if (c.getGuildId() < 1) {
             return;
         }
-        try (Connection con = client.getChannelServer().getConnection();
+        try (Connection con = client.getWorldServer().getConnection();
              PreparedStatement ps = con.prepareStatement("UPDATE bbs_threads SET `name` = ?, `timestamp` = ?, " + "`icon` = ?, " + "`startpost` = ? WHERE guildid = ? AND localthreadid = ? AND (postercid = ? OR ?)")) {
             ps.setString(1, title);
             ps.setLong(2, System.currentTimeMillis());
@@ -179,7 +178,7 @@ public class PlayerGuildBoardInteractionEvent extends PacketEvent {
             return;
         }
         int nextId = 0;
-        try (Connection con = client.getChannelServer().getConnection()) {
+        try (Connection con = client.getWorldServer().getConnection()) {
             if (!bNotice) {
                 try (PreparedStatement ps = con.prepareStatement("SELECT MAX(localthreadid) AS lastLocalId FROM bbs_threads WHERE guildid = ?")) {
                     ps.setInt(1, c.getGuildId());
@@ -210,7 +209,7 @@ public class PlayerGuildBoardInteractionEvent extends PacketEvent {
         if (mc.getGuildId() <= 0) {
             return;
         }
-        try (Connection con = client.getChannelServer().getConnection()) {
+        try (Connection con = client.getWorldServer().getConnection()) {
             int threadid;
             try (PreparedStatement ps = con.prepareStatement("SELECT threadid, postercid FROM bbs_threads WHERE guildid = ? AND localthreadid = ?")) {
                 ps.setInt(1, mc.getGuildId());
@@ -244,7 +243,7 @@ public class PlayerGuildBoardInteractionEvent extends PacketEvent {
             return;
         }
         int threadid;
-        try (Connection con = client.getChannelServer().getConnection()) {
+        try (Connection con = client.getWorldServer().getConnection()) {
             try (PreparedStatement ps = con.prepareStatement("SELECT postercid, threadid FROM bbs_replies WHERE replyid = ?")) {
                 ps.setInt(1, replyid);
                 try (ResultSet rs = ps.executeQuery()) {
@@ -280,7 +279,7 @@ public class PlayerGuildBoardInteractionEvent extends PacketEvent {
         if (mc.getGuildId() <= 0) {
             return;
         }
-        try (Connection con = client.getChannelServer().getConnection()) {
+        try (Connection con = client.getWorldServer().getConnection()) {
             try (PreparedStatement ps = con.prepareStatement("SELECT * FROM bbs_threads WHERE guildid = ? AND " + (bIsThreadIdLocal ? "local" : "") + "threadid = ?")) {
                 ps.setInt(1, mc.getGuildId());
                 ps.setInt(2, threadid);

@@ -247,7 +247,7 @@ public class HGMCommands {
                             channel.getMap(player.getMapId()).broadcastMessage(MaplePacketCreator.spawnNPC(npc));
                         }
                     }
-                    try (Connection con = client.getChannelServer().getConnection();
+                    try (Connection con = client.getWorldServer().getConnection();
                          PreparedStatement ps = con.prepareStatement("INSERT INTO spawns (idd, f, fh, cy, rx0, rx1, type , x, mid, mobtime, script) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)")) {
                         ps.setInt(1, npcId);
                         ps.setInt(2, npc.getF());
@@ -289,7 +289,7 @@ public class HGMCommands {
                         mob.setRx0(xpos + 50);
                         mob.setRx1(xpos - 50);
                         mob.setFh(fh);
-                        try (Connection con = client.getChannelServer().getConnection();
+                        try (Connection con = client.getWorldServer().getConnection();
                              PreparedStatement ps = con.prepareStatement("INSERT INTO spawns ( idd, f, fh, cy, rx0, rx1, type, x, mid, mobtime) VALUES ( ?, ?, ?, ?, ?, ?, ?, ?, ?, ? )")) {
                             ps.setInt(1, mobId);
                             ps.setInt(2, 0);

@@ -485,7 +485,7 @@ public class PlayerCashItemUseEvent extends PacketEvent implements Cleaner.Clean
                     return null;
                 }
                 pet.setName(username);
-                try (Connection con = ch.getConnection()) {
+                try (Connection con = getClient().getWorldServer().getConnection()) {
                     pet.saveToDb(con);
                 } catch (SQLException ignore) {
                 }

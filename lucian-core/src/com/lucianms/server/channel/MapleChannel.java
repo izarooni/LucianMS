@@ -13,15 +13,12 @@ import com.lucianms.server.maps.HiredMerchant;
 import com.lucianms.server.maps.MapleMap;
 import com.lucianms.server.world.MapleParty;
 import com.lucianms.server.world.MaplePartyCharacter;
-import com.zaxxer.hikari.HikariDataSource;
 import org.apache.commons.io.FilenameUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import tools.MaplePacketCreator;
 
 import java.io.File;
-import java.sql.Connection;
-import java.sql.SQLException;
 import java.util.*;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock.WriteLock;
@@ -41,7 +38,6 @@ public final class MapleChannel {
     private ReentrantReadWriteLock merchant_lock = new ReentrantReadWriteLock(true);
     private List<MapleExpedition> expeditions = new ArrayList<>();
     private MapleEvent event;
-    private HikariDataSource hikari;
 
     public MapleChannel(final int world, final int channel) {
         this.world = world;
@@ -60,18 +56,6 @@ public final class MapleChannel {
 
     public void setServerHandler(MapleServerInboundHandler serverHandler) {
         this.serverHandler = serverHandler;
-    }
-
-    public HikariDataSource getHikari() {
-        return hikari;
-    }
-
-    public void setHikari(HikariDataSource hikari) {
-        this.hikari = hikari;
-    }
-
-    public Connection getConnection() throws SQLException {
-        return hikari.getConnection();
     }
 
     public void reloadEventScriptManager() {

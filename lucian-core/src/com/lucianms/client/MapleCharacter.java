@@ -1717,7 +1717,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
         } else {
             skills.remove(skill);
             this.client.announce(MaplePacketCreator.updateSkill(skill.getId(), newLevel, newMasterlevel, -1)); // Shouldn't
-            try (Connection con = client.getChannelServer().getConnection();
+            try (Connection con = client.getWorldServer().getConnection();
                  PreparedStatement ps = con.prepareStatement("DELETE FROM skills WHERE skillid = ? AND characterid = ?")) {
                 ps.setInt(1, skill.getId());
                 ps.setInt(2, id);
@@ -2796,7 +2796,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
     }
 
     public void setMerchantMeso(int set) {
-        try (Connection con = client.getChannelServer().getConnection();
+        try (Connection con = client.getWorldServer().getConnection();
              PreparedStatement ps = con.prepareStatement("UPDATE characters SET MerchantMesos = ? WHERE id = ?", Statement.RETURN_GENERATED_KEYS)) {
             ps.setInt(1, set);
             ps.setInt(2, id);
@@ -3337,7 +3337,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
     public void hasGivenFame(MapleCharacter to) {
         lastfametime = System.currentTimeMillis();
         lastmonthfameids.add(to.getId());
-        try (Connection con = client.getChannelServer().getConnection();
+        try (Connection con = client.getWorldServer().getConnection();
              PreparedStatement ps = con.prepareStatement("INSERT INTO famelog (characterid, characterid_to) VALUES (?, ?)")) {
             ps.setInt(1, getId());
             ps.setInt(2, to.getId());
@@ -3600,7 +3600,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
     }
 
     public void createPlayerNPC(MapleCharacter v, int scriptId, String script) {
-        try (Connection con = client.getChannelServer().getConnection()) {
+        try (Connection con = client.getWorldServer().getConnection()) {
             int pnpcid = 0;
             try (PreparedStatement ps = con.prepareStatement("INSERT INTO playernpcs (name, scriptid, script, map, hair, face, skin, gender, foothold, dir, x, cy, rx0, rx1) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", Statement.RETURN_GENERATED_KEYS)) {
                 ps.setString(1, v.getName());
@@ -4061,7 +4061,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
 
     public synchronized void saveCooldowns() {
         if (getAllCooldowns().size() > 0) {
-            try (Connection con = client.getChannelServer().getConnection()) {
+            try (Connection con = client.getWorldServer().getConnection()) {
                 deleteWhereCharacterId(con, "DELETE FROM cooldowns WHERE charid = ?");
                 try (PreparedStatement ps = con.prepareStatement("INSERT INTO cooldowns (charid, SkillID, StartTime, length) VALUES (?, ?, ?, ?)")) {
                     ps.setInt(1, getId());
@@ -4080,7 +4080,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
     }
 
     public void saveGuildStatus() {
-        try (Connection con = client.getChannelServer().getConnection();
+        try (Connection con = client.getWorldServer().getConnection();
              PreparedStatement ps = con.prepareStatement("UPDATE characters SET guildid = ?, guildrank = ?, allianceRank = ? WHERE id = ?")) {
             ps.setInt(1, guildid);
             ps.setInt(2, guildrank);
@@ -4159,7 +4159,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
     }
 
     public void saveToDB() {
-        try (Connection con = client.getChannelServer().getConnection()) {
+        try (Connection con = client.getWorldServer().getConnection()) {
             con.setAutoCommit(false);
             try (PreparedStatement ps = con.prepareStatement("UPDATE characters SET level = ?, fame = ?, str = ?, dex = ?, luk = ?, `int` = ?, exp = ?, gachaexp = ?, hp = ?, mp = ?, maxhp = ?, maxmp = ?, sp = ?, ap = ?, gm = ?, skincolor = ?, gender = ?, job = ?, hair = ?, face = ?, map = ?, meso = ?, hpMpUsed = ?, spawnpoint = ?, party = ?, buddyCapacity = ?, messengerid = ?, messengerposition = ?, mountlevel = ?, mountexp = ?, mounttiredness= ?, equipslots = ?, useslots = ?, setupslots = ?, etcslots = ?,  monsterbookcover = ?, vanquisherStage = ?, dojoPoints = ?, lastDojoStage = ?, finishedDojoTutorial = ?, vanquisherKills = ?, matchcardwins = ?, matchcardlosses = ?, matchcardties = ?, omokwins = ?, omoklosses = ?, omokties = ?, dataString = ?, fishingpoints = ?, daily = ?, reborns = ?, eventpoints = ?, rebirthpoints = ?, occupation = ?, jumpquestpoints = ?, chattype = ?, name = ? WHERE id = ?", Statement.RETURN_GENERATED_KEYS)) {
                 ps.setInt(1, level);
@@ -4577,7 +4577,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
     }
 
     public void setHasMerchant(boolean set) {
-        try (Connection con = client.getChannelServer().getConnection();
+        try (Connection con = client.getWorldServer().getConnection();
              PreparedStatement ps = con.prepareStatement("UPDATE characters SET HasMerchant = ? WHERE id = ?")) {
             ps.setInt(1, set ? 1 : 0);
             ps.setInt(2, id);
@@ -4590,7 +4590,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
     }
 
     public void addMerchantMesos(int add) {
-        try (Connection con = client.getChannelServer().getConnection();
+        try (Connection con = client.getWorldServer().getConnection();
              PreparedStatement ps = con.prepareStatement("UPDATE characters SET MerchantMesos = ? WHERE id = ?", Statement.RETURN_GENERATED_KEYS)) {
             ps.setInt(1, merchantmeso + add);
             ps.setInt(2, id);
@@ -4677,7 +4677,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
 
     public void changeName(String name) {
         this.name = name;
-        try (Connection con = client.getChannelServer().getConnection();
+        try (Connection con = client.getWorldServer().getConnection();
              PreparedStatement ps = con.prepareStatement("UPDATE `characters` SET `name` = ? WHERE `id` = ?")) {
             ps.setString(1, name);
             ps.setInt(2, id);
@@ -4751,7 +4751,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
     }
 
     public void showNote() {
-        try (Connection con = client.getChannelServer().getConnection();
+        try (Connection con = client.getWorldServer().getConnection();
              PreparedStatement ps = con.prepareStatement("SELECT * FROM notes WHERE `to`=? AND `deleted` = 0", ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_UPDATABLE)) {
             ps.setString(1, this.getName());
             try (ResultSet rs = ps.executeQuery()) {
@@ -4834,7 +4834,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
     public void unequipPet(MaplePet pet, boolean shift_left, boolean hunger) {
         if (this.getPet(this.getPetIndex(pet)) != null) {
             this.getPet(this.getPetIndex(pet)).setSummoned(false);
-            try (Connection con = getClient().getChannelServer().getConnection()) {
+            try (Connection con = getClient().getWorldServer().getConnection()) {
                 this.getPet(this.getPetIndex(pet)).saveToDb(con);
             } catch (SQLException ignore) {
             }
@@ -5029,7 +5029,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
         Calendar cal = Calendar.getInstance();
         cal.add(Calendar.DATE, days);
         Timestamp TS = new Timestamp(cal.getTimeInMillis());
-        try (Connection con = client.getChannelServer().getConnection();
+        try (Connection con = client.getWorldServer().getConnection();
              PreparedStatement ps = con.prepareStatement("UPDATE accounts SET banreason = ?, tempban = ?, greason = ? WHERE id = ?")) {
             ps.setString(1, desc);
             ps.setTimestamp(2, TS);
@@ -5489,7 +5489,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
     }
 
     public boolean tempban(Timestamp tempban) {
-        try (Connection con = client.getChannelServer().getConnection();
+        try (Connection con = client.getWorldServer().getConnection();
              PreparedStatement ps = con.prepareStatement("UPDATE accounts SET tempban = ? WHERE id = ?")) {
             ps.setTimestamp(1, tempban);
             ps.setInt(2, getAccountID());

@@ -37,6 +37,7 @@ import com.lucianms.server.channel.MapleChannel;
 import com.lucianms.server.guild.MapleGuild;
 import com.lucianms.server.guild.MapleGuildCharacter;
 import com.lucianms.server.guild.MapleGuildSummary;
+import com.zaxxer.hikari.HikariDataSource;
 import tools.MaplePacketCreator;
 
 import java.sql.Connection;
@@ -51,6 +52,7 @@ import java.util.function.Predicate;
  */
 public class MapleWorld {
 
+    private HikariDataSource hikari;
     private int id, flag, exprate, droprate, mesorate, bossdroprate;
     private String eventmsg;
     private List<MapleChannel> channels = new ArrayList<>();
@@ -74,6 +76,19 @@ public class MapleWorld {
         this.droprate = droprate;
         this.mesorate = mesorate;
         this.bossdroprate = bossdroprate;
+    }
+
+
+    public HikariDataSource getHikari() {
+        return hikari;
+    }
+
+    public void setHikari(HikariDataSource hikari) {
+        this.hikari = hikari;
+    }
+
+    public Connection getConnection() throws SQLException {
+        return hikari.getConnection();
     }
 
     public SAutoEvent getScheduledEvent(String name) {

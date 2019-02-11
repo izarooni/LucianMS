@@ -138,7 +138,7 @@ public class GameMasterCommands {
 
                     if (args.length() == 3 && Boolean.parseBoolean(args.get(2))) {
                         sb.append("\r\nOffline users: \r\n\r\n");
-                        try (Connection con = ch.getConnection();
+                        try (Connection con = client.getWorldServer().getConnection();
                              PreparedStatement stmt = con.prepareStatement(
                                      "SELECT c.accountid, c.name, SUM(ii.quantity) as 'quantity' FROM characters c" +
                                              " JOIN inventoryitems ii ON c.id = ii.characterid" +
@@ -730,7 +730,7 @@ public class GameMasterCommands {
                         if (ItemConstants.isPet(itemId)) {
                             if (item.getPetId() > -1) {
                                 // maybe skip pets instead?
-                                try (Connection con = client.getChannelServer().getConnection()) {
+                                try (Connection con = client.getWorldServer().getConnection()) {
                                     Database.executeSingle(con, "delete from pets where petid = ?", item.getPet().getUniqueId());
                                 } catch (SQLException e) {
                                     e.printStackTrace();
@@ -849,7 +849,7 @@ public class GameMasterCommands {
                 String username = args.get(0);
                 ArrayList<String> usernames = new ArrayList<>();
                 // will this statement work? who knows
-                try (Connection con = client.getChannelServer().getConnection();
+                try (Connection con = client.getWorldServer().getConnection();
                      PreparedStatement ps = con.prepareStatement("select name from characters where accountid = (select accountid from characters where name = ?)")) {
                     ps.setString(1, username);
                     try (ResultSet rs = ps.executeQuery()) {

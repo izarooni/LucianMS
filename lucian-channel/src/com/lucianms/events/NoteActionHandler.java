@@ -56,7 +56,7 @@ public class NoteActionHandler extends PacketEvent {
             player.getCashShop().decreaseNotes();
         } else if (action == 1) {
             int fame = 0;
-            try (Connection con = getClient().getChannelServer().getConnection()) {
+            try (Connection con = getClient().getWorldServer().getConnection()) {
                 for (int note : notes) {
                     try (PreparedStatement ps = con.prepareStatement("SELECT `fame` FROM notes WHERE id=? AND deleted=0")) {
                         ps.setInt(1, note);

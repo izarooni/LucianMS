@@ -50,8 +50,6 @@ import com.lucianms.server.partyquest.Pyramid;
 import com.lucianms.server.quest.MapleQuest;
 import com.lucianms.server.world.MapleParty;
 import com.lucianms.server.world.MaplePartyCharacter;
-import com.zaxxer.hikari.HikariDataSource;
-import tools.Database;
 import tools.MaplePacketCreator;
 
 import java.awt.*;
@@ -65,10 +63,8 @@ import java.util.stream.Collectors;
 
 public class AbstractPlayerInteraction {
 
-    private static final HikariDataSource hikari = Database.createDataSource("hikari-scripts");
-
     public Connection getDatabaseConnection() throws SQLException {
-        return hikari.getConnection();
+        return c.getWorldServer().getConnection();
     }
 
     public MapleClient c;
