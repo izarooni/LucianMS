@@ -106,6 +106,13 @@ public class GameMasterCommands {
             commands.sort(String::compareTo);
             commands.forEach(player::dropMessage);
             commands.clear();
+        } else if (command.equals("fwarp")) {
+            Integer fieldId = args.parseNumber(0, int.class);
+            if (fieldId != null) {
+                client.announce(MaplePacketCreator.getWarpToMap(fieldId, 0x80, player, null));
+            } else {
+                player.sendMessage(5, "Usage: !fwarp <map_id>");
+            }
         } else if (command.equals("killed")) {
             if (player.getMap().getLastPlayerDiedInMap() != null) {
                 player.dropMessage(6, "The last player who died on this map is " + player.getMap().getLastPlayerDiedInMap());
@@ -128,7 +135,7 @@ public class GameMasterCommands {
                                     .append(itemId).append("#\r\n");
                         }
                     }
-                    
+
                     if (args.length() == 3 && Boolean.parseBoolean(args.get(2))) {
                         sb.append("\r\nOffline users: \r\n\r\n");
                         try (Connection con = ch.getConnection();
