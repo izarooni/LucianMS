@@ -1604,11 +1604,11 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
     }
 
     public void changeMap(final MapleMap to, final MaplePortal pto) {
-        changeMapInternal(to, pto.getPosition(), MaplePacketCreator.getWarpToMap(to, pto.getId(), this, null));
+        changeMapInternal(to, pto.getPosition(), MaplePacketCreator.getWarpToMap(to.getId(), pto.getId(), this, null));
     }
 
     public void changeMap(final MapleMap to, final Point pos) {
-        changeMapInternal(to, pos, MaplePacketCreator.getWarpToMap(to, 0x80, this, pos));
+        changeMapInternal(to, pos, MaplePacketCreator.getWarpToMap(to.getId(), 0x80, this, pos));
     }
 
     public void changeMapBanish(int mapid, String portal, String msg) {

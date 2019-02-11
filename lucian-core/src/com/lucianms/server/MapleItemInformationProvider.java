@@ -790,6 +790,9 @@ public class MapleItemInformationProvider {
             return pickupRestrictionCache.get(itemId);
         }
         MapleData data = getItemData(itemId);
+        if (data == null) {
+            return false;
+        }
         boolean bRestricted = MapleDataTool.getIntConvert("info/only", data, 0) == 1;
         pickupRestrictionCache.put(itemId, bRestricted);
         return bRestricted;

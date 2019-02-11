@@ -3119,20 +3119,20 @@ public class MaplePacketCreator {
     /**
      * Gets a packet telling the client to change maps.
      *
-     * @param to         The <code>MapleMap</code> to warp to.
-     * @param spawnPoint The spawn portal number to spawn at.
-     * @param chr        The character warping to <code>to</code>
+     * @param to         The field to warp to
+     * @param spawnPoint The spawn portal number to spawn at
+     * @param player     The character warping
      * @return The map change packet.
      */
-    public static byte[] getWarpToMap(MapleMap to, int spawnPoint, MapleCharacter chr, Point pos) {
+    public static byte[] getWarpToMap(int mapId, int spawnPoint, MapleCharacter player, Point pos) {
         final MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
         mplew.writeShort(SendOpcode.SET_FIELD.getValue());
-        mplew.writeInt(chr.getClient().getChannel() - 1);
+        mplew.writeInt(player.getClient().getChannel() - 1);
         mplew.writeInt(0);//updated
         mplew.write(0);//updated
-        mplew.writeInt(to.getId());
+        mplew.writeInt(mapId);
         mplew.write(spawnPoint);
-        mplew.writeShort(chr.getHp());
+        mplew.writeShort(player.getHp());
         mplew.write(pos != null ? 1 : 0);
         if (pos != null) {
             mplew.writeInt(pos.x);
