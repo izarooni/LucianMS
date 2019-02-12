@@ -4,7 +4,6 @@ import com.lucianms.client.MapleCharacter;
 import com.lucianms.events.gm.MapleEvent;
 import com.lucianms.io.scripting.event.EventScriptManager;
 import com.lucianms.nio.server.MapleServerInboundHandler;
-import com.lucianms.scheduler.TaskExecutor;
 import com.lucianms.server.ConcurrentMapStorage;
 import com.lucianms.server.FieldBuilder;
 import com.lucianms.server.Server;
@@ -44,10 +43,6 @@ public final class MapleChannel {
         this.channel = channel;
         final int port = (7575 + (this.channel - 1)) + (world * 100);
         ip = Server.getConfig().getString("ServerHost") + ":" + port;
-
-        if (Server.getRunningOperation() == Server.RunningOperation.Channel) {
-            TaskExecutor.createRepeatingTask(() -> maps.forEach(MapleMap::respawn), 5000);
-        }
     }
 
     public MapleServerInboundHandler getServerHandler() {
@@ -78,10 +73,10 @@ public final class MapleChannel {
 
     public final void shutdown() {
         try {
+            getPlayerStorage().forEach(MapleCharacter::saveToDB);
             if (eventScriptManager != null) {
                 eventScriptManager.close();
             }
-            getPlayerStorage().forEach(MapleCharacter::saveToDB);
             closeAllMerchants();
             LOGGER.info("Shut down world {} channel {}", world, channel);
         } catch (Exception e) {
@@ -106,8 +101,8 @@ public final class MapleChannel {
         }
     }
 
-    public boolean isMapLoaded(int mapID) {
-        return maps.get(mapID) != null;
+    public Collection<MapleMap> getMaps() {
+        return maps.values();
     }
 
     public MapleMap getMap(int mapID) {

@@ -156,7 +156,7 @@ public enum RecvOpcode {
     MONSTER_CARNIVAL        (0x00DA, ReceivePacketState.ChannelServer),
     PARTY_SEARCH_REGISTER   (0x00DC, ReceivePacketState.ChannelServer),
     PARTY_SEARCH_START      (0x00DE, ReceivePacketState.ChannelServer),
-    PLAYER_UPDATE           (0x00DF, ReceivePacketState.Both, PlayerUpdateEvent.class),
+    FIELD_SET               (0x00DF, ReceivePacketState.Both, FieldSetEvent.class),
     CHECK_CASH              (0x00E4, ReceivePacketState.ChannelServer),
     CASHSHOP_OPERATION      (0x00E5, ReceivePacketState.ChannelServer),
     COUPON_CODE             (0x00E6, ReceivePacketState.ChannelServer),

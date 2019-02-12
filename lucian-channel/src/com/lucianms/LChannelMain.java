@@ -1,17 +1,25 @@
 package com.lucianms;
 
+import com.lucianms.client.SkillFactory;
+import com.lucianms.cquest.CQuestBuilder;
 import com.lucianms.discord.DiscordSession;
 import com.lucianms.events.*;
 import com.lucianms.features.auto.GAutoEventManager;
 import com.lucianms.features.scheduled.SOuterSpace;
 import com.lucianms.helpers.DailyWorker;
+import com.lucianms.helpers.HouseManager;
+import com.lucianms.helpers.RankingWorker;
 import com.lucianms.io.Config;
+import com.lucianms.io.scripting.Achievements;
 import com.lucianms.nio.ReceivePacketState;
 import com.lucianms.nio.RecvOpcode;
 import com.lucianms.nio.server.MapleServerInboundHandler;
 import com.lucianms.scheduler.TaskExecutor;
+import com.lucianms.server.CashShop;
 import com.lucianms.server.Server;
 import com.lucianms.server.channel.MapleChannel;
+import com.lucianms.server.maps.tasks.FieldUpdateTask;
+import com.lucianms.server.quest.MapleQuest;
 import com.lucianms.server.world.MapleWorld;
 import com.lucianms.service.InternalChannelCommunicationsHandler;
 import com.zaxxer.hikari.HikariDataSource;
@@ -26,6 +34,7 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Calendar;
 import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 public class LChannelMain {
@@ -35,8 +44,23 @@ public class LChannelMain {
 
     public static void main(String[] args) {
         initReceiveHeaders();
-        Server.createServer(Server.RunningOperation.Channel);
-        Config config = Server.getConfig();
+        Server.createServer();
+
+        long timeToTake = System.currentTimeMillis();
+        MapleQuest.loadAllQuest();
+        CQuestBuilder.loadAllQuests();
+        LOGGER.info("Quest data loaded in {}s", ((System.currentTimeMillis() - timeToTake) / 1000d));
+
+        timeToTake = System.currentTimeMillis();
+        SkillFactory.loadAllSkills();
+        LOGGER.info("Skill data loaded in {}s", ((System.currentTimeMillis() - timeToTake) / 1000d));
+
+        int achievements = Achievements.loadAchievements();
+        LOGGER.info("{} achievements loaded in {}s", achievements, ((System.currentTimeMillis() - timeToTake) / 1000d));
+
+        timeToTake = System.currentTimeMillis();
+        int count = HouseManager.loadHouses();
+        LOGGER.info("{} houses loaded in {}s", count, ((System.currentTimeMillis() - timeToTake) / 1000d));
 
         // schedule a daily task
         Calendar tmrw = Calendar.getInstance();
@@ -45,14 +69,20 @@ public class LChannelMain {
         tmrw.set(Calendar.MINUTE, 0);
         tmrw.set(Calendar.SECOND, 0);
         tmrw.set(Calendar.MILLISECOND, 0);
-        Executors.newSingleThreadScheduledExecutor(new DefaultThreadFactory("DailyWorker")).schedule(new DailyWorker(), tmrw.getTimeInMillis() - System.currentTimeMillis(), TimeUnit.MILLISECONDS);
-        LOGGER.info("Daily worker schedule in {}s", (tmrw.getTimeInMillis() - System.currentTimeMillis()));
+        ScheduledExecutorService repeatWorker = Executors.newSingleThreadScheduledExecutor(new DefaultThreadFactory("RepeatWorker"));
+        repeatWorker.scheduleWithFixedDelay(new DailyWorker(), (tmrw.getTimeInMillis() - System.currentTimeMillis()), TimeUnit.DAYS.toMillis(1), TimeUnit.MILLISECONDS);
+        repeatWorker.scheduleWithFixedDelay(new RankingWorker(), RankingWorker.UpdateInterval, RankingWorker.UpdateInterval, TimeUnit.MILLISECONDS);
+        LOGGER.info("Repeat worker initialized", (tmrw.getTimeInMillis() - System.currentTimeMillis()));
+
+        CashShop.CashItemFactory.loadCommodities();
 
         for (MapleWorld world : Server.getWorlds()) {
             HikariDataSource hikari = Database.createDataSource("hikari-world" + world.getId());
 
             final long repeat = (1000 * 60 * 60) * 4;
             TaskExecutor.createRepeatingTask(() -> GAutoEventManager.startRandomEvent(world), repeat);
+            new FieldUpdateTask(world).run();
+
             world.addScheduledEvent(new SOuterSpace(world));
             world.setHikari(hikari);
 
@@ -78,6 +108,7 @@ public class LChannelMain {
         }
 
         try {
+            Config config = Server.getConfig();
             LOGGER.info("Initializing communications connector");
             communicationsHandler = new InternalChannelCommunicationsHandler(config.getString("ServerHost"), config.getNumber("LoginBasePort").intValue() + 1);
         } catch (Exception e) {
@@ -89,7 +120,7 @@ public class LChannelMain {
         DiscordSession.listen();
 
         try (Connection con = Server.getConnection()) {
-            Database.execute(con, "update accounts set loggedin = 0");
+            Database.execute(con, "update accounts set loggedin = 0 where loggedin != 0");
             Database.execute(con, "update characters set hasmerchant = 0");
         } catch (SQLException e) {
             e.printStackTrace();

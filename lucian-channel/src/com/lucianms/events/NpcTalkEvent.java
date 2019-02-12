@@ -8,7 +8,6 @@ import com.lucianms.server.maps.MapleMapObject;
 import com.lucianms.server.maps.PlayerNPC;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import tools.MaplePacketCreator;
 
 /**
  * @author izarooni
@@ -37,16 +36,12 @@ public class NpcTalkEvent extends PacketEvent {
                 if (player.isGM() && player.isDebug()) {
                     player.sendMessage("NPC Talk ObjectID: {}, ID: {}, Script: {}", npc.getObjectId(), npc.getId(), npc.getScript());
                 }
-//                if (npc.getId() == 9010009) {
-//                    player.announce(MaplePacketCreator.sendDuey((byte) 8, DueyHandler.loadItems(player)));
-//                } else
                 if (npc.hasShop()) {
                     if (player.getShop() == null) {
                         npc.sendShop(getClient());
                     }
                 } else {
                     if (npc.getId() >= 9100100 && npc.getId() <= 9100200) {
-                        // Custom handling for gachapon scripts to reduce the amount of scripts needed.
                         NPCScriptManager.start(getClient(), npc.getId(), "gachapon");
                     } else {
                         NPCScriptManager.start(getClient(), npc.getObjectId(), npc.getId(), npc.getScript());

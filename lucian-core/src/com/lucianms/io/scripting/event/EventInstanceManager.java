@@ -73,7 +73,7 @@ public class EventInstanceManager {
     }
 
     public void registerPlayer(MapleCharacter player) {
-        if (player == null || !player.isLoggedin()) {
+        if (player == null) {
             LOGGER.warn("Unable to register null player into event instance '{}'", getName());
             return;
         }

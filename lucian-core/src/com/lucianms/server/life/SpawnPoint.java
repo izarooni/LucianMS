@@ -98,7 +98,7 @@ public final class SpawnPoint {
         }
     }
 
-    public void summonMonster() {
+    public synchronized void summonMonster() {
         if (monster == null) {
             LOGGER.error("Can't spawn monster (was never created)", getMonsterID());
             return;

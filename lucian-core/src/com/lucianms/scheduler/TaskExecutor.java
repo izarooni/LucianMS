@@ -50,6 +50,10 @@ public final class TaskExecutor {
         EXECUTOR.purge();
     }
 
+    public synchronized static void execute(Runnable r) {
+        EXECUTOR.execute(r);
+    }
+
     /**
      * @param r a runnable interface
      * @param a the time in milliseconds of when to execute the task

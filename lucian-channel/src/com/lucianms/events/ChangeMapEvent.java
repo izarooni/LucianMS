@@ -3,15 +3,15 @@ package com.lucianms.events;
 import com.lucianms.client.MapleCharacter;
 import com.lucianms.client.MapleClient;
 import com.lucianms.client.inventory.MapleInventoryType;
+import com.lucianms.constants.ServerConstants;
 import com.lucianms.features.GenericEvent;
 import com.lucianms.nio.receive.MaplePacketReader;
-import com.lucianms.constants.ServerConstants;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import com.lucianms.server.MapleInventoryManipulator;
 import com.lucianms.server.MaplePortal;
 import com.lucianms.server.MapleTrade;
 import com.lucianms.server.maps.MapleMap;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import tools.MaplePacketCreator;
 
 import java.net.InetAddress;
@@ -77,7 +77,7 @@ public class ChangeMapEvent extends PacketEvent {
 
         if (eCashShop) {
             if (!player.getCashShop().isOpened()) {
-                getClient().disconnect(false, false);
+                getClient().disconnect(false);
                 return null;
             }
             String[] socket = getClient().getChannelServer().getIP().split(":");
@@ -95,7 +95,7 @@ public class ChangeMapEvent extends PacketEvent {
             }
         } else {
             if (player.getCashShop().isOpened()) {
-                getClient().disconnect(false, false);
+                getClient().disconnect(false);
                 return null;
             }
             try {

@@ -2,22 +2,14 @@ package com.lucianms.server;
 
 import com.lucianms.Whitelist;
 import com.lucianms.client.MapleCharacter;
-import com.lucianms.client.SkillFactory;
-import com.lucianms.constants.ServerConstants;
-import com.lucianms.cquest.CQuestBuilder;
-import com.lucianms.helpers.HouseManager;
-import com.lucianms.helpers.RankingWorker;
 import com.lucianms.io.Config;
 import com.lucianms.io.defaults.Defaults;
-import com.lucianms.io.scripting.Achievements;
 import com.lucianms.lang.GProperties;
 import com.lucianms.scheduler.TaskExecutor;
-import com.lucianms.server.CashShop.CashItemFactory;
 import com.lucianms.server.channel.MapleChannel;
 import com.lucianms.server.guild.MapleAlliance;
 import com.lucianms.server.guild.MapleGuild;
 import com.lucianms.server.guild.MapleGuildCharacter;
-import com.lucianms.server.quest.MapleQuest;
 import com.lucianms.server.world.MapleWorld;
 import com.zaxxer.hikari.HikariDataSource;
 import org.json.JSONObject;
@@ -40,14 +32,9 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class Server {
 
-    public enum RunningOperation {
-        Login, Channel
-    }
-
     private static final Logger LOGGER = LoggerFactory.getLogger(Server.class);
     public static final long Uptime = System.currentTimeMillis();
 
-    private static RunningOperation runningOperation;
     private static final PlayerBuffStorage buffStorage = new PlayerBuffStorage();
     private static final ArrayList<MapleWorld> worlds = new ArrayList<>();
     private static final ArrayList<Map<Integer, String>> channels = new ArrayList<>();
@@ -58,10 +45,6 @@ public class Server {
 
     private static HikariDataSource hikari = Database.createDataSource("hikari-server");
     private static Config config = null;
-
-    public static RunningOperation getRunningOperation() {
-        return runningOperation;
-    }
 
     public static Connection getConnection() throws SQLException {
         return hikari.getConnection();
@@ -86,15 +69,6 @@ public class Server {
         return worldRecommendedList;
     }
 
-    public static void removeChannel(int worldid, int channel) {
-        channels.remove(channel);
-
-        MapleWorld world = worlds.get(worldid);
-        if (world != null) {
-            world.removeChannel(channel);
-        }
-    }
-
     public static MapleChannel getChannel(int world, int channel) {
         return worlds.get(world).getChannel(channel);
     }
@@ -103,20 +77,11 @@ public class Server {
         return worlds.get(world).getChannels();
     }
 
-    public static List<MapleChannel> getAllChannels() {
-        List<MapleChannel> channelz = new ArrayList<>();
-        for (MapleWorld world : worlds) {
-            channelz.addAll(world.getChannels());
-        }
-        return channelz;
-    }
-
     public static String getIP(int world, int channel) {
         return channels.get(world).get(channel);
     }
 
-    public static void createServer(RunningOperation operation) {
-        Server.runningOperation = operation;
+    public static void createServer() {
         long timeToTake;
 
         Properties p = new Properties();
@@ -146,27 +111,11 @@ public class Server {
             e.printStackTrace();
         }
 
-
         TaskExecutor.prestartAllCoreThreads();
         Runtime.getRuntime().addShutdownHook(new Thread(shutdown()));
 
-        TaskExecutor.createRepeatingTask(RankingWorker::new, ServerConstants.RANKING_INTERVAL);
-
-        if (operation == RunningOperation.Channel) {
-            timeToTake = System.currentTimeMillis();
-            MapleQuest.loadAllQuest();
-            CQuestBuilder.loadAllQuests();
-            LOGGER.info("Quest data loaded in {}s", ((System.currentTimeMillis() - timeToTake) / 1000d));
-
-            timeToTake = System.currentTimeMillis();
-            SkillFactory.loadAllSkills();
-            LOGGER.info("Skill data loaded in {}s", ((System.currentTimeMillis() - timeToTake) / 1000d));
-
-            Achievements.loadAchievements();
-        }
         timeToTake = System.currentTimeMillis();
         MapleItemInformationProvider.getInstance().getAllItems();
-        CashItemFactory.loadCommodities();
         LOGGER.info("Item data loaded in {}s", ((System.currentTimeMillis() - timeToTake) / 1000d));
 
         try {
@@ -192,12 +141,6 @@ public class Server {
                 }
                 world.setServerMessage(sMessage);
                 LOGGER.info("World {} created {} channels in {}s", (world.getId() + 1), world.getChannels().size(), ((System.currentTimeMillis() - timeToTake) / 1000d));
-            }
-
-            if (operation == RunningOperation.Channel) {
-                timeToTake = System.currentTimeMillis();
-                int count = HouseManager.loadHouses();
-                LOGGER.info("{} houses loaded in {}s", count, ((System.currentTimeMillis() - timeToTake) / 1000d));
             }
         } catch (Exception e) {
             e.printStackTrace();// For those who get errors
@@ -499,7 +442,6 @@ public class Server {
             public void run() {
                 LOGGER.info("Shutdown hook invoked");
                 getWorlds().forEach(MapleWorld::shutdown);
-                TaskExecutor.getExecutor().shutdownNow().clear();
                 LOGGER.info("Worlds & channels are now offline");
             }
         };

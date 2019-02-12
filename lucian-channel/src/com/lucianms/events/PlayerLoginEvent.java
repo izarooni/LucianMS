@@ -18,6 +18,7 @@ import com.lucianms.server.world.PartyOperation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import tools.MaplePacketCreator;
+import tools.Pair;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -47,7 +48,6 @@ public class PlayerLoginEvent extends PacketEvent {
     @Override
     public Object onPacket() {
         MapleCharacter player = getClient().getWorldServer().getPlayer(playerID);
-        boolean firstLogin = player == null;
         if (player == null) {
             try (Connection con = getClient().getWorldServer().getConnection()) {
                 player = MapleCharacter.loadCharFromDB(con, playerID, getClient(), true);
@@ -64,34 +64,26 @@ public class PlayerLoginEvent extends PacketEvent {
 
         final int state = getClient().getLoginState();
         MapleChannel channel = getClient().getChannelServer();
-        boolean allowLogin = true;
 
-        if (state == MapleClient.LOGIN_SERVER_TRANSITION || state == MapleClient.LOGIN_NOTLOGGEDIN) {
-            for (String charName : getClient().loadCharacterNames(getClient().getWorld())) {
-                for (MapleChannel ch : getClient().getWorldServer().getChannels()) {
-                    if (ch.isConnected(charName)) {
-                        allowLogin = false;
-                        break;
-                    }
-                }
-            }
-        }
-        if (state != MapleClient.LOGIN_SERVER_TRANSITION || !allowLogin) {
+        if (state != MapleClient.LOGIN_SERVER_TRANSITION) {
             getClient().setPlayer(null);
             getClient().announce(MaplePacketCreator.getAfterLoginError(7));
             return null;
+        }
+        for (Pair<Integer, String> p : getClient().loadCharactersInternal(getClient().getWorld())) {
+            for (MapleChannel ch : getClient().getWorldServer().getChannels()) {
+                MapleCharacter found = ch.getPlayerStorage().get(p.getLeft());
+                if (found != null) {
+                    found.getClient().disconnect(false);
+                    break;
+                }
+            }
         }
         getClient().updateLoginState(MapleClient.LOGIN_LOGGEDIN);
 
         if (JailManager.isJailed(player.getId())) {
             player.setMapId(JailManager.getRandomField());
         }
-
-        MapleInventory eqd = player.getInventory(MapleInventoryType.EQUIPPED);
-//        if (eqd.getItem((short) -149) == null) { // regalia
-//            Equip eq = new Equip(1802056, (short) -149);
-//            player.getInventory(MapleInventoryType.EQUIPPED).addFromDB(eq);
-//        }
 
         channel.addPlayer(player);
         List<PlayerBuffValueHolder> buffs = Server.getPlayerBuffStorage().remove(playerID);
@@ -208,6 +200,7 @@ public class PlayerLoginEvent extends PacketEvent {
         player.updatePartyMemberHP();
         //endregion
 
+        MapleInventory eqd = player.getInventory(MapleInventoryType.EQUIPPED);
         if (eqd.findById(1122017) != null) {
             player.scheduleSpiritPendant();
         }

@@ -53,7 +53,7 @@ public class DisconnectRequest extends DiscordRequest {
                             MapleCharacter target = world.getPlayer(rs.getInt("id"));
                             if (target != null) {
                                 world.removePlayer(target);
-                                target.getClient().disconnect(false, target.getCashShop().isOpened());
+                                target.getClient().disconnect(false);
                                 writer.write(Result.Success.ordinal());
                                 writer.writeMapleAsciiString(target.getName());
                                 DiscordSession.sendPacket(writer.getPacket());
@@ -88,7 +88,7 @@ public class DisconnectRequest extends DiscordRequest {
             if (player != null) {
                 online = true;
                 world.removePlayer(player);
-                player.getClient().disconnect(false, false);
+                player.getClient().disconnect(false);
             }
         }
 

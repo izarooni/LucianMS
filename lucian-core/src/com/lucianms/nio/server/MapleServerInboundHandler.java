@@ -24,7 +24,9 @@ import org.slf4j.LoggerFactory;
 import tools.MapleAESOFB;
 import tools.MaplePacketCreator;
 
-import java.io.*;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.PrintWriter;
 
 @ChannelHandler.Sharable
 public class MapleServerInboundHandler extends ChannelInboundHandlerAdapter {
@@ -80,7 +82,7 @@ public class MapleServerInboundHandler extends ChannelInboundHandlerAdapter {
         try {
             if (attr.get() != null) {
                 MapleClient client = attr.get();
-                client.disconnect(false, client.getPlayer() != null && client.getPlayer().getCashShop().isOpened());
+                client.disconnect(false);
             }
         } finally {
             attr.set(null);

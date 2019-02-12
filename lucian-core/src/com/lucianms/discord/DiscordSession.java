@@ -20,7 +20,7 @@ public class DiscordSession {
     private static final Logger LOGGER = LoggerFactory.getLogger(DiscordSession.class);
     private static final int ListeningPort = 8483;
 
-    private static HikariDataSource hikari = Database.createDataSource("hikari-discord");
+    private static HikariDataSource hikari;
     private static DiscordServer discordServer = null;
     private static Channel session;
 
@@ -41,6 +41,7 @@ public class DiscordSession {
             return;
         }
         try {
+            hikari = Database.createDataSource("hikari-discord");
             discordServer = new DiscordServer(ListeningPort);
         } catch (Exception e) {
             LOGGER.warn("Unable to create Discord listener on port", ListeningPort, e);

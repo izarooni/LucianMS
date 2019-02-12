@@ -61,7 +61,6 @@ import java.sql.SQLException;
 import java.util.*;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
-import java.util.stream.Collectors;
 
 public class MapleClient {
 
@@ -108,19 +107,6 @@ public class MapleClient {
         this.send = send;
         this.receive = receive;
         this.session = session;
-    }
-
-    public static long dottedQuadToLong(String dottedQuad) throws RuntimeException {
-        String[] quads = dottedQuad.split("\\.");
-        if (quads.length != 4) {
-            throw new RuntimeException("Invalid IP Address format.");
-        }
-        long ipAddress = 0;
-        for (int i = 0; i < 4; i++) {
-            int quad = Integer.parseInt(quads[i]);
-            ipAddress += (long) (quad % 256) * (long) Math.pow(256, (double) (4 - i));
-        }
-        return ipAddress;
     }
 
     private static boolean checkHash(String hash, String type, String password) {
@@ -201,11 +187,7 @@ public class MapleClient {
         }
     }
 
-    public List<String> loadCharacterNames(int serverId) {
-        return loadCharactersInternal(serverId).stream().map(Pair::getRight).collect(Collectors.toList());
-    }
-
-    private List<Pair<Integer, String>> loadCharactersInternal(int serverId) {
+    public List<Pair<Integer, String>> loadCharactersInternal(int serverId) {
         List<Pair<Integer, String>> ret = new ArrayList<>();
         try (Connection con = Server.getConnection();
              PreparedStatement ps = con.prepareStatement("SELECT id, name FROM characters WHERE accountid = ? AND world = ?")) {
@@ -543,7 +525,7 @@ public class MapleClient {
                 e.printStackTrace();
             }
         } else {
-            disconnect(false, false); // Invalid HWID...
+            disconnect(false); // Invalid HWID...
         }
     }
 
@@ -693,12 +675,12 @@ public class MapleClient {
         }
     }
 
-    public final void disconnect(boolean shutdown, boolean cashshop) {
+    public final void disconnect(boolean shutdown) {
         if (disconnecting) {
             return;
         }
         disconnecting = true;
-        if (player != null && player.isLoggedin() && player.getClient() != null) {
+        if (player != null && player.getClient() != null) {
             player.getGenericEvents().forEach(e -> e.onPlayerDisconnect(player));
             MapleMap map = player.getMap();
             final MapleParty party = player.getParty();
@@ -720,7 +702,7 @@ public class MapleClient {
             }
             final MapleWorld worlda = getWorldServer();
             try {
-                if (!cashshop) {
+                if (player.getCashShop().isOpened()) {
                     if (!this.serverTransition) { // meaning not changing channels
                         //region messenger
                         if (messengerid > 0) {
@@ -797,10 +779,9 @@ public class MapleClient {
                 getChannelServer().removePlayer(player);
                 if (!this.serverTransition) {
                     worlda.removePlayer(player);
-                    if (player != null) {//no idea, occur :(
+                    if (player != null) {
                         player.empty(false);
                     }
-                    player.logOff();
                 }
                 player = null;
             }
@@ -835,8 +816,8 @@ public class MapleClient {
     public boolean deleteCharacter(int cid) {
         MapleCharacter player = Server.getWorld(0).getPlayer(cid);
         if (player != null) {
-            player.getClient().disconnect(false, false);
-            disconnect(false, false);
+            player.getClient().disconnect(false);
+            disconnect(false);
             return false; //DC both and return, fuck that
         }
         try (Connection con = Server.getConnection()) {
@@ -1067,7 +1048,7 @@ public class MapleClient {
 
     public void changeChannel(int channel) {
         if (player.isBanned()) {
-            disconnect(false, false);
+            disconnect(false);
             return;
         }
         if (!player.isAlive() || FieldLimit.CHANGECHANNEL.check(player.getMap().getFieldLimit())) {

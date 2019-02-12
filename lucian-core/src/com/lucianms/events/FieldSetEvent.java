@@ -2,7 +2,7 @@ package com.lucianms.events;
 
 import com.lucianms.nio.receive.MaplePacketReader;
 
-public class PlayerUpdateEvent extends PacketEvent {
+public class FieldSetEvent extends PacketEvent {
 
     @Override
     public boolean inValidState() {
@@ -15,9 +15,6 @@ public class PlayerUpdateEvent extends PacketEvent {
 
     @Override
     public Object onPacket() {
-        if (getClient().getPlayer() != null) {
-            getClient().getPlayer().saveToDB();
-        }
         return null;
     }
 }

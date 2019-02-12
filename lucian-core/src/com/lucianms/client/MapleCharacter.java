@@ -154,7 +154,6 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
     private boolean muted = false;
     private boolean debug = false;
     private boolean isbanned = false;
-    private boolean loggedIn = false;
     private boolean autorebirthing = false;
     private boolean eyeScannersEquiped = false;
     private boolean finishedDojoTutorial, dojoParty;
@@ -268,9 +267,6 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
 
     public MapleCharacter() {
         setStance(0);
-        for (int i = 0; i < remainingSp.length; i++) {
-            remainingSp[i] = 0;
-        }
         for (MapleInventoryType type : MapleInventoryType.values()) {
             inventory[type.ordinal()] = new MapleInventory(type, (byte) 96);
         }
@@ -659,7 +655,6 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
                     ret.messengerposition = position;
                 }
             }
-            ret.loggedIn = true;
             try (PreparedStatement ps = con.prepareStatement("SELECT mapid,vip FROM trocklocations WHERE characterid = ? LIMIT 15")) {
                 ps.setInt(1, charid);
                 try (ResultSet rs = ps.executeQuery()) {
@@ -1218,7 +1213,6 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
     public void newClient(MapleClient client) {
         client.setAccountName(this.client.getAccountName());
         this.client = client;
-        this.loggedIn = true;
 
         map = this.client.getChannelServer().getMap(getMapId());
         MaplePortal portal = map.findClosestSpawnpoint(getPosition());
@@ -1507,16 +1501,14 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
             return;// the fuck you doing idiot!
         }
         this.job = newJob;
-        remainingSp[GameConstants.getSkillBook(newJob.getId())] += 1;
-        if (GameConstants.hasSPTable(newJob)) {
-            remainingSp[GameConstants.getSkillBook(newJob.getId())] += 2;
-        } else {
-            if (newJob.getId() % 10 == 2) {
-                remainingSp[GameConstants.getSkillBook(newJob.getId())] += 2;
-            }
+        int nGainSkillPoints = 1;
+        if (GameConstants.hasSPTable(newJob) || newJob.getId() % 10 == 2) {
+            nGainSkillPoints = 2;
         }
+        gainSp(nGainSkillPoints);
+
         if (newJob.getId() % 10 > 1) {
-            this.remainingAp += 5;
+            gainAp(5);
         }
         int job_ = job.getId() % 1000; // lame temp "fix"
         if (job_ == 100) {
@@ -1530,8 +1522,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
             maxhp += Randomizer.rand(300, 350);
         } else if (job_ < 300) {
             maxmp += Randomizer.rand(450, 500);
-        } // handle KoC here (undone)
-        else if (job_ > 0 && job_ != 1000) {
+        } else {
             maxhp += Randomizer.rand(300, 350);
             maxmp += Randomizer.rand(150, 200);
         }
@@ -1550,7 +1541,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
         statup.add(new Pair<>(MapleStat.MAXHP, maxhp));
         statup.add(new Pair<>(MapleStat.MAXMP, maxmp));
         statup.add(new Pair<>(MapleStat.AVAILABLEAP, remainingAp));
-        statup.add(new Pair<>(MapleStat.AVAILABLESP, remainingSp[GameConstants.getSkillBook(job.getId())]));
+        statup.add(new Pair<>(MapleStat.AVAILABLESP, getRemainingSp()));
         statup.add(new Pair<>(MapleStat.JOB, job.getId()));
         if (dragon != null) {
             getMap().broadcastMessage(MaplePacketCreator.removeDragon(dragon.getObjectId()));
@@ -3437,7 +3428,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
         int improvingMaxHPLevel = 0;
         int improvingMaxMPLevel = 0;
 
-        remainingAp += 5;
+        gainAp(5);
 
         if (job == MapleJob.BEGINNER || job == MapleJob.NOBLESSE || job == MapleJob.LEGEND) {
             maxhp += Randomizer.rand(12, 16);
@@ -3544,17 +3535,15 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
     }
 
     public void gainAp(int amount) {
-        List<Pair<MapleStat, Integer>> statup = new ArrayList<>(1);
-        remainingAp += amount;
-        statup.add(new Pair<>(MapleStat.AVAILABLEAP, remainingAp));
-        client.announce(MaplePacketCreator.updatePlayerStats(statup, this));
+        int nAbilityPoints = Math.min(remainingAp + amount, Short.MAX_VALUE);
+        remainingAp = nAbilityPoints;
+        updateSingleStat(MapleStat.AVAILABLEAP, nAbilityPoints);
     }
 
     public void gainSp(int amount) {
-        List<Pair<MapleStat, Integer>> statup = new ArrayList<>(1);
-        remainingSp[GameConstants.getSkillBook(job.getId())] += amount;
-        statup.add(new Pair<>(MapleStat.AVAILABLESP, remainingSp[GameConstants.getSkillBook(job.getId())]));
-        client.announce(MaplePacketCreator.updatePlayerStats(statup, this));
+        int skillPoints = remainingSp[GameConstants.getSkillBook(job.getId())];
+        int nSkillPoints = Math.min(skillPoints + amount, Short.MAX_VALUE);
+        updateSingleStat(MapleStat.AVAILABLESP, nSkillPoints);
     }
 
     public void message(String m) {
@@ -4020,8 +4009,8 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
                 tsp += ((getLevel() - 10) * 3);
                 break;
         }
-        this.remainingAp = tap;
-        this.remainingSp[GameConstants.getSkillBook(job.getId())] = tsp;
+        gainAp(tap);
+        gainSp(tsp);
         this.dex = tdex;
         this.int_ = tint;
         this.str = tstr;
@@ -4159,6 +4148,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
     }
 
     public void saveToDB() {
+        final long beginTimestamp = System.currentTimeMillis();
         try (Connection con = client.getWorldServer().getConnection()) {
             con.setAutoCommit(false);
             try (PreparedStatement ps = con.prepareStatement("UPDATE characters SET level = ?, fame = ?, str = ?, dex = ?, luk = ?, `int` = ?, exp = ?, gachaexp = ?, hp = ?, mp = ?, maxhp = ?, maxmp = ?, sp = ?, ap = ?, gm = ?, skincolor = ?, gender = ?, job = ?, hair = ?, face = ?, map = ?, meso = ?, hpMpUsed = ?, spawnpoint = ?, party = ?, buddyCapacity = ?, messengerid = ?, messengerposition = ?, mountlevel = ?, mountexp = ?, mounttiredness= ?, equipslots = ?, useslots = ?, setupslots = ?, etcslots = ?,  monsterbookcover = ?, vanquisherStage = ?, dojoPoints = ?, lastDojoStage = ?, finishedDojoTutorial = ?, vanquisherKills = ?, matchcardwins = ?, matchcardlosses = ?, matchcardties = ?, omokwins = ?, omoklosses = ?, omokties = ?, dataString = ?, fishingpoints = ?, daily = ?, reborns = ?, eventpoints = ?, rebirthpoints = ?, occupation = ?, jumpquestpoints = ?, chattype = ?, name = ? WHERE id = ?", Statement.RETURN_GENERATED_KEYS)) {
@@ -4480,6 +4470,8 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
             }
             con.commit();
             con.setAutoCommit(true);
+
+            LOGGER.info("Saved Player({}) in {}s", getName(), ((System.currentTimeMillis() - beginTimestamp) / 1000d));
         } catch (SQLException | RuntimeException t) {
             LOGGER.error("Error while saving player '{}'", name, t);
         }
@@ -4491,7 +4483,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
         TaskExecutor.createTask(new Runnable() {
             @Override
             public void run() {
-                client.disconnect(false, false);
+                client.disconnect(false);
             }
         }, duration);
     }
@@ -5289,14 +5281,6 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
         }
     }
 
-    public void logOff() {
-        this.loggedIn = false;
-    }
-
-    public boolean isLoggedin() {
-        return loggedIn;
-    }
-
     public boolean isDebug() {
         return debug;
     }
@@ -5343,16 +5327,6 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
 
     public void setDragon(MapleDragon dragon) {
         this.dragon = dragon;
-    }
-
-    public int getRemainingSpSize() {
-        int sp = 0;
-        for (int i = 0; i < remainingSp.length; i++) {
-            if (remainingSp[i] > 0) {
-                sp++;
-            }
-        }
-        return sp;
     }
 
     public boolean isMuted() {

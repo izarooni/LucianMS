@@ -26,7 +26,7 @@ public class LLoginMain {
 
     public static void main(String[] args) {
         initReceiveHeaders();
-        Server.createServer(Server.RunningOperation.Login);
+        Server.createServer();
         Config config = Server.getConfig();
 
         try {
@@ -39,10 +39,10 @@ public class LLoginMain {
                     DirectPacketDecoder.class,
                     DirectPacketEncoder.class);
             interServer.run();
-            LOGGER.info("Internal login on {}:{}", address, port);
+            LOGGER.info("Internal login listening on {}:{}", address, (port + 1));
 
             serverHandler = new MapleServerInboundHandler(ReceivePacketState.LoginServer, address, port.intValue(), new NioEventLoopGroup());
-            LOGGER.info("Login server created on {}:{}", address, port);
+            LOGGER.info("Public Login Server listening on {}:{}", address, port);
         } catch (Exception e) {
             e.printStackTrace();
             System.exit(0);

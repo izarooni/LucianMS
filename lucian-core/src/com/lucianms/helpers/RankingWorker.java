@@ -34,6 +34,8 @@ import java.sql.SQLException;
  * @author Quit
  */
 public class RankingWorker implements Runnable {
+
+    public static final long UpdateInterval = 1000 * 60 * 60;
     private long lastUpdate = System.currentTimeMillis();
 
     public void run() {

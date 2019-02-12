@@ -26,14 +26,14 @@ import com.lucianms.client.inventory.Item;
 import com.lucianms.client.inventory.MapleInventoryType;
 import com.lucianms.client.inventory.MapleWeaponType;
 import com.lucianms.client.meta.Occupation;
-import com.lucianms.nio.receive.MaplePacketReader;
-import com.lucianms.scheduler.TaskExecutor;
 import com.lucianms.constants.GameConstants;
 import com.lucianms.constants.skills.*;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import com.lucianms.nio.receive.MaplePacketReader;
+import com.lucianms.scheduler.TaskExecutor;
 import com.lucianms.server.MapleStatEffect;
 import com.lucianms.server.life.FakePlayer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import tools.MaplePacketCreator;
 import tools.Pair;
 
@@ -79,7 +79,7 @@ public final class PlayerDealDamageNearbyEvent extends AbstractDealDamageEvent {
         if (player.getBuffEffect(MapleBuffStat.MORPH) != null) {
             if (player.getBuffEffect(MapleBuffStat.MORPH).isMorphWithoutAttack()) {
                 // How are they attacking when the client won't let them?
-                player.getClient().disconnect(false, false);
+                player.getClient().disconnect(false);
                 return null;
             }
         }

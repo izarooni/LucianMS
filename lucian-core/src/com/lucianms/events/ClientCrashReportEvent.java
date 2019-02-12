@@ -23,8 +23,22 @@ public class ClientCrashReportEvent extends PacketEvent {
     @Override
     public Object onPacket() {
         Matcher m = Pattern.compile(Pattern.compile(".+?\\(.*?\\)\\)?").pattern()).matcher(error.replaceAll(", ", ""));
+        StringBuilder sb = new StringBuilder();
         while (m.find()) {
-            getLogger().info(m.group());
+            sb.append(m.group()).append("\r\n");
+        }
+        /*
+        ver(%d)
+        CharacterName(%s)
+        WorldID(%d)
+        ChID(%d)
+        FieldID(%d)
+        com_error(%s)
+        ZException (%s)
+        source(?)
+         */
+        if (sb.length() > 0) {
+            getLogger().info(sb.toString());
         }
         return null;
     }

@@ -14,6 +14,7 @@ import com.lucianms.server.life.MapleMonster;
 import com.lucianms.server.life.MapleMonsterStats;
 import com.lucianms.server.life.MapleNPC;
 import com.lucianms.server.maps.MapleFoothold;
+import com.lucianms.server.maps.MapleMap;
 import com.lucianms.server.world.MapleWorld;
 import tools.MaplePacketCreator;
 
@@ -238,13 +239,12 @@ public class HGMCommands {
                 npc.setF(player.isFacingLeft() ? 0 : 1);
                 npc.setScript(script);
                 npc.setFh(0);
-                player.getMap().addMapObject(npc);
-                player.getMap().broadcastMessage(MaplePacketCreator.spawnNPC(npc));
                 if (permanent) {
                     for (MapleChannel channel : player.getClient().getWorldServer().getChannels()) {
-                        if (channel.isMapLoaded(player.getMapId())) {
-                            channel.getMap(player.getMapId()).addMapObject(npc);
-                            channel.getMap(player.getMapId()).broadcastMessage(MaplePacketCreator.spawnNPC(npc));
+                        MapleMap map = channel.getMap(player.getMapId());
+                        if (map != null) {
+                            map.addMapObject(npc);
+                            map.broadcastMessage(MaplePacketCreator.spawnNPC(npc));
                         }
                     }
                     try (Connection con = client.getWorldServer().getConnection();

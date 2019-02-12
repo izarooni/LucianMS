@@ -7,7 +7,6 @@ import com.lucianms.client.inventory.MapleInventory;
 import com.lucianms.client.inventory.MapleInventoryType;
 import com.lucianms.client.inventory.ModifyInventory;
 import com.lucianms.constants.ServerConstants;
-import com.lucianms.events.PacketEvent;
 import com.lucianms.nio.receive.MaplePacketReader;
 import tools.MaplePacketCreator;
 
@@ -43,7 +42,7 @@ public class PlayerInventorySortByIDEvent extends PacketEvent {
         }
 
         if (inventoryType < 1 || inventoryType > 5) {
-            getClient().disconnect(false, false);
+            getClient().disconnect(false);
             return null;
         }
 

@@ -4,6 +4,7 @@ import com.lucianms.client.MapleCharacter;
 import com.lucianms.client.MapleClient;
 import com.lucianms.command.executors.*;
 import com.lucianms.helpers.JailManager;
+import com.lucianms.scheduler.TaskExecutor;
 
 import java.util.regex.Pattern;
 
@@ -52,13 +53,13 @@ public class CommandWorker {
             try {
                 if ((noCheck || player.getGMLevel() >= 1) && !EventCommands.execute(client, command, args)) {
                     if (noCheck || player.getGMLevel() >= 6) {
-                        AdministratorCommands.execute(client, command, args);
+                        TaskExecutor.execute(() -> AdministratorCommands.execute(client, command, args));
                     }
                     if (noCheck || player.getGMLevel() >= 3) {
-                        HGMCommands.execute(client, command, args);
+                        TaskExecutor.execute(() -> HGMCommands.execute(client, command, args));
                     }
                     if (noCheck || player.getGMLevel() >= 2) {
-                        GameMasterCommands.execute(client, command, args);
+                        TaskExecutor.execute(() -> GameMasterCommands.execute(client, command, args));
                     }
                 }
             } catch (Exception e) {
@@ -68,22 +69,21 @@ public class CommandWorker {
             return true;
         } else if (h == '@') {
             if (!player.isGM() && !noCheck) {
-                if(player.getArcade() != null) {
+                if (player.getArcade() != null) {
                     player.getArcade().fail();
                 }
-
                 if (JailManager.isJailed(player.getId())) {
                     player.sendMessage(5, "You cannot use commands here.");
                     return true;
                 } else if (!command.equals("dispose", "quests")) {
-                    if ((player.getMapId() >= 90000000 && player.getMapId() <= 90000004)
-                            || player.getMapId() == 80 || player.getMapId() == 81) {
+                    if ((player.getMapId() >= 90000000 && player.getMapId() <= 90000004) // starter area
+                            || player.getMapId() == 80 || player.getMapId() == 81) { // jail
                         player.dropMessage("Commands are disabled in this area.");
                         return true;
                     }
                 }
             }
-            PlayerCommands.execute(client, command, args);
+            TaskExecutor.execute(() -> PlayerCommands.execute(client, command, args));
             return true;
         }
         return false;
