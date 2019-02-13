@@ -24,10 +24,7 @@ package com.lucianms.helpers;
 import com.lucianms.client.MapleJob;
 import com.lucianms.server.Server;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 
 /**
  * @author Matze
@@ -61,11 +58,10 @@ public class RankingWorker implements Runnable {
                 }
                 try (ResultSet rs = charSelect.executeQuery()) {
                     try (PreparedStatement ps = con.prepareStatement("UPDATE characters SET " + (job != null ? "jobRank = ?, jobRankMove = ? " : "rank = ?, rankMove = ? ") + "WHERE id = ?")) {
-                        int rank = 0;
-                        while (rs.next()) {
+                        for (int rank = 0; rs.next(); rank++) {
                             int rankMove = 0;
-                            rank++;
-                            if (rs.getLong("lastlogin") < lastUpdate || rs.getInt("loggedin") > 0) {
+                            Timestamp lastlogin = rs.getTimestamp("lastlogin");
+                            if (lastlogin.getTime() < lastUpdate || rs.getInt("loggedin") > 0) {
                                 rankMove = rs.getInt((job != null ? "jobRankMove" : "rankMove"));
                             }
                             rankMove += rs.getInt((job != null ? "jobRank" : "rank")) - rank;
