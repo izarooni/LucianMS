@@ -1,7 +1,7 @@
 package com.lucianms.client.autoban;
 
 import com.lucianms.client.MapleClient;
-import com.lucianms.discord.DiscordSession;
+import com.lucianms.discord.DiscordConnection;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.helpers.MessageFormatter;
@@ -44,7 +44,7 @@ public class Cheater {
             if (!client.getPlayer().isGM()) {
                 String content = MessageFormatter.arrayFormat(message, args).getMessage();
                 LOGGER.info(content);
-                DiscordSession.sendMessage(502056472461443072L, content);
+                DiscordConnection.sendMessage(502056472461443072L, content);
             }
             latestAnnouncement = System.currentTimeMillis();
         }

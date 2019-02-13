@@ -2,7 +2,7 @@ package com.lucianms.events;
 
 import com.lucianms.client.MapleCharacter;
 import com.lucianms.command.CommandWorker;
-import com.lucianms.discord.DiscordSession;
+import com.lucianms.discord.DiscordConnection;
 import com.lucianms.discord.Headers;
 import com.lucianms.discord.handlers.BindRequest;
 import com.lucianms.nio.receive.MaplePacketReader;
@@ -36,7 +36,7 @@ public class PlayerAllChatEvent extends PacketEvent {
             writer.writeLong(0); // ignore channel_id
             writer.writeLong(getClient().getDiscordId());
             writer.write(3);
-            DiscordSession.sendPacket(writer.getPacket());
+            DiscordConnection.sendPacket(writer.getPacket());
             BindRequest.keys.remove(getClient().getDiscordKey());
             getClient().setDiscordKey(null);
             try (Connection con = getClient().getWorldServer().getConnection();

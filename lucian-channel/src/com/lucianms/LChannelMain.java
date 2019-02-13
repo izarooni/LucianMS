@@ -2,7 +2,7 @@ package com.lucianms;
 
 import com.lucianms.client.SkillFactory;
 import com.lucianms.cquest.CQuestBuilder;
-import com.lucianms.discord.DiscordSession;
+import com.lucianms.discord.DiscordConnection;
 import com.lucianms.events.*;
 import com.lucianms.features.auto.GAutoEventManager;
 import com.lucianms.features.scheduled.SOuterSpace;
@@ -117,7 +117,7 @@ public class LChannelMain {
             return;
         }
 
-        DiscordSession.listen();
+        DiscordConnection.listen();
 
         try (Connection con = Server.getConnection()) {
             Database.execute(con, "update accounts set loggedin = 0 where loggedin != 0");

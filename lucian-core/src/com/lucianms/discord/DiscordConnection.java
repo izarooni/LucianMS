@@ -15,34 +15,34 @@ import java.sql.SQLException;
  *
  * @author izarooni
  */
-public class DiscordSession {
+public class DiscordConnection {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(DiscordSession.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(DiscordConnection.class);
     private static final int ListeningPort = 8483;
 
     private static HikariDataSource hikari;
-    private static DiscordServer discordServer = null;
+    private static DiscordSessionHandler discordSession = null;
     private static Channel session;
 
-    private DiscordSession() {
+    private DiscordConnection() {
     }
 
-    public static Connection getConnection() throws SQLException {
+    public static Connection getDatabaseConnection() throws SQLException {
         return hikari.getConnection();
     }
 
-    public static DiscordServer getDiscordServer() {
-        return discordServer;
+    public static DiscordSessionHandler getDiscordSession() {
+        return discordSession;
     }
 
     public static void listen() {
-        if (discordServer != null) {
+        if (discordSession != null) {
             LOGGER.warn("Discord server is already listening");
             return;
         }
         try {
             hikari = Database.createDataSource("hikari-discord");
-            discordServer = new DiscordServer(ListeningPort);
+            discordSession = new DiscordSessionHandler(ListeningPort);
         } catch (Exception e) {
             LOGGER.warn("Unable to create Discord listener on port", ListeningPort, e);
         }
@@ -62,7 +62,7 @@ public class DiscordSession {
     }
 
     public static void setSession(Channel session) {
-        DiscordSession.session = session;
+        DiscordConnection.session = session;
     }
 
     public static void sendMessage(long channelID, String content) {

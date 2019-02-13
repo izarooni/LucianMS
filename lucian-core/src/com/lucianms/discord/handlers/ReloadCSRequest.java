@@ -1,6 +1,6 @@
 package com.lucianms.discord.handlers;
 
-import com.lucianms.discord.DiscordSession;
+import com.lucianms.discord.DiscordConnection;
 import com.lucianms.discord.Headers;
 import com.lucianms.nio.receive.MaplePacketReader;
 import com.lucianms.server.CashShop;
@@ -18,6 +18,6 @@ public class ReloadCSRequest extends DiscordRequest {
         MaplePacketLittleEndianWriter writer = new MaplePacketLittleEndianWriter();
         writer.write(Headers.ReloadCS.value);
         writer.writeLong(reader.readLong());
-        DiscordSession.sendPacket(writer.getPacket());
+        DiscordConnection.sendPacket(writer.getPacket());
     }
 }

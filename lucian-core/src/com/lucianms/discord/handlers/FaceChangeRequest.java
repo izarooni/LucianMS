@@ -2,7 +2,7 @@ package com.lucianms.discord.handlers;
 
 import com.lucianms.client.MapleCharacter;
 import com.lucianms.client.MapleStat;
-import com.lucianms.discord.DiscordSession;
+import com.lucianms.discord.DiscordConnection;
 import com.lucianms.discord.Headers;
 import com.lucianms.nio.receive.MaplePacketReader;
 import com.lucianms.server.Server;
@@ -44,7 +44,7 @@ public class FaceChangeRequest extends DiscordRequest {
         } else {
             int playerId = MapleCharacter.getIdByName(username);
             if (playerId > 0) {
-                try (Connection con = DiscordSession.getConnection();
+                try (Connection con = DiscordConnection.getDatabaseConnection();
                      PreparedStatement ps = con.prepareStatement("update characters set face = ? where id = ?")) {
                     ps.setInt(1, faceId);
                     ps.setInt(2, playerId);
@@ -59,6 +59,6 @@ public class FaceChangeRequest extends DiscordRequest {
                 LOGGER.info("The player {} could not be found", username);
             }
         }
-        DiscordSession.sendPacket(writer.getPacket());
+        DiscordConnection.sendPacket(writer.getPacket());
     }
 }

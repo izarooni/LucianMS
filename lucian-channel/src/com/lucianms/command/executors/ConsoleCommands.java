@@ -4,7 +4,7 @@ import com.lucianms.Whitelist;
 import com.lucianms.client.MapleCharacter;
 import com.lucianms.command.CommandWorker;
 import com.lucianms.cquest.CQuestBuilder;
-import com.lucianms.discord.DiscordSession;
+import com.lucianms.discord.DiscordConnection;
 import com.lucianms.discord.Headers;
 import com.lucianms.helpers.HouseManager;
 import com.lucianms.io.scripting.Achievements;
@@ -81,10 +81,10 @@ public class ConsoleCommands {
 
     private static void execute(CommandWorker.Command command, CommandWorker.CommandArgs args) {
         if (command.equals("stop", "exit")) {
-            if (DiscordSession.getSession() != null) {
+            if (DiscordConnection.getSession() != null) {
                 MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
                 mplew.write(Headers.Shutdown.value);
-                DiscordSession.sendPacket(mplew.getPacket());
+                DiscordConnection.sendPacket(mplew.getPacket());
             }
 
             reading = false;

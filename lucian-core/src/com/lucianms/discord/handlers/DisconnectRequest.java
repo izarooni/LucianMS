@@ -1,7 +1,7 @@
 package com.lucianms.discord.handlers;
 
 import com.lucianms.client.MapleCharacter;
-import com.lucianms.discord.DiscordSession;
+import com.lucianms.discord.DiscordConnection;
 import com.lucianms.discord.Headers;
 import com.lucianms.nio.receive.MaplePacketReader;
 import com.lucianms.server.Server;
@@ -44,7 +44,7 @@ public class DisconnectRequest extends DiscordRequest {
         long userID = reader.readLong();
         writer.writeLong(userID);
 
-        try (Connection con = DiscordSession.getConnection()) {
+        try (Connection con = DiscordConnection.getDatabaseConnection()) {
             try (PreparedStatement ps = con.prepareStatement("select id, name from characters where accountid = (select id from accounts where discord_id = ?)")) {
                 ps.setLong(1, userID);
                 try (ResultSet rs = ps.executeQuery()) {
@@ -56,7 +56,7 @@ public class DisconnectRequest extends DiscordRequest {
                                 target.getClient().disconnect(false);
                                 writer.write(Result.Success.ordinal());
                                 writer.writeMapleAsciiString(target.getName());
-                                DiscordSession.sendPacket(writer.getPacket());
+                                DiscordConnection.sendPacket(writer.getPacket());
                                 return;
                             }
                         }
@@ -65,11 +65,11 @@ public class DisconnectRequest extends DiscordRequest {
             }
         } catch (SQLException e) {
             writer.write(Result.Failure.ordinal());
-            DiscordSession.sendPacket(writer.getPacket());
+            DiscordConnection.sendPacket(writer.getPacket());
             return;
         }
         writer.write(Result.NotFound.ordinal());
-        DiscordSession.sendPacket(writer.getPacket());
+        DiscordConnection.sendPacket(writer.getPacket());
     }
 
     /**
@@ -97,7 +97,7 @@ public class DisconnectRequest extends DiscordRequest {
         } else {
             try {
                 int accountID = 0;
-                try (Connection con = DiscordSession.getConnection();
+                try (Connection con = DiscordConnection.getDatabaseConnection();
                      PreparedStatement ps = con.prepareStatement("SELECT accountid FROM characters WHERE name = ?")) {
                     ps.setString(1, username);
                     try (ResultSet rs = ps.executeQuery()) {
@@ -107,7 +107,7 @@ public class DisconnectRequest extends DiscordRequest {
                     }
                 }
                 if (accountID > 0) {
-                    try (Connection con = DiscordSession.getConnection();
+                    try (Connection con = DiscordConnection.getDatabaseConnection();
                          PreparedStatement ps = con.prepareStatement("UPDATE accounts SET loggedin = 0 WHERE id = ?")) {
                         ps.setInt(1, accountID);
                         ps.executeUpdate();
@@ -121,6 +121,6 @@ public class DisconnectRequest extends DiscordRequest {
                 writer.write(Result.Failure.ordinal());
             }
         }
-        DiscordSession.sendPacket(writer.getPacket());
+        DiscordConnection.sendPacket(writer.getPacket());
     }
 }

@@ -2,7 +2,7 @@ package com.lucianms.discord.handlers;
 
 import com.lucianms.client.inventory.MapleInventoryType;
 import com.lucianms.constants.ItemConstants;
-import com.lucianms.discord.DiscordSession;
+import com.lucianms.discord.DiscordConnection;
 import com.lucianms.discord.Headers;
 import com.lucianms.nio.receive.MaplePacketReader;
 import com.lucianms.server.MapleItemInformationProvider;
@@ -106,7 +106,7 @@ public class SearchRequest extends DiscordRequest {
             writer.writeInt(-1);
             writer.writeMapleAsciiString("You must specify a search type");
         }
-        DiscordSession.sendPacket(writer.getPacket());
+        DiscordConnection.sendPacket(writer.getPacket());
         System.gc();
     }
 

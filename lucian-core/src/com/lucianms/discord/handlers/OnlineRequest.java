@@ -1,7 +1,7 @@
 package com.lucianms.discord.handlers;
 
 import com.lucianms.client.MapleCharacter;
-import com.lucianms.discord.DiscordSession;
+import com.lucianms.discord.DiscordConnection;
 import com.lucianms.discord.Headers;
 import com.lucianms.nio.receive.MaplePacketReader;
 import com.lucianms.server.Server;
@@ -39,6 +39,6 @@ public class OnlineRequest extends DiscordRequest {
             }
         }
 
-        DiscordSession.sendPacket(writer.getPacket());
+        DiscordConnection.sendPacket(writer.getPacket());
     }
 }

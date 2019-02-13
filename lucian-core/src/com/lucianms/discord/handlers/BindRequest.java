@@ -1,7 +1,7 @@
 package com.lucianms.discord.handlers;
 
 import com.lucianms.client.MapleCharacter;
-import com.lucianms.discord.DiscordSession;
+import com.lucianms.discord.DiscordConnection;
 import com.lucianms.discord.Headers;
 import com.lucianms.nio.receive.MaplePacketReader;
 import com.lucianms.server.Server;
@@ -37,7 +37,7 @@ public class BindRequest extends DiscordRequest {
         writer.writeLong(channelId);
         writer.writeLong(authorId);
 
-        try (Connection con = DiscordSession.getConnection()) {
+        try (Connection con = DiscordConnection.getDatabaseConnection()) {
             int accountId = 0;
             try (PreparedStatement ps = con.prepareStatement("select discord_id, id, loggedin from accounts where name = ?")) {
                 ps.setString(1, accountUsername);
@@ -46,7 +46,7 @@ public class BindRequest extends DiscordRequest {
                         if (rs.getString("discord_id") != null) {
                             writer.write(2);
                             writer.writeMapleAsciiString(accountUsername);
-                            DiscordSession.sendPacket(writer.getPacket());
+                            DiscordConnection.sendPacket(writer.getPacket());
                             return;
                         }
                         if (rs.getInt("loggedin") == 2) {
@@ -58,7 +58,7 @@ public class BindRequest extends DiscordRequest {
             if (accountId == 0) {
                 writer.write(0);
                 writer.writeMapleAsciiString(accountUsername);
-                DiscordSession.sendPacket(writer.getPacket());
+                DiscordConnection.sendPacket(writer.getPacket());
             } else {
                 try (PreparedStatement ps = con.prepareStatement("select id from characters where accountid = ?")) {
                     ps.setInt(1, accountId);
@@ -72,7 +72,7 @@ public class BindRequest extends DiscordRequest {
                             writer.write(1);
                             writer.writeMapleAsciiString(key);
                             writer.writeMapleAsciiString(accountUsername);
-                            DiscordSession.sendPacket(writer.getPacket());
+                            DiscordConnection.sendPacket(writer.getPacket());
 
                             for (MapleWorld world : Server.getWorlds()) {
                                 for (MapleChannel channel : world.getChannels()) {
@@ -87,7 +87,7 @@ public class BindRequest extends DiscordRequest {
                         }
                         writer.write(0);
                         writer.writeMapleAsciiString(accountUsername);
-                        DiscordSession.sendPacket(writer.getPacket());
+                        DiscordConnection.sendPacket(writer.getPacket());
                     }
                 }
             }

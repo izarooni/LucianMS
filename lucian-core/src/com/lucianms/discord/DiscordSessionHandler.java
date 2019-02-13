@@ -24,14 +24,14 @@ import java.io.IOException;
  * @author izarooni
  */
 @ChannelHandler.Sharable
-public class DiscordServer extends ChannelInboundHandlerAdapter {
+public class DiscordSessionHandler extends ChannelInboundHandlerAdapter {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(DiscordServer.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(DiscordSessionHandler.class);
 
     private EventLoopGroup bossGroup;
     private ChannelFuture channelFuture;
 
-    DiscordServer(int port) throws Exception {
+    DiscordSessionHandler(int port) throws Exception {
         bossGroup = new NioEventLoopGroup();
         ServerBootstrap b = new ServerBootstrap();
         b.group(bossGroup)
@@ -42,7 +42,7 @@ public class DiscordServer extends ChannelInboundHandlerAdapter {
                         ch.pipeline()
                                 .addLast("decoder", DirectPacketDecoder.class.getDeclaredConstructor().newInstance())
                                 .addLast("encoder", DirectPacketEncoder.class.getDeclaredConstructor().newInstance())
-                                .addLast(DiscordServer.this);
+                                .addLast(DiscordSessionHandler.this);
                     }
                 })
                 .option(ChannelOption.SO_BACKLOG, 128)
@@ -60,7 +60,8 @@ public class DiscordServer extends ChannelInboundHandlerAdapter {
 
     @Override
     public void channelRegistered(ChannelHandlerContext ctx) throws Exception {
-        DiscordSession.setSession(ctx.channel());
+        LOGGER.info("Discord channel context registered");
+        DiscordConnection.setSession(ctx.channel());
     }
 
     @Override
@@ -71,6 +72,7 @@ public class DiscordServer extends ChannelInboundHandlerAdapter {
         DiscordRequest request = DiscordRequestManager.getRequest(header);
         if (request != null) {
             try {
+                LOGGER.info("Command request '{}'", request.getClass().getSimpleName());
                 request.handle(reader);
             } catch (Throwable t) {
                 LOGGER.error("Failed to handle packet 0x{}", Integer.toHexString(header));
