@@ -1,5 +1,6 @@
 package com.lucianms;
 
+import com.lucianms.client.MapleCharacter;
 import com.lucianms.client.SkillFactory;
 import com.lucianms.cquest.CQuestBuilder;
 import com.lucianms.discord.DiscordConnection;
@@ -33,6 +34,7 @@ import java.io.File;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Calendar;
+import java.util.Iterator;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -106,6 +108,29 @@ public class LChannelMain {
                 LOGGER.info("World {} channel {} bound to port {}", (world.getId() + 1), (channel.getId()), port);
             }
         }
+
+        Runtime.getRuntime().addShutdownHook(new Thread(new Runnable() {
+            @Override
+            public void run() {
+                LOGGER.info("Running shutdown hook...");
+                for (MapleWorld world : Server.getWorlds()) {
+                    for (MapleChannel channel : world.getChannels()) {
+                        Iterator<MapleCharacter> iter = channel.getPlayerStorage().values().iterator();
+                        while (iter.hasNext()) {
+                            MapleCharacter player = iter.next();
+                            player.saveToDB();
+                            iter.remove();
+                        }
+                        try {
+                            channel.getServerHandler().getDiscardServer().close();
+                            LOGGER.info("World {} Channel {} discard server closed", world.getId(), channel.getId());
+                        } catch (Exception e) {
+                            LOGGER.error("Failed to close World {} Channel {} discard server", world.getId(), channel.getId(), e);
+                        }
+                    }
+                }
+            }
+        }, "ShutdownHook"));
 
         try {
             Config config = Server.getConfig();

@@ -8,6 +8,8 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 
 /**
+ * {@link java.util.concurrent.ConcurrentHashMap} :angry:
+ *
  * @author izarooni
  */
 public final class ConcurrentMapStorage<K, V> {
