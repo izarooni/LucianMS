@@ -46,8 +46,8 @@ import tools.Pair;
 import tools.Randomizer;
 
 import java.awt.*;
-import java.util.*;
 import java.util.List;
+import java.util.*;
 
 public abstract class AbstractDealDamageEvent extends PacketEvent {
 
@@ -247,13 +247,13 @@ public abstract class AbstractDealDamageEvent extends PacketEvent {
                         Skill steal = SkillFactory.getSkill(Bandit.STEAL);
                         if (monster.getStolen().size() < 1) { // One steal per mob <3
                             if (Math.random() < 0.3 && steal.getEffect(player.getSkillLevel(steal)).makeChanceResult()) { //Else it drops too many cool stuff :(
-                                List<MonsterDropEntry> toSteals = MapleMonsterInformationProvider.getInstance().retrieveDrop(monster.getId());
+                                List<MonsterDropEntry> toSteals = MapleMonsterInformationProvider.retrieveDrop(monster.getId());
                                 Collections.shuffle(toSteals);
                                 int toSteal = toSteals.get(Randomizer.rand(0, (toSteals.size() - 1))).itemId;
                                 MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
                                 Item item;
                                 if (ItemConstants.getInventoryType(toSteal).equals(MapleInventoryType.EQUIP)) {
-                                    item = ii.randomizeStats((Equip) ii.getEquipById(toSteal));
+                                    item = ii.randomizeStats(ii.getEquipById(toSteal));
                                 } else {
                                     item = new Item(toSteal, (byte) 0, (short) 1, -1);
                                 }

@@ -72,20 +72,11 @@ public class SOuterSpace extends SAutoEvent {
         MapleMonster monster = MapleLifeFactory.getMonster(MonsterId);
 
         if (monster != null) {
-            MonsterListener DeathListener = new MonsterListener() {
-                @Override
-                public void monsterKilled(MapleCharacter player, int aniTime) {
-                    map.setInstanced(false);
-                    map.broadcastMessage(MaplePacketCreator.getClock(60));
-                    TaskExecutor.createTask(() -> map.warpEveryone(ServerConstants.HOME_MAP), (1000 * 60));
-                }
-            };
-
             // anders didn't remove the removeAfter property from the monster
             MapleMonsterStats stats = new MapleMonsterStats(monster.getStats());
             stats.setRemoveAfter(0);
             monster.setOverrideStats(stats);
-            monster.getListeners().add(DeathListener);
+            monster.getListeners().add(new SlimeKingHandler());
 
             map.spawnMonsterOnGroudBelow(monster, pos);
         } else {
@@ -146,5 +137,16 @@ public class SOuterSpace extends SAutoEvent {
             unregisterPlayer(player);
         }
         return true;
+    }
+
+    private class SlimeKingHandler extends MonsterListener {
+        @Override
+        public void monsterKilled(MapleMonster monster, MapleCharacter player) {
+            MapleMap map = monster.getMap();
+
+            map.setInstanced(false);
+            map.broadcastMessage(MaplePacketCreator.getClock(60));
+            TaskExecutor.createTask(() -> map.warpEveryone(ServerConstants.HOME_MAP), (1000 * 60));
+        }
     }
 }

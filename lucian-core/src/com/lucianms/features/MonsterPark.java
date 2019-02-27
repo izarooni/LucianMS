@@ -59,33 +59,7 @@ public class MonsterPark extends GenericEvent {
                     if (monster != null) {
                         MapleMonsterStats overrides = spawnPoint.createOverrides();
                         overrides.setExp((int) (ExpTable.getExpNeededForLevel(baseLevel) * (Math.random() * 0.01) + 0.01));
-                        monster.getListeners().add(new MonsterListener() {
-                            @Override
-                            public void monsterKilled(MapleCharacter player, int aniTime) {
-                                totalExp.addAndGet(monster.getExp());
-                                if (instanceMap.getMonsters().stream().noneMatch(m -> m.getHp() > 0)) {
-                                    if (portal != null) {
-                                        portal.setPortalStatus(true);
-                                    }
-                                    if (getStage(instanceMap.getId()) == 5) {
-                                        timeout.cancel();
-                                        instanceMap.broadcastMessage(MaplePacketCreator.showEffect("monsterPark/clearF"));
-                                        TaskExecutor.createTask(new Runnable() {
-                                            @Override
-                                            public void run() {
-                                                for (MapleMap instanceMap : maps.values()) {
-                                                    if (instanceMap != null) {
-                                                        instanceMap.getAllPlayer().forEach(MonsterPark.this::unregisterPlayer);
-                                                    }
-                                                }
-                                            }
-                                        }, 3500);
-                                    } else {
-                                        instanceMap.broadcastMessage(MaplePacketCreator.showEffect("monsterPark/clear"));
-                                    }
-                                }
-                            }
-                        });
+                        monster.getListeners().add(new MPMonsterHandler(portal));
                         spawnPoint.summonMonster();
                         instanceMap.spawnMonsterOnGroudBelow(monster, spawnPoint.getPosition());
                     } else {
@@ -171,5 +145,42 @@ public class MonsterPark extends GenericEvent {
 
     public int getMapId() {
         return mapId;
+    }
+
+    private class MPMonsterHandler extends MonsterListener {
+
+        private MaplePortal portal;
+
+        public MPMonsterHandler(MaplePortal portal) {
+            this.portal = portal;
+        }
+
+        @Override
+        public void monsterKilled(MapleMonster monster, MapleCharacter player) {
+            MapleMap map = monster.getMap();
+
+            totalExp.addAndGet(monster.getExp());
+            if (map.getMonsters().stream().noneMatch(m -> m.getHp() > 0)) {
+                if (portal != null) {
+                    portal.setPortalStatus(true);
+                }
+                if (getStage(map.getId()) == 5) {
+                    timeout.cancel();
+                    map.broadcastMessage(MaplePacketCreator.showEffect("monsterPark/clearF"));
+                    TaskExecutor.createTask(new Runnable() {
+                        @Override
+                        public void run() {
+                            for (MapleMap map : maps.values()) {
+                                if (map != null) {
+                                    map.getAllPlayer().forEach(MonsterPark.this::unregisterPlayer);
+                                }
+                            }
+                        }
+                    }, 3500);
+                } else {
+                    map.broadcastMessage(MaplePacketCreator.showEffect("monsterPark/clear"));
+                }
+            }
+        }
     }
 }

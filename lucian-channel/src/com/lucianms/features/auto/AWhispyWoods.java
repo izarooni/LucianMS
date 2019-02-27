@@ -102,7 +102,7 @@ public class AWhispyWoods extends GAutoEvent {
             monster.setOverrideStats(stats);
             monster.getListeners().add(new MonsterListener() {
                 @Override
-                public void monsterKilled(MapleCharacter player, int aniTime) {
+                public void monsterKilled(MapleMonster monster, MapleCharacter player) {
                     timeoutTask.cancel();
                     distributeRewards();
                     stop();

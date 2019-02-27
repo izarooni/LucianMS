@@ -258,7 +258,7 @@ public class EventCommands {
                     monster.setOverrideStats(stats);
                     monster.getListeners().add(new MonsterListener() {
                         @Override
-                        public void monsterKilled(MapleCharacter player, int aniTime) {
+                        public void monsterKilled(MapleMonster monster, MapleCharacter player) {
                             if (player != null) {
                                 monster.getMap().broadcastMessage(5, "Box killed by '{}'", player.getName());
                             }

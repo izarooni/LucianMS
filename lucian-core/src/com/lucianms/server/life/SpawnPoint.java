@@ -10,6 +10,17 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 public final class SpawnPoint {
 
+    private class SPMonsterHandler extends MonsterListener {
+        @Override
+        public void monsterKilled(MapleMonster monster, MapleCharacter player) {
+            if (spawnedMonsters.get() > 0) {
+                spawnedMonsters.decrementAndGet();
+            }
+            nextPossibleSpawn = System.currentTimeMillis();
+            nextPossibleSpawn += (mobTime > 0) ? (mobTime * 1000) : monster.getAnimationTime("die1");
+        }
+    }
+
     public interface Summon {
         void summon();
     }
@@ -77,16 +88,7 @@ public final class SpawnPoint {
         if (overrides != null) {
             monster.setOverrideStats(overrides);
         }
-        monster.getListeners().add(new MonsterListener() {
-            @Override
-            public void monsterKilled(MapleCharacter player, int animationTime) {
-                if (spawnedMonsters.get() > 0) {
-                    spawnedMonsters.decrementAndGet();
-                }
-                nextPossibleSpawn = System.currentTimeMillis();
-                nextPossibleSpawn += (mobTime > 0) ? (mobTime * 1000) : animationTime;
-            }
-        });
+        monster.getListeners().add(new SPMonsterHandler());
         return monster;
     }
 

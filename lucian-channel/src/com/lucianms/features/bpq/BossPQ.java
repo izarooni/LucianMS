@@ -139,7 +139,7 @@ public abstract class BossPQ extends GenericEvent {
                         final long spawnTimestamp = System.currentTimeMillis();
                         monster.getListeners().add(new MonsterListener() {
                             @Override
-                            public void monsterKilled(MapleCharacter player, int aniTime) {
+                            public void monsterKilled(MapleMonster monster, MapleCharacter player) {
                                 long endTime = System.currentTimeMillis();
                                 long elapse = endTime - spawnTimestamp;
                                 String time;
