@@ -343,7 +343,7 @@ public class MapleMap {
             if (!qData.isCompleted()) {
                 for (CQuestItemRequirement.CQuestItem qItem : qData.getToCollect().getItems().values()) {
                     if (qItem.getMonsterId() == mob.getId()) {
-                        int chance = (999999 / 1000) * qItem.getChance();
+                        int chance = (1000000 / 1000) * qItem.getChance();
                         dropEntry.add(new MonsterDropEntry(qItem.getItemId(), chance, qItem.getMinQuantity(), qItem.getMaxQuantity(), (short) -1));
                     }
                 }

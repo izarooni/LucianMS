@@ -29,10 +29,9 @@ public class LLoginMain {
         Server.createServer();
         Config config = Server.getConfig();
 
+        String address = config.getString("ServerHost");
+        Long port = config.getNumber("LoginBasePort");
         try {
-            String address = config.getString("ServerHost");
-            Long port = config.getNumber("LoginBasePort");
-
             NettyDiscardServer interServer = new NettyDiscardServer(address, port.intValue() + 1,
                     new InternalLoginCommunicationsHandler(),
                     new NioEventLoopGroup(),
@@ -40,11 +39,17 @@ public class LLoginMain {
                     DirectPacketEncoder.class);
             interServer.run();
             LOGGER.info("Internal login listening on {}:{}", address, (port + 1));
+        } catch (Exception e) {
+            LOGGER.error("Failed to bind to {}:{}", address, (port + 1), e);
+            System.exit(0);
+            return;
+        }
 
+        try {
             serverHandler = new MapleServerInboundHandler(ReceivePacketState.LoginServer, address, port.intValue(), new NioEventLoopGroup());
             LOGGER.info("Public Login Server listening on {}:{}", address, port);
         } catch (Exception e) {
-            e.printStackTrace();
+            LOGGER.error("Failed to bind to {}:{}", address, port, e);
             System.exit(0);
         }
     }
@@ -57,7 +62,7 @@ public class LLoginMain {
         RecvOpcode.LOGIN_PASSWORD.clazz = AccountLoginEvent.class;
         RecvOpcode.SERVERLIST_REREQUEST.clazz = WorldListEvent.class;
         RecvOpcode.SERVERLIST_REQUEST.clazz = WorldListEvent.class;
-        RecvOpcode.CHARLIST_REQUEST.clazz = AccountChannelSelectEvent.class;
+        RecvOpcode.CHARLIST_REQUEST.clazz = WorldChannelSelectEvent.class;
         RecvOpcode.SERVERSTATUS_REQUEST.clazz = WorldStatusCheckEvent.class;
         RecvOpcode.ACCEPT_TOS.clazz = AccountToSResultEvent.class;
         RecvOpcode.SET_GENDER.clazz = AccountGenderSetEvent.class;

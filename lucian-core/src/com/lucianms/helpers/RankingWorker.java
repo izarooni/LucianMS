@@ -57,7 +57,9 @@ public class RankingWorker implements Runnable {
                     charSelect.setInt(1, job.getId() / 100);
                 }
                 try (ResultSet rs = charSelect.executeQuery()) {
-                    try (PreparedStatement ps = con.prepareStatement("UPDATE characters SET " + (job != null ? "jobRank = ?, jobRankMove = ? " : "rank = ?, rankMove = ? ") + "WHERE id = ?")) {
+                    String query = (job != null) ? "jobRank = ?, jobRankMove = ?" : "`rank` = ?, rankMove = ?";
+                    query = "update characters set " + query + " where id = ?";
+                    try (PreparedStatement ps = con.prepareStatement(query)) {
                         for (int rank = 0; rs.next(); rank++) {
                             int rankMove = 0;
                             Timestamp lastlogin = rs.getTimestamp("lastlogin");

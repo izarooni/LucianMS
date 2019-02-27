@@ -41,6 +41,6 @@ public class MonsterDropEntry {
     }
 
     public boolean shouldDrop(float mod) {
-        return Randomizer.nextInt(MapleMap.MAX_DROP_CHANCE) >= chance * mod;
+        return Randomizer.nextInt(MapleMap.MAX_DROP_CHANCE) <= chance * mod;
     }
 }

@@ -65,6 +65,7 @@ import java.util.concurrent.locks.ReentrantLock;
 public class MapleClient {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MapleClient.class);
+    private static final long TRANSITION_TIMEOUT = 60000;
 
     public static final int LOGIN_NOTLOGGEDIN = 0;
     public static final int LOGIN_SERVER_TRANSITION = 1;
@@ -591,13 +592,12 @@ public class MapleClient {
                 }
                 int state = rs.getInt("loggedin");
                 if (state == LOGIN_SERVER_TRANSITION) {
-                    if (rs.getTimestamp("lastlogin").getTime() + 30000 < System.currentTimeMillis()) {
+                    long lastlogin = rs.getTimestamp("lastlogin").getTime() + TRANSITION_TIMEOUT;
+                    if (lastlogin < System.currentTimeMillis()) {
                         state = LOGIN_NOTLOGGEDIN;
                         updateLoginState(LOGIN_NOTLOGGEDIN);
                     }
                 } else if (state == LOGIN_LOGGEDIN && player == null) {
-                    // todo : test
-                    state = LOGIN_LOGGEDIN;
                     updateLoginState(LOGIN_LOGGEDIN);
                 }
                 if (state == LOGIN_LOGGEDIN) {

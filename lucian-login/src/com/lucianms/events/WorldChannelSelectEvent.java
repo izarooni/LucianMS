@@ -1,12 +1,11 @@
 package com.lucianms.events;
 
 import com.lucianms.nio.receive.MaplePacketReader;
-import com.lucianms.events.PacketEvent;
 
 /**
  * @author izarooni
  */
-public class AccountChannelSelectEvent extends PacketEvent {
+public class WorldChannelSelectEvent extends PacketEvent {
 
     private byte world, channel;
 
