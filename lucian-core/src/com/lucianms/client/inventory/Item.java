@@ -41,6 +41,10 @@ public class Item implements Comparable<Item> {
 
     private boolean obtainable = true;
 
+    public Item(int id) {
+        this(id, (short) 0, (short) 1);
+    }
+
     public Item(int id, short position, short quantity) {
         this.id = id;
         this.position = position;

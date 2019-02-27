@@ -54,6 +54,10 @@ public class Equip extends Item {
     private boolean wear = false;
     private boolean regalia = false;
 
+    public Equip(int id) {
+        this(id, (short) 0);
+    }
+
     public Equip(int id, short position) {
         super(id, position, (short) 1);
         this.itemExp = 0;

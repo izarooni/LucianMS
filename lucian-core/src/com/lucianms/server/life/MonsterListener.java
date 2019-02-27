@@ -2,7 +2,12 @@ package com.lucianms.server.life;
 
 import com.lucianms.client.MapleCharacter;
 
-public interface MonsterListener {
+public class MonsterListener {
 
-    void monsterKilled(MapleCharacter player, int aniTime);
+    public void monsterKilled(MapleMonster monster, MapleCharacter player) {
+    }
+
+    public MonsterDropEntry onDeathDrop(MapleMonster monster, MapleCharacter player) {
+        return null;
+    }
 }

@@ -1,43 +1,61 @@
 package com.lucianms.server.life;
 
 import com.lucianms.server.Server;
-import provider.MapleData;
-import provider.MapleDataProvider;
-import provider.MapleDataProviderFactory;
-import provider.MapleDataTool;
-import tools.Pair;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import java.io.File;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.*;
 
-public class MapleMonsterInformationProvider {
+public final class MapleMonsterInformationProvider {
 
-    private static final MapleMonsterInformationProvider instance = new MapleMonsterInformationProvider();
-    private final Map<Integer, List<MonsterDropEntry>> drops = new HashMap<>();
-    private final List<MonsterGlobalDropEntry> globaldrops = new ArrayList<>();
+    private static final Logger LOGGER = LoggerFactory.getLogger(MapleMonsterInformationProvider.class);
+    private static final Map<Integer, ArrayList<MonsterDropEntry>> A_DROP_DATA = new HashMap<>();
+    private static final List<MonsterGlobalDropEntry> A_GLOBAL_DROPS = new ArrayList<>();
 
-    protected MapleMonsterInformationProvider() {
-        retrieveGlobal();
+    private MapleMonsterInformationProvider() {
     }
 
-    public static MapleMonsterInformationProvider getInstance() {
-        return instance;
+    public static List<MonsterGlobalDropEntry> getGlobalDrop() {
+        return A_GLOBAL_DROPS;
     }
 
-    public final List<MonsterGlobalDropEntry> getGlobalDrop() {
-        return globaldrops;
+    public static List<MonsterDropEntry> retrieveDrop(final int monsterId) {
+        if (A_DROP_DATA.containsKey(monsterId)) {
+            return A_DROP_DATA.get(monsterId);
+        }
+        try (Connection con = Server.getConnection();
+             PreparedStatement ps = con.prepareStatement("SELECT * FROM drop_data WHERE dropperid = ?")) {
+            ps.setInt(1, monsterId);
+            try (ResultSet rs = ps.executeQuery()) {
+                ArrayList<MonsterDropEntry> ret = new ArrayList<>();
+                while (rs.next()) {
+                    ret.add(new MonsterDropEntry(
+                            rs.getInt("itemid"),
+                            rs.getInt("chance"),
+                            rs.getInt("minimum_quantity"),
+                            rs.getInt("maximum_quantity"),
+                            rs.getShort("questid")));
+                }
+                A_DROP_DATA.put(monsterId, ret);
+                return ret;
+            }
+        } catch (SQLException e) {
+            LOGGER.error("Faile to retrieve drop data for monster {}", monsterId, e);
+            A_DROP_DATA.remove(monsterId);
+        }
+        return Collections.emptyList();
     }
 
-    private void retrieveGlobal() {
+    public static void createGlobalCache() {
         try (Connection con = Server.getConnection();
              PreparedStatement ps = con.prepareStatement("SELECT * FROM drop_data_global WHERE chance > 0")) {
             try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
-                    globaldrops.add(
+                    A_GLOBAL_DROPS.add(
                             new MonsterGlobalDropEntry(
                                     rs.getInt("itemid"),
                                     rs.getInt("chance"),
@@ -49,64 +67,14 @@ public class MapleMonsterInformationProvider {
                 }
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            LOGGER.error("Failed to retrieve global drop data", e);
         }
     }
 
-    public final List<MonsterDropEntry> retrieveDrop(final int monsterId) {
-        if (drops.containsKey(monsterId)) {
-            return drops.get(monsterId);
-        }
-        final List<MonsterDropEntry> ret = new LinkedList<>();
+    public static void clearCache() {
+        A_DROP_DATA.clear();
+        A_GLOBAL_DROPS.clear();
 
-        try (Connection con = Server.getConnection();
-             PreparedStatement ps = con.prepareStatement("SELECT * FROM drop_data WHERE dropperid = ?")) {
-            ps.setInt(1, monsterId);
-            try (ResultSet rs = ps.executeQuery()) {
-                while (rs.next()) {
-                    ret.add(
-                            new MonsterDropEntry(
-                                    rs.getInt("itemid"),
-                                    rs.getInt("chance"),
-                                    rs.getInt("minimum_quantity"),
-                                    rs.getInt("maximum_quantity"),
-                                    rs.getShort("questid")));
-                }
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-            return ret;
-        }
-        drops.put(monsterId, ret);
-        return ret;
-    }
-
-    public static ArrayList<Pair<Integer, String>> getMobsIDsFromName(String search) {
-        MapleDataProvider dataProvider = MapleDataProviderFactory.getDataProvider(new File("wz/String.wz"));
-        ArrayList<Pair<Integer, String>> retMobs = new ArrayList<>();
-        MapleData data = dataProvider.getData("Mob.img");
-        List<Pair<Integer, String>> mobPairList = new LinkedList<>();
-        for (MapleData mobIdData : data.getChildren()) {
-            int mobIdFromData = Integer.parseInt(mobIdData.getName());
-            String mobNameFromData = MapleDataTool.getString(mobIdData.getChildByPath("name"), "NO-NAME");
-            mobPairList.add(new Pair<>(mobIdFromData, mobNameFromData));
-        }
-        for (Pair<Integer, String> mobPair : mobPairList) {
-            if (mobPair.getRight().toLowerCase().contains(search.toLowerCase())) {
-                retMobs.add(mobPair);
-            }
-        }
-        return retMobs;
-    }
-
-    public static String getMobNameFromID(int id) {
-        MapleMonster monster = MapleLifeFactory.getMonster(id);
-        return monster != null ? monster.getName() : null;
-    }
-
-    public final void clearCache() {
-        drops.clear();
-        globaldrops.clear();
-        retrieveGlobal();
+        createGlobalCache();
     }
 }

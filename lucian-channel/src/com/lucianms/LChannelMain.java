@@ -19,6 +19,7 @@ import com.lucianms.scheduler.TaskExecutor;
 import com.lucianms.server.CashShop;
 import com.lucianms.server.Server;
 import com.lucianms.server.channel.MapleChannel;
+import com.lucianms.server.life.MapleMonsterInformationProvider;
 import com.lucianms.server.maps.tasks.FieldUpdateTask;
 import com.lucianms.server.quest.MapleQuest;
 import com.lucianms.server.world.MapleWorld;
@@ -47,6 +48,8 @@ public class LChannelMain {
     public static void main(String[] args) {
         initReceiveHeaders();
         Server.createServer();
+
+        MapleMonsterInformationProvider.createGlobalCache();
 
         long timeToTake = System.currentTimeMillis();
         MapleQuest.loadAllQuest();
@@ -129,8 +132,14 @@ public class LChannelMain {
                         }
                     }
                 }
+
+                try {
+                    communicationsHandler.close();
+                } catch (Exception e) {
+                    LOGGER.error("Failed to close Netty socket", e);
+                }
             }
-        }, "ShutdownHook"));
+        }, "CServerShutdownHook"));
 
         try {
             Config config = Server.getConfig();

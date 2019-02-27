@@ -4,7 +4,6 @@ import com.lucianms.nio.receive.DirectPacketDecoder;
 import com.lucianms.nio.send.DirectPacketEncoder;
 import com.lucianms.nio.send.MaplePacketWriter;
 import com.lucianms.nio.server.NettyDiscardClient;
-import com.lucianms.scheduler.TaskExecutor;
 import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoopGroup;
 import org.slf4j.Logger;
@@ -29,6 +28,10 @@ public class InternalChannelCommunicationsHandler extends ChannelInboundHandlerA
         client = new NettyDiscardClient(address, port, new NioEventLoopGroup(), this, DirectPacketDecoder.class, DirectPacketEncoder.class);
         client.run();
         attemptConnection();
+    }
+
+    public void close() throws Exception {
+        client.close();
     }
 
     private void attemptConnection() {

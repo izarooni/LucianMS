@@ -4,13 +4,13 @@ import com.lucianms.client.MapleCharacter;
 import com.lucianms.client.status.MonsterStatus;
 import com.lucianms.features.GenericEvent;
 import com.lucianms.features.carnival.MCarnivalGame;
+import com.lucianms.features.carnival.MCarnivalMobHandler;
 import com.lucianms.features.carnival.MCarnivalPacket;
 import com.lucianms.features.carnival.MCarnivalTeam;
 import com.lucianms.nio.receive.MaplePacketReader;
 import com.lucianms.server.life.MapleLifeFactory;
 import com.lucianms.server.life.MapleMonster;
 import com.lucianms.server.life.MobSkillFactory;
-import com.lucianms.server.life.MonsterListener;
 import com.lucianms.server.maps.MapleMap;
 import com.lucianms.server.maps.MapleReactor;
 import com.lucianms.server.maps.MapleReactorFactory;
@@ -79,18 +79,7 @@ public final class MonsterCarnivalEvent extends PacketEvent {
                             if (monster != null) {
                                 monster.setPosition(new Point(1, 1));
                                 monster.setTeam(friendly.getId());
-                                monster.getListeners().add(new MonsterListener() {
-                                    @Override
-                                    public void monsterKilled(MapleCharacter player, int aniTime) {
-                                        MCarnivalGame carnivalGame = (MCarnivalGame) player.getGenericEvents().stream().filter(o -> o instanceof MCarnivalGame).findFirst().orElse(null);
-                                        if (monster.getCP() > 0 && carnivalGame != null) {
-                                            carnivalGame.getTeam(player.getTeam()).addCarnivalPoints(player, monster.getCP());
-                                            player.announce(MCarnivalPacket.getMonsterCarnivalPointsUpdate(player.getCP(), player.getObtainedCP()));
-                                            player.getMap().broadcastMessage(MCarnivalPacket.getMonsterCarnivalPointsUpdateParty(carnivalGame.getTeam(player.getTeam())));
-                                            // they drop items too ):
-                                        }
-                                    }
-                                });
+                                monster.getListeners().add(new MCarnivalMobHandler());
                                 map.addCarnivalMonster(monster, friendly.getId());
                                 friendly.setSummonedMonsters(friendly.getSummonedMonsters() + 1);
 

@@ -42,8 +42,8 @@ import tools.Randomizer;
 
 import java.awt.*;
 import java.lang.ref.WeakReference;
-import java.util.*;
 import java.util.List;
+import java.util.*;
 import java.util.Map.Entry;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.locks.ReentrantLock;
@@ -454,12 +454,7 @@ public class MapleMonster extends AbstractLoadedMapleLife {
                 eventInstance.monsterKilled(this);
             }
         }
-        ArrayList<MonsterListener> temp = new ArrayList<>(listeners);
-        try {
-            temp.forEach(listener -> listener.monsterKilled(killer, getAnimationTime("die1")));
-        } finally {
-            temp.clear();
-        }
+        listeners.forEach(listener -> listener.monsterKilled(this, killer));
         MapleCharacter looter = map.getCharacterById(getHighestDamagerId());
         if (killer != null) {
             Achievements.testFor(killer, getId());

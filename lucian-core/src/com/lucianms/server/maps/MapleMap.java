@@ -37,7 +37,6 @@ import com.lucianms.cquest.CQuestData;
 import com.lucianms.cquest.requirement.CQuestItemRequirement;
 import com.lucianms.cquest.requirement.CQuestKillRequirement;
 import com.lucianms.events.gm.*;
-import com.lucianms.features.MonsterPark;
 import com.lucianms.io.scripting.event.EventInstanceManager;
 import com.lucianms.io.scripting.map.MapScriptManager;
 import com.lucianms.lang.GProperties;
@@ -331,19 +330,20 @@ public class MapleMap {
             chServerrate *= (stati.get(MonsterStatus.SHOWDOWN).getStati().get(MonsterStatus.SHOWDOWN).doubleValue() / 100.0 + 1.0);
         }
 
-        final MapleMonsterInformationProvider mi = MapleMonsterInformationProvider.getInstance();
-        final List<MonsterDropEntry> dropEntry = new ArrayList<>(mi.retrieveDrop(mob.getId()));
+        ArrayList<MonsterDropEntry> dropEntry = new ArrayList<>(MapleMonsterInformationProvider.retrieveDrop(mob.getId()));
 
-        // Monster Coin Drop
-        if (chr.getGenericEvents().stream().anyMatch(g -> g instanceof MonsterPark)) {
-            dropEntry.add(new MonsterDropEntry(4310020, MAX_DROP_CHANCE / 100 * 35, 1, 1, (short) -1));
+        for (MonsterListener listener : mob.getListeners()) {
+            MonsterDropEntry drop = listener.onDeathDrop(mob, chr);
+            if (drop != null) {
+                dropEntry.add(drop);
+            }
         }
 
         for (CQuestData qData : chr.getCustomQuests().values()) {
             if (!qData.isCompleted()) {
                 for (CQuestItemRequirement.CQuestItem qItem : qData.getToCollect().getItems().values()) {
                     if (qItem.getMonsterId() == mob.getId()) {
-                        int chance = (1000000 / 1000) * qItem.getChance();
+                        int chance = (MAX_DROP_CHANCE / 1000) * qItem.getChance();
                         dropEntry.add(new MonsterDropEntry(qItem.getItemId(), chance, qItem.getMinQuantity(), qItem.getMaxQuantity(), (short) -1));
                     }
                 }
@@ -378,10 +378,11 @@ public class MapleMap {
                 d++;
             }
         }
+        dropEntry.clear();
 
         // Global Drops
-        final List<MonsterGlobalDropEntry> globalEntry = mi.getGlobalDrop();
-        for (final MonsterGlobalDropEntry de : globalEntry) {
+        List<MonsterGlobalDropEntry> globalEntry = MapleMonsterInformationProvider.getGlobalDrop();
+        for (MonsterGlobalDropEntry de : globalEntry) {
             float nRate = chServerrate;
             if (ItemConstants.isEyeScanner(de.itemId)) {
                 nRate *= 0.1;

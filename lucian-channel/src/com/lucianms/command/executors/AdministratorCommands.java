@@ -100,7 +100,7 @@ public class AdministratorCommands {
                         break;
                     case "drops":
                         ReactorScriptManager.clearDrops();
-                        MapleMonsterInformationProvider.getInstance().clearCache();
+                        MapleMonsterInformationProvider.clearCache();
                         player.sendMessage("Drop data cache reloaded");
                         break;
                     case "mapscripts":
