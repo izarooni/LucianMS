@@ -24,7 +24,6 @@ package com.lucianms.server.maps;
 import com.lucianms.client.MapleClient;
 import com.lucianms.io.scripting.portal.PortalScriptManager;
 import com.lucianms.server.MaplePortal;
-import tools.MaplePacketCreator;
 
 import java.awt.*;
 
@@ -116,21 +115,18 @@ public class MapleGenericPortal implements MaplePortal {
     }
 
     @Override
-    public void enterPortal(MapleClient c) {
-        boolean changed = false;
+    public boolean enterPortal(MapleClient c) {
         if (getScriptName() != null) {
-            changed = PortalScriptManager.executePortalScript(c, this);
+            return PortalScriptManager.executePortalScript(c, this);
         } else if (getTargetMapId() != 999999999 && !disabled) {
             MapleMap to = c.getPlayer().getEventInstance() == null ? c.getChannelServer().getMap(getTargetMapId()) : c.getPlayer().getEventInstance().getMapInstance(getTargetMapId());
             MaplePortal pto = to.getPortal(getTarget());
-            if (pto == null) {// fallback for missing portals - no real life case anymore - intresting for not implemented areas
+            if (pto == null) {// fallback for missing portals - no real life case anymore - interesting for not implemented areas
                 pto = to.getPortal(0);
             }
             c.getPlayer().changeMap(to, pto); //late resolving makes this harder but prevents us from loading the whole world at once
-            changed = true;
+            return true;
         }
-        if (!changed) {
-            c.announce(MaplePacketCreator.enableActions());
-        }
+        return false;
     }
 }

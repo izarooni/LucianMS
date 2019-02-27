@@ -3,19 +3,33 @@ package com.lucianms.events;
 import com.lucianms.client.MapleCharacter;
 import com.lucianms.client.MapleClient;
 import com.lucianms.client.inventory.MapleInventoryType;
+import com.lucianms.constants.GameConstants;
 import com.lucianms.constants.ServerConstants;
 import com.lucianms.features.GenericEvent;
+import com.lucianms.features.carnival.MCarnivalGame;
+import com.lucianms.features.carnival.MCarnivalPacket;
+import com.lucianms.features.emergency.Emergency;
+import com.lucianms.features.emergency.EmergencyAttack;
+import com.lucianms.features.emergency.EmergencyDuel;
 import com.lucianms.nio.receive.MaplePacketReader;
+import com.lucianms.scheduler.TaskExecutor;
 import com.lucianms.server.MapleInventoryManipulator;
 import com.lucianms.server.MaplePortal;
 import com.lucianms.server.MapleTrade;
+import com.lucianms.server.Server;
+import com.lucianms.server.life.SpawnPoint;
 import com.lucianms.server.maps.MapleMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import tools.MaplePacketCreator;
+import tools.Randomizer;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.concurrent.TimeUnit;
 
 public class ChangeMapEvent extends PacketEvent {
 
@@ -178,16 +192,12 @@ public class ChangeMapEvent extends PacketEvent {
                 if (player.getMapId() == 109030003 || player.getMapId() == 109030103) {
                     player.getOla().resetTimes();
                 }
-                if (portal != null) {
-                    if (portal.getPosition().distanceSq(player.getPosition()) > 400000) {
-                        getClient().announce(MaplePacketCreator.enableActions());
-                        return null;
-                    }
-
-                    portal.enterPortal(getClient());
-                } else {
+                if (portal == null || portal.getPosition().distanceSq(player.getPosition()) > 400000 || !portal.enterPortal(getClient())) {
                     getClient().announce(MaplePacketCreator.enableActions());
+                    return null;
                 }
+                DoEmergencyEvent();
+                ShowMCarnivalBoard();
                 player.setRates();
             } catch (Exception e) {
                 e.printStackTrace();
@@ -214,5 +224,64 @@ public class ChangeMapEvent extends PacketEvent {
 
     public int getTargetMapId() {
         return targetMapId;
+    }
+
+    private void DoEmergencyEvent() {
+        //region emergency attack
+        // empty map or contains only party members
+        MapleCharacter player = getClient().getPlayer();
+        MapleMap map = player.getMap();
+        Collection<MapleCharacter> characters = new ArrayList<>(map.getCharacters());
+        if (characters.size() == 1
+                || (player.getPartyId() > 0 && characters.stream().allMatch(p -> p.getPartyId() == player.getPartyId()))) {
+            /*
+            May only activate under the following conditions:
+            Contains monster spawn points,
+            Contains no boss-type monsters,
+            Map is a non-town type,
+            Is not explicity excluded via server configuration
+            must be a map that contains monster spawnpoints, contains no boss entity and is a hutning field
+             */
+            ArrayList<SpawnPoint> spawnPoints = map.getMonsterSpawnPoints();
+            if (!map.isTown()
+                    && spawnPoints.stream().noneMatch(sp -> sp.getMonster().isBoss() || player.getLevel() - sp.getMonster().getLevel() > 30)
+                    && !spawnPoints.isEmpty()
+                    && Arrays.binarySearch(Server.getConfig().getIntArray("EmergencyExcludes"), map.getId()) < 0) {
+                // 1/25 chance to trigger emergency
+                if ((player.isGM() && player.isDebug())
+                        || ((System.currentTimeMillis() > map.getNextEmergency())
+                        && player.getEventInstance() == null
+                        && Randomizer.nextInt(25) == 0
+                        && player.getGenericEvents().isEmpty()
+                        && player.getArcade() == null)) {
+                    Emergency event = Randomizer.nextBoolean() && player.getLevel() >= 30 ? new EmergencyDuel(player) : new EmergencyAttack(player);
+                    TaskExecutor.createTask(new Runnable() {
+                        @Override
+                        public void run() {
+                            event.registerPlayer(player);
+                            if (!event.isCanceled()) {
+                                map.setNextEmergency(System.currentTimeMillis() + TimeUnit.MINUTES.toMillis(8));
+                            }
+                        }
+                    }, 1500);
+                } else {
+                    map.setNextEmergency(System.currentTimeMillis() + TimeUnit.SECONDS.toMillis(15));
+                }
+            }
+        }
+        characters.clear();
+        //endregion
+    }
+
+    private void ShowMCarnivalBoard() {
+        MapleCharacter player = getClient().getPlayer();
+        int mapId = player.getMapId();
+
+        MCarnivalGame carnivalGame = (MCarnivalGame) player.getGenericEvents().stream().filter(o -> o instanceof MCarnivalGame).findFirst().orElse(null);
+        if (carnivalGame != null && GameConstants.isCarnivalField(mapId)) {
+            player.announce(MaplePacketCreator.getClock((int) (carnivalGame.getTimeLeft() / 1000)));
+            player.announce(MCarnivalPacket.getMonsterCarnivalStart(player, carnivalGame));
+            player.announce(MaplePacketCreator.showForcedEquip(player.getTeam()));
+        }
     }
 }

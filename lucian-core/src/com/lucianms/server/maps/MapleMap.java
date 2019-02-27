@@ -63,7 +63,7 @@ import java.util.stream.Collectors;
 
 public class MapleMap {
 
-    private static final int MAX_CHANCE = 999999;
+    public static final int MAX_DROP_CHANCE = 1000000;
     private static final Logger LOGGER = LoggerFactory.getLogger(MapleMap.class);
     private static final List<MapleMapObjectType> rangedMapobjectTypes = Arrays.asList(
             MapleMapObjectType.SHOP,
@@ -336,7 +336,7 @@ public class MapleMap {
 
         // Monster Coin Drop
         if (chr.getGenericEvents().stream().anyMatch(g -> g instanceof MonsterPark)) {
-            dropEntry.add(new MonsterDropEntry(4310020, MAX_CHANCE / 100 * 35, 1, 1, (short) -1));
+            dropEntry.add(new MonsterDropEntry(4310020, MAX_DROP_CHANCE / 100 * 35, 1, 1, (short) -1));
         }
 
         for (CQuestData qData : chr.getCustomQuests().values()) {
@@ -352,7 +352,7 @@ public class MapleMap {
 
         Collections.shuffle(dropEntry);
         for (MonsterDropEntry de : dropEntry) {
-            if (Randomizer.nextInt(MAX_CHANCE) < de.chance * chServerrate) {
+            if (de.shouldDrop(chServerrate)) {
                 if (droptype == 3) {
                     pos.x = mobpos + (d % 2 == 0 ? (40 * (d + 1) / 2) : -(40 * (d / 2)));
                 } else {
@@ -382,11 +382,11 @@ public class MapleMap {
         // Global Drops
         final List<MonsterGlobalDropEntry> globalEntry = mi.getGlobalDrop();
         for (final MonsterGlobalDropEntry de : globalEntry) {
-            int chance = de.chance;
-            if (de.itemId >= 4011009 && de.itemId <= 4011009 + 6 && chr.isEyeScannersEquiped()) {
-                chance *= 0.10;
+            float nRate = chServerrate;
+            if (ItemConstants.isEyeScanner(de.itemId)) {
+                nRate *= 0.1;
             }
-            if (Randomizer.nextInt(999999) < chance) {
+            if (de.shouldDrop(nRate)) {
                 if (droptype == 3) {
                     pos.x = mobpos + (d % 2 == 0 ? (40 * (d + 1) / 2) : -(40 * (d / 2)));
                 } else {
@@ -1511,52 +1511,6 @@ public class MapleMap {
             chr.announce(MaplePacketCreator.rollSnowBall(true, 0, null, null));
         }
 
-        //region emergency attack
-        // empty map or contains only party members
-//        if (characters.size() == 1
-//                || (chr.getPartyId() > 0 && getCharacters().stream().allMatch(p -> p.getPartyId() == chr.getPartyId()))) {
-//            /*
-//            May only activate under the following conditions:
-//            Contains monster spawn points,
-//            Contains no boss-type monsters,
-//            Map is a non-town type,
-//            Is not explicity excluded via server configuration
-//             */
-//            // must be a map that contains monster spawnpoints, contains no boss entity and is a hutning field
-//            if (!isTown()
-//                    && spawnPoints.stream().noneMatch(sp -> sp.getMonster().isBoss() || chr.getLevel() - sp.getMonster().getLevel() > 30)
-//                    && !spawnPoints.isEmpty()
-//                    && Arrays.binarySearch(Server.getConfig().getIntArray("EmergencyExcludes"), getId()) < 0) {
-//                // 1/25 chance to trigger emergency
-//                if ((chr.isGM() && chr.isDebug())
-//                        || ((System.currentTimeMillis() > nextEmergency)
-//                        && Randomizer.nextInt(25) == 0
-//                        && chr.getGenericEvents().isEmpty()
-//                        && eim == null
-//                        && chr.getArcade() == null)) {
-//                    Emergency event = Randomizer.nextBoolean() && chr.getLevel() >= 30 ? new EmergencyDuel(chr) : new EmergencyAttack(chr);
-//                    TaskExecutor.createTask(new Runnable() {
-//                        @Override
-//                        public void run() {
-//                            event.registerPlayer(chr);
-//                            if (!event.isCanceled()) {
-//                                nextEmergency = System.currentTimeMillis() + TimeUnit.MINUTES.toMillis(8);
-//                            }
-//                        }
-//                    }, 1500);
-//                } else {
-//                    nextEmergency = System.currentTimeMillis() + TimeUnit.SECONDS.toMillis(15);
-//                }
-//            }
-//        }
-//        //endregion
-//
-//        MCarnivalGame carnivalGame = (MCarnivalGame) chr.getGenericEvents().stream().filter(o -> o instanceof MCarnivalGame).findFirst().orElse(null);
-//        if (carnivalGame != null && (mapid == 980000101 || mapid == 980000201 || mapid == 980000301 || mapid == 980000401 || mapid == 980000501 || mapid == 980000601)) {
-//            chr.announce(MaplePacketCreator.getClock((int) (carnivalGame.getTimeLeft() / 1000)));
-//            chr.announce(MCarnivalPacket.getMonsterCarnivalStart(chr, carnivalGame));
-//            chr.announce(MaplePacketCreator.showForcedEquip(chr.getTeam()));
-//        }
         if (hasClock()) {
             Calendar cal = Calendar.getInstance();
             chr.getClient().announce((MaplePacketCreator.getClockTime(cal.get(Calendar.HOUR_OF_DAY), cal.get(Calendar.MINUTE), cal.get(Calendar.SECOND))));
@@ -2320,9 +2274,7 @@ public class MapleMap {
                 MapleNPC npc = (MapleNPC) obj;
                 if (npc.getId() == id) {
                     npc.setHide(!npc.isHidden());
-                    if (!npc.isHidden()) // Should only be hidden upon changing
-                    // maps
-                    {
+                    if (!npc.isHidden()) { // Should only be hidden upon changing maps
                         broadcastMessage(MaplePacketCreator.spawnNPC(npc));
                     }
                 }

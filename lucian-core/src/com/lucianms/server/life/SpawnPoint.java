@@ -68,8 +68,7 @@ public final class SpawnPoint {
     public MapleMonster getMonster() {
         monster = MapleLifeFactory.getMonster(monsterID);
         if (monster == null) {
-            LOGGER.error("Unable to spawn monster (non-existing) {}", monsterID);
-            return null;
+            LOGGER.error("Unable to spawn monster (non-existing) {}", monsterID, new NullPointerException());
         }
         monster.setPosition(pos.getLocation());
         monster.setTeam(team);

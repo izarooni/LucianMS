@@ -51,6 +51,10 @@ public final class ItemConstants {
         return 0;
     }
 
+    public static boolean isEyeScanner(int itemID) {
+        return itemID >= 4011009 && itemID <= 4011015;
+    }
+
     public static boolean isThrowingStar(int itemId) {
         return itemId / 10000 == 207;
     }

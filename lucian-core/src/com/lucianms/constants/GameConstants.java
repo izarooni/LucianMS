@@ -11,6 +11,10 @@ public class GameConstants {
     private GameConstants() {
     }
 
+    public static boolean isCarnivalField(int mapID) {
+        return mapID == 980000101 || mapID == 980000201 || mapID == 980000301 || mapID == 980000401 || mapID == 980000501 || mapID == 980000601;
+    }
+
     public static boolean isMapleTV(int npcID) {
         return npcID == 9250023 || npcID == 9250024 || npcID == 9250025 || npcID == 9250026 || npcID == 9250042 ||
                 npcID == 9250043 || npcID == 9250044 || npcID == 9250045 || npcID == 9250046;

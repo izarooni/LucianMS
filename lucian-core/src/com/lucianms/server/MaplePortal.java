@@ -51,5 +51,5 @@ public interface MaplePortal {
 
     int getTargetMapId();
 
-    void enterPortal(MapleClient c);
+    boolean enterPortal(MapleClient c);
 }

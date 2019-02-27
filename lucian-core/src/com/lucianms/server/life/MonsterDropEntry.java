@@ -20,19 +20,27 @@
 */
 package com.lucianms.server.life;
 
+import com.lucianms.server.maps.MapleMap;
+import tools.Randomizer;
+
 /**
- *
  * @author LightPepsi
  */
 
 public class MonsterDropEntry {
+
+    public final short questid;
+    public final int itemId, chance, Minimum, Maximum;
+
     public MonsterDropEntry(int itemId, int chance, int Minimum, int Maximum, short questid) {
-	this.itemId = itemId;
-	this.chance = chance;
-	this.questid = questid;
-	this.Minimum = Minimum;
-	this.Maximum = Maximum;
+        this.itemId = itemId;
+        this.chance = chance;
+        this.questid = questid;
+        this.Minimum = Minimum;
+        this.Maximum = Maximum;
     }
-    public short questid;
-    public int itemId, chance, Minimum, Maximum;
+
+    public boolean shouldDrop(float mod) {
+        return Randomizer.nextInt(MapleMap.MAX_DROP_CHANCE) >= chance * mod;
+    }
 }
