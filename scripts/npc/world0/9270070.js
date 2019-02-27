@@ -36,7 +36,7 @@ function action(mode, type, selection) {
             + "\r\n#L5#Make me immortal#l"
             + "\r\n#L6#Give me NX#l"
             + "\r\n#L7#Clone me#l"
-            + "\r\n#L8#Give me more power#l");
+            + "\r\n#L8#Give me a rebirth#l");
     } else if (status == 2) {
         switch (selection) {
             case 0:
@@ -102,18 +102,14 @@ function action(mode, type, selection) {
                 }
                 break;
             case 8: {
-            
-                let EXPToGain = (ExpTable.getExpNeededForLevel(cm.getPlayer().getLevel()));
-                
-                cm.sendOk("Wish granted. Take my power and make it your own.");
-                if (player.getLevel() < 200) {
-                     // give exp in 10 parts
-                    let partEXP = EXPToGain / 10;
-                    for(let i = 0; i < 10; i++) {
-                        cm.getPlayer().gainExp(partEXP, true, false);
-                    }
+
+                let levels = 200 - player.getLevel();
+                if (levels > 0) {
+                    let apGain = levels * 5;
+                    player.addPoints("ap", apGain);
+                    player.sendMessage("You gained {} Ability Points for {} levels", apGain, levels);
                 }
-        
+                player.doRebirth();
                 break;
             }
         }
