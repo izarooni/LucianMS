@@ -50,6 +50,7 @@ import com.lucianms.server.partyquest.Pyramid;
 import com.lucianms.server.quest.MapleQuest;
 import com.lucianms.server.world.MapleParty;
 import com.lucianms.server.world.MaplePartyCharacter;
+import jdk.nashorn.api.scripting.ScriptObjectMirror;
 import tools.MaplePacketCreator;
 
 import java.awt.*;
@@ -68,6 +69,7 @@ public class AbstractPlayerInteraction {
     }
 
     public MapleClient c;
+    public ScriptObjectMirror vars;
 
     public AbstractPlayerInteraction(MapleClient c) {
         this.c = c;
