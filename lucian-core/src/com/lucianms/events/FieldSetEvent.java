@@ -15,6 +15,7 @@ public class FieldSetEvent extends PacketEvent {
 
     @Override
     public Object onPacket() {
+        getClient().getPlayer().setRates();
         return null;
     }
 }

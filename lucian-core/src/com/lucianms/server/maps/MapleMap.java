@@ -1320,6 +1320,11 @@ public class MapleMap {
                 chr.saveLocation("INTRO");
             }
             MapScriptManager.getInstance().getMapScript(chr.getClient(), onUserEnter, false);
+        } else {
+            String strMapID = Integer.toString(mapid);
+            if (MapScriptManager.getInstance().scriptExists(strMapID, false)) {
+                MapScriptManager.getInstance().getMapScript(chr.getClient(), strMapID, false);
+            }
         }
         if (FieldLimit.CANNOTUSEMOUNTS.check(fieldLimit) && chr.getBuffedValue(MapleBuffStat.MONSTER_RIDING) != null) {
             chr.cancelEffectFromBuffStat(MapleBuffStat.MONSTER_RIDING);

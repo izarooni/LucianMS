@@ -4531,10 +4531,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
     }
 
     public void setRates() {
-        Calendar cal = Calendar.getInstance();
-        cal.setTimeZone(TimeZone.getTimeZone("GMT-8"));
         MapleWorld w = Server.getWorld(world);
-        int hr = cal.get(Calendar.HOUR_OF_DAY);
 
         expRate = w.getExpRate();
         mesoRate = w.getMesoRate();
