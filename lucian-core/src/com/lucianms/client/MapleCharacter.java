@@ -4152,7 +4152,66 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
         final long beginTimestamp = System.currentTimeMillis();
         try (Connection con = client.getWorldServer().getConnection()) {
             con.setAutoCommit(false);
-            try (PreparedStatement ps = con.prepareStatement("UPDATE characters SET level = ?, fame = ?, str = ?, dex = ?, luk = ?, `int` = ?, exp = ?, gachaexp = ?, hp = ?, mp = ?, maxhp = ?, maxmp = ?, sp = ?, ap = ?, gm = ?, skincolor = ?, gender = ?, job = ?, hair = ?, face = ?, map = ?, meso = ?, hpMpUsed = ?, spawnpoint = ?, party = ?, buddyCapacity = ?, messengerid = ?, messengerposition = ?, mountlevel = ?, mountexp = ?, mounttiredness= ?, equipslots = ?, useslots = ?, setupslots = ?, etcslots = ?,  monsterbookcover = ?, vanquisherStage = ?, dojoPoints = ?, lastDojoStage = ?, finishedDojoTutorial = ?, vanquisherKills = ?, matchcardwins = ?, matchcardlosses = ?, matchcardties = ?, omokwins = ?, omoklosses = ?, omokties = ?, dataString = ?, fishingpoints = ?, daily = ?, reborns = ?, eventpoints = ?, rebirthpoints = ?, occupation = ?, jumpquestpoints = ?, chattype = ?, name = ? WHERE id = ?", Statement.RETURN_GENERATED_KEYS)) {
+            try (PreparedStatement ps = con.prepareStatement("UPDATE characters\n" +
+                    "SET level                = ?,\n" +
+                    "    fame                 = ?,\n" +
+                    "    str                  = ?,\n" +
+                    "    dex                  = ?,\n" +
+                    "    luk                  = ?,\n" +
+                    "    `int`                = ?,\n" +
+                    "    exp                  = ?,\n" +
+                    "    gachaexp             = ?,\n" +
+                    "    hp                   = ?,\n" +
+                    "    mp                   = ?,\n" +
+                    "    maxhp                = ?,\n" +
+                    "    maxmp                = ?,\n" +
+                    "    sp                   = ?,\n" +
+                    "    ap                   = ?,\n" +
+                    "    gm                   = ?,\n" +
+                    "    skincolor            = ?,\n" +
+                    "    gender               = ?,\n" +
+                    "    job                  = ?,\n" +
+                    "    hair                 = ?,\n" +
+                    "    face                 = ?,\n" +
+                    "    map                  = ?,\n" +
+                    "    meso                 = ?,\n" +
+                    "    hpMpUsed             = ?,\n" +
+                    "    spawnpoint           = ?,\n" +
+                    "    party                = ?,\n" +
+                    "    buddyCapacity        = ?,\n" +
+                    "    messengerid          = ?,\n" +
+                    "    messengerposition    = ?,\n" +
+                    "    mountlevel           = ?,\n" +
+                    "    mountexp             = ?,\n" +
+                    "    mounttiredness       = ?,\n" +
+                    "    equipslots           = ?,\n" +
+                    "    useslots             = ?,\n" +
+                    "    setupslots           = ?,\n" +
+                    "    etcslots             = ?,\n" +
+                    "    monsterbookcover     = ?,\n" +
+                    "    vanquisherStage      = ?,\n" +
+                    "    dojoPoints           = ?,\n" +
+                    "    lastDojoStage        = ?,\n" +
+                    "    finishedDojoTutorial = ?,\n" +
+                    "    vanquisherKills      = ?,\n" +
+                    "    matchcardwins        = ?,\n" +
+                    "    matchcardlosses      = ?,\n" +
+                    "    matchcardties        = ?,\n" +
+                    "    omokwins             = ?,\n" +
+                    "    omoklosses           = ?,\n" +
+                    "    omokties             = ?,\n" +
+                    "    dataString           = ?,\n" +
+                    "    fishingpoints        = ?,\n" +
+                    "    daily                = ?,\n" +
+                    "    reborns              = ?,\n" +
+                    "    eventpoints          = ?,\n" +
+                    "    rebirthpoints        = ?,\n" +
+                    "    occupation           = ?,\n" +
+                    "    jumpquestpoints      = ?,\n" +
+                    "    chattype             = ?,\n" +
+                    "    `name`               = ?,\n" +
+                    "    msi_creations        = ?" +
+                    "WHERE id = ?")) {
                 ps.setInt(1, level);
                 ps.setInt(2, fame);
                 ps.setInt(3, str);
@@ -4170,8 +4229,9 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
                     sps.append(aRemainingSp);
                     sps.append(",");
                 }
-                String sp = sps.toString();
-                ps.setString(13, sp.substring(0, sp.length() - 1));
+                sps.setLength(sps.length() - 1);
+                ps.setString(13, sps.toString());
+                sps.setLength(0);
                 ps.setInt(14, remainingAp);
                 ps.setInt(15, gmLevel);
                 ps.setInt(16, skinColor.getId());
@@ -4250,17 +4310,16 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
                 ps.setInt(55, jumpQuestPoints);
                 ps.setInt(56, chatType.ordinal());
                 ps.setString(57, name);
-                ps.setInt(58, id);
-
+                ps.setInt(58, msiCreations);
+                ps.setInt(59, id);
                 int updateRows = ps.executeUpdate();
                 if (updateRows < 1) {
                     throw new RuntimeException("Character not in database (" + id + ")");
                 }
-
-                for (int i = 0; i < 3; i++) {
-                    if (pets[i] != null) {
-                        pets[i].saveToDb(con);
-                    }
+            }
+            for (int i = 0; i < 3; i++) {
+                if (pets[i] != null) {
+                    pets[i].saveToDb(con);
                 }
             }
 
