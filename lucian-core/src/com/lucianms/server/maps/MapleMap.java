@@ -634,13 +634,12 @@ public class MapleMap {
                     Pair<Integer, Integer> p = toKill.get(monster.getId());
                     if (p != null && p.right < p.left) { // don't exceed requirement variable
                         toKill.incrementRequirement(monster.getId(), 1); // increment progress
-                        chr.announce(MaplePacketCreator.earnTitleMessage(String.format("[%s] Monster killed '%s' [%d / %d]", data.getName(), monster.getName(), p.right, p.left)));
+                        if (!data.isSilentComplete()) {
+                            chr.announce(MaplePacketCreator.earnTitleMessage(String.format("[%s] Monster killed '%s' [%d / %d]", data.getName(), monster.getName(), p.right, p.left)));
+                        }
                         boolean checked = toKill.isFinished(); // store to local variable before updating
                         if (data.checkRequirements() && !checked) { // update checked; if requirement is finished and previously was not...
-                            chr.announce(MaplePacketCreator.getShowQuestCompletion(1));
-                            chr.announce(MaplePacketCreator.earnTitleMessage(String.format("Quest '%s' completed!", data.getName())));
-                            chr.announce(MaplePacketCreator.serverNotice(5, String.format("Quest '%s' completed!", data.getName())));
-
+                            data.announceCompletion(chr.getClient());
                         }
                     }
                 }

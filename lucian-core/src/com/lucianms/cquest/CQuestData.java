@@ -1,11 +1,12 @@
 package com.lucianms.cquest;
 
 import com.lucianms.client.MapleCharacter;
+import com.lucianms.client.MapleClient;
 import com.lucianms.constants.ItemConstants;
-import com.lucianms.server.MapleInventoryManipulator;
 import com.lucianms.cquest.requirement.CQuestItemRequirement;
 import com.lucianms.cquest.requirement.CQuestKillRequirement;
 import com.lucianms.cquest.reward.CQuestReward;
+import com.lucianms.server.MapleInventoryManipulator;
 import tools.MaplePacketCreator;
 
 import java.util.ArrayList;
@@ -20,11 +21,12 @@ public class CQuestData {
     private final int id;
     private final boolean daily;
     private final String name;
-    private boolean completed = false;
+    private boolean silentComplete;
+    private boolean completed;
     private long completion = -1; // timestamp
     private int preQuestId = -1;
-    private int[] preQuestIds = null; // backwards compatibility i want to die
-    private int minimumLevel = 0;
+    private int[] preQuestIds; // backwards compatibility i want to die
+    private int minimumLevel;
 
     private final CQuestKillRequirement toKill = new CQuestKillRequirement(); // monster kill requirements
     final CQuestItemRequirement toCollect = new CQuestItemRequirement(); // item collect requirements
@@ -74,10 +76,8 @@ public class CQuestData {
         the quest can be finished as soon as it's started
          */
         if (!silent && toKill.isEmpty()) {
-            if (checkRequirements()) { // requirements are met
-                player.announce(MaplePacketCreator.getShowQuestCompletion(1));
-                player.announce(MaplePacketCreator.earnTitleMessage(String.format("Quest '%s' completed!", getName())));
-                player.announce(MaplePacketCreator.serverNotice(5, String.format("Quest '%s' completed!", getName())));
+            if (!silentComplete && checkRequirements()) { // requirements are met
+                announceCompletion(player.getClient());
             }
         }
 
@@ -128,6 +128,17 @@ public class CQuestData {
     }
 
     /**
+     * should the user be notified when the complete is available to complete
+     */
+    public boolean isSilentComplete() {
+        return silentComplete;
+    }
+
+    public void setSilentComplete(boolean silentComplete) {
+        this.silentComplete = silentComplete;
+    }
+
+    /**
      * @return true if the quest is completed (i.e. completed and no longer in a state of "ongoing")
      */
     public boolean isCompleted() {
@@ -167,6 +178,12 @@ public class CQuestData {
 
     public CQuestItemRequirement getToCollect() {
         return toCollect;
+    }
+
+    public void announceCompletion(MapleClient client) {
+        client.announce(MaplePacketCreator.getShowQuestCompletion(1));
+        client.announce(MaplePacketCreator.earnTitleMessage(String.format("Quest '%s' completed!", getName())));
+        client.announce(MaplePacketCreator.serverNotice(5, String.format("Quest '%s' completed!", getName())));
     }
 
     /**

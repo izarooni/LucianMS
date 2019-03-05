@@ -190,15 +190,15 @@ ItemPickupEvent extends PacketEvent {
                                     this is check means the quest is finished. The quest completion notification should only
                                     happen once unless a progress variable drops below the requirement
                                      */
-                                getClient().announce(MaplePacketCreator.getShowQuestCompletion(1));
-                                getClient().announce(MaplePacketCreator.earnTitleMessage(String.format("Quest '%s' completed!", data.getName())));
-                                getClient().announce(MaplePacketCreator.serverNotice(5, String.format("Quest '%s' completed!", data.getName())));
+                                data.announceCompletion(getClient());
                             }
-                            CQuestItemRequirement.CQuestItem p = toLoot.get(mapitem.getItemId());
-                            if (p != null) {
-                                String name = ii.getName(mapitem.getItemId());
-                                name = (name == null) ? "NO-NAME" : name; // hmmm
-                                chr.announce(MaplePacketCreator.earnTitleMessage(String.format("[%s] Item Collection '%s' [%d / %d]", data.getName(), name, p.getProgress(), p.getRequirement())));
+                            if (!data.isSilentComplete()) {
+                                CQuestItemRequirement.CQuestItem p = toLoot.get(mapitem.getItemId());
+                                if (p != null) {
+                                    String name = ii.getName(mapitem.getItemId());
+                                    name = (name == null) ? "NO-NAME" : name; // hmmm
+                                    chr.announce(MaplePacketCreator.earnTitleMessage(String.format("[%s] Item Collection '%s' [%d / %d]", data.getName(), name, p.getProgress(), p.getRequirement())));
+                                }
                             }
                         }
                     }

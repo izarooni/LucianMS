@@ -26,12 +26,12 @@ import com.lucianms.client.MapleCharacter;
 import com.lucianms.client.MapleClient;
 import com.lucianms.client.MapleRing;
 import com.lucianms.client.inventory.*;
+import com.lucianms.constants.ItemConstants;
 import com.lucianms.cquest.CQuestData;
 import com.lucianms.cquest.requirement.CQuestItemRequirement;
-import com.lucianms.constants.ItemConstants;
+import com.lucianms.server.maps.MapleMapItem;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import com.lucianms.server.maps.MapleMapItem;
 import tools.MaplePacketCreator;
 
 import java.awt.*;
@@ -467,15 +467,15 @@ public class MapleInventoryManipulator {
                 this is check means the quest is finished. The quest completion notification should only
                 happen once unless a progress variable drops below the requirement
                  */
-                    c.announce(MaplePacketCreator.getShowQuestCompletion(1));
-                    c.announce(MaplePacketCreator.earnTitleMessage(String.format("Quest '%s' completed!", data.getName())));
-                    c.announce(MaplePacketCreator.serverNotice(5, String.format("Quest '%s' completed!", data.getName())));
+                    data.announceCompletion(c);
                 }
-                CQuestItemRequirement.CQuestItem qItem = toLoot.get(source.getItemId());
-                if (qItem != null) {
-                    String name = MapleItemInformationProvider.getInstance().getName(source.getItemId());
-                    name = (name == null) ? "NO-NAME" : name; // hmmm
-                    player.announce(MaplePacketCreator.earnTitleMessage(String.format("[%s] Item Collection '%s' [%d / %d]", data.getName(), name, qItem.getProgress(), qItem.getRequirement())));
+                if (!data.isSilentComplete()) {
+                    CQuestItemRequirement.CQuestItem qItem = toLoot.get(source.getItemId());
+                    if (qItem != null) {
+                        String name = MapleItemInformationProvider.getInstance().getName(source.getItemId());
+                        name = (name == null) ? "NO-NAME" : name; // hmmm
+                        player.announce(MaplePacketCreator.earnTitleMessage(String.format("[%s] Item Collection '%s' [%d / %d]", data.getName(), name, qItem.getProgress(), qItem.getRequirement())));
+                    }
                 }
             }
         }
@@ -529,15 +529,15 @@ public class MapleInventoryManipulator {
                 this is check means the quest is finished. The quest completion notification should only
                 happen once unless a progress variable drops below the requirement
                  */
-                    c.announce(MaplePacketCreator.getShowQuestCompletion(1));
-                    c.announce(MaplePacketCreator.earnTitleMessage(String.format("Quest '%s' completed!", data.getName())));
-                    c.announce(MaplePacketCreator.serverNotice(5, String.format("Quest '%s' completed!", data.getName())));
+                    data.announceCompletion(c);
                 }
-                CQuestItemRequirement.CQuestItem qItem = toLoot.get(source.getItemId());
-                if (qItem != null) {
-                    String name = MapleItemInformationProvider.getInstance().getName(source.getItemId());
-                    name = (name == null) ? "NO-NAME" : name; // hmmm
-                    player.announce(MaplePacketCreator.earnTitleMessage(String.format("[%s] Item Collection '%s' [%d / %d]", data.getName(), name, qItem.getProgress(), qItem.getRequirement())));
+                if (!data.isSilentComplete()) {
+                    CQuestItemRequirement.CQuestItem qItem = toLoot.get(source.getItemId());
+                    if (qItem != null) {
+                        String name = MapleItemInformationProvider.getInstance().getName(source.getItemId());
+                        name = (name == null) ? "NO-NAME" : name; // hmmm
+                        player.announce(MaplePacketCreator.earnTitleMessage(String.format("[%s] Item Collection '%s' [%d / %d]", data.getName(), name, qItem.getProgress(), qItem.getRequirement())));
+                    }
                 }
             }
         }
@@ -583,15 +583,15 @@ public class MapleInventoryManipulator {
                 this is check means the quest is finished. The quest completion notification should only
                 happen once unless a progress variable drops below the requirement
                  */
-                    c.announce(MaplePacketCreator.getShowQuestCompletion(1));
-                    c.announce(MaplePacketCreator.earnTitleMessage(String.format("Quest '%s' completed!", data.getName())));
-                    c.announce(MaplePacketCreator.serverNotice(5, String.format("Quest '%s' completed!", data.getName())));
+                    data.announceCompletion(c);
                 }
-                CQuestItemRequirement.CQuestItem qItem = toLoot.get(itemId);
-                if (qItem != null) {
-                    String name = ii.getName(itemId);
-                    name = (name == null) ? "NO-NAME" : name; // hmmm
-                    player.announce(MaplePacketCreator.earnTitleMessage(String.format("[%s] Item Collection '%s' [%d / %d]", data.getName(), name, qItem.getProgress(), qItem.getRequirement())));
+                if (!data.isSilentComplete()) {
+                    CQuestItemRequirement.CQuestItem qItem = toLoot.get(itemId);
+                    if (qItem != null) {
+                        String name = ii.getName(itemId);
+                        name = (name == null) ? "NO-NAME" : name; // hmmm
+                        player.announce(MaplePacketCreator.earnTitleMessage(String.format("[%s] Item Collection '%s' [%d / %d]", data.getName(), name, qItem.getProgress(), qItem.getRequirement())));
+                    }
                 }
             }
         }

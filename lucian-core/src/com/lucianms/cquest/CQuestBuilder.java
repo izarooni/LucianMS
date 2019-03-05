@@ -115,6 +115,8 @@ public class CQuestBuilder {
             // begin constructing custom quest data
             CQuestData qData = new CQuestData(questId, xml.getName(), daily);
 
+            qData.setSilentComplete(MapleDataTool.getInt(xml.getChildByPath("info/silent"), 0) == 1);
+
             if (pqdata.getType() == MapleDataType.STRING) {
                 String[] sp = MapleDataTool.getString(pqdata, "-1").split(",");
                 int[] pqids = new int[sp.length];
