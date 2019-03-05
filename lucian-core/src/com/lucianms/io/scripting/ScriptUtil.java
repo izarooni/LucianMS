@@ -1,10 +1,13 @@
 package com.lucianms.io.scripting;
 
-import com.lucianms.client.MapleClient;
+import jdk.nashorn.api.scripting.NashornScriptEngine;
 import jdk.nashorn.api.scripting.NashornScriptEngineFactory;
 import tools.Pair;
 
-import javax.script.*;
+import javax.script.Bindings;
+import javax.script.Invocable;
+import javax.script.ScriptContext;
+import javax.script.ScriptException;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
@@ -13,13 +16,14 @@ import java.util.Collection;
 
 public final class ScriptUtil {
 
-    public static Invocable eval(MapleClient client, String path, Collection<Pair<String, Object>> binds) throws IOException, ScriptException {
+    public static Invocable eval(String path, Collection<Pair<String, Object>> binds) throws IOException, ScriptException {
         path = "scripts/" + path;
         File file = new File(path);
         if (!file.exists()) {
             throw new FileNotFoundException("No script found for path " + path);
         }
-        ScriptEngine engine = new NashornScriptEngineFactory().getScriptEngine();
+        NashornScriptEngineFactory factory = new NashornScriptEngineFactory();
+        NashornScriptEngine engine = (NashornScriptEngine) factory.getScriptEngine();
         try (FileReader reader = new FileReader(file)) {
             if (binds != null) {
                 Bindings b = engine.createBindings();
@@ -30,15 +34,7 @@ public final class ScriptUtil {
             }
             engine.eval("load(\"nashorn:mozilla_compat.js\");");
             engine.eval(reader);
-            if (client != null) {
-                client.setEngine(path, engine);
-            }
-            return (Invocable) engine;
+            return engine;
         }
-    }
-
-    public static void removeScript(MapleClient client, String path) {
-        path = "scripts/ " + path;
-        client.removeEngine(path);
     }
 }

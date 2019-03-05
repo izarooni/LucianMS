@@ -52,7 +52,7 @@ public class ReactorScriptManager {
         ReactorActionManager rm = new ReactorActionManager(c, reactor);
         Invocable iv = null;
         try {
-            iv = ScriptUtil.eval(c, "reactor/" + reactor.getId() + ".js", Collections.singleton(new Pair<>("rm", rm)));
+            iv = ScriptUtil.eval("reactor/" + reactor.getId() + ".js", Collections.singleton(new Pair<>("rm", rm)));
         } catch (FileNotFoundException e) {
             rm.dropItems();
         } catch (IOException | ScriptException e) {
@@ -107,7 +107,7 @@ public class ReactorScriptManager {
     private static void touching(MapleClient c, MapleReactor reactor, boolean touching) {
         try {
             ReactorActionManager rm = new ReactorActionManager(c, reactor);
-            Invocable iv = ScriptUtil.eval(c, "reactor/" + reactor.getId() + ".js", Collections.singleton(new Pair<>("rm", rm)));
+            Invocable iv = ScriptUtil.eval("reactor/" + reactor.getId() + ".js", Collections.singleton(new Pair<>("rm", rm)));
             if (iv == null) {
                 LOGGER.warn("Unable to find script for reactor ID:{}, Name:'{}'", reactor.getId(), reactor.getName());
                 return;

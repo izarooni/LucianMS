@@ -54,7 +54,7 @@ public class NPCScriptManager {
 
             Invocable iv;
             try {
-                iv = ScriptUtil.eval(client, path, binds);
+                iv = ScriptUtil.eval(path, binds);
             } catch (FileNotFoundException e) {
                 dispose(client);
                 return;
@@ -123,7 +123,6 @@ public class NPCScriptManager {
             pair.left = null;
             pair.right = null;
         }
-        ScriptUtil.removeScript(client, path);
         System.gc();
     }
 

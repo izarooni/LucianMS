@@ -48,7 +48,6 @@ import tools.MapleAESOFB;
 import tools.MaplePacketCreator;
 import tools.Pair;
 
-import javax.script.ScriptEngine;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.InetAddress;
@@ -87,7 +86,6 @@ public class MapleClient {
     private long lastPong;
     private int gmlevel;
     private Set<String> macs = new HashSet<>();
-    private Map<String, ScriptEngine> engines = new HashMap<>();
     private byte characterSlots = 3;
     private byte loginattempt = 0;
     private String pin = null;
@@ -911,18 +909,6 @@ public class MapleClient {
 
     public int getGMLevel() {
         return gmlevel;
-    }
-
-    public void setEngine(String name, ScriptEngine e) {
-        engines.put(name, e);
-    }
-
-    public ScriptEngine getEngine(String name) {
-        return engines.get(name);
-    }
-
-    public void removeEngine(String name) {
-        engines.remove(name);
     }
 
     public NPCConversationManager getCM() {

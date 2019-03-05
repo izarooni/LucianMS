@@ -41,7 +41,7 @@ public class EventManager extends GenericEvent {
         this.scriptName = scriptName;
 
         try {
-            invocable = ScriptUtil.eval(null, "event/" + scriptName + ".js", Collections.singletonList(new Pair<>("em", this)));
+            invocable = ScriptUtil.eval("event/" + scriptName + ".js", Collections.singletonList(new Pair<>("em", this)));
         } catch (IOException | ScriptException e) {
             LOGGER.error("Unable to eval script {}", scriptName, e);
         }

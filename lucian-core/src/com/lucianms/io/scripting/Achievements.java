@@ -53,7 +53,7 @@ public class Achievements {
             invocables = new ArrayList<>(files.length);
             for (File file : files) {
                 try {
-                    Invocable iv = ScriptUtil.eval(null, "achievements/" + file.getName(), Collections.emptyList());
+                    Invocable iv = ScriptUtil.eval("achievements/" + file.getName(), Collections.emptyList());
                     String name = (String) iv.invokeFunction("getName");
                     ArrayList<String> rr = new ArrayList<>();
                     iv.invokeFunction("readableRewards", rr);

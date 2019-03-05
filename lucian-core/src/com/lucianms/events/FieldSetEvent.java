@@ -6,7 +6,7 @@ public class FieldSetEvent extends PacketEvent {
 
     @Override
     public boolean inValidState() {
-        return true;
+        return getClient().isLoggedIn() && getClient().getPlayer() != null;
     }
 
     @Override

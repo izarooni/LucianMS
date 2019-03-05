@@ -89,9 +89,9 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
     private static int[] ariantroomslot = new int[3];
     private static int FRECEIVAL_ITEM = 2022323;
 
-    private byte pendantExp = 0, lastmobcount = 0;
+    private byte pendantExp, lastmobcount;
 
-    private short combocounter = 0;
+    private short combocounter;
 
     //region integers
     private int world;
@@ -106,20 +106,20 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
     private int initialSpawnPoint;
     private int mapid;
     private int gender;
-    private int currentPage, currentType = 0, currentTab = 1;
+    private int currentPage, currentType, currentTab = 1;
     private int chair;
     private int itemEffect;
     private int guildid, guildrank, allianceRank;
     private int messengerposition = 4;
-    private int slots = 0;
+    private int slots;
     private int energybar;
     private int gmLevel;
-    private int ci = 0;
+    private int ci;
     private int familyId;
     private int bookCover;
-    private int markedMonster = 0;
-    private int battleshipHp = 0;
-    private int mesosTraded = 0;
+    private int markedMonster;
+    private int battleshipHp;
+    private int mesosTraded;
     private int possibleReports = 10;
     private int dojoPoints, vanquisherStage, dojoStage, dojoEnergy, vanquisherKills;
     private int warpToId;
@@ -127,43 +127,44 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
     private int omokwins, omokties, omoklosses, matchcardwins, matchcardties, matchcardlosses;
     private int married;
     private int merchantmeso;
-    private int linkedLevel = 0;
+    private int linkedLevel;
     private int donorLevel;
     private int hidingLevel = 1;
 
     //region points
-    private int eventPoints = 0;
-    private int rebirthPoints = 0;
-    private int fishingPoints = 0;
-    private int jumpQuestPoints = 0;
+    private int eventPoints;
+    private int rebirthPoints;
+    private int fishingPoints;
+    private int jumpQuestPoints;
     //endregion
 
-    private int rebirths = 0;
+    private int msiCreations;
+    private int rebirths;
     private int goal, current;
     private int killType;
-    private int riceCakes = 0;
+    private int riceCakes;
     private transient int localmaxhp, localmaxmp, localstr, localdex, localluk, localint_, magic, watk;
     private int[] remainingSp = new int[10];
     //endregion
 
-    private long lastEmergency = 0;
-    private long immortalTimestamp = 0;
-    private long portaldelay = 0, lastcombo = 0;
+    private long lastEmergency;
+    private long immortalTimestamp;
+    private long portaldelay, lastcombo;
     private long dojoFinish, lastfametime, lastHealed;
     private long createDate;
-    private boolean muted = false;
-    private boolean debug = false;
-    private boolean isbanned = false;
-    private boolean autorebirthing = false;
-    private boolean eyeScannersEquiped = false;
+    private boolean muted;
+    private boolean debug;
+    private boolean isbanned;
+    private boolean autorebirthing;
+    private boolean eyeScannersEquiped;
     private boolean finishedDojoTutorial, dojoParty;
-    private boolean hidden, canDoor = true, berserk, hasMerchant, whiteChat = false;
+    private boolean hidden, canDoor = true, berserk, hasMerchant, whiteChat;
 
-    private String name = null;
-    private String search = null;
-    private String chalktext = null;
-    private String dataString = null;
-    private String linkedName = null;
+    private String name;
+    private String search;
+    private String chalktext;
+    private String dataString;
+    private String linkedName;
 
     private AtomicInteger exp = new AtomicInteger();
     private AtomicInteger meso = new AtomicInteger();
@@ -195,13 +196,13 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
     private HashMap<Integer, MapleCoolDownValueHolder> coolDowns = new HashMap<>(50);
     //endregion
 
-    private BuddyList buddylist = null;
-    private MapleFamily family = null;
-    private MapleClient client = null;
-    private HiredMerchant hiredMerchant = null;
-    private MapleGuildCharacter mgc = null;
-    private MaplePartyCharacter mpc = null;
-    private EventInstanceManager eventInstance = null;
+    private BuddyList buddylist;
+    private MapleFamily family;
+    private MapleClient client;
+    private HiredMerchant hiredMerchant;
+    private MapleGuildCharacter mgc;
+    private MaplePartyCharacter mpc;
+    private EventInstanceManager eventInstance;
 
     private Task[] fullnessSchedule = new Task[3];
     private MaplePet[] pets = new MaplePet[3];
@@ -210,15 +211,15 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
     private MapleInventory[] inventory = new MapleInventory[MapleInventoryType.values().length];
 
     private MapleJob job = MapleJob.BEGINNER;
-    private MapleMap map = null, dojoMap = null;
-    private MapleShop shop = null;
-    private MapleParty party = null;
-    private MapleTrade trade = null;
-    private MapleStorage storage = null;
-    private MapleMount maplemount = null;
-    private MapleMiniGame miniGame = null;
-    private MapleMessenger messenger = null;
-    private MaplePlayerShop playerShop = null;
+    private MapleMap map, dojoMap;
+    private MapleShop shop;
+    private MapleParty party;
+    private MapleTrade trade;
+    private MapleStorage storage;
+    private MapleMount maplemount;
+    private MapleMiniGame miniGame;
+    private MapleMessenger messenger;
+    private MaplePlayerShop playerShop;
     private MapleSkinColor skinColor = MapleSkinColor.NORMAL;
     private SavedLocation[] savedLocations = new SavedLocation[SavedLocationType.values().length];
 
@@ -228,42 +229,42 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
     private EnumMap<MapleDisease, DiseaseValueHolder> diseases = new EnumMap<>(MapleDisease.class);
     private EnumMap<MapleBuffStat, MapleBuffStatValueHolder> effects = new EnumMap<>(MapleBuffStat.class);
 
-    private Task recoveryTask = null;
-    private Task hpDecreaseTask = null;
-    private Task expirationTask = null;
-    private Task spiritPendantTask = null; // 1122017
-    private Task dragonBloodTask = null;
-    private Task beholderHealingTask = null;
-    private Task beholderBuffTask = null;
-    private Task berserkTask = null;
-    private Task fishingTask = null;
+    private Task recoveryTask;
+    private Task hpDecreaseTask;
+    private Task expirationTask;
+    private Task spiritPendantTask; // 1122017
+    private Task dragonBloodTask;
+    private Task beholderHealingTask;
+    private Task beholderBuffTask;
+    private Task berserkTask;
+    private Task fishingTask;
 
     private Cheater cheater = new Cheater();
     private CashShop cashshop;
-    private MapleRing marriageRing = null;
-    private PartyQuest partyQuest = null;
+    private MapleRing marriageRing;
+    private PartyQuest partyQuest;
     private MonsterBook monsterbook;
 
-    private Arcade arcade = null;
+    private Arcade arcade;
     private ChatType chatType = ChatType.NORMAL;
-    private Timestamp daily = null;
-    private FakePlayer fakePlayer = null;
-    private MapleDragon dragon = null;
-    private PlayerTitles title = null;
+    private Timestamp daily;
+    private FakePlayer fakePlayer;
+    private MapleDragon dragon;
+    private PlayerTitles title;
     private Relationship relationship = new Relationship();
-    private RPSGame RPSGame = null;
-    private Occupation occupation = null;
+    private RPSGame RPSGame;
+    private Occupation occupation;
     private final SpamTracker spamTracker = new SpamTracker();
 
     // EVENTS
-    private byte team = 0;
+    private byte team;
     private MapleFitness fitness;
     private MapleOla ola;
     private long snowballattack;
 
     // Monster Carnival
-    private int carnivalPoints = 0;
-    private int obtainedcp = 0;
+    private int carnivalPoints;
+    private int obtainedcp;
 
     public MapleCharacter() {
         setStance(0);
@@ -5477,6 +5478,14 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
 
     public void writeDaily() {
         this.daily = new Timestamp(System.currentTimeMillis());
+    }
+
+    public int getMsiCreations() {
+        return msiCreations;
+    }
+
+    public void setMsiCreations(int msiCreations) {
+        this.msiCreations = msiCreations;
     }
 
     public int getRebirths() {

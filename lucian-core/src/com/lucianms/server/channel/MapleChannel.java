@@ -73,7 +73,9 @@ public final class MapleChannel {
 
     public final void shutdown() {
         try {
-            getPlayerStorage().forEach(MapleCharacter::saveToDB);
+            ArrayList<MapleCharacter> arrPlayers = new ArrayList<>(getPlayerStorage().values());
+            arrPlayers.forEach(MapleCharacter::saveToDB);
+            arrPlayers.clear();
             if (eventScriptManager != null) {
                 eventScriptManager.close();
             }

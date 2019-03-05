@@ -23,10 +23,10 @@ package com.lucianms.io.scripting.quest;
 
 import com.lucianms.client.MapleClient;
 import com.lucianms.client.MapleQuestStatus;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import com.lucianms.io.scripting.ScriptUtil;
 import com.lucianms.server.quest.MapleQuest;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import tools.Pair;
 
 import javax.script.Invocable;
@@ -60,7 +60,7 @@ public class QuestScriptManager {
             }
             QuestActionManager qm = new QuestActionManager(client, questId, npc, true);
             Collection<Pair<String, Object>> binds = Collections.singletonList(new Pair<>("qm", qm));
-            Invocable iv = ScriptUtil.eval(client, "quest/" + questId + ".js", binds);
+            Invocable iv = ScriptUtil.eval("quest/" + questId + ".js", binds);
             if (iv == null) {
                 LOGGER.warn("No script for quest {}", questId);
                 qm.dispose();
@@ -98,7 +98,7 @@ public class QuestScriptManager {
             if (storage.containsKey(client)) {
                 return;
             }
-            Invocable iv = ScriptUtil.eval(client, "quest/" + questid + ".js", Collections.singletonList(new Pair<>("qm", qm)));
+            Invocable iv = ScriptUtil.eval("quest/" + questid + ".js", Collections.singletonList(new Pair<>("qm", qm)));
             storage.put(client, new Pair<>(iv, qm));
             if (iv == null) {
                 qm.dispose();
@@ -125,7 +125,6 @@ public class QuestScriptManager {
 
     public static void dispose(QuestActionManager qm, MapleClient client) {
         storage.remove(client);
-        ScriptUtil.removeScript(client, "quest/" + qm.getQuest() + ".js");
     }
 
     public static void dispose(MapleClient client) {

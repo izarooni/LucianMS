@@ -239,14 +239,14 @@ public class HGMCommands {
                 npc.setF(player.isFacingLeft() ? 0 : 1);
                 npc.setScript(script);
                 npc.setFh(0);
-                if (permanent) {
-                    for (MapleChannel channel : player.getClient().getWorldServer().getChannels()) {
-                        MapleMap map = channel.getMap(player.getMapId());
-                        if (map != null) {
-                            map.addMapObject(npc);
-                            map.broadcastMessage(MaplePacketCreator.spawnNPC(npc));
-                        }
+                for (MapleChannel channel : player.getClient().getWorldServer().getChannels()) {
+                    MapleMap map = channel.getMap(player.getMapId());
+                    if (map != null) {
+                        map.addMapObject(npc);
+                        map.broadcastMessage(MaplePacketCreator.spawnNPC(npc));
                     }
+                }
+                if (permanent) {
                     try (Connection con = client.getWorldServer().getConnection();
                          PreparedStatement ps = con.prepareStatement("INSERT INTO spawns (idd, f, fh, cy, rx0, rx1, type , x, mid, mobtime, script) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)")) {
                         ps.setInt(1, npcId);

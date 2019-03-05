@@ -10,7 +10,7 @@ import com.lucianms.features.auto.GAutoEventManager;
 import com.lucianms.features.scheduled.SAutoEvent;
 import com.lucianms.io.scripting.Achievements;
 import com.lucianms.io.scripting.event.EventManager;
-import com.lucianms.io.scripting.map.MapScriptManager;
+import com.lucianms.io.scripting.map.FieldScriptExecutor;
 import com.lucianms.io.scripting.portal.PortalScriptManager;
 import com.lucianms.io.scripting.reactor.ReactorScriptManager;
 import com.lucianms.server.MapleInventoryManipulator;
@@ -104,7 +104,7 @@ public class AdministratorCommands {
                         player.sendMessage("Drop data cache reloaded");
                         break;
                     case "mapscripts":
-                        MapScriptManager.getInstance().clearCache();
+                        FieldScriptExecutor.clearCache();
                         player.sendMessage("Map scripts cache cleared");
                         break;
                     case "cquests":

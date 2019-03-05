@@ -38,7 +38,7 @@ import com.lucianms.cquest.requirement.CQuestItemRequirement;
 import com.lucianms.cquest.requirement.CQuestKillRequirement;
 import com.lucianms.events.gm.*;
 import com.lucianms.io.scripting.event.EventInstanceManager;
-import com.lucianms.io.scripting.map.MapScriptManager;
+import com.lucianms.io.scripting.map.FieldScriptExecutor;
 import com.lucianms.lang.GProperties;
 import com.lucianms.scheduler.Task;
 import com.lucianms.scheduler.TaskExecutor;
@@ -1309,23 +1309,25 @@ public class MapleMap {
         characters.put(chr.getObjectId(), chr);
 
         chr.setMapId(mapid);
-        if (onFirstUserEnter.length() != 0 && !chr.hasEntered(onFirstUserEnter, mapid) && MapScriptManager.getInstance().scriptExists(onFirstUserEnter, true)) {
+
+        //region script processing
+        if (onFirstUserEnter.length() != 0 && !chr.hasEntered(onFirstUserEnter, mapid)) {
             if (getAllPlayer().size() <= 1) {
                 chr.enteredScript(onFirstUserEnter, mapid);
-                MapScriptManager.getInstance().getMapScript(chr.getClient(), onFirstUserEnter, true);
+                FieldScriptExecutor.executeFirstEnter(chr.getClient(), onFirstUserEnter);
             }
         }
         if (onUserEnter != null && !onUserEnter.isEmpty()) {
             if (onUserEnter.equals("cygnusTest") && (mapid < 913040000 || mapid > 913040006)) {
                 chr.saveLocation("INTRO");
             }
-            MapScriptManager.getInstance().getMapScript(chr.getClient(), onUserEnter, false);
-        } else {
-            String strMapID = Integer.toString(mapid);
-            if (MapScriptManager.getInstance().scriptExists(strMapID, false)) {
-                MapScriptManager.getInstance().getMapScript(chr.getClient(), strMapID, false);
-            }
+            FieldScriptExecutor.executeEnter(chr.getClient(), onUserEnter);
         }
+
+        String strMapID = Integer.toString(mapid);
+        FieldScriptExecutor.executeEnter(chr.getClient(), strMapID);
+        //endregion
+
         if (FieldLimit.CANNOTUSEMOUNTS.check(fieldLimit) && chr.getBuffedValue(MapleBuffStat.MONSTER_RIDING) != null) {
             chr.cancelEffectFromBuffStat(MapleBuffStat.MONSTER_RIDING);
             chr.cancelBuffStats(MapleBuffStat.MONSTER_RIDING);

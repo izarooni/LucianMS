@@ -4,9 +4,9 @@ import com.lucianms.client.MapleCharacter;
 import com.lucianms.client.MapleClient;
 import com.lucianms.client.SpamTracker;
 import com.lucianms.io.scripting.ScriptUtil;
+import com.lucianms.server.MaplePortal;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import com.lucianms.server.MaplePortal;
 
 import javax.script.Invocable;
 import javax.script.ScriptException;
@@ -32,7 +32,7 @@ public class PortalScriptManager {
             return scripts.get(script);
         }
         try {
-            Invocable iv = ScriptUtil.eval(client, "portal/" + script + ".js", Collections.emptyList());
+            Invocable iv = ScriptUtil.eval("portal/" + script + ".js", Collections.emptyList());
             return scripts.put(script, iv);
         } catch (FileNotFoundException e) {
             LOGGER.warn("No portal script found '{}'", script);
