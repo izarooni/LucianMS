@@ -112,7 +112,6 @@ public class Server {
         }
 
         TaskExecutor.prestartAllCoreThreads();
-        Runtime.getRuntime().addShutdownHook(new Thread(shutdown()));
 
         timeToTake = System.currentTimeMillis();
         MapleItemInformationProvider.getInstance().getAllItems();
@@ -434,16 +433,5 @@ public class Server {
 
     public static List<MapleWorld> getWorlds() {
         return worlds;
-    }
-
-    private static Runnable shutdown() {// only once :D
-        return new Runnable() {
-            @Override
-            public void run() {
-                LOGGER.info("Shutdown hook invoked");
-                getWorlds().forEach(MapleWorld::shutdown);
-                LOGGER.info("Worlds & channels are now offline");
-            }
-        };
     }
 }

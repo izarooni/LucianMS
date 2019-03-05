@@ -116,6 +116,8 @@ public class LChannelMain {
             @Override
             public void run() {
                 LOGGER.info("Running shutdown hook...");
+                TaskExecutor.getExecutor().shutdownNow();
+                LOGGER.info("Task executor shutdown");
                 for (MapleWorld world : Server.getWorlds()) {
                     for (MapleChannel channel : world.getChannels()) {
                         Iterator<MapleCharacter> iter = channel.getPlayerStorage().values().iterator();
@@ -124,6 +126,7 @@ public class LChannelMain {
                             player.saveToDB();
                             iter.remove();
                         }
+                        LOGGER.info("Saved players");
                         try {
                             channel.getServerHandler().getDiscardServer().close();
                             LOGGER.info("World {} Channel {} discard server closed", world.getId(), channel.getId());
@@ -135,6 +138,7 @@ public class LChannelMain {
 
                 try {
                     communicationsHandler.close();
+                    LOGGER.info("Inter server closed");
                 } catch (Exception e) {
                     LOGGER.error("Failed to close Netty socket", e);
                 }

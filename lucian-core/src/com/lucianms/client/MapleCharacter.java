@@ -4210,7 +4210,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
                     "    jumpquestpoints      = ?,\n" +
                     "    chattype             = ?,\n" +
                     "    `name`               = ?,\n" +
-                    "    msi_creations        = ?" +
+                    "    msi_creations        = ?\n" +
                     "WHERE id = ?")) {
                 ps.setInt(1, level);
                 ps.setInt(2, fame);
