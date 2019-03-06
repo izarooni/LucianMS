@@ -32,7 +32,6 @@ public final class ScriptUtil {
                 }
                 engine.setBindings(b, ScriptContext.ENGINE_SCOPE);
             }
-            engine.eval("load(\"nashorn:mozilla_compat.js\");");
             engine.eval(reader);
             return engine;
         }

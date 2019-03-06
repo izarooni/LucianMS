@@ -87,10 +87,7 @@ public class EventManager extends GenericEvent {
             public void run() {
                 try {
                     getInvocable().invokeFunction(function, eim);
-                } catch (ScriptException e) {
-                    String message = e.getMessage();
-                    LOGGER.error("Unable to invoke function {} in script {}", function, scriptName, message.contains("ReferenceError") ? e.getMessage() : e);
-                } catch (NoSuchMethodException e) {
+                } catch (ScriptException | NoSuchMethodException e) {
                     LOGGER.error("Unable to invoke function {} in script {}", function, scriptName, e);
                 }
             }
@@ -104,7 +101,7 @@ public class EventManager extends GenericEvent {
                 try {
                     getInvocable().invokeFunction(function, args);
                 } catch (ScriptException | NoSuchMethodException e) {
-                    LOGGER.error("Unable to invoke function {} in script {}", function, scriptName, e);
+                    LOGGER.error("Unable to invoke function with varargs {} in script {}", function, scriptName, e);
                 }
             }
         }, delay);
@@ -116,7 +113,7 @@ public class EventManager extends GenericEvent {
                 try {
                     getInvocable().invokeFunction(function, (Object) null);
                 } catch (ScriptException | NoSuchMethodException e) {
-                    LOGGER.error("Unable to invoke function {} in script {}", function, scriptName, e);
+                    LOGGER.error("Unable to invoke function at timestamp {} in script {}", function, scriptName, e);
                 }
             }
         }, timestamp - System.currentTimeMillis());

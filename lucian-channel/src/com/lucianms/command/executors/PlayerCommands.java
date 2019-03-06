@@ -336,17 +336,6 @@ public class PlayerCommands {
         } else if (command.equals("home")) {
             player.saveLocation(SavedLocationType.FREE_MARKET.name());
             player.changeMap(ServerConstants.HOME_MAP);
-        } else if (command.equals("serverinfo")) {
-            // why is this a command, seriously?
-            player.dropMessage("Version: 83");
-            player.dropMessage("Rates: 10x | 10x | 2x");
-            player.dropMessage("Owner: Venem");
-            player.dropMessage("Developers: izarooni");
-            player.dropMessage("Staff: Kill | Evan | Joey | Jackie | Luckedy | Bryan");
-            player.dropMessage("Home Command: @home or @go fm");
-            player.dropMessage("Main Website: http://lucianms.com");
-            player.dropMessage("Voting resets every 24th hours!");
-            player.dropMessage("Have Fun and consider to donate for more customs!");
         } else if (command.equals("online")) {
             StringBuilder sb = new StringBuilder();
             for (MapleChannel channel : client.getWorldServer().getChannels()) {
