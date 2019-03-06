@@ -74,7 +74,7 @@ public class PlayerLoginEvent extends PacketEvent {
             for (MapleChannel ch : getClient().getWorldServer().getChannels()) {
                 MapleCharacter found = ch.getPlayerStorage().get(p.getLeft());
                 if (found != null) {
-                    found.getClient().disconnect(false);
+                    found.getClient().disconnect(true);
                     break;
                 }
             }

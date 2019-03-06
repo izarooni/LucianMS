@@ -1,7 +1,6 @@
 package com.lucianms.events;
 
 import com.lucianms.nio.receive.MaplePacketReader;
-import com.lucianms.events.PacketEvent;
 import tools.MaplePacketCreator;
 
 /**
@@ -23,7 +22,7 @@ public class AccountToSResultEvent extends PacketEvent {
 
     @Override
     public Object onPacket() {
-        if (accepted && getClient().finishLogin() == 0) {
+        if (accepted) {
             getClient().announce(MaplePacketCreator.getAuthSuccess(getClient()));
         } else {
             getClient().announce(MaplePacketCreator.getLoginFailed(9));

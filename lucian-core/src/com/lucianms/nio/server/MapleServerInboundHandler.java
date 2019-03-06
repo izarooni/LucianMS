@@ -125,13 +125,15 @@ public class MapleServerInboundHandler extends ChannelInboundHandlerAdapter {
             PacketEvent packetEvent = event.getDeclaredConstructor().newInstance();
             try {
                 packetEvent.setClient(client);
-                packetEvent.processInput(reader);
-                MapleCharacter player = client.getPlayer();
-                if (player != null) {
-                    player.getGenericEvents().forEach(g -> g.onPacketEvent(packetEvent));
-                }
-                if (!packetEvent.isCanceled()) {
-                    packetEvent.onPacket();
+                if (packetEvent.inValidState()) {
+                    packetEvent.processInput(reader);
+                    MapleCharacter player = client.getPlayer();
+                    if (player != null) {
+                        player.getGenericEvents().forEach(g -> g.onPacketEvent(packetEvent));
+                    }
+                    if (!packetEvent.isCanceled()) {
+                        packetEvent.onPacket();
+                    }
                 }
             } catch (Throwable t) {
                 if (!packetEvent.exceptionCaught(t)) {

@@ -352,17 +352,6 @@ public class MapleClient {
         }
     }
 
-    public int finishLogin() {
-        synchronized (MapleClient.class) {
-            if (getLoginState() > LOGIN_NOTLOGGEDIN) { // 0 = LOGIN_NOTLOGGEDIN, 1= LOGIN_SERVER_TRANSITION, 2 = LOGIN_LOGGEDIN
-                loggedIn = false;
-                return 7;
-            }
-            updateLoginState(LOGIN_LOGGEDIN);
-        }
-        return 0;
-    }
-
     public String getPin() {
         return pin;
     }
@@ -419,7 +408,6 @@ public class MapleClient {
     }
 
     public int login(String login, String pwd) {
-//        loginattempt++;
         int loginok = 5;
         try (Connection con = Server.getConnection()) {
             try (PreparedStatement ps = con.prepareStatement("SELECT id, password, salt, gender, banned, gm, pin, pic, characterslots, tos, ip FROM accounts WHERE name = ?")) {
@@ -440,10 +428,7 @@ public class MapleClient {
                         String passhash = rs.getString("password");
                         String salt = rs.getString("salt");
                         byte tos = rs.getByte("tos");
-                        if (getLoginState() > LOGIN_NOTLOGGEDIN) { // already loggedin
-                            loggedIn = false;
-                            loginok = 7;
-                        } else if (pwd.equals(passhash) || checkHash(passhash, "SHA-1", pwd) || checkHash(passhash, "SHA-512", pwd + salt)) {
+                        if (pwd.equals(passhash) || checkHash(passhash, "SHA-1", pwd) || checkHash(passhash, "SHA-512", pwd + salt)) {
                             if (tos == 0) {
                                 loginok = 23;
                             } else {

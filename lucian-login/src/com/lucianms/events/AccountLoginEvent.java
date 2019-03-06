@@ -1,6 +1,7 @@
 package com.lucianms.events;
 
 import com.lucianms.Whitelist;
+import com.lucianms.client.MapleClient;
 import com.lucianms.nio.receive.MaplePacketReader;
 import com.lucianms.server.Server;
 import org.slf4j.Logger;
@@ -42,39 +43,39 @@ public class AccountLoginEvent extends PacketEvent {
 
     @Override
     public Object onPacket() {
-        getClient().setAccountName(username);
-        int loginResult = getClient().login(username, password);
+        MapleClient client = getClient();
+        client.setAccountName(username);
+        int loginResult = client.login(username, password);
         if (loginResult == 0 && Server.getConfig().getBoolean("WhitelistEnabled")) {
-            if (!Whitelist.hasAccount(getClient().getAccID())) {
-                LOGGER.warn("Attempted non-whitelist account login username: '{}' , accountID: '{}'", username, getClient().getAccID());
-                getClient().announce(MaplePacketCreator.getLoginFailed(7));
-                getClient().announce(MaplePacketCreator.serverNotice(1, "The server is in whitelist mode! Only certain users will have access to the game right now."));
+            if (!Whitelist.hasAccount(client.getAccID())) {
+                LOGGER.warn("Attempted non-whitelist account login username: '{}' , accountID: '{}'", username, client.getAccID());
+                client.announce(MaplePacketCreator.getLoginFailed(7));
+                client.announce(MaplePacketCreator.serverNotice(1, "The server is in whitelist mode! Only certain users will have access to the game right now."));
                 return null;
             }
         }
 
         //region ban checks
-        if (getClient().hasBannedIP() || getClient().hasBannedMac()) {
-            getClient().announce(MaplePacketCreator.getLoginFailed(3));
+        if (client.hasBannedIP() || client.hasBannedMac()) {
+            client.announce(MaplePacketCreator.getLoginFailed(3));
             return null;
         }
-        Calendar tempban = getClient().getTempBanCalendar();
+        Calendar tempban = client.getTempBanCalendar();
         if (tempban != null) {
             if (tempban.getTimeInMillis() > System.currentTimeMillis()) {
-                getClient().announce(MaplePacketCreator.getTempBan(tempban.getTimeInMillis(), getClient().getGReason()));
+                client.announce(MaplePacketCreator.getTempBan(tempban.getTimeInMillis(), client.getGReason()));
                 return null;
             }
         }
         //endregion
 
         if (loginResult == 3) {
-            getClient().announce(MaplePacketCreator.getPermBan(getClient().getGReason()));
+            client.announce(MaplePacketCreator.getPermBan(client.getGReason()));
         } else if (loginResult != 0) {
-            getClient().announce(MaplePacketCreator.getLoginFailed(loginResult));
-        } else if (getClient().finishLogin() == 0) {
-            getClient().announce(MaplePacketCreator.getAuthSuccess(getClient()));
+            client.announce(MaplePacketCreator.getLoginFailed(loginResult));
         } else {
-            getClient().announce(MaplePacketCreator.getLoginFailed(7));
+            getClient().updateLoginState(MapleClient.LOGIN_LOGGEDIN);
+            client.announce(MaplePacketCreator.getAuthSuccess(client));
         }
         return null;
     }

@@ -63,7 +63,7 @@ public abstract class PacketEvent implements Cleaner.Cleanable {
     }
 
     public boolean inValidState() {
-        return client.isLoggedIn();
+        return client != null && client.isLoggedIn();
     }
 
     public boolean exceptionCaught(Throwable t) {
