@@ -104,6 +104,10 @@ public final class MapleChannel {
         }
     }
 
+    public boolean isMapLoaded(int mapID) {
+        return maps.get(mapID) != null;
+    }
+
     public Collection<MapleMap> getMaps() {
         return maps.values();
     }

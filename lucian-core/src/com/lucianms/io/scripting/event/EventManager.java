@@ -16,7 +16,6 @@ import tools.Pair;
 
 import javax.script.Invocable;
 import javax.script.ScriptException;
-import java.io.IOException;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -42,8 +41,8 @@ public class EventManager extends GenericEvent {
 
         try {
             invocable = ScriptUtil.eval("event/" + scriptName + ".js", Collections.singletonList(new Pair<>("em", this)));
-        } catch (IOException | ScriptException e) {
-            LOGGER.error("Unable to eval script {}", scriptName, e);
+        } catch (Exception e) {
+            LOGGER.error("Failed to compile script '{}'", scriptName, e);
         }
     }
 
