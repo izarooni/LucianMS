@@ -12,6 +12,7 @@ import com.lucianms.server.maps.HiredMerchant;
 import com.lucianms.server.maps.MapleMap;
 import com.lucianms.server.world.MapleParty;
 import com.lucianms.server.world.MaplePartyCharacter;
+import com.lucianms.server.world.MapleWorld;
 import org.apache.commons.io.FilenameUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -133,6 +134,10 @@ public final class MapleChannel {
 
     public int getWorld() {
         return world;
+    }
+
+    public MapleWorld getWorldServer() {
+        return Server.getWorld(getWorld());
     }
 
     public void addPlayer(MapleCharacter chr) {

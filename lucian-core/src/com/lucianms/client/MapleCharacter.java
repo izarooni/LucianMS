@@ -4983,7 +4983,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
 
     @Override
     public String toString() {
-        return name;
+        return String.format("MapleCharacter{accountid=%d, id=%d, name='%s'}", accountid, id, name);
     }
 
     @Override
