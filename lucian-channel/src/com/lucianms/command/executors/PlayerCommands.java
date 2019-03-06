@@ -340,13 +340,19 @@ public class PlayerCommands {
             StringBuilder sb = new StringBuilder();
             for (MapleChannel channel : client.getWorldServer().getChannels()) {
                 ConcurrentMapStorage<Integer, MapleCharacter> storage = channel.getPlayerStorage();
-                sb.append("#echannel ").append(channel.getId()).append(" - ").append(storage.size()).append(" players#n\r\n");
+                sb.append("#echannel ").append(channel.getId()).append(" - ");
+                int playerCount = 0;
+                StringBuilder usernames = new StringBuilder();
                 for (MapleCharacter players : storage.values()) {
                     if (!players.isGM()) {
-                        sb.append(players.getName()).append(" ");
+                        playerCount++;
+                        usernames.append(players.getName()).append(" ");
                     }
                 }
+                sb.append(playerCount).append(" players#n\r\n");
+                sb.append(usernames.toString());
                 sb.append("\r\n");
+                usernames.setLength(0);
             }
             client.announce(MaplePacketCreator.getNPCTalk(10200, (byte) 0, sb.toString(), "00 00", (byte) 0));
             sb.setLength(0);
