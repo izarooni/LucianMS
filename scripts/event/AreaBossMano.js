@@ -26,7 +26,7 @@
 	ThreeStep (based on xQuasar's King Clang spawner)
 **/
 
-importPackage(Packages.com.lucianms.client);
+const nFieldID = 104000400;
 
 function init() {
     scheduleNew();
@@ -42,17 +42,19 @@ function cancelSchedule() {
 }
 
 function start() {
-    var thicketAroundTheBeach3 = em.getChannel().getMap(104000400);
-    var mano = Packages.server.life.MapleLifeFactory.getMonster(2220000);
-    if(thicketAroundTheBeach3.getMonsterById(2220000) != null) {
-		em.schedule("start", 3 * 60 *60 * 1000);
-		return;
-	}
-	
-	var posX;
-    var posY = 455;
-    posX =  Math.floor((Math.random() * 605) + 110);
-    thicketAroundTheBeach3.spawnMonsterOnGroundBelow(mano, new Packages.java.awt.Point(posX, posY));
-    thicketAroundTheBeach3.broadcastMessage(Packages.tools.MaplePacketCreator.serverNotice(6, "A cool breeze was felt when Mano appeared."));
+    if (em.getChannel().isMapLoaded(nFieldID)) {
+        var thicketAroundTheBeach3 = em.getChannel().getMap(nFieldID);
+        var mano = Packages.server.life.MapleLifeFactory.getMonster(2220000);
+        if(thicketAroundTheBeach3.getMonsterById(2220000) != null) {
+            em.schedule("start", 3 * 60 *60 * 1000);
+            return;
+        }
+        
+        var posX;
+        var posY = 455;
+        posX =  Math.floor((Math.random() * 605) + 110);
+        thicketAroundTheBeach3.spawnMonsterOnGroundBelow(mano, new Packages.java.awt.Point(posX, posY));
+        thicketAroundTheBeach3.broadcastMessage(Packages.tools.MaplePacketCreator.serverNotice(6, "A cool breeze was felt when Mano appeared."));
+    }
 	em.schedule("start", 3 * 60 *60 * 1000);
 }

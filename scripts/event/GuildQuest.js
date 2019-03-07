@@ -27,11 +27,6 @@
 
 var exitMap;
 var waitingListCurrent = 0;
- 
-importPackage(Packages.world);
-importPackage(Packages.com.lucianms.client);
-importPackage(Packages.com.lucianms.server.maps);
-importPackage(java.lang);
 
 function init() {
     em.setProperty("shuffleReactors","false");

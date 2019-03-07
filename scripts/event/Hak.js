@@ -1,4 +1,4 @@
-importPackage(Packages.tools);
+const MaplePacketCreator = Java.type('tools.MaplePacketCreator');
 
 var returnTo = new Array(200000141, 250000100);
 var rideTo = new Array(250000100, 200000141);

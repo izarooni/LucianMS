@@ -21,10 +21,10 @@ function action(mode, type, selection) {
             + "\r\n\r\nThis button will definitely not be enabled everywhere but if it is disabled in a map where you think otherwise, please let us know!";
         cm.sendNextPrev(content);
     } else if (status == 3) {
-        cm.sendNextPrev("Are you ready to continue in the tutorial?");
+        cm.sendNextPrev("Are you ready to continue in the tutorial? There is no turning back once you continue.");
     } else if (status == 4) {
         cm.warp(90000001);
-        player.announce(Packages.tools.MaplePacketCreator.showEffect("PSO2/stuff/1"));
+        player.announce(Packages.tools.MaplePacketCreator.showEffect("quest/party/clear3"));
         cm.dispose();
     }
 }

@@ -27,12 +27,7 @@
  * Orbis Party Quest
  */
 
-importPackage(java.lang);
-importPackage(Packages.com.lucianms.world);
-importPackage(Packages.com.lucianms.client);
-importPackage(Packages.com.lucianms.server.maps);
-importPackage(Packages.com.lucianms.server.life);
-importPackage(Packages.com.lucianms.scripting.npc);
+const MaplePacketCreator = Java.type('tools.MaplePacketCreator');
 
 var exitMap;
 var instanceId;
@@ -102,9 +97,9 @@ function setup() {
 function playerEntry(eim, player) {
     var map = eim.getMapInstance(920010000);
     player.changeMap(map, map.getPortal(0));
-    player.getClient().getSession().write(net.sf.odinms.tools.MaplePacketCreator.getClock((Long.parseLong(eim.getProperty("entryTimestamp")) - System.currentTimeMillis()) / 1000));
+    player.getClient().getSession().write(MaplePacketCreator.getClock((Long.parseLong(eim.getProperty("entryTimestamp")) - System.currentTimeMillis()) / 1000));
     var texttt = "Hi, my name is Eak, the Chamberlain of the Goddess. Don't be alarmed; you won't be able to see me right now. Back when the Goddess turned into a block of stone, I simultaneously lost my own power. If you gather up the power of the Magic Cloud of Orbis, however, then I'll be able to recover my body and re-transform back to my original self. Please collect #b20#k Magic Clouds and bring them back to me. Right now, you'll only see me as a tiny, flickering light."
-    player.getClient().getSession().write(net.sf.odinms.tools.MaplePacketCreator.getNPCTalk(2013001, /*(byte)*/ 0, texttt, "00 00"));
+    player.getClient().getSession().write(MaplePacketCreator.getNPCTalk(2013001, /*(byte)*/ 0, texttt, "00 00"));
 //player.getClient().getSession().write(net.sf.odinms.scripting.npc.NPCScriptManager.dispose(eim.getClient()));
 //THE CLOCK IS SHIT
 //player.getClient().getSession().write(net.sf.odinms.tools.MaplePacketCreator.getClock(1800));
@@ -207,7 +202,7 @@ function clearPQ(eim) {
         var player = iter.next();
         player.changeMap(bonusMap, bonusMap.getPortal(0));
         eim.setProperty("entryTimestamp",System.currentTimeMillis() + (1 * 60000));
-        player.getClient().getSession().write(net.sf.odinms.tools.MaplePacketCreator.getClock(60));
+        player.getClient().getSession().write(MaplePacketCreator.getClock(60));
     }
     eim.schedule("finish", 60000)
 }
@@ -246,7 +241,7 @@ function timeOut() {
 
 function playerClocks(eim, player) {
     if (player.getMap().hasTimer() == false){
-        player.getClient().getSession().write(net.sf.odinms.tools.MaplePacketCreator.getClock((Long.parseLong(eim.getProperty("entryTimestamp")) - System.currentTimeMillis()) / 1000));
+        player.getClient().getSession().write(MaplePacketCreator.getClock((Long.parseLong(eim.getProperty("entryTimestamp")) - System.currentTimeMillis()) / 1000));
     //player.getMap().setTimer(true);
     }
 }

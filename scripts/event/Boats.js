@@ -1,6 +1,5 @@
-importPackage(Packages.com.lucianms.client);
-importPackage(Packages.tools);
-importPackage(Packages.com.lucianms.server.life);
+const MapleLifeFactory = Java.type('com.lucianms.server.life.MapleLifeFactory');
+const MaplePacketCreator = Java.type('tools.MaplePacketCreator');
 
 //Time Setting is in millisecond
 var closeTime = 50 * 1000; //The time to close the gate

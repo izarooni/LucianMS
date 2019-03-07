@@ -26,8 +26,7 @@
 	ThreeStep (based on xQuasar's King Clang spawner)
 
 **/
-
-importPackage(Packages.com.lucianms.client);
+const nFieldID = 101030404;
 
 function init() {
     scheduleNew();
@@ -43,18 +42,20 @@ function cancelSchedule() {
 }
 
 function start() {
-    var eastRockyMountain5 = em.getChannel().getMap(101030404);
-    var stumpy = Packages.server.life.MapleLifeFactory.getMonster(3220000);
-	
-	if(eastRockyMountain5.getMonsterById(3220000) != null) {
-		em.schedule("start", 3 * 60 * 60 * 1000);
-		return;
-	}
-	
-    var posX;
-    var posY = 1280;
-    posX =  Math.floor((Math.random() * 800) + 400);
-    eastRockyMountain5.spawnMonsterOnGroundBelow(stumpy, new Packages.java.awt.Point(posX, posY));
-    eastRockyMountain5.broadcastMessage(Packages.tools.MaplePacketCreator.serverNotice(6, "Stumpy has appeared with a stumping sound that rings the Stone Mountain."));
+    if (em.getChannel().isMapLoaded(nFieldID)) {
+        var eastRockyMountain5 = em.getChannel().getMap(nFieldID);
+        var stumpy = Packages.server.life.MapleLifeFactory.getMonster(3220000);
+
+        if(eastRockyMountain5.getMonsterById(3220000) != null) {
+            em.schedule("start", 3 * 60 * 60 * 1000);
+            return;
+        }
+
+        var posX;
+        var posY = 1280;
+        posX =  Math.floor((Math.random() * 800) + 400);
+        eastRockyMountain5.spawnMonsterOnGroundBelow(stumpy, new Packages.java.awt.Point(posX, posY));
+        eastRockyMountain5.broadcastMessage(Packages.tools.MaplePacketCreator.serverNotice(6, "Stumpy has appeared with a stumping sound that rings the Stone Mountain."));
+    }
 	em.schedule("start", 3 * 60 * 60 * 1000);
 }

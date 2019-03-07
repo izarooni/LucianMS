@@ -26,8 +26,7 @@
 	ThreeStep (based on xQuasar's King Clang spawner)
 
 **/
-
-importPackage(Packages.com.lucianms.client);
+const nFieldID = 250010304;
 
 function init() {
     scheduleNew();
@@ -43,18 +42,20 @@ function cancelSchedule() {
 }
 
 function start() {
-    var territoryOfWanderingBear = em.getChannel().getMap(250010304);
-    var taeRoon = Packages.server.life.MapleLifeFactory.getMonster(7220000);
-	
-	if(territoryOfWanderingBear.getMonsterById(7220000) != null) {
-		em.schedule("start", 3 * 60 * 60 * 1000);
-		return;
-	}
-	
-    var posX;
-    var posY = 390;
-    posX =  Math.floor((Math.random() * 700) - 800);
-    territoryOfWanderingBear.spawnMonsterOnGroundBelow(taeRoon, new Packages.java.awt.Point(posX, posY));
-    territoryOfWanderingBear.broadcastMessage(Packages.tools.MaplePacketCreator.serverNotice(6, "Tae Roon has appeared with a soft whistling sound."));
+    if (em.getChannel().isMapLoaded(nFieldID)) {
+        var territoryOfWanderingBear = em.getChannel().getMap(nFieldID);
+        var taeRoon = Packages.server.life.MapleLifeFactory.getMonster(7220000);
+        
+        if(territoryOfWanderingBear.getMonsterById(7220000) != null) {
+            em.schedule("start", 3 * 60 * 60 * 1000);
+            return;
+        }
+        
+        var posX;
+        var posY = 390;
+        posX =  Math.floor((Math.random() * 700) - 800);
+        territoryOfWanderingBear.spawnMonsterOnGroundBelow(taeRoon, new Packages.java.awt.Point(posX, posY));
+        territoryOfWanderingBear.broadcastMessage(Packages.tools.MaplePacketCreator.serverNotice(6, "Tae Roon has appeared with a soft whistling sound."));
+    }
 	em.schedule("start", 3 * 60 * 60 * 1000);
 }

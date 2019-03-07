@@ -39,7 +39,7 @@
 ---------------------------------------------------------------------------------------------------
 **/
 
-importPackage(Packages.tools);
+const MaplePacketCreator = Java.type('tools.MaplePacketCreator');
 
 //Time Setting is in millisecond
 var closeTime = 60 * 1000; //The time to close the gate

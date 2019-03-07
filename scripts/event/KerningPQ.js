@@ -6,8 +6,6 @@ insert into drop_data values (default, 9300001, 4001007, 1, 1, 0, 999999);
 insert into drop_data values (default, 9300002, 4001008, 1, 1, 0, 999999);
 insert into drop_data values (default, 9300003, 4001008, 1, 1, 0, 999999);
 */
-
-importPackage(Packages.world);
 var exitMap;
 var minPlayers = 3;
 

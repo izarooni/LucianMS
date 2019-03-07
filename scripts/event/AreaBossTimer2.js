@@ -26,15 +26,10 @@
 	ThreeStep (based on xQuasar's King Clang spawner)
 
 **/
-
-importPackage(Packages.com.lucianms.client);
+const nFieldID = 220050100;
 
 function init() {
-    if (em.getChannel().getMap(220050100) == null) {
-        print("Script AreaBossTimer2 can't initialize due to an invalid map")
-    } else {
-        scheduleNew();
-    }
+    scheduleNew();
 }
 
 function scheduleNew() {
@@ -47,18 +42,20 @@ function cancelSchedule() {
 }
 
 function start() {
-    var lostTime1 = em.getChannel().getMap(220050000);
-    var timer2 = Packages.server.life.MapleLifeFactory.getMonster(5220003);
-	
-	if(lostTime1.getMonsterById(5220003) != null) {
-		em.schedule("start", 3 * 60 * 60 * 1000);
-		return;
-	}
-	
-    var posX;
-    var posY = 1030;
-    posX =  Math.floor((Math.random() * 1400) - 1000);
-    lostTime1.spawnMonsterOnGroundBelow(timer2, new Packages.java.awt.Point(posX, posY));
-    lostTime1.broadcastMessage(Packages.tools.MaplePacketCreator.serverNotice(6, "Tick-Tock Tick-Tock! Timer makes it's presence known."));
+    if (em.getChannel().isMapLoaded(nFieldID)) {
+        var lostTime1 = em.getChannel().getMap(nFieldID);
+        var timer2 = Packages.server.life.MapleLifeFactory.getMonster(5220003);
+        
+        if(lostTime1.getMonsterById(5220003) != null) {
+            em.schedule("start", 3 * 60 * 60 * 1000);
+            return;
+        }
+        
+        var posX;
+        var posY = 1030;
+        posX =  Math.floor((Math.random() * 1400) - 1000);
+        lostTime1.spawnMonsterOnGroundBelow(timer2, new Packages.java.awt.Point(posX, posY));
+        lostTime1.broadcastMessage(Packages.tools.MaplePacketCreator.serverNotice(6, "Tick-Tock Tick-Tock! Timer makes it's presence known."));
+    }
 	em.schedule("start", 3 * 60 * 60 * 1000);
 }

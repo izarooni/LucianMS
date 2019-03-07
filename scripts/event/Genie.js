@@ -19,7 +19,7 @@
     You should have received a copy of the GNU Affero General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
-importPackage(Packages.tools);
+const MaplePacketCreator = Java.type('tools.MaplePacketCreator');
 
 //Time Setting is in millisecond
 var closeTime = 60 * 1000; //The time to close the gate

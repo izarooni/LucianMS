@@ -26,8 +26,7 @@
 	ThreeStep (based on xQuasar's King Clang spawner)
 
 **/
-
-importPackage(Packages.com.lucianms.client);
+const nFieldID = 222010310;
 
 function init() {
     scheduleNew();
@@ -43,16 +42,18 @@ function cancelSchedule() {
 }
 
 function start() {
-    var moonRidge = em.getChannel().getMap(222010310);
-    var nineTailedFox = Packages.server.life.MapleLifeFactory.getMonster(7220001);
-	if(moonRidge.getMonsterById(7220001) != null) {
-		em.schedule("start", 3 * 60 *60 * 1000);
-		return;
-	}
-    var posX;
-    var posY = 33;
-    posX =  Math.floor((Math.random() * 1300) - 800);
-    moonRidge.spawnMonsterOnGroundBelow(nineTailedFox, new Packages.java.awt.Point(posX, posY));
-    moonRidge.broadcastMessage(Packages.tools.MaplePacketCreator.serverNotice(6, "As the moon light dims, a long fox cry can be heard and the presence of the old fox can be felt"));
+    if (em.getChannel().isMapLoaded(nFieldID)) {
+        var moonRidge = em.getChannel().getMap(nFieldID);
+        var nineTailedFox = Packages.server.life.MapleLifeFactory.getMonster(7220001);
+        if(moonRidge.getMonsterById(7220001) != null) {
+            em.schedule("start", 3 * 60 *60 * 1000);
+            return;
+        }
+        var posX;
+        var posY = 33;
+        posX =  Math.floor((Math.random() * 1300) - 800);
+        moonRidge.spawnMonsterOnGroundBelow(nineTailedFox, new Packages.java.awt.Point(posX, posY));
+        moonRidge.broadcastMessage(Packages.tools.MaplePacketCreator.serverNotice(6, "As the moon light dims, a long fox cry can be heard and the presence of the old fox can be felt"));
+    }
 	em.schedule("start", 3 * 60 *60 * 1000);
 }

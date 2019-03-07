@@ -26,8 +26,9 @@
 	ThreeStep (based on xQuasar's King Clang spawner)
 
 **/
-importPackage(Packages.com.lucianms.server.life);
-importPackage(Packages.tools);
+const MapleLifeFactory = Java.type('com.lucianms.server.life.MapleLifeFactory');
+const MaplePacketCreator = Java.type('tools.MaplePacketCreator');
+let nFieldID = 107000300;
 
 function init() {
     scheduleNew();
@@ -43,12 +44,14 @@ function cancelSchedule() {
 }
 
 function start() {
-    var dangeroudCroko1 = em.getChannel().getMap(107000300);
-	if(dangeroudCroko1.getMonsterById(6220000) != null) {
-		setupTask = em.schedule("start", 3 * 60 *60 * 1000);
-		return;
-	}
-    dangeroudCroko1.spawnMonsterOnGroundBelow(MapleLifeFactory.getMonster(6220000), new Packages.java.awt.Point(90, 119));
-    dangeroudCroko1.broadcastMessage(MaplePacketCreator.serverNotice(6, "The huge crocodile Dyle has come out from the swamp."));
+    if (em.getChannel().isMapLoaded(nFieldID)) {
+        var dangeroudCroko1 = em.getChannel().getMap(nFieldID);
+        if(dangeroudCroko1.getMonsterById(6220000) != null) {
+            setupTask = em.schedule("start", 3 * 60 *60 * 1000);
+            return;
+        }
+        dangeroudCroko1.spawnMonsterOnGroundBelow(MapleLifeFactory.getMonster(6220000), new Packages.java.awt.Point(90, 119));
+        dangeroudCroko1.broadcastMessage(MaplePacketCreator.serverNotice(6, "The huge crocodile Dyle has come out from the swamp."));
+    }
 	setupTask = em.schedule("start", 3 * 60 *60 * 1000);
 }

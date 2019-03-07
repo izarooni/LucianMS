@@ -1,4 +1,4 @@
-importPackage(Packages.tools);
+const MaplePacketCreator = Java.type('tools.MaplePacketCreator');
 
 var Orbis_btf;
 var Train_to_Orbis;

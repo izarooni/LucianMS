@@ -25,15 +25,10 @@
 -- Edited by --------------------------------------------------------------------------------------
 	ThreeStep (based on xQuasar's King Clang spawner)
 **/
-
-importPackage(Packages.com.lucianms.client);
+const nFieldID = 220050100; 
 
 function init() {
-    if (em.getChannel().getMap(220050100) == null) {
-        print("Script AreaBossTimer1 can't initialize due to an invalid map")
-    } else {
-        scheduleNew();
-    }
+    scheduleNew();
 }
 
 function scheduleNew() {
@@ -46,18 +41,20 @@ function cancelSchedule() {
 }
 
 function start() {
-    var whirlpoolOfTime = em.getChannel().getMap(220050100);
-    var timer1 = Packages.server.life.MapleLifeFactory.getMonster(5220003);
-	
-	if(whirlpoolOfTime.getMonsterById(5220003) != null) {
-		em.schedule("start", 3 * 60 * 60 * 1000);
-		return;
-	}
-	
-    var posX;
-    var posY = 1030;
-    posX =  Math.floor((Math.random() * 770) - 770);
-    whirlpoolOfTime.spawnMonsterOnGroundBelow(timer1, new Packages.java.awt.Point(posX, posY));
-    whirlpoolOfTime.broadcastMessage(Packages.tools.MaplePacketCreator.serverNotice(6, "Tick-Tock Tick-Tock! Timer makes it's presence known."));
+    if (em.getChannel().isMapLoaded(nFieldID)) {
+        var whirlpoolOfTime = em.getChannel().getMap(nFieldID);
+        var timer1 = Packages.server.life.MapleLifeFactory.getMonster(5220003);
+        
+        if(whirlpoolOfTime.getMonsterById(5220003) != null) {
+            em.schedule("start", 3 * 60 * 60 * 1000);
+            return;
+        }
+        
+        var posX;
+        var posY = 1030;
+        posX =  Math.floor((Math.random() * 770) - 770);
+        whirlpoolOfTime.spawnMonsterOnGroundBelow(timer1, new Packages.java.awt.Point(posX, posY));
+        whirlpoolOfTime.broadcastMessage(Packages.tools.MaplePacketCreator.serverNotice(6, "Tick-Tock Tick-Tock! Timer makes it's presence known."));
+    }
 	em.schedule("start", 3 * 60 * 60 * 1000);
 }

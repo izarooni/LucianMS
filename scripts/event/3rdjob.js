@@ -1,6 +1,5 @@
+load("nashorn:mozilla_compat.js");
 importPackage(Packages.com.lucianms.client);
-importPackage(Packages.com.lucianms.server.life);
-importPackage(Packages.tools);
 importPackage(Packages.com.lucianms.client.inventory);
 
 function init() {

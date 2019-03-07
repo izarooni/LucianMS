@@ -75,8 +75,8 @@ function action(mode, type, selection) {
                 if (text.length > 4) { // because "\r\n".length == 4; make sure items have been added
                     cm.sendSimple(text);
                 } else {
-                    cm.sendPrev("This inventory is empty!");
-                    this.emptyInventory = true; // sigh.. special case just for this status handling shit
+                    cm.sendNext("This inventory is empty!");
+                    status = 1;
                 }
             } else {
                 if (selection == 6) {
@@ -85,9 +85,9 @@ function action(mode, type, selection) {
                     var t = getPlayer(this.stalk.id);
                     if (t != null) {
                         var otherChars = "\t";
-                        var idNamePair = t.getClient().loadCharacterNames(client.getWorldServer());
+                        var idNamePair = t.getClient().loadCharactersInternal(client.getWorldServer());
                         for (var i = 0; i < idNamePair.size(); i++) {
-                            otherChars += idNamePair.get(i) + ", ";
+                            otherChars += idNamePair.get(i).getRight() + ", ";
                         }
                         cm.sendOk(
                             "#e" + this.stalk.name + "'s stats#n\r\n"
@@ -125,10 +125,6 @@ function action(mode, type, selection) {
             if (this.inventory == null) {
                 // prevent bug occurrences i guess
                 cm.sendOk("Something's not right!");
-                cm.dispose();
-            } else if (this.emptyInventory) {
-                // when clicking 'ok' on the previous status and the inventory was empty
-                cm.sendOk("The player's inventory is now empty");
                 cm.dispose();
                 return;
             }

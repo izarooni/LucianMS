@@ -26,13 +26,9 @@
 	ThreeStep (based on xQuasar's King Clang spawner)
 
 **/
-
-importPackage(Packages.com.lucianms.client);
-
-var hotSand;
+const nFieldID = 110040000;
 
 function init() {
-	hotSand = em.getChannel().getMap(110040000);
     scheduleNew();
 }
 
@@ -46,15 +42,18 @@ function cancelSchedule() {
 }
 
 function start() {
-    if(hotSand.getMonsterById(5220001) != null) {
-		em.schedule("start", 3 * 60 *60 * 1000);
-		return;
-	}
-    var kingClang = Packages.server.life.MapleLifeFactory.getMonster(5220001);
-    var posX;
-    var posY = 140;
-    posX =  Math.floor((Math.random() * 2400) - 1600);
-    hotSand.spawnMonsterOnGroundBelow(kingClang, new Packages.java.awt.Point(posX, posY));
-    hotSand.broadcastMessage(Packages.tools.MaplePacketCreator.serverNotice(6, "A strange turban shell has appeared on the beach."));
+    if (em.getChannel().isMapLoaded(nFieldID)) {
+        let map = em.getChannel().getMap(nFieldID);
+        if(map.getMonsterById(5220001) != null) {
+            em.schedule("start", 3 * 60 *60 * 1000);
+            return;
+        }
+        var kingClang = Packages.server.life.MapleLifeFactory.getMonster(5220001);
+        var posX;
+        var posY = 140;
+        posX =  Math.floor((Math.random() * 2400) - 1600);
+        map.spawnMonsterOnGroundBelow(kingClang, new Packages.java.awt.Point(posX, posY));
+        map.broadcastMessage(Packages.tools.MaplePacketCreator.serverNotice(6, "A strange turban shell has appeared on the beach."));
+    }
 	em.schedule("start", 3 * 60 * 60 * 1000);
 }

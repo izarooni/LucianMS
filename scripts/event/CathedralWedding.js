@@ -1,187 +1,158 @@
-/*
-	This file is part of the OdinMS Maple Story Server
-    Copyright (C) 2008 Patrick Huy <patrick.huy@frz.cc>
-					   Matthias Butz <matze@odinms.de>
-					   Jan Christian Meyer <vimes@odinms.de>
+load('scripts/util_imports.js');
+load('scripts/util_wedding.js');
+const MaplePacketCreator = Java.type('tools.MaplePacketCreator');
+const Equip = Java.type('com.lucianms.client.inventory.Equip');
+const MapleRing = Java.type('com.lucianms.client.MapleRing');
+/* izarooni */
+const nFieldExit   = 680000500;
+const nFieldAltar  = 680000210;
+const nFieldPhoto  = 680000300;
+const nFieldLounge = 680000200;
 
-    This program is free software: you can redistribute it and/or modify
-    it under the terms of the GNU Affero General Public License as
-    published by the Free Software Foundation version 3 as published by
-    the Free Software Foundation. You may not use, modify or distribute
-    this program under any other version of the GNU Affero General Public
-    License.
+function init() {}
 
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU Affero General Public License for more details.
+function setup() {
+    let name = "SaintAltar-" + em.getChannel().getId();
+    let eim = em.newInstance(name);
 
-    You should have received a copy of the GNU Affero General Public License
-    along with this program.  If not, see <http://www.gnu.org/licenses/>.
-*/
-/*
- * @Author Jvlaple
- *
- * Wedding for odinMS
- */
-importPackage(java.lang);
-
-importPackage(Packages.world);
-importPackage(Packages.com.lucianms.client);
-importPackage(Packages.server.maps);
-
-var exitMap;
-var altarMap;
-var cakeMap;
-var instanceId;
-var minPlayers = 1;
-
-function init() {
-    exitMap = em.getChannel().getMap(680000500); //Teh exit map :) <---------t
-    altarMap = em.getChannel().getMap(680000210); //Teh altar map
-    cakeMap = em.getChannel().getMap(680000300); //Teh cake
-    instanceId = 1;
-}
-
-function monsterValue(eim, mobId) {
-    return 1;
-}
-
-
-
-function setup(eim) {
-    var instanceName = "CathedralWedding" + instanceId;
-    var eim = em.newInstance(instanceName);
-    instanceId++;
-
-    var eim = em.newInstance(instanceName);
-
-    var map = em.getChannel().getMap(680000200);//wutt
-    //Lets make the clock continue through all maps xD
-    em.schedule("playerAltar", 3 * 60000);
-    eim.setProperty("hclicked", 0);
-    eim.setProperty("wclicked", 0);
-    eim.setProperty("entryTimestamp",System.currentTimeMillis() + (3 * 60000));
-
+    let delay = 1000 * 10;
+    eim.setProperty("timestamp", Date.now() + delay);
+    eim.schedule("exchangeRings", delay);
     return eim;
 }
 
 function playerEntry(eim, player) {
-    var map = eim.getMapInstance(680000200);
-    player.changeMap(map, map.getPortal(0));
+    let sn = eim.getProperty("s"),
+        on = eim.getProperty("o");
+    let name = player.getName();
+    let portalID = (name.equals(sn) || name.equals(on)) ? 2 : 1;
+    player.changeMap(nFieldAltar, portalID);
 
-    //1st - 20 min 2nd - 5 min 3rd 5 min xD
-    //player.getClient().getSession().write(net.sf.odinms.tools.MaplePacketCreator.getClock(1200));
-    //player.getClient().getSession().write(net.sf.odinms.tools.MaplePacketCreator.getClock(180));
-    player.getClient().getSession().write(net.sf.odinms.tools.MaplePacketCreator.getClock((Long.parseLong(eim.getProperty("entryTimestamp")) - System.currentTimeMillis()) / 1000));
+    let timestamp = eim.getProperty("timestamp");
+    let elapsed = (timestamp - Date.now()) / 1000;
+    player.getClient().announce(MaplePacketCreator.getClock(elapsed));
 }
 
-//lets forget this bullshit...
+function moveMap(eim, player, map) {
+    return true;
+}
+
+function playerDisconnected(eim, player) {
+    removePlayer(eim, player);
+    player.setMap(nFieldExit);
+}
+
+function playerExit(eim, player) {
+    player.changeMap(nFieldExit);
+}
+
+// ==== utility ====
+
+function exchangeRings(eim) {
+    let sn = eim.getProperty("s"),
+        on = eim.getProperty("o");
+    let map = em.getChannel().getMap(nFieldAltar);
+    let s = map.getCharacterByName(sn),
+        o = map.getCharacterByName(on);
+    if (s != null && o != null) {
+        let nEngItemID, isBox;
+        for (let i = 0; i < ENG_ETC.length; i++) {
+            nEngItemID = ENG_ETC[i];
+            let itemCount = s.getItemQuantity(nEngItemID, false);
+            if (itemCount > 0) {
+                isBox = (nEngItemID % 2 == 0) ? false : true;
+                break;
+            }
+        }
+        let nWRingID = GetRingFromEtc(nEngItemID);
+        let nRingID = MapleRing.createRing(nWRingID, s, o);
+
+        if (nRingID > 0) {
+            
+            let sr = s.getRelationship(),
+                or = o.getRelationship();
+            
+            let engagementBoxID = GetEngagementBoxFromEtc(nEngItemID);            
+            updateRelationship(s, o, engagementBoxID);
+            
+            exchangeEngagementItems(s, nWRingID, nEngItemID, nRingID);
+            exchangeEngagementItems(o, nWRingID, nEngItemID + (isBox ? 1 : -1), nRingID + 1);
+            
+            s.setMarriageRing(MapleRing.loadFromDb(nRingID));
+            o.setMarriageRing(MapleRing.loadFromDb(nRingID + 1));
+            
+            map.broadcastMessage(6, "The weddings rings will now be exchanged.");
+            eim.schedule("transferVisagePhotos", (1000 * 20));
+            map.broadcastMessage(MaplePacketCreator.getClock(20));
+        } else {
+            eim.schedule("dispose", 1000 * 5);
+            map.broadcastMessage(1, "[Error]\r\nFailed to create wedding rings."); 
+        }
+    } else {
+        map.broadcastMessage(MaplePacketCreator.getClock(60));
+        eim.schedule("dispose", 1000 * 60);
+        map.broadcastMessage(6, "Due to the members of the wedding being absent from the room, the wedding will be cancelled.");
+    }
+}
+
+function updateRelationship(p1, p2, engagementBoxID) {
+    let p1r = p1.getRelationship(),
+        p2r = p2.getRelationship();
+    
+    p1r.setGroomId(p1.getId());
+    p1r.setBrideId(p2.getId());
+    p1r.setStatus(Relationship.Status.Married);
+    p1r.setEngagementBoxId(engagementBoxID);
+    
+    p2r.setGroomId(p1.getId());
+    p2r.setBrideId(p2.getId());
+    p2r.setStatus(Relationship.Status.Married);
+    p2r.setEngagementBoxId(engagementBoxID);
+}
+
+function exchangeEngagementItems(player, nWRingID, nEngItemID, nRingID) {
+    InventoryModifier.removeById(player.getClient(), InventoryType.ETC, nEngItemID, 1, false, false);
+    let eq = new Equip(nWRingID);
+    eq.setRingId(nRingID);
+    InventoryModifier.addFromDrop(player.getClient(), eq, true);
+}
+
+function transferVisagePhotos(eim) {
+    let map = em.getChannel().getMap(nFieldAltar);
+    map.getCharacters().forEach(p => p.changeMap(nFieldPhoto));
+    eim.schedule("dispose", 1000 * 60);
+    map = em.getChannel().getMap(nFieldPhoto);
+    map.broadcastMessage(MaplePacketCreator.getClock(60));
+}
+
+// ==== not used ====
+
 function playerDead(eim, player) {
 }
 
 function playerRevive(eim, player) {
-//how the fuck can this happen? o.O
 }
 
-function playerDisconnected(eim, player) {
-    playerExit(eim, player);//kick him/her
-}
-
-function leftParty(eim, player) {	//this doesnt fucking matter...
+function leftParty(eim, player) {
 }
 
 function disbandParty(eim) {
 }
 
-function playerExit(eim, player) {
-    eim.unregisterPlayer(player);
-    player.changeMap(exitMap, exitMap.getPortal(0));
-}
-
-function playerWarpAltar(eim, player) {
-    if ((player.getName() != eim.getProperty("husband")) && (player.getName() != eim.getProperty("wife"))){
-        player.changeMap(altarMap, altarMap.getPortal(0));
-        player.getClient().getSession().write(net.sf.odinms.tools.MaplePacketCreator.getClock(300));
-    }else{
-        player.changeMap(altarMap, altarMap.getPortal(2));
-        player.getClient().getSession().write(net.sf.odinms.tools.MaplePacketCreator.getClock(300));
-        player.getClient().getSession().write(net.sf.odinms.tools.MaplePacketCreator.serverNotice(6, "Please talk to High Priest John now!"));
-    }
-}
-
-function playerWarpCake(eim, player) {
-    player.changeMap(cakeMap, cakeMap.getPortal(0));
-    player.getClient().getSession().write(net.sf.odinms.tools.MaplePacketCreator.getClock(300));
-}
-
-function playerAltar(eim, player) {
-    var iter = em.getInstances().iterator();
-    while (iter.hasNext()) {
-        var eim = iter.next();
-        if (eim.getPlayerCount() > 0) {
-            var pIter = eim.getPlayers().iterator();
-            while (pIter.hasNext()) {
-                playerWarpAltar(eim, pIter.next());
-            }
-        }
-        em.schedule("playerCake", 5 * 60000);
-    //eim.dispose();
-    }
-}
-
-function playerCake(eim, player) {
-    var iter = em.getInstances().iterator();
-    while (iter.hasNext()) {
-        var eim = iter.next();
-        if (eim.getPlayerCount() > 0) {
-            var pIter = eim.getPlayers().iterator();
-            while (pIter.hasNext()) {
-                playerWarpCake(eim, pIter.next());
-            }
-        }
-        em.schedule("timeOut", 5 * 60000);
-    //eim.dispose();
-    }
-}
-
-//Those offline cuntts
-function removePlayer(eim, player) {
-    eim.unregisterPlayer(player);
-    player.getMap().removePlayer(player);
-    player.setMap(exitMap);
-}
-
-function clearPQ(eim) {
-    //Wedding? IDK about gifts o.O
-    var party = eim.getPlayers();
-    for (var i = 0; i < party.size(); i++) {
-        playerExit(eim, party.get(i));
-    }
-    eim.dispose();
-}
-
-function allMonstersDead(eim) {
-}
-
 function cancelSchedule() {
-}
-
-function timeOut() {
-    var iter = em.getInstances().iterator();
+    let iter = em.getInstances().iterator();
     while (iter.hasNext()) {
-        var eim = iter.next();
-        if (eim.getPlayerCount() > 0) {
-            var pIter = eim.getPlayers().iterator();
-            while (pIter.hasNext()) {
-                playerExit(eim, pIter.next());
-            }
-        }
+        let eim = iter.next();
         eim.dispose();
+        print(`Disposed event script instance ${eim.getName()}`);
     }
 }
 
+function dispose(eim) {
+    let map = em.getChannel().getMap(nFieldAltar);
+    map.getCharacters().forEach(p => eim.removePlayer(p));
 
-function dispose() {
-
+    map = em.getChannel().getMap(nFieldPhoto);
+    map.getCharacters().forEach(p => eim.removePlayer(p));
+    em.removeInstance(eim.getName());
 }

@@ -1,0 +1,31 @@
+<imgdir name="Nana(K)'s Proof of Love'">
+    <imgdir name="info">
+        <int name="questId" value="215"/>
+        <int name="silent" value="1"/>
+		<int name="preQuest" value="-1"/>
+		<int name="daily" value="0"/>
+    </imgdir>
+
+    <imgdir name="toKill">
+    </imgdir>
+
+    <imgdir name="toCollect">
+        <imgdir name="0">
+            <int name="itemId" value="4000006"/>
+            <int name="quantity" value="200"/>
+        </imgdir>
+        <imgdir name="0">
+            <int name="itemId" value="4000004"/>
+            <int name="quantity" value="200"/>
+        </imgdir>
+    </imgdir>
+    <imgdir name="rewards">
+
+        <imgdir name="items">
+            <imgdir name="0">
+                <int name="itemId" value="4031368"/>
+                <int name="quantity" value="1"/>
+            </imgdir>
+        </imgdir>
+    </imgdir>
+</imgdir>

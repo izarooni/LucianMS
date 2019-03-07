@@ -27,8 +27,7 @@
 	ThreeStep (based on xQuasar's King Clang spawner)
 
 **/
-
-importPackage(Packages.com.lucianms.client);
+const nFieldID = 230020100;
 
 function init() {
     if (em.getChannel().getMap(230020100) == null) {
@@ -48,18 +47,20 @@ function cancelSchedule() {
 }
 
 function start() {
-    var towerMap = em.getChannel().getMap(230020100);
-    var seruf = Packages.server.life.MapleLifeFactory.getMonster(4220001);
+    if (em.getChannel().isMapLoaded(nFieldID)) {
+        var towerMap = em.getChannel().getMap(nFieldID);
+        var seruf = Packages.server.life.MapleLifeFactory.getMonster(4220001);
 
-	if(towerMap.getMonsterById(4220001) != null) {
-		em.schedule("start", 3 * 60 * 60 * 1000);
-		return;
-	}
+        if(towerMap.getMonsterById(4220001) != null) {
+            em.schedule("start", 3 * 60 * 60 * 1000);
+            return;
+        }
 
-    var posX;
-    var posY = 520;
-    posX =  Math.floor((Math.random() * 2300) - 1500);
-    towerMap.spawnMonsterOnGroundBelow(seruf, new Packages.java.awt.Point(posX, posY));
-    towerMap.broadcastMessage(Packages.tools.MaplePacketCreator.serverNotice(6, "A strange shell has appeared from a grove of seaweed"));
+        var posX;
+        var posY = 520;
+        posX =  Math.floor((Math.random() * 2300) - 1500);
+        towerMap.spawnMonsterOnGroundBelow(seruf, new Packages.java.awt.Point(posX, posY));
+        towerMap.broadcastMessage(Packages.tools.MaplePacketCreator.serverNotice(6, "A strange shell has appeared from a grove of seaweed"));
+    }
 	em.schedule("start", 3 * 60 * 60 * 1000);
 }

@@ -26,8 +26,7 @@
 	ThreeStep (based on xQuasar's King Clang spawner)
 
 **/
-
-importPackage(Packages.com.lucianms.client);
+const nFieldID = 261030000;
 
 function init() {
     scheduleNew();
@@ -43,18 +42,20 @@ function cancelSchedule() {
 }
 
 function start() {
-    var labSecretBasementPath = em.getChannel().getMap(261030000);
-    var chimera = Packages.server.life.MapleLifeFactory.getMonster(8220002);
-	
-	if(labSecretBasementPath.getMonsterById(8220002) != null) {
-		em.schedule("start", 3 * 60 *60 * 1000);
-		return;
-	}
-	
-    var posX;
-    var posY = 180;
-    posX =  (Math.floor(Math.random() * 900) - 900);
-    labSecretBasementPath.spawnMonsterOnGroundBelow(chimera, new Packages.java.awt.Point(posX, posY));
-    labSecretBasementPath.broadcastMessage(Packages.tools.MaplePacketCreator.serverNotice(6, "Kimera has appeared out of the darkness of the underground with a glitter in her eyes."));
+    if (em.getChannel().isMapLoaded(nFieldID)) {
+        var labSecretBasementPath = em.getChannel().getMap(nFieldID);
+        var chimera = Packages.server.life.MapleLifeFactory.getMonster(8220002);
+        
+        if(labSecretBasementPath.getMonsterById(8220002) != null) {
+            em.schedule("start", 3 * 60 *60 * 1000);
+            return;
+        }
+        
+        var posX;
+        var posY = 180;
+        posX =  (Math.floor(Math.random() * 900) - 900);
+        labSecretBasementPath.spawnMonsterOnGroundBelow(chimera, new Packages.java.awt.Point(posX, posY));
+        labSecretBasementPath.broadcastMessage(Packages.tools.MaplePacketCreator.serverNotice(6, "Kimera has appeared out of the darkness of the underground with a glitter in her eyes."));
+    }
 	em.schedule("start", 3 * 60 *60 * 1000);
 }

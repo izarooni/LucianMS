@@ -22,7 +22,7 @@
 /**
  *Dollhouse Event
 **/
-importPackage(Packages.tools);
+const MaplePacketCreator = Java.type('tools.MaplePacketCreator');
 
 var returnMap;
 var map;

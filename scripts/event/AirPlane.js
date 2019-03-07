@@ -1,5 +1,3 @@
-importPackage(Packages.tools);
-
 //Time Setting is in millisecond
 var closeTime = 24 * 1000; //The time to close the gate
 var beginTime = 30 * 1000; //The time to begin the ride
