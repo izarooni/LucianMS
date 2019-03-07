@@ -152,22 +152,21 @@ public class ConsoleCommands {
                 LOGGER.info("Available operations: cs, whitelist, cquests, achievements, houses, config");
             }
         } else if (command.equals("online")) {
-            StringBuilder sb = new StringBuilder();
             for (MapleWorld worlds : Server.getWorlds()) {
-                sb.append("World ").append(worlds.getId() + 1).append(":").append("\r\n");
+                System.out.printf("World %d:\r\n", (worlds.getId() + 1));
                 for (MapleChannel channels : worlds.getChannels()) {
-                    sb.append("\tChanel ").append(channels.getId()).append(": ");
+                    System.out.printf("\tChannel %d: ", channels.getId());
+                    StringBuilder usernames = new StringBuilder();
                     for (MapleCharacter players : channels.getPlayerStorage().values()) {
-                        sb.append(players.getName()).append(", ");
+                        usernames.append(players.getName()).append(", ");
                     }
-                    if (sb.length() > 2) {
-                        sb.setLength(sb.length() - 2);
+                    if (usernames.length() > 2) {
+                        usernames.setLength(usernames.length() - 2);
                     }
-                    sb.append("\r\n");
+                    System.out.printf("%s\r\n", usernames.toString());
+                    usernames.setLength(0);
                 }
             }
-            LOGGER.info(sb.toString());
-            sb.setLength(0);
         } else if (command.equals("gc")) {
             TaskExecutor.purge();
             LOGGER.info("Tasks purged");
@@ -212,7 +211,7 @@ public class ConsoleCommands {
             desc.add("online - View current online players");
             desc.add("reloadmap <map_id> - Reload an in-game map");
             desc.add("reload <operation> - Reload/clear the cache of specified feature");
-            desc.forEach(LOGGER::info);
+            desc.forEach(System.out::println);
             desc.clear();
         }
     }
