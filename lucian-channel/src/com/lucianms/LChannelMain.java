@@ -2,6 +2,7 @@ package com.lucianms;
 
 import com.lucianms.client.MapleCharacter;
 import com.lucianms.client.SkillFactory;
+import com.lucianms.command.executors.ConsoleCommands;
 import com.lucianms.cquest.CQuestBuilder;
 import com.lucianms.discord.DiscordConnection;
 import com.lucianms.events.*;
@@ -166,6 +167,8 @@ public class LChannelMain {
         } catch (SQLException e) {
             e.printStackTrace();
         }
+
+        ConsoleCommands.beginReading();
     }
 
     private static void initReceiveHeaders() {

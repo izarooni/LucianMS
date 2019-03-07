@@ -20,6 +20,7 @@ import tools.data.output.MaplePacketLittleEndianWriter;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.URISyntaxException;
+import java.util.ArrayList;
 import java.util.Scanner;
 
 /**
@@ -151,21 +152,22 @@ public class ConsoleCommands {
                 LOGGER.info("Available operations: cs, whitelist, cquests, achievements, houses, config");
             }
         } else if (command.equals("online")) {
+            StringBuilder sb = new StringBuilder();
             for (MapleWorld worlds : Server.getWorlds()) {
-                LOGGER.info("World {}:", (worlds.getId() + 1));
+                sb.append("World ").append(worlds.getId() + 1).append(":").append("\r\n");
                 for (MapleChannel channels : worlds.getChannels()) {
-                    StringBuilder sb = new StringBuilder();
-                    sb.append("\tChannel {}: ");
+                    sb.append("\tChanel ").append(channels.getId()).append(": ");
                     for (MapleCharacter players : channels.getPlayerStorage().values()) {
                         sb.append(players.getName()).append(", ");
                     }
                     if (sb.length() > 2) {
                         sb.setLength(sb.length() - 2);
                     }
-                    LOGGER.info(sb.toString(), channels.getId());
-                    LOGGER.info("");
+                    sb.append("\r\n");
                 }
             }
+            LOGGER.info(sb.toString());
+            sb.setLength(0);
         } else if (command.equals("gc")) {
             TaskExecutor.purge();
             LOGGER.info("Tasks purged");
@@ -202,13 +204,16 @@ public class ConsoleCommands {
                 }
             }
         } else if (command.equals("help", "commands")) {
-            LOGGER.info("gc - Requests JVM garbage collection");
-            LOGGER.info("cls <count> - \"Clear\" the buffer");
-            LOGGER.info("exit - Safely stop and close the server");
-            LOGGER.info("crash <username> - Crash an in-game character");
-            LOGGER.info("online - View current online players");
-            LOGGER.info("reloadmap <map_id> - Reload an in-game map");
-            LOGGER.info("reload <operation> - Reload/clear the cache of specified feature");
+            ArrayList<String> desc = new ArrayList<>();
+            desc.add("gc - Requests JVM garbage collection");
+            desc.add("cls <count> - \"Clear\" the buffer");
+            desc.add("exit - Safely stop and close the server");
+            desc.add("crash <username> - Crash an in-game character");
+            desc.add("online - View current online players");
+            desc.add("reloadmap <map_id> - Reload an in-game map");
+            desc.add("reload <operation> - Reload/clear the cache of specified feature");
+            desc.forEach(LOGGER::info);
+            desc.clear();
         }
     }
 }
