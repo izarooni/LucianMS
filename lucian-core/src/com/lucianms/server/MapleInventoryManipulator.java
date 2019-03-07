@@ -47,6 +47,34 @@ public class MapleInventoryManipulator {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MapleInventoryManipulator.class);
 
+    private static void checkItemQuestProgress(MapleCharacter player, int itemID, short quantity) {
+        MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
+
+        for (CQuestData data : player.getCustomQuests().values()) {
+            if (!data.isCompleted()) {
+                CQuestItemRequirement toLoot = data.getToCollect();
+                toLoot.incrementRequirement(itemID, -quantity);
+                boolean checked = toLoot.isFinished(); // local bool before updating requirement checks; if false, quest is not finished
+                if (data.checkRequirements() && !checked) { // update requirement checks - it is important that checkRequirements is executed first
+                /*
+                If checkRequirements returns true, the quest is finished. If checked is also false, then
+                this is check means the quest is finished. The quest completion notification should only
+                happen once unless a progress variable drops below the requirement
+                 */
+                    data.announceCompletion(player.getClient());
+                }
+                if (!data.isSilentComplete()) {
+                    CQuestItemRequirement.CQuestItem qItem = toLoot.get(itemID);
+                    if (qItem != null) {
+                        String name = ii.getName(itemID);
+                        name = (name == null) ? "NO-NAME" : name; // hmmm
+                        player.announce(MaplePacketCreator.earnTitleMessage(String.format("[%s] Item Collection '%s' [%d / %d]", data.getName(), name, qItem.getProgress(), qItem.getRequirement())));
+                    }
+                }
+            }
+        }
+    }
+
     public static boolean addById(MapleClient c, int itemId, short quantity) {
         return addById(c, itemId, quantity, null, -1, -1);
     }
@@ -64,17 +92,19 @@ public class MapleInventoryManipulator {
     }
 
     public static boolean addById(MapleClient c, int itemId, short quantity, String owner, int petid, byte flag, long expiration) {
+        MapleCharacter player = c.getPlayer();
         MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
         MapleInventoryType type = ii.getInventoryType(itemId);
-        if (!type.equals(MapleInventoryType.EQUIP)) {
+
+        if (type != MapleInventoryType.EQUIP) {
             short slotMax = ii.getSlotMax(c, itemId);
-            List<Item> existing = c.getPlayer().getInventory(type).listById(itemId);
+            List<Item> existing = player.getInventory(type).listById(itemId);
             if (!ItemConstants.isRechargable(itemId)) {
                 if (existing.size() > 0) { // first update all existing slots to slotMax
                     Iterator<Item> i = existing.iterator();
                     while (quantity > 0) {
                         if (i.hasNext()) {
-                            Item eItem = (Item) i.next();
+                            Item eItem = i.next();
                             short oldQ = eItem.getQuantity();
                             if (oldQ < slotMax && (eItem.getOwner().equals(owner) || owner == null)) {
                                 short newQ = (short) Math.min(oldQ + quantity, slotMax);
@@ -95,7 +125,7 @@ public class MapleInventoryManipulator {
                         Item nItem = new Item(itemId, (short) 0, newQ, petid);
                         nItem.setFlag(flag);
                         nItem.setExpiration(expiration);
-                        short newSlot = c.getPlayer().getInventory(type).addItem(nItem);
+                        short newSlot = player.getInventory(type).addItem(nItem);
                         if (newSlot == -1) {
                             c.announce(MaplePacketCreator.getInventoryFull());
                             c.announce(MaplePacketCreator.getShowInventoryFull());
@@ -117,7 +147,7 @@ public class MapleInventoryManipulator {
                 Item nItem = new Item(itemId, (short) 0, quantity, petid);
                 nItem.setFlag(flag);
                 nItem.setExpiration(expiration);
-                short newSlot = c.getPlayer().getInventory(type).addItem(nItem);
+                short newSlot = player.getInventory(type).addItem(nItem);
                 if (newSlot == -1) {
                     c.announce(MaplePacketCreator.getInventoryFull());
                     c.announce(MaplePacketCreator.getShowInventoryFull());
@@ -125,7 +155,7 @@ public class MapleInventoryManipulator {
                 }
                 c.announce(MaplePacketCreator.modifyInventory(true, Collections.singletonList(new ModifyInventory(0, nItem))));
             }
-        } else if (quantity == 1) {
+        } else {
             Item nEquip = ii.getEquipById(itemId);
             if (nEquip != null) {
                 nEquip.setFlag(flag);
@@ -133,7 +163,7 @@ public class MapleInventoryManipulator {
                 if (owner != null) {
                     nEquip.setOwner(owner);
                 }
-                short newSlot = c.getPlayer().getInventory(type).addItem(nEquip);
+                short newSlot = player.getInventory(type).addItem(nEquip);
                 if (newSlot == -1) {
                     c.announce(MaplePacketCreator.getInventoryFull());
                     c.announce(MaplePacketCreator.getShowInventoryFull());
@@ -141,14 +171,13 @@ public class MapleInventoryManipulator {
                 }
                 c.announce(MaplePacketCreator.modifyInventory(true, Collections.singletonList(new ModifyInventory(0, nEquip))));
             } else {
-                LOGGER.warn("Invalid item {} from player '{}'", itemId, c.getPlayer().getName());
+                LOGGER.warn("Invalid item {} from player '{}'", itemId, player.getName());
                 c.announce(MaplePacketCreator.getInventoryFull());
                 c.announce(MaplePacketCreator.getShowInventoryFull());
                 return false;
             }
-        } else {
-            throw new RuntimeException("Trying to create equip with non-one quantity");
         }
+        checkItemQuestProgress(player, itemId, quantity);
         return true;
     }
 
@@ -192,7 +221,7 @@ public class MapleInventoryManipulator {
                     Iterator<Item> i = existing.iterator();
                     while (quantity > 0) {
                         if (i.hasNext()) {
-                            Item eItem = (Item) i.next();
+                            Item eItem = i.next();
                             short oldQ = eItem.getQuantity();
                             if (oldQ < slotMax && item.getOwner().equals(eItem.getOwner())) {
                                 short newQ = (short) Math.min(oldQ + quantity, slotMax);
@@ -246,6 +275,7 @@ public class MapleInventoryManipulator {
         if (show) {
             c.announce(MaplePacketCreator.getShowItemGain(item.getItemId(), item.getQuantity()));
         }
+        checkItemQuestProgress(player, item.getItemId(), item.getQuantity());
         return true;
     }
 
@@ -289,14 +319,17 @@ public class MapleInventoryManipulator {
     }
 
     public static void removeFromSlot(MapleClient c, MapleInventoryType type, short slot, short quantity, boolean fromDrop, boolean consume) {
-        Item item = c.getPlayer().getInventory(type).getItem(slot);
+        MapleCharacter player = c.getPlayer();
+        Item item = player.getInventory(type).getItem(slot);
         boolean allowZero = consume && ItemConstants.isRechargable(item.getItemId());
-        c.getPlayer().getInventory(type).removeItem(slot, quantity, allowZero);
+
+        player.getInventory(type).removeItem(slot, quantity, allowZero);
         if (item.getQuantity() == 0 && !allowZero) {
             c.announce(MaplePacketCreator.modifyInventory(fromDrop, Collections.singletonList(new ModifyInventory(3, item))));
         } else {
             c.announce(MaplePacketCreator.modifyInventory(fromDrop, Collections.singletonList(new ModifyInventory(1, item))));
         }
+        checkItemQuestProgress(player, item.getItemId(), quantity);
     }
 
     public static void removeById(MapleClient c, MapleInventoryType type, int itemId, int quantity, boolean fromDrop, boolean consume) {
@@ -310,7 +343,6 @@ public class MapleInventoryManipulator {
                 if (item.getItemId() == itemId || item.getCashId() == itemId) {
                     if (removeQuantity <= item.getQuantity()) {
                         removeFromSlot(c, type, item.getPosition(), (short) removeQuantity, fromDrop, consume);
-                        removeQuantity = 0;
                         break;
                     } else {
                         removeQuantity -= item.getQuantity();
@@ -318,9 +350,6 @@ public class MapleInventoryManipulator {
                     }
                 }
             }
-        }
-        if (removeQuantity > 0) {
-            throw new RuntimeException("[HACK] Not enough items available of Item:" + itemId + ", Quantity (After Quantity/Over Current Quantity): " + (quantity - removeQuantity) + "/" + quantity);
         }
     }
 
@@ -455,30 +484,6 @@ public class MapleInventoryManipulator {
         mods.add(new ModifyInventory(2, source, src));
         c.announce(MaplePacketCreator.modifyInventory(true, mods));
         player.equipChanged();
-
-        for (CQuestData data : player.getCustomQuests().values()) {
-            if (!data.isCompleted()) {
-                CQuestItemRequirement toLoot = data.getToCollect();
-                toLoot.incrementRequirement(source.getItemId(), -source.getQuantity());
-                boolean checked = toLoot.isFinished(); // local bool before updating requirement checks; if false, quest is not finished
-                if (data.checkRequirements() && !checked) { // update requirement checks - it is important that checkRequirements is executed first
-                /*
-                If checkRequirements returns true, the quest is finished. If checked is also false, then
-                this is check means the quest is finished. The quest completion notification should only
-                happen once unless a progress variable drops below the requirement
-                 */
-                    data.announceCompletion(c);
-                }
-                if (!data.isSilentComplete()) {
-                    CQuestItemRequirement.CQuestItem qItem = toLoot.get(source.getItemId());
-                    if (qItem != null) {
-                        String name = MapleItemInformationProvider.getInstance().getName(source.getItemId());
-                        name = (name == null) ? "NO-NAME" : name; // hmmm
-                        player.announce(MaplePacketCreator.earnTitleMessage(String.format("[%s] Item Collection '%s' [%d / %d]", data.getName(), name, qItem.getProgress(), qItem.getRequirement())));
-                    }
-                }
-            }
-        }
     }
 
     public static void unequip(MapleClient c, short src, short dst) {
@@ -517,30 +522,6 @@ public class MapleInventoryManipulator {
         }
         c.announce(MaplePacketCreator.modifyInventory(true, Collections.singletonList(new ModifyInventory(2, source, src))));
         c.getPlayer().equipChanged();
-
-        for (CQuestData data : player.getCustomQuests().values()) {
-            if (!data.isCompleted()) {
-                CQuestItemRequirement toLoot = data.getToCollect();
-                toLoot.incrementRequirement(source.getItemId(), source.getQuantity());
-                boolean checked = toLoot.isFinished(); // local bool before updating requirement checks; if false, quest is not finished
-                if (data.checkRequirements() && !checked) { // update requirement checks - it is important that checkRequirements is executed first
-                /*
-                If checkRequirements returns true, the quest is finished. If checked is also false, then
-                this is check means the quest is finished. The quest completion notification should only
-                happen once unless a progress variable drops below the requirement
-                 */
-                    data.announceCompletion(c);
-                }
-                if (!data.isSilentComplete()) {
-                    CQuestItemRequirement.CQuestItem qItem = toLoot.get(source.getItemId());
-                    if (qItem != null) {
-                        String name = MapleItemInformationProvider.getInstance().getName(source.getItemId());
-                        name = (name == null) ? "NO-NAME" : name; // hmmm
-                        player.announce(MaplePacketCreator.earnTitleMessage(String.format("[%s] Item Collection '%s' [%d / %d]", data.getName(), name, qItem.getProgress(), qItem.getRequirement())));
-                    }
-                }
-            }
-        }
     }
 
     public static MapleMapItem drop(MapleClient c, MapleInventoryType type, short src, short quantity) {
@@ -572,29 +553,7 @@ public class MapleInventoryManipulator {
         if ((!ItemConstants.isRechargable(itemId) && player.getItemQuantity(itemId, true) < quantity) || quantity < 0) {
             return null;
         }
-        for (CQuestData data : player.getCustomQuests().values()) {
-            if (!data.isCompleted()) {
-                CQuestItemRequirement toLoot = data.getToCollect();
-                toLoot.incrementRequirement(itemId, -quantity);
-                boolean checked = toLoot.isFinished(); // local bool before updating requirement checks; if false, quest is not finished
-                if (data.checkRequirements() && !checked) { // update requirement checks - it is important that checkRequirements is executed first
-                /*
-                If checkRequirements returns true, the quest is finished. If checked is also false, then
-                this is check means the quest is finished. The quest completion notification should only
-                happen once unless a progress variable drops below the requirement
-                 */
-                    data.announceCompletion(c);
-                }
-                if (!data.isSilentComplete()) {
-                    CQuestItemRequirement.CQuestItem qItem = toLoot.get(itemId);
-                    if (qItem != null) {
-                        String name = ii.getName(itemId);
-                        name = (name == null) ? "NO-NAME" : name; // hmmm
-                        player.announce(MaplePacketCreator.earnTitleMessage(String.format("[%s] Item Collection '%s' [%d / %d]", data.getName(), name, qItem.getProgress(), qItem.getRequirement())));
-                    }
-                }
-            }
-        }
+        checkItemQuestProgress(player, itemId, quantity);
         Point dropPos = new Point(player.getPosition());
         if (quantity < source.getQuantity() && !ItemConstants.isRechargable(itemId)) {
             Item target = source.copy();
