@@ -7,11 +7,10 @@ const MaplePacketCreator = Java.type('tools.MaplePacketCreator');
 const STAT_RESET = 0;
 const STAT_MAX = 32767;
 const ItemRequirements = [
-    new Requirement(4000000, 1, 10),
-    new Requirement(4000001, 1, 10),
-    new Requirement(4000002, 1, 10),
-    new Requirement(4000003, 1, 10),
-    new Requirement(4000004, 1, 10)
+    new Requirement(4000164, 1, 10),
+    new Requirement(4000144, 1, 10),
+    new Requirement(4010007, 1, 10),
+    new Requirement(4000059, 1, 10)
 ];
 let status = 0;
 
