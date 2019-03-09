@@ -28,6 +28,16 @@ function setup() {
     map = eim.getMapInstance(nFieldWisemenGuards);
     map.setEverlast(true);
 
+    //shuffle reactors in two maps for stage 3
+    eim.getMapInstance(nFieldCenterBanquet).shuffleReactors();
+    eim.getMapInstance(nFieldWineCellar).shuffleReactors();
+
+    //force no-respawn on certain map reactors
+    eim.getMapInstance(990000611).getReactors().forEach(reactor => reactor.setDelay(0));
+    eim.getMapInstance(990000620).getReactors().forEach(reactor => reactor.setDelay(0));
+    eim.getMapInstance(990000631).getReactors().forEach(reactor => reactor.setDelay(0));
+    eim.getMapInstance(990000641).getReactors().forEach(reactor => reactor.setDelay(0));
+
     return eim;
 }
 

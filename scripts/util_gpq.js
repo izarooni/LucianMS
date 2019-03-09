@@ -11,6 +11,9 @@ const nFieldGPQValley = 990000100;
 const nFieldGPQStatues = 990000300;
 const nFieldGPQRoad = 990000301;
 const nFieldWisemenGuards = 990000500;
+const nFieldCenterBanquet = 990000501;
+const nFieldWineCellar = 990000502;
+
 const nFieldUndergroundWaterway = 990000600;
 const nFieldErgoth = 990000900;
 
