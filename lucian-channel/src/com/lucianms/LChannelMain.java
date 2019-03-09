@@ -36,7 +36,6 @@ import java.io.File;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Calendar;
-import java.util.Iterator;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -121,11 +120,8 @@ public class LChannelMain {
                 LOGGER.info("Disposing {} worlds", Server.getWorlds().size());
                 for (MapleWorld world : Server.getWorlds()) {
                     for (MapleChannel channel : world.getChannels()) {
-                        Iterator<MapleCharacter> iter = channel.getPlayerStorage().values().iterator();
-                        while (iter.hasNext()) {
-                            MapleCharacter player = iter.next();
+                        for (MapleCharacter player : channel.getPlayerStorage().values()) {
                             player.saveToDB();
-                            iter.remove();
                         }
                         LOGGER.info("Saved players");
                         try {

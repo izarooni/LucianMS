@@ -80,7 +80,7 @@ public class ChangeMapEvent extends PacketEvent {
         MaplePortal portal = player.getMap().getPortal(startwp);
 
         if (portal != null && player.isGM() && player.isDebug()) {
-            player.sendMessage("[DEBUG] ID: {}, Name: {}/{}, Target map: {}, Location: x:{}/y:{}", portal.getId(), portal.getName(), portal.getScriptName(), portal.getTarget(), portal.getPosition().x, portal.getPosition().y);
+            player.sendMessage("[DEBUG] ID: {}, Name: {}, Script: {}, Target map: {}:{}, Location: x:{}/y:{}", portal.getId(), portal.getName(), portal.getScriptName(), portal.getTarget(), portal.getTargetMapId(), portal.getPosition().x, portal.getPosition().y);
             player.announce(MaplePacketCreator.enableActions());
             return null;
         }

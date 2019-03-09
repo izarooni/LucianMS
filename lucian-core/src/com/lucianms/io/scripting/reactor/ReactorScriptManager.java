@@ -50,22 +50,14 @@ public class ReactorScriptManager {
 
     public static void act(MapleClient c, MapleReactor reactor) {
         ReactorActionManager rm = new ReactorActionManager(c, reactor);
-        Invocable iv = null;
         try {
-            iv = ScriptUtil.eval("reactor/" + reactor.getId() + ".js", Collections.singleton(new Pair<>("rm", rm)));
+            Invocable iv = ScriptUtil.eval("reactor/" + reactor.getId() + ".js", Collections.singleton(new Pair<>("rm", rm)));
+            iv.invokeFunction("act");
         } catch (FileNotFoundException e) {
             rm.dropItems();
-        } catch (IOException | ScriptException e) {
-            e.printStackTrace();
-        }
-        if (iv == null) {
-            LOGGER.warn("Unable to find script for reactor ID:{}, Name:'{}'", reactor.getId(), reactor.getName());
             return;
-        }
-        try {
-            iv.invokeFunction("act");
-        } catch (ScriptException | NoSuchMethodException e) {
-            LOGGER.error("unable to execute 'act' reactor: {} map {}", reactor.getId(), reactor.getMap().getId());
+        } catch (Exception e) {
+            LOGGER.error("unable to execute 'act' reactor: {} map {}", reactor.getId(), reactor.getMap().getId(), e);
         }
     }
 

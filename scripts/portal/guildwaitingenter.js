@@ -1,42 +1,18 @@
-/*
-	This file is part of the OdinMS Maple Story Server
-    Copyright (C) 2008 Patrick Huy <patrick.huy@frz.cc>
-		       Matthias Butz <matze@odinms.de>
-		       Jan Christian Meyer <vimes@odinms.de>
-
-    This program is free software: you can redistribute it and/or modify
-    it under the terms of the GNU Affero General Public License as
-    published by the Free Software Foundation version 3 as published by
-    the Free Software Foundation. You may not use, modify or distribute
-    this program under any other version of the GNU Affero General Public
-    License.
-
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU Affero General Public License for more details.
-
-    You should have received a copy of the GNU Affero General Public License
-    along with this program.  If not, see <http://www.gnu.org/licenses/>.
-*/
-/* @Author Lerk
- * 
- * Guild Quest Waiting Room - Entry Portal (map 990000000)
- */
-
+load('scripts/util_gpq.js');
+/* izarooni */
 function enter(pi) {
-    if (pi.getPlayer().getEventInstance() == null) {
-        pi.warp(101030104);
-        return true;
-    }
-    else {
-        if (pi.getPlayer().getEventInstance().getProperty("canEnter").equals("false")) {
-            pi.warp(990000100);
-            return true;
-        }
-        else { //cannot proceed while allies can still enter
-            pi.playerMessage(5, "The portal is not open yet.");
+    let eim = pi.getPlayer().getEventInstance();
+    
+    if (eim == null) {
+        pi.getPlayer().sendMessage(5, "Unable to enter because of the force of the ground.");
+        return false;
+    } else if (!eim.vars.canEnter) {
+        if (!pi.isLeader()) {
+            pi.getPlayer().sendMessage(5, "The portal is not open yet.");
             return false;
         }
     }
+    eim.vars.canEnter = true;
+    pi.warp(nFieldGPQValley);
+    return true;
 }

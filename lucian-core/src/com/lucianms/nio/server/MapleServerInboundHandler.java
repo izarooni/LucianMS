@@ -147,7 +147,7 @@ public class MapleServerInboundHandler extends ChannelInboundHandlerAdapter {
                 packetEvent.packetCompleted();
             }
         } else {
-            LOGGER.info("No packet event for packet '0x{}' {}", Integer.toHexString(header), packetState.name());
+            LOGGER.info("No packet event for packet '0x{} ({})' {}\r\n{}", Integer.toHexString(header), header, packetState.name(), reader.toString());
         }
     }
 

@@ -9,6 +9,7 @@ import com.lucianms.server.life.MapleMonster;
 import com.lucianms.server.maps.MapleMap;
 import com.lucianms.server.world.MapleParty;
 import com.lucianms.server.world.MaplePartyCharacter;
+import jdk.nashorn.api.scripting.ScriptObjectMirror;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import tools.MaplePacketCreator;
@@ -26,7 +27,9 @@ public class EventInstanceManager {
 
     private final EventManager eventManager;
     private final String name;
+    @Deprecated
     private final Properties props = new Properties();
+    public ScriptObjectMirror vars;
 
     private HashMap<Integer, MapleMap> maps = new HashMap<>(15);
     private HashMap<Integer, MapleCharacter> players = new HashMap<>();

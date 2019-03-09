@@ -26,11 +26,11 @@ import com.lucianms.client.MapleClient;
 import com.lucianms.client.status.MonsterStatus;
 import com.lucianms.io.scripting.reactor.ReactorScriptManager;
 import com.lucianms.scheduler.TaskExecutor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import com.lucianms.server.life.MapleLifeFactory;
 import com.lucianms.server.life.MapleMonster;
 import com.lucianms.server.life.MobSkill;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import tools.MaplePacketCreator;
 import tools.Pair;
 
@@ -64,6 +64,11 @@ public class MapleReactor extends AbstractMapleMapObject {
     public MapleReactor(MapleReactorStats stats, int id) {
         this.stats = stats;
         this.id = id;
+    }
+
+    @Override
+    public String toString() {
+        return String.format("MapleReactor{name='%s', id=%d, state=%s, alive=%s}", name, id, state.get(), alive);
     }
 
     public void setTimerActive(boolean active) {
@@ -165,9 +170,6 @@ public class MapleReactor extends AbstractMapleMapObject {
         final byte state = (byte) this.state.get();
         final int type = stats.getType(state);
 
-        // type 2 = only hit from right (kerning swamp plants)
-        // 00 = air left
-        // 02 = ground left
         if (type < 999 && type != -1) {
             if (!(type == 2 && (charPos == 0 || charPos == 2))) { // get next state
                 for (byte b = 0; b < stats.getStateSize(state); b++) {
