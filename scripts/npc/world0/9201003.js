@@ -19,7 +19,7 @@ function action(mode, type, selection) {
     else if (!quest.checkRequirements()) {
         cm.sendOk("Have you visited Nana the Fairy in Orbis and Ludibrium? Bring us their Proof of Love and you may have our blessing\r\n\r\n");
         if (player.isDebug()) {
-            items.values().forEach(item => {
+            quest.getToCollect().getItems().values().forEach(item => {
                 cm.gainItem(item.getItemId(), item.getRequirement());
             });
         }
