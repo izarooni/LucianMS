@@ -6522,10 +6522,10 @@ public class MaplePacketCreator {
         return mplew.getPacket();
     }
 
-    public static byte[] updateGender(MapleCharacter chr) {
+    public static byte[] updateGender(byte gender) {
         final MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter(3);
         mplew.writeShort(SendOpcode.SET_GENDER.getValue());
-        mplew.write(chr.getGender());
+        mplew.write(gender);
         return mplew.getPacket();
     }
 

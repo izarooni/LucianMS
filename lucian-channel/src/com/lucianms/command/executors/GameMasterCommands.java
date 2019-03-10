@@ -1153,7 +1153,7 @@ public class GameMasterCommands {
         } else if (command.equals("gender")) {
             if (args.length() == 2) {
                 MapleCharacter target = ch.getPlayerStorage().find(p -> p.getName().equalsIgnoreCase(args.get(0)));
-                int gender = -1;
+                byte gender;
                 switch (args.get(1)) {
                     case "male":
                         gender = 0;
@@ -1169,6 +1169,7 @@ public class GameMasterCommands {
                         return;
                 }
                 if (target != null) {
+                    target.announce(MaplePacketCreator.updateGender(gender));
                     target.setGender(gender);
                     target.sendMessage("Your gender has changed to {}", args.get(1));
                     player.dropMessage("Success!");

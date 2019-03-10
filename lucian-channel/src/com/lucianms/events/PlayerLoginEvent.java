@@ -114,7 +114,7 @@ public class PlayerLoginEvent extends PacketEvent {
         }
 
         getClient().announce(MaplePacketCreator.getCharInfo(player));
-        getClient().announce(MaplePacketCreator.updateGender(player));
+        getClient().announce(MaplePacketCreator.updateGender((byte) player.getGender()));
         getClient().announce(MaplePacketCreator.enableReport());
         player.getMap().addPlayer(player);
         player.sendKeymap();
