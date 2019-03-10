@@ -93,9 +93,7 @@ public class PlayerRingActionEvent extends PacketEvent {
 
         switch (action) {
             case 0: { // proposal
-                if (player.getGender() != 0) { // only males are able to propose
-                    getClient().announce(getEngagementResult((byte) 0x13)); // any error message really
-                } else if (username.equalsIgnoreCase(player.getName())) {
+                if (username.equalsIgnoreCase(player.getName())) {
                     getClient().announce(getEngagementResult((byte) 0x12));
                 } else if (rltn.getStatus() == Relationship.Status.Single && rltn.getBrideId() > 0) {
                     getClient().announce(getEngagementResult((byte) 0x1b));
@@ -113,9 +111,6 @@ public class PlayerRingActionEvent extends PacketEvent {
                         if (pplayer.getMapId() != player.getMapId()) {
                             // Both players must be in the same map
                             getClient().announce(getEngagementResult((byte) 0x13));
-                        } else if (pplayer.getGender() == player.getGender()) {
-                            // Must be different genders  -- females can't interact with the box anyways
-                            getClient().announce(getEngagementResult((byte) 0x16));
                         } else if (prltn.getStatus() == Relationship.Status.Married) {
                             // partner is already married
                             getClient().announce(getEngagementResult((byte) 0x18));
