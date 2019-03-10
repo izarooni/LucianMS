@@ -138,6 +138,7 @@ public enum RecvOpcode {
     DAMAGE_SUMMON           (0x00B1, ReceivePacketState.ChannelServer),
     BEHOLDER                (0x00B2, ReceivePacketState.ChannelServer),
     MOVE_DRAGON             (0x00B5, ReceivePacketState.ChannelServer),
+    QUICK_SLOT_UPDATE       (0x00B7, ReceivePacketState.ChannelServer, IgnoredPacketEvent.class),
     MOVE_LIFE               (0x00BC, ReceivePacketState.ChannelServer),
     AUTO_AGGRO              (0x00BD, ReceivePacketState.ChannelServer),
     MOB_DAMAGE_MOB_FRIENDLY (0x00C0, ReceivePacketState.ChannelServer),
