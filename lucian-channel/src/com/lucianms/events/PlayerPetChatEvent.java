@@ -2,7 +2,6 @@ package com.lucianms.events;
 
 import com.lucianms.client.MapleCharacter;
 import com.lucianms.nio.receive.MaplePacketReader;
-import com.lucianms.events.PacketEvent;
 import tools.MaplePacketCreator;
 
 /**
@@ -20,7 +19,7 @@ public class PlayerPetChatEvent extends PacketEvent {
         reader.readInt();
         reader.readByte();
         action = reader.readByte();
-        String content = reader.readMapleAsciiString();
+        content = reader.readMapleAsciiString();
         if (petID < 0 || petID > 3 || action < 0 || action > 9) {
             setCanceled(true);
         }
