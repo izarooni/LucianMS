@@ -1,12 +1,12 @@
 package com.lucianms.nio.receive;
 
 import com.lucianms.client.MapleClient;
+import com.lucianms.nio.MapleCustomEncryption;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.ByteToMessageDecoder;
 import io.netty.util.AttributeKey;
-import com.lucianms.nio.MapleCustomEncryption;
 import tools.MapleAESOFB;
 
 import java.util.List;
