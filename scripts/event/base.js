@@ -7,6 +7,7 @@ function playerEntry(eim, player) {
 }
 
 function moveMap(eim, player, map) {
+    return true;
 }
 
 function playerDead(eim, player) {

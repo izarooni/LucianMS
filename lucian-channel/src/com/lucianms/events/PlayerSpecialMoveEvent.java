@@ -2,12 +2,11 @@ package com.lucianms.events;
 
 import com.lucianms.client.*;
 import com.lucianms.client.MapleCharacter.CancelCooldownAction;
+import com.lucianms.constants.GameConstants;
+import com.lucianms.constants.skills.*;
 import com.lucianms.nio.receive.MaplePacketReader;
 import com.lucianms.scheduler.Task;
 import com.lucianms.scheduler.TaskExecutor;
-import com.lucianms.events.PacketEvent;
-import com.lucianms.constants.GameConstants;
-import com.lucianms.constants.skills.*;
 import com.lucianms.server.MapleStatEffect;
 import com.lucianms.server.life.MapleMonster;
 import tools.MaplePacketCreator;
@@ -63,7 +62,7 @@ public class PlayerSpecialMoveEvent extends PacketEvent {
         if (skillID % 10000000 == 1010 || skillID % 10000000 == 1011) {
             playerSkillLevel = 1;
             player.setDojoEnergy(0);
-            getClient().announce(MaplePacketCreator.getEnergy("energy", 0));
+            getClient().announce(MaplePacketCreator.setSessionValue("energy", 0));
         }
         if (playerSkillLevel == 0 || playerSkillLevel != skillLevel) {
             getClient().announce(MaplePacketCreator.enableActions());

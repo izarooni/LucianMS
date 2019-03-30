@@ -10,9 +10,9 @@ let status = 0;
 function ListMonsters(selection) {
     if (status == 1) {
         let content = "";
-        let objects = player.getMap().getMapObjects();
-        for (let i = 0; i < objects.size(); i++) {
-            let obj = player.getMap().getMonsterByOid(objects.get(i).getObjectId());
+        let objects = player.getMap().getMapObjects().toArray();
+        for (let i = 0; i < objects.length; i++) {
+            let obj = player.getMap().getMonsterByOid(objects[i].getObjectId());
             if (obj != null) {
                 content += `\r\n#L${obj.getObjectId()}#${obj.getName()}#l`;
             }

@@ -258,7 +258,7 @@ public final class PlayerTakeDamageEvent extends PacketEvent {
 
         if (map.getId() >= 925020000 && map.getId() < 925030000) {
             player.setDojoEnergy(player.isGM() ? 300 : player.getDojoEnergy() < 300 ? player.getDojoEnergy() + 1 : 0); //Fking gm's
-            player.getClient().announce(MaplePacketCreator.getEnergy("energy", player.getDojoEnergy()));
+            player.getClient().announce(MaplePacketCreator.setSessionValue("energy", player.getDojoEnergy()));
         }
         return null;
     }

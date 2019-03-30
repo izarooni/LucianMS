@@ -28,7 +28,7 @@ function action(mode, type, selection) {
 
     if (jobID != 0 && jobID != 1000 && jobID != 2000
           && !containsJob(jobs, jobID)) {
-        cm.sendOk("This path is not meant for you now.");
+        cm.sendOk("This path is not meant for you anymore.");
         cm.dispose();
         return;
     }

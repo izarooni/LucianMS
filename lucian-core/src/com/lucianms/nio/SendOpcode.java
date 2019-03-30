@@ -112,7 +112,7 @@ public enum SendOpcode {
     CONSULT_AUTHKEY_UPDATE(0x57),
     CLASS_COMPETITION_AUTHKEY_UPDATE(0x58),
     WEB_BOARD_AUTHKEY_UPDATE(0x59),
-    SESSION_VALUE(0x5A),
+    SESSION_VALUE(90),
     PARTY_VALUE(0x5B),
     FIELD_SET_VARIABLE(0x5C),
     BONUS_EXP_CHANGED(0x5D),//pendant of spirit etc (guess, not sure about the opcode in v83)
@@ -178,24 +178,24 @@ public enum SendOpcode {
     OX_QUIZ(0x91),//QUIZ
     GMEVENT_INSTRUCTIONS(0x92),//DESC
     CLOCK(0x93),
-    CONTI_MOVE(0x94),
-    CONTI_STATE(0x95),
-    SET_QUEST_CLEAR(0x96),
-    SET_QUEST_TIME(0x97),
-    WARN_MESSAGE(0x98),
-    SET_OBJECT_STATE(0x99),
-    STOP_CLOCK(0x9A),
-    ARIANT_ARENA_SHOW_RESULT(0x9B),
-    PYRAMID_GAUGE(0x9D),
-    PYRAMID_SCORE(0x9E),
-    SPAWN_PLAYER(0xA0),
-    REMOVE_PLAYER_FROM_MAP(0xA1),
-    CHATTEXT(0xA2), //0
-    CHATTEXT1(0xA3), //1
-    CHALKBOARD(0xA4),
-    UPDATE_CHAR_BOX(0xA5),
-    SHOW_CONSUME_EFFECT(0xA6),
-    SHOW_SCROLL_EFFECT(0xA7),
+    CONTI_MOVE               (148),
+    CONTI_STATE              (149),
+    SET_QUEST_CLEAR          (150),
+    SET_QUEST_TIME           (151),
+    WARN_MESSAGE             (152),
+    SET_OBJECT_STATE         (153),
+    STOP_CLOCK               (154),
+    ARIANT_ARENA_SHOW_RESULT (155),
+    MASSACRE_GAUGE_INC       (157),
+    MASSACRE_RESULT          (158),
+    SPAWN_PLAYER             (160),
+    REMOVE_PLAYER_FROM_MAP   (161),
+    CHATTEXT                 (162), //0
+    CHATTEXT1                (163), //1
+    CHALKBOARD               (164),
+    UPDATE_CHAR_BOX          (165),
+    SHOW_CONSUME_EFFECT      (166),
+    SHOW_SCROLL_EFFECT       (167),
 
     SPAWN_PET(0xA8),
     MOVE_PET(0xAA),
@@ -336,9 +336,9 @@ public enum SendOpcode {
     MTS_OPERATION2(0x15B),
     MTS_OPERATION(0x15C),
     VICIOUS_HAMMER(0x162);
-    private int code = -2;
+    private int code;
 
-    private SendOpcode(int code) {
+    SendOpcode(int code) {
         this.code = code;
     }
 

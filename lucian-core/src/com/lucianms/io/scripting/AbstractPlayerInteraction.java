@@ -542,7 +542,7 @@ public class AbstractPlayerInteraction {
     }
 
     public void dojoEnergy() {
-        c.announce(MaplePacketCreator.getEnergy("energy", getPlayer().getDojoEnergy()));
+        c.announce(MaplePacketCreator.setSessionValue("energy", getPlayer().getDojoEnergy()));
     }
 
     public void talkGuide(String message) {

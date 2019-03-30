@@ -52,14 +52,14 @@ public class MapleMonster extends AbstractLoadedMapleLife {
 
     private int hp, mp;
     private int team;
-    private int venomMultiplier = 0;
-    private boolean controllerHasAggro = false;
-    private boolean controllerKnowsAboutAggro = false;
+    private int venomMultiplier;
+    private boolean controllerHasAggro;
+    private boolean controllerKnowsAboutAggro;
     private MapleMap map;
     private MapleMonsterStats stats;
-    private MapleMonsterStats overrideStats = null;
+    private MapleMonsterStats overrideStats;
     private WeakReference<MapleCharacter> controller = new WeakReference<>(null);
-    private EventInstanceManager eventInstance = null;
+    private EventInstanceManager eventInstance;
     private ArrayList<Integer> stolenItems = new ArrayList<>();
     private ArrayList<Pair<Integer, Integer>> usedSkills = new ArrayList<>();
     private ArrayList<MonsterStatus> alreadyBuffed = new ArrayList<>();
@@ -67,9 +67,9 @@ public class MapleMonster extends AbstractLoadedMapleLife {
     private Map<Pair<Integer, Integer>, Integer> skillsUsed = new HashMap<>();
     private EnumMap<MonsterStatus, MonsterStatusEffect> stati = new EnumMap<>(MonsterStatus.class);
     private final HashMap<Integer, AtomicInteger> takenDamage = new HashMap<>();
-    private boolean fake = false;
-    private boolean dropsDisabled = false;
-    private boolean damagedOvertime = false;
+    private boolean fake;
+    private boolean dropsDisabled;
+    private boolean damagedOvertime;
 
     public ReentrantLock monsterLock = new ReentrantLock();
 
@@ -450,7 +450,7 @@ public class MapleMonster extends AbstractLoadedMapleLife {
             }, getAnimationTime("die1"));
         }
         if (eventInstance != null) {
-            if (!this.getStats().isFriendly()) {
+            if (!getStats().isFriendly()) {
                 eventInstance.monsterKilled(this);
             }
         }

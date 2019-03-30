@@ -23,10 +23,10 @@
 package com.lucianms.server.partyquest;
 
 import com.lucianms.client.MapleCharacter;
-import com.lucianms.server.world.MapleParty;
 import com.lucianms.scheduler.Task;
 import com.lucianms.scheduler.TaskExecutor;
 import com.lucianms.server.MapleItemInformationProvider;
+import com.lucianms.server.world.MapleParty;
 import tools.MaplePacketCreator;
 import tools.Pair;
 
@@ -171,8 +171,8 @@ public class Pyramid extends PartyQuest {
 
     private void broadcastInfo(String info, int amount) {
         for (MapleCharacter chr : getParticipants()) {
-            chr.announce(MaplePacketCreator.getEnergy("massacre_" + info, amount));
-            chr.announce(MaplePacketCreator.pyramidGauge(count));
+            chr.announce(MaplePacketCreator.setSessionValue("massacre_" + info, amount));
+            chr.announce(MaplePacketCreator.increaseMassacreGauge(count));
         }
     }
 
@@ -200,7 +200,7 @@ public class Pyramid extends PartyQuest {
             skill++;
             MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
             for (MapleCharacter chr : getParticipants()) {
-                chr.announce(MaplePacketCreator.getEnergy("massacre_skill", skill));
+                chr.announce(MaplePacketCreator.setSessionValue("massacre_skill", skill));
                 ii.getItemEffect(2022586).applyTo(chr);
             }
         } else if (buffcount == 2 && total >= 1000) {
@@ -208,7 +208,7 @@ public class Pyramid extends PartyQuest {
             skill++;
             MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
             for (MapleCharacter chr : getParticipants()) {
-                chr.announce(MaplePacketCreator.getEnergy("massacre_skill", skill));
+                chr.announce(MaplePacketCreator.setSessionValue("massacre_skill", skill));
                 ii.getItemEffect(2022587).applyTo(chr);
             }
         } else if (buffcount == 3 && total >= 1500) {
@@ -219,7 +219,7 @@ public class Pyramid extends PartyQuest {
             skill++;
             MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
             for (MapleCharacter chr : getParticipants()) {
-                chr.announce(MaplePacketCreator.getEnergy("massacre_skill", skill));
+                chr.announce(MaplePacketCreator.setSessionValue("massacre_skill", skill));
                 ii.getItemEffect(2022588).applyTo(chr);
             }
         } else if (buffcount == 5 && total >= 2500) {
@@ -266,7 +266,7 @@ public class Pyramid extends PartyQuest {
 
             exp += ((kill * 2) + (cool * 10));
         }
-        chr.announce(MaplePacketCreator.pyramidScore(rank, exp));
+        chr.announce(MaplePacketCreator.getMassacreResult(rank, exp));
         chr.gainExp(exp, true, true);
     }
 

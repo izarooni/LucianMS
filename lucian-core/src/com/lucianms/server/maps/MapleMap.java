@@ -1424,16 +1424,18 @@ public class MapleMap {
             }
         } else if (MapleMiniDungeon.isDungeonMap(mapid)) {
             final MapleMiniDungeon dungeon = MapleMiniDungeon.getDungeon(mapid);
-            chr.getClient().announce(MaplePacketCreator.getClock(30 * 60));
-            TaskExecutor.createTask(new Runnable() {
+            if (dungeon != null) {
+                chr.getClient().announce(MaplePacketCreator.getClock(30 * 60));
+                TaskExecutor.createTask(new Runnable() {
 
-                @Override
-                public void run() {
-                    if (MapleMiniDungeon.isDungeonMap(chr.getMapId())) {
-                        chr.changeMap(dungeon.getBase());
+                    @Override
+                    public void run() {
+                        if (MapleMiniDungeon.isDungeonMap(chr.getMapId())) {
+                            chr.changeMap(dungeon.getBase());
+                        }
                     }
-                }
-            }, 30 * 60 * 1000);
+                }, 30 * 60 * 1000);
+            }
         }
         MaplePet[] pets = chr.getPets();
         for (int i = 0; i < chr.getPets().length; i++) {

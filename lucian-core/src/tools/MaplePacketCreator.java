@@ -1838,7 +1838,7 @@ public class MaplePacketCreator {
         return mplew.getPacket();
     }
 
-    public static byte[] getEnergy(String info, int amount) {
+    public static byte[] setSessionValue(String info, int amount) {
         final MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
         mplew.writeShort(SendOpcode.SESSION_VALUE.getValue());
         mplew.writeMapleAsciiString(info);
@@ -4259,16 +4259,19 @@ public class MaplePacketCreator {
         return mplew.getPacket();
     }
 
-    public static byte[] pyramidGauge(int gauge) {
+    public static byte[] increaseMassacreGauge(int gauge) {
         final MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter(6);
-        mplew.writeShort(SendOpcode.PYRAMID_GAUGE.getValue());
+        mplew.writeShort(SendOpcode.MASSACRE_GAUGE_INC.getValue());
         mplew.writeInt(gauge);
         return mplew.getPacket();
     }
 
-    public static byte[] pyramidScore(byte score, int exp) {//Type cannot be higher than 4 (Rank D), otherwise you'll crash
+    public static byte[] getMassacreResult(byte score, int exp) {
+        if (score < 0 || score > 4) {
+            throw new IllegalArgumentException("score value must be between 0 (incsluve) and 4 (incsluve). " + score + " was given");
+        }
         final MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter(7);
-        mplew.writeShort(SendOpcode.PYRAMID_SCORE.getValue());
+        mplew.writeShort(SendOpcode.MASSACRE_RESULT.getValue());
         mplew.write(score);
         mplew.writeInt(exp);
         return mplew.getPacket();
