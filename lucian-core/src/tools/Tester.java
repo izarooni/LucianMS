@@ -26,19 +26,6 @@ public class Tester {
     public static void main(String[] args) {
 //        initConfig();
 //        HikariDataSource hikari = Database.createDataSource("test");
-//        for (int i = 0; i < 1000; i++) {
-//            try {
-//                Connection con = hikari.getConnection();
-//                System.out.println("connection " + i + " created");
-//                try (PreparedStatement ps = con.prepareStatement("select * from accounts")) {
-//                    try (ResultSet rs = ps.executeQuery()) {
-//                        rs.next();
-//                    }
-//                }
-//            } catch (SQLException e) {
-//                e.printStackTrace();
-//            }
-//        }
     }
 
     private static void initConfig() {

@@ -49,6 +49,41 @@ public class LChannelMain {
         initReceiveHeaders();
         Server.createServer();
 
+        Runtime.getRuntime().addShutdownHook(new Thread(new Runnable() {
+            @Override
+            public void run() {
+                System.out.println("Shutting 'er down!");
+
+                System.out.printf("Disposing %d worlds\r\n", Server.getWorlds().size());
+                for (MapleWorld world : Server.getWorlds()) {
+                    for (MapleChannel channel : world.getChannels()) {
+                        if (channel.getServerHandler() != null) {
+                            for (MapleCharacter player : channel.getPlayerStorage().values()) {
+                                player.saveToDB();
+                            }
+                            System.out.printf("Saved players in world %d channel %d\r\n", world.getId(), channel.getId());
+                            try {
+                                channel.getServerHandler().getDiscardServer().close();
+                                System.out.printf("World %d channel %d discard server closed\r\n", world.getId(), channel.getId());
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
+                        }
+                    }
+                }
+
+                try {
+                    communicationsHandler.close();
+                    System.out.println("Internal server communicator closed");
+                } catch (Exception e) {
+                    LOGGER.error("Failed to close Netty socket", e);
+                }
+
+                TaskExecutor.getExecutor().shutdownNow();
+                System.out.println("Task executor shutdown");
+            }
+        }));
+
         MapleMonsterInformationProvider.createGlobalCache();
 
         long timeToTake = System.currentTimeMillis();
@@ -111,39 +146,6 @@ public class LChannelMain {
                 LOGGER.info("World {} channel {} bound to port {}", (world.getId() + 1), (channel.getId()), port);
             }
         }
-
-        Runtime.getRuntime().addShutdownHook(new Thread(new Runnable() {
-            @Override
-            public void run() {
-                LOGGER.info("Running shutdown hook...");
-
-                LOGGER.info("Disposing {} worlds", Server.getWorlds().size());
-                for (MapleWorld world : Server.getWorlds()) {
-                    for (MapleChannel channel : world.getChannels()) {
-                        for (MapleCharacter player : channel.getPlayerStorage().values()) {
-                            player.saveToDB();
-                        }
-                        LOGGER.info("Saved players");
-                        try {
-                            channel.getServerHandler().getDiscardServer().close();
-                            LOGGER.info("World {} Channel {} discard server closed", world.getId(), channel.getId());
-                        } catch (Exception e) {
-                            LOGGER.error("Failed to close World {} Channel {} discard server", world.getId(), channel.getId(), e);
-                        }
-                    }
-                }
-
-                try {
-                    communicationsHandler.close();
-                    LOGGER.info("Inter server closed");
-                } catch (Exception e) {
-                    LOGGER.error("Failed to close Netty socket", e);
-                }
-
-                TaskExecutor.getExecutor().shutdownNow();
-                LOGGER.info("Task executor shutdown");
-            }
-        }));
 
         try {
             Config config = Server.getConfig();
