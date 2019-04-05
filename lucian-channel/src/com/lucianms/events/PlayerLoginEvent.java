@@ -205,9 +205,12 @@ public class PlayerLoginEvent extends PacketEvent {
             player.scheduleSpiritPendant();
         }
 
+        player.changeSkillLevel(SkillFactory.getSkill(10000000 * player.getJobType() + 12), (byte) (player.getLinkedLevel() / 10), 20, -1);
+        player.changeSkillLevel(SkillFactory.getSkill(5001005), (byte) 0, 0, 0);
+        player.changeSkillLevel(SkillFactory.getSkill(15001003), (byte) 0, 0, 0);
+
         player.showNote();
         player.checkMessenger();
-        player.changeSkillLevel(SkillFactory.getSkill(10000000 * player.getJobType() + 12), (byte) (player.getLinkedLevel() / 10), 20, -1);
         player.checkBerserk();
         player.expirationTask();
         player.setRates();
