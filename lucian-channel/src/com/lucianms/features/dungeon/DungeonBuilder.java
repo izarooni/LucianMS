@@ -38,6 +38,7 @@ public class DungeonBuilder {
     private ArrayList<MapleMonster> spawns = new ArrayList<>();
     private ArrayList<Integer> itemRequirements = new ArrayList<>();
     private Task endTask;
+    private Task respawnTask;
     private MapleMap map;
     private String areLacking = "";
     private int timeLimit = 300;
@@ -92,14 +93,8 @@ public class DungeonBuilder {
             if (monster != null) {
 
                 int randomPlatform = this.platforms[Randomizer.nextInt(this.platforms.length)];
-                Point point = new Point(Randomizer.nextInt(maxX + minX) - minX, randomPlatform);
-                Point newpos = map.calcPointBelow(point);
-                if (newpos == null) {
-                    LOGGER.warn("No foothold for monster {} at x:{},y:{} in map {}", monster.getId(), monster.getPosition().x, monster.getPosition().y, mapId);
-                    continue;
-                }
-                newpos.y -= 1;
-                monster.setPosition(newpos);
+                Point point = new Point(Randomizer.nextInt(maxX + minX) - minX, randomPlatform - 2);
+                monster.setPosition(point);
                 SpawnPoint spawnPoint = new SpawnPoint(map, monster, !monster.isMobile(), respawnTime, -1);
 
                 MapleMonsterStats overrides = spawnPoint.createOverrides();
@@ -157,8 +152,21 @@ public class DungeonBuilder {
                 // A respawning task that'll end the dungeon if everyone is gone
                 map.broadcastMessage(MaplePacketCreator.getClock(getTimeLimit()));
                 // get these people out of here!!
-                endTask = TaskExecutor.createTask(() -> map.getAllPlayer().forEach((move) -> move.changeMap(this.returnMap)), getTimeLimit() * 1000);
-
+                endTask = TaskExecutor.createTask(new Runnable() {
+                    @Override
+                    public void run() {
+                        endTask = TaskExecutor.cancelTask(respawnTask);
+                        map.getAllPlayer().forEach((move) -> move.changeMap(DungeonBuilder.this.returnMap));
+                    }
+                }, getTimeLimit() * 1000);
+                respawnTask = TaskExecutor.createRepeatingTask(new Runnable() {
+                    @Override
+                    public void run() {
+                        for (SpawnPoint sp : map.getMonsterSpawnPoints()) {
+                            sp.attemptMonsterSummon();
+                        }
+                    }
+                }, 3000, 3000);
                 return true;
             }
         }
