@@ -143,6 +143,36 @@ public class MapleMap {
         }
     }
 
+    public static void doItemVac(MapleCharacter player, MaplePet pet, int range) {
+        List<MapleMapItem> mapDrops = player.getMap().getMapObjects().stream()
+                .filter(o -> o instanceof MapleMapItem)
+                .map(o -> (MapleMapItem) o)
+                .collect(Collectors.toList());
+        Point origin = (pet == null) ? player.getPosition() : pet.getPos();
+
+        for (MapleMapItem drop : mapDrops) {
+            if (range != -1) {
+                double distance = drop.getPosition().distance(origin);
+                if (distance > range) {
+                    continue;
+                }
+            }
+            if (drop.getMeso() > 0) {
+                player.gainMeso(drop.getMeso(), true);
+            } else {
+                MapleInventoryManipulator.addFromDrop(player.getClient(), drop.getItem(), true);
+            }
+            drop.setPickedUp(true);
+            if (pet != null) {
+                player.getMap().broadcastMessage(MaplePacketCreator.removeItemFromMap(drop.getObjectId(), 5, player.getId(), true, player.getPetIndex(pet)));
+            } else {
+                player.getMap().broadcastMessage(MaplePacketCreator.removeItemFromMap(drop.getObjectId(), 2, player.getId()), drop.getPosition());
+            }
+            player.getMap().removeMapObject(drop);
+        }
+        mapDrops.clear();
+    }
+
     public int getWorld() {
         return world;
     }
@@ -1697,10 +1727,12 @@ public class MapleMap {
 
     public List<MapleMapObject> getMapObjectsInRange(Point from, double rangeSq, List<MapleMapObjectType> types) {
         ArrayList<MapleMapObject> ret = new ArrayList<>();
-        for (MapleMapObject l : getMapObjects()) {
-            if (types.contains(l.getType())) {
-                if (from.distanceSq(l.getPosition()) <= rangeSq) {
-                    ret.add(l);
+        Iterator<MapleMapObject> iterator = getMapObjects().iterator();
+        while (iterator.hasNext()) {
+            MapleMapObject ent = iterator.next();
+            if (types.contains(ent.getType())) {
+                if (from.distanceSq(ent.getPosition()) <= rangeSq) {
+                    ret.add(ent);
                 }
             }
         }

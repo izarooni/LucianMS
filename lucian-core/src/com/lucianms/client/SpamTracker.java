@@ -24,6 +24,10 @@ public class SpamTracker {
             return true;
         }
 
+        public long getTimestamp() {
+            return timestamp;
+        }
+
         public int getTriggers() {
             return triggers;
         }
@@ -35,7 +39,10 @@ public class SpamTracker {
 
     public enum SpamOperation {
         PlayerCommands, NpcTalk, PortalScripts, SkillUsage, MoneyDrop, CashItemUse, PetFeeding, InventorySort, ChangeChannel,
-        ItemUse, InventoryMove, IdleHeal, CatchItem
+        ItemUse, InventoryMove, IdleHeal, CatchItem,
+
+        // occupations
+        OccTrollDebuff
     }
 
     private final ConcurrentHashMap<SpamOperation, SpamData> tracker = new ConcurrentHashMap<>();

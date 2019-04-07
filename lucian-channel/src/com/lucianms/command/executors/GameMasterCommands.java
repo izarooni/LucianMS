@@ -15,7 +15,6 @@ import com.lucianms.server.MapleInventoryManipulator;
 import com.lucianms.server.MapleItemInformationProvider;
 import com.lucianms.server.channel.MapleChannel;
 import com.lucianms.server.maps.MapleMap;
-import com.lucianms.server.maps.MapleMapItem;
 import com.lucianms.server.maps.MapleMapObject;
 import com.lucianms.server.maps.MapleMapObjectType;
 import com.lucianms.server.world.MapleWorld;
@@ -474,6 +473,8 @@ public class GameMasterCommands {
                 } else {
                     player.sendMessage(5, "Unable to find any player named '{}'", args.get(0));
                 }
+            } else if (args.length() == 0) {
+                player.levelUp(false);
             } else {
                 player.sendMessage(5, "syntax: !{} <username> <levels>", command.getName());
             }
@@ -829,21 +830,7 @@ public class GameMasterCommands {
                 player.dropMessage(5, "You must specify a message");
             }
         } else if (command.equals("itemvac")) {
-            List<MapleMapObject> objects = new ArrayList<>(player.getMap().getMapObjects());
-            for (MapleMapObject mapObject : objects) {
-                if (mapObject instanceof MapleMapItem) {
-                    MapleMapItem mapItem = ((MapleMapItem) mapObject);
-                    if (mapItem.getMeso() > 0) {
-                        player.gainMeso(mapItem.getMeso(), true);
-                    } else {
-                        MapleInventoryManipulator.addFromDrop(client, mapItem.getItem(), true);
-                    }
-                    mapItem.setPickedUp(true);
-                    player.getMap().broadcastMessage(MaplePacketCreator.removeItemFromMap(mapItem.getObjectId(), 2, player.getId()), mapItem.getPosition());
-                    player.getMap().removeMapObject(mapObject);
-                }
-            }
-            objects.clear();
+            MapleMap.doItemVac(player, null,-1);
         } else if (command.equals("characters")) {
             if (args.length() == 1) {
                 String username = args.get(0);

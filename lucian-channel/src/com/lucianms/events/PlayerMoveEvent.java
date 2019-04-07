@@ -41,9 +41,9 @@ public final class PlayerMoveEvent extends PacketEvent {
         MovementPacketHelper.updatePosition(movements, player, 0);
         player.getMap().movePlayer(player, player.getPosition());
         if (player.isHidden()) {
-            player.getMap().broadcastGMMessage(player, MaplePacketCreator.movePlayer(player.getId(), movements), false);
+            player.getMap().broadcastGMMessage(player, MaplePacketCreator.movePlayer(player.getId(), clientPosition, movements), false);
         } else {
-            player.getMap().broadcastMessage(player, MaplePacketCreator.movePlayer(player.getId(), movements), false);
+            player.getMap().broadcastMessage(player, MaplePacketCreator.movePlayer(player.getId(), clientPosition, movements), false);
         }
 
         final FakePlayer fPlayer = player.getFakePlayer();
@@ -52,7 +52,7 @@ public final class PlayerMoveEvent extends PacketEvent {
                 @Override
                 public void run() {
                     MovementPacketHelper.updatePosition(movements, fPlayer, 0);
-                    fPlayer.getMap().broadcastMessage(fPlayer, MaplePacketCreator.movePlayer(fPlayer.getId(), movements), false);
+                    fPlayer.getMap().broadcastMessage(fPlayer, MaplePacketCreator.movePlayer(fPlayer.getId(), clientPosition, movements), false);
                 }
             }, 100);
         }

@@ -9,10 +9,7 @@ import com.lucianms.server.*;
 import com.lucianms.server.channel.MapleChannel;
 import com.lucianms.server.guild.MapleGuild;
 import com.lucianms.server.guild.MapleGuildCharacter;
-import com.lucianms.server.life.MapleLifeFactory;
-import com.lucianms.server.life.MapleMonster;
-import com.lucianms.server.life.MapleMonsterStats;
-import com.lucianms.server.life.MapleNPC;
+import com.lucianms.server.life.*;
 import com.lucianms.server.maps.MapleFoothold;
 import com.lucianms.server.maps.MapleMap;
 import com.lucianms.server.world.MapleWorld;
@@ -187,7 +184,12 @@ public class HGMCommands {
                 player.dropMessage(5, "You need to specify the ID of the item you want.");
             }
         } else if (command.equals("respawn")) {
-            player.getMap().respawn();
+            for (SpawnPoint sp : player.getMap().getMonsterSpawnPoints()) {
+                if (sp.canSpawn(true)) {
+                    sp.getMonster();
+                    sp.summonMonster();
+                }
+            }
             player.getMap().resetReactors();
             player.sendMessage("Monsters and reactors have respawned and reset");
         } else if (command.equals("spawn")) {

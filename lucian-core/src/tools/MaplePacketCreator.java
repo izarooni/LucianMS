@@ -3898,11 +3898,11 @@ public class MaplePacketCreator {
         return mplew.getPacket();
     }
 
-    public static byte[] movePlayer(int cid, List<LifeMovementFragment> moves) {
+    public static byte[] movePlayer(int cid, Point origin, List<LifeMovementFragment> moves) {
         final MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
         mplew.writeShort(SendOpcode.MOVE_PLAYER.getValue());
         mplew.writeInt(cid);
-        mplew.writeInt(0);
+        mplew.writePos(origin);
         serializeMovementList(mplew, moves);
         return mplew.getPacket();
     }

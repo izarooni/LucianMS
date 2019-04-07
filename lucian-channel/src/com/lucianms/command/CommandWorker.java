@@ -83,7 +83,9 @@ public class CommandWorker {
                     }
                 }
             }
-            TaskExecutor.execute(() -> PlayerCommands.execute(client, command, args));
+            if (!OccupationCommands.execute(client, command, args)) {
+                TaskExecutor.execute(() -> PlayerCommands.execute(client, command, args));
+            }
             return true;
         }
         return false;
@@ -142,7 +144,7 @@ public class CommandWorker {
      */
     public static class CommandArgs {
 
-        private final String[] args;
+        private String[] args;
         private final String[] errors;
 
         public CommandArgs(String[] args) {
@@ -176,6 +178,13 @@ public class CommandWorker {
          */
         public int length() {
             return args.length;
+        }
+
+        public void setLength(int length) {
+            if (length == args.length) return;
+            String[] temp = new String[length];
+            System.arraycopy(args, 0, temp, 0, args.length);
+            args = temp;
         }
 
         /**

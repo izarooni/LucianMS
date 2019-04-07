@@ -155,7 +155,8 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
     private boolean muted;
     private boolean debug;
     private boolean isbanned;
-    private boolean autorebirthing;
+    private boolean autoRebirth;
+    private boolean autoCurrency;
     private boolean eyeScannersEquiped;
     private boolean finishedDojoTutorial, dojoParty;
     private boolean hidden, canDoor = true, berserk, hasMerchant, whiteChat;
@@ -2156,11 +2157,15 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
     }
 
     public void gainExp(int gain, int party, boolean show, boolean inChat, boolean white) {
+        if (getOccupation() != null) {
+            if (getOccupation().getType() == Occupation.Type.Trainer) {
+                gain += gain * ((getOccupation().getLevel() + 10) / 100d);
+            }
+        }
         if (hasDisease(MapleDisease.CURSE)) {
             gain *= 0.5;
             party *= 0.5;
         }
-
         int equip = (gain / 10) * pendantExp;
         int total = gain + equip + party;
 
@@ -2186,7 +2191,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
                 }
             }
         } else {
-            if (autorebirthing) {
+            if (autoRebirth) {
                 doRebirth();
             }
         }
@@ -2213,10 +2218,18 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
         if (meso.get() + gain < 0) {
             client.announce(MaplePacketCreator.enableActions());
             return;
+        } else if (gain != 0) {
+            updateSingleStat(MapleStat.MESO, meso.addAndGet(gain), enableActions);
+            if (show) {
+                client.announce(MaplePacketCreator.getShowMesoGain(gain, inChat));
+            }
         }
-        updateSingleStat(MapleStat.MESO, meso.addAndGet(gain), enableActions);
-        if (show) {
-            client.announce(MaplePacketCreator.getShowMesoGain(gain, inChat));
+        if (isAutoCurrency() && meso.get() >= 2000000000) {
+            if (MapleInventoryManipulator.checkSpace(getClient(), ServerConstants.CURRENCY, 1, "")) {
+                gainMeso(-2000000000, true);
+                MapleInventoryManipulator.addById(getClient(), ServerConstants.CURRENCY, (short) 1);
+
+            }
         }
     }
 
@@ -3452,9 +3465,6 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
         } else if (job.isA(MapleJob.BOWMAN) || job.isA(MapleJob.THIEF) || (job.getId() > 1299 && job.getId() < 1500)) {
             maxhp += Randomizer.rand(20, 24);
             maxmp += Randomizer.rand(14, 16);
-        } else if (job.isA(MapleJob.GM)) {
-            maxhp = 30000;
-            maxmp = 30000;
         } else if (job.isA(MapleJob.PIRATE) || job.isA(MapleJob.THUNDERBREAKER1)) {
             improvingMaxHP = isCygnus() ? SkillFactory.getSkill(ThunderBreaker.IMPROVE_MAXHP) : SkillFactory.getSkill(5100000);
             improvingMaxHPLevel = getSkillLevel(improvingMaxHP);
@@ -3480,18 +3490,8 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
         }
         level++;
         Achievements.testFor(this, -1);
-        if (level >= getMaxLevel()) {
-            exp.set(0);
-            level = getMaxLevel(); // To prevent levels past 200
-        }
-        if (level % 50 == 0) { // For the drop + meso rate
-            setRates();
-        }
         maxhp = Math.min(30000, maxhp);
         maxmp = Math.min(30000, maxmp);
-        if (level == 200) {
-            exp.set(0);
-        }
         hp = maxhp;
         mp = maxmp;
         recalcLocalStats();
@@ -3514,23 +3514,18 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
         recalcLocalStats();
         setMPC(new MaplePartyCharacter(this));
         silentPartyUpdate();
-        if (ServerConstants.PERFECT_PITCH && level >= 30) {
-            if (MapleInventoryManipulator.checkSpace(client, 4310000, (short) 1, "")) {
-                MapleInventoryManipulator.addById(client, 4310000, (short) 1);
-            }
-        }
-        //        if (this.guildid > 0) {
-        //            getGuild().broadcast(MaplePacketCreator.levelUpMessage(2, level, name), this.getId());
-        //        }
-        //        if (level == 200 && !isGM()) {
-        //            final String names = (getMedalText() + name);
-        //            client.getWorldServer().broadcastPacket(MaplePacketCreator.serverNotice(6, String.format(LEVEL_200, names, names)));
-        //        }
-        //        levelUpMessages();
         guildUpdate();
-        if (level % 50 == 0) {
-            if (MapleInventoryManipulator.checkSpace(client, 5220000, (short) 1, "")) {
-                MapleInventoryManipulator.addById(client, 5220000, (short) 1);
+
+        Occupation occupation = getOccupation();
+        if (occupation != null) {
+            if (occupation.getType() == Occupation.Type.Looter) {
+                MaplePet pet = getPet(0);
+                if (pet != null) {
+                    MapleMap.doItemVac(this, pet, 80 * (occupation.getLevel() + 1));
+                    if (occupation.gainExperience(10)) {
+                        sendMessage("Your occupation is now level {}", occupation.getLevel());
+                    }
+                }
             }
         }
     }
@@ -4207,6 +4202,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
                     "    eventpoints          = ?,\n" +
                     "    rebirthpoints        = ?,\n" +
                     "    occupation           = ?,\n" +
+                    "    occupation_level     = ?,\n" +
                     "    jumpquestpoints      = ?,\n" +
                     "    chattype             = ?,\n" +
                     "    `name`               = ?,\n" +
@@ -4286,6 +4282,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
                     ps.setInt(i + 31, getSlots(i));
                 }
 
+                Optional<Occupation> occupation = Optional.ofNullable(this.occupation);
                 monsterbook.saveCards(con, getId());
 
                 ps.setInt(36, bookCover);
@@ -4306,12 +4303,13 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
                 ps.setInt(51, rebirths);
                 ps.setInt(52, eventPoints);
                 ps.setInt(53, rebirthPoints);
-                ps.setInt(54, (occupation == null) ? -1 : occupation.getType().ordinal());
-                ps.setInt(55, jumpQuestPoints);
-                ps.setInt(56, chatType.ordinal());
-                ps.setString(57, name);
-                ps.setInt(58, msiCreations);
-                ps.setInt(59, id);
+                ps.setInt(54, occupation.map(o -> o.getType().ordinal()).orElse(-1));
+                ps.setInt(55, occupation.map(Occupation::getLevel).orElse((byte) 0));
+                ps.setInt(56, jumpQuestPoints);
+                ps.setInt(57, chatType.ordinal());
+                ps.setString(58, name);
+                ps.setInt(59, msiCreations);
+                ps.setInt(60, id);
                 int updateRows = ps.executeUpdate();
                 if (updateRows < 1) {
                     throw new RuntimeException("Character not in database (" + id + ")");
@@ -4598,7 +4596,12 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
         dropRate = w.getDropRate();
 
         if (occupation != null) {
+            byte occupationLevel = (byte) Math.max(1, occupation.getLevel());
             switch (occupation.getType()) {
+                case Farmer:
+                    mesoRate += 100 * occupationLevel;
+                    dropRate += 1;
+                    break;
                 case Pharaoh:
                     expRate += 1;
                     mesoRate -= 1;
@@ -5699,12 +5702,20 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
         this.immortalTimestamp = immortalTimestamp;
     }
 
-    public boolean isAutorebirthing() {
-        return autorebirthing;
+    public boolean isAutoRebirth() {
+        return autoRebirth;
     }
 
-    public void setAutorebirthing(boolean autorebirthing) {
-        this.autorebirthing = autorebirthing;
+    public void setAutoRebirth(boolean autoRebirth) {
+        this.autoRebirth = autoRebirth;
+    }
+
+    public boolean isAutoCurrency() {
+        return autoCurrency;
+    }
+
+    public void setAutoCurrency(boolean autoCurrency) {
+        this.autoCurrency = autoCurrency;
     }
 
     public boolean isEyeScannersEquiped() {

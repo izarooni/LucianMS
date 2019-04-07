@@ -79,7 +79,8 @@ public class PlayerCommands {
             commands.add("@house - Display the house manager NPC");
             commands.add("@jobs - Display a list of job modifications");
             commands.add("@chalktalk - Display a chalkboard with specified text");
-//            commands.add("@rebirth - Reset your player level to earn more AP");
+            commands.add("@rebirth - Reset your player level to earn more AP");
+            commands.add("@occupation - List commands for your occupation");
             commands.sort(String::compareTo);
             if (npc) {
                 StringBuilder sb = new StringBuilder();
@@ -121,14 +122,17 @@ public class PlayerCommands {
             }
             player.sendMessage("================ '{}''s Stats ================", target.getName());
             player.sendMessage("EXP {}x, MESO {}x, DROP {}x", target.getExpRate(), target.getMesoRate(), target.getDropRate());
-            //   player.sendMessage("Rebirths: {}", player.getRebirths());
             player.sendMessage("Mesos: {}", StringUtil.formatNumber(target.getMeso()));
             player.sendMessage("Ability Points: {}", StringUtil.formatNumber(target.getRemainingAp()));
             player.sendMessage("Skill Points: {}", StringUtil.formatNumber(target.getRemainingSp()));
             player.sendMessage("Hair / Face: {} / {}", target.getHair(), target.getFace());
-            player.sendMessage("Crystals: {}", target.getItemQuantity(ServerConstants.CURRENCY, false));
-            Occupation occupation = target.getOccupation();
-            player.sendMessage("Occupation: {}", (occupation == null) ? "N/A" : occupation.getType().name());
+            player.sendMessage("========== Etc ==========");
+            player.sendMessage("Currency: {}", target.getItemQuantity(ServerConstants.CURRENCY, false));
+            Optional<Occupation> occupation = Optional.ofNullable(player.getOccupation());
+            player.sendMessage("Rebirths: {}", player.getRebirths());
+            player.sendMessage("Occupation: {} Lv.{}", occupation.map(o -> o.getType().name()).orElse("N/A"), occupation.map(Occupation::getLevel).orElse((byte) 0));
+            player.sendMessage("Occupation Exp: {} / {}", occupation.map(Occupation::getExperience).orElse(0), occupation.map(o -> o.getType().getExperienceForLv(o.getLevel())).orElse(0));
+            player.sendMessage("========== Points ==========");
             player.sendMessage("Fishing Points: {}", StringUtil.formatNumber(target.getFishingPoints()));
             player.sendMessage("Event Points" + StringUtil.formatNumber(target.getEventPoints()));
             player.sendMessage("Donor Points: {}", StringUtil.formatNumber(target.getClient().getDonationPoints()));

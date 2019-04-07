@@ -2,6 +2,7 @@ package com.lucianms.command.executors;
 
 import com.lucianms.client.*;
 import com.lucianms.client.inventory.Equip;
+import com.lucianms.client.meta.Occupation;
 import com.lucianms.command.CommandWorker;
 import com.lucianms.cquest.CQuestBuilder;
 import com.lucianms.events.PlayerRingActionEvent;
@@ -56,6 +57,7 @@ public class AdministratorCommands {
                 commands.add("!wpos - Warp yourself to a specified {x,y} position in the current map");
                 commands.add("!setgmlevel - Change the GM level of a specified player");
                 commands.add("!setcouple - Declare two specified players as a married couple");
+                commands.add("!occupation - Changes your occupation");
                 commands.sort(String::compareTo);
                 commands.forEach(player::dropMessage);
             } finally {
@@ -333,6 +335,36 @@ public class AdministratorCommands {
                 player.sendMessage(6, "Success!");
             } else {
                 player.sendMessage(5, "usage: !setcouple <engagement_box> <groom> <bride>");
+            }
+        } else if (command.equals("occupation")) {
+            if (args.length() != 1) {
+                player.dropMessage("usage: !occupation <occupation_name>");
+                Occupation.Type[] values = Occupation.Type.values();
+                StringBuilder sb = new StringBuilder();
+                for (Occupation.Type value : values) {
+                    sb.append(value.name().toLowerCase()).append("(").append(value.ordinal()).append(")").append(", ");
+                }
+                sb.setLength(sb.length() - 2);
+                player.sendMessage(sb.toString());
+                return;
+            }
+            Number number = args.parseNumber(0, int.class);
+            if (number == null) {
+                if (args.get(0).equals("none")) {
+                    player.setOccupation(null);
+                    player.sendMessage("Occupation has been removed");
+                } else {
+                    player.sendMessage(args.getFirstError());
+                }
+                return;
+            }
+            Occupation.Type type = Occupation.Type.fromValue(number.intValue());
+            if (type != null) {
+                player.setOccupation(new Occupation(type));
+                player.setRates();
+                player.sendMessage("Occupation has changed to {}", type.name());
+            } else {
+                player.sendMessage("{} is not a valid occupation", number.intValue());
             }
         }
     }
