@@ -46,10 +46,12 @@ public class OccupationCommands {
                     break;
             }
             return true;
-        } else if (player.getOccupation().getType() == Occupation.Type.Troll) {
-            return ExecuteTroll(client, command, args);
-        } else if (player.getOccupation().getType() == Occupation.Type.Farmer) {
-            return ExecuteFarmer(client, command, args);
+        } else if (player.getOccupation().getType() == Occupation.Type.Troll
+                && ExecuteTroll(client, command, args)) {
+            return true;
+        } else if (player.getOccupation().getType() == Occupation.Type.Farmer
+                && ExecuteFarmer(client, command, args)) {
+            return true;
         }
         return false;
     }
@@ -69,9 +71,9 @@ public class OccupationCommands {
         MapleCharacter player = client.getPlayer();
 
         SpamTracker.SpamData spammer = player.getSpamTracker(SpamTracker.SpamOperation.OccTrollDebuff);
-        if (spammer.testFor(TimeUnit.SECONDS.toMillis(60))) {
+        if (spammer.testFor(TimeUnit.SECONDS.toMillis(300))) {
             player.sendMessage("Commands on cooldown for {}s", (System.currentTimeMillis() - spammer.getTimestamp()) / 1000);
-            return true;
+            return false;
         }
         if (command.equals("warp")) {
             if (args.length() == 1) {
@@ -87,14 +89,17 @@ public class OccupationCommands {
             } else {
                 player.sendMessage("usage: @warp <username>");
             }
+            return true;
         } else if (command.equals("stun")) {
             args.setLength(1);
             giveDebuff(player, command, args.get(0), MobSkillFactory.getMobSkill(123, 1));
             spammer.record();
+            return true;
         } else if (command.equals("reverse")) {
             args.setLength(1);
             giveDebuff(player, command, args.get(0), MobSkillFactory.getMobSkill(120, 1));
             spammer.record();
+            return true;
         } else if (command.equals("bomb")) {
             MapleMonster monster = MapleLifeFactory.getMonster(9300166);
             if (monster != null) {
@@ -102,12 +107,14 @@ public class OccupationCommands {
                 player.getMap().spawnMonsterOnGroudBelow(monster, player.getPosition());
                 spammer.record();
             }
+            return true;
         } else if (command.equals("seduce")) {
             args.setLength(1);
             giveDebuff(player, command, args.get(0), MobSkillFactory.getMobSkill(128, 1));
             spammer.record();
+            return true;
         }
-        return true;
+        return false;
     }
 
     private static void giveDebuff(MapleCharacter player, CommandWorker.Command command, String username, MobSkill skill) {
