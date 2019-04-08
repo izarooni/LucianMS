@@ -1,4 +1,4 @@
 function action(mode, type, selection) {
-    cm.getPlayer().changeMap(90000008);
+    cm.getPlayer().changeMap(96);
     cm.dispose();
 }

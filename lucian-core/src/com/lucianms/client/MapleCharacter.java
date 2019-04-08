@@ -2159,7 +2159,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
     public void gainExp(int gain, int party, boolean show, boolean inChat, boolean white) {
         if (getOccupation() != null) {
             if (getOccupation().getType() == Occupation.Type.Trainer) {
-                gain += gain * ((getOccupation().getLevel() + 10) / 100d);
+                gain += gain * (getOccupation().getLevel() / 10);
             }
         }
         if (hasDisease(MapleDisease.CURSE)) {
@@ -4600,7 +4600,9 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
             switch (occupation.getType()) {
                 case Farmer:
                     mesoRate += 100 * occupationLevel;
-                    dropRate += 1;
+                    break;
+                case Looter:
+                    dropRate += 2;
                     break;
                 case Pharaoh:
                     expRate += 1;

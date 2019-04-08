@@ -23,27 +23,27 @@ function action(mode, type, selection) {
     }
     if (status == 1) {
         if (pocc == null) {
-            cm.sendNext("You haven't decided on your occupation?\r\nThere's a few you can pick from, let me tell you about them");
+            cm.sendNext("You haven't decided on your occupation?\r\nThere's a few you can pick from, let's take a look");
         } else {
             cm.sendNext("You are currently a member of the #b" + NameFromValue(pocc.getType().ordinal()) + "#k occupation");
             status = 2;
         }
     } else if (status == 2){
-        cm.sendSimple("There's #bPharoah, Undead, Demon and Human#k and each one has it's own attributes that may help with your endeavors. Which one would you like to learn about?\r\n#b"
-            + "\r\n#L0#Pharoah#l"
-            + "\r\n#L1#Undead#l"
-            + "\r\n#L2#Demon#l"
-            + "\r\n#L3#Human#l");
+        cm.sendSimple("Each occupation has it's own attributes that may help with your endeavors. Which one would you like to learn about?\r\n#b"
+            + "\r\n#L0#Trainer#l"
+            + "\r\n#L1#Troll#l"
+            + "\r\n#L2#Farmer#l"
+            + "\r\n#L3#Looter#l");
     } else if (status == 3) {
         this.career = (selection > -1) ? selection : pocc.getType().ordinal();
         if (this.career == 0) {
-            cm.sendNextPrev("The #bPharaoh#k has a higher EXP rate (1+), but a lower meso & drop rate (-1)\r\n\r\n\t#bGood for people with no life");
+            cm.sendNextPrev("The #bTrainer#k has a maximum of 10 levels. As a trainer, the experience gained is increased by 10% for each occupation level reached.");
         } else if (this.career == 1) {
-            cm.sendNextPrev("The #bUndead#k gains HP each time a monster is attacked and does not lose EXP upon death\r\n\r\n\t#bGood for bossing & leeching");
+            cm.sendNextPrev("The #bTroll#k has a maximum of 5 levels. Trolls have access to special commands for debuffing players (ie. stun, reverse, seduce and bomb) and a command that allows warping to other players. One command is unlocked at each level");
         } else if (this.career == 2) {
-            cm.sendNextPrev("The #bDemon#k is immune to all diseases from monsters\r\n\r\n\t#bGood for bossing");
+            cm.sendNextPrev("The #bFarmer#k has a maximum of 3 levels. Farmers have a meso rate that increases for each occupation level and a command that allows automatic conversion from mesos to the server currency");
         } else if (this.career == 3) {
-            cm.sendNextPrev("The #bHuman#k has a higher loot rate and meso rate (1+)\r\n\r\n\t#bGood for farming")
+            cm.sendNextPrev("The #bLooter#k has a maximum of 5 levels. When a Looter has a pet with them, each time you (the player) level, items around the pet will \"vacuumed\" meaning that items and mesos will be looted for you. Each occupation will increase the range that the vacuum can reach for items.");
         } else {
             cm.sendOk("What?");
             cm.dispose();
