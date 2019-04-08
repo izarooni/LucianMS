@@ -5,6 +5,7 @@ import com.lucianms.client.inventory.Equip;
 import com.lucianms.client.inventory.Item;
 import com.lucianms.client.inventory.MapleInventory;
 import com.lucianms.client.inventory.MapleInventoryType;
+import com.lucianms.client.meta.Occupation;
 import com.lucianms.command.CommandWorker;
 import com.lucianms.constants.ItemConstants;
 import com.lucianms.constants.ServerConstants;
@@ -102,6 +103,7 @@ public class GameMasterCommands {
             commands.add("!gmmap - Warps you to the GM headquarters");
             commands.add("!itemq <itemid> <morethan> - Check what online players have more than of an item id");
             commands.add("!killed - Find out who last died in the map.");
+            commands.add("!occupation - Changes your occupation");
             commands.sort(String::compareTo);
             commands.forEach(player::dropMessage);
             commands.clear();
@@ -830,7 +832,7 @@ public class GameMasterCommands {
                 player.dropMessage(5, "You must specify a message");
             }
         } else if (command.equals("itemvac")) {
-            MapleMap.doItemVac(player, null,-1);
+            MapleMap.doItemVac(player, null, -1);
         } else if (command.equals("characters")) {
             if (args.length() == 1) {
                 String username = args.get(0);
@@ -1199,6 +1201,36 @@ public class GameMasterCommands {
                 }
             } else {
                 player.dropMessage(5, "Syntax: !setall <number> [username]");
+            }
+        } else if (command.equals("occupation")) {
+            if (args.length() != 1) {
+                player.dropMessage("usage: !occupation <occupation_name>");
+                Occupation.Type[] values = Occupation.Type.values();
+                StringBuilder sb = new StringBuilder();
+                for (Occupation.Type value : values) {
+                    sb.append(value.name().toLowerCase()).append("(").append(value.ordinal()).append(")").append(", ");
+                }
+                sb.setLength(sb.length() - 2);
+                player.sendMessage(sb.toString());
+                return;
+            }
+            Number number = args.parseNumber(0, int.class);
+            if (number == null) {
+                if (args.get(0).equals("none")) {
+                    player.setOccupation(null);
+                    player.sendMessage("Occupation has been removed");
+                } else {
+                    player.sendMessage(args.getFirstError());
+                }
+                return;
+            }
+            Occupation.Type type = Occupation.Type.fromValue(number.intValue());
+            if (type != null) {
+                player.setOccupation(new Occupation(type));
+                player.setRates();
+                player.sendMessage("Occupation has changed to {}", type.name());
+            } else {
+                player.sendMessage("{} is not a valid occupation", number.intValue());
             }
         }
     }
