@@ -3,15 +3,16 @@ const MonsterPark = Java.type("com.lucianms.features.MonsterPark");
 /* izarooni */
 let status = 0;
 let options = {
-    "Job advancement":     {npc:9201433, script:null},
-    "Vote point trader":   {npc:9901754, script:null},
-    "Event point trader":  {npc:9901752, script:null},
-    "Donor point trader":  {npc:9901755, script:null},
-    "Eye Scanner trader":  {npc:9901753, script:null},
-    "Monster Coin trader": {npc:2007,    script:"shop_monster_coin"},
-    "Overwatch lootbox":   {npc:9270043, script:null},
-    "Styler":              {npc:9900001, script:null},
-    "Skill Fixer":         {npc:2007,    script:"f_skill_fixer"},
+    "Job advancement":     {npc:9201433,    script:null},
+    "Vote point trader":   {npc:9901754,    script:null},
+    "Event point trader":  {npc:9901752,    script:null},
+    "Donor point trader":  {npc:9901755,    script:null},
+    "Eye Scanner trader":  {npc:9901753,    script:null},
+    "Monster Coin trader": {npc:2007,       script:"shop_monster_coin"},
+    "Overwatch lootbox":   {npc:9270043,    script:null},
+    "Styler":              {npc:9900001,    script:null},
+    "Skill Fixer":         {npc:2007,       script:"f_skill_fixer"},
+    "All In One":          {npc:2007,       script:"_all_in_one"},
     get: function(idx) {
         let cidx = 0;
         for (let o in options) {
