@@ -22,12 +22,12 @@ public class OccupationCommands {
     public static boolean execute(MapleClient client, CommandWorker.Command command, CommandWorker.CommandArgs args) {
         MapleCharacter player = client.getPlayer();
 
+        if (player.getOccupation() == null) {
+            return false;
+        }
+
         if (command.equals("occupation")) {
             Occupation occupation = player.getOccupation();
-            if (occupation == null) {
-                player.dropMessage("You do not have an occupation");
-                return true;
-            }
             Occupation.Type type = occupation.getType();
             byte level = occupation.getLevel();
             switch (type) {
@@ -35,14 +35,15 @@ public class OccupationCommands {
                     player.sendMessage("Your occupation '{}' does not have any commands", type.name());
                     break;
                 case Troll:
-                    if (level >= 1) player.dropMessage("@warp");
-                    if (level >= 2) player.dropMessage("@stun");
-                    if (level >= 3) player.dropMessage("@reverse");
-                    if (level >= 4) player.dropMessage("@bomb");
-                    if (level >= 5) player.dropMessage("@seduce");
+                    if (level >= 1) player.dropMessage("@warp - Warp to any player");
+                    if (level >= 2) player.dropMessage("@stun - Apply a stun to a player");
+                    if (level >= 5) player.dropMessage("@seduce - Apply a seduce a player");
+                    if (level >= 3) player.dropMessage("@reverse - Apply a reverse debuff to a player");
+                    if (level >= 4)
+                        player.dropMessage("@bomb - Spawn a bomb that immediately explodes where you stand");
                     break;
                 case Farmer:
-                    player.dropMessage("@autocoin - Automatically converts mesos to server currency when possible");
+                    player.dropMessage("@autocoin - Automatically converts mesos to currency when possible");
                     break;
             }
             return true;
