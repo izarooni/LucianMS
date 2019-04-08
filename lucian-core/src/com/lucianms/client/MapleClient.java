@@ -1053,7 +1053,6 @@ public class MapleClient {
         player.getInventory(MapleInventoryType.EQUIPPED).checked(false); //test
         player.getMap().removePlayer(player);
         player.getClient().getChannelServer().removePlayer(player);
-        player.saveToDB();
         player.getClient().updateLoginState(MapleClient.LOGIN_SERVER_TRANSITION);
         try {
             announce(MaplePacketCreator.getChannelChange(InetAddress.getByName(socket[0]), Integer.parseInt(socket[1])));
