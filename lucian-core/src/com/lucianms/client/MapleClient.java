@@ -21,6 +21,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package com.lucianms.client;
 
+import at.favre.lib.crypto.bcrypt.BCrypt;
 import com.lucianms.client.inventory.MapleInventoryType;
 import com.lucianms.io.scripting.npc.NPCConversationManager;
 import com.lucianms.io.scripting.npc.NPCScriptManager;
@@ -428,7 +429,10 @@ public class MapleClient {
                         String passhash = rs.getString("password");
                         String salt = rs.getString("salt");
                         byte tos = rs.getByte("tos");
-                        if (pwd.equals(passhash) || checkHash(passhash, "SHA-1", pwd) || checkHash(passhash, "SHA-512", pwd + salt)) {
+                        if (pwd.equals(passhash)
+                                || BCrypt.verifyer().verify(pwd.getBytes(), passhash.getBytes()).verified
+                                || checkHash(passhash, "SHA-1", pwd)
+                                || checkHash(passhash, "SHA-512", pwd + salt)) {
                             if (tos == 0) {
                                 loginok = 23;
                             } else {
