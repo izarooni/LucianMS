@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/LucianMS.iml" filepath="$PROJECT_DIR$/LucianMS.iml" />
+      <module fileurl="file://$PROJECT_DIR$/lucian-channel/lucian-channel.iml" filepath="$PROJECT_DIR$/lucian-channel/lucian-channel.iml" />
+      <module fileurl="file://$PROJECT_DIR$/lucian-core/lucian-core.iml" filepath="$PROJECT_DIR$/lucian-core/lucian-core.iml" />
+      <module fileurl="file://$PROJECT_DIR$/lucian-login/lucian-login.iml" filepath="$PROJECT_DIR$/lucian-login/lucian-login.iml" />
+    </modules>
+  </component>
+</project>

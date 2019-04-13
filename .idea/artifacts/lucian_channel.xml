@@ -1,0 +1,20 @@
+<component name="ArtifactManager">
+  <artifact name="lucian-channel">
+    <output-path>$PROJECT_DIR$/classes/artifacts/lucian_channel</output-path>
+    <root id="root">
+      <element id="archive" name="lucian-channel.jar">
+        <element id="module-output" name="lucian-channel" />
+        <element id="module-output" name="lucian-core" />
+      </element>
+      <element id="library" level="project" name="Maven: com.google.protobuf:protobuf-java:3.6.1" />
+      <element id="library" level="project" name="Maven: com.zaxxer:HikariCP:3.2.0" />
+      <element id="library" level="project" name="Maven: commons-io:commons-io:2.6" />
+      <element id="library" level="project" name="Maven: io.netty:netty-all:4.1.30.Final" />
+      <element id="library" level="project" name="Maven: mysql:mysql-connector-java:8.0.14" />
+      <element id="library" level="project" name="Maven: org.slf4j:slf4j-api:1.7.25" />
+      <element id="library" level="project" name="Maven: org.slf4j:slf4j-jdk14:1.7.25" />
+      <element id="library" level="project" name="Maven: at.favre.lib:bcrypt:0.7.0" />
+      <element id="library" level="project" name="Maven: at.favre.lib:bytes:0.8.0" />
+    </root>
+  </artifact>
+</component>

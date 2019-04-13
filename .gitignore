@@ -6,7 +6,6 @@ classes
 *.MF
 
 MANIFEST.MF
-.idea
 *.iml
 .vs
 
