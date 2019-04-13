@@ -1,14 +1,7 @@
 #Project files
 out
 classes
-
-*.iml
-*.MF
-
-MANIFEST.MF
-*.iml
 .vs
-
 *.code-workspace
 
 #Server files

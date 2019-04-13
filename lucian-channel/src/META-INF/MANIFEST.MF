@@ -1,0 +1,7 @@
+Manifest-Version: 1.0
+Class-Path: commons-io-2.6.jar HikariCP-3.2.0.jar mysql-connector-java
+ -8.0.14.jar netty-all-4.1.30.Final.jar protobuf-java-3.6.1.jar slf4j-
+ api-1.7.25.jar slf4j-jdk14-1.7.25.jar bcrypt-0.7.0.jar bytes-0.8.0.ja
+ r
+Main-Class: com.lucianms.LChannelMain
+
