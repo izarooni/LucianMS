@@ -47,14 +47,14 @@ function action(mode, type, selection) {
         status++;
     }
     if (status == 1) {
-        cm.sendNext("Welcome! We hope you'll enjoy our server #bLucianMS#k. "
+        cm.sendNext("Welcome! We hope you'll enjoy our server #bChirithy#k. "
             + "Make sure to join our forum and Discord server to keep up with the latest updates!");
     } else if (status == 2) {
         if (UGiveaway.checkWithBoth(client.getRemoteAddress(), client.getHWID(), GiveawayType)) {
             if (silentQuest.isCompleted()) {
                 cm.sendOk("I've already given you your starter pack! Let's go going, the world is waiting for you!");
             } else {
-                cm.sendNext("According to our records... You're amazing! Thanks for playing #bLucianMS#k. "
+                cm.sendNext("According to our records... You're amazing! Thanks for playing #bChirithy#k. "
                     + "Here are a few things to help get you started~");
                 cm.gainItem(2000002, 200);  // white potions
                 cm.gainItem(2000006, 200); // mana elixir
@@ -77,7 +77,7 @@ function action(mode, type, selection) {
         }
     } else if (status == 3) {
         if (firstDay) {
-            cm.sendNext("It's launch day!! Thanks for taking time to try out #bLucianMS#k!\r\nFor playing on the first day, we would like to reward you with this very exclusive medal");
+            cm.sendNext("It's launch day!! Thanks for taking time to try out #bChirithy#k!\r\nFor playing on the first day, we would like to reward you with this very exclusive medal");
             let equip = new Equip(GiveawayMedal, 1);
             equip.setStr(5);
             equip.setDex(5);

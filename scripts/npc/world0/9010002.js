@@ -22,7 +22,7 @@ function action(mode, type, selection) {
         else
             status--;
         if (status == 0){
-            var txt1 = "Hello #b" + cm.getPlayer().getName() + "#k! I am the v83 chair trader of LucianMS!\r\nWhich chair would you like to buy?\r\n\r\n";
+            var txt1 = "Hello #b" + cm.getPlayer().getName() + "#k! I am the v83 chair trader of Chirithy!\r\nWhich chair would you like to buy?\r\n\r\n";
             var txt2 ="-----------------------------------#e#rFREE#n#k-----------------------------------\r\n\r\n";
             for (var i = 0; i < chair1.length; i++)
                 txt2 += "#L" + i + "##v" + chair1[i] + "##l    ";

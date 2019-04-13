@@ -36,7 +36,7 @@ function action(mode, type, selection) {
         if (this.optional.isPresent()) {
             cm.openNpc(9071000, "f_monster_park_quit");
         } else {
-            let content = "Welcome to #bLucianMS#k! What can I help you with?\r\n#b";
+            let content = "Welcome to #bChirithy#k! What can I help you with?\r\n#b";
             let i = 0;
             for (let o in options) {
                 if (options.hasOwnProperty(o) && typeof options[o] != "function") {
