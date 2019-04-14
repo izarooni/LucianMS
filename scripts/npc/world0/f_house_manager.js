@@ -1,9 +1,11 @@
 const HouseManager = Java.type("com.lucianms.helpers.HouseManager");
 const MapleCharacter = Java.type("com.lucianms.client.MapleCharacter");
 const StringUtil = Java.type("tools.StringUtil");
+const ServerConstants = Java.type("com.lucianms.constants.ServerConstants");
 
 const FEE_INITIAL = 3000000;
 const FEE_RENT = 2100000;
+const SELL_RETURN_PERCENTAGE = 75; // percentage of initial fee to be returned upon selling the house
 
 /* izarooni */
 let status = 0;
@@ -53,7 +55,24 @@ function action(mode, type, selection) {
                 cm.dispose();
             }
         } else if (operation == 3) {
-            cm.sendOk("Selling houses is currently unavailable.");
+            if(cm.getMeso() + (FEE_INITIAL * (SELL_RETURN_PERCENTAGE / 100)) <= Integer.MAX_VALUE) {
+                player.sendOk("You have sold your house.");
+                HouseManager.removeHouse(player.getId());
+                player.gainMeso(FEE_INITIAL * (SELL_RETURN_PERCENTAGE / 100), true);
+                for(let target in player.getMap().getCharacters()) {
+                    // or perhaps another return map, not sure.
+                    target.changeMap(ServerConstants.HOME_MAP);
+
+                    // notify players that they have been warped out.
+                    if(!(target.equals(player))) {
+                        target.dropMessage("House manager: The owner of this house has sold the house, therefore you have been warped out.");
+                    }
+                }
+                cm.dispose();
+            } else {
+                cm.sendOk("Your meso pouch is too full to hold the returned meso amount.");
+                cm.dispose();
+            }
             cm.dispose();
         } else if (operation == 4) {
             let rent = house.getBillDate();
