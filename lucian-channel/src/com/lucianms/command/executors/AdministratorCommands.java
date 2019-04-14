@@ -26,6 +26,7 @@ import com.lucianms.server.maps.MapleMapObject;
 import com.lucianms.server.maps.MapleReactor;
 import com.lucianms.server.maps.PlayerNPC;
 import com.lucianms.server.world.MapleWorld;
+import tools.HexTool;
 
 import javax.script.ScriptException;
 import java.awt.*;
@@ -271,6 +272,12 @@ public class AdministratorCommands {
             } else {
                 player.sendMessage(5, "usage: !setgmlevel <username> <gm_level>");
             }
+        } else if (command.equals("pb")) {
+            if (args.length() == 0) {
+                player.sendMessage(5, "Not enough data provided");
+                return;
+            }
+            client.announce(HexTool.getByteArrayFromHexString(args.concatFrom(0)));
         } else if (command.equals("setcouple")) {
             if (args.length() == 3) {
                 Integer engagementBoxID = args.parseNumber(0, int.class);
