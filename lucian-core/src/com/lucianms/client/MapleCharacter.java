@@ -1210,14 +1210,14 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Di
     public void newClient(MapleClient client) {
         client.setAccountName(this.client.getAccountName());
         this.client = client;
-
         map = this.client.getChannelServer().getMap(getMapId());
         MaplePortal portal = map.findClosestSpawnpoint(getPosition());
-        if (portal == null) {
-            portal = map.getPortal(0);
+        if (portal == null && (portal = map.getPortal(0)) != null) {
+            setPosition(portal.getPosition());
+            initialSpawnPoint = portal.getId();
+        } else {
+            initialSpawnPoint = 0x80;
         }
-        this.setPosition(portal.getPosition());
-        this.initialSpawnPoint = portal.getId();
     }
 
     public void cancelBuffEffects() {

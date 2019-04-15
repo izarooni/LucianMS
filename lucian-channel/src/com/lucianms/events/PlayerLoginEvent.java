@@ -47,7 +47,7 @@ public class PlayerLoginEvent extends PacketEvent {
     @Override
     public Object onPacket() {
         MapleCharacter player = getClient().getWorldServer().getPlayer(playerID);
-        if (player == null) {
+        if (player == null || player.getClient() == null) {
             try (Connection con = getClient().getWorldServer().getConnection()) {
                 player = MapleCharacter.loadCharFromDB(con, playerID, getClient(), true);
             } catch (SQLException e) {

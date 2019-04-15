@@ -581,10 +581,11 @@ public class MapleClient implements Disposable {
         disconnecting = true;
         final MapleWorld world = getWorldServer();
         final MapleCharacter player = getPlayer();
-        if (player != null) {
-            player.getGenericEvents().forEach(e -> e.onPlayerDisconnect(player));
+        try {
+            if (player != null) {
+                player.getMap().removePlayer(player);
+                player.getGenericEvents().forEach(e -> e.onPlayerDisconnect(player));
 
-            try {
                 for (MapleQuestStatus status : player.getStartedQuests()) {
                     //This is for those quests that you have to stay logged in for a certain amount of time
                     MapleQuest quest = status.getQuest();
@@ -621,18 +622,18 @@ public class MapleClient implements Disposable {
                 } else if (getLoginState() == LoginState.Transfer) {
                     world.loggedOn(player.getName(), player.getId(), channelID, friends.getBuddyIds());
                 }
-            } catch (Throwable t) {
-                // whatever happens here, we still want to save the player.
-                t.printStackTrace();
-            } finally {
-                if (checkLoginState() != LoginState.Transfer) {
-                    setLoginState(LoginState.LogOut);
-                    session.attr(CLIENT_KEY).set(null);
-                    session.close();
-                    Functions.requireNotNull(player, MapleCharacter::dispose);
-                    dispose();
-                }
-                getWorldServer().removePlayer(player);
+            }
+        } catch (Throwable t) {
+            // whatever happens here, we still want to save the player.
+            t.printStackTrace();
+        } finally {
+            getWorldServer().removePlayer(player);
+            if (checkLoginState() != LoginState.Transfer) {
+                setLoginState(LoginState.LogOut);
+                session.attr(CLIENT_KEY).set(null);
+                session.close();
+                Functions.requireNotNull(player, MapleCharacter::dispose);
+                dispose();
             }
         }
     }
