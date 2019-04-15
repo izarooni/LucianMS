@@ -1669,9 +1669,6 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Di
                 client.announce(MaplePacketCreator.updateParty(client.getChannel(), party, PartyOperation.SILENT_UPDATE, null));
                 updatePartyMemberHP();
             }
-            if (getMap().getHPDec() > 0) {
-                hpDecreaseTask = TaskExecutor.createTask(this::doHurtHp, 10000);
-            }
         }
     }
 
@@ -1971,18 +1968,6 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Di
             default:
                 return false;
         }
-    }
-
-    public void doHurtHp() {
-        if (this.getInventory(MapleInventoryType.EQUIPPED).findById(getMap().getHPDecProtect()) != null) {
-            if (hpDecreaseTask != null) {
-                hpDecreaseTask.cancel();
-                hpDecreaseTask = null;
-            }
-            return;
-        }
-        addHP(-getMap().getHPDec());
-        hpDecreaseTask = TaskExecutor.createTask(this::doHurtHp, 10000);
     }
 
     /**

@@ -1,6 +1,7 @@
 package com.lucianms.server.maps.tasks;
 
 import com.lucianms.client.MapleCharacter;
+import com.lucianms.client.inventory.MapleInventoryType;
 import com.lucianms.client.meta.Occupation;
 import com.lucianms.constants.ServerConstants;
 import com.lucianms.scheduler.TaskExecutor;
@@ -33,6 +34,13 @@ public class FieldUpdateTask implements Runnable {
                     Iterator<MapleCharacter> iterator = map.getCharacters().iterator();
                     while (iterator.hasNext()) {
                         MapleCharacter player = iterator.next();
+
+                        if (map.getHPDec() > 0) {
+                            if (player.getInventory(MapleInventoryType.EQUIPPED).findById(map.getHPDecProtect()) != null) {
+                                player.addHP(-map.getHPDec());
+                            }
+                        }
+
                         Occupation occupation = player.getOccupation();
                         if (occupation != null) {
                             if (occupation.getType() == Occupation.Type.Troll &&

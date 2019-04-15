@@ -1,6 +1,8 @@
 package com.lucianms.events;
 
+import com.lucianms.client.MapleCharacter;
 import com.lucianms.nio.receive.MaplePacketReader;
+import com.lucianms.server.maps.MapleMap;
 
 public class FieldSetEvent extends PacketEvent {
 
@@ -10,7 +12,10 @@ public class FieldSetEvent extends PacketEvent {
 
     @Override
     public Object onPacket() {
-        getClient().getPlayer().setRates();
+        MapleCharacter player = getClient().getPlayer();
+        MapleMap map = player.getMap();
+
+        player.setRates();
         return null;
     }
 }
