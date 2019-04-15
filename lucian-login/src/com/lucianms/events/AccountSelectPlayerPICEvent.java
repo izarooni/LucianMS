@@ -1,8 +1,7 @@
 package com.lucianms.events;
 
-import com.lucianms.client.MapleClient;
+import com.lucianms.client.LoginState;
 import com.lucianms.nio.receive.MaplePacketReader;
-import com.lucianms.events.PacketEvent;
 import tools.MaplePacketCreator;
 
 import java.net.InetAddress;
@@ -31,18 +30,13 @@ public class AccountSelectPlayerPICEvent extends PacketEvent {
         getClient().updateMacs(macs);
         getClient().updateHWID(hwid);
 
-        if (getClient().hasBannedMac() || getClient().hasBannedHWID() || !getClient().playerBelongs(playerID)) {
+        if (getClient().hasBannedMac() || getClient().hasBannedHWID() || !getClient().isPlayerBelonging(playerID)) {
             getClient().getSession().close();
             return null;
         }
-//        if (ServerConstants.ENABLE_PIC && !client.checkPic(pic)) {
-//            client.announce(MaplePacketCreator.wrongPic());
-//            return;
-//        }
-
-        getClient().updateLoginState(MapleClient.LOGIN_SERVER_TRANSITION);
 
         try {
+            getClient().setLoginState(LoginState.Transfer);
             String[] socket = getClient().getChannelServer().getIP().split(":");
             getClient().announce(MaplePacketCreator.getServerIP(InetAddress.getByName(socket[0]), Integer.parseInt(socket[1]), playerID));
         } catch (UnknownHostException e) {

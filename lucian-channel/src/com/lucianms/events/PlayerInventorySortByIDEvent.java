@@ -42,7 +42,7 @@ public class PlayerInventorySortByIDEvent extends PacketEvent {
         }
 
         if (inventoryType < 1 || inventoryType > 5) {
-            getClient().disconnect(false);
+            getClient().disconnect();
             return null;
         }
 

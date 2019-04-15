@@ -21,11 +21,24 @@
 */
 package tools;
 
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.text.DecimalFormat;
 
 public class StringUtil {
 
     private static final DecimalFormat df = new DecimalFormat("#,###,###,###,###,###,###");
+
+    public static boolean checkHash(String hash, String type, String password) {
+        try {
+            MessageDigest digester = MessageDigest.getInstance(type);
+            digester.update(password.getBytes(StandardCharsets.UTF_8), 0, password.length());
+            return HexTool.toString(digester.digest()).replace(" ", "").toLowerCase().equals(hash);
+        } catch (NoSuchAlgorithmException e) {
+            throw new RuntimeException("Encoding the string failed", e);
+        }
+    }
 
     /**
      * Gets a string padded from the left to <code>length</code> by

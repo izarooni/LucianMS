@@ -1,5 +1,6 @@
 package com.lucianms.events;
 
+import com.lucianms.client.LoginState;
 import com.lucianms.nio.receive.MaplePacketReader;
 import tools.MaplePacketCreator;
 
@@ -12,7 +13,7 @@ public class AccountToSResultEvent extends PacketEvent {
 
     @Override
     public boolean inValidState() {
-        return !getClient().isLoggedIn();
+        return getClient().getLoginState() == LoginState.LogOut;
     }
 
     @Override

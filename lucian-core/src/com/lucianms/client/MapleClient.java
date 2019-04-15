@@ -44,16 +44,10 @@ import io.netty.channel.Channel;
 import io.netty.util.AttributeKey;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import tools.HexTool;
-import tools.MapleAESOFB;
-import tools.MaplePacketCreator;
-import tools.Pair;
+import tools.*;
 
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.net.InetAddress;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -62,61 +56,50 @@ import java.util.*;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
-public class MapleClient {
+public class MapleClient implements Disposable {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(MapleClient.class);
-    private static final long TRANSITION_TIMEOUT = 60000;
-
-    public static final int LOGIN_NOTLOGGEDIN = 0;
-    public static final int LOGIN_SERVER_TRANSITION = 1;
-    public static final int LOGIN_LOGGEDIN = 2;
     public static final AttributeKey<MapleClient> CLIENT_KEY = AttributeKey.newInstance(MapleClient.class.getName());
-
+    private static final Logger LOGGER = LoggerFactory.getLogger(MapleClient.class);
     private final Lock mutex = new ReentrantLock(true);
     private MapleAESOFB send;
     private MapleAESOFB receive;
     private Channel session;
     private MapleCharacter player;
-    private int channel = 1;
-    private int accId = 0;
-    private boolean loggedIn = false;
-    private boolean serverTransition = false;
-    private Calendar birthday = null;
-    private String accountName = null;
-    private int world;
-    private long lastPong;
-    private int gmlevel;
-    private Set<String> macs = new HashSet<>();
-    private byte characterSlots = 3;
-    private byte loginattempt = 0;
-    private String pin = null;
-    private int pinattempt = 0;
-    private String pic = null;
-    private String hwid = null;
-    private int picattempt = 0;
-    private byte gender = -1;
-    private boolean disconnecting = false;
-    private int voteTime = -1;
+    private Calendar birthday;
     private long sessionId;
-    private String lastKnownIP = null;
+    private long lastPong;
+    private int channel;
+    private int ID;
+    private int world;
+    private int gmlevel;
+    private int pinattempt;
+    private int picattempt;
+    private int voteTime;
+    private byte characterSlots;
+    private byte loginAttempts;
+    private byte gender;
+    private LoginState loginState;
+    private volatile boolean disconnecting;
+    private String pin;
+    private String pic;
+    private String hwid;
+    private String lastKnownIP;
+    private String accountName;
+    private Set<String> macs;
 
-    private long discordId = 0;
-    private String discordKey = null;
+    private long discordId;
+    private String discordKey;
 
     public MapleClient(MapleAESOFB send, MapleAESOFB receive, Channel session) {
         this.send = send;
         this.receive = receive;
         this.session = session;
-    }
 
-    private static boolean checkHash(String hash, String type, String password) {
-        try {
-            MessageDigest digester = MessageDigest.getInstance(type);
-            digester.update(password.getBytes("UTF-8"), 0, password.length());
-            return HexTool.toString(digester.digest()).replace(" ", "").toLowerCase().equals(hash);
-        } catch (NoSuchAlgorithmException | UnsupportedEncodingException e) {
-            throw new RuntimeException("Encoding the string failed", e);
-        }
+        gender = 10;
+        voteTime = -1;
+        characterSlots = 3;
+        loginState = LoginState.LogOut;
+        macs = new HashSet<>();
     }
 
     public MapleAESOFB getSendCrypto() {
@@ -153,7 +136,8 @@ public class MapleClient {
      * @param playerId ID of a character
      * @return true if the account the specified character belongs to this account, false otherwise
      */
-    public boolean playerBelongs(int playerId) {
+    @SuppressWarnings("BooleanMethodIsAlwaysInverted")
+    public boolean isPlayerBelonging(int playerId) {
         try (Connection con = Server.getConnection();
              PreparedStatement ps = con.prepareStatement("SELECT count(*) AS total FROM characters WHERE id = ? AND accountid = ? ")) {
             ps.setInt(1, playerId);
@@ -200,13 +184,9 @@ public class MapleClient {
             }
             return ret;
         } catch (SQLException e) {
-            LOGGER.info("Unable to load account ID: '{}', Name: {} character id and username information", accId, accountName, e);
+            LOGGER.info("Unable to load account ID: '{}', Name: {} character id and username information", ID, accountName, e);
             return Collections.emptyList();
         }
-    }
-
-    public boolean isLoggedIn() {
-        return loggedIn;
     }
 
     public boolean hasBannedIP() {
@@ -286,7 +266,7 @@ public class MapleClient {
     private void loadHWIDIfNescessary(Connection con) throws SQLException {
         if (hwid == null) {
             try (PreparedStatement ps = con.prepareStatement("SELECT hwid FROM accounts WHERE id = ?")) {
-                ps.setInt(1, accId);
+                ps.setInt(1, ID);
                 try (ResultSet rs = ps.executeQuery()) {
                     if (rs.next()) {
                         hwid = rs.getString("hwid");
@@ -299,7 +279,7 @@ public class MapleClient {
     private void loadMacsIfNescessary(Connection con) throws SQLException {
         if (macs.isEmpty()) {
             try (PreparedStatement ps = con.prepareStatement("SELECT macs FROM accounts WHERE id = ?")) {
-                ps.setInt(1, accId);
+                ps.setInt(1, ID);
                 try (ResultSet rs = ps.executeQuery()) {
                     if (rs.next()) {
                         for (String mac : rs.getString("macs").split(", ")) {
@@ -362,7 +342,7 @@ public class MapleClient {
         try (Connection con = Server.getConnection();
              PreparedStatement ps = con.prepareStatement("UPDATE accounts SET pin = ? WHERE id = ?")) {
             ps.setString(1, pin);
-            ps.setInt(2, accId);
+            ps.setInt(2, ID);
             ps.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
@@ -390,7 +370,7 @@ public class MapleClient {
         try (Connection con = Server.getConnection();
              PreparedStatement ps = con.prepareStatement("UPDATE accounts SET pic = ? WHERE id = ?")) {
             ps.setString(1, pic);
-            ps.setInt(2, accId);
+            ps.setInt(2, ID);
             ps.executeUpdate();
         } catch (SQLException ignored) {
         }
@@ -408,64 +388,52 @@ public class MapleClient {
         return false;
     }
 
-    public int login(String login, String pwd) {
-        int loginok = 5;
+    public int getLoginResponse(String username, String password) {
+        if (loginAttempts++ > 5) {
+            getSession().close();
+            return 3;
+        }
+        int loginResponse = 5;
         try (Connection con = Server.getConnection()) {
-            try (PreparedStatement ps = con.prepareStatement("SELECT id, password, salt, gender, banned, gm, pin, pic, characterslots, tos, ip FROM accounts WHERE name = ?")) {
-                ps.setString(1, login);
+            try (PreparedStatement ps = con.prepareStatement("SELECT * FROM accounts WHERE name = ?")) {
+                ps.setString(1, username);
                 try (ResultSet rs = ps.executeQuery()) {
                     if (rs.next()) {
                         if (rs.getByte("banned") == 1) {
                             return 3;
                         }
-                        accId = rs.getInt("id");
+                        ID = rs.getInt("id");
                         gmlevel = rs.getInt("gm");
                         pin = rs.getString("pin");
                         pic = rs.getString("pic");
                         gender = rs.getByte("gender");
-                        gender = (gender == 10) ? 0 : gender;
                         characterSlots = rs.getByte("characterslots");
                         lastKnownIP = rs.getString("ip");
-                        String passhash = rs.getString("password");
+                        String cryptoPassword = rs.getString("password");
                         String salt = rs.getString("salt");
-                        byte tos = rs.getByte("tos");
-                        if (pwd.equals(passhash)
-                                || BCrypt.verifyer().verify(pwd.getBytes(), passhash.getBytes()).verified
-                                || checkHash(passhash, "SHA-1", pwd)
-                                || checkHash(passhash, "SHA-512", pwd + salt)) {
-                            if (tos == 0) {
-                                loginok = 23;
-                            } else {
-                                loginok = 0;
+                        byte tos = rs.getByte("tos"); // who the fuck cares
+                        if (BCrypt.verifyer().verify(password.getBytes(), cryptoPassword.getBytes()).verified) {
+                            loginResponse = 0;
+                        } else if (password.equals(cryptoPassword)
+                                || StringUtil.checkHash(cryptoPassword, "SHA-1", password)
+                                || StringUtil.checkHash(cryptoPassword, "SHA-512", password + salt)) {
+                            loginResponse = 0;
+                            try (PreparedStatement fuck = con.prepareStatement("update accounts set password = ? where id = ?")) {
+                                String bcryptPassword = BCrypt.with(BCrypt.Version.VERSION_2Y).hashToString(10, password.toCharArray());
+                                fuck.setString(1, bcryptPassword);
+                                fuck.setInt(1, ID);
+                                fuck.executeUpdate();
                             }
                         } else {
-                            loggedIn = false;
-                            loginok = 4;
+                            loginResponse = 4;
                         }
                     }
                 }
             }
-            try (PreparedStatement ps = con.prepareStatement("INSERT INTO iplog (accountid, ip) VALUES (?, ?)")) {
-                ps.setInt(1, accId);
-                ps.setString(2, getRemoteAddress());
-                ps.executeUpdate();
-            }
-            if (loginok == 0) {
-                loginattempt = 0;
-                try (PreparedStatement ps = con.prepareStatement("update accounts set ip = ? where id = ?")) {
-                    ps.setString(1, getRemoteAddress());
-                    ps.setInt(2, getAccID());
-                    ps.executeUpdate();
-                } catch (SQLException e) {
-                    e.printStackTrace();
-                }
-            } else if (loginattempt > 4) {
-                getSession().close();
-            }
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        return loginok;
+        return loginResponse;
     }
 
     public Calendar getTempBanCalendar() {
@@ -498,7 +466,7 @@ public class MapleClient {
 
             int len = convert.length();
             for (int i = len - 2; i >= 0; i -= 2) {
-                hwid.append(convert.substring(i, i + 2));
+                hwid.append(convert, i, i + 2);
             }
             hwid.insert(4, "-");
 
@@ -507,13 +475,13 @@ public class MapleClient {
             try (Connection con = Server.getConnection();
                  PreparedStatement ps = con.prepareStatement("UPDATE accounts SET hwid = ? WHERE id = ?")) {
                 ps.setString(1, this.hwid);
-                ps.setInt(2, accId);
+                ps.setInt(2, ID);
                 ps.executeUpdate();
             } catch (SQLException e) {
                 e.printStackTrace();
             }
         } else {
-            disconnect(false); // Invalid HWID...
+            disconnect(); // Invalid HWID...
         }
     }
 
@@ -531,7 +499,7 @@ public class MapleClient {
         try (Connection con = Server.getConnection();
              PreparedStatement ps = con.prepareStatement("UPDATE accounts SET macs = ? WHERE id = ?")) {
             ps.setString(1, newMacData.toString());
-            ps.setInt(2, accId);
+            ps.setInt(2, ID);
             ps.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
@@ -539,70 +507,60 @@ public class MapleClient {
     }
 
     public int getAccID() {
-        return accId;
+        return ID;
     }
 
     public void setAccID(int accId) {
-        this.accId = accId;
+        this.ID = accId;
     }
 
-    public void updateLoginState(int newstate) {
-        try (Connection con = Server.getConnection();
-             PreparedStatement ps = con.prepareStatement("UPDATE accounts SET loggedin = ?, lastlogin = CURRENT_TIMESTAMP() WHERE id = ?")) {
-            ps.setInt(1, newstate);
-            ps.setInt(2, getAccID());
-            ps.executeUpdate();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        if (newstate == LOGIN_NOTLOGGEDIN) {
-            loggedIn = false;
-            serverTransition = false;
-        } else {
-            serverTransition = (newstate == LOGIN_SERVER_TRANSITION);
-            loggedIn = !serverTransition;
-        }
-    }
-
-    public int getLoginState() {  // 0 = LOGIN_NOTLOGGEDIN, 1= LOGIN_SERVER_TRANSITION, 2 = LOGIN_LOGGEDIN
-        try (Connection con = Server.getConnection();
-             PreparedStatement ps = con.prepareStatement("SELECT loggedin, lastlogin, UNIX_TIMESTAMP(birthday) AS birthday FROM accounts WHERE id = ?")) {
-            ps.setInt(1, getAccID());
-            try (ResultSet rs = ps.executeQuery()) {
-                if (!rs.next()) {
-                    throw new RuntimeException("getLoginState - MapleClient");
-                }
-                birthday = Calendar.getInstance();
-                long blubb = rs.getLong("birthday");
-                if (blubb > 0) {
-                    birthday.setTimeInMillis(blubb * 1000);
-                }
-                int state = rs.getInt("loggedin");
-                if (state == LOGIN_SERVER_TRANSITION) {
-                    long lastlogin = rs.getTimestamp("lastlogin").getTime() + TRANSITION_TIMEOUT;
-                    if (lastlogin < System.currentTimeMillis()) {
-                        state = LOGIN_NOTLOGGEDIN;
-                        updateLoginState(LOGIN_NOTLOGGEDIN);
-                    }
-                } else if (state == LOGIN_LOGGEDIN && player == null) {
-                    updateLoginState(LOGIN_LOGGEDIN);
-                }
-                if (state == LOGIN_LOGGEDIN) {
-                    loggedIn = true;
-                } else if (state == LOGIN_SERVER_TRANSITION) {
-                    try (PreparedStatement pps = con.prepareStatement("UPDATE accounts SET loggedin = 0 WHERE id = ?")) {
-                        pps.setInt(1, getAccID());
-                        pps.executeUpdate();
-                    }
-                } else {
-                    loggedIn = false;
-                }
-                return state;
+    public void setLoginState(LoginState loginState) {
+        this.loginState = loginState;
+        try (Connection con = Server.getConnection()) {
+            try (PreparedStatement ps = con.prepareStatement("update accounts set loggedin = ?, lastlogin = current_timestamp() where id = ?")) {
+                ps.setInt(1, loginState.ordinal());
+                ps.setInt(2, getAccID());
+                ps.executeUpdate();
             }
         } catch (SQLException e) {
-            loggedIn = false;
-            e.printStackTrace();
-            throw new RuntimeException("login state");
+            LOGGER.error("Failed to update login state for account {}", this, e);
+        }
+    }
+
+    public LoginState getLoginState() {
+        return loginState;
+    }
+
+    public LoginState checkLoginState() {
+        try (Connection con = Server.getConnection()) {
+            try (PreparedStatement ps = con.prepareStatement("select loggedin, lastlogin, UNIX_TIMESTAMP(birthday) as birthday from accounts where id = ?")) {
+                ps.setInt(1, getAccID());
+                try (ResultSet rs = ps.executeQuery()) {
+                    if (!rs.next()) {
+                        throw new RuntimeException();
+                    }
+                    birthday = Calendar.getInstance();
+                    long unixBirthday = rs.getLong("birthday");
+                    if (unixBirthday > 0) {
+                        birthday.setTimeInMillis(unixBirthday * 1000);
+                    }
+                    LoginState state = LoginState.values()[rs.getInt("loggedin")];
+                    switch (state) {
+                        case LogOut:
+                            break;
+                        case Transfer:
+                            break;
+                        case Login:
+                            if (player == null) {
+                                setLoginState(LoginState.LogOut);
+                            }
+                            break;
+                    }
+                    return state;
+                }
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
         }
     }
 
@@ -610,171 +568,102 @@ public class MapleClient {
         return date.get(Calendar.YEAR) == birthday.get(Calendar.YEAR) && date.get(Calendar.MONTH) == birthday.get(Calendar.MONTH) && date.get(Calendar.DAY_OF_MONTH) == birthday.get(Calendar.DAY_OF_MONTH);
     }
 
-    private void removePlayer() {
-        try {
-            player.cancelAllBuffs(true);
-            player.cancelAllDebuffs();
-            final MaplePlayerShop mps = player.getPlayerShop();
-            if (mps != null) {
-                mps.removeVisitors();
-                player.setPlayerShop(null);
+    @Override
+    public void dispose() {
+        MapleMap map = player.getMap();
+
+        player.cancelAllDebuffs();
+        player.setMessenger(null);
+        Functions.requireNotNull(player.getPlayerShop(), MaplePlayerShop::removeVisitors);
+        player.setPlayerShop(null);
+        final HiredMerchant merchant = player.getHiredMerchant();
+        if (merchant != null) {
+            if (merchant.isOwner(player)) {
+                merchant.setOpen(true);
+            } else {
+                merchant.removeVisitor(player);
             }
-            final HiredMerchant merchant = player.getHiredMerchant();
-            if (merchant != null) {
-                if (merchant.isOwner(player)) {
-                    merchant.setOpen(true);
-                } else {
-                    merchant.removeVisitor(player);
-                }
-                try {
-                    merchant.saveItems(false);
-                } catch (SQLException ex) {
-                    System.out.println("Error while saving Hired Merchant items.");
-                }
+            try (Connection con = Server.getConnection()) {
+                merchant.saveItems(con, false);
+            } catch (SQLException e) {
+                LOGGER.error("Failed to save merchant items for {}", this.toString(), e);
             }
-            player.setMessenger(null);
-            final MapleMiniGame game = player.getMiniGame();
-            if (game != null) {
-                player.setMiniGame(null);
-                if (game.isOwner(player)) {
-                    player.getMap().broadcastMessage(MaplePacketCreator.removeCharBox(player));
-                    game.broadcastToVisitor(MaplePacketCreator.getMiniGameClose());
-                } else {
-                    game.removeVisitor(player);
-                }
-            }
-            NPCScriptManager.dispose(this);
-            QuestScriptManager.dispose(this);
-            if (player.getTrade() != null) {
-                MapleTrade.cancelTrade(player);
-            }
-            if (player.getEventInstance() != null) {
-                player.getEventInstance().playerDisconnected(player);
-            }
-            if (player.getMap() != null) {
-                player.getMap().removePlayer(player);
-            }
-            if (player.getFakePlayer() != null) {
-                player.getMap().removeFakePlayer(player.getFakePlayer());
-            }
-        } catch (final Throwable t) {
-            t.printStackTrace();
         }
+        final MapleMiniGame game = player.getMiniGame();
+        if (game != null) {
+            if (game.isOwner(player)) {
+                map.broadcastMessage(MaplePacketCreator.removeCharBox(player));
+                game.broadcastToVisitor(MaplePacketCreator.getMiniGameClose());
+            } else {
+                game.removeVisitor(player);
+            }
+            player.setMiniGame(null);
+        }
+        NPCScriptManager.dispose(this);
+        QuestScriptManager.dispose(this);
+        Functions.requireNotNull(player.getTrade(), t -> MapleTrade.cancelTrade(player));
+        Functions.requireNotNull(player.getEventInstance(), eim -> eim.playerDisconnected(player));
+        Functions.requireNotNull(player.getFakePlayer(), map::removeFakePlayer);
+        map.removePlayer(player);
     }
 
-    public final void disconnect(boolean shutdown) {
+    public final void disconnect() {
         if (disconnecting) {
             return;
         }
         disconnecting = true;
-        if (player != null && player.getClient() != null) {
+        final MapleWorld world = getWorldServer();
+        final MapleCharacter player = getPlayer();
+        if (player != null) {
             player.getGenericEvents().forEach(e -> e.onPlayerDisconnect(player));
-            MapleMap map = player.getMap();
-            final MapleParty party = player.getParty();
-            final int idz = player.getId();
-            final int messengerid = player.getMessenger() == null ? 0 : player.getMessenger().getId();
-            //final int fid = player.getFamilyId();
-            final BuddyList bl = player.getBuddylist();
-            final MaplePartyCharacter chrp = new MaplePartyCharacter(player);
-            final MapleMessengerCharacter chrm = new MapleMessengerCharacter(player, 0);
-            final MapleGuildCharacter chrg = player.getMGC();
-            final MapleGuild guild = player.getGuild();
 
-            removePlayer();
-            player.saveCooldowns();
-            player.saveToDB();
-            if (channel == -1 || shutdown) {
-                player = null;
-                return;
-            }
-            final MapleWorld worlda = getWorldServer();
             try {
-                if (player.getCashShop().isOpened()) {
-                    if (!this.serverTransition) { // meaning not changing channels
-                        //region messenger
-                        if (messengerid > 0) {
-                            worlda.leaveMessenger(messengerid, chrm);
-                        }
-                        //endregion
-                        //region custom quests
-                        for (MapleQuestStatus status : player.getStartedQuests()) { //This is for those quests that you have to stay logged in for a certain amount of time
-                            MapleQuest quest = status.getQuest();
-                            if (quest.getTimeLimit() > 0) {
-                                MapleQuestStatus newStatus = new MapleQuestStatus(quest, MapleQuestStatus.Status.NOT_STARTED);
-                                newStatus.setForfeited(player.getQuest(quest).getForfeited() + 1);
-                                player.updateQuest(newStatus);
-                            }
-                        }
-                        //endregion
-                        //region guild
-                        if (guild != null) {
-                            Server.setGuildMemberOnline(chrg, false, player.getClient().getChannel());
-                            player.getClient().announce(MaplePacketCreator.showGuildInfo(player));
-                        }
-                        //endregion
-                        //region party
-                        if (party != null) {
-                            chrp.setOnline(false);
-                            worlda.updateParty(party.getId(), PartyOperation.LOG_ONOFF, chrp);
-                            if (map != null && party.getLeader().getId() == idz) {
-                                MaplePartyCharacter lchr = null;
-                                for (MaplePartyCharacter pchr : party.getMembers()) {
-                                    if (pchr != null && map.getCharacterById(pchr.getId()) != null && (lchr == null || lchr.getLevel() <= pchr.getLevel())) {
-                                        lchr = pchr;
-                                    }
-                                }
-                                if (lchr != null && lchr.getId() != player.getId()) {
-                                    worlda.updateParty(party.getId(), PartyOperation.CHANGE_LEADER, lchr);
-                                }
-                            }
-                        }
-                        //endregion
-                        //region buddy list
-                        if (bl != null) {
-                            worlda.loggedOff(player.getName(), player.getId(), channel, player.getBuddylist().getBuddyIds());
-                        }
-                        //endregion
-                    }
-                } else {
-                    if (!this.serverTransition) { // if dc inside of cash shop.
-                        //region party
-                        if (party != null) {
-                            chrp.setOnline(false);
-                            worlda.updateParty(party.getId(), PartyOperation.LOG_ONOFF, chrp);
-                            if (map != null && party.getLeader().getId() == idz) {
-                                MaplePartyCharacter lchr = null;
-                                for (MaplePartyCharacter pchr : party.getMembers()) {
-                                    if (pchr != null && map.getCharacterById(pchr.getId()) != null && (lchr == null || lchr.getLevel() <= pchr.getLevel())) {
-                                        lchr = pchr;
-                                    }
-                                }
-                                if (lchr != null && lchr.getId() != player.getId()) {
-                                    worlda.updateParty(party.getId(), PartyOperation.CHANGE_LEADER, lchr);
-                                }
-                            }
-                        }
-                        //endregion
-                        //region buddy list
-                        if (bl != null) {
-                            worlda.loggedOff(player.getName(), player.getId(), channel, player.getBuddylist().getBuddyIds());
-                        }
-                        //endregion
+                for (MapleQuestStatus status : player.getStartedQuests()) {
+                    //This is for those quests that you have to stay logged in for a certain amount of time
+                    MapleQuest quest = status.getQuest();
+                    if (quest.getTimeLimit() > 0) {
+                        MapleQuestStatus newStatus = new MapleQuestStatus(quest, MapleQuestStatus.Status.NOT_STARTED);
+                        newStatus.setForfeited(player.getQuest(quest).getForfeited() + 1);
+                        player.updateQuest(newStatus);
                     }
                 }
-            } finally {
-                LOGGER.info("Player {} disconnected", player.getName());
-                getChannelServer().removePlayer(player);
-                if (!this.serverTransition) {
-                    worlda.removePlayer(player);
-                    if (player != null) {
-                        player.empty(false);
+
+                MapleMessenger messenger = player.getMessenger();
+                if (messenger != null) {
+                    world.removeMessengerPlayer(messenger, messenger.getPositionByName(player.getName()));
+                }
+                int channelID = (getLoginState() == LoginState.Transfer) ? getChannel() : -1;
+                MapleGuild guild = player.getGuild();
+                if (guild != null) {
+                    Server.setGuildMemberOnline(player.getMGC(), (getLoginState() == LoginState.Transfer), channelID);
+                }
+                MapleParty party = player.getParty();
+                if (party != null) {
+                    MaplePartyCharacter mpc = player.getMPC();
+                    mpc.setOnline(false);
+                    mpc.setChannel(-1);
+                    world.updateParty(party.getId(), PartyOperation.LOG_ONOFF, mpc);
+                    if (party.getLeader().getId() == mpc.getId()) {
+                        var newLeader = party.getMembers().stream().filter(p -> p.getPlayer() != null).findAny();
+                        newLeader.ifPresent(maplePartyCharacter -> world.updateParty(party.getId(), PartyOperation.CHANGE_LEADER, maplePartyCharacter));
                     }
                 }
-                player = null;
+                BuddyList friends = player.getBuddylist();
+                if (getLoginState() == LoginState.Login) {
+                    world.loggedOff(player.getName(), player.getId(), channelID, friends.getBuddyIds());
+                } else if (getLoginState() == LoginState.Transfer) {
+                    world.loggedOn(player.getName(), player.getId(), channelID, friends.getBuddyIds());
+                }
+            } catch (Throwable t) {
+                // whatever happens here, we still want to save the player.
+                t.printStackTrace();
             }
+            getWorldServer().removePlayer(player);
+            player.dispose();
+            dispose();
         }
-        if (!serverTransition && isLoggedIn()) {
-            updateLoginState(MapleClient.LOGIN_NOTLOGGEDIN);
+        if (checkLoginState() != LoginState.Transfer) {
+            setLoginState(LoginState.LogOut);
             session.attr(CLIENT_KEY).set(null);
             session.close();
         }
@@ -803,14 +692,14 @@ public class MapleClient {
     public boolean deleteCharacter(int cid) {
         MapleCharacter player = Server.getWorld(0).getPlayer(cid);
         if (player != null) {
-            player.getClient().disconnect(false);
-            disconnect(false);
+            player.getClient().disconnect();
+            disconnect();
             return false; //DC both and return, fuck that
         }
         try (Connection con = Server.getConnection()) {
             try (PreparedStatement ps = con.prepareStatement("SELECT id, guildid, guildrank, name, allianceRank FROM characters WHERE id = ? AND accountid = ?")) {
                 ps.setInt(1, cid);
-                ps.setInt(2, accId);
+                ps.setInt(2, ID);
                 try (ResultSet rs = ps.executeQuery()) {
                     if (!rs.next()) {
                         return false;
@@ -914,7 +803,7 @@ public class MapleClient {
         }
         try (Connection con = Server.getConnection()) {
             try (PreparedStatement ps = con.prepareStatement("SELECT `tos` FROM accounts WHERE id = ?")) {
-                ps.setInt(1, accId);
+                ps.setInt(1, ID);
                 try (ResultSet rs = ps.executeQuery()) {
                     if (rs.next()) {
                         if (rs.getByte("tos") == 1) {
@@ -924,7 +813,7 @@ public class MapleClient {
                 }
             }
             try (PreparedStatement ps = con.prepareStatement("UPDATE accounts SET tos = 1 WHERE id = ?")) {
-                ps.setInt(1, accId);
+                ps.setInt(1, ID);
                 ps.executeUpdate();
             }
         } catch (SQLException e) {
@@ -936,7 +825,7 @@ public class MapleClient {
     public int getVotePoints() {
         try (Connection con = Server.getConnection();
              PreparedStatement ps = con.prepareStatement("SELECT votepoints FROM accounts WHERE id = ?")) {
-            ps.setInt(1, accId);
+            ps.setInt(1, ID);
             try (ResultSet rs = ps.executeQuery()) {
                 if (rs.next()) {
                     return rs.getInt("votepoints");
@@ -952,7 +841,7 @@ public class MapleClient {
         try (Connection con = Server.getConnection();
              PreparedStatement ps = con.prepareStatement("UPDATE accounts SET votepoints = ? WHERE id = ?")) {
             ps.setInt(1, n);
-            ps.setInt(2, accId);
+            ps.setInt(2, ID);
             ps.executeUpdate();
         } catch (SQLException e) {
             LOGGER.warn("Unable to update vote points for account {} player {}", getAccountName(), ((player != null) ? player.getName() : "N/A"), e);
@@ -976,7 +865,7 @@ public class MapleClient {
             try (Connection con = Server.getConnection();
                  PreparedStatement ps = con.prepareStatement("UPDATE accounts SET characterslots = ? WHERE id = ?")) {
                 ps.setInt(1, this.characterSlots += 1);
-                ps.setInt(2, accId);
+                ps.setInt(2, ID);
                 ps.executeUpdate();
             } catch (SQLException e) {
                 e.printStackTrace();
@@ -989,7 +878,7 @@ public class MapleClient {
     public final byte getGReason() {
         try (Connection con = Server.getConnection();
              PreparedStatement ps = con.prepareStatement("SELECT `greason` FROM `accounts` WHERE id = ?")) {
-            ps.setInt(1, accId);
+            ps.setInt(1, ID);
             try (ResultSet rs = ps.executeQuery()) {
                 if (rs.next()) {
                     return rs.getByte("greason");
@@ -1010,7 +899,7 @@ public class MapleClient {
         try (Connection con = Server.getConnection();
              PreparedStatement ps = con.prepareStatement("UPDATE accounts SET gender = ? WHERE id = ?")) {
             ps.setByte(1, gender);
-            ps.setInt(2, accId);
+            ps.setInt(2, ID);
             ps.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
@@ -1023,7 +912,7 @@ public class MapleClient {
 
     public void changeChannel(int channel) {
         if (player.isBanned()) {
-            disconnect(false);
+            disconnect();
             return;
         }
         if (!player.isAlive() || FieldLimit.CHANGECHANNEL.check(player.getMap().getFieldLimit())) {
@@ -1057,7 +946,7 @@ public class MapleClient {
         player.getInventory(MapleInventoryType.EQUIPPED).checked(false); //test
         player.getMap().removePlayer(player);
         player.getClient().getChannelServer().removePlayer(player);
-        player.getClient().updateLoginState(MapleClient.LOGIN_SERVER_TRANSITION);
+        player.getClient().setLoginState(LoginState.Transfer);
         try {
             announce(MaplePacketCreator.getChannelChange(InetAddress.getByName(socket[0]), Integer.parseInt(socket[1])));
         } catch (IOException e) {
@@ -1076,7 +965,7 @@ public class MapleClient {
     public int getDonationPoints() {
         try (Connection con = Server.getConnection();
              PreparedStatement ps = con.prepareStatement("SELECT donationpoints FROM accounts WHERE id = ?")) {
-            ps.setInt(1, accId);
+            ps.setInt(1, ID);
             try (ResultSet rs = ps.executeQuery()) {
                 if (rs.next()) {
                     return rs.getInt("donationpoints");
@@ -1092,7 +981,7 @@ public class MapleClient {
         try (Connection con = Server.getConnection();
              PreparedStatement ps = con.prepareStatement("UPDATE accounts SET donationpoints = ? WHERE id = ?")) {
             ps.setInt(1, n);
-            ps.setInt(2, accId);
+            ps.setInt(2, ID);
             ps.executeUpdate();
         } catch (SQLException e) {
             LOGGER.warn("Unable to update donation points for account {} player {}", getAccountName(), ((player != null) ? player.getName() : "N/A"), e);

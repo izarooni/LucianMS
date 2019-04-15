@@ -1,5 +1,6 @@
 package com.lucianms.events;
 
+import com.lucianms.client.LoginState;
 import com.lucianms.client.MapleClient;
 import com.lucianms.nio.receive.MaplePacketReader;
 import org.slf4j.Logger;
@@ -50,7 +51,7 @@ public abstract class PacketEvent implements Cleaner.Cleanable {
         posts.add(runnable);
     }
 
-    public  void packetCompleted() {
+    public void packetCompleted() {
         Runnable poll;
         while ((poll = posts.poll()) != null) {
             poll.run();
@@ -63,11 +64,11 @@ public abstract class PacketEvent implements Cleaner.Cleanable {
     }
 
     public boolean inValidState() {
-        return client != null && client.isLoggedIn();
+        return client.getLoginState() == LoginState.Login;
     }
 
     public boolean exceptionCaught(Throwable t) {
-        t.printStackTrace();
+        getLogger().error("{}", getClient().toString(), t);
         return false;
     }
 

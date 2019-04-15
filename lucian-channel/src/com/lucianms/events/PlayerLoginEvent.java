@@ -37,7 +37,7 @@ public class PlayerLoginEvent extends PacketEvent {
 
     @Override
     public boolean inValidState() {
-        return !getClient().isLoggedIn();
+        return getClient().getLoginState() == LoginState.LogOut;
     }
 
     @Override
@@ -62,10 +62,10 @@ public class PlayerLoginEvent extends PacketEvent {
         getClient().setAccID(player.getAccountID());
         getClient().setPlayer(player);
 
-        final int state = getClient().getLoginState();
+        final LoginState state = getClient().checkLoginState();
         MapleChannel channel = getClient().getChannelServer();
 
-        if (state != MapleClient.LOGIN_SERVER_TRANSITION) {
+        if (state != LoginState.Transfer) {
             getClient().setPlayer(null);
             getClient().announce(MaplePacketCreator.getAfterLoginError(7));
             return null;
@@ -74,12 +74,12 @@ public class PlayerLoginEvent extends PacketEvent {
             for (MapleChannel ch : getClient().getWorldServer().getChannels()) {
                 MapleCharacter found = ch.getPlayerStorage().get(p.getLeft());
                 if (found != null) {
-                    found.getClient().disconnect(true);
+                    found.getClient().disconnect();
                     break;
                 }
             }
         }
-        getClient().updateLoginState(MapleClient.LOGIN_LOGGEDIN);
+        getClient().setLoginState(LoginState.Login);
 
         if (JailManager.isJailed(player.getId())) {
             player.setMapId(JailManager.getRandomField());

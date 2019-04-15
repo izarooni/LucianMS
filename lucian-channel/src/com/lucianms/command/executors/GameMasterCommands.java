@@ -188,7 +188,7 @@ public class GameMasterCommands {
                     try {
                         for (MapleCharacter players : characters) {
                             if (!players.isGM()) {
-                                players.getClient().disconnect(false);
+                                players.getClient().disconnect();
                             }
                         }
                     } finally {
@@ -198,7 +198,7 @@ public class GameMasterCommands {
                 } else {
                     MapleCharacter target = client.getWorldServer().findPlayer(p -> p.getName().equalsIgnoreCase(username));
                     if (target != null) {
-                        target.getClient().disconnect(false);
+                        target.getClient().disconnect();
                     } else {
                         player.dropMessage(5, String.format("Unable to find any player named '%s'", username));
                     }
@@ -517,7 +517,7 @@ public class GameMasterCommands {
                 MapleCharacter target = client.getWorldServer().findPlayer(p -> p.getName().equalsIgnoreCase(username));
                 MapleCharacter.ban(username, args.concatFrom(1), false);
                 if (target != null) {
-                    target.getClient().disconnect(false);
+                    target.getClient().disconnect();
                     player.sendMessage(6, "'{}' has been banned", username);
                 } else {
                     player.sendMessage(6, "Offline banned '{}'", username);
@@ -655,7 +655,7 @@ public class GameMasterCommands {
                 if (args.get(0).equalsIgnoreCase("map")) {
                     ArrayList<MapleCharacter> characters = new ArrayList<>(player.getMap().getCharacters());
                     try {
-                        characters.stream().filter(p -> !p.isGM()).forEach(p -> p.getClient().disconnect(false));
+                        characters.stream().filter(p -> !p.isGM()).forEach(p -> p.getClient().disconnect());
                     } finally {
                         characters.clear();
                     }
@@ -665,7 +665,7 @@ public class GameMasterCommands {
                             String username = args.get(i);
                             MapleCharacter target = world.findPlayer(p -> p.getName().equalsIgnoreCase(username));
                             if (target != null) {
-                                target.getClient().disconnect(false);
+                                target.getClient().disconnect();
                             }
                         }
                     } else {

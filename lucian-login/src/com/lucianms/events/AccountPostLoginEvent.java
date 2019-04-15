@@ -1,8 +1,7 @@
 package com.lucianms.events;
 
-import com.lucianms.client.MapleClient;
+import com.lucianms.client.LoginState;
 import com.lucianms.nio.receive.MaplePacketReader;
-import com.lucianms.events.PacketEvent;
 import tools.MaplePacketCreator;
 
 /**
@@ -34,7 +33,7 @@ public class AccountPostLoginEvent extends PacketEvent {
         } else if (c2 == 2 && c3 == 0) {
             getClient().announce(getClient().checkPin(pin) ? MaplePacketCreator.registerPin() : MaplePacketCreator.requestPinAfterFailure());
         } else if (c2 == 0 && c3 == 5) {
-            getClient().updateLoginState(MapleClient.LOGIN_NOTLOGGEDIN);
+            getClient().setLoginState(LoginState.LogOut);
         }
         return null;
     }

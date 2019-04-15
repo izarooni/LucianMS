@@ -79,7 +79,7 @@ public final class PlayerDealDamageRangedEvent extends AbstractDealDamageEvent {
         if (player.getBuffEffect(MapleBuffStat.MORPH) != null) {
             if (player.getBuffEffect(MapleBuffStat.MORPH).isMorphWithoutAttack()) {
                 // How are they attacking when the client won't let them?
-                player.getClient().disconnect(false);
+                player.getClient().disconnect();
                 return null;
             }
         }

@@ -1,6 +1,7 @@
 package com.lucianms.events;
 
 import com.lucianms.Whitelist;
+import com.lucianms.client.LoginState;
 import com.lucianms.client.MapleClient;
 import com.lucianms.nio.receive.MaplePacketReader;
 import com.lucianms.server.Server;
@@ -22,7 +23,7 @@ public class AccountLoginEvent extends PacketEvent {
 
     @Override
     public boolean inValidState() {
-        return !getClient().isLoggedIn();
+        return getClient().getLoginState() == LoginState.LogOut;
     }
 
     @Override
@@ -45,7 +46,7 @@ public class AccountLoginEvent extends PacketEvent {
     public Object onPacket() {
         MapleClient client = getClient();
         client.setAccountName(username);
-        int loginResult = client.login(username, password);
+        int loginResult = client.getLoginResponse(username, password);
         if (loginResult == 0 && Server.getConfig().getBoolean("WhitelistEnabled")) {
             if (!Whitelist.hasAccount(client.getAccID())) {
                 LOGGER.warn("Attempted non-whitelist account login username: '{}' , accountID: '{}'", username, client.getAccID());
@@ -74,7 +75,7 @@ public class AccountLoginEvent extends PacketEvent {
         } else if (loginResult != 0) {
             client.announce(MaplePacketCreator.getLoginFailed(loginResult));
         } else {
-            getClient().updateLoginState(MapleClient.LOGIN_LOGGEDIN);
+            getClient().setLoginState(LoginState.Login);
             client.announce(MaplePacketCreator.getAuthSuccess(client));
         }
         return null;

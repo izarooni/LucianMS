@@ -82,7 +82,7 @@ public class MapleServerInboundHandler extends ChannelInboundHandlerAdapter {
         try {
             if (attr.get() != null) {
                 MapleClient client = attr.get();
-                client.disconnect(false);
+                client.disconnect();
             }
         } finally {
             attr.set(null);

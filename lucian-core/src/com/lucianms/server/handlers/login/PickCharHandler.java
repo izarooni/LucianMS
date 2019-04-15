@@ -1,8 +1,8 @@
 package com.lucianms.server.handlers.login;
 
-import com.lucianms.client.MapleClient;
-import com.lucianms.nio.receive.MaplePacketReader;
+import com.lucianms.client.LoginState;
 import com.lucianms.events.PacketEvent;
+import com.lucianms.nio.receive.MaplePacketReader;
 import com.lucianms.server.channel.MapleChannel;
 import tools.MaplePacketCreator;
 import tools.Randomizer;
@@ -25,7 +25,7 @@ public class PickCharHandler extends PacketEvent {
         playerID = reader.readInt();
         worldID = reader.readInt();
         macs = reader.readMapleAsciiString();
-        if (getClient().hasBannedMac() || !getClient().playerBelongs(playerID)) {
+        if (getClient().hasBannedMac() || !getClient().isPlayerBelonging(playerID)) {
             getClient().getSession().close();
             setCanceled(true);
         }
@@ -39,7 +39,7 @@ public class PickCharHandler extends PacketEvent {
         getClient().setChannel(Randomizer.nextInt(channels.size()) + 1);
 
         try {
-            getClient().updateLoginState(MapleClient.LOGIN_SERVER_TRANSITION);
+            getClient().setLoginState(LoginState.Transfer);
             String[] socket = getClient().getChannelServer().getIP().split(":");
             getClient().announce(MaplePacketCreator.getServerIP(InetAddress.getByName(socket[0]), Integer.parseInt(socket[1]), playerID));
         } catch (UnknownHostException e) {

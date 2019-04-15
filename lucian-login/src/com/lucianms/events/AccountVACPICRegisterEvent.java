@@ -1,8 +1,7 @@
 package com.lucianms.events;
 
-import com.lucianms.client.MapleClient;
+import com.lucianms.client.LoginState;
 import com.lucianms.nio.receive.MaplePacketReader;
-import com.lucianms.events.PacketEvent;
 import com.lucianms.server.channel.MapleChannel;
 import tools.MaplePacketCreator;
 import tools.Randomizer;
@@ -33,7 +32,7 @@ public class AccountVACPICRegisterEvent extends PacketEvent {
 
     @Override
     public Object onPacket() {
-        if (getClient().hasBannedMac() || !getClient().playerBelongs(playerID)) {
+        if (getClient().hasBannedMac() || !getClient().isPlayerBelonging(playerID)) {
             getClient().getSession().close();
             return null;
         }
@@ -43,7 +42,7 @@ public class AccountVACPICRegisterEvent extends PacketEvent {
         getClient().updateMacs(macs);
         getClient().setPic(PIC);
         try {
-            getClient().updateLoginState(MapleClient.LOGIN_SERVER_TRANSITION);
+            getClient().setLoginState(LoginState.Transfer);
             String[] socket = getClient().getChannelServer().getIP().split(":");
             getClient().announce(MaplePacketCreator.getServerIP(InetAddress.getByName(socket[0]), Integer.parseInt(socket[1]), playerID));
         } catch (UnknownHostException ignore) {

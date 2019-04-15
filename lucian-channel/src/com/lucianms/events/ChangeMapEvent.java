@@ -1,7 +1,7 @@
 package com.lucianms.events;
 
+import com.lucianms.client.LoginState;
 import com.lucianms.client.MapleCharacter;
-import com.lucianms.client.MapleClient;
 import com.lucianms.client.inventory.MapleInventoryType;
 import com.lucianms.constants.GameConstants;
 import com.lucianms.constants.ServerConstants;
@@ -91,13 +91,13 @@ public class ChangeMapEvent extends PacketEvent {
 
         if (eCashShop) {
             if (!player.getCashShop().isOpened()) {
-                getClient().disconnect(false);
+                getClient().disconnect();
                 return null;
             }
             String[] socket = getClient().getChannelServer().getIP().split(":");
             player.getCashShop().open(false);
             getClient().getChannelServer().removePlayer(player);
-            getClient().updateLoginState(MapleClient.LOGIN_SERVER_TRANSITION);
+            getClient().setLoginState(LoginState.Transfer);
             if (player.getFakePlayer() != null) {
                 player.getFakePlayer().setFollowing(true);
                 player.getMap().addFakePlayer(player.getFakePlayer());
@@ -109,7 +109,7 @@ public class ChangeMapEvent extends PacketEvent {
             }
         } else {
             if (player.getCashShop().isOpened()) {
-                getClient().disconnect(false);
+                getClient().disconnect();
                 return null;
             }
             try {
@@ -124,7 +124,7 @@ public class ChangeMapEvent extends PacketEvent {
                             MapleInventoryManipulator.removeById(getClient(), MapleInventoryType.CASH, 5510000, 1, true, false);
                             player.announce(MaplePacketCreator.showWheelsLeft(player.getItemQuantity(5510000, false)));
                         } else {
-                            player.cancelAllBuffs(false);
+                            player.cancelAllBuffs();
                             for (GenericEvent event : player.getGenericEvents()) {
                                 if (event.onPlayerDeath(this, player)) {
                                     return null;

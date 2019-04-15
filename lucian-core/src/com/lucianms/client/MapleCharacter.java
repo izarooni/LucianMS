@@ -74,7 +74,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.regex.Pattern;
 
-public class MapleCharacter extends AbstractAnimatedMapleMapObject {
+public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Disposable {
 
     public static final int[] FISHING_MAPS = {749050500, 749050501, 749050502};
     public static final int[] FISHING_CHAIRS = {3011000, 3010151, 3010184};
@@ -1132,7 +1132,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
                     weapMulti = 4.2;
                 }
 
-                int attack = (int) Math.min(Math.floor((2 * getLevel() + 31) / 3), 31);
+                int attack = (int) Math.min(Math.floor((2 * getLevel() + 31) / 3f), 31);
 
                 maxbasedamage = (int) (localstr * weapMulti + localdex) * attack / 100;
             } else {
@@ -1142,14 +1142,12 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
         return Math.max(1, maxbasedamage);
     }
 
-    public void cancelAllBuffs(boolean disconnect) {
-        if (disconnect) {
-            effects.clear();
-        } else {
-            for (MapleBuffStatValueHolder mbsvh : new ArrayList<>(effects.values())) {
-                cancelEffect(mbsvh.effect, false, mbsvh.startTime);
-            }
+    public void cancelAllBuffs() {
+        ArrayList<MapleBuffStatValueHolder> temp = new ArrayList<>(effects.values());
+        for (MapleBuffStatValueHolder mbsvh : temp) {
+            cancelEffect(mbsvh.effect, false, mbsvh.startTime);
         }
+        temp.clear();
     }
 
     public void cancelBuffStats(MapleBuffStat stat) {
@@ -3646,7 +3644,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
 
     private void playerDead() {
         getMap().setLastPlayerDiedInMap(getName());
-        cancelAllBuffs(false);
+        cancelAllBuffs();
         dispelDebuffs();
         ManualPlayerEvent playerEvent = getClient().getWorldServer().getPlayerEvent();
         if (playerEvent != null) {
@@ -4541,7 +4539,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
         TaskExecutor.createTask(new Runnable() {
             @Override
             public void run() {
-                client.disconnect(false);
+                client.disconnect();
             }
         }, duration);
     }
@@ -5297,50 +5295,31 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
         this.partyQuest = pq;
     }
 
-    public final void empty(final boolean remove) {
-        if (dragonBloodTask != null) {
-            dragonBloodTask.cancel();
-            dragonBloodTask = null;
-        }
-        if (hpDecreaseTask != null) {
-            hpDecreaseTask.cancel();
-            hpDecreaseTask = null;
-        }
-        if (beholderHealingTask != null) {
-            beholderHealingTask.cancel();
-            beholderHealingTask = null;
-        }
-        if (beholderBuffTask != null) {
-            beholderBuffTask.cancel();
-            beholderBuffTask = null;
-        }
-        if (berserkTask != null) {
-            berserkTask.cancel();
-            berserkTask = null;
-        }
-        if (recoveryTask != null) {
-            recoveryTask.cancel();
-            recoveryTask = null;
-        }
-        cancelExpirationTask();
-        new ArrayList<>(tasks).forEach(Task::cancel);
+    @Override
+    public void dispose() {
+        saveCooldowns();
+        saveToDB();
+
+        dragonBloodTask = TaskExecutor.cancelTask(dragonBloodTask);
+        hpDecreaseTask = TaskExecutor.cancelTask(hpDecreaseTask);
+        beholderHealingTask = TaskExecutor.cancelTask(beholderHealingTask);
+        beholderBuffTask = TaskExecutor.cancelTask(beholderBuffTask);
+        berserkTask = TaskExecutor.cancelTask(berserkTask);
+        recoveryTask = TaskExecutor.cancelTask(recoveryTask);
+        expirationTask = TaskExecutor.cancelTask(expirationTask);
+        tasks.forEach(Task::cancel);
         tasks.clear();
-        if (maplemount != null) {
-            maplemount.empty();
-            maplemount = null;
-        }
-        if (remove) {
-            partyQuest = null;
-            events = null;
-            mpc = null;
-            mgc = null;
-            events = null;
-            party = null;
-            family = null;
-            client = null;
-            map = null;
-            tasks = null;
-        }
+        effects.clear();
+        Functions.requireNotNull(maplemount, MapleMount::empty);
+        maplemount = null;
+        partyQuest = null;
+        events = null;
+        mpc = null;
+        mgc = null;
+        party = null;
+        family = null;
+        client = null;
+        map = null;
     }
 
     public boolean isDebug() {

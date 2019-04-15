@@ -179,7 +179,7 @@ public class ConsoleCommands {
                     MapleCharacter player = world.findPlayer(p -> p.getName().equalsIgnoreCase(username));
                     if (player != null) {
                         world.removePlayer(player);
-                        player.getClient().disconnect(false);
+                        player.getClient().disconnect();
                         LOGGER.info("{} disconnected", player.getName());
                         return;
                     }
