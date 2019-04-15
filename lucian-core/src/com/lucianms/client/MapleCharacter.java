@@ -2879,7 +2879,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Di
     }
 
     public MapleParty getParty() {
-        if (getParty() == null) return null;
+        if (getPartyID() == 0) return null;
         return getClient().getWorldServer().getParty(getPartyID());
     }
 
