@@ -16,6 +16,7 @@ public class FieldSetEvent extends PacketEvent {
         MapleMap map = player.getMap();
 
         player.setRates();
+        player.checkBerserk();
         return null;
     }
 }

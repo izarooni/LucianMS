@@ -231,7 +231,6 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Di
     private EnumMap<MapleBuffStat, MapleBuffStatValueHolder> effects = new EnumMap<>(MapleBuffStat.class);
 
     private Task recoveryTask;
-    private Task hpDecreaseTask;
     private Task expirationTask;
     private Task spiritPendantTask; // 1122017
     private Task dragonBloodTask;
@@ -1725,23 +1724,12 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Di
     }
 
     public void checkBerserk() {
-        if (berserkTask != null) {
-            berserkTask.cancel();
-            final MapleCharacter chr = this;
-            if (job == MapleJob.DARKKNIGHT) {
-                Skill BerserkX = SkillFactory.getSkill(DarkKnight.BERSERK);
-                final int skilllevel = getSkillLevel(BerserkX);
-                if (skilllevel > 0) {
-                    berserk = chr.getHp() * 100 / chr.getMaxHp() < BerserkX.getEffect(skilllevel).getX();
-                    berserkTask = TaskExecutor.createRepeatingTask(new Runnable() {
-                        @Override
-                        public void run() {
-                            client.announce(MaplePacketCreator.showOwnBerserk(skilllevel, berserk));
-                            getMap().broadcastMessage(MapleCharacter.this, MaplePacketCreator.showBerserk(getId(), skilllevel, berserk), false);
-                        }
-                    }, 5000, 3000);
-                }
-            }
+        if (job == MapleJob.DARKKNIGHT) {
+            Skill BerserkX = SkillFactory.getSkill(DarkKnight.BERSERK);
+            final int skillLevel = getSkillLevel(BerserkX);
+            boolean enabled = skillLevel > 0 && getHp() * 100 / getMaxHp() < BerserkX.getEffect(skillLevel).getX();
+            client.announce(MaplePacketCreator.showOwnBerserk(skillLevel, enabled));
+            getMap().broadcastMessage(this, MaplePacketCreator.showBerserk(getId(), skillLevel, enabled), false);
         }
     }
 
@@ -3416,7 +3404,6 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Di
         if (chair != 0) {
             chair = 0;
         }
-        hpDecreaseTask = TaskExecutor.cancelTask(hpDecreaseTask);
     }
 
     public void levelUp(boolean takeexp) {
@@ -5286,7 +5273,6 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Di
         saveToDB();
 
         dragonBloodTask = TaskExecutor.cancelTask(dragonBloodTask);
-        hpDecreaseTask = TaskExecutor.cancelTask(hpDecreaseTask);
         beholderHealingTask = TaskExecutor.cancelTask(beholderHealingTask);
         beholderBuffTask = TaskExecutor.cancelTask(beholderBuffTask);
         berserkTask = TaskExecutor.cancelTask(berserkTask);
