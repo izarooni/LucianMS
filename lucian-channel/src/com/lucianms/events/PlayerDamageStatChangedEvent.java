@@ -14,6 +14,7 @@ public class PlayerDamageStatChangedEvent extends PacketEvent {
     @Override
     public Object onPacket() {
         MapleCharacter player = getClient().getPlayer();
+        player.updateLocalizedStats();
         player.checkBerserk();
         return null;
     }

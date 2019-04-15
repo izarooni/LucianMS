@@ -850,7 +850,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Di
             }
             ret.buddylist.loadFromDb(charid);
             ret.storage = MapleStorage.loadOrCreateFromDB(ret.accountid, ret.world);
-            ret.recalcLocalStats();
+            ret.updateLocalizedStats();
             // ret.resetBattleshipHp();
             ret.silentEnforceMaxHpMp();
             int mountid = ret.getJobType() * 10000000 + 1004;
@@ -1019,7 +1019,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Di
             this.luk += up;
             updateSingleStat(MapleStat.LUK, luk);
         }
-        recalcLocalStats();
+        updateLocalizedStats();
     }
 
     public int addHP(MapleClient c) {
@@ -1346,7 +1346,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Di
 
     private void cancelPlayerBuffs(List<MapleBuffStat> buffstats) {
         if (client.getChannelServer().getPlayerStorage().get(getId()) != null) {
-            recalcLocalStats();
+            updateLocalizedStats();
             enforceMaxHpMp();
             client.announce(MaplePacketCreator.cancelBuff(buffstats));
             if (buffstats.size() > 0) {
@@ -1528,7 +1528,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Di
             getMap().broadcastMessage(MaplePacketCreator.removeDragon(dragon.getObjectId()));
             dragon = null;
         }
-        recalcLocalStats();
+        updateLocalizedStats();
         client.announce(MaplePacketCreator.updatePlayerStats(statup, this));
         if (this.guildid > 0) {
             getGuild().broadcast(MaplePacketCreator.jobMessage(0, job.getId(), name), this.getId());
@@ -1995,7 +1995,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Di
 
     public void equipChanged() {
         getMap().broadcastMessage(this, MaplePacketCreator.updateCharLook(this), false);
-        recalcLocalStats();
+        updateLocalizedStats();
         enforceMaxHpMp();
         Functions.requireNotNull(getMessenger(), m -> m.sendPacket(MaplePacketCreator.updateMessengerPlayer(m.get(getId()))));
         MapleInventory inventory = getInventory(MapleInventoryType.EQUIPPED);
@@ -2345,7 +2345,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Di
 
     public void setDex(int dex) {
         this.dex = dex;
-        recalcLocalStats();
+        updateLocalizedStats();
     }
 
     public int getDojoEnergy() {
@@ -2570,7 +2570,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Di
 
     public void setInt(int int_) {
         this.int_ = int_;
-        recalcLocalStats();
+        updateLocalizedStats();
     }
 
     public MapleInventory[] getCreativeInventory() {
@@ -2647,7 +2647,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Di
 
     public void setLuk(int luk) {
         this.luk = luk;
-        recalcLocalStats();
+        updateLocalizedStats();
     }
 
     public int getFh() {
@@ -2712,7 +2712,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Di
 
     public void setMaxHp(int hp) {
         this.maxhp = hp;
-        recalcLocalStats();
+        updateLocalizedStats();
     }
 
     public int getMaxLevel() {
@@ -2725,7 +2725,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Di
 
     public void setMaxMp(int mp) {
         this.maxmp = mp;
-        recalcLocalStats();
+        updateLocalizedStats();
     }
 
     public int getMeso() {
@@ -3098,7 +3098,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Di
 
     public void setStr(int str) {
         this.str = str;
-        recalcLocalStats();
+        updateLocalizedStats();
     }
 
     public Map<Integer, MapleSummon> getSummons() {
@@ -3409,7 +3409,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Di
         maxmp = Math.min(30000, maxmp);
         hp = maxhp;
         mp = maxmp;
-        recalcLocalStats();
+        updateLocalizedStats();
         List<Pair<MapleStat, Integer>> statup = new ArrayList<>(10);
         statup.add(new Pair<>(MapleStat.AVAILABLEAP, remainingAp));
         statup.add(new Pair<>(MapleStat.HP, localmaxhp));
@@ -3426,7 +3426,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Di
         }
         client.announce(MaplePacketCreator.updatePlayerStats(statup, this));
         getMap().broadcastMessage(this, MaplePacketCreator.showForeignEffect(getId(), 0), false);
-        recalcLocalStats();
+        updateLocalizedStats();
         Functions.requireNotNull(getParty(), party -> party.get(getId()).updateWithPlayer(this));
         guildUpdate();
 
@@ -3643,7 +3643,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Di
         }
     }
 
-    private void recalcLocalStats() {
+    public void updateLocalizedStats() {
         int oldmaxhp = localmaxhp;
         localmaxhp = getMaxHp();
         localmaxmp = getMaxMp();
@@ -3828,7 +3828,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Di
         for (Pair<MapleBuffStat, Integer> statup : effect.getStatups()) {
             effects.put(statup.getLeft(), new MapleBuffStatValueHolder(effect, starttime, task, statup.getRight()));
         }
-        recalcLocalStats();
+        updateLocalizedStats();
     }
 
     public void removeAllCooldownsExcept(int id, boolean packet) {
@@ -4597,7 +4597,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Di
             setHpMpApUsed(getHpMpApUsed() + 1);
         }
         this.maxhp = hp;
-        recalcLocalStats();
+        updateLocalizedStats();
     }
 
     public void setMaxMp(int mp, boolean ap) {
@@ -4606,7 +4606,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Di
             setHpMpApUsed(getHpMpApUsed() + 1);
         }
         this.maxmp = mp;
-        recalcLocalStats();
+        updateLocalizedStats();
     }
 
     public void setMiniGamePoints(MapleCharacter visitor, int winnerslot, boolean omok) {
