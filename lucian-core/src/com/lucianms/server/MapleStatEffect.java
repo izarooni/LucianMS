@@ -723,7 +723,6 @@ public class MapleStatEffect {
                     partyMembers.getPlayer().addDoor(door);
                     partyMembers.updateDoor(door);
                 }
-                applyto.silentPartyUpdate();
             } else {
                 applyto.addDoor(door);
             }
@@ -734,7 +733,6 @@ public class MapleStatEffect {
                     partyMembers.getPlayer().addDoor(door);
                     partyMembers.updateDoor(door);
                 }
-                applyto.silentPartyUpdate();
             } else {
                 applyto.addDoor(door);
             }

@@ -272,7 +272,7 @@ public class MapleMonster extends AbstractLoadedMapleLife {
 
         Collection<MapleCharacter> chrs = map.getCharacters();
         for (MapleCharacter mc : chrs) {
-            if (mc.getPartyId() == pid) {
+            if (mc.getPartyID() == pid) {
                 members.add(mc);
             }
         }

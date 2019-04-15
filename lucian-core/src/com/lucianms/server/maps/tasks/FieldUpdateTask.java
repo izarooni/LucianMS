@@ -25,6 +25,7 @@ public class FieldUpdateTask implements Runnable {
     }
 
     @Override
+    @SuppressWarnings("WhileLoopReplaceableByForEach")
     public void run() {
         try {
             for (MapleChannel channel : world.getChannels()) {

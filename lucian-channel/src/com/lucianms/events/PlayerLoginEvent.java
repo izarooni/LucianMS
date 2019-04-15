@@ -12,9 +12,7 @@ import com.lucianms.server.channel.CharacterIdChannelPair;
 import com.lucianms.server.channel.MapleChannel;
 import com.lucianms.server.guild.MapleAlliance;
 import com.lucianms.server.guild.MapleGuild;
-import com.lucianms.server.world.MaplePartyCharacter;
-import com.lucianms.server.world.MapleWorld;
-import com.lucianms.server.world.PartyOperation;
+import com.lucianms.server.world.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import tools.MaplePacketCreator;
@@ -130,7 +128,7 @@ public class PlayerLoginEvent extends PacketEvent {
         MapleWorld world = getClient().getWorldServer();
 
         //region friends list
-        int buddyIds[] = player.getBuddylist().getBuddyIds();
+        int[] buddyIds = player.getBuddylist().getBuddyIds();
         world.loggedOn(player.getName(), player.getId(), getClient().getChannel(), buddyIds);
         for (CharacterIdChannelPair onlineBuddy : world.multiBuddyFind(player.getId(), buddyIds)) {
             BuddylistEntry ble = player.getBuddylist().get(onlineBuddy.getCharacterId());
@@ -209,8 +207,16 @@ public class PlayerLoginEvent extends PacketEvent {
         player.changeSkillLevel(SkillFactory.getSkill(5001005), (byte) 0, 0, 0);
         player.changeSkillLevel(SkillFactory.getSkill(15001003), (byte) 0, 0, 0);
 
+        MapleMessenger messenger = player.getMessenger();
+        if (messenger != null) {
+            MapleMessengerCharacter member = messenger.get(player.getId());
+            if (member != null) {
+                member.setPlayer(player);
+                messenger.sendPacket(MaplePacketCreator.updateMessengerPlayer(member), player);
+            }
+        }
+
         player.showNote();
-        player.checkMessenger();
         player.checkBerserk();
         player.expirationTask();
         player.setRates();

@@ -3,6 +3,9 @@ package com.lucianms.events;
 import com.lucianms.client.MapleCharacter;
 import com.lucianms.nio.receive.MaplePacketReader;
 import com.lucianms.server.maps.MapleMap;
+import com.lucianms.server.world.MapleParty;
+import com.lucianms.server.world.PartyOperation;
+import tools.MaplePacketCreator;
 
 public class FieldSetEvent extends PacketEvent {
 
@@ -17,6 +20,12 @@ public class FieldSetEvent extends PacketEvent {
 
         player.setRates();
         player.checkBerserk();
+
+        MapleParty party = player.getParty();
+        if (party != null) {
+            player.announce(MaplePacketCreator.updateParty(getClient().getChannel(), party, PartyOperation.SILENT_UPDATE, null));
+            player.updatePartyMemberHP();
+        }
         return null;
     }
 }

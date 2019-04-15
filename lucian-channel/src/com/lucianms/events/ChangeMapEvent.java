@@ -233,7 +233,7 @@ public class ChangeMapEvent extends PacketEvent {
         MapleMap map = player.getMap();
         Collection<MapleCharacter> characters = new ArrayList<>(map.getCharacters());
         if (characters.size() == 1
-                || (player.getPartyId() > 0 && characters.stream().allMatch(p -> p.getPartyId() == player.getPartyId()))) {
+                || (player.getPartyID() > 0 && characters.stream().allMatch(p -> p.getPartyID() == player.getPartyID()))) {
             /*
             May only activate under the following conditions:
             Contains monster spawn points,

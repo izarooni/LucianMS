@@ -1,7 +1,7 @@
 package com.lucianms.server;
 
 import java.util.Collection;
-import java.util.HashMap;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -12,21 +12,25 @@ import java.util.function.Predicate;
  *
  * @author izarooni
  */
-public final class ConcurrentMapStorage<K, V> {
+public class ConcurrentMapStorage<K, V> {
 
     private final ReentrantReadWriteLock.ReadLock rLock;
     private final ReentrantReadWriteLock.WriteLock wLock;
-
-    // initialize capacity of 80 objects using the default load factor value
-    private final HashMap<K, V> storage = new HashMap<>((int) (80 / 0.75) + 1);
+    private final ConcurrentHashMap<K, V> storage;
 
     public ConcurrentMapStorage() {
+        this(80);
+    }
+
+    public ConcurrentMapStorage(int initialSize) {
         ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
         rLock = lock.readLock();
         wLock = lock.writeLock();
+
+        storage = new ConcurrentHashMap<>((int) (initialSize / 0.75) + 1);
     }
 
-    public void clear() {
+    public final void clear() {
         wLock.lock();
         try {
             storage.clear();
@@ -35,7 +39,7 @@ public final class ConcurrentMapStorage<K, V> {
         }
     }
 
-    public void put(K key, V player) {
+    public final void put(K key, V player) {
         wLock.lock();
         try {
             storage.put(key, player);
@@ -44,7 +48,7 @@ public final class ConcurrentMapStorage<K, V> {
         }
     }
 
-    public V remove(K key) {
+    public final V remove(K key) {
         wLock.lock();
         try {
             return storage.remove(key);
@@ -53,7 +57,7 @@ public final class ConcurrentMapStorage<K, V> {
         }
     }
 
-    public void forEach(Consumer<V> consumer) {
+    public final void forEach(Consumer<V> consumer) {
         rLock.lock();
         try {
             storage.values().forEach(consumer);
@@ -62,7 +66,7 @@ public final class ConcurrentMapStorage<K, V> {
         }
     }
 
-    public V find(Predicate<V> predicate) {
+    public final V find(Predicate<V> predicate) {
         rLock.lock();
         try {
             return storage.values().stream().filter(predicate).findFirst().orElse(null);
@@ -71,7 +75,7 @@ public final class ConcurrentMapStorage<K, V> {
         }
     }
 
-    public V get(K key) {
+    public final V get(K key) {
         rLock.lock();
         try {
             return storage.get(key);
@@ -80,7 +84,7 @@ public final class ConcurrentMapStorage<K, V> {
         }
     }
 
-    public Collection<V> values() {
+    public final Collection<V> values() {
         rLock.lock();
         try {
             return storage.values();
@@ -89,7 +93,7 @@ public final class ConcurrentMapStorage<K, V> {
         }
     }
 
-    public int size() {
+    public final int size() {
         rLock.lock();
         try {
             return storage.size();
@@ -98,7 +102,7 @@ public final class ConcurrentMapStorage<K, V> {
         }
     }
 
-    public boolean isEmpty() {
+    public final boolean isEmpty() {
         rLock.lock();
         try {
             return storage.isEmpty();
@@ -107,7 +111,7 @@ public final class ConcurrentMapStorage<K, V> {
         }
     }
 
-    public V computeIfAbsent(K key, Function<? super K, ? extends V> mappingFunction) {
+    public final V computeIfAbsent(K key, Function<? super K, ? extends V> mappingFunction) {
         wLock.lock();
         try {
             return storage.computeIfAbsent(key, mappingFunction);

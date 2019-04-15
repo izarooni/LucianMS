@@ -2,7 +2,6 @@ package com.lucianms.events;
 
 import com.lucianms.client.MapleCharacter;
 import com.lucianms.nio.receive.MaplePacketReader;
-import com.lucianms.events.PacketEvent;
 import com.lucianms.server.world.MapleParty;
 import com.lucianms.server.world.MaplePartyCharacter;
 import com.lucianms.server.world.MapleWorld;
@@ -52,9 +51,8 @@ public class PlayerPartyOperationEvent extends PacketEvent {
                 if (player.getParty() == null) {
                     partyplayer = new MaplePartyCharacter(player);
                     party = world.createParty(partyplayer);
-                    player.setParty(party);
+                    player.setPartyID(party.getId());
                     player.setMPC(partyplayer);
-                    player.silentPartyUpdate();
                     getClient().announce(MaplePacketCreator.partyCreated(partyplayer));
                 } else {
                     getClient().announce(MaplePacketCreator.serverNotice(5, "You can't create a party as you are already in one."));
@@ -74,7 +72,7 @@ public class PlayerPartyOperationEvent extends PacketEvent {
                             player.getEventInstance().leftParty(player);
                         }
                     }
-                    player.setParty(null);
+                    player.setPartyID(0);
                 }
                 break;
             }
@@ -109,7 +107,7 @@ public class PlayerPartyOperationEvent extends PacketEvent {
                         if (player.getParty() == null) {
                             partyplayer = new MaplePartyCharacter(player);
                             party = world.createParty(partyplayer);
-                            player.setParty(party);
+                            player.setPartyID(party.getId());
                             player.setMPC(partyplayer);
                             getClient().announce(MaplePacketCreator.partyCreated(partyplayer));
                         }

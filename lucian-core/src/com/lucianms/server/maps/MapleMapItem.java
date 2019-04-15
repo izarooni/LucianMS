@@ -52,7 +52,7 @@ public class MapleMapItem extends AbstractMapleMapObject {
         setPosition(position);
         this.item = item;
         this.dropper = dropper;
-        this.character_ownerid = owner.getParty() == null ? owner.getId() : owner.getPartyId();
+        this.character_ownerid = owner.getParty() == null ? owner.getId() : owner.getPartyID();
         this.meso = 0;
         this.type = type;
         this.playerDrop = playerDrop;
@@ -63,7 +63,7 @@ public class MapleMapItem extends AbstractMapleMapObject {
         setPosition(position);
         this.item = null;
         this.dropper = dropper;
-        this.character_ownerid = owner.getParty() == null ? owner.getId() : owner.getPartyId();
+        this.character_ownerid = owner.getParty() == null ? owner.getId() : owner.getPartyID();
         this.meso = meso;
         this.type = type;
         this.playerDrop = playerDrop;

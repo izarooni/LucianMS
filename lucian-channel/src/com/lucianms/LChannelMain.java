@@ -283,5 +283,6 @@ public class LChannelMain {
         RecvOpcode.NPC_SHOP.clazz = PlayerNpcShopInteractionEvent.class;
         RecvOpcode.CHANGE_MAP_SPECIAL.clazz = ChangeMapSpecialEvent.class;
         RecvOpcode.ITEM_PICKUP.clazz = ItemPickupEvent.class;
+        RecvOpcode.DAMAGE_STAT_CHANGED.clazz = PlayerDamageStatChangedEvent.class;
     }
 }

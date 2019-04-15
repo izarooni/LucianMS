@@ -268,8 +268,8 @@ public class MapleMap {
 
     public int getCurrentPartyId() {
         for (MapleCharacter chr : this.getCharacters()) {
-            if (chr.getPartyId() != -1) {
-                return chr.getPartyId();
+            if (chr.getPartyID() != -1) {
+                return chr.getPartyID();
             }
         }
         return -1;
@@ -1782,8 +1782,8 @@ public class MapleMap {
         return null;
     }
 
-    public MaplePortal getPortal(int portalid) {
-        return portals.get(portalid);
+    public MaplePortal getPortal(int portalID) {
+        return portals.get(portalID);
     }
 
     public void addMapleArea(Rectangle rec) {

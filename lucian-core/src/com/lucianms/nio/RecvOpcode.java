@@ -91,7 +91,7 @@ public enum RecvOpcode {
     TROCK_ADD_MAP           (0x0066, ReceivePacketState.ChannelServer),
     REPORT                  (0x006A, ReceivePacketState.ChannelServer),
     QUEST_ACTION            (0x006B, ReceivePacketState.ChannelServer),
-    UNKNOWN2                (0x006C, ReceivePacketState.Both, IgnoredPacketEvent.class),
+    DAMAGE_STAT_CHANGED     (0x006C, ReceivePacketState.ChannelServer),
     SKILL_MACRO             (0x006E, ReceivePacketState.ChannelServer),
     USE_ITEM_REWARD         (0x0070, ReceivePacketState.ChannelServer),
     MAKER_SKILL             (0x0071, ReceivePacketState.ChannelServer),

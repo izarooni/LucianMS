@@ -110,7 +110,6 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Di
     private int chair;
     private int itemEffect;
     private int guildid, guildrank, allianceRank;
-    private int messengerposition = 4;
     private int slots;
     private int energybar;
     private int gmLevel;
@@ -130,6 +129,8 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Di
     private int linkedLevel;
     private int donorLevel;
     private int hidingLevel = 1;
+    private int partyID;
+    private int messengerID;
 
     //region points
     private int eventPoints;
@@ -214,12 +215,10 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Di
     private MapleJob job = MapleJob.BEGINNER;
     private MapleMap map, dojoMap;
     private MapleShop shop;
-    private MapleParty party;
     private MapleTrade trade;
     private MapleStorage storage;
     private MapleMount maplemount;
     private MapleMiniGame miniGame;
-    private MapleMessenger messenger;
     private MaplePlayerShop playerShop;
     private MapleSkinColor skinColor = MapleSkinColor.NORMAL;
     private SavedLocation[] savedLocations = new SavedLocation[SavedLocationType.values().length];
@@ -492,10 +491,6 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Di
         ret.client = client;
         ret.id = charid;
 
-        int partyid;
-        int messengerid;
-        int position;
-
         int mountexp;
         int mountlevel;
         int mounttiredness;
@@ -525,9 +520,8 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Di
                 for (int i = 0; i < ret.remainingSp.length; i++) {
                     ret.remainingSp[i] = Integer.parseInt(skillPoints[i]);
                 }
-                messengerid = rs.getInt("messengerid");
-                position = rs.getInt("messengerposition");
-                partyid = rs.getInt("party");
+                ret.messengerID = rs.getInt("messengerid");
+                ret.partyID = rs.getInt("party");
 
                 ret.remainingAp = rs.getInt("ap");
                 ret.meso.set(rs.getInt("meso"));
@@ -632,29 +626,18 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Di
                 ret.dropMessage(5, "You were returned to the home map due to the map being obstructed");
             }
             MaplePortal portal = ret.map.getPortal(ret.initialSpawnPoint);
-            if (portal == null) {
-                portal = ret.map.getPortal(0);
-                if (portal == null) {
-                    LOGGER.info("'{}' logged-in to a map with no portals", ret.name);
-                    ret.map = client.getChannelServer().getMap(ServerConstants.HOME_MAP);
-                    portal = ret.map.getPortal(0);
-                    ret.dropMessage(5, "You were returned to the home map due to the map being obstructed");
-                }
-                ret.initialSpawnPoint = 0;
+            if (portal == null && (portal = ret.map.getPortal(0)) != null) {
+                ret.setPosition(portal.getPosition());
             }
-            ret.setPosition(portal.getPosition());
-            MapleParty party = Server.getWorld(ret.world).getParty(partyid);
+            MapleParty party = ret.getParty();
             if (party != null) {
-                ret.mpc = new MaplePartyCharacter(ret);
                 party.updateMember(ret.mpc);
-                ret.party = party;
+            } else {
+                ret.partyID = 0;
             }
-            if (messengerid > 0 && position < 4 && position > -1) {
-                MapleMessenger messenger = Server.getWorld(ret.world).getMessenger(messengerid);
-                if (messenger != null) {
-                    ret.messenger = messenger;
-                    ret.messengerposition = position;
-                }
+            MapleMessenger messenger = ret.getMessenger();
+            if (ret.messengerID > 0 && messenger == null) {
+                ret.messengerID = 0;
             }
             try (PreparedStatement ps = con.prepareStatement("SELECT mapid,vip FROM trocklocations WHERE characterid = ? LIMIT 15")) {
                 ps.setInt(1, charid);
@@ -1269,12 +1252,11 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Di
                     door.getTarget().removeMapObject(destroyDoor);
                     door.getTown().removeMapObject(destroyDoor);
                 }
-                if (party != null) {
+                if (getParty() != null) {
                     for (MaplePartyCharacter partyMembers : getParty().getMembers()) {
                         partyMembers.getPlayer().getDoors().remove(door);
                         partyMembers.getDoors().remove(door);
                     }
-                    silentPartyUpdate();
                 } else {
                     clearDoors();
                 }
@@ -1548,7 +1530,6 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Di
         }
         recalcLocalStats();
         client.announce(MaplePacketCreator.updatePlayerStats(statup, this));
-        silentPartyUpdate();
         if (this.guildid > 0) {
             getGuild().broadcast(MaplePacketCreator.jobMessage(0, job.getId(), name), this.getId());
         }
@@ -1662,12 +1643,6 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Di
                 map.addFakePlayer(getFakePlayer());
             }
             map.addPlayer(this);
-            if (party != null) {
-                mpc.setMapId(to.getId());
-                silentPartyUpdate();
-                client.announce(MaplePacketCreator.updateParty(client.getChannel(), party, PartyOperation.SILENT_UPDATE, null));
-                updatePartyMemberHP();
-            }
         }
     }
 
@@ -1730,14 +1705,6 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Di
             boolean enabled = skillLevel > 0 && getHp() * 100 / getMaxHp() < BerserkX.getEffect(skillLevel).getX();
             client.announce(MaplePacketCreator.showOwnBerserk(skillLevel, enabled));
             getMap().broadcastMessage(this, MaplePacketCreator.showBerserk(getId(), skillLevel, enabled), false);
-        }
-    }
-
-    public void checkMessenger() {
-        if (messenger != null && messengerposition < 4 && messengerposition > -1) {
-            MapleWorld worldz = Server.getWorld(world);
-            worldz.silentJoinMessenger(messenger.getId(), new MapleMessengerCharacter(this, messengerposition), messengerposition);
-            worldz.updateMessenger(getMessenger().getId(), name, client.getChannel());
         }
     }
 
@@ -2030,9 +1997,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Di
         getMap().broadcastMessage(this, MaplePacketCreator.updateCharLook(this), false);
         recalcLocalStats();
         enforceMaxHpMp();
-        if (getMessenger() != null) {
-            Server.getWorld(world).updateMessenger(getMessenger(), getName(), getWorld(), client.getChannel());
-        }
+        Functions.requireNotNull(getMessenger(), m -> m.sendPacket(MaplePacketCreator.updateMessengerPlayer(m.get(getId()))));
         MapleInventory inventory = getInventory(MapleInventoryType.EQUIPPED);
         // DBZ Drop rate boost
         // Blue Eye Scanner
@@ -2791,14 +2756,6 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Di
         return mesosTraded;
     }
 
-    public int getMessengerPosition() {
-        return messengerposition;
-    }
-
-    public void setMessengerPosition(int position) {
-        this.messengerposition = position;
-    }
-
     public MapleGuildCharacter getMGC() {
         return mgc;
     }
@@ -2876,11 +2833,16 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Di
     }
 
     public MapleMessenger getMessenger() {
-        return messenger;
+        if (getMessengerID() == 0) return null;
+        return getClient().getWorldServer().getMessengers().get(getMessengerID());
     }
 
-    public void setMessenger(MapleMessenger messenger) {
-        this.messenger = messenger;
+    public int getMessengerID() {
+        return messengerID;
+    }
+
+    public void setMessengerID(int messengerID) {
+        this.messengerID = messengerID;
     }
 
     public String getName() {
@@ -2915,18 +2877,16 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Di
     }
 
     public MapleParty getParty() {
-        return party;
+        if (getParty() == null) return null;
+        return getClient().getWorldServer().getParty(getPartyID());
     }
 
-    public void setParty(MapleParty party) {
-        if (party == null) {
-            this.mpc = null;
-        }
-        this.party = party;
+    public int getPartyID() {
+        return partyID;
     }
 
-    public int getPartyId() {
-        return (party != null ? party.getId() : -1);
+    public void setPartyID(int partyID) {
+        this.partyID = partyID;
     }
 
     public MaplePlayerShop getPlayerShop() {
@@ -3390,10 +3350,6 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Di
         return visibleMapObjects.containsKey(mo.getObjectId());
     }
 
-    public boolean isPartyLeader() {
-        return party.getLeader() == party.getMemberById(getId());
-    }
-
     public void leaveMap() {
         controlled.clear();
         controlled = new LinkedHashSet<>();
@@ -3483,7 +3439,6 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Di
         getMap().broadcastMessage(this, MaplePacketCreator.showForeignEffect(getId(), 0), false);
         recalcLocalStats();
         setMPC(new MaplePartyCharacter(this));
-        silentPartyUpdate();
         guildUpdate();
 
         Occupation occupation = getOccupation();
@@ -3824,6 +3779,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Di
     }
 
     public void receivePartyMemberHP() {
+        MapleParty party = getParty();
         if (party != null) {
             int channel = client.getChannel();
             for (MaplePartyCharacter partychar : party.getMembers()) {
@@ -4226,15 +4182,18 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Di
                         ps.setInt(24, 0);
                     }
                 }
+                MapleParty party = getParty();
                 if (party != null) {
                     ps.setInt(25, party.getId());
                 } else {
                     ps.setInt(25, -1);
                 }
                 ps.setInt(26, buddylist.getCapacity());
-                if (messenger != null) {
-                    ps.setInt(27, messenger.getId());
-                    ps.setInt(28, messengerposition);
+                MapleMessenger messenger = getMessenger();
+                MapleMessengerCharacter msgrMember;
+                if (messenger != null && (msgrMember = messenger.get(getId())) != null) {
+                    ps.setInt(27, messenger.getID());
+                    ps.setInt(28, msgrMember.getPosition());
                 } else {
                     ps.setInt(27, 0);
                     ps.setInt(28, 4);
@@ -4799,34 +4758,8 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Di
         }
     }
 
-    public void silentPartyUpdate() {
-        if (party != null) {
-            Server.getWorld(world).updateParty(party.getId(), PartyOperation.SILENT_UPDATE, getMPC());
-        }
-    }
-
     public boolean skillisCooling(int skillId) {
         return coolDowns.containsKey(skillId);
-    }
-
-    public void startFullnessSchedule(final int decrease, final MaplePet pet, int petSlot) {
-//        fullnessSchedule[petSlot] = TaskExecutor.createRepeatingTask(new Runnable() {
-//            @Override
-//            public void run() {
-//                int newFullness = pet.getFullness() - decrease;
-//                if (newFullness <= 5) {
-//                    pet.setFullness(15);
-//                    unequipPet(pet, true);
-//                } else {
-//                    pet.setFullness(newFullness);
-//                    Item petz = getInventory(MapleInventoryType.CASH).getItem(pet.getPosition());
-//                    if (petz != null) {
-//                        forceUpdateItem(petz);
-//                    }
-//                }
-//                pet.saveToDb();
-//            }
-//        }, 180000, 18000);
     }
 
     public void startMapEffect(String msg, int itemId) {
@@ -4875,6 +4808,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Di
     }
 
     public void updatePartyMemberHP() {
+        MapleParty party = getParty();
         if (party != null) {
             int channel = client.getChannel();
             for (MaplePartyCharacter partychar : party.getMembers()) {
@@ -5269,6 +5203,37 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Di
 
     @Override
     public void dispose() {
+        MapleMap map = getMap();
+        Functions.requireNotNull(getPlayerShop(), MaplePlayerShop::removeVisitors);
+        setPlayerShop(null);
+        final HiredMerchant merchant = getHiredMerchant();
+        if (merchant != null) {
+            if (merchant.isOwner(this)) {
+                merchant.setOpen(true);
+            } else {
+                merchant.removeVisitor(this);
+            }
+            try (Connection con = Server.getConnection()) {
+                merchant.saveItems(con, false);
+            } catch (SQLException e) {
+                LOGGER.error("Failed to save merchant items for {}", this.toString(), e);
+            }
+        }
+        final MapleMiniGame game = getMiniGame();
+        if (game != null) {
+            if (game.isOwner(this)) {
+                map.broadcastMessage(MaplePacketCreator.removeCharBox(this));
+                game.broadcastToVisitor(MaplePacketCreator.getMiniGameClose());
+            } else {
+                game.removeVisitor(this);
+            }
+            setMiniGame(null);
+        }
+        Functions.requireNotNull(getTrade(), t -> MapleTrade.cancelTrade(this));
+        Functions.requireNotNull(getEventInstance(), eim -> eim.playerDisconnected(this));
+        Functions.requireNotNull(getFakePlayer(), map::removeFakePlayer);
+        map.removePlayer(this);
+
         saveCooldowns();
         saveToDB();
 
@@ -5287,10 +5252,8 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Di
         events = null;
         mpc = null;
         mgc = null;
-        party = null;
         family = null;
         client = null;
-        map = null;
     }
 
     public boolean isDebug() {

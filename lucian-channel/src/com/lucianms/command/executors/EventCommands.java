@@ -314,8 +314,8 @@ public class EventCommands {
             // get parties and solo players
             for (MapleCharacter players : player.getMap().getCharacters()) {
                 if (players.getParty() != null) {
-                    if (players.getParty().getLeader().getId() == players.getId() && !parties.contains(players.getPartyId())) {
-                        parties.add(players.getPartyId());
+                    if (players.getParty().getLeader().getId() == players.getId() && !parties.contains(players.getPartyID())) {
+                        parties.add(players.getPartyID());
                     }
                 } else {
                     solo.add(players.getName());

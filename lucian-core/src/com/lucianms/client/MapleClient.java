@@ -28,8 +28,6 @@ import com.lucianms.io.scripting.npc.NPCScriptManager;
 import com.lucianms.io.scripting.quest.QuestActionManager;
 import com.lucianms.io.scripting.quest.QuestScriptManager;
 import com.lucianms.scheduler.TaskExecutor;
-import com.lucianms.server.MapleMiniGame;
-import com.lucianms.server.MaplePlayerShop;
 import com.lucianms.server.MapleTrade;
 import com.lucianms.server.Server;
 import com.lucianms.server.channel.MapleChannel;
@@ -37,9 +35,11 @@ import com.lucianms.server.guild.MapleGuild;
 import com.lucianms.server.guild.MapleGuildCharacter;
 import com.lucianms.server.maps.FieldLimit;
 import com.lucianms.server.maps.HiredMerchant;
-import com.lucianms.server.maps.MapleMap;
 import com.lucianms.server.quest.MapleQuest;
-import com.lucianms.server.world.*;
+import com.lucianms.server.world.MapleParty;
+import com.lucianms.server.world.MaplePartyCharacter;
+import com.lucianms.server.world.MapleWorld;
+import com.lucianms.server.world.PartyOperation;
 import io.netty.channel.Channel;
 import io.netty.util.AttributeKey;
 import org.slf4j.Logger;
@@ -570,41 +570,8 @@ public class MapleClient implements Disposable {
 
     @Override
     public void dispose() {
-        MapleMap map = player.getMap();
-
-        player.cancelAllDebuffs();
-        player.setMessenger(null);
-        Functions.requireNotNull(player.getPlayerShop(), MaplePlayerShop::removeVisitors);
-        player.setPlayerShop(null);
-        final HiredMerchant merchant = player.getHiredMerchant();
-        if (merchant != null) {
-            if (merchant.isOwner(player)) {
-                merchant.setOpen(true);
-            } else {
-                merchant.removeVisitor(player);
-            }
-            try (Connection con = Server.getConnection()) {
-                merchant.saveItems(con, false);
-            } catch (SQLException e) {
-                LOGGER.error("Failed to save merchant items for {}", this.toString(), e);
-            }
-        }
-        final MapleMiniGame game = player.getMiniGame();
-        if (game != null) {
-            if (game.isOwner(player)) {
-                map.broadcastMessage(MaplePacketCreator.removeCharBox(player));
-                game.broadcastToVisitor(MaplePacketCreator.getMiniGameClose());
-            } else {
-                game.removeVisitor(player);
-            }
-            player.setMiniGame(null);
-        }
         NPCScriptManager.dispose(this);
         QuestScriptManager.dispose(this);
-        Functions.requireNotNull(player.getTrade(), t -> MapleTrade.cancelTrade(player));
-        Functions.requireNotNull(player.getEventInstance(), eim -> eim.playerDisconnected(player));
-        Functions.requireNotNull(player.getFakePlayer(), map::removeFakePlayer);
-        map.removePlayer(player);
     }
 
     public final void disconnect() {
@@ -628,10 +595,7 @@ public class MapleClient implements Disposable {
                     }
                 }
 
-                MapleMessenger messenger = player.getMessenger();
-                if (messenger != null) {
-                    world.removeMessengerPlayer(messenger, messenger.getPositionByName(player.getName()));
-                }
+                Functions.requireNotNull(player.getMessenger(), m -> m.removeMember(player));
                 int channelID = (getLoginState() == LoginState.Transfer) ? getChannel() : -1;
                 MapleGuild guild = player.getGuild();
                 if (guild != null) {

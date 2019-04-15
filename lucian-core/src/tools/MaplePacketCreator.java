@@ -49,6 +49,7 @@ import com.lucianms.server.life.MapleNPC;
 import com.lucianms.server.life.MobSkill;
 import com.lucianms.server.maps.*;
 import com.lucianms.server.movement.LifeMovementFragment;
+import com.lucianms.server.world.MapleMessengerCharacter;
 import com.lucianms.server.world.MapleParty;
 import com.lucianms.server.world.MaplePartyCharacter;
 import com.lucianms.server.world.PartyOperation;
@@ -609,14 +610,14 @@ public class MaplePacketCreator {
         return mplew.getPacket();
     }
 
-    public static byte[] addMessengerPlayer(String from, MapleCharacter chr, int position, int channel) {
+    public static byte[] addMessengerPlayer(MapleMessengerCharacter member) {
         final MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
         mplew.writeShort(SendOpcode.MESSENGER.getValue());
         mplew.write(0x00);
-        mplew.write(position);
-        addCharLook(mplew, chr, true);
-        mplew.writeMapleAsciiString(from);
-        mplew.write(channel);
+        mplew.write(member.getPosition());
+        addCharLook(mplew, member.getPlayer(), true);
+        mplew.writeMapleAsciiString(member.getUsername());
+        mplew.write(member.getChannelID());
         mplew.write(0x00);
         return mplew.getPacket();
     }
@@ -6555,14 +6556,14 @@ public class MaplePacketCreator {
         return mplew.getPacket();
     }
 
-    public static byte[] updateMessengerPlayer(String from, MapleCharacter chr, int position, int channel) {
+    public static byte[] updateMessengerPlayer(MapleMessengerCharacter member) {
         final MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
         mplew.writeShort(SendOpcode.MESSENGER.getValue());
         mplew.write(0x07);
-        mplew.write(position);
-        addCharLook(mplew, chr, true);
-        mplew.writeMapleAsciiString(from);
-        mplew.write(channel);
+        mplew.write(member.getPosition());
+        addCharLook(mplew, member.getPlayer(), true);
+        mplew.writeMapleAsciiString(member.getUsername());
+        mplew.write(member.getChannelID());
         mplew.write(0x00);
         return mplew.getPacket();
     }
