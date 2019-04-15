@@ -19,7 +19,7 @@ public class MaplePartyCharacter extends SocialMember {
 
     public MaplePartyCharacter() {
         super(null);
-        setChannelID(-2);
+        setChannelID(-1);
         // placeholder for packets, don't remove!
     }
 

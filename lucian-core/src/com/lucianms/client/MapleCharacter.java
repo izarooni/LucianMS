@@ -55,10 +55,7 @@ import com.lucianms.server.life.MobSkill;
 import com.lucianms.server.maps.*;
 import com.lucianms.server.partyquest.PartyQuest;
 import com.lucianms.server.quest.MapleQuest;
-import com.lucianms.server.world.MapleMessenger;
-import com.lucianms.server.world.MapleMessengerCharacter;
-import com.lucianms.server.world.MapleParty;
-import com.lucianms.server.world.MapleWorld;
+import com.lucianms.server.world.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.helpers.MessageFormatter;
@@ -646,7 +643,10 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Di
             }
             MapleParty party = ret.getParty();
             if (party != null) {
-                party.get(ret.getId()).updateWithPlayer(ret);
+                MaplePartyCharacter member = party.get(ret.getId());
+                if (member != null) {
+                    member.updateWithPlayer(ret);
+                }
             } else {
                 ret.setPartyID(0);
             }
@@ -3772,10 +3772,9 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Di
     public void receivePartyMemberHP() {
         MapleParty party = getParty();
         if (party != null) {
-            int channel = client.getChannel();
             Collection<MapleCharacter> players = party.getPlayers();
             for (MapleCharacter player : players) {
-                if (player.getMap() == getMap()) {
+                if (player.getMap() == getMap() && player.getId() != getId()) {
                     client.announce(MaplePacketCreator.updatePartyMemberHP(player.getId(), player.getHp(), player.getCurrentMaxHp()));
                 }
             }
@@ -4800,7 +4799,6 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Di
     public void updatePartyMemberHP() {
         MapleParty party = getParty();
         if (party != null) {
-            int channel = client.getChannel();
             Collection<MapleCharacter> players = party.getPlayers();
             for (MapleCharacter player : players) {
                 if (player.getMap() == getMap()) {

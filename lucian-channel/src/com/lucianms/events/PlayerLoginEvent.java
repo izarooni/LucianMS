@@ -22,6 +22,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -63,7 +64,7 @@ public class PlayerLoginEvent extends PacketEvent {
         final LoginState state = getClient().checkLoginState();
         MapleChannel channel = getClient().getChannelServer();
 
-        if (state != LoginState.Transfer) {
+        if (getClient().getAccID() == 0 || state != LoginState.Transfer) {
             getClient().setPlayer(null);
             getClient().announce(MaplePacketCreator.getAfterLoginError(7));
             return null;
@@ -190,11 +191,16 @@ public class PlayerLoginEvent extends PacketEvent {
         //region party
         MapleParty party = player.getParty();
         if (party != null) {
-            MaplePartyCharacter member = party.get(player.getId());
-            member.updateWithPlayer(player);
-            party.sendPacket(MaplePacketCreator.updateParty(member.getChannelID(), party, PartyOperation.LOG_ONOFF, member));
+            MaplePartyCharacter me = party.get(player.getId());
+            me.updateWithPlayer(player);
+            Collection<MapleCharacter> members = party.getPlayers();
+            for (MapleCharacter member : members) {
+                member.announce(MaplePacketCreator.updateParty(member.getClient().getChannel(), party, PartyOperation.SILENT_UPDATE, null));
+            }
+            members.clear();
+            player.receivePartyMemberHP();
+            player.updatePartyMemberHP();
         }
-        player.updatePartyMemberHP();
         //endregion
 
         MapleInventory eqd = player.getInventory(MapleInventoryType.EQUIPPED);
@@ -211,6 +217,7 @@ public class PlayerLoginEvent extends PacketEvent {
             MapleMessengerCharacter member = messenger.get(player.getId());
             if (member != null) {
                 member.setPlayer(player);
+                member.updateWithPlayer(player);
                 messenger.sendPacket(MaplePacketCreator.updateMessengerPlayer(member), player);
             }
         }

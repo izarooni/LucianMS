@@ -1559,7 +1559,6 @@ public class MapleMap {
         } else if (hasBoat() == 1 && (chr.getMapId() != 200090000 || chr.getMapId() != 200090010)) {
             chr.getClient().announce(MaplePacketCreator.boatPacket(false));
         }
-        chr.receivePartyMemberHP();
         if (chr.getDragon() == null && GameConstants.hasSPTable(chr.getJob())) {
             chr.createDragon();
             broadcastMessage(MaplePacketCreator.spawnDragon(chr.getDragon()));

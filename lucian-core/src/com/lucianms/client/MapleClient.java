@@ -605,12 +605,14 @@ public class MapleClient implements Disposable {
                 if (party != null) {
                     MaplePartyCharacter member = party.get(player.getId());
                     member.updateWithPlayer(player);
-                    member.setChannelID(-1);
-                    member.setPlayer(null);
-                    party.sendPacket(MaplePacketCreator.updateParty(member.getChannelID(), party, PartyOperation.LOG_ONOFF, member));
-                    if (party.getLeaderPlayerID() == player.getId()) {
-                        var newLeader = party.values().stream().filter(p -> p.getPlayer() != null).findAny();
-                        newLeader.ifPresent(m -> party.sendPacket(MaplePacketCreator.updateParty(m.getChannelID(), party, PartyOperation.CHANGE_LEADER, m)));
+                    if (getLoginState() != LoginState.Transfer) {
+                        member.setChannelID(-2);
+                        member.setPlayer(null);
+                        if (party.getLeaderPlayerID() == player.getId()) {
+                            var newLeader = party.values().stream().filter(p -> p.getPlayer() != null).findAny();
+                            newLeader.ifPresent(m -> party.sendPacket(MaplePacketCreator.updateParty(m.getChannelID(), party, PartyOperation.CHANGE_LEADER, m)));
+                        }
+                        party.sendPacket(MaplePacketCreator.updateParty(getChannel(), party, PartyOperation.LOG_ONOFF, member));
                     }
                 }
                 BuddyList friends = player.getBuddylist();
@@ -622,15 +624,16 @@ public class MapleClient implements Disposable {
             } catch (Throwable t) {
                 // whatever happens here, we still want to save the player.
                 t.printStackTrace();
+            } finally {
+                if (checkLoginState() != LoginState.Transfer) {
+                    setLoginState(LoginState.LogOut);
+                    session.attr(CLIENT_KEY).set(null);
+                    session.close();
+                    Functions.requireNotNull(player, MapleCharacter::dispose);
+                    dispose();
+                }
+                getWorldServer().removePlayer(player);
             }
-            getWorldServer().removePlayer(player);
-            player.dispose();
-            dispose();
-        }
-        if (checkLoginState() != LoginState.Transfer) {
-            setLoginState(LoginState.LogOut);
-            session.attr(CLIENT_KEY).set(null);
-            session.close();
         }
     }
 

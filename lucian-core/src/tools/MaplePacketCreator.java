@@ -663,10 +663,10 @@ public class MaplePacketCreator {
         members.addAll(Collections.nCopies(6 - party.size(), new MaplePartyCharacter()));
         members.addAll(party.values());
         members.forEach(m -> lew.writeInt(m.getPlayerID()));
-        members.forEach(m -> StringUtil.getRightPaddedStr(m.getUsername(), '\0', 13));
+        members.forEach(m -> lew.writeAsciiString(StringUtil.getRightPaddedStr(m.getUsername(), '\0', 13)));
         members.forEach(m -> lew.writeInt(m.getJobID()));
         members.forEach(m -> lew.writeInt(m.getLevel()));
-        members.forEach(m -> lew.writeInt(m.getChannelID()));
+        members.forEach(m -> lew.writeInt(m.getChannelID() - 1));
         lew.writeInt(party.getLeaderPlayerID());
         members.forEach(m -> lew.writeInt(m.getChannelID() == forchannel ? m.getFieldID() : 0));
         for (MaplePartyCharacter member : members) {
@@ -684,6 +684,7 @@ public class MaplePacketCreator {
                 lew.writeInt(0);
             }
         }
+        members.clear();
     }
 
     public static void addPetInfo(final MaplePacketLittleEndianWriter mplew, MaplePet pet, boolean showpet) {

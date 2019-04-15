@@ -336,8 +336,10 @@ public class EventCommands {
                 }
                 player.dropMessage(sb.toString());
             }
-            player.dropMessage("Characters NOT in party:");
-            player.dropMessage(solo.toString());
+            if (!solo.isEmpty()) {
+                player.dropMessage("Characters NOT in party:");
+                player.dropMessage(solo.toString());
+            }
             return true;
         } else if (command.equals("ak")) {
             if (args.length() == 1) {

@@ -4,8 +4,7 @@ import com.lucianms.client.MapleCharacter;
 import com.lucianms.nio.receive.MaplePacketReader;
 import com.lucianms.server.maps.MapleMap;
 import com.lucianms.server.world.MapleParty;
-import com.lucianms.server.world.PartyOperation;
-import tools.MaplePacketCreator;
+import com.lucianms.server.world.MaplePartyCharacter;
 
 public class FieldSetEvent extends PacketEvent {
 
@@ -23,9 +22,14 @@ public class FieldSetEvent extends PacketEvent {
 
         MapleParty party = player.getParty();
         if (party != null) {
-            party.get(player.getId()).setFieldID(map.getId());
-            player.announce(MaplePacketCreator.updateParty(getClient().getChannel(), party, PartyOperation.SILENT_UPDATE, null));
-            player.updatePartyMemberHP();
+            MaplePartyCharacter member = party.get(player.getId());
+            if (member != null) {
+                member.setFieldID(map.getId());
+                player.updatePartyMemberHP();
+                player.receivePartyMemberHP();
+            } else {
+                player.setPartyID(0);
+            }
         }
         return null;
     }
