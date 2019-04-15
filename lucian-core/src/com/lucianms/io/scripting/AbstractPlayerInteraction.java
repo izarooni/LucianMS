@@ -49,7 +49,6 @@ import com.lucianms.server.partyquest.PartyQuest;
 import com.lucianms.server.partyquest.Pyramid;
 import com.lucianms.server.quest.MapleQuest;
 import com.lucianms.server.world.MapleParty;
-import com.lucianms.server.world.MaplePartyCharacter;
 import jdk.nashorn.api.scripting.ScriptObjectMirror;
 import tools.MaplePacketCreator;
 
@@ -57,10 +56,10 @@ import java.awt.*;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
-import java.util.stream.Collectors;
 
 public class AbstractPlayerInteraction {
 
@@ -104,17 +103,19 @@ public class AbstractPlayerInteraction {
     }
 
     public void warpParty(int id) {
-        for (MapleCharacter mc : getPartyMembers()) {
+        Collection<MapleCharacter> members = getPartyMembers();
+        for (MapleCharacter mc : members) {
             if (id == 925020100) {
                 mc.setDojoParty(true);
             }
             mc.changeMap(getWarpMap(id));
         }
+        members.clear();
     }
 
-    public List<MapleCharacter> getPartyMembers() {
+    public Collection<MapleCharacter> getPartyMembers() {
         if (getParty() != null) {
-            return getParty().getMembers().stream().filter(MaplePartyCharacter::isOnline).map(MaplePartyCharacter::getPlayer).collect(Collectors.toList());
+            return getParty().getPlayers();
         }
         return null;
     }
@@ -331,7 +332,9 @@ public class AbstractPlayerInteraction {
     }
 
     public boolean isLeader() {
-        return getParty() != null && getParty().getLeader().getId() == getPlayer().getMPC().getId();
+        MapleParty party = getParty();
+        if (party == null) return false;
+        return party.getLeaderPlayerID() == getPlayer().getId();
 
     }
 
@@ -360,11 +363,9 @@ public class AbstractPlayerInteraction {
             removeAll(id);
             return;
         }
-        for (MaplePartyCharacter chr : getParty().getMembers()) {
-            if (chr != null && chr.isOnline() && chr.getPlayer().getClient() != null) {
-                removeAll(id, chr.getPlayer().getClient());
-            }
-        }
+        Collection<MapleCharacter> players = getParty().getPlayers();
+        players.forEach(p -> removeAll(id, p.getClient()));
+        players.clear();
     }
 
     public void givePartyExp(int amount, List<MapleCharacter> party) {
@@ -387,31 +388,24 @@ public class AbstractPlayerInteraction {
         //5 players = +20% bonus (120)
         //6 players = +30% bonus (130)
         MapleParty party = getPlayer().getParty();
-        int size = party.getMembers().size();
+        int size = party.size();
 
+        Collection<MapleCharacter> players = party.getPlayers();
         if (instance) {
-            for (MaplePartyCharacter member : party.getMembers()) {
-                if (member == null || !member.isOnline() || member.getPlayer().getEventInstance() == null) {
-                    size--;
-                }
-            }
+            size -= players.stream().filter(p -> p.getEventInstance() == null).mapToInt(p -> 1).sum();
         }
 
         int bonus = size < 4 ? 100 : 70 + (size * 10);
-        for (MaplePartyCharacter member : party.getMembers()) {
-            if (member == null || !member.isOnline()) {
-                continue;
-            }
-            MapleCharacter player = member.getPlayer();
-            if (instance && player.getEventInstance() == null) {
+        for (MapleCharacter member : players) {
+            if (instance && member.getEventInstance() == null) {
                 continue; // They aren't in the instance, don't give EXP.
             }
-            int base = PartyQuest.getExp(PQ, player.getLevel());
-            int exp = base * player.getExpRate();
+            int base = PartyQuest.getExp(PQ, member.getLevel());
+            int exp = base * member.getExpRate();
             exp = exp * bonus / 100;
-            player.gainExp(exp, true, true);
-            if (ServerConstants.PQ_BONUS_EXP_MOD > 0 && System.currentTimeMillis() <= ServerConstants.EVENT_END_TIMESTAMP) {
-                player.gainExp((int) (exp * ServerConstants.PQ_BONUS_EXP_MOD), true, true);
+            member.gainExp(exp, true, true);
+            if (System.currentTimeMillis() <= ServerConstants.EVENT_END_TIMESTAMP) {
+                member.gainExp(exp, true, true);
             }
         }
     }
@@ -420,7 +414,8 @@ public class AbstractPlayerInteraction {
         if (getParty() == null) {
             return;
         }
-        for (MapleCharacter chr : getPartyMembers()) {
+        Collection<MapleCharacter> members = getPartyMembers();
+        for (MapleCharacter chr : members) {
             MapleInventory iv = chr.getInventory(ItemConstants.getInventoryType(itemId));
             int count = iv.countById(itemId);
             if (count > 0) {
@@ -428,6 +423,7 @@ public class AbstractPlayerInteraction {
                 chr.announce(MaplePacketCreator.getShowItemGain(itemId, (short) -count, true));
             }
         }
+        members.clear();
     }
 
     public void removeAll(int id) {

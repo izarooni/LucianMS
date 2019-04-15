@@ -1,17 +1,20 @@
 package com.lucianms.events;
 
 import com.lucianms.client.MapleCharacter;
+import com.lucianms.io.scripting.event.EventInstanceManager;
 import com.lucianms.nio.receive.MaplePacketReader;
 import com.lucianms.server.world.MapleParty;
 import com.lucianms.server.world.MaplePartyCharacter;
 import com.lucianms.server.world.MapleWorld;
 import com.lucianms.server.world.PartyOperation;
+import tools.Functions;
 import tools.MaplePacketCreator;
 
 /**
  * @author izarooni
  */
 public class PlayerPartyOperationEvent extends PacketEvent {
+
 
     private String username;
     private byte action;
@@ -40,39 +43,31 @@ public class PlayerPartyOperationEvent extends PacketEvent {
         MapleCharacter player = getClient().getPlayer();
         MapleWorld world = getClient().getWorldServer();
         MapleParty party = player.getParty();
-        MaplePartyCharacter partyplayer = player.getMPC();
 
         switch (action) {
             case 1: { // create
                 if (player.getLevel() < 10) {
-                    getClient().announce(MaplePacketCreator.partyStatusMessage(10));
+                    getClient().announce(MaplePacketCreator.getPartyResult(10));
                     return null;
                 }
-                if (player.getParty() == null) {
-                    partyplayer = new MaplePartyCharacter(player);
-                    party = world.createParty(partyplayer);
-                    player.setPartyID(party.getId());
-                    player.setMPC(partyplayer);
-                    getClient().announce(MaplePacketCreator.partyCreated(partyplayer));
+                if (party == null) {
+                    createParty();
                 } else {
-                    getClient().announce(MaplePacketCreator.serverNotice(5, "You can't create a party as you are already in one."));
+                    getClient().announce(MaplePacketCreator.getPartyResult(16));
                 }
                 break;
             }
-            case 2: {
-                if (party != null && partyplayer != null) {
-                    if (partyplayer.equals(party.getLeader())) {
-                        world.updateParty(party.getId(), PartyOperation.DISBAND, partyplayer);
-                        if (player.getEventInstance() != null) {
-                            player.getEventInstance().disbandParty();
-                        }
+            case 2: { // leave or disband
+                if (party != null) {
+                    MaplePartyCharacter member = party.get(player.getId());
+                    if (party.getLeaderPlayerID() == player.getId()) {
+                        Functions.requireNotNull(player.getEventInstance(), EventInstanceManager::disbandParty);
+                        party.sendPacket(MaplePacketCreator.updateParty(player.getClient().getChannel(), party, PartyOperation.DISBAND, member));
+                        party.dispose();
                     } else {
-                        world.updateParty(party.getId(), PartyOperation.LEAVE, partyplayer);
-                        if (player.getEventInstance() != null) {
-                            player.getEventInstance().leftParty(player);
-                        }
+                        party.sendPacket(MaplePacketCreator.updateParty(player.getClient().getChannel(), party, PartyOperation.LEAVE, member));
+                        Functions.requireNotNull(player.getEventInstance(), eim -> eim.leftParty(player));
                     }
-                    player.setPartyID(0);
                 }
                 break;
             }
@@ -80,73 +75,72 @@ public class PlayerPartyOperationEvent extends PacketEvent {
                 if (player.getParty() == null) {
                     party = world.getParty(partyID);
                     if (party != null) {
-                        if (party.getMembers().size() < 6) {
-                            partyplayer = new MaplePartyCharacter(player);
-                            world.updateParty(party.getId(), PartyOperation.JOIN, partyplayer);
+                        if (party.size() < MapleParty.MaximumUsers) {
+                            party.addMember(player);
                             player.receivePartyMemberHP();
                             player.updatePartyMemberHP();
                         } else {
-                            getClient().announce(MaplePacketCreator.partyStatusMessage(17));
+                            getClient().announce(MaplePacketCreator.getPartyResult(17));
                         }
                     } else {
-                        getClient().announce(MaplePacketCreator.serverNotice(5, "The person you have invited to the party is already in one."));
+                        getClient().announce(MaplePacketCreator.getPartyResultMessage("The party you are trying to join no longer exists."));
                     }
                 } else {
-                    getClient().announce(MaplePacketCreator.serverNotice(5, "You can't join the party as you are already in one."));
+                    getClient().announce(MaplePacketCreator.getPartyResult(16));
                 }
                 break;
             }
             case 4: { // invite
                 MapleCharacter invited = world.findPlayer(p -> p.getName().equalsIgnoreCase(username));
                 if (invited != null) {
-                    if (invited.getLevel() < 10) { //min requirement is level 10
-                        getClient().announce(MaplePacketCreator.serverNotice(5, "The player you have invited does not meet the requirements."));
-                        return null;
-                    }
-                    if (invited.getParty() == null) {
-                        if (player.getParty() == null) {
-                            partyplayer = new MaplePartyCharacter(player);
-                            party = world.createParty(partyplayer);
-                            player.setPartyID(party.getId());
-                            player.setMPC(partyplayer);
-                            getClient().announce(MaplePacketCreator.partyCreated(partyplayer));
+                    if (invited.getPartyID() == 0) {
+                        if (party == null) {
+                            party = createParty();
                         }
-                        if (party.getMembers().size() < 6) {
+                        if (party.size() < MapleParty.MaximumUsers) {
                             invited.getClient().announce(MaplePacketCreator.partyInvite(player));
                         } else {
-                            getClient().announce(MaplePacketCreator.partyStatusMessage(17));
+                            getClient().announce(MaplePacketCreator.getPartyResult(17));
                         }
                     } else {
-                        getClient().announce(MaplePacketCreator.partyStatusMessage(16));
+                        getClient().announce(MaplePacketCreator.getPartyResult(16));
                     }
                 } else {
-                    getClient().announce(MaplePacketCreator.partyStatusMessage(19));
+                    getClient().announce(MaplePacketCreator.getPartyResult(19));
                 }
                 break;
             }
             case 5: { // expel
-                if (partyplayer.equals(party.getLeader())) {
-                    MaplePartyCharacter expelled = party.getMemberById(playerID);
-                    if (expelled != null) {
-                        world.updateParty(party.getId(), PartyOperation.EXPEL, expelled);
-                        if (player.getEventInstance() != null) {
-                            if (expelled.isOnline()) {
-                                player.getEventInstance().disbandParty();
-                            }
-                        }
+                if (party != null) {
+                    if (playerID == player.getId() || playerID == party.getLeaderPlayerID()) {
+                        return null;
+                    }
+                    MaplePartyCharacter remove = party.remove(playerID);
+                    if (remove != null) {
+                        party.sendPacket(MaplePacketCreator.updateParty(remove.getChannelID(), party, PartyOperation.EXPEL, remove));
                     }
                 }
                 break;
             }
-            case 6: {
-                if (party != null && party.getLeader().getId() == player.getId()) {
-                    MaplePartyCharacter newLeadr = party.getMemberById(playerID);
-                    party.setLeader(newLeadr);
-                    world.updateParty(party.getId(), PartyOperation.CHANGE_LEADER, newLeadr);
+            case 6: { // change leader
+                if (party != null && party.getLeaderPlayerID() == player.getId()) {
+                    MaplePartyCharacter member = party.get(playerID);
+                    if (member != null && playerID != player.getId()) {
+                        party.setLeader(member.getPlayerID());
+                    }
                 }
                 break;
             }
         }
         return null;
+    }
+
+    private MapleParty createParty() {
+        MapleCharacter player = getClient().getPlayer();
+        MapleParty party = new MapleParty(player);
+        MaplePartyCharacter member = party.get(player.getId());
+        getClient().getWorldServer().getParties().put(party.getID(), party);
+        getClient().announce(MaplePacketCreator.partyCreated(member));
+        return party;
     }
 }

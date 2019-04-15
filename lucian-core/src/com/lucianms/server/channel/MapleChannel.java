@@ -197,9 +197,9 @@ public final class MapleChannel {
 
     public List<MapleCharacter> getPartyMembers(MapleParty party) {
         List<MapleCharacter> partym = new ArrayList<>(8);
-        for (MaplePartyCharacter partychar : party.getMembers()) {
-            if (partychar.getChannel() == getId()) {
-                MapleCharacter chr = getPlayerStorage().find(c -> c.getName().equalsIgnoreCase(partychar.getName()));
+        for (MaplePartyCharacter partychar : party.values()) {
+            if (partychar.getChannelID() == getId()) {
+                MapleCharacter chr = getPlayerStorage().find(c -> c.getName().equalsIgnoreCase(partychar.getUsername()));
                 if (chr != null) {
                     partym.add(chr);
                 }

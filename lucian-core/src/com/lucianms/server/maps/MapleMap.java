@@ -46,7 +46,7 @@ import com.lucianms.server.*;
 import com.lucianms.server.life.*;
 import com.lucianms.server.life.MapleLifeFactory.SelfDestruction;
 import com.lucianms.server.partyquest.Pyramid;
-import com.lucianms.server.world.MaplePartyCharacter;
+import com.lucianms.server.world.MapleParty;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import tools.MaplePacketCreator;
@@ -530,8 +530,9 @@ public class MapleMap {
                     if (!monster.isAlive()) { // monster just died
 
                         // Kaneki boss map
+                        MapleParty party = chr.getParty();
                         if (monster.getMap().getId() == 85) {
-                            if (chr.getParty() != null) {
+                            if (party != null) {
                                 for (MapleCharacter players : getAllPlayer()) {
                                     players.changeMap(88);
                                     players.dropMessage(5, "Thanks for finally letting me realize my actions were corrupt against the realm.");
@@ -546,39 +547,38 @@ public class MapleMap {
                         if (ServerConstants.NX_FROM_MONSTERS) {
                             int random = (Randomizer.nextInt(100)) + 1;
                             int levelDifference = chr.getLevel() - monster.getLevel();
+                            int receive = 0;
+                            Collection<MapleCharacter> partyMembers = party == null ? null : party.getPlayers(p -> p.getMap() == this);
+
                             if (levelDifference > ServerConstants.MAX_LEVELS_ABOVE) {
                                 if (random < ServerConstants.BELOW_LEVERANGEL_NX_CHANCE) {
-                                    int receive = monster.getLevel() * 4 / random;
-                                    if (chr.getParty() != null) {
-                                        List<MaplePartyCharacter> collect = chr.getParty().getMembers().stream().filter(m -> m.isOnline() && m.getPlayer().getMap() == this).collect(Collectors.toList());
-                                        receive = (int) (monster.getLevel() * ServerConstants.LEVEL_TO_NX_MULTIPLIER) / Math.min(collect.size(), 1);
-                                        for (MaplePartyCharacter players : collect) {
-                                            players.getPlayer().getCashShop().gainCash(1, receive);
-                                            if (receive >= 1) {
-                                                players.getPlayer().announce(MaplePacketCreator.earnTitleMessage("You gained " + receive + " NX cash"));
-                                            }
+                                    if (party != null) {
+                                        receive = (int) (monster.getLevel() * ServerConstants.LEVEL_TO_NX_MULTIPLIER) / Math.min(partyMembers.size(), 1);
+                                    } else {
+                                        receive = monster.getLevel() * 4 / random;
+                                        if (receive > 0) {
+                                            chr.getCashShop().gainCash(1, receive);
+                                            chr.announce(MaplePacketCreator.earnTitleMessage("You gained " + receive + " NX cash"));
                                         }
-                                    } else if (receive > 0) {
-                                        chr.getCashShop().gainCash(1, receive);
-                                        chr.announce(MaplePacketCreator.earnTitleMessage("You gained " + receive + " NX cash"));
                                     }
                                 }
                             } else if (levelDifference > -ServerConstants.MAX_LEVELS_BELOW) {
                                 if (random < ServerConstants.BELOW_LEVERANGEL_NX_CHANCE) {
-                                    int receive = (int) (monster.getLevel() * ServerConstants.LEVEL_TO_NX_MULTIPLIER + random);
-                                    if (chr.getParty() != null) {
-                                        List<MaplePartyCharacter> collect = chr.getParty().getMembers().stream().filter(m -> m.isOnline() && m.getPlayer().getMap() == this).collect(Collectors.toList());
-                                        receive = (int) (monster.getLevel() * ServerConstants.LEVEL_TO_NX_MULTIPLIER + random - (random / 2)) / Math.min(collect.size(), 1);
-                                        for (MaplePartyCharacter players : collect) {
-                                            players.getPlayer().getCashShop().gainCash(1, receive);
-                                            if (receive >= 1) {
-                                                players.getPlayer().announce(MaplePacketCreator.earnTitleMessage("You gained " + receive + " NX cash"));
-                                            }
+                                    if (party != null) {
+                                        receive = (int) (monster.getLevel() * ServerConstants.LEVEL_TO_NX_MULTIPLIER + random - (random / 2)) / Math.min(partyMembers.size(), 1);
+                                    } else {
+                                        receive = (int) (monster.getLevel() * ServerConstants.LEVEL_TO_NX_MULTIPLIER + random);
+                                        if (receive > 0) {
+                                            chr.getCashShop().gainCash(1, receive);
+                                            chr.announce(MaplePacketCreator.earnTitleMessage("You gained " + receive + " NX cash"));
                                         }
-                                    } else if (receive > 0) {
-                                        chr.getCashShop().gainCash(1, receive);
-                                        chr.announce(MaplePacketCreator.earnTitleMessage("You gained " + receive + " NX cash"));
                                     }
+                                }
+                            }
+                            if (receive > 0 && party != null) {
+                                for (MapleCharacter players : partyMembers) {
+                                    players.getCashShop().gainCash(1, receive);
+                                    players.announce(MaplePacketCreator.earnTitleMessage("You gained " + receive + " NX cash"));
                                 }
                             }
                         }
@@ -1157,7 +1157,7 @@ public class MapleMap {
             @Override
             public void sendPackets(MapleClient c) {
                 c.announce(MaplePacketCreator.spawnDoor(door.getOwner().getId(), door.getTargetPosition(), false));
-                if (door.getOwner().getParty() != null && (door.getOwner() == c.getPlayer() || door.getOwner().getParty().containsMembers(c.getPlayer().getMPC()))) {
+                if (door.getOwner().getParty() != null && (door.getOwner() == c.getPlayer() || door.getOwner().getParty().containsKey(c.getPlayer().getId()))) {
                     c.announce(MaplePacketCreator.partyPortal(door.getTown().getId(), door.getTarget().getId(), door.getTargetPosition()));
                 }
                 c.announce(MaplePacketCreator.spawnPortal(door.getTown().getId(), door.getTarget().getId(), door.getTargetPosition()));
@@ -1216,7 +1216,7 @@ public class MapleMap {
                     for (MapleMapObject mo : players) {
                         if (mist.makeChanceResult()) {
                             MapleCharacter chr = (MapleCharacter) mo;
-                            if (mist.getOwner().getId() == chr.getId() || mist.getOwner().getParty() != null && mist.getOwner().getParty().containsMembers(chr.getMPC())) {
+                            if (mist.getOwner().getId() == chr.getId() || mist.getOwner().getParty() != null && mist.getOwner().getParty().containsKey(chr.getId())) {
                                 chr.addMP(mist.getSourceSkill().getEffect(chr.getSkillLevel(mist.getSourceSkill().getId())).getX() * chr.getMp() / 100);
                             }
                         }

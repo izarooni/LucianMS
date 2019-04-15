@@ -35,7 +35,6 @@ import com.lucianms.server.maps.MapleMap;
 import com.lucianms.server.maps.MapleMapObject;
 import com.lucianms.server.maps.MapleMapObjectType;
 import com.lucianms.server.world.MapleParty;
-import com.lucianms.server.world.MaplePartyCharacter;
 import tools.MaplePacketCreator;
 import tools.Pair;
 import tools.Randomizer;
@@ -232,11 +231,11 @@ public class MapleMonster extends AbstractLoadedMapleLife {
         } else if (!isBoss()) {
             int remainingHP = (int) Math.max(0, hp * 100f / getMaxHp());
             byte[] packet = MaplePacketCreator.showMonsterHP(getObjectId(), remainingHP);
-            if (from.getParty() != null) {
-                for (MaplePartyCharacter mpc : from.getParty().getMembers()) {
-                    MapleCharacter member = from.getMap().getCharacterById(mpc.getId()); // god bless
-                    if (member != null) {
-                        member.announce(packet.clone()); // clone it just in case of crypto
+            MapleParty party = from.getParty();
+            if (party != null) {
+                for (MapleCharacter player : party.getPlayers()) {
+                    if (player.getMap() == from.getMap()) {
+                        player.announce(packet);
                     }
                 }
             } else {
@@ -321,7 +320,7 @@ public class MapleMonster extends AbstractLoadedMapleLife {
         int exp = getExp();
         int totalHealth = getMaxHp();
         Map<Integer, Integer> partyExp = new HashMap<>();
-        // 80% of pool is split amongst all the damagers
+        // 80% of pool is split amongst all the attackers
         for (Entry<Integer, AtomicInteger> damage : takenDamage.entrySet()) {
             MapleCharacter mc = getMap().getCharacterById(damage.getKey());
             if (mc != null) {
@@ -330,11 +329,11 @@ public class MapleMonster extends AbstractLoadedMapleLife {
                 if (isKiller) {
                     xp += exp / 5;
                 }
-                MapleParty p = mc.getParty();
-                if (p != null) {
-                    for (MaplePartyCharacter member : p.getMembers()) {
-                        if (member.isOnline() && member.getPlayer().getMap() == getMap()) {
-                            int pID = p.getId();
+                MapleParty party = mc.getParty();
+                if (party != null) {
+                    for (MapleCharacter player : party.getPlayers()) {
+                        if (player.getMap() == getMap()) {
+                            int pID = party.getID();
                             int pXP = xp + (partyExp.getOrDefault(pID, 0));
                             partyExp.put(pID, pXP);
                         }

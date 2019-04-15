@@ -85,8 +85,8 @@ public class EventInstanceManager {
     }
 
     public void registerParty(MapleParty party, MapleMap map) {
-        for (MaplePartyCharacter pc : party.getMembers()) {
-            MapleCharacter c = map.getCharacterById(pc.getId());
+        for (MaplePartyCharacter pc : party.values()) {
+            MapleCharacter c = map.getCharacterById(pc.getPlayerID());
             registerPlayer(c);
         }
     }
@@ -235,7 +235,7 @@ public class EventInstanceManager {
     }
 
     public boolean isLeader(MapleCharacter chr) {
-        return (chr.getParty().getLeader().getId() == chr.getId());
+        return (chr.getParty().getLeader().getPlayerID() == chr.getId());
     }
 
     public void startEventTimer(long time) {

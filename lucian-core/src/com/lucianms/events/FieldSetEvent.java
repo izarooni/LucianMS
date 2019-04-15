@@ -23,6 +23,7 @@ public class FieldSetEvent extends PacketEvent {
 
         MapleParty party = player.getParty();
         if (party != null) {
+            party.get(player.getId()).setFieldID(map.getId());
             player.announce(MaplePacketCreator.updateParty(getClient().getChannel(), party, PartyOperation.SILENT_UPDATE, null));
             player.updatePartyMemberHP();
         }

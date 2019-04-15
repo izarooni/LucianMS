@@ -25,7 +25,6 @@ public class ServerConstants {
 
     // Rates
     public static final int PARTY_EXPERIENCE_MOD = 1; // change for event stuff
-    public static final double PQ_BONUS_EXP_MOD = 0.5;
 
     public static final long EVENT_END_TIMESTAMP = 1428897600000L;
 

@@ -51,7 +51,7 @@ public abstract class Emergency extends GenericEvent {
 
     @Override
     public boolean onPlayerChangeMapInternal(MapleCharacter player, MapleMap destination) {
-        if (player.getParty() != null && player.getParty().getLeader().getId() == player.getId()) {
+        if (player.getParty() != null && player.getParty().getLeaderPlayerID() == player.getId()) {
             cancelTimeout();
             new Timeout(false).run();
             unregisterPlayers();
@@ -82,7 +82,7 @@ public abstract class Emergency extends GenericEvent {
 
         MapleParty party = player.getParty();
         Collection<MaplePartyCharacter> members;
-        if (party != null && (members = party.getMembers()).size() > 2) {
+        if (party != null && (members = party.values()).size() > 2) {
             averageLevel = 0;
             for (MaplePartyCharacter member : members) {
                 averageLevel += member.getLevel();

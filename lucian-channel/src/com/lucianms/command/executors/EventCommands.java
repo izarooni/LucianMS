@@ -314,7 +314,7 @@ public class EventCommands {
             // get parties and solo players
             for (MapleCharacter players : player.getMap().getCharacters()) {
                 if (players.getParty() != null) {
-                    if (players.getParty().getLeader().getId() == players.getId() && !parties.contains(players.getPartyID())) {
+                    if (players.getParty().getLeaderPlayerID() == players.getId() && !parties.contains(players.getPartyID())) {
                         parties.add(players.getPartyID());
                     }
                 } else {
@@ -325,13 +325,13 @@ public class EventCommands {
             for (int partyId : parties) {
                 StringBuilder sb = new StringBuilder();
                 MapleParty party = client.getWorldServer().getParty(partyId);
-                sb.append(party.getLeader().getName()).append("'s members: ");
-                for (MaplePartyCharacter members : party.getMembers()) {
-                    if (members.getId() != party.getLeader().getId()) {
-                        sb.append(members.getName()).append(", ");
+                sb.append(party.getLeader().getUsername()).append("'s members: ");
+                for (MaplePartyCharacter members : party.values()) {
+                    if (members.getPlayerID() != party.getLeaderPlayerID()) {
+                        sb.append(members.getUsername()).append(", ");
                     }
                 }
-                if (party.getMembers().size() > 1) {
+                if (party.size() > 1) {
                     sb.setLength(sb.length() - 2);
                 }
                 player.dropMessage(sb.toString());

@@ -35,6 +35,7 @@ import com.lucianms.constants.skills.ThunderBreaker;
 import com.lucianms.events.gm.MapleSnowball;
 import com.lucianms.events.meta.CommunityActions;
 import com.lucianms.nio.SendOpcode;
+import com.lucianms.nio.send.MaplePacketWriter;
 import com.lucianms.server.CashShop.CashItem;
 import com.lucianms.server.CashShop.CashItemFactory;
 import com.lucianms.server.CashShop.SpecialCashItem;
@@ -624,13 +625,6 @@ public class MaplePacketCreator {
 
     private static void addMiniGameInfo(final MaplePacketLittleEndianWriter mplew, MapleCharacter chr) {
         mplew.writeShort(0);
-        /*for (int m = size; m > 0; m--) {//nexon does this :P
-         mplew.writeInt(0);
-         mplew.writeInt(0);
-         mplew.writeInt(0);
-         mplew.writeInt(0);
-         mplew.writeInt(0);
-         }*/
     }
 
     private static void addMonsterBookInfo(final MaplePacketLittleEndianWriter mplew, MapleCharacter chr) {
@@ -665,51 +659,23 @@ public class MaplePacketCreator {
     }
 
     private static void addPartyStatus(int forchannel, MapleParty party, LittleEndianWriter lew, boolean leaving) {
-        List<MaplePartyCharacter> partymembers = new ArrayList<>(party.getMembers());
-        while (partymembers.size() < 6) {
-            partymembers.add(new MaplePartyCharacter());
-        }
-        for (MaplePartyCharacter partychar : partymembers) {
-            lew.writeInt(partychar.getId());
-        }
-        for (MaplePartyCharacter partychar : partymembers) {
-            lew.writeAsciiString(getRightPaddedStr(partychar.getName(), '\0', 13));
-        }
-        for (MaplePartyCharacter partychar : partymembers) {
-            lew.writeInt(partychar.getJobId());
-        }
-        for (MaplePartyCharacter partychar : partymembers) {
-            lew.writeInt(partychar.getLevel());
-        }
-        for (MaplePartyCharacter partychar : partymembers) {
-            if (partychar.isOnline()) {
-                lew.writeInt(partychar.getChannel() - 1);
-            } else {
-                lew.writeInt(-2);
-            }
-        }
-        lew.writeInt(party.getLeader().getId());
-        for (MaplePartyCharacter partychar : partymembers) {
-            if (partychar.getChannel() == forchannel) {
-                lew.writeInt(partychar.getMapId());
-            } else {
-                lew.writeInt(0);
-            }
-        }
-        for (MaplePartyCharacter partychar : partymembers) {
-            if (partychar.getChannel() == forchannel && !leaving) {
-                if (partychar.getDoors().size() > 0) {
-                    for (MapleDoor doors : partychar.getDoors()) {
-                        lew.writeInt(doors.getTown().getId());
-                        lew.writeInt(doors.getTarget().getId());
-                        lew.writeInt(doors.getPosition().x);
-                        lew.writeInt(doors.getPosition().y);
-                    }
-                } else {
-                    lew.writeInt(999999999);
-                    lew.writeInt(999999999);
-                    lew.writeInt(0);
-                    lew.writeInt(0);
+        ArrayList<MaplePartyCharacter> members = new ArrayList<>();
+        members.addAll(Collections.nCopies(6 - party.size(), new MaplePartyCharacter()));
+        members.addAll(party.values());
+        members.forEach(m -> lew.writeInt(m.getPlayerID()));
+        members.forEach(m -> StringUtil.getRightPaddedStr(m.getUsername(), '\0', 13));
+        members.forEach(m -> lew.writeInt(m.getJobID()));
+        members.forEach(m -> lew.writeInt(m.getLevel()));
+        members.forEach(m -> lew.writeInt(m.getChannelID()));
+        lew.writeInt(party.getLeaderPlayerID());
+        members.forEach(m -> lew.writeInt(m.getChannelID() == forchannel ? m.getFieldID() : 0));
+        for (MaplePartyCharacter member : members) {
+            if (member.getChannelID() == forchannel && !leaving && !member.getDoors().isEmpty()) {
+                for (MapleDoor doors : member.getDoors()) {
+                    lew.writeInt(doors.getTown().getId());
+                    lew.writeInt(doors.getTarget().getId());
+                    lew.writeInt(doors.getPosition().x);
+                    lew.writeInt(doors.getPosition().y);
                 }
             } else {
                 lew.writeInt(999999999);
@@ -767,7 +733,7 @@ public class MaplePacketCreator {
         mplew.writeShort(player.getCrushRings().size());
         for (MapleRing ring : player.getCrushRings()) {
             mplew.writeInt(ring.getPartnerChrId());
-            mplew.writeAsciiString(getRightPaddedStr(ring.getPartnerName(), '\0', 13));
+            mplew.writeAsciiString(StringUtil.getRightPaddedStr(ring.getPartnerName(), '\0', 13));
             mplew.writeInt(ring.getRingId());
             mplew.writeInt(0);
             mplew.writeInt(ring.getPartnerRingId());
@@ -776,7 +742,7 @@ public class MaplePacketCreator {
         mplew.writeShort(player.getFriendshipRings().size());
         for (MapleRing ring : player.getFriendshipRings()) {
             mplew.writeInt(ring.getPartnerChrId());
-            mplew.writeAsciiString(getRightPaddedStr(ring.getPartnerName(), '\0', 13));
+            mplew.writeAsciiString(StringUtil.getRightPaddedStr(ring.getPartnerName(), '\0', 13));
             mplew.writeInt(ring.getRingId());
             mplew.writeInt(0);
             mplew.writeInt(ring.getPartnerRingId());
@@ -1839,6 +1805,22 @@ public class MaplePacketCreator {
         return mplew.getPacket();
     }
 
+    public static byte[] getPartyResult(int result) {
+        if (result == 36) throw new IllegalArgumentException("Use getPartyMessage(String)");
+        MaplePacketWriter w = new MaplePacketWriter();
+        w.writeShort(SendOpcode.PARTY_OPERATION.getValue());
+        w.write(result);
+        return w.getPacket();
+    }
+
+    public static byte[] getPartyResultMessage(String content) {
+        MaplePacketWriter w = new MaplePacketWriter();
+        w.writeShort(SendOpcode.PARTY_OPERATION.getValue());
+        w.write(36);
+        w.writeMapleString(content);
+        return w.getPacket();
+    }
+
     public static byte[] setSessionValue(String info, int amount) {
         final MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
         mplew.writeShort(SendOpcode.SESSION_VALUE.getValue());
@@ -1977,7 +1959,7 @@ public class MaplePacketCreator {
             mplew.writeInt(mgc.getId());
         }
         for (MapleGuildCharacter mgc : members) {
-            mplew.writeAsciiString(getRightPaddedStr(mgc.getName(), '\0', 13));
+            mplew.writeAsciiString(StringUtil.getRightPaddedStr(mgc.getName(), '\0', 13));
             mplew.writeInt(mgc.getJobId());
             mplew.writeInt(mgc.getLevel());
             mplew.writeInt(mgc.getGuildRank());
@@ -2725,14 +2707,6 @@ public class MaplePacketCreator {
         mplew.writeShort(SendOpcode.RELOG_RESPONSE.getValue());
         mplew.write(1);//1 O.O Must be more types ):
         return mplew.getPacket();
-    }
-
-    private static String getRightPaddedStr(String in, char padchar, int length) {
-        StringBuilder builder = new StringBuilder(in);
-        for (int x = in.length(); x < length; x++) {
-            builder.append(padchar);
-        }
-        return builder.toString();
     }
 
     public static byte[] getScrollEffect(int chr, ScrollResult scrollSuccess, boolean legendarySpirit) {
@@ -3945,7 +3919,7 @@ public class MaplePacketCreator {
         mplew.write(0x27);
         mplew.writeInt(mgc.getGuildId());
         mplew.writeInt(mgc.getId());
-        mplew.writeAsciiString(getRightPaddedStr(mgc.getName(), '\0', 13));
+        mplew.writeAsciiString(StringUtil.getRightPaddedStr(mgc.getName(), '\0', 13));
         mplew.writeInt(mgc.getJobId());
         mplew.writeInt(mgc.getLevel());
         mplew.writeInt(mgc.getGuildRank()); //should be always 5 but whatevs
@@ -4134,7 +4108,7 @@ public class MaplePacketCreator {
         final MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
         mplew.writeShort(SendOpcode.PARTY_OPERATION.getValue());
         mplew.write(4);
-        mplew.writeInt(from.getParty().getId());
+        mplew.writeInt(from.getParty().getID());
         mplew.writeMapleAsciiString(from.getName());
         mplew.write(0);
         return mplew.getPacket();
@@ -4150,22 +4124,6 @@ public class MaplePacketCreator {
         return mplew.getPacket();
     }
 
-    /**
-     * 10: A beginner can't create a party. 1/11/14/19: Your request for a party
-     * didn't work due to an unexpected error. 13: You have yet to join a party.
-     * 16: Already have joined a party. 17: The party you're trying to join is
-     * already in full capacity. 19: Unable to find the requested character in
-     * this channel.
-     *
-     * @param message
-     * @return
-     */
-    public static byte[] partyStatusMessage(int message) {
-        final MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(SendOpcode.PARTY_OPERATION.getValue());
-        mplew.write(message);
-        return mplew.getPacket();
-    }
 
     /**
      * 23: 'Char' have denied request to the party.
@@ -4597,7 +4555,7 @@ public class MaplePacketCreator {
         mplew.writeInt(cidFrom);
         mplew.writeMapleAsciiString(nameFrom);
         mplew.writeInt(cidFrom);
-        mplew.writeAsciiString(getRightPaddedStr(nameFrom, '\0', 11));
+        mplew.writeAsciiString(StringUtil.getRightPaddedStr(nameFrom, '\0', 11));
         mplew.write(0x09);
         mplew.write(0xf0);
         mplew.write(0x01);
@@ -5424,7 +5382,7 @@ public class MaplePacketCreator {
             mplew.writeInt(mgc.getId());
         }
         for (MapleGuildCharacter mgc : members) {
-            mplew.writeAsciiString(getRightPaddedStr(mgc.getName(), '\0', 13));
+            mplew.writeAsciiString(StringUtil.getRightPaddedStr(mgc.getName(), '\0', 13));
             mplew.writeInt(mgc.getJobId());
             mplew.writeInt(mgc.getLevel());
             mplew.writeInt(mgc.getGuildRank());
@@ -6482,10 +6440,10 @@ public class MaplePacketCreator {
         for (BuddylistEntry buddy : buddylist) {
             if (buddy.isVisible()) {
                 mplew.writeInt(buddy.getCharacterId()); // cid
-                mplew.writeAsciiString(getRightPaddedStr(buddy.getName(), '\0', 13));
+                mplew.writeAsciiString(StringUtil.getRightPaddedStr(buddy.getName(), '\0', 13));
                 mplew.write(0); // opposite status
                 mplew.writeInt(buddy.getChannel() - 1);
-                mplew.writeAsciiString(getRightPaddedStr(buddy.getGroup(), '\0', 13));
+                mplew.writeAsciiString(StringUtil.getRightPaddedStr(buddy.getGroup(), '\0', 13));
                 mplew.writeInt(0);//mapid?
             }
         }
@@ -6588,10 +6546,10 @@ public class MaplePacketCreator {
             case LEAVE:
                 mplew.write(0x0C);
                 mplew.writeInt(40546);
-                mplew.writeInt(target.getId());
+                mplew.writeInt(target.getPlayerID());
                 if (op == PartyOperation.DISBAND) {
                     mplew.write(0);
-                    mplew.writeInt(party.getId());
+                    mplew.writeInt(party.getID());
                 } else {
                     mplew.write(1);
                     if (op == PartyOperation.EXPEL) {
@@ -6599,25 +6557,25 @@ public class MaplePacketCreator {
                     } else {
                         mplew.write(0);
                     }
-                    mplew.writeMapleAsciiString(target.getName());
+                    mplew.writeMapleAsciiString(target.getUsername());
                     addPartyStatus(forChannel, party, mplew, false);
                 }
                 break;
             case JOIN:
                 mplew.write(0xF);
                 mplew.writeInt(40546);
-                mplew.writeMapleAsciiString(target.getName());
+                mplew.writeMapleAsciiString(target.getUsername());
                 addPartyStatus(forChannel, party, mplew, false);
                 break;
             case SILENT_UPDATE:
             case LOG_ONOFF:
                 mplew.write(0x7);
-                mplew.writeInt(party.getId());
+                mplew.writeInt(party.getID());
                 addPartyStatus(forChannel, party, mplew, false);
                 break;
             case CHANGE_LEADER:
                 mplew.write(0x1B);
-                mplew.writeInt(target.getId());
+                mplew.writeInt(target.getPlayerID());
                 mplew.write(0);
                 break;
         }

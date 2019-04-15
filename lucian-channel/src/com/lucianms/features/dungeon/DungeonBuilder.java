@@ -13,6 +13,7 @@ import com.lucianms.server.life.MapleMonster;
 import com.lucianms.server.life.MapleMonsterStats;
 import com.lucianms.server.life.SpawnPoint;
 import com.lucianms.server.maps.MapleMap;
+import com.lucianms.server.world.MapleParty;
 import com.lucianms.server.world.MaplePartyCharacter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -100,8 +101,9 @@ public class DungeonBuilder {
                 MapleMonsterStats overrides = spawnPoint.createOverrides();
                 MapleCharacter expCalc = player;
                 if (scaleEXP) {
-                    if (player.getParty() != null) {
-                        for (MaplePartyCharacter expCalculation : player.getParty().getMembers()) {
+                    MapleParty party = player.getParty();
+                    if (party != null) {
+                        for (MaplePartyCharacter expCalculation : party.values()) {
                             if (expCalculation.getLevel() < expCalc.getLevel()) {
                                 expCalc = expCalculation.getPlayer();
                             }
@@ -141,7 +143,7 @@ public class DungeonBuilder {
 
                 if (isPartyPlay) {
                     if (player.getParty() != null) {
-                        player.getParty().getMembers().forEach((member) -> member.getPlayer().changeMap(map));
+                        player.getParty().forEachPlayer(p -> p.changeMap(map));
                     } else {
                         player.changeMap(map);
                     }
@@ -175,7 +177,7 @@ public class DungeonBuilder {
 
     private boolean allowEntrance() {
         if (player.getParty() != null) {
-            for (MaplePartyCharacter pcharacter : player.getParty().getMembers()) {
+            for (MaplePartyCharacter pcharacter : player.getParty().values()) {
                 MapleCharacter character = pcharacter.getPlayer();
                 if (!(character.getLevel() >= getMinLevel() && character.getLevel() <= getMaxLevel())) {
                     areLacking += String.format("%s does not fulfill the level requirements\r\n", character.getName());
@@ -218,7 +220,7 @@ public class DungeonBuilder {
 
         if (player.getParty() != null) {
             if (isEveryoneNeedsItemRequirements()) {
-                for (MaplePartyCharacter pchar : player.getParty().getMembers()) {
+                for (MaplePartyCharacter pchar : player.getParty().values()) {
                     MapleCharacter character = pchar.getPlayer();
                     for (Integer integer : getItemRequirements()) {
                         MapleInventoryManipulator.removeById(character.getClient(), MapleInventoryType.ETC, integer, 1, false, false);
@@ -242,7 +244,7 @@ public class DungeonBuilder {
         if (this.allowParty) {
             if (!(spawns.isEmpty() && getItemRequirements().isEmpty())) {
                 if (player.getParty() != null) {
-                    if (player.getParty().getMembers().size() <= getMaxPartySize()) {
+                    if (player.getParty().size() <= getMaxPartySize()) {
                         return this.buildDungeon(true);
                     }
                 }

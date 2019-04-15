@@ -75,6 +75,15 @@ public class ConcurrentMapStorage<K, V> {
         }
     }
 
+    public boolean containsKey(K key) {
+        rLock.lock();
+        try {
+            return storage.containsKey(key);
+        } finally {
+            rLock.unlock();
+        }
+    }
+
     public final V get(K key) {
         rLock.lock();
         try {

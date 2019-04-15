@@ -41,7 +41,6 @@ import com.lucianms.server.partyquest.Pyramid;
 import com.lucianms.server.partyquest.Pyramid.PyramidMode;
 import com.lucianms.server.quest.MapleQuest;
 import com.lucianms.server.world.MapleParty;
-import com.lucianms.server.world.MaplePartyCharacter;
 import provider.MapleData;
 import provider.MapleDataProviderFactory;
 import tools.MaplePacketCreator;
@@ -464,7 +463,7 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
         }
 
         if (!party) {
-            partyz = new MapleParty(-1, new MaplePartyCharacter(getPlayer()));
+            partyz = new MapleParty(getPlayer());
         }
         Pyramid py = new Pyramid(partyz, mod, map.getId());
         getPlayer().setPartyQuest(py);

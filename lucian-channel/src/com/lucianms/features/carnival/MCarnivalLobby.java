@@ -4,7 +4,6 @@ import com.lucianms.scheduler.Task;
 import com.lucianms.scheduler.TaskExecutor;
 import com.lucianms.server.channel.MapleChannel;
 import com.lucianms.server.world.MapleParty;
-import com.lucianms.server.world.MaplePartyCharacter;
 import tools.MaplePacketCreator;
 import tools.Randomizer;
 
@@ -44,10 +43,10 @@ public class MCarnivalLobby {
 
     private void broadcastPacket(byte[] packet) {
         if (party1 != null) {
-            party1.getMembers().stream().filter(MaplePartyCharacter::isOnline).map(MaplePartyCharacter::getPlayer).forEach(p -> p.announce(packet));
+            party1.sendPacket(packet);
         }
         if (party2 != null) {
-            party2.getMembers().stream().filter(MaplePartyCharacter::isOnline).map(MaplePartyCharacter::getPlayer).forEach(p -> p.announce(packet));
+            party2.sendPacket(packet);
         }
     }
 
@@ -99,13 +98,13 @@ public class MCarnivalLobby {
                     waitingTask.cancel();
                 }
                 MCarnivalGame carnivalGame = createGame();
-                party1.getMembers().forEach(p -> carnivalGame.registerPlayer(p.getPlayer()));
-                party2.getMembers().forEach(p -> carnivalGame.registerPlayer(p.getPlayer()));
+                party1.forEachPlayer(carnivalGame::registerPlayer);
+                party2.forEachPlayer(carnivalGame::registerPlayer);
                 waitingTask = TaskExecutor.createTask(new Runnable() {
                     @Override
                     public void run() {
-                        party1.getMembers().forEach(p -> carnivalGame.unregisterPlayer(p.getPlayer()));
-                        party2.getMembers().forEach(p -> carnivalGame.unregisterPlayer(p.getPlayer()));
+                        party1.forEachPlayer(carnivalGame::unregisterPlayer);
+                        party2.forEachPlayer(carnivalGame::unregisterPlayer);
                         setState(State.Available);
                     }
                 }, 1000 * 60 * 10); // 10 min game
@@ -147,9 +146,9 @@ public class MCarnivalLobby {
     }
 
     public boolean removeParty(MapleParty party) {
-        if (party1.getId() == party.getId()) {
+        if (party1.getID() == party.getID()) {
             party1 = null;
-        } else if (party2.getId() == party.getId()) {
+        } else if (party2.getID() == party.getID()) {
             party2 = null;
         }
         return party1 == null && party2 == null;
@@ -166,10 +165,10 @@ public class MCarnivalLobby {
      */
     public boolean canEnter(MapleParty party) {
         if (party1 == null && party2 == null) {
-            return party.getMembers().size() <= maxPartySize;
+            return party.size() <= maxPartySize;
         }
         MapleParty nn = party1 == null ? party2 : party1;
-        return nn.getMembers().size() == party.getMembers().size();
+        return nn.size() == party.size();
     }
 
     private MCarnivalGame createGame() {

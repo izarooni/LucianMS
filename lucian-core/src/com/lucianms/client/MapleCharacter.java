@@ -55,7 +55,10 @@ import com.lucianms.server.life.MobSkill;
 import com.lucianms.server.maps.*;
 import com.lucianms.server.partyquest.PartyQuest;
 import com.lucianms.server.quest.MapleQuest;
-import com.lucianms.server.world.*;
+import com.lucianms.server.world.MapleMessenger;
+import com.lucianms.server.world.MapleMessengerCharacter;
+import com.lucianms.server.world.MapleParty;
+import com.lucianms.server.world.MapleWorld;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.helpers.MessageFormatter;
@@ -203,7 +206,6 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Di
     private MapleClient client;
     private HiredMerchant hiredMerchant;
     private MapleGuildCharacter mgc;
-    private MaplePartyCharacter mpc;
     private EventInstanceManager eventInstance;
 
     private Task[] fullnessSchedule = new Task[3];
@@ -631,13 +633,13 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Di
             }
             MapleParty party = ret.getParty();
             if (party != null) {
-                party.updateMember(ret.mpc);
+                party.get(ret.getId()).updateWithPlayer(ret);
             } else {
-                ret.partyID = 0;
+                ret.setPartyID(0);
             }
             MapleMessenger messenger = ret.getMessenger();
-            if (ret.messengerID > 0 && messenger == null) {
-                ret.messengerID = 0;
+            if (ret.getMessengerID() > 0 && messenger == null) {
+                ret.setMessengerID(0);
             }
             try (PreparedStatement ps = con.prepareStatement("SELECT mapid,vip FROM trocklocations WHERE characterid = ? LIMIT 15")) {
                 ps.setInt(1, charid);
@@ -1239,27 +1241,25 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Di
             }
         }
         deregisterBuffStats(buffstats);
-        if (effect.isMagicDoor()) {
-            if (!getDoors().isEmpty()) {
-                MapleDoor door = getDoors().iterator().next();
-                for (MapleCharacter chr : door.getTarget().getCharacters()) {
-                    door.sendDestroyData(chr.client);
-                }
-                for (MapleCharacter chr : door.getTown().getCharacters()) {
-                    door.sendDestroyData(chr.client);
-                }
-                for (MapleDoor destroyDoor : getDoors()) {
-                    door.getTarget().removeMapObject(destroyDoor);
-                    door.getTown().removeMapObject(destroyDoor);
-                }
-                if (getParty() != null) {
-                    for (MaplePartyCharacter partyMembers : getParty().getMembers()) {
-                        partyMembers.getPlayer().getDoors().remove(door);
-                        partyMembers.getDoors().remove(door);
-                    }
-                } else {
-                    clearDoors();
-                }
+        if (effect.isMagicDoor() && !doors.isEmpty()) {
+            MapleDoor door = getDoors().iterator().next();
+            for (MapleCharacter chr : door.getTarget().getCharacters()) {
+                door.sendDestroyData(chr.client);
+            }
+            for (MapleCharacter chr : door.getTown().getCharacters()) {
+                door.sendDestroyData(chr.client);
+            }
+            for (MapleDoor destroyDoor : getDoors()) {
+                door.getTarget().removeMapObject(destroyDoor);
+                door.getTown().removeMapObject(destroyDoor);
+            }
+            if (getParty() != null) {
+                getParty().forEachMember(m -> {
+                    m.getDoors().remove(door);
+                    m.getPlayer().getDoors().remove(door);
+                });
+            } else {
+                clearDoors();
             }
         }
         if (effect.getSourceId() == Spearman.HYPER_BODY || effect.getSourceId() == SuperGM.HYPER_BODY) {
@@ -2760,17 +2760,6 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Di
         return mgc;
     }
 
-    public MaplePartyCharacter getMPC() {
-        if (mpc == null) {
-            mpc = new MaplePartyCharacter(this);
-        }
-        return mpc;
-    }
-
-    public void setMPC(MaplePartyCharacter mpc) {
-        this.mpc = mpc;
-    }
-
     public MapleMiniGame getMiniGame() {
         return miniGame;
     }
@@ -3438,7 +3427,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Di
         client.announce(MaplePacketCreator.updatePlayerStats(statup, this));
         getMap().broadcastMessage(this, MaplePacketCreator.showForeignEffect(getId(), 0), false);
         recalcLocalStats();
-        setMPC(new MaplePartyCharacter(this));
+        Functions.requireNotNull(getParty(), party -> party.get(getId()).updateWithPlayer(this));
         guildUpdate();
 
         Occupation occupation = getOccupation();
@@ -3662,7 +3651,6 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Di
         localint_ = getInt();
         localstr = getStr();
         localluk = getLuk();
-        int speed = 100, jump = 100;
         magic = localint_;
         watk = 0;
 
@@ -3676,8 +3664,6 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Di
             localluk += equip.getLuk();
             magic += equip.getMatk() + equip.getInt();
             watk += equip.getWatk();
-            speed += equip.getSpeed();
-            jump += equip.getJump();
         }
         magic = Math.min(magic, 2000);
         Integer hbhp = getBuffedValue(MapleBuffStat.HYPERBODYHP);
@@ -3730,14 +3716,6 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Di
         if (matkbuff != null) {
             magic += matkbuff;
         }
-        Integer speedbuff = getBuffedValue(MapleBuffStat.SPEED);
-        if (speedbuff != null) {
-            speed += speedbuff;
-        }
-        Integer jumpbuff = getBuffedValue(MapleBuffStat.JUMP);
-        if (jumpbuff != null) {
-            jump += jumpbuff;
-        }
 
         Integer blessing = getSkillLevel(10000000 * getJobType() + 12);
         if (blessing > 0) {
@@ -3782,14 +3760,13 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Di
         MapleParty party = getParty();
         if (party != null) {
             int channel = client.getChannel();
-            for (MaplePartyCharacter partychar : party.getMembers()) {
-                if (partychar.getMapId() == getMapId() && partychar.getChannel() == channel) {
-                    MapleCharacter other = Server.getWorld(world).getChannel(channel).getPlayerStorage().find(p -> p.getName().equalsIgnoreCase(partychar.getName()));
-                    if (other != null) {
-                        client.announce(MaplePacketCreator.updatePartyMemberHP(other.getId(), other.getHp(), other.getCurrentMaxHp()));
-                    }
+            Collection<MapleCharacter> players = party.getPlayers();
+            for (MapleCharacter player : players) {
+                if (player.getMap() == getMap()) {
+                    client.announce(MaplePacketCreator.updatePartyMemberHP(player.getId(), player.getHp(), player.getCurrentMaxHp()));
                 }
             }
+            players.clear();
         }
     }
 
@@ -4184,7 +4161,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Di
                 }
                 MapleParty party = getParty();
                 if (party != null) {
-                    ps.setInt(25, party.getId());
+                    ps.setInt(25, party.getID());
                 } else {
                     ps.setInt(25, -1);
                 }
@@ -4811,12 +4788,10 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Di
         MapleParty party = getParty();
         if (party != null) {
             int channel = client.getChannel();
-            for (MaplePartyCharacter partychar : party.getMembers()) {
-                if (partychar.getMapId() == getMapId() && partychar.getChannel() == channel) {
-                    MapleCharacter other = Server.getWorld(world).getChannel(channel).getPlayerStorage().find(p -> p.getName().equalsIgnoreCase(partychar.getName()));
-                    if (other != null) {
-                        other.client.announce(MaplePacketCreator.updatePartyMemberHP(getId(), this.hp, maxhp));
-                    }
+            Collection<MapleCharacter> players = party.getPlayers();
+            for (MapleCharacter player : players) {
+                if (player.getMap() == getMap()) {
+                    player.announce(MaplePacketCreator.updatePartyMemberHP(getId(), hp, localmaxhp));
                 }
             }
         }
@@ -5250,7 +5225,6 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Di
         maplemount = null;
         partyQuest = null;
         events = null;
-        mpc = null;
         mgc = null;
         family = null;
         client = null;

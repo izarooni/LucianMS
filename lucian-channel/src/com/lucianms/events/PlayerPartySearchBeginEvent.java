@@ -2,9 +2,8 @@ package com.lucianms.events;
 
 import com.lucianms.client.MapleCharacter;
 import com.lucianms.client.MapleJob;
-import com.lucianms.nio.receive.MaplePacketReader;
 import com.lucianms.constants.ServerConstants;
-import com.lucianms.events.PacketEvent;
+import com.lucianms.nio.receive.MaplePacketReader;
 import com.lucianms.server.world.MapleParty;
 import com.lucianms.server.world.MaplePartyCharacter;
 import com.lucianms.server.world.PartyOperation;
@@ -37,19 +36,22 @@ public class PlayerPartySearchBeginEvent extends PacketEvent {
     public Object onPacket() {
         MapleCharacter player = getClient().getPlayer();
         MapleParty party = player.getParty();
-        if (party.getMembers().size() > 5) {
+        if (party.size() >= MapleParty.MaximumUsers) {
             return null;
         }
         Collection<MapleCharacter> players = player.getMap().getAllPlayer();
-        for (MapleCharacter chrs : players) {
-            int cLevel = chrs.getLevel();
-            if (cLevel >= min && cLevel <= max && isValidJob(chrs.getJob(), jobs)) {
-                if (party.getMembers().size() < 6) {
-                    getClient().getWorldServer().updateParty(party.getId(), PartyOperation.JOIN, new MaplePartyCharacter(chrs));
-                    chrs.receivePartyMemberHP();
-                    chrs.updatePartyMemberHP();
+        for (MapleCharacter others : players) {
+            int cLevel = others.getLevel();
+            if (cLevel >= min && cLevel <= max && isValidJob(others.getJob(), jobs)) {
+                if (party.size() < MapleParty.MaximumUsers) {
+                    party.addMember(others);
+                    MaplePartyCharacter member = party.get(others.getId());
+                    party.sendPacket(MaplePacketCreator.updateParty(member.getChannelID(), party, PartyOperation.JOIN, member));
+                    others.receivePartyMemberHP();
+                    others.updatePartyMemberHP();
+                    break;
                 } else {
-                    getClient().announce(MaplePacketCreator.partyStatusMessage(17));
+                    getClient().announce(MaplePacketCreator.getPartyResult(17));
                 }
             }
         }

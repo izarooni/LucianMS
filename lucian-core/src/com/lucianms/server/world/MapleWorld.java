@@ -45,7 +45,6 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.*;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Predicate;
 
 /**
@@ -63,8 +62,6 @@ public class MapleWorld {
     private Map<Integer, MapleGuildSummary> gsStore = new HashMap<>();
     private Map<Integer, MapleFamily> families = new LinkedHashMap<>();
     private Map<String, SAutoEvent> scheduledEvents = new HashMap<>();
-
-    private AtomicInteger runningPartyId = new AtomicInteger(1);
 
     private ManualPlayerEvent playerEvent;
 
@@ -313,76 +310,12 @@ public class MapleWorld {
         }
     }
 
-    public MapleParty createParty(MaplePartyCharacter chrfor) {
-        int partyid = runningPartyId.getAndIncrement();
-        MapleParty party = new MapleParty(partyid, chrfor);
-        parties.put(party.getId(), party);
-        return party;
+    public Map<Integer, MapleParty> getParties() {
+        return parties;
     }
 
     public MapleParty getParty(int partyid) {
         return parties.get(partyid);
-    }
-
-    public MapleParty disbandParty(int partyid) {
-        return parties.remove(partyid);
-    }
-
-    public void updateParty(MapleParty party, PartyOperation operation, MaplePartyCharacter target) {
-        for (MaplePartyCharacter partychar : party.getMembers()) {
-            MapleCharacter chr = findPlayer(p -> p.getName().equalsIgnoreCase(partychar.getName()));
-            if (chr != null) {
-                if (operation == PartyOperation.DISBAND) {
-                    chr.setPartyID(0);
-                    chr.setMPC(null);
-                } else {
-                    chr.setPartyID(party.getId());
-                    chr.setMPC(partychar);
-                }
-                chr.getClient().announce(MaplePacketCreator.updateParty(chr.getClient().getChannel(), party, operation, target));
-            }
-        }
-        switch (operation) {
-            case LEAVE:
-            case EXPEL:
-                MapleCharacter chr = findPlayer(p -> p.getName().equalsIgnoreCase(target.getName()));
-                if (chr != null) {
-                    chr.getClient().announce(MaplePacketCreator.updateParty(chr.getClient().getChannel(), party, operation, target));
-                    chr.setPartyID(0);
-                    chr.setMPC(null);
-                }
-            default:
-                break;
-        }
-    }
-
-    public void updateParty(int partyid, PartyOperation operation, MaplePartyCharacter target) {
-        MapleParty party = getParty(partyid);
-        if (party == null) {
-            throw new IllegalArgumentException("no party with the specified partyid exists");
-        }
-        switch (operation) {
-            case JOIN:
-                party.addMember(target);
-                break;
-            case EXPEL:
-            case LEAVE:
-                party.removeMember(target);
-                break;
-            case DISBAND:
-                disbandParty(partyid);
-                break;
-            case SILENT_UPDATE:
-            case LOG_ONOFF:
-                party.updateMember(target);
-                break;
-            case CHANGE_LEADER:
-                party.setLeader(target);
-                break;
-            default:
-                System.out.println("Unhandeled updateParty operation " + operation.name());
-        }
-        updateParty(party, operation, target);
     }
 
     public int find(String name) {
@@ -401,17 +334,6 @@ public class MapleWorld {
             channel = chr.getClient().getChannel();
         }
         return channel;
-    }
-
-    public void partyChat(MapleParty party, String chattext, String namefrom) {
-        for (MaplePartyCharacter partychar : party.getMembers()) {
-            if (!(partychar.getName().equals(namefrom))) {
-                MapleCharacter chr = findPlayer(p -> p.getName().equalsIgnoreCase(partychar.getName()));
-                if (chr != null) {
-                    chr.getClient().announce(MaplePacketCreator.multiChat(namefrom, chattext, 1));
-                }
-            }
-        }
     }
 
     public void buddyChat(int[] recipientCharacterIds, int cidFrom, String nameFrom, String chattext) {

@@ -3,7 +3,6 @@ package com.lucianms.events;
 import com.lucianms.client.MapleCharacter;
 import com.lucianms.command.CommandWorker;
 import com.lucianms.nio.receive.MaplePacketReader;
-import com.lucianms.events.PacketEvent;
 import com.lucianms.server.Server;
 import com.lucianms.server.world.MapleWorld;
 import tools.MaplePacketCreator;
@@ -40,7 +39,7 @@ public class PlayerGroupChatEvent extends PacketEvent {
         if (action == 0) {
             world.buddyChat(recipients, player.getId(), player.getName(), content);
         } else if (action == 1 && player.getParty() != null) {
-            world.partyChat(player.getParty(), content, player.getName());
+            player.getParty().sendPacket(MaplePacketCreator.multiChat(player.getName(), content, 1));
         } else if (action == 2 && player.getGuildId() > 0) {
             Server.guildChat(player.getGuildId(), player.getName(), player.getId(), content);
         } else if (action == 3 && player.getGuild() != null) {

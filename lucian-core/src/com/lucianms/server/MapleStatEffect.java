@@ -33,6 +33,7 @@ import com.lucianms.scheduler.Task;
 import com.lucianms.scheduler.TaskExecutor;
 import com.lucianms.server.life.MapleMonster;
 import com.lucianms.server.maps.*;
+import com.lucianms.server.world.MapleParty;
 import com.lucianms.server.world.MaplePartyCharacter;
 import provider.MapleData;
 import provider.MapleDataTool;
@@ -718,8 +719,9 @@ public class MapleStatEffect {
             }
             Point doorPosition = new Point(applyto.getPosition().x, y);
             MapleDoor door = new MapleDoor(applyto, doorPosition);
-            if (applyto.getParty() != null) {// out of town door
-                for (MaplePartyCharacter partyMembers : applyto.getParty().getMembers()) {
+            MapleParty party = applyto.getParty();
+            if (party != null) {// out of town door
+                for (MaplePartyCharacter partyMembers : party.values()) {
                     partyMembers.getPlayer().addDoor(door);
                     partyMembers.updateDoor(door);
                 }
@@ -728,8 +730,8 @@ public class MapleStatEffect {
             }
             applyto.getMap().spawnDoor(door);
             door = new MapleDoor(door); //The town door
-            if (applyto.getParty() != null) {// update town doors
-                for (MaplePartyCharacter partyMembers : applyto.getParty().getMembers()) {
+            if (party != null) {// update town doors
+                for (MaplePartyCharacter partyMembers : party.values()) {
                     partyMembers.getPlayer().addDoor(door);
                     partyMembers.updateDoor(door);
                 }

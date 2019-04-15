@@ -188,12 +188,11 @@ public class PlayerLoginEvent extends PacketEvent {
         //endregion
 
         //region party
-        if (player.getParty() != null) {
-            MaplePartyCharacter pchar = player.getMPC();
-            pchar.setChannel(getClient().getChannel());
-            pchar.setMapId(player.getMapId());
-            pchar.setOnline(true);
-            world.updateParty(player.getParty().getId(), PartyOperation.LOG_ONOFF, pchar);
+        MapleParty party = player.getParty();
+        if (party != null) {
+            MaplePartyCharacter member = party.get(player.getId());
+            member.updateWithPlayer(player);
+            party.sendPacket(MaplePacketCreator.updateParty(member.getChannelID(), party, PartyOperation.LOG_ONOFF, member));
         }
         player.updatePartyMemberHP();
         //endregion

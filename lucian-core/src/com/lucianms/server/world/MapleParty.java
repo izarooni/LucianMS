@@ -1,68 +1,79 @@
 package com.lucianms.server.world;
 
+import com.lucianms.client.MapleCharacter;
+import tools.Disposable;
+import tools.MaplePacketCreator;
+
 import java.util.Collection;
-import java.util.HashMap;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
 
 /**
  * @author izarooni
  */
-public class MapleParty {
+public class MapleParty extends SocialGroup<MaplePartyCharacter> implements Disposable {
 
-    private int id;
-    private MaplePartyCharacter leader;
-    private HashMap<Integer, MaplePartyCharacter> members = new HashMap<>(7);
+    private static final AtomicInteger UniqueID = new AtomicInteger(1);
+    public static final int MaximumUsers = 6;
 
-    public MapleParty(int id, MaplePartyCharacter leader) {
-        this.leader = leader;
-        this.members.put(this.leader.getId(), this.leader);
-        this.id = id;
+    private final int ID;
+    private int leaderPlayerID;
+
+    public MapleParty(MapleCharacter player) {
+        super(6);
+        ID = UniqueID.getAndIncrement();
+        leaderPlayerID = player.getId();
+
+        player.setPartyID(ID);
+        put(player.getId(), new MaplePartyCharacter(player));
     }
 
-    public int getId() {
-        return id;
+    @Override
+    public Collection<MapleCharacter> getPlayers() {
+        return values().stream().filter(m -> m.getPlayer() != null)
+                .map(SocialMember::getPlayer).collect(Collectors.toList());
     }
 
-    public void setId(int id) {
-        this.id = id;
+    @Override
+    public void dispose() {
+        Collection<MapleCharacter> players = getPlayers();
+        players.forEach(p -> p.setPartyID(0));
+        players.clear();
+        clear();
+    }
+
+    public int getID() {
+        return ID;
+    }
+
+    public int getLeaderPlayerID() {
+        return leaderPlayerID;
     }
 
     public MaplePartyCharacter getLeader() {
-        return leader;
+        return get(getLeaderPlayerID());
     }
 
-    public void setLeader(MaplePartyCharacter leader) {
-        this.leader = leader;
-    }
-
-    public boolean containsMembers(MaplePartyCharacter member) {
-        return members.get(member.getId()) != null;
-    }
-
-    public void addMember(MaplePartyCharacter member) {
-        members.put(member.getId(), member);
-    }
-
-    public void removeMember(MaplePartyCharacter member) {
-        members.remove(member.getId());
-    }
-
-
-    public void updateMember(MaplePartyCharacter member) {
-        if (member.getId() == leader.getId()) {
-            leader = member;
+    public void setLeader(int playerID) {
+        MaplePartyCharacter member = get(playerID);
+        if (member != null) {
+            leaderPlayerID = playerID;
         }
-        members.put(member.getId(), member);
+        throw new NullPointerException();
     }
 
-    public MaplePartyCharacter getMemberById(int id) {
-        return members.values().stream().filter(m -> m.getId() == id).findFirst().orElse(null);
+    public void addMember(MapleCharacter player) {
+        player.setPartyID(ID);
+        MaplePartyCharacter member = new MaplePartyCharacter(player);
+        put(player.getId(), member);
+        sendPacket(MaplePacketCreator.updateParty(player.getClient().getChannel(), this, PartyOperation.JOIN, member));
     }
 
-    public Collection<MaplePartyCharacter> getMembers() {
-        return members.values();
-    }
-
-    public void broadcastPacket(byte[] packet) {
-        members.values().stream().filter(MaplePartyCharacter::isOnline).map(MaplePartyCharacter::getPlayer).forEach(m -> m.announce(packet));
+    public void removeMember(MapleCharacter player, boolean expelled) {
+        player.setPartyID(0);
+        MaplePartyCharacter remove = remove(player.getId());
+        if (remove != null) {
+            sendPacket(MaplePacketCreator.updateParty(player.getClient().getChannel(), this, expelled ? PartyOperation.EXPEL : PartyOperation.LEAVE, remove));
+        }
     }
 }

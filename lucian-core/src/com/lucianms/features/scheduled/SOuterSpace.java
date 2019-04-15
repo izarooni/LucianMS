@@ -44,7 +44,7 @@ public class SOuterSpace extends SAutoEvent {
     public MapleMap getMapInstance(MapleCharacter player) {
         int worldID = player.getClient().getWorld();
         int channelID = player.getClient().getChannel();
-        int reserve = (player.getParty() == null) ? player.getId() : player.getParty().getId();
+        int reserve = (player.getParty() == null) ? player.getId() : player.getParty().getID();
         return mapInstances.computeIfAbsent(reserve, new Function<Integer, MapleMap>() {
             @Override
             public MapleMap apply(Integer id) {

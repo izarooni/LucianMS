@@ -21,73 +21,57 @@
 */
 package com.lucianms.server.maps;
 
-import java.awt.Point;
+import com.lucianms.client.MapleCharacter;
+import com.lucianms.client.MapleClient;
+import com.lucianms.server.MaplePortal;
+import tools.MaplePacketCreator;
+
+import java.awt.*;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
-import com.lucianms.server.MaplePortal;
-import tools.MaplePacketCreator;
-import com.lucianms.client.MapleCharacter;
-import com.lucianms.client.MapleClient;
-
 /**
- *
  * @author Matze
  */
 public class MapleDoor extends AbstractMapleMapObject {
     private MapleCharacter owner;
-    private MapleMap town;
+    private MapleMap townField;
     private MaplePortal townPortal;
-    private MapleMap target;
+    private MapleMap targetField;
     private Point targetPosition;
 
     public MapleDoor(MapleCharacter owner, Point targetPosition) {
         super();
         this.owner = owner;
-        this.target = owner.getMap();
-        this.targetPosition = targetPosition;
-        setPosition(this.targetPosition);
-        this.town = this.target.getReturnMap();
         this.townPortal = getFreePortal();
+        this.targetField = owner.getMap();
+        this.targetPosition = targetPosition;
+        this.townField = targetField.getReturnMap();
+        setPosition(this.targetPosition);
     }
 
     public MapleDoor(MapleDoor origDoor) {
         super();
         this.owner = origDoor.owner;
-        this.town = origDoor.town;
+        this.townField = origDoor.townField;
         this.townPortal = origDoor.townPortal;
-        this.target = origDoor.target;
+        this.targetField = origDoor.targetField;
         this.targetPosition = origDoor.targetPosition;
-        this.townPortal = origDoor.townPortal;
         setPosition(this.townPortal.getPosition());
     }
 
     private MaplePortal getFreePortal() {
-        List<MaplePortal> freePortals = new ArrayList<MaplePortal>();
-        for (MaplePortal port : town.getPortals()) {
+        List<MaplePortal> freePortals = new ArrayList<>();
+        for (MaplePortal port : townField.getPortals()) {
             if (port.getType() == 6) {
                 freePortals.add(port);
             }
         }
-        Collections.sort(freePortals, new Comparator<MaplePortal>() {
-            public int compare(MaplePortal o1, MaplePortal o2) {
-                if (o1.getId() < o2.getId()) {
-                    return -1;
-                } else if (o1.getId() == o2.getId()) {
-                    return 0;
-                } else {
-                    return 1;
-                }
-            }
-        });
-        for (MapleMapObject obj : town.getMapObjects()) {
-            if (obj instanceof MapleDoor) {
-                MapleDoor door = (MapleDoor) obj;
-                if (door.getOwner().getParty() != null && door.getOwner().getParty().containsMembers(door.getOwner().getMPC())) {
-                    freePortals.remove(door.getTownPortal());
-                }
+        freePortals.sort(Comparator.comparingInt(MaplePortal::getId));
+        for (MapleDoor door : townField.getMapObjects(MapleDoor.class)) {
+            if (door.getOwner().getParty().containsKey(door.getOwner().getId())) {
+                freePortals.remove(door.getTownPortal());
             }
         }
         return freePortals.iterator().next();
@@ -95,21 +79,26 @@ public class MapleDoor extends AbstractMapleMapObject {
 
     @Override
     public void sendSpawnData(MapleClient client) {
-        if (target.getId() == client.getPlayer().getMapId() || owner == client.getPlayer() && owner.getParty() == null) {
-            client.announce(MaplePacketCreator.spawnDoor(owner.getId(), town.getId() == client.getPlayer().getMapId() ? townPortal.getPosition() : targetPosition, true));
-            if (owner.getParty() != null && (owner == client.getPlayer() || owner.getParty().containsMembers(client.getPlayer().getMPC()))) {
-                client.announce(MaplePacketCreator.partyPortal(town.getId(), target.getId(), targetPosition));
+        MapleCharacter player = client.getPlayer();
+        boolean isOwner = owner.getId() == player.getId();
+        if (player.getMapId() == targetField.getId() || (isOwner && owner.getPartyID() > 0)) {
+            Point destination = townField.getId() == player.getMapId() ? townPortal.getPosition() : targetPosition;
+            client.announce(MaplePacketCreator.spawnDoor(owner.getId(), destination, true));
+            if (owner.getParty() != null && (isOwner || owner.getParty().containsKey(player.getId()))) {
+                client.announce(MaplePacketCreator.partyPortal(townField.getId(), targetField.getId(), targetPosition));
             }
         }
-        if (owner.getId() != client.getPlayer().getId()) {
-        	client.announce(MaplePacketCreator.spawnPortal(town.getId(), target.getId(), targetPosition));
+        if (owner.getId() != player.getId()) {
+            client.announce(MaplePacketCreator.spawnPortal(townField.getId(), targetField.getId(), targetPosition));
         }
     }
 
     @Override
     public void sendDestroyData(MapleClient client) {
-        if (target.getId() == client.getPlayer().getMapId() || owner == client.getPlayer() || owner.getParty() != null && owner.getParty().containsMembers(client.getPlayer().getMPC())) {
-            if (owner.getParty() != null && (owner == client.getPlayer() || owner.getParty().containsMembers(client.getPlayer().getMPC()))) {
+        MapleCharacter player = client.getPlayer();
+        boolean isOwner = owner == player;
+        if (targetField.getId() == player.getMapId() || isOwner || owner.getParty() != null && owner.getParty().containsKey(player.getId())) {
+            if (owner.getParty() != null && (isOwner || owner.getParty().containsKey(player.getId()))) {
                 client.announce(MaplePacketCreator.partyPortal(999999999, 999999999, new Point(-1, -1)));
             }
             client.announce(MaplePacketCreator.removeDoor(owner.getId(), false));
@@ -117,15 +106,15 @@ public class MapleDoor extends AbstractMapleMapObject {
         }
     }
 
-    public void warp(MapleCharacter chr, boolean toTown) {
-        if (chr == owner || owner.getParty() != null && owner.getParty().containsMembers(chr.getMPC())) {
+    public void warp(MapleCharacter player, boolean toTown) {
+        if (player == owner || owner.getParty() != null && owner.getParty().containsKey(player.getId())) {
             if (!toTown) {
-                chr.changeMap(target, targetPosition);
+                player.changeMap(targetField, targetPosition);
             } else {
-                chr.changeMap(town, townPortal);
+                player.changeMap(townField, townPortal);
             }
         } else {
-            chr.getClient().announce(MaplePacketCreator.enableActions());
+            player.getClient().announce(MaplePacketCreator.enableActions());
         }
     }
 
@@ -134,7 +123,7 @@ public class MapleDoor extends AbstractMapleMapObject {
     }
 
     public MapleMap getTown() {
-        return town;
+        return townField;
     }
 
     public MaplePortal getTownPortal() {
@@ -142,7 +131,7 @@ public class MapleDoor extends AbstractMapleMapObject {
     }
 
     public MapleMap getTarget() {
-        return target;
+        return targetField;
     }
 
     public Point getTargetPosition() {
@@ -153,5 +142,5 @@ public class MapleDoor extends AbstractMapleMapObject {
     public MapleMapObjectType getType() {
         return MapleMapObjectType.DOOR;
     }
-    
+
 }

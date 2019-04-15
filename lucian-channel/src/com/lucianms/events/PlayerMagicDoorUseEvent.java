@@ -2,7 +2,6 @@ package com.lucianms.events;
 
 import com.lucianms.client.MapleCharacter;
 import com.lucianms.nio.receive.MaplePacketReader;
-import com.lucianms.events.PacketEvent;
 import com.lucianms.server.maps.MapleDoor;
 import com.lucianms.server.maps.MapleMapObject;
 import tools.MaplePacketCreator;
@@ -32,7 +31,7 @@ public class PlayerMagicDoorUseEvent extends PacketEvent {
 
         if (playerID != player.getId()) {
             if (player.getParty() != null) {
-                if (player.getParty().getLeader().getId() == playerID) {
+                if (player.getParty().getLeaderPlayerID() == playerID) {
                     doors = player.getParty().getLeader().getDoors();
                     isPartyLeaderDoor = true;
                 }

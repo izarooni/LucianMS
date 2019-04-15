@@ -29,7 +29,7 @@ public class EmergencyDuel extends Emergency {
         super(player);
 
         MapleParty party = player.getParty();
-        delay = (party != null && party.getMembers().size() >= 2) ? 800 : 300;
+        delay = (party != null && party.size() >= 2) ? 800 : 300;
     }
 
     @Override

@@ -45,7 +45,7 @@ public class EmergencyAttack extends Emergency {
         registerAnnotationPacketEvents(this);
 
         MapleParty party = player.getParty();
-        delay = (party != null && party.getMembers().size() >= 2) ? 60 : 120;
+        delay = (party != null && party.size() >= 2) ? 60 : 120;
     }
 
     @Override

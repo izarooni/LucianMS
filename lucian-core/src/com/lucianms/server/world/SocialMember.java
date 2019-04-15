@@ -22,9 +22,14 @@ public class SocialMember implements Disposable {
     }
 
     public void updateWithPlayer(MapleCharacter player) {
-        playerID = player.getId();
-        username = player.getName();
-        channelID = player.getClient().getChannel();
+        if (player != null) {
+            playerID = player.getId();
+            username = player.getName();
+            channelID = player.getClient().getChannel();
+        } else {
+            setUsername("");
+            setChannelID(-2);
+        }
     }
 
     @Override

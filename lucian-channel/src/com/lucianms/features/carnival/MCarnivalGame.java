@@ -8,6 +8,8 @@ import com.lucianms.lang.annotation.PacketWorker;
 import com.lucianms.server.maps.MapleMap;
 import com.lucianms.server.world.MaplePartyCharacter;
 
+import java.util.Collection;
+
 /**
  * @author izarooni
  */
@@ -45,10 +47,12 @@ public class MCarnivalGame extends GenericEvent {
 
         MCarnivalTeam team = getTeam(player.getTeam());
         MaplePartyCharacter leader = team.getParty().getLeader();
-        boolean isLeader = (leader.getId() == player.getId());
+        boolean isLeader = (leader.getPlayerID() == player.getId());
         MapleCharacter newLeader = null;
         if (isLeader) {
-            newLeader = team.getParty().getMembers().stream().filter(m -> m.getId() != leader.getId()).map(MaplePartyCharacter::getPlayer).findAny().orElse(null);
+            Collection<MapleCharacter> players = team.getParty().getPlayers(p -> p.getId() != player.getId());
+            newLeader = players.stream().findAny().orElse(null);
+            players.clear();
             if (newLeader == null) {
                 dispose();
                 lobby.setState(MCarnivalLobby.State.Available);
@@ -85,20 +89,25 @@ public class MCarnivalGame extends GenericEvent {
 
     public void broadcastMessage(MCarnivalTeam team, String content, Object... args) {
         if (team == null || team.getId() == 0) {
-            teamRed.getParty().getMembers().forEach(m -> m.getPlayer().sendMessage(5, content, args));
+            teamRed.getParty().sendMessage(5, content, args);
         }
         if (team == null || team.getId() == 1) {
-            teamBlue.getParty().getMembers().forEach(m -> m.getPlayer().sendMessage(5, content, args));
+            teamBlue.getParty().sendMessage(5, content, args);
         }
     }
 
     public void dispose() {
+        Collection<MapleCharacter> players;
         if (teamRed != null) {
-            teamRed.getParty().getMembers().stream().map(MaplePartyCharacter::getPlayer).forEach(this::removePlayer);
+            players = teamRed.getParty().getPlayers();
+            players.forEach(this::removePlayer);
+            players.clear();
             teamRed = null;
         }
         if (teamBlue != null) {
-            teamBlue.getParty().getMembers().stream().map(MaplePartyCharacter::getPlayer).forEach(this::removePlayer);
+            players = teamBlue.getParty().getPlayers();
+            players.forEach(this::removePlayer);
+            players.clear();
             teamBlue = null;
         }
         MapleMap map = lobby.getChannel().removeMap(lobby.getBattlefieldMapId());
@@ -136,7 +145,10 @@ public class MCarnivalGame extends GenericEvent {
 
     public void setTeamRed(MCarnivalTeam teamRed) {
         this.teamRed = teamRed;
-        this.teamRed.getParty().getMembers().forEach(p -> p.getPlayer().setTeam(0));
+
+        Collection<MapleCharacter> players = teamRed.getParty().getPlayers();
+        players.forEach(p -> p.setTeam(0));
+        players.clear();
     }
 
     public MCarnivalTeam getTeamBlue() {
@@ -145,6 +157,9 @@ public class MCarnivalGame extends GenericEvent {
 
     public void setTeamBlue(MCarnivalTeam teamBlue) {
         this.teamBlue = teamBlue;
-        this.teamBlue.getParty().getMembers().forEach(p -> p.getPlayer().setTeam(1));
+
+        Collection<MapleCharacter> players = teamBlue.getParty().getPlayers();
+        players.forEach(p -> p.setTeam(1));
+        players.clear();
     }
 }

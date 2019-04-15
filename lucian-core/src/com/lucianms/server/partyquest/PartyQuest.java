@@ -23,13 +23,13 @@
 package com.lucianms.server.partyquest;
 
 import com.lucianms.client.MapleCharacter;
-import com.lucianms.server.Server;
 import com.lucianms.server.world.MapleParty;
 import com.lucianms.server.world.MaplePartyCharacter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -44,18 +44,15 @@ public class PartyQuest {
 
     public PartyQuest(MapleParty party) {
         this.party = party;
+
         MaplePartyCharacter leader = party.getLeader();
-        int channel = leader.getChannel();
-        int world = leader.getWorld();
-        int mapid = leader.getMapId();
-        for (MaplePartyCharacter pchr : party.getMembers()) {
-            if (pchr.getChannel() == channel && pchr.getMapId() == mapid) {
-                MapleCharacter chr = Server.getWorld(world).getChannel(channel).getPlayerStorage().get(pchr.getId());
-                if (chr != null) {
-                    this.participants.add(chr);
-                }
+        Collection<MapleCharacter> players = party.getPlayers();
+        for (MapleCharacter player : players) {
+            if (player.getMap() == leader.getPlayer().getMap()) {
+                participants.add(player);
             }
         }
+        players.clear();
     }
 
     public MapleParty getParty() {
