@@ -275,6 +275,19 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Di
         setPosition(new Point(0, 0));
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        MapleCharacter that = (MapleCharacter) o;
+        return id == that.id;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
+    }
+
     public static MapleCharacter getDefault(MapleClient c) {
         MapleCharacter ret = new MapleCharacter();
         ret.client = c;
