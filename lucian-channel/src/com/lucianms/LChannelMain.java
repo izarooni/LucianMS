@@ -18,6 +18,7 @@ import com.lucianms.nio.RecvOpcode;
 import com.lucianms.nio.server.MapleServerInboundHandler;
 import com.lucianms.scheduler.TaskExecutor;
 import com.lucianms.server.CashShop;
+import com.lucianms.server.MapleItemInformationProvider;
 import com.lucianms.server.Server;
 import com.lucianms.server.channel.MapleChannel;
 import com.lucianms.server.life.MapleMonsterInformationProvider;
@@ -90,6 +91,10 @@ public class LChannelMain {
         MapleQuest.loadAllQuest();
         CQuestBuilder.loadAllQuests();
         LOGGER.info("Quest data loaded in {}s", ((System.currentTimeMillis() - timeToTake) / 1000d));
+
+        timeToTake = System.currentTimeMillis();
+        MapleItemInformationProvider.getInstance().getAllItems();
+        LOGGER.info("Item data loaded in {}s", ((System.currentTimeMillis() - timeToTake) / 1000d));
 
         timeToTake = System.currentTimeMillis();
         SkillFactory.loadAllSkills();

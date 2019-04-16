@@ -7,8 +7,10 @@ let display = null;
 const dialog = {
     introSpoke: false, // backwards compatibility
     intro: null,
-    first: "You currently have #b{PointsQuantity} {PointsName}#k\r\nIs there anything you would like to buy?\r\n#b",
-    second: "Absolutely, what item interests you?\r\n#b"
+    dialog: [
+        "You currently have #b{PointsQuantity} {PointsName}#k\r\nIs there anything you would like to buy?\r\n#b",
+        "Absolutely, what item interests you?\r\n#b"
+    ]
 };
 const items = {
     get: function(idx, ob) {
@@ -40,7 +42,7 @@ function action(mode, type, selection) {
         status++;
     }
     if (status == 0) {
-        cm.sendNext(dialog.intro);
+        cm.sendNext(dialog[status]);
         dialog.introSpoke = true;
     } else if (status == 1) {
         if (broken != null) {
@@ -68,7 +70,7 @@ function action(mode, type, selection) {
         }
         if (this.sub != null && this.sub.length > 0) {
             let subName = items.get(selection, false);
-            let text = dialog.second;
+            let text = dialog[status];
             for (let i = 0; i < this.sub.length; i++) {
                 if (subName == "Chairs") {
                     // a lot of custom chairs don't have names, thus viewing the item in shop via name is impossible.
@@ -124,9 +126,13 @@ function getPoints(s) {
     }
     switch(s) {
         default: return -1;
+        case "dp":
         case "donor points": return client.getDonationPoints();
+        case "fp":
         case "fishing points": return player.getFishingPoints();
+        case "ep":
         case "event points": return player.getEventPoints();
+        case "vp":
         case "vote points": return client.getVotePoints();
     }
 }
@@ -138,15 +144,19 @@ function gainPoints(s, amt) {
     }
     switch (s) {
         default: return false;
+        case "ep":
         case "event points":
             player.addPoints("ep", amt);
             return true;
+        case "dp":
         case "donor points":
             player.addPoints("dp", amt);
             return true;
+        case "fp":
         case "fishing points":
             player.addPoints("fp", amt);
             return true;
+        case "vp":
         case "vote points":
             player.addPoints("vp", amt);
             return true;

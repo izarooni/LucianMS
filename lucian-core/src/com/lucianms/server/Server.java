@@ -113,10 +113,6 @@ public class Server {
 
         TaskExecutor.prestartAllCoreThreads();
 
-        timeToTake = System.currentTimeMillis();
-        MapleItemInformationProvider.getInstance().getAllItems();
-        LOGGER.info("Item data loaded in {}s", ((System.currentTimeMillis() - timeToTake) / 1000d));
-
         try {
             timeToTake = System.currentTimeMillis();
             int qWorlds = Integer.parseInt(p.getProperty("worlds"));
