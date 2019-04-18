@@ -3450,7 +3450,7 @@ public class MaplePacketCreator {
 
     public static byte[] hitSnowBall(int what, int damage) {
         final MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter(7);
-        mplew.writeShort(SendOpcode.HIT_SNOWBALL.getValue());
+        mplew.writeShort(SendOpcode.SNOWBALL_HIT.getValue());
         mplew.write(what);
         mplew.writeInt(damage);
         return mplew.getPacket();
@@ -3560,9 +3560,9 @@ public class MaplePacketCreator {
         return mplew.getPacket();
     }
 
-    public static byte[] leftKnockBack() {
+    public static byte[] getSnowBallTouch() {
         final MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter(2);
-        mplew.writeShort(SendOpcode.LEFT_KNOCK_BACK.getValue());
+        mplew.writeShort(SendOpcode.SNOWBALL_TOUCH.getValue());
         return mplew.getPacket();
     }
 
@@ -6582,6 +6582,8 @@ public class MaplePacketCreator {
         }
         return mplew.getPacket();
     }
+
+
 
     public static byte[] updatePartyMemberHP(int cid, int curhp, int maxhp) {
         final MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();

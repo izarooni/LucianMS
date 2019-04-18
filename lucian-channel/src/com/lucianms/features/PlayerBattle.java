@@ -9,6 +9,8 @@ import com.lucianms.events.PlayerDealDamageMagicEvent;
 import com.lucianms.events.PlayerDealDamageNearbyEvent;
 import com.lucianms.events.PlayerDealDamageRangedEvent;
 import com.lucianms.lang.annotation.PacketWorker;
+import com.lucianms.nio.SendOpcode;
+import com.lucianms.nio.send.MaplePacketWriter;
 import com.lucianms.server.life.MapleLifeFactory;
 import com.lucianms.server.life.MapleMonster;
 import com.lucianms.server.maps.MapleMap;
@@ -27,6 +29,14 @@ import java.util.concurrent.locks.ReentrantLock;
  * @author izarooni
  */
 public class PlayerBattle extends GenericEvent {
+
+    private static byte[] setKnockBackForce(boolean left, byte force) {
+        MaplePacketWriter w = new MaplePacketWriter(4);
+        w.writeShort(SendOpcode.SNOWBALL_MESSAGE.getValue());
+        w.write(force);
+        w.write(left ? 6 : 7);
+        return w.getPacket();
+    }
 
     private static final Logger LOGGER = LoggerFactory.getLogger(PlayerBattle.class);
 
@@ -137,8 +147,8 @@ public class PlayerBattle extends GenericEvent {
                 .filter(player -> player.getId() != attacker.getId() && player.getGenericEvents().stream().anyMatch(g -> g instanceof PlayerBattle) // find players register in a pvp event and exclude the attacker
                         && player.isAlive()) // make sure they're alive
                 .forEach(player -> locations.put(player.getId(), player.getPosition().getLocation()));
-        if (attacker.isGM()) {
-            LOGGER.info(locations.size() + " targets initialized");
+        if (attacker.isDebug()) {
+            attacker.sendMessage("{} targets initialized", locations.size());
         }
     }
 
@@ -158,8 +168,8 @@ public class PlayerBattle extends GenericEvent {
         for (Map.Entry<Integer, Point> entry : locations.entrySet()) { // all targets in the field
             Point targetLocation = entry.getValue();
             double lDistance = attackerLocation.distance(targetLocation);
-            if (attacker.isGM()) {
-                LOGGER.info("A<->T dist: " + lDistance + " / Required: " + (cAttackRange == -1 ? fAttackRange : cAttackRange));
+            if (attacker.isDebug()) {
+                attacker.sendMessage("A<->T dist: " + lDistance + " / Required: " + (cAttackRange == -1 ? fAttackRange : cAttackRange));
             }
             if (lDistance <= (cAttackRange == -1 ? fAttackRange : cAttackRange)) { // target within attacking distance
                 if (fAttackRange > 0) {
@@ -180,6 +190,12 @@ public class PlayerBattle extends GenericEvent {
             for (Map.Entry<Integer, Point> entry : neighbors.entrySet()) { // iterate nearby targets and display damage dealt
                 MapleCharacter mPlayer = attacker.getMap().getCharacterById(entry.getKey());
                 if (mPlayer != null) {
+                    byte missingHPPercentage = (byte) ((100f / mPlayer.getMaxHp()) * mPlayer.getHp());
+                    if (attacker.isDebug()) {
+                        attacker.sendMessage("applying {} force to {}", (150 + (25 * missingHPPercentage)), mPlayer.getName());
+                    }
+                    mPlayer.announce(setKnockBackForce(!facingLeft, (byte) (100 - missingHPPercentage)));
+                    mPlayer.announce(MaplePacketCreator.getSnowBallTouch());
                     mPlayer.addHP(-damage);
                     map.broadcastMessage(MaplePacketCreator.damagePlayer(0, 100100, entry.getKey(), damage, 0, 0, false, 0, false, 0, 0, 0));
                 }
@@ -265,7 +281,9 @@ public class PlayerBattle extends GenericEvent {
                 }
                 break;
             default:
-                LOGGER.warn("Unhandled weapon type for distance calculations: {}", wt);
+                if (attacker.isDebug()) {
+                    attacker.sendMessage("Unhandled weapon type for distance calculations: {}", wt);
+                }
                 break;
         }
 
@@ -284,6 +302,14 @@ public class PlayerBattle extends GenericEvent {
             //region Job 222
             case 2221003:
                 fAttackRange = 400;
+                break;
+            //endregion
+
+            //region Job 212
+            case 2121006:
+            case 2121003:
+                cAttackRange = 350;
+                fAttackRange = 350;
                 break;
             //endregion
 
@@ -366,23 +392,27 @@ public class PlayerBattle extends GenericEvent {
             //endregion
 
             default:
-                LOGGER.warn("Unhandled skill for distance calculation: {}", attackInfo.skill);
+                if (attacker.isDebug()) {
+                    attacker.sendMessage("Unhandled skill for distance calculation: {}", attackInfo.skill);
+                }
                 break;
         }
 
         int damage = attacker.calculateMaxBaseDamage(attacker.getTotalWatk());
         String dString = Integer.toString(damage);
-        int sub = (int) (Math.ceil(dString.length() / 2) + 1);
+        int sub = (int) (Math.ceil(dString.length() / 2f) + 1);
         int tDamage = Integer.parseInt(dString.substring(0, Math.min(dString.length(), sub)));
         int min = Math.abs(tDamage - 10);
         int max = (tDamage + 25);
         int eDamage = Randomizer.rand(min, max);
         this.damage = eDamage;
         if (attacker.isGM()) {
-            System.out.println();
-            LOGGER.info("Distance calculated: [c: {}, f: {}]", cAttackRange, fAttackRange);
-            LOGGER.info("Weapon attack damage calculation: {}", damage);
-            LOGGER.info("Extra damage randomizer: {}", eDamage);
+            if (attacker.isDebug()) {
+                attacker.sendMessage(":");
+                attacker.sendMessage("Distance calculated: [c: {}, f: {}]", cAttackRange, fAttackRange);
+                attacker.sendMessage("Weapon attack damage calculation: {}", damage);
+                attacker.sendMessage("Extra damage randomizer: {}", eDamage);
+            }
         }
     }
 }

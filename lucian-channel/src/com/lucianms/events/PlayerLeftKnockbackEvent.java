@@ -16,7 +16,7 @@ public class PlayerLeftKnockbackEvent extends PacketEvent {
 
     @Override
     public Object onPacket() {
-        getClient().announce(MaplePacketCreator.leftKnockBack());
+        getClient().announce(MaplePacketCreator.getSnowBallTouch());
         getClient().announce(MaplePacketCreator.enableActions());
         return null;
     }
