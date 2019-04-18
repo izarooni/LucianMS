@@ -196,6 +196,7 @@ public class PlayerBattle extends GenericEvent {
                     }
                     mPlayer.announce(setKnockBackForce(!facingLeft, (byte) (100 - missingHPPercentage)));
                     mPlayer.announce(MaplePacketCreator.getSnowBallTouch());
+                    attacker.announce(MaplePacketCreator.playSound("Cokeplay/Hit"));
                     mPlayer.addHP(-damage);
                     map.broadcastMessage(MaplePacketCreator.damagePlayer(0, 100100, entry.getKey(), damage, 0, 0, false, 0, false, 0, 0, 0));
                 }
