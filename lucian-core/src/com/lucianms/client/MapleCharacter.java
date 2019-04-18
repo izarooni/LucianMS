@@ -5371,11 +5371,6 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Di
         setRebirthPoints(getRebirthPoints() + 50);
         dropMessage("You have received 50 rebirth points");
 
-        announce(MaplePacketCreator.showEffect("breakthrough/One")); // effect
-        announce(MaplePacketCreator.showEffect("breakthrough/Two")); // effect
-        announce(MaplePacketCreator.showEffect("breakthrough/Three")); // effect
-        announce(MaplePacketCreator.showEffect("breakthrough/Four")); // effect
-        announce(MaplePacketCreator.showEffect("breakthrough/Five")); // effect
         announce(MaplePacketCreator.showEffect("breakthrough/Ten")); // effect
         announce(MaplePacketCreator.trembleEffect(0, 0)); // shake screen
 
