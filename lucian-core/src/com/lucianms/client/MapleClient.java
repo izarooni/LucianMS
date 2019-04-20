@@ -421,7 +421,7 @@ public class MapleClient implements Disposable {
                             try (PreparedStatement fuck = con.prepareStatement("update accounts set password = ? where id = ?")) {
                                 String bcryptPassword = BCrypt.with(BCrypt.Version.VERSION_2Y).hashToString(10, password.toCharArray());
                                 fuck.setString(1, bcryptPassword);
-                                fuck.setInt(1, ID);
+                                fuck.setInt(2, ID);
                                 fuck.executeUpdate();
                             }
                         } else {
