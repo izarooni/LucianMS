@@ -18,7 +18,6 @@ import org.slf4j.LoggerFactory;
 import tools.MaplePacketCreator;
 
 import java.awt.*;
-import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -86,7 +85,7 @@ public class ShenronSummoner extends GenericEvent {
                 if (position.x >= min_x && position.x <= max_x && position.y == pos_y) { // ball is dropped within set boundaries
                     if (balls.size() == 6) { // all balls have been dropped
                         event.getClient().getWorldServer().broadcastPacket(MaplePacketCreator.serverNotice(6, player.getName() + " summoned the eternal Shenron! Let's hope they choose wisely"));
-                        LOGGER.info("{} summoned Shenron on {}", player.getName(), Calendar.getInstance().getTime().toString());
+                        player.announce(MaplePacketCreator.playSound("Shenron/summoning"));
                         summoning = true;
                         wishing = true;
 
@@ -119,7 +118,6 @@ public class ShenronSummoner extends GenericEvent {
                             public void run() {
                                 wishing = false;
                                 if (player.getMapId() == SummoningMap) {
-                                    LOGGER.info("Shenron timeout with {} on {}", player.getName(), Calendar.getInstance().getTime().toString());
                                     map.removeMapObject(npc);
                                 }
                                 player.announce(MaplePacketCreator.removeNPC(npc.getObjectId())); // remove NPC
@@ -164,6 +162,7 @@ public class ShenronSummoner extends GenericEvent {
         npc.setCy(npc.getPosition().y);
         npc.setRx0(npc.getPosition().x - 50);
         npc.setRx1(npc.getPosition().x + 50);
+        npc.setHide(true);
         return npc;
     }
 
@@ -189,5 +188,6 @@ public class ShenronSummoner extends GenericEvent {
     public void wish(MapleCharacter player) {
         npc.sendDestroyData(player.getClient());
         player.getMap().removeMapObject(npc.getObjectId());
+        player.announce(MaplePacketCreator.playSound("Shenron/wishgranted"));
     }
 }

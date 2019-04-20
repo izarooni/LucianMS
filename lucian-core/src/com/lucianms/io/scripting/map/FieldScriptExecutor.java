@@ -5,9 +5,7 @@ import com.lucianms.io.scripting.ScriptProcessor;
 import jdk.nashorn.api.scripting.NashornScriptEngine;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import tools.MaplePacketCreator;
 
-import javax.script.Bindings;
 import javax.script.CompiledScript;
 import javax.script.Invocable;
 import javax.script.ScriptException;
@@ -32,49 +30,47 @@ public class FieldScriptExecutor {
         COMPILED_SCRIPTS.clear();
     }
 
-    private static CompiledScript getCompiledScript(MapleClient client, String script) throws IOException, ScriptException {
+    private static CompiledScript getCompiledScript(String script) throws IOException, ScriptException {
         NashornScriptEngine engine = SCRIPT_PROCESSOR.newEngine();
         try (FileReader reader = new FileReader(script)) {
-            Bindings bindings = engine.createBindings();
-            bindings.put("client", client.getPlayer());
-            bindings.put("player", client.getPlayer());
-            bindings.put("packet", MaplePacketCreator.class);
-            CompiledScript compile = SCRIPT_PROCESSOR.compile(engine, reader, bindings);
+            CompiledScript compile = SCRIPT_PROCESSOR.compile(engine, reader, null);
             COMPILED_SCRIPTS.put(script, compile);
         }
         throw new RuntimeException(String.format("Failed to compile script '%s'", script));
     }
 
     public static boolean executeFirstEnter(MapleClient client, String script) {
-        String format = String.format("onFirstUserEnter/%s", script);
-        CompiledScript compile = COMPILED_SCRIPTS.get(format);
+        String path = String.format("scripts/map/onFirstUserEnter/%s.js", script);
+        CompiledScript compile = COMPILED_SCRIPTS.get(path);
         try {
             if (compile == null) {
-                compile = getCompiledScript(client, format);
-                COMPILED_SCRIPTS.put(format, compile);
+                compile = getCompiledScript(path);
+                COMPILED_SCRIPTS.put(path, compile);
             }
-            ((Invocable) compile).invokeFunction("start");
+            ((Invocable) compile.getEngine()).invokeFunction("start", new MapScriptMethods(client));
             return true;
         } catch (NoSuchMethodException | FileNotFoundException ignore) {
         } catch (ScriptException | IOException e) {
-            LOGGER.error("Failed to process script '{}'", format, e);
+            LOGGER.error("Failed to process script '{}'", path, e);
         }
         return false;
     }
 
     public static boolean executeEnter(MapleClient client, String script) {
-        String format = String.format("onUserEnter/%s", script);
-        CompiledScript compile = COMPILED_SCRIPTS.get(format);
+        String path = String.format("scripts/map/onUserEnter/%s.js", script);
+        CompiledScript compile = COMPILED_SCRIPTS.get(path);
         try {
             if (compile == null) {
-                compile = getCompiledScript(client, format);
-                COMPILED_SCRIPTS.put(format, compile);
+                compile = getCompiledScript(path);
+                COMPILED_SCRIPTS.put(path, compile);
             }
-            ((Invocable) compile).invokeFunction("start");
+            if (compile != null) {
+                ((Invocable) compile.getEngine()).invokeFunction("start", new MapScriptMethods(client));
+            }
             return true;
         } catch (NoSuchMethodException | FileNotFoundException ignore) {
         } catch (ScriptException | IOException e) {
-            LOGGER.error("Failed to process script '{}'", format, e);
+            LOGGER.error("Failed to process script '{}'", path, e);
         }
         return false;
     }

@@ -46,6 +46,7 @@ public class MapleNPC extends AbstractLoadedMapleLife {
 
     @Override
     public void sendSpawnData(MapleClient client) {
+        if (isHidden()) return;
         if (this.getId() > 9010010 && this.getId() < 9010014) {
             client.announce(MaplePacketCreator.spawnNPCRequestController(this, false));
         } else {

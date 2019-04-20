@@ -2,6 +2,7 @@ package com.lucianms.io.scripting;
 
 import jdk.nashorn.api.scripting.NashornScriptEngine;
 import jdk.nashorn.api.scripting.NashornScriptEngineFactory;
+import tools.Functions;
 
 import javax.script.Bindings;
 import javax.script.CompiledScript;
@@ -25,7 +26,7 @@ public class ScriptProcessor {
     }
 
     public CompiledScript compile(NashornScriptEngine engine, FileReader reader, Bindings bindings) throws ScriptException {
-        engine.setBindings(bindings, ScriptContext.ENGINE_SCOPE);
+        Functions.requireNotNull(bindings, b -> engine.setBindings(b, ScriptContext.ENGINE_SCOPE));
         CompiledScript compile = engine.compile(reader);
         compile.eval();
         return compile;
