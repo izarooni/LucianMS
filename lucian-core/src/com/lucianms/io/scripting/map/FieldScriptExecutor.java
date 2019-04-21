@@ -12,7 +12,7 @@ import javax.script.ScriptException;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.HashMap;
+import java.util.Hashtable;
 
 /**
  * @author izarooni
@@ -21,7 +21,7 @@ public class FieldScriptExecutor {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(FieldScriptExecutor.class);
     private static final ScriptProcessor SCRIPT_PROCESSOR = new ScriptProcessor();
-    private static final HashMap<String, CompiledScript> COMPILED_SCRIPTS = new HashMap<>();
+    private static final Hashtable<String, CompiledScript> COMPILED_SCRIPTS = new Hashtable<>();
 
     private FieldScriptExecutor() {
     }
@@ -33,10 +33,8 @@ public class FieldScriptExecutor {
     private static CompiledScript getCompiledScript(String script) throws IOException, ScriptException {
         NashornScriptEngine engine = SCRIPT_PROCESSOR.newEngine();
         try (FileReader reader = new FileReader(script)) {
-            CompiledScript compile = SCRIPT_PROCESSOR.compile(engine, reader, null);
-            COMPILED_SCRIPTS.put(script, compile);
+            return SCRIPT_PROCESSOR.compile(engine, reader, null);
         }
-        throw new RuntimeException(String.format("Failed to compile script '%s'", script));
     }
 
     public static boolean executeFirstEnter(MapleClient client, String script) {
@@ -64,9 +62,7 @@ public class FieldScriptExecutor {
                 compile = getCompiledScript(path);
                 COMPILED_SCRIPTS.put(path, compile);
             }
-            if (compile != null) {
-                ((Invocable) compile.getEngine()).invokeFunction("start", new MapScriptMethods(client));
-            }
+            ((Invocable) compile.getEngine()).invokeFunction("start", new MapScriptMethods(client));
             return true;
         } catch (NoSuchMethodException | FileNotFoundException ignore) {
         } catch (ScriptException | IOException e) {

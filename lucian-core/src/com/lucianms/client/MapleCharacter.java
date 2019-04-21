@@ -1307,15 +1307,13 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Di
 
     public void setHidden(boolean hidden, boolean login) {
         if (isGM()) {
-            setHide(hidden);
-            announce(MaplePacketCreator.getGMEffect(0x10, (byte) (hidden ? 1 : 0)));
             if (!hidden) {
                 List<MapleBuffStat> dsstat = Collections.singletonList(MapleBuffStat.DARKSIGHT);
                 getMap().broadcastGMMessage(this, MaplePacketCreator.cancelForeignBuff(id, dsstat), false);
                 getMap().broadcastMessage(this, MaplePacketCreator.spawnPlayerMapobject(this), false);
                 updatePartyMemberHP();
                 getMap().getMonsters().forEach(getMap()::updateMonsterController);
-                if (getFakePlayer() != null) {
+                if (this.hidden && getFakePlayer() != null) {
                     getMap().addFakePlayer(getFakePlayer());
                 }
             } else {
@@ -1335,6 +1333,8 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Di
                     getMap().removeFakePlayer(getFakePlayer());
                 }
             }
+            setHide(hidden);
+            announce(MaplePacketCreator.getGMEffect(0x10, (byte) (hidden ? 1 : 0)));
             announce(MaplePacketCreator.enableActions());
         }
     }
@@ -4879,15 +4879,6 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Di
     @Override
     public String toString() {
         return String.format("MapleCharacter{accountid=%d, id=%d, name='%s'}", accountid, id, name);
-    }
-
-    @Override
-    public int getObjectId() {
-        return getId();
-    }
-
-    @Override
-    public void setObjectId(int id) {
     }
 
     @Override

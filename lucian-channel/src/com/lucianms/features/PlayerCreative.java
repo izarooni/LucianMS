@@ -102,7 +102,7 @@ public class PlayerCreative extends GenericEvent {
                 player.sendMessage(5, "'{}' is not a number.", args[1]);
                 return;
             }
-            Item item = null;
+            Item item;
             if (ItemConstants.getInventoryType(itemID) == MapleInventoryType.EQUIP) {
                 item = new Equip(itemID, (short) 0);
             } else {
@@ -110,9 +110,7 @@ public class PlayerCreative extends GenericEvent {
                 return;
             }
 
-            if(item != null) {
-                player.getMap().spawnItemDrop(player, player, item, player.getPosition(), true, false);
-            }
+            player.getMap().spawnItemDrop(player, player, item, player.getPosition(), true, false);
 
         } else if (args[0].equals("cleardrops")) {
             player.getMap().clearDrops();

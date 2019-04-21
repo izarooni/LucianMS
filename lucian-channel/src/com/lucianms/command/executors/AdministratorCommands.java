@@ -18,10 +18,7 @@ import com.lucianms.server.MapleItemInformationProvider;
 import com.lucianms.server.MapleShopFactory;
 import com.lucianms.server.Server;
 import com.lucianms.server.channel.MapleChannel;
-import com.lucianms.server.life.MapleLifeFactory;
-import com.lucianms.server.life.MapleMonster;
-import com.lucianms.server.life.MapleMonsterInformationProvider;
-import com.lucianms.server.life.MapleNPC;
+import com.lucianms.server.life.*;
 import com.lucianms.server.maps.MapleMapObject;
 import com.lucianms.server.maps.MapleReactor;
 import com.lucianms.server.maps.PlayerNPC;
@@ -62,13 +59,16 @@ public class AdministratorCommands {
             } finally {
                 commands.clear();
             }
-        } else if (command.equals("sethp")) {
-            if (args.length() == 1) {
-                Integer hp = args.parseNumber(0, int.class);
-                if (hp != null) {
-                    player.setHp(hp);
-                    player.updateSingleStat(MapleStat.HP, hp);
-                }
+        } else if (command.equals("fakeplayer")) {
+            if (player.getFakePlayer() == null) {
+                FakePlayer fake = new FakePlayer(player.getName() + "'s Toy");
+                fake.setMap(player.getMap());
+                fake.clonePlayer(player);
+                player.setFakePlayer(fake);
+                player.getMap().addFakePlayer(fake);
+                fake.setFollowing(true);
+            } else {
+                player.sendMessage("You already have a fake player");
             }
         } else if (command.equals("clearcache")) {
             if (args.length() == 1) {

@@ -1323,13 +1323,14 @@ public class MapleMap {
     }
 
     public void addFakePlayer(FakePlayer fakePlayer) {
-        mapobjects.put(fakePlayer.getObjectId(), fakePlayer);
+        addMapObject(fakePlayer);
+        fakePlayer.setId(fakePlayer.getObjectId());
         characters.put(fakePlayer.getObjectId(), fakePlayer);
         broadcastMessage(fakePlayer, MaplePacketCreator.spawnPlayerMapobject(fakePlayer), false);
     }
 
     public void removeFakePlayer(FakePlayer fakePlayer) {
-        mapobjects.remove(fakePlayer.getObjectId());
+        removeMapObject(fakePlayer.getObjectId());
         characters.remove(fakePlayer.getObjectId());
         broadcastMessage(fakePlayer, MaplePacketCreator.removePlayerFromMap(fakePlayer.getId()), false);
     }
@@ -1351,10 +1352,10 @@ public class MapleMap {
                 chr.saveLocation("INTRO");
             }
             FieldScriptExecutor.executeEnter(chr.getClient(), onUserEnter);
+        } else {
+            String strMapID = Integer.toString(mapid);
+            FieldScriptExecutor.executeEnter(chr.getClient(), strMapID);
         }
-
-        String strMapID = Integer.toString(mapid);
-        FieldScriptExecutor.executeEnter(chr.getClient(), strMapID);
         //endregion
 
         if (FieldLimit.CANNOTUSEMOUNTS.check(fieldLimit) && chr.getBuffedValue(MapleBuffStat.MONSTER_RIDING) != null) {

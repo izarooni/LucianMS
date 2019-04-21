@@ -3,7 +3,6 @@ package com.lucianms.events;
 import com.lucianms.client.MapleCharacter;
 import com.lucianms.lang.GProperties;
 import com.lucianms.nio.receive.MaplePacketReader;
-import com.lucianms.scheduler.TaskExecutor;
 import com.lucianms.server.life.FakePlayer;
 import com.lucianms.server.movement.LifeMovementFragment;
 import com.lucianms.server.movement.MovementPacketHelper;
@@ -46,18 +45,13 @@ public final class PlayerMoveEvent extends PacketEvent {
             player.getMap().broadcastMessage(player, MaplePacketCreator.movePlayer(player.getId(), clientPosition, movements), false);
         }
 
-        final FakePlayer fPlayer = player.getFakePlayer();
-        if (player.isAlive() && fPlayer != null && fPlayer.isFollowing()) {
-            TaskExecutor.createTask(new Runnable() {
-                @Override
-                public void run() {
-                    MovementPacketHelper.updatePosition(movements, fPlayer, 0);
-                    fPlayer.getMap().broadcastMessage(fPlayer, MaplePacketCreator.movePlayer(fPlayer.getId(), clientPosition, movements), false);
-                }
-            }, 100);
+        FakePlayer fPlayer = player.getFakePlayer();
+        if (fPlayer != null && player.isAlive() && fPlayer.isFollowing()) {
+            MovementPacketHelper.updatePosition(movements, fPlayer, 0);
+            player.getMap().broadcastMessage(fPlayer, MaplePacketCreator.movePlayer(fPlayer.getId(), clientPosition, movements), false);
         }
 
-        if ((!player.isGM() || (player.isGM() && player.isDebug()))) {
+        if (!player.isGM() || player.isDebug()) {
             GProperties<Point> akp = player.getMap().getAutoKillPositions();
             Point position;
             if ((position = akp.get("left")) != null && clientPosition.x <= position.x) {

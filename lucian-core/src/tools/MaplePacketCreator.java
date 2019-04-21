@@ -36,10 +36,10 @@ import com.lucianms.events.gm.MapleSnowball;
 import com.lucianms.events.meta.CommunityActions;
 import com.lucianms.nio.SendOpcode;
 import com.lucianms.nio.send.MaplePacketWriter;
+import com.lucianms.server.*;
 import com.lucianms.server.CashShop.CashItem;
 import com.lucianms.server.CashShop.CashItemFactory;
 import com.lucianms.server.CashShop.SpecialCashItem;
-import com.lucianms.server.*;
 import com.lucianms.server.channel.MapleChannel;
 import com.lucianms.server.guild.MapleAlliance;
 import com.lucianms.server.guild.MapleGuild;
@@ -1156,14 +1156,20 @@ public class MaplePacketCreator {
         } else {
             mplew.write(0);
         }
-        mplew.write(chr.getCashShop().getWishList().size());
-        for (int sn : chr.getCashShop().getWishList()) {
-            mplew.writeInt(sn);
+        CashShop cashShop = chr.getCashShop();
+        if (cashShop != null) {
+            mplew.write(cashShop.getWishList().size());
+            for (int sn : cashShop.getWishList()) {
+                mplew.writeInt(sn);
+            }
+        } else {
+            mplew.write(0);
         }
-        mplew.writeInt(chr.getMonsterBook().getBookLevel());
-        mplew.writeInt(chr.getMonsterBook().getNormalCard());
-        mplew.writeInt(chr.getMonsterBook().getSpecialCard());
-        mplew.writeInt(chr.getMonsterBook().getTotalCards());
+        Optional<MonsterBook> monsterBook = Optional.ofNullable(chr.getMonsterBook());
+        mplew.writeInt(monsterBook.map(MonsterBook::getBookLevel).orElse(0));
+        mplew.writeInt(monsterBook.map(MonsterBook::getNormalCard).orElse(0));
+        mplew.writeInt(monsterBook.map(MonsterBook::getSpecialCard).orElse(0));
+        mplew.writeInt(monsterBook.map(MonsterBook::getTotalCards).orElse(0));
         mplew.writeInt(chr.getMonsterBookCover() > 0 ? MapleItemInformationProvider.getInstance().getCardMobId(chr.getMonsterBookCover()) : 0);
         Item medal = chr.getInventory(MapleInventoryType.EQUIPPED).getItem((short) -49);
         if (medal != null) {
@@ -6582,7 +6588,6 @@ public class MaplePacketCreator {
         }
         return mplew.getPacket();
     }
-
 
 
     public static byte[] updatePartyMemberHP(int cid, int curhp, int maxhp) {
