@@ -583,6 +583,7 @@ public class MapleClient implements Disposable {
         final MapleCharacter player = getPlayer();
         try {
             if (player != null) {
+                getWorldServer().removePlayer(player);
                 player.getMap().removePlayer(player);
                 player.getGenericEvents().forEach(e -> e.onPlayerDisconnect(player));
 
@@ -627,7 +628,6 @@ public class MapleClient implements Disposable {
             // whatever happens here, we still want to save the player.
             t.printStackTrace();
         } finally {
-            getWorldServer().removePlayer(player);
             if (checkLoginState() != LoginState.Transfer) {
                 setLoginState(LoginState.LogOut);
                 session.attr(CLIENT_KEY).set(null);
