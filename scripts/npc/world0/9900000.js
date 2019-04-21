@@ -6,14 +6,14 @@ function action(mode, type, selection) {
         + "\r\n\t\t\t\t\t\t\t\t#eDark Knight#k - Dragoon"
         + "\r\n\t\t\t\t\t\t\t   #eDawn Warrior#k - Valkryie\r\n"
 
-        + "\r\n\t\t\t\t\t  #eArchmage (Fire/Poison)#k - Phantom"
+        + "\r\n\t\t\t\t\t  #eArchmage (Fire/Poison)#k - Cadena"
         + "\r\n\t\t\t\t\t#eArchmage (Ice/Lightning)#k - Luminous"
         + "\r\n\t\t\t\t\t\t\t\t\t\t#eBishop#k - Evan\r\n"
 
         + "\r\n\t\t\t\t\t\t\t   #eBowmaster#k - Mercedes"
         + "\r\n\t\t\t\t\t\t\t   #eMarksman#k - Marksman\r\n"
 
-        + "\r\n\t\t\t\t\t\t\t\t\t#eNight Lord#k - Shade"
+        + "\r\n\t\t\t\t\t\t\t\t\t#eNight Lord#k - Dancer"
         + "\r\n\t\t\t\t\t\t\t\t#eShadower#k - Dual Blader\r\n"
 
         + "\r\n\t\t\t\t\t\t\t\t\t#eBuccaneer#k - Ark"
