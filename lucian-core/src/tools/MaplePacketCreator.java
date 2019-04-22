@@ -2766,6 +2766,14 @@ public class MaplePacketCreator {
         return mplew.getPacket();
     }
 
+    public static byte[] getSelectPlayerFailed(byte error, byte error2) {
+        MaplePacketWriter w = new MaplePacketWriter(4);
+        w.writeShort(SendOpcode.SERVER_IP.getValue());
+        w.write(error);
+        w.write(error2);
+        return w.getPacket();
+    }
+
     /**
      * Gets a packet detailing a server and its channels.
      *

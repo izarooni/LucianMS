@@ -1,16 +1,14 @@
 package com.lucianms.events;
 
-import com.lucianms.client.LoginState;
+import com.lucianms.client.MapleClient;
 import com.lucianms.nio.receive.MaplePacketReader;
 import com.lucianms.server.channel.MapleChannel;
 import tools.MaplePacketCreator;
 import tools.Randomizer;
 
-import java.net.InetAddress;
-import java.net.UnknownHostException;
 import java.util.List;
 
-public class AccountVACWithPICEvent extends PacketEvent {
+public class AccountVACWithPICEvent extends UserTransferEvent {
 
     private String PIC;
     private String macs;
@@ -23,30 +21,29 @@ public class AccountVACWithPICEvent extends PacketEvent {
         playerID = reader.readInt();
         worldID = reader.readInt();
         macs = reader.readMapleAsciiString();
+
+        checkLoginAvailability();
     }
 
     @Override
     public Object onPacket() {
-        getClient().setWorld(worldID);
-        List<MapleChannel> channels = getClient().getWorldServer().getChannels();
-        getClient().setChannel(Randomizer.nextInt(channels.size()) + 1);
-        getClient().updateMacs(macs);
+        MapleClient client = getClient();
+        MapleChannel cserv = client.getChannelServer();
+        List<MapleChannel> channels = client.getWorldServer().getChannels();
 
-        if (getClient().hasBannedMac()) {
-            getClient().getSession().close();
+        client.setWorld(worldID);
+        client.setChannel(Randomizer.nextInt(channels.size()) + 1);
+        client.updateMacs(macs);
+
+        if (client.hasBannedMac()) {
+            client.getSession().close();
             return null;
         }
-        if (getClient().checkPic(PIC) || !getClient().isPlayerBelonging(playerID)) {
-            try {
-                getClient().setLoginState(LoginState.Transfer);
-                String[] socket = getClient().getChannelServer().getIP().split(":");
-                getClient().announce(MaplePacketCreator.getServerIP(InetAddress.getByName(socket[0]), Integer.parseInt(socket[1]), playerID));
-            } catch (UnknownHostException e) {
-                e.printStackTrace();
-            }
-        } else {
-            getClient().announce(MaplePacketCreator.wrongPic());
+        if (!client.checkPic(PIC) || !client.isPlayerBelonging(playerID)) {
+            client.announce(MaplePacketCreator.wrongPic());
+            return null;
         }
+        issueConnect(cserv.getNetworkAddress(), cserv.getPort(), playerID);
         return null;
     }
 }

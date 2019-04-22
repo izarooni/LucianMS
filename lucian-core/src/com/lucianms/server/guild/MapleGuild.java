@@ -50,7 +50,7 @@ public class MapleGuild {
     private String name, notice;
     private int id, gp, logo, logoColor, leader, capacity, logoBG, logoBGColor, signature, allianceId;
     private int world;
-    private Map<Integer, List<Integer>> notifications = new LinkedHashMap<>();
+    private final Map<Integer, List<Integer>> notifications = new LinkedHashMap<>();
     private boolean bDirty = true;
 
 
@@ -105,11 +105,11 @@ public class MapleGuild {
         if (!bDirty) {
             return;
         }
-        Set<Integer> chs = Server.getChannelServer(world);
+        List<MapleChannel> chs = Server.getWorld(world).getChannels();
         if (notifications.keySet().size() != chs.size()) {
             notifications.clear();
-            for (Integer ch : chs) {
-                notifications.put(ch, new LinkedList<Integer>());
+            for (MapleChannel ch : chs) {
+                notifications.put(ch.getId(), new LinkedList<>());
             }
         } else {
             for (List<Integer> l : notifications.values()) {
@@ -246,14 +246,15 @@ public class MapleGuild {
                 buildNotifications();
             }
             try {
-                for (Integer b : Server.getChannelServer(world)) {
-                    if (notifications.get(b).size() > 0) {
+                for (MapleChannel ch : Server.getWorld(world).getChannels()) {
+                    List<Integer> notifs = notifications.get(ch.getId());
+                    if (notifs.size() > 0) {
                         if (bcop == BCOp.DISBAND) {
-                            Server.getWorld(world).setGuildAndRank(notifications.get(b), 0, 5, exceptionId);
+                            Server.getWorld(world).setGuildAndRank(notifs, 0, 5, exceptionId);
                         } else if (bcop == BCOp.EMBELMCHANGE) {
-                            Server.getWorld(world).changeEmblem(this.id, notifications.get(b), new MapleGuildSummary(this));
+                            Server.getWorld(world).changeEmblem(this.id, notifs, new MapleGuildSummary(this));
                         } else {
-                            Server.getWorld(world).sendPacket(notifications.get(b), packet, exceptionId);
+                            Server.getWorld(world).sendPacket(notifs, packet, exceptionId);
                         }
                     }
                 }

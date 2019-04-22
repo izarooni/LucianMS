@@ -7,27 +7,35 @@ import com.lucianms.server.channel.MapleChannel;
 /**
  * @author izarooni
  */
-public class AccountPlayerSelectEvent extends UserTransferEvent {
+public class SPWSelectPlayerEvent extends UserTransferEvent {
 
-    private int playerID;
+    private String PIC;
     private String macs;
+    private String hwid;
+    private int playerID;
 
     @Override
     public void processInput(MaplePacketReader reader) {
+        PIC = reader.readMapleAsciiString();
         playerID = reader.readInt();
         macs = reader.readMapleAsciiString();
+        hwid = reader.readMapleAsciiString();
+
+        checkLoginAvailability();
     }
 
     @Override
     public Object onPacket() {
         MapleClient client = getClient();
-        if (client.hasBannedMac() || !client.isPlayerBelonging(playerID)) {
+        MapleChannel cserv = client.getChannelServer();
+
+        if (client.hasBannedMac() || client.hasBannedHWID() || !client.isPlayerBelonging(playerID)) {
             client.getSession().close();
             return null;
         }
 
-        MapleChannel cserv = client.getChannelServer();
         client.updateMacs(macs);
+        client.updateHWID(hwid);
         issueConnect(cserv.getNetworkAddress(), cserv.getPort(), playerID);
         return null;
     }

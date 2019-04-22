@@ -1,6 +1,7 @@
 package com.lucianms.events;
 
 import com.lucianms.client.MapleCharacter;
+import com.lucianms.client.MapleClient;
 import com.lucianms.client.SpamTracker;
 import com.lucianms.nio.receive.MaplePacketReader;
 import tools.MaplePacketCreator;
@@ -15,9 +16,11 @@ public class ChangeChannelEvent extends PacketEvent {
 
     @Override
     public void processInput(MaplePacketReader reader) {
-        MapleCharacter player = getClient().getPlayer();
+        MapleClient client = getClient();
+
+        MapleCharacter player = client.getPlayer();
         channelID = reader.readByte() + 1;
-        if (getClient().getChannel() == channelID) {
+        if (client.getChannel() == channelID) {
             setCanceled(true);
         }
         if (player.getCashShop().isOpened()
@@ -28,11 +31,11 @@ public class ChangeChannelEvent extends PacketEvent {
         }
         SpamTracker.SpamData spamTracker = player.getSpamTracker(SpamTracker.SpamOperation.ChangeChannel);
         if (spamTracker.testFor(1000)) {
-            getClient().announce(MaplePacketCreator.enableActions());
+            client.announce(MaplePacketCreator.enableActions());
             setCanceled(true);
         } else if (player.getMapId() == 98) {
             player.dropMessage(1, "You can't do it here in this map.");
-            getClient().announce(MaplePacketCreator.enableActions());
+            client.announce(MaplePacketCreator.enableActions());
             setCanceled(true);
         }
         spamTracker.record();
@@ -40,7 +43,9 @@ public class ChangeChannelEvent extends PacketEvent {
 
     @Override
     public Object onPacket() {
-        getClient().changeChannel(channelID);
+        if (!getClient().changeChannel(channelID)) {
+            getClient().announce(MaplePacketCreator.enableActions());
+        }
         return null;
     }
 }

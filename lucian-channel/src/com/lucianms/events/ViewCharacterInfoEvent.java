@@ -1,9 +1,9 @@
 package com.lucianms.events;
 
 import com.lucianms.client.MapleCharacter;
+import com.lucianms.client.MapleClient;
 import com.lucianms.nio.receive.MaplePacketReader;
 import com.lucianms.server.life.FakePlayer;
-import com.lucianms.server.maps.MapleMapObject;
 import tools.MaplePacketCreator;
 
 /**
@@ -21,17 +21,18 @@ public class ViewCharacterInfoEvent extends PacketEvent {
 
     @Override
     public Object onPacket() {
-        MapleCharacter player = getClient().getPlayer();
-        MapleMapObject target = player.getMap().getMapObject(playerId);
+        MapleClient client = getClient();
+        MapleCharacter player = client.getPlayer();
+        MapleCharacter target = player.getMap().getCharacterById(playerId);
+
         if (player.isDebug() && target instanceof FakePlayer) {
             FakePlayer fakePlayer = (FakePlayer) target;
             fakePlayer.setFollowing(!fakePlayer.isFollowing());
             player.sendMessage("{} is {} following", fakePlayer.getName(), (fakePlayer.isFollowing() ? "now" : "no longer"));
-        }
-        if (target instanceof MapleCharacter) {
-            getClient().announce(MaplePacketCreator.charInfo((MapleCharacter) target));
+        } else if (target != null) {
+            client.announce(MaplePacketCreator.charInfo(target));
         } else {
-            getClient().announce(MaplePacketCreator.enableActions());
+            client.announce(MaplePacketCreator.enableActions());
         }
         return null;
     }

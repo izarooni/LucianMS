@@ -27,7 +27,9 @@ import java.net.URISyntaxException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Properties;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class Server {
@@ -37,7 +39,6 @@ public class Server {
 
     private static final PlayerBuffStorage buffStorage = new PlayerBuffStorage();
     private static final ArrayList<MapleWorld> worlds = new ArrayList<>();
-    private static final ArrayList<Map<Integer, String>> channels = new ArrayList<>();
     private static final ArrayList<Pair<Integer, String>> worldRecommendedList = new ArrayList<>();
     private static final ConcurrentHashMap<Integer, MapleGuild> guilds = new ConcurrentHashMap<>();
     private static final ConcurrentHashMap<Integer, MapleAlliance> alliances = new ConcurrentHashMap<>();
@@ -75,10 +76,6 @@ public class Server {
 
     public static List<MapleChannel> getChannelsFromWorld(int world) {
         return worlds.get(world).getChannels();
-    }
-
-    public static String getIP(int world, int channel) {
-        return channels.get(world).get(channel);
     }
 
     public static void createServer() {
@@ -126,13 +123,11 @@ public class Server {
                 worlds.add(world);
                 worldRecommendedList.add(new Pair<>(i, p.getProperty("recommend" + i)));
 
-                channels.add(new LinkedHashMap<>());
                 int qChannels = Integer.parseInt(p.getProperty("channels" + i));
                 for (int j = 0; j < qChannels; j++) {
                     int channelId = j + 1;
                     MapleChannel channel = new MapleChannel(i, channelId);
                     world.addChannel(channel);
-                    channels.get(i).put(channelId, channel.getIP());
                 }
                 world.setServerMessage(sMessage);
                 LOGGER.info("World {} created {} channels in {}s", (world.getId() + 1), world.getChannels().size(), ((System.currentTimeMillis() - timeToTake) / 1000d));
@@ -227,21 +222,6 @@ public class Server {
             return true;
         }
         return false;
-    }
-
-    public static Set<Integer> getChannelServer(int world) {
-        return new HashSet<>(channels.get(world).keySet());
-    }
-
-    public static byte getHighestChannelId() {
-        byte highest = 0;
-        for (Iterator<Integer> it = channels.get(0).keySet().iterator(); it.hasNext(); ) {
-            Integer channel = it.next();
-            if (channel != null && channel > highest) {
-                highest = channel.byteValue();
-            }
-        }
-        return highest;
     }
 
     public static int createGuild(int leaderId, String name) {

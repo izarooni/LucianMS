@@ -46,8 +46,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import tools.*;
 
-import java.io.IOException;
-import java.net.InetAddress;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -879,16 +877,17 @@ public class MapleClient implements Disposable {
         session.writeAndFlush(packet);
     }
 
-    public void changeChannel(int channel) {
+    public boolean changeChannel(int channel) {
         if (player.isBanned()) {
             disconnect();
-            return;
+            return false;
         }
         if (!player.isAlive() || FieldLimit.CHANGECHANNEL.check(player.getMap().getFieldLimit())) {
             announce(MaplePacketCreator.enableActions());
-            return;
+            return false;
         }
-        String[] socket = getWorldServer().getChannel(channel).getIP().split(":");
+
+        MapleChannel cserv = getWorldServer().getChannel(channel);
         if (player.getTrade() != null) {
             MapleTrade.cancelTrade(getPlayer());
         }
@@ -916,11 +915,8 @@ public class MapleClient implements Disposable {
         player.getMap().removePlayer(player);
         player.getClient().getChannelServer().removePlayer(player);
         player.getClient().setLoginState(LoginState.Transfer);
-        try {
-            announce(MaplePacketCreator.getChannelChange(InetAddress.getByName(socket[0]), Integer.parseInt(socket[1])));
-        } catch (IOException e) {
-            LOGGER.error("Unable to change to channel {} from {} for user {} player {}", channel, this.channel, getAccountName(), player.getName());
-        }
+        announce(MaplePacketCreator.getChannelChange(cserv.getNetworkAddress(), cserv.getPort()));
+        return true;
     }
 
     public long getSessionId() {

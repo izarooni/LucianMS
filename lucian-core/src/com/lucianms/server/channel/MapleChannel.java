@@ -19,6 +19,8 @@ import org.slf4j.LoggerFactory;
 import tools.MaplePacketCreator;
 
 import java.io.File;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.*;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock.WriteLock;
@@ -28,8 +30,10 @@ public final class MapleChannel {
     private static final Logger LOGGER = LoggerFactory.getLogger(MapleChannel.class);
 
     private MapleServerInboundHandler serverHandler;
-    private int world, channel;
-    private String ip, serverMessage;
+    private final int world, channel;
+    private final int port;
+    private final InetAddress networkAddress;
+    private String serverMessage;
     private ConcurrentMapStorage<Integer, MapleCharacter> players = new ConcurrentMapStorage<>();
     private ConcurrentMapStorage<Integer, MapleMap> maps = new ConcurrentMapStorage<>();
     private EventScriptManager eventScriptManager;
@@ -39,11 +43,11 @@ public final class MapleChannel {
     private List<MapleExpedition> expeditions = new ArrayList<>();
     private MapleEvent event;
 
-    public MapleChannel(final int world, final int channel) {
+    public MapleChannel(final int world, final int channel) throws UnknownHostException {
         this.world = world;
         this.channel = channel;
-        final int port = (7575 + (this.channel - 1)) + (world * 100);
-        ip = Server.getConfig().getString("ServerHost") + ":" + port;
+        this.port = (7575 + (this.channel - 1)) + (world * 100);
+        networkAddress = InetAddress.getByName(Server.getConfig().getString("ServerHost"));
     }
 
     public MapleServerInboundHandler getServerHandler() {
@@ -171,8 +175,12 @@ public final class MapleChannel {
         return channel;
     }
 
-    public String getIP() {
-        return ip;
+    public InetAddress getNetworkAddress() {
+        return networkAddress;
+    }
+
+    public int getPort() {
+        return port;
     }
 
     public MapleEvent getEvent() {

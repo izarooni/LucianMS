@@ -1325,7 +1325,7 @@ public class MapleMap {
     public void addFakePlayer(FakePlayer fakePlayer) {
         addMapObject(fakePlayer);
         fakePlayer.setId(fakePlayer.getObjectId());
-        characters.put(fakePlayer.getObjectId(), fakePlayer);
+        characters.put(fakePlayer.getId(), fakePlayer);
         broadcastMessage(fakePlayer, MaplePacketCreator.spawnPlayerMapobject(fakePlayer), false);
     }
 
@@ -1336,7 +1336,7 @@ public class MapleMap {
     }
 
     public void addPlayer(final MapleCharacter chr) {
-        characters.put(chr.getObjectId(), chr);
+        characters.put(chr.getId(), chr);
 
         chr.setMapId(mapid);
 

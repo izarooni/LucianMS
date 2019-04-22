@@ -10,7 +10,6 @@ import com.lucianms.nio.send.DirectPacketEncoder;
 import com.lucianms.nio.server.MapleServerInboundHandler;
 import com.lucianms.nio.server.NettyDiscardServer;
 import com.lucianms.server.Server;
-import com.lucianms.server.handlers.login.PickCharHandler;
 import com.lucianms.server.handlers.login.ViewCharHandler;
 import io.netty.channel.nio.NioEventLoopGroup;
 import org.slf4j.Logger;
@@ -76,6 +75,6 @@ public class LLoginMain {
         RecvOpcode.DELETE_CHAR.clazz = AccountPlayerDeleteEvent.class;
         RecvOpcode.RELOG.clazz = AccountRelogEvent.class;
         RecvOpcode.REGISTER_PIC.clazz = AccountRegisterPICEvent.class;
-        RecvOpcode.CHAR_SELECT_WITH_PIC.clazz = AccountSelectPlayerPICEvent.class;
+        RecvOpcode.CHAR_SELECT_WITH_PIC.clazz = SPWSelectPlayerEvent.class;
     }
 }

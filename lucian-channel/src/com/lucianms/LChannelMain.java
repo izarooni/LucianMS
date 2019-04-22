@@ -136,11 +136,8 @@ public class LChannelMain {
                 if (!eventFolder.exists() && eventFolder.mkdirs()) {
                     LOGGER.info("Created folder 'scripts/features'");
                 }
-
-                String[] split = channel.getIP().split(":");
-                int port = Integer.parseInt(split[1]);
                 try {
-                    MapleServerInboundHandler handler = new MapleServerInboundHandler(ReceivePacketState.ChannelServer, split[0], port, new NioEventLoopGroup());
+                    MapleServerInboundHandler handler = new MapleServerInboundHandler(ReceivePacketState.ChannelServer, channel.getNetworkAddress().getHostName(), channel.getPort(), new NioEventLoopGroup());
                     channel.setServerHandler(handler);
                     channel.reloadEventScriptManager();
                 } catch (Exception e) {
@@ -148,7 +145,7 @@ public class LChannelMain {
                     System.exit(0);
                     return;
                 }
-                LOGGER.info("World {} channel {} bound to port {}", (world.getId() + 1), (channel.getId()), port);
+                LOGGER.info("World {} channel {} bound to port {}", (world.getId() + 1), (channel.getId()), channel.getPort());
             }
         }
 

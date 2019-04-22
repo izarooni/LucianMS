@@ -1,19 +1,16 @@
 package com.lucianms.events;
 
-import com.lucianms.client.LoginState;
+import com.lucianms.client.MapleClient;
 import com.lucianms.nio.receive.MaplePacketReader;
 import com.lucianms.server.channel.MapleChannel;
-import tools.MaplePacketCreator;
 import tools.Randomizer;
 
-import java.net.InetAddress;
-import java.net.UnknownHostException;
 import java.util.List;
 
 /**
  * @author izarooni
  */
-public class AccountVACPICRegisterEvent extends PacketEvent {
+public class AccountVACPICRegisterEvent extends UserTransferEvent {
 
     private String macs;
     private String PIC;
@@ -28,25 +25,24 @@ public class AccountVACPICRegisterEvent extends PacketEvent {
         macs = reader.readMapleAsciiString();
         reader.readMapleAsciiString();
         PIC = reader.readMapleAsciiString();
+
+        checkLoginAvailability();
     }
 
     @Override
     public Object onPacket() {
-        if (getClient().hasBannedMac() || !getClient().isPlayerBelonging(playerID)) {
-            getClient().getSession().close();
+        MapleClient client = getClient();
+        MapleChannel cserv = client.getChannelServer();
+        if (client.hasBannedMac() || !client.isPlayerBelonging(playerID)) {
+            client.getSession().close();
             return null;
         }
-        getClient().setWorld(worldID);
-        List<MapleChannel> channels = getClient().getWorldServer().getChannels();
-        getClient().setChannel(Randomizer.nextInt(channels.size()) + 1);
-        getClient().updateMacs(macs);
-        getClient().setPic(PIC);
-        try {
-            getClient().setLoginState(LoginState.Transfer);
-            String[] socket = getClient().getChannelServer().getIP().split(":");
-            getClient().announce(MaplePacketCreator.getServerIP(InetAddress.getByName(socket[0]), Integer.parseInt(socket[1]), playerID));
-        } catch (UnknownHostException ignore) {
-        }
+        client.setWorld(worldID);
+        List<MapleChannel> channels = client.getWorldServer().getChannels();
+        client.setChannel(Randomizer.nextInt(channels.size()) + 1);
+        client.updateMacs(macs);
+        client.setPic(PIC);
+        issueConnect(cserv.getNetworkAddress(), cserv.getPort(), playerID);
         return null;
     }
 }

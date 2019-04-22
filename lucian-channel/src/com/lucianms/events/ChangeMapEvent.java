@@ -2,6 +2,7 @@ package com.lucianms.events;
 
 import com.lucianms.client.LoginState;
 import com.lucianms.client.MapleCharacter;
+import com.lucianms.client.MapleClient;
 import com.lucianms.client.inventory.MapleInventoryType;
 import com.lucianms.constants.GameConstants;
 import com.lucianms.constants.ServerConstants;
@@ -17,6 +18,7 @@ import com.lucianms.server.MapleInventoryManipulator;
 import com.lucianms.server.MaplePortal;
 import com.lucianms.server.MapleTrade;
 import com.lucianms.server.Server;
+import com.lucianms.server.channel.MapleChannel;
 import com.lucianms.server.life.SpawnPoint;
 import com.lucianms.server.maps.MapleMap;
 import org.slf4j.Logger;
@@ -24,8 +26,6 @@ import org.slf4j.LoggerFactory;
 import tools.MaplePacketCreator;
 import tools.Randomizer;
 
-import java.net.InetAddress;
-import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -76,8 +76,10 @@ public class ChangeMapEvent extends PacketEvent {
 
     @Override
     public Object onPacket() {
-        MapleCharacter player = getClient().getPlayer();
+        MapleClient client = getClient();
+        MapleCharacter player = client.getPlayer();
         MaplePortal portal = player.getMap().getPortal(startwp);
+        MapleChannel cserv = client.getChannelServer();
 
         if (portal != null && player.isGM() && player.isDebug()) {
             player.sendMessage("[DEBUG] ID: {}, Name: {}, Script: {}, Target map: {}:{}, Location: x:{}/y:{}", portal.getId(), portal.getName(), portal.getScriptName(), portal.getTarget(), portal.getTargetMapId(), portal.getPosition().x, portal.getPosition().y);
@@ -91,25 +93,20 @@ public class ChangeMapEvent extends PacketEvent {
 
         if (eCashShop) {
             if (!player.getCashShop().isOpened()) {
-                getClient().disconnect();
+                client.disconnect();
                 return null;
             }
-            String[] socket = getClient().getChannelServer().getIP().split(":");
             player.getCashShop().open(false);
-            getClient().getChannelServer().removePlayer(player);
-            getClient().setLoginState(LoginState.Transfer);
+            cserv.removePlayer(player);
+            client.setLoginState(LoginState.Transfer);
             if (player.getFakePlayer() != null) {
                 player.getFakePlayer().setFollowing(true);
                 player.getMap().addFakePlayer(player.getFakePlayer());
             }
-            try {
-                getClient().announce(MaplePacketCreator.getChannelChange(InetAddress.getByName(socket[0]), Integer.parseInt(socket[1])));
-            } catch (UnknownHostException e) {
-                e.printStackTrace();
-            }
+            client.announce(MaplePacketCreator.getChannelChange(cserv.getNetworkAddress(), cserv.getPort()));
         } else {
             if (player.getCashShop().isOpened()) {
-                getClient().disconnect();
+                client.disconnect();
                 return null;
             }
             try {
@@ -121,7 +118,7 @@ public class ChangeMapEvent extends PacketEvent {
                     if (executeStandardPath) {
                         MapleMap to = player.getMap();
                         if (wheelOfDestiny && player.getItemQuantity(5510000, false) > 0) {
-                            MapleInventoryManipulator.removeById(getClient(), MapleInventoryType.CASH, 5510000, 1, true, false);
+                            MapleInventoryManipulator.removeById(client, MapleInventoryType.CASH, 5510000, 1, true, false);
                             player.announce(MaplePacketCreator.showWheelsLeft(player.getItemQuantity(5510000, false)));
                         } else {
                             player.cancelAllBuffs();
@@ -134,7 +131,7 @@ public class ChangeMapEvent extends PacketEvent {
                             if (to == null) {
                                 LOGGER.warn("Player '{}' unable to return to map {}", player.getName(), player.getMap().getReturnMapId());
                                 player.sendMessage("The return map is obstructed");
-                                to = getClient().getChannelServer().getMap(ServerConstants.HOME_MAP);
+                                to = cserv.getMap(ServerConstants.HOME_MAP);
                             }
                             player.setStance(0);
                         }
@@ -142,7 +139,7 @@ public class ChangeMapEvent extends PacketEvent {
                         player.changeMap(to, to.getPortal(0));
                     }
                 } else if (targetMapId != -1 && player.isGM()) {
-                    MapleMap to = getClient().getChannelServer().getMap(targetMapId);
+                    MapleMap to = cserv.getMap(targetMapId);
                     if (to != null) {
                         player.changeMap(to);
                     }
@@ -155,8 +152,8 @@ public class ChangeMapEvent extends PacketEvent {
                         }
                     } else if (divi == 20100) {
                         if (targetMapId == 104000000) {
-                            getClient().announce(MaplePacketCreator.lockUI(false));
-                            getClient().announce(MaplePacketCreator.disableUI(false));
+                            client.announce(MaplePacketCreator.lockUI(false));
+                            client.announce(MaplePacketCreator.disableUI(false));
                             warp = true;
                         }
                     } else if (divi == 9130401) { // Only allow warp if player is already in Intro map, or else = hack
@@ -177,13 +174,13 @@ public class ChangeMapEvent extends PacketEvent {
                         }
                     }
                     if (warp) {
-                        final MapleMap to = getClient().getChannelServer().getMap(targetMapId);
+                        final MapleMap to = cserv.getMap(targetMapId);
                         player.changeMap(to, to.getPortal(0));
                     }
                 }
                 if (portal != null && !portal.getPortalStatus()) {
-                    getClient().announce(MaplePacketCreator.blockedMessage(1));
-                    getClient().announce(MaplePacketCreator.enableActions());
+                    client.announce(MaplePacketCreator.blockedMessage(1));
+                    client.announce(MaplePacketCreator.enableActions());
                     return null;
                 }
                 if (player.getMapId() == 109040004) {
@@ -192,8 +189,8 @@ public class ChangeMapEvent extends PacketEvent {
                 if (player.getMapId() == 109030003 || player.getMapId() == 109030103) {
                     player.getOla().resetTimes();
                 }
-                if (portal == null || portal.getPosition().distanceSq(player.getPosition()) > 400000 || !portal.enterPortal(getClient())) {
-                    getClient().announce(MaplePacketCreator.enableActions());
+                if (portal == null || portal.getPosition().distanceSq(player.getPosition()) > 400000 || !portal.enterPortal(client)) {
+                    client.announce(MaplePacketCreator.enableActions());
                     return null;
                 }
                 DoEmergencyEvent();

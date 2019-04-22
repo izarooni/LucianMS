@@ -1,16 +1,13 @@
 package com.lucianms.events;
 
-import com.lucianms.client.LoginState;
+import com.lucianms.client.MapleClient;
 import com.lucianms.nio.receive.MaplePacketReader;
-import tools.MaplePacketCreator;
-
-import java.net.InetAddress;
-import java.net.UnknownHostException;
+import com.lucianms.server.channel.MapleChannel;
 
 /**
  * @author izarooni
  */
-public class AccountRegisterPICEvent extends PacketEvent {
+public class AccountRegisterPICEvent extends UserTransferEvent {
 
     private String macs;
     private String hwid;
@@ -24,29 +21,23 @@ public class AccountRegisterPICEvent extends PacketEvent {
         macs = reader.readMapleAsciiString();
         hwid = reader.readMapleAsciiString();
         PIC = reader.readMapleAsciiString();
+
+        checkLoginAvailability();
     }
 
     @Override
     public Object onPacket() {
-        getClient().updateMacs(macs);
-        getClient().updateHWID(hwid);
+        MapleClient client = getClient();
+        MapleChannel cserv = client.getChannelServer();
+        client.updateMacs(macs);
+        client.updateHWID(hwid);
 
-        if (getClient().hasBannedMac() || getClient().hasBannedHWID() || !getClient().isPlayerBelonging(playerID)) {
-            getClient().getSession().close();
+        if (client.getPic() != null || client.hasBannedMac() || client.hasBannedHWID() || !client.isPlayerBelonging(playerID)) {
+            client.getSession().close();
             return null;
         }
-
-        if (getClient().getPic() == null || getClient().getPic().isEmpty()) {
-            getClient().setPic(PIC);
-            try {
-                getClient().setLoginState(LoginState.Transfer);
-                String[] socket = getClient().getChannelServer().getIP().split(":");
-                getClient().announce(MaplePacketCreator.getServerIP(InetAddress.getByName(socket[0]), Integer.parseInt(socket[1]), playerID));
-            } catch (UnknownHostException ignore) {
-            }
-        } else {
-            getClient().getSession().close();
-        }
+        client.setPic(PIC);
+        issueConnect(cserv.getNetworkAddress(), cserv.getPort(), playerID);
         return null;
     }
 }
