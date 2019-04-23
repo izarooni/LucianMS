@@ -1331,7 +1331,7 @@ public class MapleMap {
 
     public void removeFakePlayer(FakePlayer fakePlayer) {
         removeMapObject(fakePlayer.getObjectId());
-        characters.remove(fakePlayer.getObjectId());
+        characters.remove(fakePlayer.getId());
         broadcastMessage(fakePlayer, MaplePacketCreator.removePlayerFromMap(fakePlayer.getId()), false);
     }
 
@@ -1591,7 +1591,7 @@ public class MapleMap {
     }
 
     public void removePlayer(MapleCharacter chr) {
-        characters.remove(chr.getObjectId());
+        characters.remove(chr.getId());
         removeMapObject(chr.getObjectId());
         if (!chr.isHidden()) {
             broadcastMessage(MaplePacketCreator.removePlayerFromMap(chr.getId()));

@@ -581,8 +581,8 @@ public class MapleClient implements Disposable {
         final MapleCharacter player = getPlayer();
         try {
             if (player != null) {
-                getWorldServer().removePlayer(player);
                 player.getMap().removePlayer(player);
+                getWorldServer().removePlayer(player);
                 player.getGenericEvents().forEach(e -> e.onPlayerDisconnect(player));
 
                 for (MapleQuestStatus status : player.getStartedQuests()) {
