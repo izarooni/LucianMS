@@ -535,7 +535,7 @@ public class MapleClient implements Disposable {
                 ps.setInt(1, getAccID());
                 try (ResultSet rs = ps.executeQuery()) {
                     if (!rs.next()) {
-                        throw new RuntimeException();
+                        throw new NullPointerException();
                     }
                     birthday = Calendar.getInstance();
                     long unixBirthday = rs.getLong("birthday");
@@ -557,9 +557,11 @@ public class MapleClient implements Disposable {
                     return state;
                 }
             }
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
+        } catch (SQLException | NullPointerException e) {
+            LOGGER.error("unable to check login state for {}", this.toString(), e);
         }
+        // i guess just to be safe; remote hack, anybody?
+        return LoginState.LogOut;
     }
 
     public boolean checkBirthDate(Calendar date) {
@@ -570,6 +572,18 @@ public class MapleClient implements Disposable {
     public void dispose() {
         NPCScriptManager.dispose(this);
         QuestScriptManager.dispose(this);
+    }
+
+    @Override
+    public String toString() {
+        return "MapleClient{" +
+                "ID=" + ID +
+                ", gmlevel=" + gmlevel +
+                ", loginState=" + loginState +
+                ", lastKnownIP='" + lastKnownIP + '\'' +
+                ", accountName='" + accountName + '\'' +
+                ", discordId=" + discordId +
+                '}';
     }
 
     public final void disconnect() {
