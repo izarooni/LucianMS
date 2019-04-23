@@ -4895,7 +4895,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Di
 
     @Override
     public void sendDestroyData(MapleClient client) {
-        client.announce(MaplePacketCreator.removePlayerFromMap(this.getObjectId()));
+        client.announce(MaplePacketCreator.removePlayerFromMap(getId()));
     }
 
     public int getLinkedLevel() {

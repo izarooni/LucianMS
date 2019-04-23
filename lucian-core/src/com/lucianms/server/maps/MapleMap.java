@@ -1492,7 +1492,7 @@ public class MapleMap {
         }
 
         sendObjectPlacement(chr.getClient());
-        mapobjects.put(chr.getObjectId(), chr);
+        addMapObject(chr);
 
         if (isStartingEventMap() && !eventStarted()) {
             chr.getMap().getPortal("join00").setPortalStatus(false);
