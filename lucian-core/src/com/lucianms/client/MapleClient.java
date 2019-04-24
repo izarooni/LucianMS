@@ -640,8 +640,11 @@ public class MapleClient implements Disposable {
             // whatever happens here, we still want to save the player.
             t.printStackTrace();
         } finally {
-            if (checkLoginState() != LoginState.Transfer) {
-                setLoginState(LoginState.LogOut);
+            LoginState loginState = checkLoginState();
+            if (loginState != LoginState.Transfer) {
+                if (loginState == LoginState.Login) {
+                    setLoginState(LoginState.LogOut);
+                }
                 session.attr(CLIENT_KEY).set(null);
                 session.close();
                 Functions.requireNotNull(player, MapleCharacter::dispose);
