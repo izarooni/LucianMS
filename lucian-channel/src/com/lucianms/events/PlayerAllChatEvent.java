@@ -44,7 +44,7 @@ public class PlayerAllChatEvent extends PacketEvent {
                 ps.setLong(1, getClient().getDiscordId());
                 ps.setInt(2, player.getAccountID());
                 ps.executeUpdate();
-                player.dropMessage("Success! Your Discord account is not bound to this LucianMS in-game account");
+                player.dropMessage("Success! Your Discord account is now bound to your game account");
             } catch (SQLException e) {
                 e.printStackTrace();
             }
