@@ -1,6 +1,6 @@
 /*
  * NX Gachapon
- * by Venem of Chirithy!
+ * by Venem of LucianMS!
  */
  
  
@@ -413,7 +413,7 @@ function action(mode, type, selection) {
         }
  
         if (status == 0) {
-            cm.sendNext("I am Chirithy' NX Gachapon.\r\nI give higher version NX items if you trade me those delicious Gachapon tickets~! \r #rNote that everytime you level up you recieve a gachapon ticket which can be used on regular gachapons or this NX machine! \r\nThe tickets look like this: #i5220000");
+            cm.sendNext("I am LucianMS' NX Gachapon.\r\nI give higher version NX items if you trade me those delicious Gachapon tickets~! \r #rNote that everytime you level up you recieve a gachapon ticket which can be used on regular gachapons or this NX machine! \r\nThe tickets look like this: #i5220000");
         } else if (status == 1) {
             if (!cm.haveItem(5220000)) {
                 cm.sendOk("You dont have any #bGachapon tickets#k.");

@@ -11,7 +11,7 @@ function action(mode, type, selection) {
         status++;
     }
     if (status == 1) {
-        let content = "Welcome to #rChirithy#k!"
+        let content = "Welcome to #rLucianMS#k!"
             + "\r\nTo play this server, you will need our custom WZ files. Because you're talking to me, we can assume you already have them and are ready to go!\r\n"
             + "\r\nIf you find a bug, crash or any other issues with gameplay, please submit it on our forum or discord (which ever may be available to you at the time).";
         cm.sendNext(content);

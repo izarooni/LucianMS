@@ -4,7 +4,8 @@
  
  */
  
-importPackage(Packages.com.lucianms.client.arcade);
+let Arcade = Packages.com.lucianms.client.arcade.Arcade;
+let PickAHolic = Java.type("com.lucianms.client.arcade.PickAHolic");
  
  var sections = {};
  var method = null;

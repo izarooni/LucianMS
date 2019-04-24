@@ -4,7 +4,8 @@
  
  */
  
-importPackage(Packages.com.lucianms.client.arcade);
+let Arcade = Packages.com.lucianms.client.arcade.Arcade;
+let BoxSpider = Java.type("com.lucianms.client.arcade.BoxSpider");
  
  var sections = {};
  var method = null;

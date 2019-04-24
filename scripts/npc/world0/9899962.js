@@ -4,7 +4,8 @@
  
  */
  
-importPackage(Packages.com.lucianms.client.arcade);
+let Arcade = Java.type("com.lucianms.client.arcade.Arcade");
+let BobOnly = Java.type("com.lucianms.client.arcade.BobOnly");
  
  var sections = {};
  var method = null;

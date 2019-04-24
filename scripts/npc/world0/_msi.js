@@ -70,7 +70,7 @@ function action(mode, type, selection) {
     } else if (status == 2) {
         if (selection == 0) {
             status = 0;
-            let content = "You can't become stronger without increasing your stats. This can be achieved by leveling-up via completing quests or slaying monsters.\r\n"
+            let content = "You can't become stronger without increasing your stats. This can be achieved by leveling-up via completing quests or slaying monsters. You will also need to obtain the following items. #eNote: The items required for an MSI will be different for every day throughout the week#n\r\n"
                 + "Please make sure all requirements are met\r\n"
                 + "\r\n#k#eSTR: " + checkStat(player.getStr()) + " / 32767"
                 + "\r\n#k#eDEX: " + checkStat(player.getDex()) + " / 32767"

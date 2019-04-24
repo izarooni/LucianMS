@@ -1,64 +1,69 @@
-load('scripts/util_cquests.js');
-const CQuestBuilder = Java.type('com.lucianms.cquest.CQuestBuilder');
-/* izarooni */
-let status = 0;
-let quest = player.getCustomQuests().get(37);
-let metadata = CQuestBuilder.getMetaData(37);
+/*
+ 
+   Author: Lucasdieswagger @ discord
+ 
+*/
+
+var sections = {};
+var method = null;
+var status = 0;
+var text = "";
+
+var moveTo = 90000004;
+
+function start() {
+    action(1, 0, 0);
+}
 
 function action(mode, type, selection) {
-    if (mode < 1) {
+    if (mode === -1) {
         cm.dispose();
         return;
+    } else if (mode === 0) {
+        status--;
+        if (status === 0) {
+            cm.dispose();
+            return;
+        }
     } else {
         status++;
     }
-    if (quest == null) beginQuest();
-    else completeQuest();
-}
-
-function completeQuest() {
-    if (!quest.checkRequirements()) {
-        if(cm.getPlayer().getMap().countMonster(9895246) === 0) {
-            cm.getPlayer().getMap().spawnMonsterOnGroudBelow(9895246, 527, 657); // respawn when not completed quest, but the monster is killed.
-        } else {
-            cm.sendOk("Have you forgotten what to do? You can check all of your quests via the #d< @quests >#k command!");
-        }
-        cm.dispose();
-    } else if (!quest.isCompleted()) {
-        cm.sendNext("Congratulations, you did it! That wasn't hard now, was it?", 1);
-        quest.complete(player);
-    } else {
-        cm.warp(Packages.constants.ServerConstants.HOME_MAP);
-        cm.dispose();
-    }
-}
-
-function beginQuest() {
-    if (status == 1) {
-        cm.sendNext("This one can't be too difficult. Let's do it!");
-    } else if (status >= 2 && status <= 4) {
-        var text = "#FUI/UIWindow/Quest/summary#\r\n";
-        if (status == 2) {
-            var res = CQuestKills(metadata.getToKill());
-            if (res != null) {
-                cm.sendNext(text + res);
-            }  else {
-                action(1, 0, 0);
+    if (status === 1) {
+        method = null;
+        if (cm.getPlayer().getKillType() == 9895226) {
+            if (cm.getPlayer().getCurrent() >= cm.getPlayer().getGoal()) {
+                // complete quest
+                cm.getPlayer().gainExp(1000, 0, true, true, false);
+                cm.getPlayer().changeMap(moveTo);
+                cm.dispose();
+            } else {
+                var amountLeft = cm.getPlayer().getGoal() - cm.getPlayer().getCurrent();
+                text = "You still need to kill " + amountLeft + " Pieces of Wandering Memory to continue.";
             }
-        } else if (status == 3) {
-            var res = CQuestCollect(metadata.getToCollect());
-            if (res != null) cm.sendNext(text + res);
-            else action(1, 0, 0);
-        } else if (status == 4) {
-            var res = CQuestRewards(metadata.getRewards());
-            if (res != null) cm.sendNext(text + res);
-            else action(1, 0, 0);
+        } else {
+            text = "You have erased the darkness! Great job. Now you must collect the pieces of the memory you have lost. Kill 10 #rPieces of wandering Memory#k. You can kill them by standing nearby them and clicking on your attack key (default: #bctrl#k).";
+            cm.getPlayer().setKillType(9895226);
+            cm.getPlayer().setGoal(10);
+            cm.getPlayer().setCurrent(0);
         }
-    } else if (status == 5) {
-        cm.sendAcceptDecline("Let me know when you're ready to take on this task!");
-    } else if (status == 6) {
-        player.getMap().spawnMonsterOnGroudBelow(9895246, 487, 657);
-        CQuestBuilder.beginQuest(player, 37);
+        cm.sendOk(text);
         cm.dispose();
+
+    } else {
+        if (method == null) {
+            method = sections[get(selection)];
+        }
+        method(mode, type, selection);
     }
+}
+
+
+function get(index) {
+    var i = 0;
+    for (var s in sections) {
+        if (i === index)
+            return s;
+        i++;
+    }
+    return null;
 }

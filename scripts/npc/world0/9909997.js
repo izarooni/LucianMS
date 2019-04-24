@@ -4,7 +4,7 @@ Map: 96
  */
 load('scripts/npc/generic_jobadvance.js');
 const FirstAdvancementGreet = "Your presence is weak. It was meant to be, your future of darkness. "
-    + "Become the nightmare as fear grows in darkness and rule all of Chirithy.";
+    + "Become the nightmare as fear grows in darkness and rule all of LucianMS.";
 jobs = {
     First: {
         Rogue: { ID: 400, req: (p) => p.getLuk() >= 25,

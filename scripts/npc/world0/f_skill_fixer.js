@@ -21,6 +21,7 @@ function action(mode, type, selection) {
         status++;
     }
     if (status == 1) {
+        cm.sendOk("Your skills have been fixed.");
         let jobID = player.getJob().getId();
         LearnSkills(skills[jobID - 1]); 
         LearnSkills(skills[jobID]);

@@ -11,7 +11,7 @@ var LifeFactory = Java.type("com.lucianms.server.life.MapleLifeFactory");
  var status = 0;
  var text = "";
 
- var moveTo = 90000004;
+ var moveTo = 90000007;
  
 function start() {
     action(1, 0, 0);
@@ -32,7 +32,7 @@ function action(mode, type, selection) {
     }
     if (status === 1) {
         method = null;
-        if(cm.getPlayer().getKillType() == 9895245) {
+        if(cm.getPlayer().getKillType() == 9899998) {
             if(cm.getPlayer().getCurrent() >= cm.getPlayer().getGoal()) {
                 // complete quest
                 cm.getPlayer().gainExp(350, 0, true, true, false);
@@ -42,11 +42,11 @@ function action(mode, type, selection) {
                 cm.getPlayer().getMap().broadcastMessage(MaplePacketCreator.playSound("customJQ/quest"));
             } else {
                 var amountLeft = cm.getPlayer().getGoal() - cm.getPlayer().getCurrent();
-                text = "You still need to kill " + amountLeft + " monsters to continue.";
+                text = "You still need to kill " + amountLeft + " heartless to continue.";
             }
         } else {
-            text = "Lets see you kill some monsters, you can kill them by standing nearby them and clicking on your attack key (default: #bctrl#k), kill 15 monsters and talk to me again.";
-            cm.getPlayer().setKillType(9895245);
+            text = "It is time to erase the darkness within you! You need to kill 15 #rHeartless#k. you can kill them by standing nearby them and clicking on your attack key (default: #bctrl#k), kill 15 monsters and talk to me again.";
+            cm.getPlayer().setKillType(99899998);
             cm.getPlayer().setGoal(15);
             cm.getPlayer().setCurrent(0);
         }

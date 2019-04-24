@@ -10,7 +10,7 @@ function action(mode, type, selection) {
         status++;
     }
     if (status == 1) {
-        var content = "Starting the transmission. Click #bYes#k whenever you are ready to go.\r\n\r\nRequirements:\r\n1x   #v4011034#   per person";
+        var content = "Starting the transmission. Click #bYes#k whenever you are ready to go.\r\n\r\nRequirements:\r\nLv. Range 20 ~ 200\r\n1x   #v4011034#   per person";
         cm.sendYesNo(content);
     } else if (status == 2) {
         // You should probably only let the party leader talk in case there's a party and party play is enabled.

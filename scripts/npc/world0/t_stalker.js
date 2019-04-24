@@ -198,7 +198,7 @@ function action(mode, type, selection) {
         } else {
             let newval = parseInt(cm.getText()); // the new value for the item stat
             this.error = null; // reset error message
-            if (isNaN(newval) || ((newval < 0 || newval > 32767) && this.changeStat != 16)) {
+            if (isNaN(newval) || (newval < 0 && this.changeStat != 16)) {
                 this.error = "#r'" + cm.getText() + "' is an invalid number#k\r\n"; // set error message
                 status -= 2; // return to previous status to display error message
             } else {

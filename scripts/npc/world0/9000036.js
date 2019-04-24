@@ -33,7 +33,7 @@ function action(mode, type, selection) {
         else
             status--;
 				if (status == 0) {
-					cm.sendNext("Agent E Here Reporting for duty. \r\nI'm the Chirithy's #rMaple Weapon#k upgrader! \r\nI'll try to do my best in upgrading your gear to full power.");
+					cm.sendNext("Agent E Here Reporting for duty. \r\nI'm the Lucian's #rMaple Weapon#k upgrader! \r\nI'll try to do my best in upgrading your gear to full power.");
                 }
 				if (status == 1) {
 					cm.sendSimple("What would you like to do Agent #h # \r\n#L0##bUpgrade my weapon#l\r\n#L1#What do I need to upgrade my weapon?#l\r\n#L2#Nevermind!#l");

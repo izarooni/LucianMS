@@ -5,15 +5,20 @@
 
 let status = 0;
 let maps = [
-    // [6, "#bTetris #k"],
+    [6, "#bTetris #k"],
     [11, "#bWario#k"],
-    // [810, "#gCasino#k"],
+    [810, "#gCasino#k"],
+    [86, "#rRealm of Gods#k"],
+    [96, "#rClass Gates#k"],
+    [808, "#eSandbox#k"],
+    [324, "#bFinal World (NPCS)#k"],
     [271000000, "#dFuture Gate#k"],
     [273000000, "#rTwilight Perion#k"],
     [211060010, "#bLion King Castle"],
     [219000000, "#dCokeTown#k"],
+    [551030800, "#bNoragami Aragato#k"],
     [951000000, "#rMonster Park#k"],
-    [808, "#eSandbox#k"],
+    [099999999, "#gSuper Mario Bros 1-1#k"],
     [599000006, "#rUltimate Mushroom#k"]
 ];
 
