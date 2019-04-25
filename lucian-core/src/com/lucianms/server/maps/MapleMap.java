@@ -63,6 +63,7 @@ import java.util.stream.Collectors;
 public class MapleMap {
 
     public static final int MAX_DROP_CHANCE = 1000000;
+    public static final int INVALID_ID = 999999999;
     private static final Logger LOGGER = LoggerFactory.getLogger(MapleMap.class);
     private static final List<MapleMapObjectType> rangedMapobjectTypes = Arrays.asList(
             MapleMapObjectType.SHOP,

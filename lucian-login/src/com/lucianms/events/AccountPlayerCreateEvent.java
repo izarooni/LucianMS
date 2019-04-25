@@ -8,9 +8,8 @@ import com.lucianms.client.inventory.Item;
 import com.lucianms.client.inventory.MapleInventory;
 import com.lucianms.client.inventory.MapleInventoryType;
 import com.lucianms.nio.receive.MaplePacketReader;
-import com.lucianms.events.PacketEvent;
-import com.lucianms.server.Server;
 import com.lucianms.server.MapleItemInformationProvider;
+import com.lucianms.server.Server;
 import tools.MaplePacketCreator;
 
 import java.sql.Connection;
@@ -114,7 +113,7 @@ public class AccountPlayerCreateEvent extends PacketEvent {
 
     @Override
     public Object onPacket() {
-        MapleCharacter newchar = MapleCharacter.getDefault(getClient());
+        MapleCharacter newchar = new MapleCharacter(getClient());
         newchar.setWorld(getClient().getWorld());
 
         newchar.setSkinColor(MapleSkinColor.getById(skin));

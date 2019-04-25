@@ -211,7 +211,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Di
     private MapleInventory[] creativeInventory;
     private MapleInventory[] inventory = new MapleInventory[MapleInventoryType.values().length];
 
-    private MapleJob job = MapleJob.BEGINNER;
+    private MapleJob job;
     private MapleMap map, dojoMap;
     private MapleShop shop;
     private MapleTrade trade;
@@ -264,12 +264,38 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Di
     private int carnivalPoints;
     private int obtainedcp;
 
-    public MapleCharacter() {
+    public MapleCharacter(MapleClient client) {
+        this.client = client;
+        if (client != null) {
+            gmLevel = client.getGMLevel();
+            accountid = client.getAccID();
+        }
+
         setStance(0);
         for (MapleInventoryType type : MapleInventoryType.values()) {
             inventory[type.ordinal()] = new MapleInventory(type, (byte) 96);
         }
-        setPosition(new Point(0, 0));
+        hp = 50;
+        maxhp = 50;
+        mp = 5;
+        maxmp = 5;
+        str = 12;
+        dex = 5;
+        int_ = 4;
+        luk = 4;
+        map = null;
+        job = MapleJob.BEGINNER;
+        level = 1;
+        buddylist = new BuddyList(20);
+        for (int i = 0; i < DEFAULT_KEY.length; i++) {
+            keymap.put(DEFAULT_KEY[i], new MapleKeyBinding(DEFAULT_TYPE[i], DEFAULT_ACTION[i]));
+        }
+        trockmaps.addAll(Collections.nCopies(MapleMap.INVALID_ID, 5));
+        viptrockmaps.addAll(Collections.nCopies(MapleMap.INVALID_ID, 10));
+    }
+
+    public MapleCharacter() {
+        this(null);
     }
 
     @Override
@@ -283,42 +309,6 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Di
     @Override
     public int hashCode() {
         return Objects.hash(id);
-    }
-
-    public static MapleCharacter getDefault(MapleClient c) {
-        MapleCharacter ret = new MapleCharacter();
-        ret.client = c;
-        ret.gmLevel = c.getGMLevel();
-        ret.hp = 50;
-        ret.maxhp = 50;
-        ret.mp = 5;
-        ret.maxmp = 5;
-        ret.str = 12;
-        ret.dex = 5;
-        ret.int_ = 4;
-        ret.luk = 4;
-        ret.map = null;
-        ret.job = MapleJob.BEGINNER;
-        ret.level = 1;
-        ret.accountid = c.getAccID();
-        ret.buddylist = new BuddyList(20);
-        ret.maplemount = null;
-        ret.getInventory(MapleInventoryType.EQUIP).setSlotLimit(24);
-        ret.getInventory(MapleInventoryType.USE).setSlotLimit(24);
-        ret.getInventory(MapleInventoryType.SETUP).setSlotLimit(24);
-        ret.getInventory(MapleInventoryType.ETC).setSlotLimit(24);
-        for (int i = 0; i < DEFAULT_KEY.length; i++) {
-            ret.keymap.put(DEFAULT_KEY[i], new MapleKeyBinding(DEFAULT_TYPE[i], DEFAULT_ACTION[i]));
-        }
-        // to fix the map 0 lol
-        for (int i = 0; i < 5; i++) {
-            ret.trockmaps.add(999999999);
-        }
-        for (int i = 0; i < 10; i++) {
-            ret.viptrockmaps.add(999999999);
-        }
-
-        return ret;
     }
 
     public static boolean ban(String username, String reason, boolean isAccountName) {
