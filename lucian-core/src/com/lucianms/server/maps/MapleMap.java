@@ -92,12 +92,12 @@ public class MapleMap implements PacketAnnouncer {
     private String onFirstUserEnter;
     private long timeLimit;
     private int mapid;
-    private int decHP = 0;
+    private int decHP;
     private int fieldType;
     private int returnMapId;
     private int channel, world;
-    private int fieldLimit = 0;
-    private int protectItem = 0;
+    private int fieldLimit;
+    private int protectItem;
     private int mobCapacity = -1;
     private int forcedReturnMap = 999999999;
     private short mobInterval = 5000;
@@ -108,30 +108,30 @@ public class MapleMap implements PacketAnnouncer {
     private boolean docked;
     private boolean swimEnabled;
     private boolean dropsOn = true;
-    private boolean everlast = false;
-    private boolean isOxQuiz = false;
+    private boolean everlast;
+    private boolean isOxQuiz;
     private boolean summonState = true; // All maps should have this true at the beginning
     private boolean respawnEnabled = true;
-    private boolean instanced = false;
-    private MapleMapEffect mapEffect = null;
+    private boolean instanced;
+    private MapleMapEffect mapEffect;
     private MapleOxQuiz ox;
-    private Task mapMonitor = null;
-    private Pair<Integer, String> timeMob = null;
-    private long nextEmergency = 0L;
+    private Task mapMonitor;
+    private Pair<Integer, String> timeMob;
+    private long nextEmergency;
     private String lastPlayerDiedInMap = ""; // THIS IS HOW YOU'RE SUPPOSED TO FUCKING DO VARIABLES - also no nullpointers >:(
 
     //region Henesys PQ
-    private int riceCakes = 0;
-
-    private int bunnyDamage = 0;
+    private int riceCakes;
+    private int bunnyDamage;
     //endregion
 
     //region events
-    private boolean eventstarted = false, isMuted = false;
-    private MapleSnowball snowball0 = null;
-    private MapleSnowball snowball1 = null;
+    private boolean eventStarted;
+    private boolean muted;
+    private MapleSnowball snowball0, snowball1;
     private MapleCoconut coconut;
     private GProperties<Point> autoKillPositions = new GProperties<>();
+    private GProperties<Boolean> autoKillMobs = new GProperties<>();
     //endregion
 
     public MapleMap(int mapid, int world, int channel, int returnMapId, float monsterRate) {
@@ -1938,11 +1938,11 @@ public class MapleMap implements PacketAnnouncer {
     }
 
     public boolean isMuted() {
-        return isMuted;
+        return muted;
     }
 
     public void setMuted(boolean mute) {
-        isMuted = mute;
+        muted = mute;
     }
 
     public boolean getEverlast() {
@@ -2269,15 +2269,15 @@ public class MapleMap implements PacketAnnouncer {
     }
 
     public boolean eventStarted() {
-        return eventstarted;
+        return eventStarted;
     }
 
     public void startEvent() {
-        this.eventstarted = true;
+        this.eventStarted = true;
     }
 
     public void setEventStarted(boolean event) {
-        this.eventstarted = event;
+        this.eventStarted = event;
     }
 
     public String getEventNPC() {
@@ -2349,6 +2349,10 @@ public class MapleMap implements PacketAnnouncer {
 
     public GProperties<Point> getAutoKillPositions() {
         return autoKillPositions;
+    }
+
+    public GProperties<Boolean> getAutoKillMobs() {
+        return autoKillMobs;
     }
 
     private interface DelayedPacketCreation {

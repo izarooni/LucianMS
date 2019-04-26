@@ -33,6 +33,7 @@ import com.lucianms.client.status.MonsterStatus;
 import com.lucianms.client.status.MonsterStatusEffect;
 import com.lucianms.constants.skills.Aran;
 import com.lucianms.constants.skills.Corsair;
+import com.lucianms.lang.GProperties;
 import com.lucianms.nio.receive.MaplePacketReader;
 import com.lucianms.server.MapleInventoryManipulator;
 import com.lucianms.server.MapleItemInformationProvider;
@@ -73,7 +74,8 @@ public final class PlayerTakeDamageEvent extends PacketEvent {
     @Override
     public void packetCompleted() {
         MapleCharacter player = getClient().getPlayer();
-        if (monsterIdFrom == 9400551) { // Bob
+        GProperties<Boolean> akm = player.getMap().getAutoKillMobs();
+        if (akm.containsKey(Integer.toString(monsterIdFrom))) {
             if (!player.isGM() || player.isDebug()) {
                 player.setHpMp(0);
             }

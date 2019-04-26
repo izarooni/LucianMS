@@ -350,9 +350,17 @@ public class EventCommands extends CommandExecutor {
         if (args.length() == 0) {
             player.sendMessage(5, "Available directions: left, right, up and down");
             player.sendMessage(5, "To clear all auto-kill positions use: !{} reset", command.getName());
+            player.sendMessage(5, "You may also declare a mob to auto-kill by specifying the mob ID");
             return;
         }
         final String action = args.get(0);
+        try {
+            int mobID = Integer.parseInt(action);
+            player.getMap().getAutoKillMobs().put(action, true);
+            player.sendMessage("Enabled auto-kill for the monster {} for this map", mobID);
+            return;
+        } catch (NumberFormatException ignore) {
+        }
         GProperties<Point> akp = player.getMap().getAutoKillPositions();
         switch (action) {
             case "left":
@@ -366,7 +374,8 @@ public class EventCommands extends CommandExecutor {
             case "reset":
             case "clear":
                 akp.clear();
-                player.sendMessage(5, "Auto-kill positions cleared");
+                player.getMap().getAutoKillMobs().clear();
+                player.sendMessage(5, "Auto-kill positions and mobs cleared");
                 break;
         }
 
