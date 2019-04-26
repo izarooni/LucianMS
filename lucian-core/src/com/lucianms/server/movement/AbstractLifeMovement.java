@@ -21,19 +21,20 @@
 */
 package com.lucianms.server.movement;
 
-import java.awt.Point;
+import java.awt.*;
 
 public abstract class AbstractLifeMovement implements LifeMovement {
-    private Point position;
-    private int duration;
-    private int newstate, type;
 
-    public AbstractLifeMovement(int type, Point position, int duration, int newstate) {
-        super();
+    private Point position;
+    private int type;
+    private int newState;
+    private int duration;
+
+    public AbstractLifeMovement(int type, Point position, int duration, int newState) {
         this.type = type;
         this.position = position;
         this.duration = duration;
-        this.newstate = newstate;
+        this.newState = newState;
     }
 
     @Override
@@ -47,8 +48,8 @@ public abstract class AbstractLifeMovement implements LifeMovement {
     }
 
     @Override
-    public int getNewstate() {
-        return newstate;
+    public int getNewState() {
+        return newState;
     }
 
     @Override

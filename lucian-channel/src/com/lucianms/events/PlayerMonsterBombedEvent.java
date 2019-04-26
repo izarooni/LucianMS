@@ -21,7 +21,7 @@ public class PlayerMonsterBombedEvent extends PacketEvent {
     public Object onPacket() {
         MapleCharacter player = getClient().getPlayer();
         MapleMonster monster = player.getMap().getMonsterByOid(objectID);
-        if (!player.isAlive() || monster == null) {
+        if (!player.isAlive() || monster == null || monster.isFake()) {
             return null;
         }
         if (monster.getId() == 8500003 || monster.getId() == 8500004) {

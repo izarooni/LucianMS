@@ -21,13 +21,13 @@
 */
 package com.lucianms.client.inventory;
 
-import com.lucianms.server.Server;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import com.lucianms.server.MapleItemInformationProvider;
+import com.lucianms.server.Server;
 import com.lucianms.server.movement.AbsoluteLifeMovement;
 import com.lucianms.server.movement.LifeMovement;
 import com.lucianms.server.movement.LifeMovementFragment;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.awt.*;
 import java.sql.Connection;
@@ -227,7 +227,7 @@ public class MaplePet extends Item {
                 if (move instanceof AbsoluteLifeMovement) {
                     this.setPos(move.getPosition());
                 }
-                this.setStance(((LifeMovement) move).getNewstate());
+                this.setStance(((LifeMovement) move).getNewState());
             }
         }
     }

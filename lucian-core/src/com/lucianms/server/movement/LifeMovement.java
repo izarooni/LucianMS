@@ -21,11 +21,15 @@
 */
 package com.lucianms.server.movement;
 
-import java.awt.Point;
+import java.awt.*;
 
 public interface LifeMovement extends LifeMovementFragment {
+
     Point getPosition();
-    int getNewstate();
+
+    int getNewState();
+
     int getDuration();
+
     int getType();
 }

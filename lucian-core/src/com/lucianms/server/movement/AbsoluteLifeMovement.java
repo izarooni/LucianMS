@@ -21,23 +21,47 @@
 */
 package com.lucianms.server.movement;
 
-import java.awt.Point;
 import tools.data.output.LittleEndianWriter;
 
+import java.awt.*;
+
 public class AbsoluteLifeMovement extends AbstractLifeMovement {
+
     private Point pixelsPerSecond;
     private int unk;
 
-    public AbsoluteLifeMovement(int type, Point position, int duration, int newstate) {
+    public AbsoluteLifeMovement(int type, Point position, int duration, int newstate, Point pixelsPerSecond, int unk) {
         super(type, position, duration, newstate);
+        this.pixelsPerSecond = pixelsPerSecond;
+        this.unk = unk;
+    }
+
+    @Override
+    public LifeMovementFragment duplicate() {
+        return new AbsoluteLifeMovement(getType(),
+                getPosition().getLocation(),
+                getDuration(),
+                getNewState(),
+                getPixelsPerSecond().getLocation(),
+                getUnk());
+    }
+
+    @Override
+    public void serialize(LittleEndianWriter lew) {
+        lew.write(getType());
+        lew.writePos(getPosition());
+        lew.writePos(getPixelsPerSecond());
+        lew.writeShort(getUnk());
+        lew.write(getNewState());
+        lew.writeShort(getDuration());
     }
 
     public Point getPixelsPerSecond() {
         return pixelsPerSecond;
     }
 
-    public void setPixelsPerSecond(Point wobble) {
-        this.pixelsPerSecond = wobble;
+    public void setPixelsPerSecond(Point pixelsPerSecond) {
+        this.pixelsPerSecond = pixelsPerSecond;
     }
 
     public int getUnk() {
@@ -46,17 +70,5 @@ public class AbsoluteLifeMovement extends AbstractLifeMovement {
 
     public void setUnk(int unk) {
         this.unk = unk;
-    }
-
-    @Override
-    public void serialize(LittleEndianWriter lew) {
-        lew.write(getType());
-        lew.writeShort(getPosition().x);
-        lew.writeShort(getPosition().y);
-        lew.writeShort(pixelsPerSecond.x);
-        lew.writeShort(pixelsPerSecond.y);
-        lew.writeShort(unk);
-        lew.write(getNewstate());
-        lew.writeShort(getDuration());
     }
 }

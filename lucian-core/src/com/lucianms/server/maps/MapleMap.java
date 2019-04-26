@@ -50,6 +50,7 @@ import com.lucianms.server.world.MapleParty;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import tools.MaplePacketCreator;
+import tools.PacketAnnouncer;
 import tools.Pair;
 import tools.Randomizer;
 
@@ -60,7 +61,7 @@ import java.util.Map.Entry;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
-public class MapleMap {
+public class MapleMap implements PacketAnnouncer {
 
     public static final int MAX_DROP_CHANCE = 1000000;
     public static final int INVALID_ID = 999999999;
@@ -142,6 +143,12 @@ public class MapleMap {
         if (this.monsterRate == 0) {
             this.monsterRate = 1;
         }
+    }
+
+    @Override
+    public Collection<MapleCharacter> getPlayers() {
+        // this is so bad but oh well odin is trash
+        return new ArrayList<>(getCharacters());
     }
 
     public static void doItemVac(MapleCharacter player, MaplePet pet, int range) {

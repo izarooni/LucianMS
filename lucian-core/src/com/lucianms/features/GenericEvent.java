@@ -6,6 +6,7 @@ import com.lucianms.lang.annotation.PacketWorker;
 import com.lucianms.server.maps.MapleMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import tools.Disposable;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -13,12 +14,19 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 /**
+ * May delegate packet events via method declarations using the {@link PacketWorker} annotation
+ * and the wanted packet event as the only parameter
+ *
  * @author izarooni
  */
-public abstract class GenericEvent {
+public abstract class GenericEvent implements Disposable {
 
     private HashMap<Class<?>, ArrayList<Method>> methods = new HashMap<>();
     private Logger LOGGER = LoggerFactory.getLogger(getClass());
+
+    @Override
+    public void dispose() {
+    }
 
     /**
      * Iterates through methods of the specified object class and stores
@@ -58,7 +66,6 @@ public abstract class GenericEvent {
         if (methods.get(event.getClass()) != null) {
             methods.get(event.getClass()).forEach(method -> {
                 try {
-//                    LOGGER.info("PacketEvent method '{}({})' invoked", method.getName(), event.getClass().getSimpleName());
                     method.invoke(this, event);
                 } catch (IllegalAccessException | InvocationTargetException e) {
                     e.printStackTrace();

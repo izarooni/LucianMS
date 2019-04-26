@@ -17,33 +17,29 @@ public final class MovementPacketHelper {
         List<LifeMovementFragment> res = new ArrayList<>();
         byte numCommands = reader.readByte();
         for (byte i = 0; i < numCommands; i++) {
-            byte command = reader.readByte();
-            switch (command) {
+            byte moveType = reader.readByte();
+            switch (moveType) {
                 case 0: // normal move
                 case 5:
                 case 17: { // Float
-                    short xpos = reader.readShort();
-                    short ypos = reader.readShort();
-                    short xwobble = reader.readShort();
-                    short ywobble = reader.readShort();
+                    Point position = reader.readPoint();
+                    Point velocity = reader.readPoint();
                     short unk = reader.readShort();
-                    byte newstate = reader.readByte();
+                    byte newState = reader.readByte();
                     short duration = reader.readShort();
-                    AbsoluteLifeMovement alm = new AbsoluteLifeMovement(command, new Point(xpos, ypos), duration, newstate);
-                    alm.setUnk(unk);
-                    alm.setPixelsPerSecond(new Point(xwobble, ywobble));
+                    AbsoluteLifeMovement alm = new AbsoluteLifeMovement(moveType, position, duration, newState, velocity, unk);
                     res.add(alm);
 
                     if (client != null) {
                         MapleCharacter player = client.getPlayer();
                         if (player != null) {
-                            if (Math.abs(xwobble) > 1500) {
+                            if (Math.abs(velocity.getX()) > 1500) {
                                 Cheater.CheatEntry cheatEntry = player.getCheater().getCheatEntry(Cheats.FastWalk);
                                 if (cheatEntry.testFor(1000 * 60)) {
-                                    cheatEntry.announce(client, 1000 * 60, "'{}' is fast walking (speed: {})", player.getName(), xwobble);
+                                    cheatEntry.announce(client, 1000 * 60, "'{}' is fast walking (speed: {})", player.getName(), velocity.getX());
                                 }
                             }
-                            if (newstate == 13 && !player.getMap().isSwimEnabled()) {
+                            if (newState == 13 && !player.getMap().isSwimEnabled()) {
                                 Cheater.CheatEntry cheatEntry = player.getCheater().getCheatEntry(Cheats.Swim);
                                 if (cheatEntry.testFor(1000 * 60)) {
                                     cheatEntry.announce(client, 1000 * 60, "'{}' is swimming in a swim disabled map {}", player.getName(), player.getMapId());
@@ -63,12 +59,10 @@ public final class MovementPacketHelper {
                 case 19: // Springs on maps
                 case 20: // Aran Combat Step
                 case 22: {
-                    short xpos = reader.readShort();
-                    short ypos = reader.readShort();
-                    byte newstate = reader.readByte();
+                    Point position = reader.readPoint();
+                    byte newState = reader.readByte();
                     short duration = reader.readShort();
-                    RelativeLifeMovement rlm = new RelativeLifeMovement(command, new Point(xpos, ypos), duration, newstate);
-                    res.add(rlm);
+                    res.add(new RelativeLifeMovement(moveType, position, duration, newState));
                     break;
                 }
                 case 3:
@@ -76,17 +70,12 @@ public final class MovementPacketHelper {
                 case 7: // assaulter
                 case 8: // assassinate
                 case 9: // rush
-                case 11: //chair
-                {
-                    //                case 14: {
-                    short xpos = reader.readShort();
-                    short ypos = reader.readShort();
-                    short xwobble = reader.readShort();
-                    short ywobble = reader.readShort();
-                    byte newstate = reader.readByte();
-                    TeleportMovement tm = new TeleportMovement(command, new Point(xpos, ypos), newstate);
-                    tm.setPixelsPerSecond(new Point(xwobble, ywobble));
-                    res.add(tm);
+                case 11: { //chair
+                    Point position = reader.readPoint();
+                    short unk = reader.readShort();
+                    byte newState = reader.readByte();
+                    short duration = reader.readShort();
+                    res.add(new TeleportMovement(moveType, position, duration, newState, unk));
                     break;
                 }
                 case 14:
@@ -96,28 +85,19 @@ public final class MovementPacketHelper {
                     res.add(new ChangeEquip(reader.readByte()));
                     break;
                 case 15: {
-                    short xpos = reader.readShort();
-                    short ypos = reader.readShort();
-                    short xwobble = reader.readShort();
-                    short ywobble = reader.readShort();
+                    Point position = reader.readPoint();
+                    Point velocity = reader.readPoint();
                     short unk = reader.readShort();
                     short fh = reader.readShort();
-                    byte newstate = reader.readByte();
+                    byte newState = reader.readByte();
                     short duration = reader.readShort();
-                    JumpDownMovement jdm = new JumpDownMovement(command, new Point(xpos, ypos), duration, newstate);
-                    jdm.setUnk(unk);
-                    jdm.setPixelsPerSecond(new Point(xwobble, ywobble));
-                    jdm.setFH(fh);
-                    res.add(jdm);
+                    res.add(new JumpDownMovement(moveType, position, duration, newState, velocity, unk, fh));
                     break;
                 }
                 case 21: {
                     reader.skip(3);
                     break;
                 }
-                default:
-                    System.out.println("Unhandled Case:" + command);
-                    return null;
             }
         }
         return res;
@@ -131,7 +111,7 @@ public final class MovementPacketHelper {
                     position.y += yoffset;
                     target.setPosition(position);
                 }
-                target.setStance(((LifeMovement) move).getNewstate());
+                target.setStance(((LifeMovement) move).getNewState());
             }
         }
     }

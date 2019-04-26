@@ -21,10 +21,12 @@
 */
 package com.lucianms.server.movement;
 
-import java.awt.Point;
 import tools.data.output.LittleEndianWriter;
 
+import java.awt.*;
+
 public class RelativeLifeMovement extends AbstractLifeMovement {
+
     public RelativeLifeMovement(int type, Point position, int duration, int newstate) {
         super(type, position, duration, newstate);
     }
@@ -32,9 +34,16 @@ public class RelativeLifeMovement extends AbstractLifeMovement {
     @Override
     public void serialize(LittleEndianWriter lew) {
         lew.write(getType());
-        lew.writeShort(getPosition().x);
-        lew.writeShort(getPosition().y);
-        lew.write(getNewstate());
+        lew.writePos(getPosition());
+        lew.write(getNewState());
         lew.writeShort(getDuration());
+    }
+
+    @Override
+    public LifeMovementFragment duplicate() {
+        return new RelativeLifeMovement(getType(),
+                getPosition().getLocation(),
+                getDuration(),
+                getNewState());
     }
 }

@@ -64,9 +64,10 @@ public final class LifeMoveEvent extends PacketEvent {
         skill_2 = reader.readByte();
         skill_3 = reader.readByte();
         skill_4 = reader.readByte();
-        reader.skip(8);
-        reader.skip(1);
-        reader.skip(4);
+        reader.readByte();
+        reader.readInt();
+        reader.readInt();
+        reader.readInt();
         xStart = reader.readShort();
         yStart = reader.readShort();
 

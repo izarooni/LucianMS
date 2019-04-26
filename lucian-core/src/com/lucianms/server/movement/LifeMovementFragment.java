@@ -21,10 +21,14 @@
 */
 package com.lucianms.server.movement;
 
-import java.awt.Point;
+import tools.Duplicable;
 import tools.data.output.LittleEndianWriter;
 
-public interface LifeMovementFragment {
+import java.awt.*;
+
+public interface LifeMovementFragment extends Duplicable<LifeMovementFragment> {
+
     void serialize(LittleEndianWriter lew);
+
     Point getPosition();
 }

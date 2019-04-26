@@ -21,16 +21,42 @@
 */
 package com.lucianms.server.movement;
 
-import java.awt.Point;
 import tools.data.output.LittleEndianWriter;
+
+import java.awt.*;
 
 public class JumpDownMovement extends AbstractLifeMovement {
     private Point pixelsPerSecond;
     private int unk;
     private int fh;
 
-    public JumpDownMovement(int type, Point position, int duration, int newstate) {
+    public JumpDownMovement(int type, Point position, int duration, int newstate, Point pixelsPerSecond, int unk, int fh) {
         super(type, position, duration, newstate);
+        this.pixelsPerSecond = pixelsPerSecond;
+        this.unk = unk;
+        this.fh = fh;
+    }
+
+    @Override
+    public void serialize(LittleEndianWriter lew) {
+        lew.write(getType());
+        lew.writePos(getPosition());
+        lew.writePos(getPixelsPerSecond());
+        lew.writeShort(getUnk());
+        lew.writeShort(getFH());
+        lew.write(getNewState());
+        lew.writeShort(getDuration());
+    }
+
+    @Override
+    public LifeMovementFragment duplicate() {
+        return new JumpDownMovement(getType(),
+                getPosition().getLocation(),
+                getDuration(),
+                getNewState(),
+                getPixelsPerSecond(),
+                getUnk(),
+                getFH());
     }
 
     public Point getPixelsPerSecond() {
@@ -55,18 +81,5 @@ public class JumpDownMovement extends AbstractLifeMovement {
 
     public void setFH(int fh) {
         this.fh = fh;
-    }
-
-    @Override
-    public void serialize(LittleEndianWriter lew) {
-        lew.write(getType());
-        lew.writeShort(getPosition().x);
-        lew.writeShort(getPosition().y);
-        lew.writeShort(pixelsPerSecond.x);
-        lew.writeShort(pixelsPerSecond.y);
-        lew.writeShort(unk);
-        lew.writeShort(fh);
-        lew.write(getNewstate());
-        lew.writeShort(getDuration());
     }
 }

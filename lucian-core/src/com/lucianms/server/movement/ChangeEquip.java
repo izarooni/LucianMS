@@ -21,10 +21,12 @@
 */
 package com.lucianms.server.movement;
 
-import java.awt.Point;
 import tools.data.output.LittleEndianWriter;
 
+import java.awt.*;
+
 public class ChangeEquip implements LifeMovementFragment {
+
     private int wui;
 
     public ChangeEquip(int wui) {
@@ -40,5 +42,10 @@ public class ChangeEquip implements LifeMovementFragment {
     @Override
     public Point getPosition() {
         return new Point(0, 0);
+    }
+
+    @Override
+    public LifeMovementFragment duplicate() {
+        return new ChangeEquip(wui);
     }
 }
