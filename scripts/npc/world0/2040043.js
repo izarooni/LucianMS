@@ -9,7 +9,7 @@ function action(mode, type, selection) {
         status++;
     }
     if (status == 1) {
-        cm.sendNext("Are you ready to leave for #bPlanet Lucian#k?\r\n\r\n- What is Planet Lucian?\r\n\Planet Lucian is a mysterious area located in space. The rumor says that the almighty #rKing Slime#k sometimes makes an appearance there. We will announce whenever we spot him making an appearance so look out in the chat.");
+        cm.sendNext("Are you ready to leave for #bPlanet Aura#k?\r\n\r\nPlanet Aura is a mysterious area located in space. The rumor says that the almighty #rKing Slime#k sometimes makes an appearance there. We will announce whenever we spot him making an appearance so look out in the chat.");
     } else if (status == 2) {
         var event = client.getWorldServer().getScheduledEvent("SOuterSpace");
         if (event != null) {

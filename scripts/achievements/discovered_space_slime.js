@@ -3,7 +3,7 @@ const OuterSpaceFieldID = 98;
 /* izarooni */
 
 function getName() {
-    return "Discord the Outer Space, Planet Lucian map";
+    return "Discord the Outer Space, Planet Aura map";
 }
 
 function testForPlayer(player) {

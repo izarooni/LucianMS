@@ -4443,17 +4443,6 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Di
         }
     }
 
-    public void sendPolice(int greason, String reason, int duration) {
-        announce(MaplePacketCreator.sendPolice(String.format("You have been blocked by the#b %s Police for %s.#k", "LucianMS", reason)));
-        this.isbanned = true;
-        TaskExecutor.createTask(new Runnable() {
-            @Override
-            public void run() {
-                client.disconnect();
-            }
-        }, duration);
-    }
-
     public void sendKeymap() {
         client.announce(MaplePacketCreator.getKeymap(keymap));
     }

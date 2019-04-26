@@ -99,7 +99,7 @@ public class SOuterSpace extends SAutoEvent {
         setOpen(true);
         start = System.currentTimeMillis();
         mapInstances.clear();
-        world.broadcastMessage(0, "The Space Slime has spawned in Outer Space, Planet Lucian");
+        world.broadcastMessage(0, "The Space Slime has spawned in Outer Space, Planet Aura");
         TaskExecutor.createTask(this::end, 1000 * 60 * 5);
     }
 
@@ -122,7 +122,7 @@ public class SOuterSpace extends SAutoEvent {
             player.announce(MaplePacketCreator.getClock((int) remainingTime));
             player.addGenericEvent(this);
         } else {
-            player.sendMessage(5, "Unfortunately the Space Slime has left Planet Lucian");
+            player.sendMessage(5, "Unfortunately the Space Slime has left Planet Aura");
         }
     }
 
