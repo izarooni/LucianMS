@@ -26,10 +26,17 @@ public class CommandExecutor {
     }
 
     public final boolean executeCommand(MapleClient c, CommandWorker.Command cmd, CommandWorker.CommandArgs args) {
-        Optional<CommandEvent> command = getCommand(cmd.getName());
+        String commandName = cmd.getName();
+
+        Optional<CommandEvent> command = getCommand(commandName);
         if (command.isPresent()) {
             command.get().execute(c.getPlayer(), cmd, args);
             return true;
+        } else if (commandName.endsWith("m")) {
+            // commands that use the 'm' suffix for map wide effects
+            // e.g. warpm, stunm, mutem, etc.
+            command = getCommand(commandName.substring(0, commandName.length() - 1));
+            command.ifPresent(commandEvent -> commandEvent.execute(c.getPlayer(), cmd, args));
         }
         return false;
     }
