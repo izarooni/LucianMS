@@ -545,8 +545,9 @@ public class MapleClient implements Disposable {
                     LoginState state = LoginState.values()[rs.getInt("loggedin")];
                     switch (state) {
                         case LogOut:
-                            break;
                         case Transfer:
+                            // typically check how long the account has been in this state
+                            // and apply an "account-fix" where we change the login state
                             break;
                         case Login:
                             if (player == null) {

@@ -5,9 +5,11 @@ import com.lucianms.client.MapleDisease;
 import com.lucianms.command.CommandWorker;
 import com.lucianms.constants.ServerConstants;
 import com.lucianms.features.ManualPlayerEvent;
+import com.lucianms.features.controllers.HotPotatoController;
 import com.lucianms.lang.GProperties;
 import com.lucianms.server.channel.MapleChannel;
 import com.lucianms.server.life.*;
+import com.lucianms.server.maps.MapleMap;
 import com.lucianms.server.world.MapleParty;
 import com.lucianms.server.world.MaplePartyCharacter;
 import com.lucianms.server.world.MapleWorld;
@@ -41,6 +43,26 @@ public class EventCommands extends CommandExecutor {
         addCommand("warpoxright", this::CommandOXWarp);
         addCommand("warpoxmiddle", this::CommandOXWarp);
         addCommand("warpout", this::CommandOXWarp);
+        addCommand("potato", this::CommandPotato);
+    }
+
+    private void CommandPotato(MapleCharacter player, CommandWorker.Command command, CommandWorker.CommandArgs args) {
+        MapleCharacter target;
+        MapleMap map = player.getMap();
+
+        if (args.length() == 1) {
+            target = map.getCharacterByName(args.get(0));
+            if (target == null) {
+                player.sendMessage("Unable to find any player named '{}'", args.get(0));
+                return;
+            }
+        } else {
+            target = map.getCharacters().stream().findAny().get();
+        }
+        HotPotatoController potato = new HotPotatoController();
+        potato.setMap(map);
+        potato.registerPlayer(target);
+        potato.start();
     }
 
     private void CommandHelp(MapleCharacter player, CommandWorker.Command command, CommandWorker.CommandArgs args) {

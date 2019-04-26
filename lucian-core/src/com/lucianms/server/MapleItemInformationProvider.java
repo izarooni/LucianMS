@@ -718,6 +718,9 @@ public class MapleItemInformationProvider {
 
     public int[][] getSummonMobs(int itemId) {
         MapleData data = getItemData(itemId);
+        if (data == null) {
+            return null;
+        }
         int theInt = data.getChildByPath("mob").getChildren().size();
         int[][] mobs2spawn = new int[theInt][2];
         for (int x = 0; x < theInt; x++) {
