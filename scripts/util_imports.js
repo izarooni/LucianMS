@@ -9,3 +9,4 @@ let StringUtil = Java.type("tools.StringUtil");
 let System = Java.type("java.lang.System");
 
 let Randomizer = Java.type("tools.Randomizer");
+const ServerConstants = Java.type("com.lucianms.constants.ServerConstants");

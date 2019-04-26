@@ -14,7 +14,7 @@ function action(mode, type, selection) {
     } else {
         status++;
     }
-    var shenron = player.getGenericEvents().stream().filter(e => e instanceof ShenronSummon).findFirst().orElse(null);
+    let shenron = player.getGenericEvents().stream().filter(e => e instanceof ShenronSummon).findFirst().orElse(null);
     if (!player.isDebug()) {
         if (shenron == null) {
             cm.sendOk("Where am I? Why did you bring me here?");
@@ -30,7 +30,7 @@ function action(mode, type, selection) {
         cm.sendSimple("I am Shenron, I shall grant you any wish. Now speak!\r\n#b"
             // + "\r\n#L0#Make me rich#l"
             + "\r\n#L1#Kill somebody#l"
-            + "\r\n#L2#Give me Crystals#l"
+            + `\r\n#L2#Give me #z${ServerConstants.CURRENCY}##l`
             + "\r\n#L3#Give me more health#l"
             + "\r\n#L4#Give me vote points#l"
             + "\r\n#L5#Make me immortal#l"
@@ -51,11 +51,10 @@ function action(mode, type, selection) {
                 cm.sendGetText(usernameError + "\r\nWho is it that you wish to kill?");
                 return;
             case 2: {
-                var crystal = 4260002;
-                var amount = Packages.tools.Randomizer.rand(2, 5);
-                if (InventoryModifier.checkSpace(client, crystal, amount, "")) {
-                    cm.gainItem(crystal, amount, true);
-                    cm.sendOk("Wish granted. I shall give you #b" + amount + " #z" + crystal + "# crystals");
+                let amount = Packages.tools.Randomizer.rand(2, 5);
+                if (InventoryModifier.checkSpace(client, ServerConstants.CURRENCY, amount, "")) {
+                    cm.gainItem(ServerConstants.CURRENCY, amount, true);
+                    cm.sendOk(`Wish granted. I shall give you #b${amount} #z${ServerConstants.CURRENCY}#`);
                 } else {
                     cm.sendOk("You currently do not have enough space in your #b" + ItemConstants.getInventoryType(crystal).name() + "#k inventory");
                 }
@@ -89,7 +88,7 @@ function action(mode, type, selection) {
                     player.getMap().addFakePlayer(fake);
                     fake.setFollowing(true);
                     cm.delayCall(function() {
-                        var remove = player.getFakePlayer();
+                        let remove = player.getFakePlayer();
                         if (remove != null) {
                             remove.setFollowing(false);
                             player.setFakePlayer(null);
@@ -116,7 +115,7 @@ function action(mode, type, selection) {
         if ((!player.isGM() || player.isDebug()) && shenron != null) shenron.wish(player);
         cm.dispose();
     } else if (status == 3) {
-        var username = cm.getText();
+        let username = cm.getText();
         if (username == null || username.length == 0) {
             usernameError = "#r#eYou must specify a username!#k#n";
         } else {
