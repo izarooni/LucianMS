@@ -27,7 +27,7 @@ import java.util.Map;
 /**
  * @author izarooni, lucasdieswagger
  */
-public class HGMCommands {
+public class HGMCommands extends CommandExecutor {
 
     public static void execute(MapleClient client, CommandWorker.Command command, CommandWorker.CommandArgs args) {
 

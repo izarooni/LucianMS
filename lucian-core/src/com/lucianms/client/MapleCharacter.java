@@ -290,8 +290,8 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Di
         for (int i = 0; i < DEFAULT_KEY.length; i++) {
             keymap.put(DEFAULT_KEY[i], new MapleKeyBinding(DEFAULT_TYPE[i], DEFAULT_ACTION[i]));
         }
-        trockmaps.addAll(Collections.nCopies(MapleMap.INVALID_ID, 5));
-        viptrockmaps.addAll(Collections.nCopies(MapleMap.INVALID_ID, 10));
+        trockmaps.addAll(Collections.nCopies(5, MapleMap.INVALID_ID));
+        viptrockmaps.addAll(Collections.nCopies(10, MapleMap.INVALID_ID));
     }
 
     public MapleCharacter() {
@@ -489,7 +489,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Di
     }
 
     public static MapleCharacter loadCharFromDB(Connection con, int charid, MapleClient client, boolean channelserver) throws SQLException {
-        MapleCharacter ret = new MapleCharacter();
+        MapleCharacter ret = new MapleCharacter(client);
         ret.client = client;
         ret.id = charid;
 

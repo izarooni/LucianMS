@@ -36,7 +36,7 @@ import java.util.function.Function;
  *
  * @author izarooni
  */
-public class AdministratorCommands {
+public class AdministratorCommands extends CommandExecutor {
 
     public static void execute(MapleClient client, CommandWorker.Command command, CommandWorker.CommandArgs args) {
 

@@ -13,6 +13,11 @@ import java.util.regex.Pattern;
  */
 public class CommandWorker {
 
+    public static final EventCommands EVENT_COMMANDS = new EventCommands();
+    public static final GameMasterCommands GM_COMMANDS = new GameMasterCommands();
+    public static final HGMCommands HGM_COMMANDS = new HGMCommands();
+    public static final AdministratorCommands ADMIN_COMMANDS = new AdministratorCommands();
+
     /**
      * Coming up with new ways to handle commands...
      */
@@ -51,7 +56,7 @@ public class CommandWorker {
 
         if (h == '!' && (player.isGM() || noCheck)) {
             try {
-                if ((noCheck || player.getGMLevel() >= 1) && !EventCommands.execute(client, command, args)) {
+                if ((noCheck || player.getGMLevel() >= 1) && !EVENT_COMMANDS.executeCommand(client, command, args)) {
                     if (noCheck || player.getGMLevel() >= 6) {
                         TaskExecutor.execute(() -> AdministratorCommands.execute(client, command, args));
                     }

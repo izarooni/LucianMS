@@ -39,8 +39,10 @@ import java.util.function.BiPredicate;
 /**
  * @author izarooni, lucasdieswagger
  */
-public class GameMasterCommands {
+public class GameMasterCommands extends CommandExecutor {
 
+    public GameMasterCommands() {
+    }
 
     private static int TagRange = 20000;
 
@@ -49,65 +51,7 @@ public class GameMasterCommands {
         MapleChannel ch = client.getChannelServer();
         MapleWorld world = client.getWorldServer();
 
-        if (command.equals("gmcommands")) {
-            ArrayList<String> commands = new ArrayList<>();
-            commands.add("!help - to see what commands there are");
-            commands.add("!commands - another way to see the commands");
-            commands.add("!dc <username> | map - DC a player or the entire map");
-            commands.add("!warp <mapid> - Warp to the specified map, by ID");
-            commands.add("!warphere <username> - warp a player to your map");
-            commands.add("!goto <mapid> - another way to warp to a map by ID");
-            commands.add("!heal [username] - Heal yourself, or a player.");
-            commands.add("!levelup <username> <levels> - Levels the specified player X times");
-            commands.add("!notice <message> - Send a notice to the server");
-            commands.add("!mute <username> - cancel a player from chatting");
-            commands.add("!clock <time> - add a clock timer for an amount of seconds");
-            commands.add("!tag - tag nearby players, range is determined by tagrange");
-            commands.add("!tagrange - set the range for players to tag");
-            commands.add("!revive <player|map> - Revive a player, or the entire map.");
-            commands.add("!kill <player|map> - Kill a player, or the entire map");
-            commands.add("!dc <player|map> - Disconnect a player from the game, or the entire map");
-            commands.add("!reloadmap - Reload the map");
-            commands.add("!killall - Kill all the monsters on the map");
-            commands.add("!cleardrops - Clears all drops in the map");
-            commands.add("!maxstats - max your stats");
-            commands.add("!maxskills - max your skills");
-            commands.add("!hide - change who can see you in hide");
-            commands.add("!sethide - toggles hide on/off, equivalent of using hide skill");
-            commands.add("!clearinv <inventory> - clear all items in the specified inventory");
-            commands.add("!debuff <usernames/map> - remove disease from specified players, or everybody in the map");
-            commands.add("!lock <usernames> - prevent players from using skills");
-            commands.add("!lockm - prevent all players in the map from using skills");
-            commands.add("!reverse <usernames> - flip players movements");
-            commands.add("!reversemap - flip movement of all players in the map");
-            commands.add("!seduce <usernames> - force players to move in a direction");
-            commands.add("!seducemap - force all players in the map to move in a direction");
-            commands.add("!online - list all visible GMs and players online");
-            commands.add("!gift <type> <username> <amount> - Give a player a certain type and specified amount of points");
-            commands.add("!gift <type> <amount> <players..> - Give a multiple players a certain type of points");
-            commands.add("!! <message> - sends a message to all GMs online");
-            commands.add("!itemvac - Loot all item drops in the map");
-            commands.add("!characters <username> - lists other characters that belong to a player");
-            commands.add("!bomb [username] - spawns a bomb at the specified player location, or your location if no name provided");
-            commands.add("!bombmap - spawns bombs everywhere");
-            commands.add("!jail <username> <reason> - Jail a player");
-            commands.add("!unjail <username> - Remove a player for jail");
-            commands.add("!search <category> <name> - Search for a map, items, npcs or skills");
-            commands.add("!chattype <type> - Change your general chat color");
-            commands.add("!buff [username] - Buff yourself or a specified player");
-            commands.add("!ap <amount> - Give yourself or another player AP");
-            commands.add("!sp <amount> - Give yourself or another player SP");
-            commands.add("!setall <number> [username] - Set all stats for yourself or a player");
-            commands.add("!gender <username> <male/female/uni> - Change the gender of a specified player");
-            commands.add("!stalker - Go through any player inventory");
-            commands.add("!gmmap - Warps you to the GM headquarters");
-            commands.add("!itemq <itemid> <morethan> - Check what online players have more than of an item id");
-            commands.add("!killed - Find out who last died in the map.");
-            commands.add("!occupation - Changes your occupation");
-            commands.sort(String::compareTo);
-            commands.forEach(player::dropMessage);
-            commands.clear();
-        } else if (command.equals("fwarp")) {
+        if (command.equals("fwarp")) {
             Integer fieldId = args.parseNumber(0, int.class);
             if (fieldId != null) {
                 client.announce(MaplePacketCreator.getWarpToMap(fieldId, 0x80, player, null));
