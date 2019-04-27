@@ -82,6 +82,45 @@ public class EventCommands extends CommandExecutor {
         MapleChannel ch = player.getClient().getChannelServer();
         ManualPlayerEvent playerEvent = player.getClient().getWorldServer().getPlayerEvent();
 
+        switch (args.get(0)) {
+            case "help": {
+                ArrayList<String> list = new ArrayList<>(8);
+                list.add("!event info - View configuration of the current event");
+                list.add("!event start - Open your event publicly");
+                list.add("!event cancel - Cancel configurations and closes the gates");
+                list.add("!event [name] - View or change the name of the current event");
+                list.add("!event sp - Set the spawn point of the event");
+                list.add("!event gate <time> - Set the delay (in seconds) before the gate automatically closes");
+                list.add("!event winners <add/remove> <usernames...> - Add or remove winners from the list of winners");
+                list.add("!event winners view - View all current winners and their points");
+                list.forEach(player::sendMessage);
+                list.clear();
+                break;
+            }
+            case "new":
+                if (playerEvent == null) {
+                    world.setPlayerEvent((playerEvent = new ManualPlayerEvent(player)));
+                    playerEvent.setMap(player.getMap());
+                    playerEvent.setChannel(ch);
+                    player.dropMessage("Event creation started. To set the name of your event, use: '!event name <event_name>'");
+                    player.dropMessage("If you would rather immediately start the event with default values, use: '!event start'");
+                    player.dropMessage("You may also abort this event creation via '!event cancel'");
+                } else {
+                    player.dropMessage("An event is already being hosted in this channel!");
+                    player.dropMessage("Use < !event info > for more information");
+                }
+                break;
+            case "cancel":
+                if (playerEvent != null) {
+                    world.setPlayerEvent(null);
+                    playerEvent.garbage();
+                    player.dropMessage("You have cancelled the event");
+                } else {
+                    player.dropMessage("There is no event on this channel right now");
+                }
+                break;
+        }
+
         if (playerEvent != null) {
             String action = args.get(0).toLowerCase();
             switch (action) {
@@ -220,45 +259,6 @@ public class EventCommands extends CommandExecutor {
                 }
             }
             return;
-        }
-
-        switch (args.get(0)) {
-            case "help": {
-                ArrayList<String> list = new ArrayList<>(8);
-                list.add("!event info - View configuration of the current event");
-                list.add("!event start - Open your event publicly");
-                list.add("!event cancel - Cancel configurations and closes the gates");
-                list.add("!event [name] - View or change the name of the current event");
-                list.add("!event sp - Set the spawn point of the event");
-                list.add("!event gate <time> - Set the delay (in seconds) before the gate automatically closes");
-                list.add("!event winners <add/remove> <usernames...> - Add or remove winners from the list of winners");
-                list.add("!event winners view - View all current winners and their points");
-                list.forEach(player::sendMessage);
-                list.clear();
-                break;
-            }
-            case "new":
-                if (playerEvent == null) {
-                    world.setPlayerEvent((playerEvent = new ManualPlayerEvent(player)));
-                    playerEvent.setMap(player.getMap());
-                    playerEvent.setChannel(ch);
-                    player.dropMessage("Event creation started. To set the name of your event, use: '!event name <event_name>'");
-                    player.dropMessage("If you would rather immediately start the event with default values, use: '!event start'");
-                    player.dropMessage("You may also abort this event creation via '!event cancel'");
-                } else {
-                    player.dropMessage("An event is already being hosted in this channel!");
-                    player.dropMessage("Use < !event info > for more information");
-                }
-                break;
-            case "cancel":
-                if (playerEvent != null) {
-                    world.setPlayerEvent(null);
-                    playerEvent.garbage();
-                    player.dropMessage("You have cancelled the event");
-                } else {
-                    player.dropMessage("There is no event on this channel right now");
-                }
-                break;
         }
     }
 
