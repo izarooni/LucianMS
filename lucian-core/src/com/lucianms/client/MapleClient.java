@@ -530,6 +530,7 @@ public class MapleClient implements Disposable {
     }
 
     public LoginState checkLoginState() {
+        if (getAccID() == 0) return LoginState.LogOut;
         try (Connection con = Server.getConnection()) {
             try (PreparedStatement ps = con.prepareStatement("select loggedin, lastlogin, UNIX_TIMESTAMP(birthday) as birthday from accounts where id = ?")) {
                 ps.setInt(1, getAccID());
