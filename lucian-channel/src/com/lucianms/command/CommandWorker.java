@@ -58,7 +58,7 @@ public class CommandWorker {
             try {
                 if ((noCheck || player.getGMLevel() >= 1) && !EVENT_COMMANDS.executeCommand(client, command, args)) {
                     if (noCheck || player.getGMLevel() >= 6) {
-                        TaskExecutor.execute(() -> AdministratorCommands.execute(client, command, args));
+                        TaskExecutor.execute(() -> ADMIN_COMMANDS.executeCommand(client, command, args));
                     }
                     if (noCheck || player.getGMLevel() >= 3) {
                         TaskExecutor.execute(() -> HGMCommands.execute(client, command, args));
@@ -115,6 +115,7 @@ public class CommandWorker {
          * Compare a String with the command name
          *
          * @param compare String to compare with the command name
+         *
          * @return true if the specified String matches the command name
          */
         public boolean equals(String compare) {
@@ -125,6 +126,7 @@ public class CommandWorker {
          * Compare multiple String with the command name
          *
          * @param compares An array of Strings to compare with the command name
+         *
          * @return true if any of the specified Strings match with the command name
          */
         public boolean equals(String... compares) {
@@ -168,6 +170,7 @@ public class CommandWorker {
 
         /**
          * @param index Index of String in the args array
+         *
          * @return String stored in the args array at the specified index
          */
         public String get(int index) {
@@ -197,6 +200,7 @@ public class CommandWorker {
          *
          * @param index    Index of String to compare
          * @param compares Array of String to compare the source String with
+         *
          * @return true if any specified String matches with the source String
          */
         public boolean argEquals(int index, String... compares) {
@@ -260,6 +264,7 @@ public class CommandWorker {
          *
          * @param index index to parse and the index the error message will be put
          * @param def   the default value to return
+         *
          * @return Long object of the parsed String, null if failure
          */
         public <T extends Number> T parseNumber(int index, T def, Class<? extends Number> t) {
@@ -275,6 +280,7 @@ public class CommandWorker {
          * Find an argument in the array of args and return the index of the argument + 1
          *
          * @param arg the argument to search for
+         *
          * @return the index above the found argument
          */
         public int findArg(String arg) {

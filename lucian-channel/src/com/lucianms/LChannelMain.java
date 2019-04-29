@@ -48,6 +48,7 @@ public class LChannelMain {
 
     public static void main(String[] args) {
         initReceiveHeaders();
+        TaskExecutor.initPoolSize(Runtime.getRuntime().availableProcessors());
         Server.createServer();
 
         Runtime.getRuntime().addShutdownHook(new Thread(new Runnable() {

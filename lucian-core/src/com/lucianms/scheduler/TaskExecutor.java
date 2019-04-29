@@ -15,17 +15,13 @@ import java.util.concurrent.atomic.AtomicInteger;
 public final class TaskExecutor {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(TaskExecutor.class);
-    private static final ScheduledThreadPoolExecutor EXECUTOR = new ScheduledThreadPoolExecutor(Runtime.getRuntime().availableProcessors(), new ThreadFactory() {
-        private int threadId = 0;
-
-        @Override
-        public Thread newThread(Runnable r) {
-            return new Thread(r, "LTask" + (++threadId));
-        }
-    });
+    private static ScheduledThreadPoolExecutor EXECUTOR;
 
     private static AtomicInteger atomicInteger = new AtomicInteger(1);
 
+    /**
+     * Upon given a scheduled task from the thread pool executor, create a wrapper and assign it a unique ID
+     */
     private static Task setupTask(ScheduledFuture<?> future) {
         final int id = atomicInteger.getAndIncrement();
         return new Task(future) {
@@ -36,18 +32,24 @@ public final class TaskExecutor {
         };
     }
 
+    public static void initPoolSize(int poolSize) {
+        EXECUTOR = new ScheduledThreadPoolExecutor(poolSize, new ThreadFactory() {
+            private int threadId = 0;
+
+            @Override
+            public Thread newThread(Runnable r) {
+                return new Thread(r, "LTask" + (++threadId));
+            }
+        });
+    }
+
     public static ScheduledThreadPoolExecutor getExecutor() {
         return EXECUTOR;
     }
 
     public static void prestartAllCoreThreads() {
         int threads = EXECUTOR.prestartAllCoreThreads();
-        LOGGER.info("{} threads started", threads);
-
-    }
-
-    public static void purge() {
-        EXECUTOR.purge();
+        LOGGER.info("{} cores started", threads);
     }
 
     public synchronized static void execute(Runnable r) {
@@ -57,6 +59,7 @@ public final class TaskExecutor {
     /**
      * @param r a runnable interface
      * @param a the time in milliseconds of when to execute the task
+     *
      * @return A {@code Task} object which is a wrapper for the {@link ScheduledFuture} object
      */
     public synchronized static Task runAt(Runnable r, long a) {
@@ -68,6 +71,7 @@ public final class TaskExecutor {
      *
      * @param r a runnable interface
      * @param d the delay before the task begins execution
+     *
      * @return A {@code Task} object which is a wrapper for the {@link ScheduledFuture} object
      */
     public synchronized static Task createTask(Runnable r, long d) {
@@ -80,6 +84,7 @@ public final class TaskExecutor {
      * @param r a runnable interface
      * @param i the delay before the task begins its first execution
      * @param d the time between each execution
+     *
      * @return A {@code Task} object which is a wrapper for the {@link ScheduledFuture} object
      */
     public synchronized static Task createRepeatingTask(Runnable r, long i, long d) {
@@ -91,6 +96,7 @@ public final class TaskExecutor {
      *
      * @param r a runnable interface
      * @param t the interval time and delay in milliseconds the task will execute
+     *
      * @return a {@code Task} object which is a wrapper for the {@link ScheduledFuture} object
      */
     public synchronized static Task createRepeatingTask(Runnable r, long t) {

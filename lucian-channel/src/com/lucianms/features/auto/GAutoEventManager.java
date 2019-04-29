@@ -7,7 +7,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 
 /**
- * Does not record each event last instantiate for multiple worlds simply because there is no need to
+ * Does not record each event last instantiated for multiple worlds simply because there is no need to
  *
  * @author izarooni
  */

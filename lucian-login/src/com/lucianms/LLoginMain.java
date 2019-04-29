@@ -9,6 +9,7 @@ import com.lucianms.nio.receive.DirectPacketDecoder;
 import com.lucianms.nio.send.DirectPacketEncoder;
 import com.lucianms.nio.server.MapleServerInboundHandler;
 import com.lucianms.nio.server.NettyDiscardServer;
+import com.lucianms.scheduler.TaskExecutor;
 import com.lucianms.server.Server;
 import com.lucianms.server.handlers.login.ViewCharHandler;
 import io.netty.channel.nio.NioEventLoopGroup;
@@ -25,6 +26,7 @@ public class LLoginMain {
 
     public static void main(String[] args) {
         initReceiveHeaders();
+        TaskExecutor.initPoolSize(1);
         Server.createServer();
         Config config = Server.getConfig();
 

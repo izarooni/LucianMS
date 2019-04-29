@@ -454,7 +454,6 @@ public class MapleMap implements PacketAnnouncer {
             }
         }, null);
 
-        TaskExecutor.createTask(new ExpireMapItemJob(mapItem), 180000);
         activateItemReactors(chr.getClient(), mapItem);
     }
 
@@ -470,7 +469,6 @@ public class MapleMap implements PacketAnnouncer {
             }
         }, null);
 
-        TaskExecutor.createTask(new ExpireMapItemJob(mdrop), 180000);
     }
 
     public final MapleMapItem disappearingItemDrop(final MapleMapObject dropper, final MapleCharacter owner, final Item item, final Point pos) {
@@ -940,6 +938,7 @@ public class MapleMap implements PacketAnnouncer {
      * returns a monster with the given oid, if no such monster exists returns null
      *
      * @param oid
+     *
      * @return
      */
     public MapleMonster getMonsterByOid(int oid) {
@@ -1262,7 +1261,6 @@ public class MapleMap implements PacketAnnouncer {
         });
         broadcastMessage(MaplePacketCreator.dropItemFromMapObject(mapItem, dropper.getPosition(), dropPosition, (byte) 0));
         if (disappear) {
-            TaskExecutor.createTask(new ExpireMapItemJob(mapItem), 180000);
             activateItemReactors(owner.getClient(), mapItem);
         }
         return mapItem;
@@ -1282,7 +1280,6 @@ public class MapleMap implements PacketAnnouncer {
         broadcastMessage(MaplePacketCreator.dropItemFromMapObject(drop, dropper.getPosition(), droppos, (byte) 0));
 
         if (!everlast) {
-            TaskExecutor.createTask(new ExpireMapItemJob(drop), 180000);
             activateItemReactors(owner.getClient(), drop);
         }
         return drop;

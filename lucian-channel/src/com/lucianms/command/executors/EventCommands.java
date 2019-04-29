@@ -66,9 +66,13 @@ public class EventCommands extends CommandExecutor {
     }
 
     private void CommandHelp(MapleCharacter player, CommandWorker.Command command, CommandWorker.CommandArgs args) {
+        player.sendMessage("==================== Event Commands ====================");
         CommandWorker.EVENT_COMMANDS.getCommandNames().stream().map(name -> "!" + name).forEach(player::dropMessage);
+        player.sendMessage("==================== GameMaster Commands ====================");
         CommandWorker.GM_COMMANDS.getCommandNames().stream().map(name -> "!" + name).forEach(player::dropMessage);
+        player.sendMessage("==================== Head-GameMaster Commands ====================");
         CommandWorker.HGM_COMMANDS.getCommandNames().stream().map(name -> "!" + name).forEach(player::dropMessage);
+        player.sendMessage("==================== Administrator Commands ====================");
         CommandWorker.ADMIN_COMMANDS.getCommandNames().stream().map(name -> "!" + name).forEach(player::dropMessage);
     }
 

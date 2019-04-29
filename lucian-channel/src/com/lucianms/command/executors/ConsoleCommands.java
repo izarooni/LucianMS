@@ -168,7 +168,7 @@ public class ConsoleCommands {
                 }
             }
         } else if (command.equals("gc")) {
-            TaskExecutor.purge();
+            TaskExecutor.getExecutor().purge();
             LOGGER.info("Tasks purged");
             System.gc();
             LOGGER.info("GC requested");
