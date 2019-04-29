@@ -1,17 +1,18 @@
 #Project files
-out
-classes
+/.idea
+/classes
+/target
 .vs
 *.code-workspace
 
 #Server files
 /wz
-bin
-world.ini
-server-config.json
-whitelist.json
-*.bat
-hikari-db.properties
+/bin
+/world.ini
+/server-config.json
+/whitelist.json
+/*.bat
+/hikari-db.properties
 
-#Ian's PC
+/#Ian's PC
 backups

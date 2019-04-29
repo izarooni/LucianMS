@@ -45,7 +45,7 @@ public class PlayerCommands {
 
         if (command.equals("help", "commands")) {
             boolean npc = args.length() == 1 && args.get(0).equals("npc");
-            ArrayList<String> commands = new ArrayList<>();
+            ArrayList<String> commands = new ArrayList<>(35);
             commands.add("@help - to see what commands there are");
             commands.add("@commands - another way to see the commands");
             commands.add("@rates - show the server rates");
