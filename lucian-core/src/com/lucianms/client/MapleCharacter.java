@@ -381,23 +381,30 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Di
         return getIdByName(name) < 0 && Pattern.compile("[a-zA-Z0-9]{4,12}").matcher(name).matches();
     }
 
-    public static void deleteMapleCharacter(Connection con, int playerid) throws SQLException {
-        if (MapleCharacter.getNameById(playerid) == null) {
-            throw new NullPointerException(String.format("Attempt to delete non-existing player (%d)", playerid));
+    public static void deletePlayer(Connection con, int playerID) throws SQLException {
+        if (MapleCharacter.getNameById(playerID) == null) {
+            throw new NullPointerException(String.format("Attempt to delete non-existing player (%d)", playerID));
         }
-        System.out.println("Deleting player " + MapleCharacter.getNameById(playerid));
-        MapleCharacter.deleteWhereCharacterId(con, "DELETE FROM area_info WHERE charid = ?", playerid);
-        System.out.println("\tDeleted area info");
-        MapleCharacter.deleteWhereCharacterId(con, "DELETE FROM buddies WHERE characterid = ?", playerid);
-        MapleCharacter.deleteWhereCharacterId(con, "DELETE FROM buddies WHERE buddyid = ?", playerid);
-        System.out.println("\tDeleted buddies");
-        MapleCharacter.deleteWhereCharacterId(con, "DELETE FROM characters WHERE id = ?", playerid);
-        System.out.println("\tDeleted player packet");
-        MapleCharacter.deleteWhereCharacterId(con, "DELETE FROM cooldowns WHERE charid = ?", playerid);
-        System.out.println("\tDeleted cooldowns");
+        MapleCharacter.deleteWhereCharacterId(con, "DELETE FROM area_info WHERE charid = ?", playerID);
+        MapleCharacter.deleteWhereCharacterId(con, "DELETE FROM buddies WHERE characterid = ?", playerID);
+        MapleCharacter.deleteWhereCharacterId(con, "DELETE FROM buddies WHERE buddyid = ?", playerID);
+        MapleCharacter.deleteWhereCharacterId(con, "DELETE FROM characters WHERE id = ?", playerID);
+        MapleCharacter.deleteWhereCharacterId(con, "DELETE FROM cooldowns WHERE charid = ?", playerID);
+        try (PreparedStatement ps = con.prepareStatement("select guildid from characters where id = ?")) {
+            ps.setInt(1, playerID);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    int guildID = rs.getInt("guildid");
+                    if (guildID > 0) {
+                        Server.deleteGuildCharacter(new MapleGuildCharacter(playerID,
+                                0, rs.getString("name"), (byte) -1, (byte) -1, 0, 0, guildID, false, 0));
+                    }
+                }
+            }
+        }
 
         try (PreparedStatement ps = con.prepareStatement("SELECT * FROM cquest WHERE characterid = ?")) {
-            ps.setInt(1, playerid);
+            ps.setInt(1, playerID);
             try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
                     try (PreparedStatement ps2 = con.prepareStatement("DELETE FROM cquestdata WHERE qtableid = ?")) {
@@ -407,21 +414,13 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Di
                 }
             }
         }
-        MapleCharacter.deleteWhereCharacterId(con, "DELETE FROM cquest WHERE characterid = ?", playerid);
-        System.out.println("\tDeleted custom quests");
-
-        MapleCharacter.deleteWhereCharacterId(con, "DELETE FROM famelog WHERE characterid_to = ?", playerid);
-        System.out.println("\tDeleted fame logs");
-        MapleCharacter.deleteWhereCharacterId(con, "DELETE FROM inventoryitems WHERE characterid = ?", playerid);
-        System.out.println("\tDeleted inventory itemes");
-        MapleCharacter.deleteWhereCharacterId(con, "DELETE FROM jailtimes WHERE playerId = ?", playerid);
-        System.out.println("\tDeleted jail packet");
-        MapleCharacter.deleteWhereCharacterId(con, "DELETE FROM keymap WHERE characterid = ?", playerid);
-        System.out.println("\tDeleted key bindings");
-        MapleCharacter.deleteWhereCharacterId(con, "DELETE FROM savedlocations WHERE characterid = ?", playerid);
-        System.out.println("\tDeleted saved locations");
-        MapleCharacter.deleteWhereCharacterId(con, "DELETE FROM skills WHERE characterid = ?", playerid);
-        System.out.println("\tDeleted skill packet");
+        MapleCharacter.deleteWhereCharacterId(con, "DELETE FROM cquest WHERE characterid = ?", playerID);
+        MapleCharacter.deleteWhereCharacterId(con, "DELETE FROM famelog WHERE characterid_to = ?", playerID);
+        MapleCharacter.deleteWhereCharacterId(con, "DELETE FROM inventoryitems WHERE characterid = ?", playerID);
+        MapleCharacter.deleteWhereCharacterId(con, "DELETE FROM jails WHERE playerid = ?", playerID);
+        MapleCharacter.deleteWhereCharacterId(con, "DELETE FROM keymap WHERE characterid = ?", playerID);
+        MapleCharacter.deleteWhereCharacterId(con, "DELETE FROM savedlocations WHERE characterid = ?", playerID);
+        MapleCharacter.deleteWhereCharacterId(con, "DELETE FROM skills WHERE characterid = ?", playerID);
     }
 
     public static void deleteWhereCharacterId(Connection con, String sql, int cid) throws SQLException {

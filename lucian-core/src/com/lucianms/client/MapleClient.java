@@ -32,7 +32,6 @@ import com.lucianms.server.MapleTrade;
 import com.lucianms.server.Server;
 import com.lucianms.server.channel.MapleChannel;
 import com.lucianms.server.guild.MapleGuild;
-import com.lucianms.server.guild.MapleGuildCharacter;
 import com.lucianms.server.maps.FieldLimit;
 import com.lucianms.server.maps.HiredMerchant;
 import com.lucianms.server.quest.MapleQuest;
@@ -552,50 +551,6 @@ public class MapleClient implements Disposable {
 
     public MapleChannel getChannelServer(byte channel) {
         return Server.getChannel(world, channel);
-    }
-
-    public boolean deleteCharacter(int cid) {
-        MapleCharacter player = Server.getWorld(0).getPlayer(cid);
-        if (player != null) {
-            player.getClient().disconnect();
-            disconnect();
-            return false; //DC both and return, fuck that
-        }
-        try (Connection con = Server.getConnection()) {
-            try (PreparedStatement ps = con.prepareStatement("SELECT id, guildid, guildrank, name, allianceRank FROM characters WHERE id = ? AND accountid = ?")) {
-                ps.setInt(1, cid);
-                ps.setInt(2, ID);
-                try (ResultSet rs = ps.executeQuery()) {
-                    if (!rs.next()) {
-                        return false;
-                    }
-                    if (rs.getInt("guildid") > 0) {
-                        try {
-                            Server.deleteGuildCharacter(new MapleGuildCharacter(cid, 0, rs.getString("name"), (byte) -1, (byte) -1, 0, rs.getInt("guildrank"), rs.getInt("guildid"), false, rs.getInt("allianceRank")));
-                        } catch (Exception re) {
-                            return false;
-                        }
-                    }
-                }
-            }
-
-            try (PreparedStatement ps = con.prepareStatement("DELETE FROM wishlists WHERE charid = ?")) {
-                ps.setInt(1, cid);
-                ps.executeUpdate();
-            }
-            try (PreparedStatement ps = con.prepareStatement("DELETE FROM characters WHERE id = ?")) {
-                ps.setInt(1, cid);
-                ps.executeUpdate();
-            }
-            String[] toDel = {"famelog", "inventoryitems", "keymap", "queststatus", "savedlocations", "skillmacros", "skills", "eventstats"};
-            for (String s : toDel) {
-                MapleCharacter.deleteWhereCharacterId(con, "DELETE FROM `" + s + "` WHERE characterid = ?", cid);
-            }
-            return true;
-        } catch (SQLException e) {
-            e.printStackTrace();
-            return false;
-        }
     }
 
     public String getAccountName() {
