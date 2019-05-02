@@ -2,6 +2,8 @@ package com.lucianms.command.executors;
 
 import com.lucianms.client.MapleCharacter;
 import com.lucianms.client.MapleDisease;
+import com.lucianms.command.Command;
+import com.lucianms.command.CommandArgs;
 import com.lucianms.command.CommandWorker;
 import com.lucianms.constants.ServerConstants;
 import com.lucianms.features.ManualPlayerEvent;
@@ -46,7 +48,7 @@ public class EventCommands extends CommandExecutor {
         addCommand("potato", this::CommandPotato);
     }
 
-    private void CommandPotato(MapleCharacter player, CommandWorker.Command command, CommandWorker.CommandArgs args) {
+    private void CommandPotato(MapleCharacter player, Command command, CommandArgs args) {
         MapleCharacter target;
         MapleMap map = player.getMap();
 
@@ -65,7 +67,7 @@ public class EventCommands extends CommandExecutor {
         potato.start();
     }
 
-    private void CommandHelp(MapleCharacter player, CommandWorker.Command command, CommandWorker.CommandArgs args) {
+    private void CommandHelp(MapleCharacter player, Command command, CommandArgs args) {
         player.sendMessage("==================== Event Commands ====================");
         CommandWorker.EVENT_COMMANDS.getCommandNames().stream().map(name -> "!" + name).forEach(player::dropMessage);
         player.sendMessage("==================== GameMaster Commands ====================");
@@ -76,7 +78,7 @@ public class EventCommands extends CommandExecutor {
         CommandWorker.ADMIN_COMMANDS.getCommandNames().stream().map(name -> "!" + name).forEach(player::dropMessage);
     }
 
-    private void CommandEvent(MapleCharacter player, CommandWorker.Command command, CommandWorker.CommandArgs args) {
+    private void CommandEvent(MapleCharacter player, Command command, CommandArgs args) {
         if (args.length() == 0) {
             player.dropMessage("Use: '!event new' to begin configuring your event.");
             player.dropMessage("Use: '!event help' for a list of relevant commands.");
@@ -266,7 +268,7 @@ public class EventCommands extends CommandExecutor {
         }
     }
 
-    private void CommandBoxOfDoom(MapleCharacter player, CommandWorker.Command command, CommandWorker.CommandArgs args) {
+    private void CommandBoxOfDoom(MapleCharacter player, Command command, CommandArgs args) {
         if (args.length() == 2) {
             Integer lowHP = args.parseNumber(0, int.class);
             Integer maxHP = args.parseNumber(1, int.class);
@@ -298,23 +300,23 @@ public class EventCommands extends CommandExecutor {
         }
     }
 
-    private void CommandLock(MapleCharacter player, CommandWorker.Command command, CommandWorker.CommandArgs args) {
+    private void CommandLock(MapleCharacter player, Command command, CommandArgs args) {
         giveDebuff(player, command, args, MobSkillFactory.getMobSkill(120, 1));
     }
 
-    private void CommandReverse(MapleCharacter player, CommandWorker.Command command, CommandWorker.CommandArgs args) {
+    private void CommandReverse(MapleCharacter player, Command command, CommandArgs args) {
         giveDebuff(player, command, args, MobSkillFactory.getMobSkill(132, 1));
     }
 
-    private void CommandSeduce(MapleCharacter player, CommandWorker.Command command, CommandWorker.CommandArgs args) {
+    private void CommandSeduce(MapleCharacter player, Command command, CommandArgs args) {
         giveDebuff(player, command, args, MobSkillFactory.getMobSkill(128, 1));
     }
 
-    private void CommandStun(MapleCharacter player, CommandWorker.Command command, CommandWorker.CommandArgs args) {
+    private void CommandStun(MapleCharacter player, Command command, CommandArgs args) {
         giveDebuff(player, command, args, MobSkillFactory.getMobSkill(123, 1));
     }
 
-    private void CommandDispel(MapleCharacter player, CommandWorker.Command command, CommandWorker.CommandArgs args) {
+    private void CommandDispel(MapleCharacter player, Command command, CommandArgs args) {
         if (command.equals("dispelm")) {
             for (MapleCharacter players : player.getMap().getCharacters()) {
                 if (!players.isGM() || player.isDebug()) {
@@ -338,7 +340,7 @@ public class EventCommands extends CommandExecutor {
         }
     }
 
-    private void CommandPartyCheck(MapleCharacter player, CommandWorker.Command command, CommandWorker.CommandArgs args) {
+    private void CommandPartyCheck(MapleCharacter player, Command command, CommandArgs args) {
         ArrayList<Integer> parties = new ArrayList<>();
         ArrayList<String> solo = new ArrayList<>(); // character not in a party
         // get parties and solo players
@@ -372,7 +374,7 @@ public class EventCommands extends CommandExecutor {
         }
     }
 
-    private void CommandAutoKill(MapleCharacter player, CommandWorker.Command command, CommandWorker.CommandArgs args) {
+    private void CommandAutoKill(MapleCharacter player, Command command, CommandArgs args) {
         if (args.length() == 0) {
             player.sendMessage(5, "Available directions: left, right, up and down");
             player.sendMessage(5, "To clear all auto-kill positions use: !{} reset", command.getName());
@@ -407,7 +409,7 @@ public class EventCommands extends CommandExecutor {
 
     }
 
-    private void CommandBomb(MapleCharacter player, CommandWorker.Command command, CommandWorker.CommandArgs args) {
+    private void CommandBomb(MapleCharacter player, Command command, CommandArgs args) {
         if (command.equals("bombm")) {
             for (MapleCharacter players : player.getMap().getCharacters()) {
                 for (int i = -5; i < 5; i++) {
@@ -460,7 +462,7 @@ public class EventCommands extends CommandExecutor {
         }
     }
 
-    private void CommandOXWarp(MapleCharacter player, CommandWorker.Command command, CommandWorker.CommandArgs args) {
+    private void CommandOXWarp(MapleCharacter player, Command command, CommandArgs args) {
         if (player.getMapId() != 109020001) {
             player.sendMessage(5, "You cannot use this command here");
             return;
@@ -481,7 +483,7 @@ public class EventCommands extends CommandExecutor {
         characters.clear();
     }
 
-    private void CommandWarpout(MapleCharacter player, CommandWorker.Command command, CommandWorker.CommandArgs args) {
+    private void CommandWarpout(MapleCharacter player, Command command, CommandArgs args) {
         if (args.length() == 0) {
             player.sendMessage(5, "syntax: !{} <map> <usernames...>", command.getName());
             return;
@@ -506,7 +508,7 @@ public class EventCommands extends CommandExecutor {
         }
     }
 
-    private static void giveDebuff(MapleCharacter player, CommandWorker.Command command, CommandWorker.CommandArgs args, MobSkill skill) {
+    private static void giveDebuff(MapleCharacter player, Command command, CommandArgs args, MobSkill skill) {
         boolean map = command.getName().endsWith("m");
         MapleDisease disease;
         switch (skill.getSkillId()) {

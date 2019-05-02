@@ -1,8 +1,9 @@
 package com.lucianms.command.executors;
 
 import com.lucianms.client.MapleClient;
+import com.lucianms.command.Command;
+import com.lucianms.command.CommandArgs;
 import com.lucianms.command.CommandEvent;
-import com.lucianms.command.CommandWorker;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -25,7 +26,7 @@ public class CommandExecutor {
         return Optional.ofNullable(commands.get(commandName));
     }
 
-    public final boolean executeCommand(MapleClient c, CommandWorker.Command cmd, CommandWorker.CommandArgs args) {
+    public final boolean executeCommand(MapleClient c, Command cmd, CommandArgs args) {
         String commandName = cmd.getName();
 
         Optional<CommandEvent> command = getCommand(commandName);

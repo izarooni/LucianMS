@@ -1,5 +1,6 @@
 package com.lucianms;
 
+import com.lucianms.commands.LoginConsoleCommands;
 import com.lucianms.events.*;
 import com.lucianms.io.Config;
 import com.lucianms.nio.InternalLoginCommunicationsHandler;
@@ -53,6 +54,8 @@ public class LLoginMain {
             LOGGER.error("Failed to bind to {}:{}", address, port, e);
             System.exit(0);
         }
+
+        new LoginConsoleCommands().beginReading();
     }
 
     public static MapleServerInboundHandler getServerHandler() {

@@ -1,5 +1,6 @@
 package com.lucianms.nio;
 
+import com.lucianms.BanManager;
 import com.lucianms.LLoginMain;
 import com.lucianms.nio.receive.MaplePacketReader;
 import com.lucianms.server.Server;
@@ -44,6 +45,15 @@ public class InternalLoginCommunicationsHandler extends ChannelInboundHandlerAda
             case 0: {
                 final String content = reader.readMapleAsciiString();
                 LLoginMain.getServerHandler().getChannels().forEach(ch -> ch.writeAndFlush((MaplePacketCreator.serverNotice(0, content))));
+                break;
+            }
+            case 1: {
+                String username = reader.readMapleAsciiString();
+                if (BanManager.pardonUser(username)) {
+                    LOGGER.info("Successfully unbanned user '{}'", username);
+                } else {
+                    LOGGER.info("Failed to find any account named '{}'", username);
+                }
                 break;
             }
         }

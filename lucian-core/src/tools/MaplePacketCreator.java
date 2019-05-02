@@ -62,6 +62,7 @@ import java.net.InetAddress;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.util.List;
 import java.util.*;
 import java.util.Map.Entry;
@@ -168,8 +169,7 @@ public class MaplePacketCreator {
     /**
      * Adds a announcement box to an existing MaplePacketLittleEndianWriter.
      *
-     * @param mplew The MaplePacketLittleEndianWriter to add an announcement box
-     *              to.
+     * @param mplew The MaplePacketLittleEndianWriter to add an announcement box to.
      * @param shop  The shop to announce.
      */
     private static void addAnnounceBox(final MaplePacketLittleEndianWriter mplew, MaplePlayerShop shop, int availability) {
@@ -905,14 +905,13 @@ public class MaplePacketCreator {
     /**
      * Gets a "block" packet (ie. the cash shop is unavailable, etc)
      * <p>
-     * Possible values for <code>type</code>:<br> 1: The portal is closed for
-     * now.<br> 2: You cannot go to that place.<br> 3: Unable to approach due to
-     * the force of the ground.<br> 4: You cannot teleport to or on this
-     * map.<br> 5: Unable to approach due to the force of the ground.<br> 6:
-     * This map can only be entered by party members.<br> 7: The Cash Shop is
-     * currently not available. Stay tuned...<br>
+     * Possible values for <code>type</code>:<br> 1: The portal is closed for now.<br> 2: You cannot go to that
+     * place.<br> 3: Unable to approach due to the force of the ground.<br> 4: You cannot teleport to or on this
+     * map.<br> 5: Unable to approach due to the force of the ground.<br> 6: This map can only be entered by party
+     * members.<br> 7: The Cash Shop is currently not available. Stay tuned...<br>
      *
      * @param type The type
+     *
      * @return The "block" packet.
      */
     public static byte[] blockedMessage(int type) {
@@ -925,14 +924,13 @@ public class MaplePacketCreator {
     /**
      * Gets a "block" packet (ie. the cash shop is unavailable, etc)
      * <p>
-     * Possible values for <code>type</code>:<br> 1: You cannot move that
-     * channel. Please try again later.<br> 2: You cannot go into the cash shop.
-     * Please try again later.<br> 3: The Item-Trading Shop is currently
-     * unavailable. Please try again later.<br> 4: You cannot go into the trade
-     * shop, due to limitation of user count.<br> 5: You do not meet the minimum
-     * level requirement to access the Trade Shop.<br>
+     * Possible values for <code>type</code>:<br> 1: You cannot move that channel. Please try again later.<br> 2: You
+     * cannot go into the cash shop. Please try again later.<br> 3: The Item-Trading Shop is currently unavailable.
+     * Please try again later.<br> 4: You cannot go into the trade shop, due to limitation of user count.<br> 5: You do
+     * not meet the minimum level requirement to access the Trade Shop.<br>
      *
      * @param type The type
+     *
      * @return The "block" packet.
      */
     public static byte[] blockedMessage2(int type) {
@@ -1064,13 +1062,13 @@ public class MaplePacketCreator {
     }
 
     /**
-     * Changes the current background effect to either being rendered or not.
-     * Data is still missing, so this is pretty binary at the moment in how it
-     * behaves.
+     * Changes the current background effect to either being rendered or not. Data is still missing, so this is pretty
+     * binary at the moment in how it behaves.
      *
      * @param remove     whether or not the remove or add the specified layer.
      * @param layer      the targeted layer for removal or addition.
      * @param transition the time it takes to transition the effect.
+     *
      * @return a packet to change the background effect of a specified layer.
      */
     public static byte[] changeBackgroundEffect(boolean remove, int layer, int transition) {
@@ -1248,6 +1246,7 @@ public class MaplePacketCreator {
      * @param life     The monster to give control to.
      * @param newSpawn Is it a new spawn?
      * @param aggro    Aggressive monster?
+     *
      * @return The monster control packet.
      */
     public static byte[] controlMonster(MapleMonster life, boolean newSpawn, boolean aggro) {
@@ -1321,6 +1320,7 @@ public class MaplePacketCreator {
      *
      * @param cid
      * @param state
+     *
      * @return
      */
     public static byte[] deleteCharResponse(int cid, int state) {
@@ -1335,6 +1335,7 @@ public class MaplePacketCreator {
      * 'Char' has denied your guild invitation.
      *
      * @param charname
+     *
      * @return
      */
     public static byte[] denyGuildInvitation(String charname) {
@@ -1541,6 +1542,7 @@ public class MaplePacketCreator {
      * @param item
      * @param town
      * @param player
+     *
      * @return
      */
     public static byte[] gachaponMessage(Item item, String town, MapleCharacter player) {
@@ -1564,21 +1566,17 @@ public class MaplePacketCreator {
     /**
      * Gets a login failed packet.
      * <p>
-     * Possible values for <code>reason</code>:<br> 2: ID deleted or blocked<br>
-     * 3: ID deleted or blocked<br> 4: Incorrect password<br> 5: Not a
-     * registered id<br> 6: Trouble logging into the game?<br> 7: Already logged
-     * in<br> 8: Trouble logging into the game?<br> 9: Trouble logging into the
-     * game?<br> 10: Cannot process so many connections<br> 11: Only users older
-     * than 20 can use this channel<br> 12: Trouble logging into the game?<br>
-     * 13: Unable to log on as master at this ip<br> 14: Wrong gateway or
-     * personal info and weird korean button<br> 15: Processing request with
-     * that korean button!<br> 16: Please verify your account through
-     * email...<br> 17: Wrong gateway or personal info<br> 21: Please verify
-     * your account through email...<br> 23: Crashes<br> 25: Maple Europe notice
-     * =[ FUCK YOU NEXON<br> 27: Some weird full client notice, probably for
-     * trial versions<br>
+     * Possible values for <code>reason</code>:<br> 2: ID deleted or blocked<br> 3: ID deleted or blocked<br> 4:
+     * Incorrect password<br> 5: Not a registered id<br> 6: Trouble logging into the game?<br> 7: Already logged in<br>
+     * 8: Trouble logging into the game?<br> 9: Trouble logging into the game?<br> 10: Cannot process so many
+     * connections<br> 11: Only users older than 20 can use this channel<br> 12: Trouble logging into the game?<br> 13:
+     * Unable to log on as master at this ip<br> 14: Wrong gateway or personal info and weird korean button<br> 15:
+     * Processing request with that korean button!<br> 16: Please verify your account through email...<br> 17: Wrong
+     * gateway or personal info<br> 21: Please verify your account through email...<br> 23: Crashes<br> 25: Maple Europe
+     * notice =[ FUCK YOU NEXON<br> 27: Some weird full client notice, probably for trial versions<br>
      *
      * @param reason The reason logging in failed.
+     *
      * @return The login failed packet.
      */
     public static byte[] getAfterLoginError(int reason) {//same as above o.o
@@ -1640,6 +1638,7 @@ public class MaplePacketCreator {
      * @param itemId  Which item used.
      * @param message The message sent.
      * @param ear     Whether or not the ear is shown for whisper.
+     *
      * @return
      */
     public static byte[] getAvatarMega(MapleCharacter chr, String medal, int channel, int itemId, List<String> message, boolean ear) {
@@ -1676,6 +1675,7 @@ public class MaplePacketCreator {
      *
      * @param inetAddr The InetAddress of the requested channel server.
      * @param port     The port the channel is on.
+     *
      * @return The server IP packet.
      */
     public static byte[] getChannelChange(InetAddress inetAddr, int port) {
@@ -1692,6 +1692,7 @@ public class MaplePacketCreator {
      * Gets character info for a character.
      *
      * @param chr The character to get info about.
+     *
      * @return The character info packet.
      */
     public static byte[] getCharInfo(MapleCharacter chr) {
@@ -1714,6 +1715,7 @@ public class MaplePacketCreator {
      *
      * @param c        The MapleClient to load characters of.
      * @param serverId The ID of the server requested.
+     *
      * @return The character list packet.
      */
     public static byte[] getCharList(MapleClient c, int serverId) {
@@ -1741,6 +1743,7 @@ public class MaplePacketCreator {
      * @param cidfrom The character ID who sent the chat.
      * @param text    The text of the chat.
      * @param hide    hide the message from the chat box
+     *
      * @return The general chat packet.
      */
     public static byte[] getChatText(int cidfrom, String text, boolean gm, int hide) {
@@ -1856,6 +1859,7 @@ public class MaplePacketCreator {
      * @param target
      * @param mapid
      * @param MTSmapCSchannel 0: MTS 1: Map 2: CS 3: Different Channel
+     *
      * @return
      */
     public static byte[] getFindReply(String target, int mapid, int MTSmapCSchannel) {
@@ -1914,17 +1918,15 @@ public class MaplePacketCreator {
     /**
      * Gets a gm effect packet (ie. hide, banned, etc.)
      * <p>
-     * Possible values for <code>type</code>:<br> 0x04: You have successfully
-     * blocked access.<br>
-     * 0x05: The unblocking has been successful.<br> 0x06 with Mode 0: You have
-     * successfully removed the name from the ranks.<br> 0x06 with Mode 1: You
-     * have entered an invalid character name.<br> 0x10: GM Hide, mode
-     * determines whether or not it is on.<br> 0x1E: Mode 0: Failed to send
-     * warning Mode 1: Sent warning<br> 0x13 with Mode 0: + mapid 0x13 with Mode
-     * 1: + ch (FF = Unable to find merchant)
+     * Possible values for <code>type</code>:<br> 0x04: You have successfully blocked access.<br> 0x05: The unblocking
+     * has been successful.<br> 0x06 with Mode 0: You have successfully removed the name from the ranks.<br> 0x06 with
+     * Mode 1: You have entered an invalid character name.<br> 0x10: GM Hide, mode determines whether or not it is
+     * on.<br> 0x1E: Mode 0: Failed to send warning Mode 1: Sent warning<br> 0x13 with Mode 0: + mapid 0x13 with Mode 1:
+     * + ch (FF = Unable to find merchant)
      *
      * @param type The type
      * @param mode The mode
+     *
      * @return The gm effect packet
      */
     public static byte[] getGMEffect(int type, byte mode) {
@@ -1990,6 +1992,7 @@ public class MaplePacketCreator {
      * @param mapleVersion The maple client version.
      * @param sendIv       the IV used by the server for sending
      * @param recvIv       the IV used by the server for receiving
+     *
      * @return
      */
     public static byte[] getHello(short mapleVersion, byte[] sendIv, byte[] recvIv) {
@@ -2471,15 +2474,15 @@ public class MaplePacketCreator {
     }
 
     /**
-     * Possible values for <code>speaker</code>:<br> 0: Npc talking (left)<br>
-     * 1: Npc talking (right)<br> 2: Player talking (left)<br> 3: Player talking
-     * (left)<br>
+     * Possible values for <code>speaker</code>:<br> 0: Npc talking (left)<br> 1: Npc talking (right)<br> 2: Player
+     * talking (left)<br> 3: Player talking (left)<br>
      *
      * @param npc      Npcid
      * @param msgType
      * @param talk
      * @param endBytes
      * @param speaker
+     *
      * @return
      */
     public static byte[] getNPCTalk(int npc, byte msgType, String talk, String endBytes, byte speaker) {
@@ -2555,15 +2558,14 @@ public class MaplePacketCreator {
         return mplew.getPacket();
     }
 
-    public static byte[] getPermBan(byte reason) {
+    public static byte[] getAccountBanned(Timestamp temporaryBan) {
         final MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
         mplew.writeShort(SendOpcode.LOGIN_STATUS.getValue());
-        mplew.write(2); // Account is banned
+        mplew.write(2); // login response type
         mplew.write(0);
-        mplew.writeInt(0);
-        mplew.write(0);
-        mplew.writeLong(getTime(-1));
-
+        mplew.writeInt(0); // not used
+        mplew.write(20);
+        mplew.writeLong(getTime(temporaryBan == null ? -1 : temporaryBan.getTime()));
         return mplew.getPacket();
     }
 
@@ -2621,6 +2623,7 @@ public class MaplePacketCreator {
      * @param c
      * @param shop
      * @param owner
+     *
      * @return
      */
     public static byte[] getPlayerShop(MapleClient c, MaplePlayerShop shop, boolean owner) {
@@ -2752,6 +2755,7 @@ public class MaplePacketCreator {
      * @param inetAddr The InetAddress of the requested channel server.
      * @param port     The port the channel is on.
      * @param clientId The ID of the client.
+     *
      * @return The server IP packet.
      */
     public static byte[] getServerIP(InetAddress inetAddr, int port, int clientId) {
@@ -2780,6 +2784,7 @@ public class MaplePacketCreator {
      * @param serverId
      * @param serverName  The name of the server.
      * @param channelLoad Load of the channel - 1200 seems to be max.
+     *
      * @return The server info packet.
      */
     public static byte[] getServerList(int serverId, String serverName, int flag, String eventmsg, List<MapleChannel> channelLoad) {
@@ -2808,10 +2813,10 @@ public class MaplePacketCreator {
     /**
      * Gets a packet detailing a server status message.
      * <p>
-     * Possible values for <code>status</code>:<br> 0 - Normal<br> 1 - Highly
-     * populated<br> 2 - Full
+     * Possible values for <code>status</code>:<br> 0 - Normal<br> 1 - Highly populated<br> 2 - Full
      *
      * @param status The server status.
+     *
      * @return The server status packet.
      */
     public static byte[] getServerStatus(int status) {
@@ -2827,6 +2832,7 @@ public class MaplePacketCreator {
      * @param gain   The amount of EXP gained.
      * @param inChat In the chat box?
      * @param white  White text or yellow?
+     *
      * @return The exp gained packet.
      */
     public static byte[] getShowExpGain(int gain, int equip, int party, boolean inChat, boolean white) {
@@ -2858,6 +2864,7 @@ public class MaplePacketCreator {
      * Gets a packet telling the client to show a fame gain.
      *
      * @param gain How many fame gained.
+     *
      * @return The meso gain packet.
      */
     public static byte[] getShowFameGain(int gain) {
@@ -2887,6 +2894,7 @@ public class MaplePacketCreator {
      *
      * @param itemId   The ID of the item gained.
      * @param quantity How many items gained.
+     *
      * @return The item gain packet.
      */
     public static byte[] getShowItemGain(int itemId, short quantity) {
@@ -2899,6 +2907,7 @@ public class MaplePacketCreator {
      * @param itemId   The ID of the item gained.
      * @param quantity The number of items gained.
      * @param inChat   Show in the chat window?
+     *
      * @return The item gain packet.
      */
     public static byte[] getShowItemGain(int itemId, short quantity, boolean inChat) {
@@ -2924,6 +2933,7 @@ public class MaplePacketCreator {
      * Gets a packet telling the client to show a meso gain.
      *
      * @param gain How many mesos gained.
+     *
      * @return The meso gain packet.
      */
     public static byte[] getShowMesoGain(int gain) {
@@ -2935,6 +2945,7 @@ public class MaplePacketCreator {
      *
      * @param gain   How many mesos gained.
      * @param inChat Show in the chat window?
+     *
      * @return The meso gain packet.
      */
     public static byte[] getShowMesoGain(int gain, boolean inChat) {
@@ -2987,18 +2998,6 @@ public class MaplePacketCreator {
         final MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
         mplew.writeShort(SendOpcode.STORAGE.getValue());
         mplew.write(i);
-        return mplew.getPacket();
-    }
-
-    public static byte[] getTempBan(long timestampTill, byte reason) {
-        final MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter(17);
-        mplew.writeShort(SendOpcode.LOGIN_STATUS.getValue());
-        mplew.write(2);
-        mplew.write(0);
-        mplew.writeInt(0);
-        mplew.write(reason);
-        mplew.writeLong(getTime(timestampTill)); // Tempban date is handled as a 64-bit long, number of 100NS intervals since 1/1/1601. Lulz.
-
         return mplew.getPacket();
     }
 
@@ -3112,6 +3111,7 @@ public class MaplePacketCreator {
      * @param to         The field to warp to
      * @param spawnPoint The spawn portal number to spawn at
      * @param player     The character warping
+     *
      * @return The map change packet.
      */
     public static byte[] getWarpToMap(int mapId, int spawnPoint, MapleCharacter player, Point pos) {
@@ -3145,6 +3145,7 @@ public class MaplePacketCreator {
     /**
      * @param target name of the target character
      * @param reply  error code: 0x0 = cannot find char, 0x1 = success
+     *
      * @return the MaplePacket
      */
     public static byte[] getWhisperReply(String target, byte reply) {
@@ -3157,13 +3158,13 @@ public class MaplePacketCreator {
     }
 
     /**
-     * It is important that statups is in the correct order (see decleration
-     * order in MapleBuffStat) since this method doesn't do automagical
-     * reordering.
+     * It is important that statups is in the correct order (see decleration order in MapleBuffStat) since this method
+     * doesn't do automagical reordering.
      *
      * @param buffid
      * @param bufflength
      * @param statups
+     *
      * @return
      */
     //1F 00 00 00 00 00 03 00 00 40 00 00 00 E0 00 00 00 00 00 00 00 00 E0 01 8E AA 4F 00 00 C2 EB 0B E0 01 8E AA 4F 00 00 C2 EB 0B 0C 00 8E AA 4F 00 00 C2 EB 0B 44 02 8E AA 4F 00 00 C2 EB 0B 44 02 8E AA 4F 00 00 C2 EB 0B 00 00 E0 7A 1D 00 8E AA 4F 00 00 00 00 00 00 00 00 03
@@ -3207,14 +3208,13 @@ public class MaplePacketCreator {
     }
 
     /**
-     * status can be: <br> 0: ok, use giveFameResponse<br> 1: the username is
-     * incorrectly entered<br> 2: users under level 15 are unable to toggle with
-     * fame.<br> 3: can't raise or drop fame anymore today.<br> 4: can't raise
-     * or drop fame for this character for this month anymore.<br> 5: received
-     * fame, use receiveFame()<br> 6: level of fame neither has been raised nor
-     * dropped due to an unexpected error
+     * status can be: <br> 0: ok, use giveFameResponse<br> 1: the username is incorrectly entered<br> 2: users under
+     * level 15 are unable to toggle with fame.<br> 3: can't raise or drop fame anymore today.<br> 4: can't raise or
+     * drop fame for this character for this month anymore.<br> 5: received fame, use receiveFame()<br> 6: level of fame
+     * neither has been raised nor dropped due to an unexpected error
      *
      * @param status
+     *
      * @return
      */
     public static byte[] giveFameErrorResponse(int status) {
@@ -3521,10 +3521,11 @@ public class MaplePacketCreator {
     /**
      * Sends a "job advance" packet to the guild or family.
      * <p>
-     * Possible values for <code>type</code>:<br> 0: <Guild ? has advanced to
-     * a(an) ?.<br> 1: <Family ? has advanced to a(an) ?.<br>
+     * Possible values for <code>type</code>:<br> 0: <Guild ? has advanced to a(an) ?.<br> 1: <Family ? has advanced to
+     * a(an) ?.<br>
      *
      * @param type The type
+     *
      * @return The "job advance" packet.
      */
     public static byte[] jobMessage(int type, int job, String charname) {
@@ -3554,6 +3555,7 @@ public class MaplePacketCreator {
      *
      * @param oid       The objectID of the killed monster.
      * @param animation 0 = dissapear, 1 = fade out, 2+ = special
+     *
      * @return The kill monster packet.
      */
     public static byte[] killMonster(int oid, int animation) {
@@ -3583,11 +3585,12 @@ public class MaplePacketCreator {
     /**
      * Sends a "levelup" packet to the guild or family.
      * <p>
-     * Possible values for <code>type</code>:<br> 0: <Family> ? has reached Lv.
-     * ?.<br> - The Reps you have received from ? will be reduced in half. 1:
+     * Possible values for <code>type</code>:<br> 0: <Family> ? has reached Lv. ?.<br> - The Reps you have received from
+     * ? will be reduced in half. 1:
      * <Family> ? has reached Lv. ?.<br> 2: <Guild> ? has reached Lv. ?.<br>
      *
      * @param type The type
+     *
      * @return The "levelup" packet.
      */
     public static byte[] levelUpMessage(int type, int level, String charname) {
@@ -3638,6 +3641,7 @@ public class MaplePacketCreator {
      * Makes a monster invisible for Ariant PQ.
      *
      * @param life
+     *
      * @return
      */
     public static byte[] makeMonsterInvisible(MapleMonster life) {
@@ -3648,6 +3652,7 @@ public class MaplePacketCreator {
      * Makes a monster previously spawned as non-targettable, targettable.
      *
      * @param life The mob to make targettable.
+     *
      * @return The packet to make the mob targettable.
      */
     public static byte[] makeMonsterReal(MapleMonster life) {
@@ -3708,11 +3713,11 @@ public class MaplePacketCreator {
     /**
      * Sends a "married" packet to the guild or family.
      * <p>
-     * Possible values for <code>type</code>:<br> 0: <Guild ? is now married.
-     * Please congratulate them.<br> 1: <Family ? is now married. Please
-     * congratulate them.<br>
+     * Possible values for <code>type</code>:<br> 0: <Guild ? is now married. Please congratulate them.<br> 1: <Family ?
+     * is now married. Please congratulate them.<br>
      *
      * @param type The type
+     *
      * @return The "married" packet.
      */
     public static byte[] marriageMessage(int type, String charname) {
@@ -3849,6 +3854,7 @@ public class MaplePacketCreator {
      * @param moveid    The movement ID.
      * @param currentMp The current MP of the monster.
      * @param useSkills Can the monster use skills?
+     *
      * @return The move response packet.
      */
     public static byte[] moveMonsterResponse(int objectid, short moveid, int currentMp, boolean useSkills) {
@@ -3864,6 +3870,7 @@ public class MaplePacketCreator {
      * @param useSkills  Can the monster use skills?
      * @param skillId    The skill ID for the monster to use.
      * @param skillLevel The level of the skill to use.
+     *
      * @return The move response packet.
      */
     public static byte[] moveMonsterResponse(int objectid, short moveid, int currentMp, boolean useSkills, int skillId, int skillLevel) {
@@ -3913,6 +3920,7 @@ public class MaplePacketCreator {
      * @param name
      * @param chattext
      * @param mode
+     *
      * @return
      */
     public static byte[] multiChat(String name, String chattext, int mode) {
@@ -4046,16 +4054,14 @@ public class MaplePacketCreator {
     }
 
     /**
-     * Sends a UI utility. 0x01 - Equipment Inventory. 0x02 - Stat Window. 0x03
-     * - Skill Window. 0x05 - Keyboard Settings. 0x06 - Quest window. 0x09 -
-     * Monsterbook Window. 0x0A - Char Info 0x0B - Guild BBS 0x12 - Monster
-     * Carnival Window 0x16 - Party Search. 0x17 - Item Creation Window. 0x1A -
-     * My Ranking O.O 0x1B - Family Window 0x1C - Family Pedigree 0x1D - GM
-     * Story Board /funny shet 0x1E - Envelop saying you got mail from an admin.
-     * lmfao 0x1F - Medal Window 0x20 - Maple Event (???) 0x21 - Invalid Pointer
-     * Crash
+     * Sends a UI utility. 0x01 - Equipment Inventory. 0x02 - Stat Window. 0x03 - Skill Window. 0x05 - Keyboard
+     * Settings. 0x06 - Quest window. 0x09 - Monsterbook Window. 0x0A - Char Info 0x0B - Guild BBS 0x12 - Monster
+     * Carnival Window 0x16 - Party Search. 0x17 - Item Creation Window. 0x1A - My Ranking O.O 0x1B - Family Window 0x1C
+     * - Family Pedigree 0x1D - GM Story Board /funny shet 0x1E - Envelop saying you got mail from an admin. lmfao 0x1F
+     * - Medal Window 0x20 - Maple Event (???) 0x21 - Invalid Pointer Crash
      *
      * @param ui
+     *
      * @return
      */
     public static byte[] openUI(byte ui) {
@@ -4145,6 +4151,7 @@ public class MaplePacketCreator {
      *
      * @param message
      * @param charname
+     *
      * @return
      */
     public static byte[] partyStatusMessage(int message, String charname) {
@@ -4194,11 +4201,11 @@ public class MaplePacketCreator {
     /**
      * Gets a packet detailing a PIN operation.
      * <p>
-     * Possible values for <code>mode</code>:<br> 0 - PIN was accepted<br> 1 -
-     * Register a new PIN<br> 2 - Invalid pin / Reenter<br> 3 - Connection
-     * failed due to system error<br> 4 - Enter the pin
+     * Possible values for <code>mode</code>:<br> 0 - PIN was accepted<br> 1 - Register a new PIN<br> 2 - Invalid pin /
+     * Reenter<br> 3 - Connection failed due to system error<br> 4 - Enter the pin
      *
      * @param mode The mode.
+     *
      * @return
      */
     private static byte[] pinOperation(byte mode) {
@@ -4335,6 +4342,7 @@ public class MaplePacketCreator {
      *
      * @param oid  The door's ID.
      * @param town
+     *
      * @return The remove door packet.
      */
     public static byte[] removeDoor(int oid, boolean town) {
@@ -4355,6 +4363,7 @@ public class MaplePacketCreator {
      * Sends a request to remove Mir<br>
      *
      * @param chrid - Needs the specific Character ID
+     *
      * @return The packet
      */
     public static byte[] removeDragon(int chrid) {
@@ -4395,12 +4404,13 @@ public class MaplePacketCreator {
     }
 
     /**
-     * animation: 0 - expire<br/> 1 - without animation<br/> 2 - pickup<br/> 4 -
-     * explode<br/> cid is ignored for 0 and 1
+     * animation: 0 - expire<br/> 1 - without animation<br/> 2 - pickup<br/> 4 - explode<br/> cid is ignored for 0 and
+     * 1
      *
      * @param oid
      * @param animation
      * @param cid
+     *
      * @return
      */
     public static byte[] removeItemFromMap(int oid, int animation, int cid) {
@@ -4408,15 +4418,15 @@ public class MaplePacketCreator {
     }
 
     /**
-     * animation: 0 - expire<br/> 1 - without animation<br/> 2 - pickup<br/> 4 -
-     * explode<br/> cid is ignored for 0 and 1.<br /><br />Flagging pet as true
-     * will make a pet pick up the item.
+     * animation: 0 - expire<br/> 1 - without animation<br/> 2 - pickup<br/> 4 - explode<br/> cid is ignored for 0 and
+     * 1.<br /><br />Flagging pet as true will make a pet pick up the item.
      *
      * @param oid
      * @param animation
      * @param cid
      * @param pet
      * @param slot
+     *
      * @return
      */
     public static byte[] removeItemFromMap(int oid, int animation, int cid, boolean pet, int slot) {
@@ -4468,6 +4478,7 @@ public class MaplePacketCreator {
      * Removes a monster invisibility.
      *
      * @param life
+     *
      * @return
      */
     public static byte[] removeMonsterInvisibility(MapleMonster life) {
@@ -4522,6 +4533,7 @@ public class MaplePacketCreator {
      *
      * @param summon
      * @param animated Animated removal?
+     *
      * @return The packet removing the object.
      */
     public static byte[] removeSummon(MapleSummon summon, boolean animated) {
@@ -4547,13 +4559,12 @@ public class MaplePacketCreator {
     /**
      * Sends a report response
      * <p>
-     * Possible values for <code>mode</code>:<br> 0: You have succesfully
-     * reported the user.<br> 1: Unable to locate the user.<br> 2: You may only
-     * report users 10 times a day.<br> 3: You have been reported to the GM's by
-     * a user.<br> 4: Your request did not go through for unknown reasons.
-     * Please try again later.<br>
+     * Possible values for <code>mode</code>:<br> 0: You have succesfully reported the user.<br> 1: Unable to locate the
+     * user.<br> 2: You may only report users 10 times a day.<br> 3: You have been reported to the GM's by a user.<br>
+     * 4: Your request did not go through for unknown reasons. Please try again later.<br>
      *
      * @param mode The mode
+     *
      * @return Report Reponse packet
      */
     public static byte[] reportResponse(byte mode) {
@@ -4725,33 +4736,21 @@ public class MaplePacketCreator {
     /**
      * Family Result Message
      * <p>
-     * Possible values for <code>type</code>:<br>
-     * 67: You do not belong to the same family.<br>
-     * 69: The character you wish to add as\r\na Junior must be in the same
-     * map.<br>
-     * 70: This character is already a Junior of another character.<br>
-     * 71: The Junior you wish to add\r\nmust be at a lower rank.<br>
-     * 72: The gap between you and your\r\njunior must be within 20 levels.<br>
-     * 73: Another character has requested to add this character.\r\nPlease try
-     * again later.<br>
-     * 74: Another character has requested a summon.\r\nPlease try again
-     * later.<br>
-     * 75: The summons has failed. Your current location or state does not allow
-     * a summons.<br>
-     * 76: The family cannot extend more than 1000 generations from above and
-     * below.<br>
-     * 77: The Junior you wish to add\r\nmust be over Level 10.<br>
-     * 78: You cannot add a Junior \r\nthat has requested to change worlds.<br>
-     * 79: You cannot add a Junior \r\nsince you've requested to change
-     * worlds.<br>
-     * 80: Separation is not possible due to insufficient Mesos.\r\nYou will
-     * need %d Mesos to\r\nseparate with a Senior.<br>
-     * 81: Separation is not possible due to insufficient Mesos.\r\nYou will
-     * need %d Mesos to\r\nseparate with a Junior.<br>
-     * 82: The Entitlement does not apply because your level does not match the
-     * corresponding area.<br>
+     * Possible values for <code>type</code>:<br> 67: You do not belong to the same family.<br> 69: The character you
+     * wish to add as\r\na Junior must be in the same map.<br> 70: This character is already a Junior of another
+     * character.<br> 71: The Junior you wish to add\r\nmust be at a lower rank.<br> 72: The gap between you and
+     * your\r\njunior must be within 20 levels.<br> 73: Another character has requested to add this character.\r\nPlease
+     * try again later.<br> 74: Another character has requested a summon.\r\nPlease try again later.<br> 75: The summons
+     * has failed. Your current location or state does not allow a summons.<br> 76: The family cannot extend more than
+     * 1000 generations from above and below.<br> 77: The Junior you wish to add\r\nmust be over Level 10.<br> 78: You
+     * cannot add a Junior \r\nthat has requested to change worlds.<br> 79: You cannot add a Junior \r\nsince you've
+     * requested to change worlds.<br> 80: Separation is not possible due to insufficient Mesos.\r\nYou will need %d
+     * Mesos to\r\nseparate with a Senior.<br> 81: Separation is not possible due to insufficient Mesos.\r\nYou will
+     * need %d Mesos to\r\nseparate with a Junior.<br> 82: The Entitlement does not apply because your level does not
+     * match the corresponding area.<br>
      *
      * @param type The type
+     *
      * @return Family Result packet
      */
     public static byte[] sendFamilyMessage(int type, int mesos) {
@@ -4813,6 +4812,7 @@ public class MaplePacketCreator {
      * @param hint   The hint it's going to send.
      * @param width  How tall the box is going to be.
      * @param height How long the box is going to be.
+     *
      * @return The player hint packet.
      */
     public static byte[] sendHint(String hint, int width, int height) {
@@ -4912,6 +4912,7 @@ public class MaplePacketCreator {
      * @param messages The message sent with the TV
      * @param type     The type of TV
      * @param partner  The partner shown with chr
+     *
      * @return the SEND_TV packet
      */
     public static byte[] sendTV(MapleCharacter chr, List<String> messages, int type, MapleCharacter partner) {
@@ -4960,6 +4961,7 @@ public class MaplePacketCreator {
      * Gets a server message packet.
      *
      * @param message The message to convey.
+     *
      * @return The server message packet.
      */
     public static byte[] serverMessage(String message) {
@@ -4969,21 +4971,21 @@ public class MaplePacketCreator {
     /**
      * Gets a server message packet.
      * <p>
-     * Possible values for <code>type</code>:<br> 0: [Notice]<br> 1: Popup<br>
-     * 2: Megaphone<br> 3: Super Megaphone<br> 4: Scrolling message at top<br>
-     * 5: Pink Text<br> 6: Lightblue Text<br> 7: BroadCasting NPC
+     * Possible values for <code>type</code>:<br> 0: [Notice]<br> 1: Popup<br> 2: Megaphone<br> 3: Super Megaphone<br>
+     * 4: Scrolling message at top<br> 5: Pink Text<br> 6: Lightblue Text<br> 7: BroadCasting NPC
      *
      * @param type          The type of the notice.
      * @param channel       The channel this notice was sent on.
      * @param message       The message to convey.
      * @param servermessage Is this a scrolling ticker?
+     *
      * @return The server notice packet.
      */
     private static byte[] serverMessage(int type, int channel, String message, boolean servermessage, boolean megaEar, int npc) {
         final MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
         mplew.writeShort(SendOpcode.SERVERMESSAGE.getValue());
         mplew.write(type);
-        if (servermessage) {
+        if (type == 4 || servermessage) {
             mplew.write(1);
         }
         mplew.writeMapleAsciiString(message);
@@ -5001,12 +5003,12 @@ public class MaplePacketCreator {
     /**
      * Gets a server notice packet.
      * <p>
-     * Possible values for <code>type</code>:<br> 0: [Notice]<br> 1: Popup<br>
-     * 2: Megaphone<br> 3: Super Megaphone<br> 4: Scrolling message at top<br>
-     * 5: Pink Text<br> 6: Lightblue Text
+     * Possible values for <code>type</code>:<br> 0: [Notice]<br> 1: Popup<br> 2: Megaphone<br> 3: Super Megaphone<br>
+     * 4: Scrolling message at top<br> 5: Pink Text<br> 6: Lightblue Text
      *
      * @param type    The type of the notice.
      * @param message The message to convey.
+     *
      * @return The server notice packet.
      */
     public static byte[] serverNotice(int type, String message) {
@@ -5016,12 +5018,12 @@ public class MaplePacketCreator {
     /**
      * Gets a server notice packet.
      * <p>
-     * Possible values for <code>type</code>:<br> 0: [Notice]<br> 1: Popup<br>
-     * 2: Megaphone<br> 3: Super Megaphone<br> 4: Scrolling message at top<br>
-     * 5: Pink Text<br> 6: Lightblue Text
+     * Possible values for <code>type</code>:<br> 0: [Notice]<br> 1: Popup<br> 2: Megaphone<br> 3: Super Megaphone<br>
+     * 4: Scrolling message at top<br> 5: Pink Text<br> 6: Lightblue Text
      *
      * @param type    The type of the notice.
      * @param message The message to convey.
+     *
      * @return The server notice packet.
      */
     public static byte[] serverNotice(int type, String message, int npc) {
@@ -5495,6 +5497,7 @@ public class MaplePacketCreator {
     /**
      * @param oid
      * @param remhppercentage
+     *
      * @return
      */
     public static byte[] showMonsterHP(int oid, int remhppercentage) {
@@ -5646,11 +5649,11 @@ public class MaplePacketCreator {
     }
 
     /**
-     * 6 = Exp did not drop (Safety Charms) 7 = Enter portal sound 8 = Job
-     * change 9 = Quest complete 10 = Recovery 14 = Monster book pickup 15 =
-     * Equipment levelup 16 = Maker Skill Success 19 = Exp card [500, 200, 50]
+     * 6 = Exp did not drop (Safety Charms) 7 = Enter portal sound 8 = Job change 9 = Quest complete 10 = Recovery 14 =
+     * Monster book pickup 15 = Equipment levelup 16 = Maker Skill Success 19 = Exp card [500, 200, 50]
      *
      * @param effect
+     *
      * @return
      */
     public static byte[] showSpecialEffect(int effect) {
@@ -5761,11 +5764,9 @@ public class MaplePacketCreator {
     /**
      * Sends a Snowball Message<br>
      * <p>
-     * Possible values for <code>message</code>:<br> 1: ... Team's snowball has
-     * passed the stage 1.<br> 2: ... Team's snowball has passed the stage
-     * 2.<br> 3: ... Team's snowball has passed the stage 3.<br> 4: ... Team is
-     * attacking the snowman, stopping the progress<br> 5: ... Team is moving
-     * again<br>
+     * Possible values for <code>message</code>:<br> 1: ... Team's snowball has passed the stage 1.<br> 2: ... Team's
+     * snowball has passed the stage 2.<br> 3: ... Team's snowball has passed the stage 3.<br> 4: ... Team is attacking
+     * the snowman, stopping the progress<br> 5: ... Team is moving again<br>
      *
      * @param message
      */
@@ -5783,6 +5784,7 @@ public class MaplePacketCreator {
      * @param oid  The door's object ID.
      * @param pos  The position of the door.
      * @param town
+     *
      * @return The remove door packet.
      */
     public static byte[] spawnDoor(int oid, Point pos, boolean town) {
@@ -5810,6 +5812,7 @@ public class MaplePacketCreator {
      *
      * @param life   The mob to spawn as non-targettable.
      * @param effect The effect to show when spawning.
+     *
      * @return The packet to spawn the mob as non-targettable.
      */
     public static byte[] spawnFakeMonster(MapleMonster life, int effect) {
@@ -5853,6 +5856,7 @@ public class MaplePacketCreator {
      *
      * @param life     The monster to spawn.
      * @param newSpawn Is it a new spawn?
+     *
      * @return The spawn monster packet.
      */
     public static byte[] spawnHPQMonster(MapleMonster life, boolean newSpawn) {
@@ -5898,6 +5902,7 @@ public class MaplePacketCreator {
      *
      * @param life     The monster to spawn.
      * @param newSpawn Is it a new spawn?
+     *
      * @return The spawn monster packet.
      */
     public static byte[] spawnMonster(MapleMonster life, boolean newSpawn) {
@@ -5910,6 +5915,7 @@ public class MaplePacketCreator {
      * @param life     The monster to spawn.
      * @param newSpawn Is it a new spawn?
      * @param effect   The spawn effect.
+     *
      * @return The spawn monster packet.
      */
     public static byte[] spawnMonster(MapleMonster life, boolean newSpawn, int effect) {
@@ -5924,6 +5930,7 @@ public class MaplePacketCreator {
      * @param newSpawn          New spawn (fade in?)
      * @param aggro             Aggressive mob?
      * @param effect            The spawn effect to use.
+     *
      * @return The spawn/control packet.
      */
     private static byte[] spawnMonsterInternal(MapleMonster life, boolean requestController, boolean newSpawn, boolean aggro, int effect, boolean makeInvis) {
@@ -6008,6 +6015,7 @@ public class MaplePacketCreator {
      * Gets a packet spawning a player as a mapobject to other clients.
      *
      * @param chr The character to spawn to other clients.
+     *
      * @return The spawn player packet.
      */
     public static byte[] spawnPlayerMapobject(MapleCharacter chr) {
@@ -6174,6 +6182,7 @@ public class MaplePacketCreator {
      * @param townId   The ID of the town the portal goes to.
      * @param targetId The ID of the target.
      * @param pos      Where to put the portal.
+     *
      * @return The portal spawn packet.
      */
     public static byte[] spawnPortal(int townId, int targetId, Point pos) {
@@ -6206,6 +6215,7 @@ public class MaplePacketCreator {
      *
      * @param summon
      * @param animated Animated spawn?
+     *
      * @return The spawn packet for the map object.
      */
     public static byte[] spawnSummon(MapleSummon summon, boolean animated) {
@@ -6239,6 +6249,7 @@ public class MaplePacketCreator {
      * Gets a stop control monster packet.
      *
      * @param oid The ObjectID of the monster to stop controlling.
+     *
      * @return The stop control monster packet.
      */
     public static byte[] stopControllingMonster(int oid) {
@@ -6353,6 +6364,7 @@ public class MaplePacketCreator {
     /**
      * @param type  - (0:Light&Long 1:Heavy&Short)
      * @param delay - seconds
+     *
      * @return
      */
     public static byte[] trembleEffect(int type, int delay) {
@@ -6611,6 +6623,7 @@ public class MaplePacketCreator {
      * Gets an update for specified stats.
      *
      * @param stats The stats to update.
+     *
      * @return The stat update packet.
      */
     public static byte[] updatePlayerStats(List<Pair<MapleStat, Integer>> stats, MapleCharacter chr) {
@@ -6622,6 +6635,7 @@ public class MaplePacketCreator {
      *
      * @param stats        The list of stats to update.
      * @param itemReaction Result of an item reaction(?)
+     *
      * @return The stat update packet.
      */
     public static byte[] updatePlayerStats(List<Pair<MapleStat, Integer>> stats, boolean itemReaction, MapleCharacter chr) {

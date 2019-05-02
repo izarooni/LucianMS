@@ -2,7 +2,7 @@ package com.lucianms;
 
 import com.lucianms.client.MapleCharacter;
 import com.lucianms.client.SkillFactory;
-import com.lucianms.command.executors.ConsoleCommands;
+import com.lucianms.command.executors.ChannelConsoleCommands;
 import com.lucianms.cquest.CQuestBuilder;
 import com.lucianms.discord.DiscordConnection;
 import com.lucianms.events.*;
@@ -45,6 +45,10 @@ public class LChannelMain {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(LChannelMain.class);
     private static InternalChannelCommunicationsHandler communicationsHandler;
+
+    public static InternalChannelCommunicationsHandler getCommunicationsHandler() {
+        return communicationsHandler;
+    }
 
     public static void main(String[] args) {
         initReceiveHeaders();
@@ -118,7 +122,7 @@ public class LChannelMain {
         ScheduledExecutorService repeatWorker = Executors.newSingleThreadScheduledExecutor(new DefaultThreadFactory("RepeatWorker"));
         repeatWorker.scheduleWithFixedDelay(new DailyWorker(), (tmrw.getTimeInMillis() - System.currentTimeMillis()), TimeUnit.DAYS.toMillis(1), TimeUnit.MILLISECONDS);
         repeatWorker.scheduleWithFixedDelay(new RankingWorker(), RankingWorker.UpdateInterval, RankingWorker.UpdateInterval, TimeUnit.MILLISECONDS);
-        LOGGER.info("Repeat worker initialized", (tmrw.getTimeInMillis() - System.currentTimeMillis()));
+        LOGGER.info("Repeat worker initialized");
 
         CashShop.CashItemFactory.loadCommodities();
 
@@ -169,7 +173,7 @@ public class LChannelMain {
             e.printStackTrace();
         }
 
-        ConsoleCommands.beginReading();
+        new ChannelConsoleCommands().beginReading();
     }
 
     private static void initReceiveHeaders() {

@@ -5,7 +5,8 @@ import com.lucianms.client.MapleClient;
 import com.lucianms.client.MapleDisease;
 import com.lucianms.client.SpamTracker;
 import com.lucianms.client.meta.Occupation;
-import com.lucianms.command.CommandWorker;
+import com.lucianms.command.Command;
+import com.lucianms.command.CommandArgs;
 import com.lucianms.server.life.MapleLifeFactory;
 import com.lucianms.server.life.MapleMonster;
 import com.lucianms.server.life.MobSkill;
@@ -19,7 +20,7 @@ import java.util.concurrent.TimeUnit;
  */
 public class OccupationCommands {
 
-    public static boolean execute(MapleClient client, CommandWorker.Command command, CommandWorker.CommandArgs args) {
+    public static boolean execute(MapleClient client, Command command, CommandArgs args) {
         MapleCharacter player = client.getPlayer();
 
         if (player.getOccupation() == null) {
@@ -57,7 +58,7 @@ public class OccupationCommands {
         return false;
     }
 
-    private static boolean ExecuteFarmer(MapleClient client, CommandWorker.Command command, CommandWorker.CommandArgs args) {
+    private static boolean ExecuteFarmer(MapleClient client, Command command, CommandArgs args) {
         MapleCharacter player = client.getPlayer();
         if (command.equals("autocoin")) {
             player.setAutoCurrency(!player.isAutoCurrency());
@@ -68,7 +69,7 @@ public class OccupationCommands {
         return false;
     }
 
-    private static boolean ExecuteTroll(MapleClient client, CommandWorker.Command command, CommandWorker.CommandArgs args) {
+    private static boolean ExecuteTroll(MapleClient client, Command command, CommandArgs args) {
         MapleCharacter player = client.getPlayer();
 
         SpamTracker.SpamData spammer = player.getSpamTracker(SpamTracker.SpamOperation.OccTrollDebuff);
@@ -118,7 +119,7 @@ public class OccupationCommands {
         return false;
     }
 
-    private static void giveDebuff(MapleCharacter player, CommandWorker.Command command, String username, MobSkill skill) {
+    private static void giveDebuff(MapleCharacter player, Command command, String username, MobSkill skill) {
         MapleCharacter target = getTarget(player.getClient(), username);
         if (target != null) {
             if (skill.getSkillId() == 128) { // seduce

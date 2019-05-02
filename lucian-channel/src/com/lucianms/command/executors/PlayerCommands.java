@@ -5,7 +5,8 @@ import com.lucianms.client.MapleClient;
 import com.lucianms.client.MapleStat;
 import com.lucianms.client.SpamTracker;
 import com.lucianms.client.meta.Occupation;
-import com.lucianms.command.CommandWorker;
+import com.lucianms.command.Command;
+import com.lucianms.command.CommandArgs;
 import com.lucianms.constants.ServerConstants;
 import com.lucianms.discord.DiscordConnection;
 import com.lucianms.events.RockPaperScissorsEvent;
@@ -32,7 +33,7 @@ import java.util.*;
  */
 public class PlayerCommands {
 
-    public static void execute(MapleClient client, CommandWorker.Command command, CommandWorker.CommandArgs args) {
+    public static void execute(MapleClient client, Command command, CommandArgs args) {
         MapleCharacter player = client.getPlayer();
 
         SpamTracker.SpamData spamTracker = player.getSpamTracker(SpamTracker.SpamOperation.PlayerCommands);

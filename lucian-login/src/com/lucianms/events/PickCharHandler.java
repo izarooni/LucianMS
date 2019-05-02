@@ -1,5 +1,6 @@
 package com.lucianms.events;
 
+import com.lucianms.BanManager;
 import com.lucianms.client.MapleClient;
 import com.lucianms.nio.receive.MaplePacketReader;
 import com.lucianms.server.channel.MapleChannel;
@@ -21,10 +22,6 @@ public class PickCharHandler extends UserTransferEvent {
         playerID = reader.readInt();
         worldID = reader.readInt();
         macs = reader.readMapleAsciiString();
-        if (getClient().hasBannedMac() || !getClient().isPlayerBelonging(playerID)) {
-            getClient().getSession().close();
-            setCanceled(true);
-        }
 
         checkLoginAvailability();
     }
@@ -33,9 +30,15 @@ public class PickCharHandler extends UserTransferEvent {
     public Object onPacket() {
         MapleClient client = getClient();
         MapleChannel cserv = client.getChannelServer();
+        client.updateMacs(macs);
+
+        if (BanManager.isBanned(getClient()) || !getClient().isPlayerBelonging(playerID)) {
+            getClient().getSession().close();
+            setCanceled(true);
+            return null;
+        }
 
         client.setWorld(worldID);
-        client.updateMacs(macs);
         List<MapleChannel> channels = client.getWorldServer().getChannels();
         client.setChannel(Randomizer.nextInt(channels.size()) + 1);
 

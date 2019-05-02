@@ -2,7 +2,8 @@ package com.lucianms.command.executors;
 
 import com.lucianms.Whitelist;
 import com.lucianms.client.MapleCharacter;
-import com.lucianms.command.CommandWorker;
+import com.lucianms.command.Command;
+import com.lucianms.command.CommandArgs;
 import com.lucianms.cquest.CQuestBuilder;
 import com.lucianms.discord.DiscordConnection;
 import com.lucianms.discord.Headers;
@@ -21,74 +22,23 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
-import java.util.Scanner;
 
 /**
  * @author izarooni
  */
-public class ConsoleCommands {
+public class ChannelConsoleCommands extends ConsoleCommands {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(ConsoleCommands.class.getSimpleName());
-    private static volatile boolean reading = false;
-    private static Scanner scanner;
+    private static final Logger LOGGER = LoggerFactory.getLogger(ChannelConsoleCommands.class);
 
-    private ConsoleCommands() {
-    }
-
-    public static void beginReading() {
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                reading = true;
-                scanner = new Scanner(System.in);
-                String line;
-                while (reading && (line = scanner.nextLine()) != null) {
-                    // from CommandWorker
-                    int cn = line.indexOf(" "); // command name split index
-                    String name; // command name
-                    String[] sp = new String[0]; // args of command
-                    if (cn > -1) { // a space exists in the message (this assumes there are arguments)
-                        // there are command arguments
-                        name = line.substring(0, cn); // substring command name
-                        if (line.length() > name.length()) { // separate command name from args
-                            sp = line.substring(cn + 1, line.length()).split(" ");
-                        }
-                    } else {
-                        // no command arguments
-                        name = line;
-                    }
-
-                    CommandWorker.Command command = new CommandWorker.Command(name);
-                    CommandWorker.CommandArgs args = new CommandWorker.CommandArgs(sp);
-
-                    try {
-                        execute(command, args);
-                    } catch (Throwable t) {
-                        // don't break the loop
-                        t.printStackTrace();
-                    }
-                }
-                LOGGER.info("Console no longer reading commands");
-            }
-        }, "ConsoleReader").start();
-    }
-
-    public static void stopReading() {
-        reading = false;
-        if (scanner != null) {
-            scanner.close();
-        }
-    }
-
-    private static void execute(CommandWorker.Command command, CommandWorker.CommandArgs args) {
+    @Override
+    public void execute(Command command, CommandArgs args) {
         if (command.equals("stop", "exit")) {
             if (DiscordConnection.getSession() != null) {
                 MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
                 mplew.write(Headers.Shutdown.value);
                 DiscordConnection.sendPacket(mplew.getPacket());
             }
-
-            reading = false;
+            setReading(false);
             System.exit(0);
         } else if (command.equals("reloadmap")) {
             if (args.length() == 1) {

@@ -1,16 +1,21 @@
 package com.lucianms.command.executors;
 
+import com.lucianms.BanManager;
+import com.lucianms.LChannelMain;
 import com.lucianms.client.*;
 import com.lucianms.client.inventory.Equip;
 import com.lucianms.client.inventory.Item;
 import com.lucianms.client.inventory.MapleInventory;
 import com.lucianms.client.inventory.MapleInventoryType;
 import com.lucianms.client.meta.Occupation;
-import com.lucianms.command.CommandWorker;
+import com.lucianms.command.Command;
+import com.lucianms.command.CommandArgs;
 import com.lucianms.constants.ItemConstants;
 import com.lucianms.constants.ServerConstants;
 import com.lucianms.helpers.JailManager;
 import com.lucianms.io.scripting.npc.NPCScriptManager;
+import com.lucianms.nio.InterPacketOperation;
+import com.lucianms.nio.send.MaplePacketWriter;
 import com.lucianms.server.ConcurrentMapStorage;
 import com.lucianms.server.MapleInventoryManipulator;
 import com.lucianms.server.MapleItemInformationProvider;
@@ -46,7 +51,7 @@ public class GameMasterCommands extends CommandExecutor {
 
     private static int TagRange = 20000;
 
-    public static void execute(MapleClient client, CommandWorker.Command command, CommandWorker.CommandArgs args) {
+    public static void execute(MapleClient client, Command command, CommandArgs args) {
         MapleCharacter player = client.getPlayer();
         MapleChannel ch = client.getChannelServer();
         MapleWorld world = client.getWorldServer();
@@ -455,16 +460,38 @@ public class GameMasterCommands extends CommandExecutor {
             } else {
                 player.dropMessage(5, "Syntax: !level <number> [usernames...]");
             }
+        } else if (command.equals("unban")) {
+            if (args.length() != 1) {
+                player.dropMessage("Syntax: !unban <username>");
+                return;
+            }
+            String username = args.get(0);
+            if (BanManager.pardonUser(username)) {
+                MaplePacketWriter w = new MaplePacketWriter();
+                w.write(InterPacketOperation.BanManager.ordinal());
+                w.writeMapleString(username);
+                LChannelMain.getCommunicationsHandler().sendPacket(w.getPacket());
+                player.sendMessage("'{}' has successfully been unbanned", username);
+            } else {
+                player.sendMessage("Failed to find any account via username '{}'", username);
+            }
         } else if (command.equals("ban")) {
             if (args.length() > 1) {
                 String username = args.get(0);
+                String reason = args.concatFrom(1);
                 MapleCharacter target = client.getWorldServer().findPlayer(p -> p.getName().equalsIgnoreCase(username));
-                MapleCharacter.ban(username, args.concatFrom(1), false);
                 if (target != null) {
+                    BanManager.setBanned(target.getAccountID(), reason);
                     target.getClient().disconnect();
                     player.sendMessage(6, "'{}' has been banned", username);
                 } else {
-                    player.sendMessage(6, "Offline banned '{}'", username);
+                    int accountID = MapleCharacter.getAccountIdByName(username);
+                    if (accountID > 0) {
+                        BanManager.setBanned(accountID, reason);
+                        player.sendMessage(6, "Offline banned '{}'", username);
+                    } else {
+                        player.sendMessage("Unable to find any player named '{}'", username);
+                    }
                 }
             } else {
                 player.dropMessage(5, "You must specify a username and a reason");

@@ -1,5 +1,6 @@
 package com.lucianms.events;
 
+import com.lucianms.BanManager;
 import com.lucianms.client.MapleClient;
 import com.lucianms.nio.receive.MaplePacketReader;
 import com.lucianms.server.channel.MapleChannel;
@@ -35,7 +36,7 @@ public class AccountVACWithPICEvent extends UserTransferEvent {
         client.setChannel(Randomizer.nextInt(channels.size()) + 1);
         client.updateMacs(macs);
 
-        if (client.hasBannedMac()) {
+        if (BanManager.isBanned(client)) {
             client.getSession().close();
             return null;
         }

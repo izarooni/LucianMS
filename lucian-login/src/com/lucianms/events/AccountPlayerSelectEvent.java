@@ -1,5 +1,6 @@
 package com.lucianms.events;
 
+import com.lucianms.BanManager;
 import com.lucianms.client.MapleClient;
 import com.lucianms.nio.receive.MaplePacketReader;
 import com.lucianms.server.channel.MapleChannel;
@@ -21,7 +22,7 @@ public class AccountPlayerSelectEvent extends UserTransferEvent {
     @Override
     public Object onPacket() {
         MapleClient client = getClient();
-        if (client.hasBannedMac() || !client.isPlayerBelonging(playerID)) {
+        if (BanManager.isBanned(client) || !client.isPlayerBelonging(playerID)) {
             client.getSession().close();
             return null;
         }

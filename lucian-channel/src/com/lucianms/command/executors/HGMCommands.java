@@ -2,6 +2,8 @@ package com.lucianms.command.executors;
 
 import com.lucianms.client.*;
 import com.lucianms.client.inventory.*;
+import com.lucianms.command.Command;
+import com.lucianms.command.CommandArgs;
 import com.lucianms.command.CommandWorker;
 import com.lucianms.constants.ItemConstants;
 import com.lucianms.io.scripting.npc.NPCScriptManager;
@@ -29,7 +31,7 @@ import java.util.Map;
  */
 public class HGMCommands extends CommandExecutor {
 
-    public static void execute(MapleClient client, CommandWorker.Command command, CommandWorker.CommandArgs args) {
+    public static void execute(MapleClient client, Command command, CommandArgs args) {
 
         MapleCharacter player = client.getPlayer();
 

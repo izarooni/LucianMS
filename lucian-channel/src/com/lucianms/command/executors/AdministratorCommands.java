@@ -5,7 +5,8 @@ import com.lucianms.client.MapleRing;
 import com.lucianms.client.Relationship;
 import com.lucianms.client.SkillFactory;
 import com.lucianms.client.inventory.Equip;
-import com.lucianms.command.CommandWorker;
+import com.lucianms.command.Command;
+import com.lucianms.command.CommandArgs;
 import com.lucianms.cquest.CQuestBuilder;
 import com.lucianms.events.PlayerRingActionEvent;
 import com.lucianms.features.auto.GAutoEvent;
@@ -58,7 +59,7 @@ public class AdministratorCommands extends CommandExecutor {
         addCommand("wipe", this::CommandWipePlayer);
     }
 
-    private void CommandWipePlayer(MapleCharacter player, CommandWorker.Command cmd, CommandWorker.CommandArgs args) {
+    private void CommandWipePlayer(MapleCharacter player, Command cmd, CommandArgs args) {
         if (args.length() >= 1) {
             boolean wiped = MapleCharacter.wipe(args.get(0));
             if (wiped) {
@@ -69,7 +70,7 @@ public class AdministratorCommands extends CommandExecutor {
         }
     }
 
-    private void CommandBakePacket(MapleCharacter player, CommandWorker.Command cmd, CommandWorker.CommandArgs args) {
+    private void CommandBakePacket(MapleCharacter player, Command cmd, CommandArgs args) {
         if (args.length() == 0) {
             player.sendMessage(5, "Not enough data provided");
             return;
@@ -77,7 +78,7 @@ public class AdministratorCommands extends CommandExecutor {
         player.announce(HexTool.getByteArrayFromHexString(args.concatFrom(0)));
     }
 
-    private void CommandReloadEvents(MapleCharacter player, CommandWorker.Command cmd, CommandWorker.CommandArgs args) {
+    private void CommandReloadEvents(MapleCharacter player, Command cmd, CommandArgs args) {
         for (MapleWorld worlds : Server.getWorlds()) {
             for (MapleChannel channels : worlds.getChannels()) {
                 channels.reloadEventScriptManager();
@@ -86,7 +87,7 @@ public class AdministratorCommands extends CommandExecutor {
         player.dropMessage(6, "Event script reloaded");
     }
 
-    private void CommandCreateClone(MapleCharacter player, CommandWorker.Command cmd, CommandWorker.CommandArgs args) {
+    private void CommandCreateClone(MapleCharacter player, Command cmd, CommandArgs args) {
         if (player.getFakePlayer() == null) {
             FakePlayer fake = new FakePlayer(player.getName() + "'s Toy");
             fake.setMap(player.getMap());
@@ -99,7 +100,7 @@ public class AdministratorCommands extends CommandExecutor {
         }
     }
 
-    private void CommandShowTasks(MapleCharacter player, CommandWorker.Command cmd, CommandWorker.CommandArgs args) {
+    private void CommandShowTasks(MapleCharacter player, Command cmd, CommandArgs args) {
         ScheduledThreadPoolExecutor exe = TaskExecutor.getExecutor();
         player.sendMessage("{} Tasks", exe.getTaskCount());
         player.sendMessage("{} in queue", exe.getQueue().size());
@@ -108,7 +109,7 @@ public class AdministratorCommands extends CommandExecutor {
         player.sendMessage("{} is the maximum pool size", exe.getMaximumPoolSize());
     }
 
-    private void CommandSetCouple(MapleCharacter player, CommandWorker.Command cmd, CommandWorker.CommandArgs args) {
+    private void CommandSetCouple(MapleCharacter player, Command cmd, CommandArgs args) {
         if (args.length() == 3) {
             Integer engagementBoxID = args.parseNumber(0, int.class);
             String error = args.getFirstError();
@@ -174,7 +175,7 @@ public class AdministratorCommands extends CommandExecutor {
         }
     }
 
-    private void CommandSetGMLevel(MapleCharacter player, CommandWorker.Command cmd, CommandWorker.CommandArgs args) {
+    private void CommandSetGMLevel(MapleCharacter player, Command cmd, CommandArgs args) {
         if (args.length() == 2) {
             Integer GMLevel = args.parseNumber(1, int.class);
             if (GMLevel == null) {
@@ -195,7 +196,7 @@ public class AdministratorCommands extends CommandExecutor {
         }
     }
 
-    private void CommandWarpPosition(MapleCharacter player, CommandWorker.Command cmd, CommandWorker.CommandArgs args) {
+    private void CommandWarpPosition(MapleCharacter player, Command cmd, CommandArgs args) {
         if (args.length() == 2) {
             Integer x = args.parseNumber(0, int.class);
             Integer y = args.parseNumber(1, int.class);
@@ -208,7 +209,7 @@ public class AdministratorCommands extends CommandExecutor {
         }
     }
 
-    private void CommandReloadEvent(MapleCharacter player, CommandWorker.Command cmd, CommandWorker.CommandArgs args) {
+    private void CommandReloadEvent(MapleCharacter player, Command cmd, CommandArgs args) {
         if (args.length() == 1) {
             String scriptName = args.get(0);
             MapleWorld world = player.getClient().getWorldServer();
@@ -237,7 +238,7 @@ public class AdministratorCommands extends CommandExecutor {
         }
     }
 
-    private void CommandDebugList(MapleCharacter player, CommandWorker.Command cmd, CommandWorker.CommandArgs args) {
+    private void CommandDebugList(MapleCharacter player, Command cmd, CommandArgs args) {
         if (args.length() == 1) {
             Function<Point, String> readable = p -> String.format("X:%d, Y:%d", p.x, p.y);
             if (args.get(0).equalsIgnoreCase("reactors")) {
@@ -268,7 +269,7 @@ public class AdministratorCommands extends CommandExecutor {
         }
     }
 
-    private void CommandForceEvent(MapleCharacter player, CommandWorker.Command cmd, CommandWorker.CommandArgs args) {
+    private void CommandForceEvent(MapleCharacter player, Command cmd, CommandArgs args) {
         GAutoEventManager[] manager = GAutoEventManager.values();
         if (args.length() == 1) {
             Integer index = args.parseNumber(0, int.class);
@@ -302,7 +303,7 @@ public class AdministratorCommands extends CommandExecutor {
         }
     }
 
-    private void CommandAutoForceEvent(MapleCharacter player, CommandWorker.Command cmd, CommandWorker.CommandArgs args) {
+    private void CommandAutoForceEvent(MapleCharacter player, Command cmd, CommandArgs args) {
         MapleWorld world = player.getClient().getWorldServer();
         if (args.length() == 1) {
             SAutoEvent scheduledEvent = world.getScheduledEvent(args.get(0));
@@ -312,7 +313,7 @@ public class AdministratorCommands extends CommandExecutor {
         }
     }
 
-    private void CommandClearCache(MapleCharacter player, CommandWorker.Command cmd, CommandWorker.CommandArgs args) {
+    private void CommandClearCache(MapleCharacter player, Command cmd, CommandArgs args) {
         if (args.length() == 1) {
             switch (args.get(0)) {
                 default:

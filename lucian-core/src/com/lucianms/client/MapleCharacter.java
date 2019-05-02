@@ -458,6 +458,21 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Di
         return character;
     }
 
+    public static int getAccountIdByName(String name) {
+        try (Connection con = Server.getConnection();
+             PreparedStatement ps = con.prepareStatement("SELECT accountid FROM characters WHERE name = ?")) {
+            ps.setString(1, name);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getInt("accountid");
+                }
+            }
+        } catch (SQLException e) {
+            LOGGER.error("Unable to get account ID of player '{}'", name);
+        }
+        return 0;
+    }
+
     public static int getIdByName(String name) {
         try (Connection con = Server.getConnection();
              PreparedStatement ps = con.prepareStatement("SELECT id FROM characters WHERE name = ?")) {
@@ -1192,8 +1207,8 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Di
     }
 
     /**
-     * Applies information from the old client to the new session client before
-     * assigning the actual client object to the existing player
+     * Applies information from the old client to the new session client before assigning the actual client object to
+     * the existing player
      *
      * @param client new client to assign to the player
      */

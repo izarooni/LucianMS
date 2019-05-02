@@ -1,13 +1,21 @@
 package com.lucianms.service;
 
+import com.lucianms.nio.InterPacketOperation;
 import com.lucianms.nio.receive.DirectPacketDecoder;
 import com.lucianms.nio.send.DirectPacketEncoder;
 import com.lucianms.nio.send.MaplePacketWriter;
 import com.lucianms.nio.server.NettyDiscardClient;
+import com.lucianms.scheduler.TaskExecutor;
+import com.lucianms.server.Server;
+import com.lucianms.server.world.MapleWorld;
 import io.netty.channel.*;
+import io.netty.channel.group.ChannelGroup;
+import io.netty.channel.group.DefaultChannelGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
+import io.netty.util.concurrent.GlobalEventExecutor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import tools.MaplePacketCreator;
 
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;
@@ -20,6 +28,7 @@ public class InternalChannelCommunicationsHandler extends ChannelInboundHandlerA
     private final String address;
     private final int port;
     private final NettyDiscardClient client;
+    private final ChannelGroup channels = new DefaultChannelGroup(GlobalEventExecutor.INSTANCE);
 
     public InternalChannelCommunicationsHandler(String address, int port) throws Exception {
         this.address = address;
@@ -47,24 +56,46 @@ public class InternalChannelCommunicationsHandler extends ChannelInboundHandlerA
         });
     }
 
-    private static byte[] sendMessage(String content) {
+    public void sendMessage(String content) {
         MaplePacketWriter writer = new MaplePacketWriter(content.length() + 3);
-        writer.write(0);
+        writer.write(InterPacketOperation.Message.ordinal());
         writer.writeMapleString(content);
-        return writer.getPacket();
+        channels.writeAndFlush(writer.getPacket());
+    }
+
+    public void sendPacket(byte[] packet) {
+        channels.writeAndFlush(packet);
     }
 
     @Override
     public void channelInactive(ChannelHandlerContext ctx) throws Exception {
+        channels.remove(ctx.channel());
         LOGGER.info("Disconnected from login server");
         attemptConnection();
+
+        for (MapleWorld world : Server.getWorlds()) {
+            world.broadcastPacket(MaplePacketCreator.serverMessage("The server is currently going under maintenance. Please refrain from logging-out until further notice."));
+        }
     }
 
     @Override
     public void channelActive(ChannelHandlerContext ctx) throws Exception {
+        channels.add(ctx.channel());
         LOGGER.info("Connected to login server");
-        byte[] p = sendMessage("The server is now available.\r\nYou may login.");
-        ctx.channel().writeAndFlush(p);
+        sendMessage("The server is now available.\r\nYou may login.");
+
+        for (MapleWorld world : Server.getWorlds()) {
+            world.broadcastPacket(MaplePacketCreator.serverMessage("Server is now operational. Thank you for your patience."));
+        }
+        TaskExecutor.createTask(new Runnable() {
+            @Override
+            public void run() {
+                for (MapleWorld world : Server.getWorlds()) {
+                    // empty message to remove scrolling notice
+                    world.broadcastPacket(MaplePacketCreator.serverMessage(""));
+                }
+            }
+        }, 10000);
     }
 
     @Override

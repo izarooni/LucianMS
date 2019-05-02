@@ -1,5 +1,6 @@
 package com.lucianms.server;
 
+import com.lucianms.BanManager;
 import com.lucianms.Whitelist;
 import com.lucianms.client.MapleCharacter;
 import com.lucianms.io.Config;
@@ -106,6 +107,12 @@ public class Server {
             }
         } catch (URISyntaxException | IOException e) {
             e.printStackTrace();
+        }
+
+        try (Connection con = getConnection()) {
+            BanManager.createCache(con);
+        } catch (SQLException e) {
+            LOGGER.error("Failed to acquire banned accounts");
         }
 
         TaskExecutor.prestartAllCoreThreads();
