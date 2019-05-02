@@ -6,6 +6,8 @@ import com.lucianms.command.Command;
 import com.lucianms.command.CommandArgs;
 import com.lucianms.command.CommandWorker;
 import com.lucianms.constants.ServerConstants;
+import com.lucianms.features.FollowTheLeader;
+import com.lucianms.features.GenericEvent;
 import com.lucianms.features.ManualPlayerEvent;
 import com.lucianms.features.controllers.HotPotatoController;
 import com.lucianms.lang.GProperties;
@@ -22,6 +24,7 @@ import java.awt.*;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Map;
+import java.util.Optional;
 
 /**
  * This can get messy so I'm separating event related commands from regular GM commands
@@ -46,6 +49,18 @@ public class EventCommands extends CommandExecutor {
         addCommand("warpoxmiddle", this::CommandOXWarp);
         addCommand("warpout", this::CommandOXWarp);
         addCommand("potato", this::CommandPotato);
+        addCommand("weenie", this::CommandWeenie);
+    }
+
+    private void CommandWeenie(MapleCharacter player, Command cmd, CommandArgs args) {
+        Optional<GenericEvent> first = player.getGenericEvents().stream().filter(g -> g instanceof FollowTheLeader).findFirst();
+        if (first.isPresent()) {
+            first.get().dispose();
+            player.sendMessage(5, "Follow the Weenie has stopped");
+        } else {
+            FollowTheLeader leader = new FollowTheLeader(player);
+            player.getMap().sendMessage(5, "{} has started Follow the Weenie", player.getName());
+        }
     }
 
     private void CommandPotato(MapleCharacter player, Command command, CommandArgs args) {
