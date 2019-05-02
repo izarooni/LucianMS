@@ -14,22 +14,32 @@ import com.lucianms.features.PlayerBattle;
 import com.lucianms.features.auto.GAutoEvent;
 import com.lucianms.features.auto.GAutoEventManager;
 import com.lucianms.io.scripting.npc.NPCScriptManager;
+import com.lucianms.nio.SendOpcode;
+import com.lucianms.nio.send.MaplePacketWriter;
 import com.lucianms.server.ConcurrentMapStorage;
 import com.lucianms.server.Server;
 import com.lucianms.server.channel.MapleChannel;
 import com.lucianms.server.life.MapleMonster;
 import com.lucianms.server.maps.SavedLocationType;
 import com.lucianms.server.world.MapleWorld;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import tools.MaplePacketCreator;
 import tools.Pair;
 import tools.StringUtil;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.*;
 
 /**
  * @author izarooni, lucasdieswagger
  */
 public class PlayerCommands extends CommandExecutor {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(PlayerCommands.class);
 
     public PlayerCommands() {
         addCommand("help", this::Help);
@@ -82,6 +92,68 @@ public class PlayerCommands extends CommandExecutor {
         addCommand("rebirth", this::Rebirth);
         addCommand("pvp", this::InitPlayerBattle);
         addCommand("bosshp", this::BossHP);
+        addCommand("ranks", this::Ranks);
+    }
+
+    private static void CollectLeaderboard(Connection con, List<String> usernames, String query) throws SQLException {
+        try (PreparedStatement ps = con.prepareStatement(query)) {
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    usernames.add(rs.getString("name"));
+                }
+            }
+        }
+    }
+
+    private void Ranks(MapleCharacter player, Command cmd, CommandArgs args) {
+        if (args.length() != 1) {
+            player.sendMessage("You must specify a leaderboard type. Currently, the available types are:");
+            player.sendMessage("rebirths, coins, event, jq");
+            return;
+        }
+        ArrayList<String> usernames = new ArrayList<>(10);
+        String rankingType = args.get(0);
+        try (Connection con = player.getClient().getWorldServer().getConnection()) {
+            switch (rankingType) {
+                default:
+                    player.sendMessage("'{}' is not a valid leaderboard", rankingType);
+                    break;
+                case "rebirths":
+                    CollectLeaderboard(con, usernames, "select name from characters where gm = 0 order by reborns desc");
+                    break;
+                case "coins":
+                    CollectLeaderboard(con, usernames, "select c.name, i.characterid, sum(i.quantity) as total from inventoryitems i inner join characters c where c.id = i.characterid and itemid = " + ServerConstants.CURRENCY + " and gm = 0 group by characterid order by total desc");
+                    break;
+                case "event":
+                    CollectLeaderboard(con, usernames, "select name from characters where gm = 0 order by eventpoints desc");
+                    break;
+                case "jq":
+                    CollectLeaderboard(con, usernames, "select name from characters where gm = 0 order by jumpquestpoints desc");
+                    break;
+            }
+        } catch (SQLException e) {
+            player.sendMessage("Rankings for {} are currently unavailable", rankingType);
+            LOGGER.error("Failed to retrieve rankings for {}", rankingType, e);
+            return;
+        }
+        if (usernames.isEmpty()) {
+            player.sendMessage("This leaderboard is currently empty");
+        } else {
+            MaplePacketWriter w = new MaplePacketWriter();
+            w.writeShort(SendOpcode.GUILD_OPERATION.getValue());
+            w.write(73);
+            w.writeInt(9040008);
+            w.writeInt(usernames.size());
+            for (String s : usernames) {
+                w.writeMapleString(s);
+                w.writeInt(0);
+                w.writeInt(0);
+                w.writeInt(0);
+                w.writeInt(0);
+                w.writeInt(0);
+            }
+            player.announce(w.getPacket());
+        }
     }
 
     private void BossHP(MapleCharacter player, Command cmd, CommandArgs args) {
@@ -533,7 +605,7 @@ public class PlayerCommands extends CommandExecutor {
 
     private void Help(MapleCharacter player, Command cnd, CommandArgs args) {
         boolean npc = args.length() == 1 && args.get(0).equals("npc");
-        ArrayList<String> commands = new ArrayList<>(35);
+        ArrayList<String> commands = new ArrayList<>(getCommandCount());
         commands.add("@help - View all commands");
         commands.add("@joinevent - Join the GM hosted event");
         commands.add("@leave - Leave the GM hosted event");
@@ -566,6 +638,7 @@ public class PlayerCommands extends CommandExecutor {
         commands.add("@rebirth - Do a rebirth for your player");
         commands.add("@pvp - Enable or disable PVP for your player");
         commands.add("@bosshp - View HP for all boss monsters in the map");
+        commands.add("@ranks - View rankings for a specific data type");
         commands.sort(String::compareTo);
         if (npc) {
             StringBuilder sb = new StringBuilder();

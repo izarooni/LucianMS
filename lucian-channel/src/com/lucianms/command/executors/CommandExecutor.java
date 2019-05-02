@@ -18,6 +18,10 @@ public class CommandExecutor {
         return Collections.unmodifiableSet(commands.keySet());
     }
 
+    public final int getCommandCount() {
+        return commands.size();
+    }
+
     public final void addCommand(String commandName, CommandEvent event) {
         commands.put(commandName, event);
     }
