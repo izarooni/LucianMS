@@ -478,6 +478,7 @@ public class MapleClient implements Disposable {
                 player.getMap().removePlayer(player);
                 getWorldServer().removePlayer(player);
                 player.getGenericEvents().forEach(e -> e.onPlayerDisconnect(player));
+                player.getGenericEvents().clear();
 
                 for (MapleQuestStatus status : player.getStartedQuests()) {
                     //This is for those quests that you have to stay logged in for a certain amount of time

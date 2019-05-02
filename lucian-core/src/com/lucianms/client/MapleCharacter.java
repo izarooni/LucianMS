@@ -5541,8 +5541,8 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Di
         return genericEvents.add(event);
     }
 
-    public void removeGenericEvent(GenericEvent event) {
-        genericEvents.remove(event);
+    public boolean removeGenericEvent(GenericEvent event) {
+        return genericEvents.remove(event);
     }
 
     public int getRiceCakes() {
