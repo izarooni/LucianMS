@@ -779,22 +779,36 @@ public class GameMasterCommands extends CommandExecutor {
                 player.dropMessage(5, "Syntax: !debuff <usernames/map>");
             }
         } else if (command.equals("online")) {
-            StringBuilder sb = new StringBuilder();
-            for (MapleChannel channel : client.getWorldServer().getChannels()) {
-                ConcurrentMapStorage<Integer, MapleCharacter> storage = channel.getPlayerStorage();
-                sb.append("#echannel ").append(channel.getId()).append(" - ").append(storage.size()).append(" players#n\r\n");
-                for (MapleCharacter players : storage.values()) {
-                    if (!players.isGM() || players.getHidingLevel() <= player.getHidingLevel()) {
+            if (args.length() == 0) {
+                for (MapleChannel channel : player.getClient().getWorldServer().getChannels()) {
+                    StringBuilder sb = new StringBuilder();
+                    ConcurrentMapStorage<Integer, MapleCharacter> storage = channel.getPlayerStorage();
+                    for (MapleCharacter players : storage.values()) {
                         sb.append(players.getName()).append(", ");
                     }
+                    if (sb.length() > 0) {
+                        sb.setLength(sb.length() - 2);
+                    }
+                    player.sendMessage("Channel {} - {} players", channel.getId(), storage.size());
+                    player.sendMessage("{}", sb.toString());
                 }
-                if (sb.length() > 2) {
-                    sb.setLength(sb.length() - 2);
+            } else if (args.get(0).equalsIgnoreCase("npc")) {
+                StringBuilder sb = new StringBuilder();
+                for (MapleChannel channel : player.getClient().getWorldServer().getChannels()) {
+                    ConcurrentMapStorage<Integer, MapleCharacter> storage = channel.getPlayerStorage();
+                    sb.append("#echannel ").append(channel.getId()).append(" - ");
+                    StringBuilder usernames = new StringBuilder();
+                    for (MapleCharacter players : storage.values()) {
+                        usernames.append(players.getName()).append(" ");
+                    }
+                    sb.append(storage.size()).append(" players#n\r\n");
+                    sb.append(usernames.toString());
+                    sb.append("\r\n");
+                    usernames.setLength(0);
                 }
-                sb.append("\r\n");
+                player.getClient().announce(MaplePacketCreator.getNPCTalk(10200, (byte) 0, sb.toString(), "00 00", (byte) 0));
+                sb.setLength(0);
             }
-            client.announce(MaplePacketCreator.getNPCTalk(10200, (byte) 0, sb.toString(), "00 00", (byte) 0));
-            sb.setLength(0);
         } else if (command.equals("!")) {
             if (args.length() > 0) {
                 String message = args.concatFrom(0);

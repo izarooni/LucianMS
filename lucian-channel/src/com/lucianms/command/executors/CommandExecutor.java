@@ -31,7 +31,7 @@ public class CommandExecutor {
     }
 
     public final boolean executeCommand(MapleClient c, Command cmd, CommandArgs args) {
-        String commandName = cmd.getName();
+        String commandName = cmd.getName().toLowerCase();
 
         Optional<CommandEvent> command = getCommand(commandName);
         if (command.isPresent()) {
