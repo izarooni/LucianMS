@@ -62,7 +62,7 @@ public class BanManager {
      */
     public static boolean isMACBanned(String pAddress) {
         try (Connection con = Server.getConnection()) {
-            try (PreparedStatement ps = con.prepareStatement("select banned from accounts where (select account_id from accounts_mac where mac = ?) and banned = 1")) {
+            try (PreparedStatement ps = con.prepareStatement("select banned from accounts where (select account_id from accounts_mac where mac = ? limit 1) and banned = 1")) {
                 ps.setString(1, pAddress);
                 try (ResultSet rs = ps.executeQuery()) {
                     if (rs.next()) {
@@ -84,7 +84,7 @@ public class BanManager {
      */
     public static boolean isMachineBanned(String machineID) {
         try (Connection con = Server.getConnection()) {
-            try (PreparedStatement ps = con.prepareStatement("select banned from accounts where (select account_id from accounts_hwid where hwid = ?) and banned = 1")) {
+            try (PreparedStatement ps = con.prepareStatement("select banned from accounts where (select account_id from accounts_hwid where hwid = ? limit 1) and banned = 1")) {
                 ps.setString(1, machineID);
                 try (ResultSet rs = ps.executeQuery()) {
                     if (rs.next()) {
