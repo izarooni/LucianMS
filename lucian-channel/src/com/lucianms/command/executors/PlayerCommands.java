@@ -41,6 +41,16 @@ public class PlayerCommands extends CommandExecutor {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(PlayerCommands.class);
 
+    private static void CollectLeaderboard(Connection con, List<String> usernames, String query) throws SQLException {
+        try (PreparedStatement ps = con.prepareStatement(query)) {
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    usernames.add(rs.getString("name"));
+                }
+            }
+        }
+    }
+
     public PlayerCommands() {
         addCommand("help", this::Help);
         addCommand("commands", this::Help);
@@ -93,15 +103,68 @@ public class PlayerCommands extends CommandExecutor {
         addCommand("pvp", this::InitPlayerBattle);
         addCommand("bosshp", this::BossHP);
         addCommand("ranks", this::Ranks);
+
+        addCommand("tradeep", this::TradePoints);
+        addCommand("tradevp", this::TradePoints);
+        addCommand("tradejq", this::TradePoints);
     }
 
-    private static void CollectLeaderboard(Connection con, List<String> usernames, String query) throws SQLException {
-        try (PreparedStatement ps = con.prepareStatement(query)) {
-            try (ResultSet rs = ps.executeQuery()) {
-                while (rs.next()) {
-                    usernames.add(rs.getString("name"));
+    private void TradePoints(MapleCharacter player, Command cmd, CommandArgs args) {
+        if (args.length() != 2) {
+            player.sendMessage("Usage: !{} <username> <amount>", cmd.getName());
+        }
+        String username = args.get(0);
+        MapleClient client = player.getClient();
+        MapleCharacter target = client.getChannelServer().getPlayerStorage().find(p -> p.getName().equalsIgnoreCase(username));
+        if (target == null) {
+            player.sendMessage("Unable to find any player named '{}'", username);
+            return;
+        }
+        Integer amount = args.parseNumber(1, int.class);
+        if (amount == null) {
+            player.sendMessage(args.getFirstError());
+            return;
+        } else if (amount < 1) {
+            player.sendMessage("You must trade at least 1 point of this type");
+            return;
+        }
+        String type = cmd.getName().substring(5);
+        switch (type) {
+            default:
+                player.sendMessage("'{}' is either not a valid points type or is not available for trading", type);
+                break;
+            case "vp":
+                if (amount > client.getVotePoints()) {
+                    player.sendMessage("You do not have that many vote points");
+                } else {
+                    target.getClient().addVotePoints(amount);
+                    client.addVotePoints(-amount);
+                    player.sendMessage("You have gave {} {} vote points", target.getName(), amount);
+                    target.sendMessage("{} has given you {} vote points", player.getName(), amount);
                 }
-            }
+                break;
+            case "ep":
+                if (amount > target.getEventPoints()) {
+                    player.sendMessage("You do not have that many event points");
+                } else {
+                    target.setEventPoints(target.getEventPoints() + amount);
+                    player.setEventPoints(player.getEventPoints() - amount);
+                    client.addVotePoints(-amount);
+                    player.sendMessage("You have gave {} {} event points", target.getName(), amount);
+                    target.sendMessage("{} has given you {} event points", player.getName(), amount);
+                }
+                break;
+            case "jq":
+                if (amount > target.getJumpQuestPoints()) {
+                    player.sendMessage("You do not have that many jump quest points");
+                } else {
+                    target.setJumpQuestPoints(target.getJumpQuestPoints() + amount);
+                    player.setJumpQuestPoints(player.getJumpQuestPoints() - amount);
+                    client.addVotePoints(-amount);
+                    player.sendMessage("You have gave {} {} jump quest points", target.getName(), amount);
+                    target.sendMessage("{} has given you {} jump quest points", player.getName(), amount);
+                }
+                break;
         }
     }
 
@@ -273,7 +336,7 @@ public class PlayerCommands extends CommandExecutor {
         player.sendMessage("Occupation Exp: {} / {}", occupation.map(Occupation::getExperience).orElse(0), occupation.map(o -> o.getType().getExperienceForLv(o.getLevel())).orElse(0));
         player.sendMessage("========== Points ==========");
         player.sendMessage("Fishing Points: {}", StringUtil.formatNumber(target.getFishingPoints()));
-        player.sendMessage("Event Points" + StringUtil.formatNumber(target.getEventPoints()));
+        player.sendMessage("Event Points: {}", StringUtil.formatNumber(target.getEventPoints()));
         player.sendMessage("Donor Points: {}", StringUtil.formatNumber(target.getClient().getDonationPoints()));
         player.sendMessage("Vote points: {}", StringUtil.formatNumber(target.getClient().getVotePoints()));
     }
@@ -639,6 +702,7 @@ public class PlayerCommands extends CommandExecutor {
         commands.add("@pvp - Enable or disable PVP for your player");
         commands.add("@bosshp - View HP for all boss monsters in the map");
         commands.add("@ranks - View rankings for a specific data type");
+        commands.add("@trade<jq/ep/vp> - Give your points to another player");
         commands.sort(String::compareTo);
         if (npc) {
             StringBuilder sb = new StringBuilder();
