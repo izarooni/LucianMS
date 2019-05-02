@@ -2,6 +2,7 @@ package com.lucianms.command;
 
 import com.lucianms.client.MapleCharacter;
 import com.lucianms.client.MapleClient;
+import com.lucianms.client.SpamTracker;
 import com.lucianms.command.executors.*;
 import com.lucianms.helpers.JailManager;
 import com.lucianms.scheduler.TaskExecutor;
@@ -15,6 +16,8 @@ public class CommandWorker {
     public static final GameMasterCommands GM_COMMANDS = new GameMasterCommands();
     public static final HGMCommands HGM_COMMANDS = new HGMCommands();
     public static final AdministratorCommands ADMIN_COMMANDS = new AdministratorCommands();
+
+    private static final PlayerCommands PLAYER_COMMANDs = new PlayerCommands();
 
     /**
      * Coming up with new ways to handle commands...
@@ -87,7 +90,14 @@ public class CommandWorker {
                 }
             }
             if (!OccupationCommands.execute(client, command, args)) {
-                TaskExecutor.execute(() -> PlayerCommands.execute(client, command, args));
+                SpamTracker.SpamData spamTracker = player.getSpamTracker(SpamTracker.SpamOperation.PlayerCommands);
+                if (spamTracker.testFor(1300) && spamTracker.getTriggers() > 3) {
+                    player.sendMessage(5, "You are doing this too fast");
+                    return true;
+                }
+                spamTracker.record();
+
+                TaskExecutor.execute(() -> PLAYER_COMMANDs.executeCommand(client, command, args));
             }
             return true;
         }
