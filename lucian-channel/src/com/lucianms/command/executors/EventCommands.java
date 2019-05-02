@@ -70,12 +70,18 @@ public class EventCommands extends CommandExecutor {
     private void CommandHelp(MapleCharacter player, Command command, CommandArgs args) {
         player.sendMessage("==================== Event Commands ====================");
         CommandWorker.EVENT_COMMANDS.getCommandNames().stream().map(name -> "!" + name).forEach(player::dropMessage);
-        player.sendMessage("==================== GameMaster Commands ====================");
-        CommandWorker.GM_COMMANDS.getCommandNames().stream().map(name -> "!" + name).forEach(player::dropMessage);
-        player.sendMessage("==================== Head-GameMaster Commands ====================");
-        CommandWorker.HGM_COMMANDS.getCommandNames().stream().map(name -> "!" + name).forEach(player::dropMessage);
-        player.sendMessage("==================== Administrator Commands ====================");
-        CommandWorker.ADMIN_COMMANDS.getCommandNames().stream().map(name -> "!" + name).forEach(player::dropMessage);
+        if (player.getGMLevel() >= 2) {
+            player.sendMessage("==================== GameMaster Commands ====================");
+            CommandWorker.GM_COMMANDS.getCommandNames().stream().map(name -> "!" + name).forEach(player::dropMessage);
+        }
+        if (player.getGMLevel() >= 3) {
+            player.sendMessage("==================== Head-GameMaster Commands ====================");
+            CommandWorker.HGM_COMMANDS.getCommandNames().stream().map(name -> "!" + name).forEach(player::dropMessage);
+        }
+        if (player.getGMLevel() >= 6) {
+            player.sendMessage("==================== Administrator Commands ====================");
+            CommandWorker.ADMIN_COMMANDS.getCommandNames().stream().map(name -> "!" + name).forEach(player::dropMessage);
+        }
     }
 
     private void CommandEvent(MapleCharacter player, Command command, CommandArgs args) {
