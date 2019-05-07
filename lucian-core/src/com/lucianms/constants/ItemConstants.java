@@ -51,6 +51,18 @@ public final class ItemConstants {
         return 0;
     }
 
+    public static boolean isWeddingRing(int itemID) {
+        return itemID == 1112803 || itemID == 1112806 || itemID == 1112807 || itemID == 1112809;
+    }
+
+    public static boolean isFriendshipEquip(int itemID) {
+        return itemID / 100 == 11128 && itemID % 10 <= 2;
+    }
+
+    public static boolean isCoupleEquip(int itemID) {
+        return itemID / 100 == 11120 && itemID != 1112000;
+    }
+
     public static boolean isEyeScanner(int itemID) {
         return itemID >= 4011009 && itemID <= 4011015;
     }

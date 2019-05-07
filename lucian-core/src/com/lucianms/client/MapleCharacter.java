@@ -619,11 +619,11 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Di
                                 if (item.getRight() == MapleInventoryType.EQUIPPED) {
                                     ring.equip();
                                 }
-                                if (ring.getItemId() >= 1112803 && ring.getItemId() <= 1112809) {
+                                if (ItemConstants.isWeddingRing(ring.getItemId())) {
                                     ret.setMarriageRing(ring);
-                                } else if (ring.getItemId() > 1112015 || ring.getItemId() == 1049000) {
+                                } else if (ItemConstants.isFriendshipEquip(ring.getItemId())) {
                                     ret.addFriendshipRing(ring);
-                                } else {
+                                } else if (ItemConstants.isCoupleEquip(ring.getItemId())) {
                                     ret.addCrushRing(ring);
                                 }
                             } else {
