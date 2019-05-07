@@ -24,6 +24,7 @@ package tools;
 import java.io.ByteArrayOutputStream;
 
 public class HexTool {
+
     private static final char[] HEX = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F'};
 
     private static String toString(byte byteValue) {
@@ -47,7 +48,7 @@ public class HexTool {
         int nextb = 0;
         boolean highoc = true;
         outer:
-        for (;;) {
+        for (; ; ) {
             int number = -1;
             while (number == -1) {
                 if (nexti == hex.length()) {

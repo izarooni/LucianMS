@@ -11,13 +11,9 @@ public class ServerConstants {
     public static final int CHANNEL_LOAD = 100;// Players per channel
     public static final boolean ENABLE_PIC = true;
 
-    // Event Configuration
-    public static final boolean PERFECT_PITCH = false;
-
     // Game play Configurations
     public static final boolean USE_MTS = false;
     public static final boolean USE_FAMILY_SYSTEM = false;
-    public static final boolean USE_DUEY = false;
     public static final boolean USE_ITEM_SORT = true;
     public static final boolean USE_PARTY_SEARCH = false;
     public static final int HOME_MAP = 910000000;

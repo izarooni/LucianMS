@@ -21,6 +21,10 @@
 */
 package tools;
 
+import com.lucianms.nio.receive.MaplePacketReader;
+import com.lucianms.nio.send.MaplePacketWriter;
+import com.lucianms.server.Server;
+
 import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
 import javax.crypto.IllegalBlockSizeException;
@@ -29,13 +33,13 @@ import javax.crypto.spec.SecretKeySpec;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 
-public class MapleAESOFB {
+/**
+ * @author izarooni - will clean up overtime
+ */
+public class AESCipher {
 
-    private byte iv[];
-    private Cipher cipher;
-    private short mapleVersion;
-
-    private static final byte[] Key = {
+    private static final int CipherHashKey;
+    private static final byte[] TransformationKey = {
             0x13, 0x00, 0x00, 0x00,
             0x08, 0x00, 0x00, 0x00,
             0x06, 0x00, 0x00, 0x00,
@@ -45,7 +49,7 @@ public class MapleAESOFB {
             0x33, 0x00, 0x00, 0x00,
             0x52, 0x00, 0x00, 0x00
     };
-    private static final byte[] funnyBytes = new byte[]{
+    private static final byte[] CipherTable = new byte[]{
             (byte) 0xEC, (byte) 0x3F, (byte) 0x77, (byte) 0xA4, (byte) 0x45, (byte) 0xD0, (byte) 0x71, (byte) 0xBF, (byte) 0xB7, (byte) 0x98, (byte) 0x20, (byte) 0xFC,
             (byte) 0x4B, (byte) 0xE9, (byte) 0xB3, (byte) 0xE1, (byte) 0x5C, (byte) 0x22, (byte) 0xF7, (byte) 0x0C, (byte) 0x44, (byte) 0x1B, (byte) 0x81, (byte) 0xBD,
             (byte) 0x63, (byte) 0x8D, (byte) 0xD4, (byte) 0xC3, (byte) 0xF2, (byte) 0x10, (byte) 0x19, (byte) 0xE0, (byte) 0xFB, (byte) 0xA1, (byte) 0x6E, (byte) 0x66,
@@ -67,73 +71,85 @@ public class MapleAESOFB {
             (byte) 0x5E, (byte) 0x32, (byte) 0x24, (byte) 0x50, (byte) 0x1F, (byte) 0x3A, (byte) 0x43, (byte) 0x8A, (byte) 0x96, (byte) 0x41, (byte) 0x74, (byte) 0xAC,
             (byte) 0x52, (byte) 0x33, (byte) 0xF0, (byte) 0xD9, (byte) 0x29, (byte) 0x80, (byte) 0xB1, (byte) 0x16, (byte) 0xD3, (byte) 0xAB, (byte) 0x91, (byte) 0xB9,
             (byte) 0x84, (byte) 0x7F, (byte) 0x61, (byte) 0x1E, (byte) 0xCF, (byte) 0xC5, (byte) 0xD1, (byte) 0x56, (byte) 0x3D, (byte) 0xCA, (byte) 0xF4, (byte) 0x05,
-            (byte) 0xC6, (byte) 0xE5, (byte) 0x08, (byte) 0x49
-    };
+            (byte) 0xC6, (byte) 0xE5, (byte) 0x08, (byte) 0x49};
 
-    public MapleAESOFB(byte[] iv, short mapleVersion) {
-        SecretKeySpec skeySpec = new SecretKeySpec(Key, "AES");
+    static {
+        if (Server.getConfig().getBoolean("UseNewEncryption")) {
+            CipherHashKey = 0x2D2511FF;
+        } else {
+            CipherHashKey = 0xC65053F2;
+        }
+    }
+
+    private byte[] seqKey;
+    private Cipher cipher;
+    private short mapleVersion;
+
+    public AESCipher(byte[] seqKey, short mapleVersion) {
         try {
+            SecretKeySpec crypto = new SecretKeySpec(TransformationKey, "AES");
             cipher = Cipher.getInstance("AES");
-        } catch (NoSuchAlgorithmException | NoSuchPaddingException e) {
+            cipher.init(Cipher.ENCRYPT_MODE, crypto);
+        } catch (NoSuchAlgorithmException | NoSuchPaddingException | InvalidKeyException e) {
             System.exit(0);
             e.printStackTrace();
             return;
         }
-        try {
-            cipher.init(Cipher.ENCRYPT_MODE, skeySpec);
-        } catch (InvalidKeyException e) {
-            System.exit(0);
-            e.printStackTrace();
-        }
-        this.setIv(iv);
+        this.seqKey = seqKey;
         this.mapleVersion = (short) (((mapleVersion >> 8) & 0xFF) | ((mapleVersion << 8) & 0xFF00));
     }
 
-    private void setIv(byte[] iv) {
-        this.iv = iv;
-    }
-
-    private static byte[] multiplyBytes(byte[] in, int count, int mul) {
-        byte[] ret = new byte[count * mul];
-        for (int x = 0; x < count * mul; x++) {
-            ret[x] = in[x % count];
+    private static byte[] multiplyBytes(byte[] in) {
+        byte[] ret = new byte[16];
+        for (int i = 0; i < ret.length; i++) {
+            ret[i] = in[i % 4];
         }
         return ret;
     }
 
+    public static int getPacketLength(int packetHeader) {
+        int packetLength = ((packetHeader >>> 16) ^ (packetHeader & 0xFFFF));
+        packetLength = ((packetLength << 8) & 0xFF00) | ((packetLength >>> 8) & 0xFF);
+        return packetLength;
+    }
+
+    @Override
+    public String toString() {
+        return String.format("MapleAESOFB{iv=%s}", HexTool.toString(seqKey));
+    }
+
     public synchronized void crypt(byte[] data) {
-        int remaining = data.length;
-        int llength = 0x5B0;
-        int start = 0;
-        while (remaining > 0) {
-            byte[] myIv = multiplyBytes(this.iv, 4, 4);
-            if (remaining < llength) {
-                llength = remaining;
-            }
-            for (int x = start; x < (start + llength); x++) {
-                if ((x - start) % myIv.length == 0) {
+        int bufferSize = data.length;
+        int bufferAlloc = bufferSize;
+        int srcIndex = 0;
+
+        if (bufferSize >= 1456) {
+            bufferAlloc = 1456;
+        }
+        while (bufferSize > 0) {
+            byte[] myIv = multiplyBytes(this.seqKey);
+            for (int x = srcIndex; x < (srcIndex + bufferAlloc); x++) {
+                if ((x - srcIndex) % myIv.length == 0) {
                     try {
                         byte[] newIv = cipher.doFinal(myIv);
                         System.arraycopy(newIv, 0, myIv, 0, myIv.length);
                     } catch (IllegalBlockSizeException | BadPaddingException ignored) {
                     }
                 }
-                data[x] ^= myIv[(x - start) % myIv.length];
+                data[x] ^= myIv[(x - srcIndex) % myIv.length];
             }
-            start += llength;
-            remaining -= llength;
-            llength = 0x5B4;
+            srcIndex += bufferAlloc;
+            bufferSize -= bufferAlloc;
+            if (bufferSize >= 1460) {
+                bufferAlloc = 1460;
+            }
         }
-        updateIv();
-    }
-
-    private synchronized void updateIv() {
-        this.iv = getNewIv(this.iv);
+        doInnoHash();
     }
 
     public byte[] getPacketHeader(int length) {
-        int iiv = (iv[3]) & 0xFF;
-        iiv |= (iv[2] << 8) & 0xFF00;
+        int iiv = (seqKey[3]) & 0xFF;
+        iiv |= (seqKey[2] << 8) & 0xFF00;
         iiv ^= mapleVersion;
         int mlength = ((length << 8) & 0xFF00) | (length >>> 8);
         int xoredIv = iiv ^ mlength;
@@ -145,67 +161,39 @@ public class MapleAESOFB {
         return ret;
     }
 
-    public static int getPacketLength(int packetHeader) {
-        int packetLength = ((packetHeader >>> 16) ^ (packetHeader & 0xFFFF));
-        packetLength = ((packetLength << 8) & 0xFF00) | ((packetLength >>> 8) & 0xFF);
-        return packetLength;
-    }
-
     public boolean checkPacket(byte[] packet) {
-        return ((((packet[0] ^ iv[2]) & 0xFF) == ((mapleVersion >> 8) & 0xFF)) && (((packet[1] ^ iv[3]) & 0xFF) == (mapleVersion & 0xFF)));
+        return ((((packet[0] ^ seqKey[2]) & 0xFF) == ((mapleVersion >> 8) & 0xFF)) &&
+                (((packet[1] ^ seqKey[3]) & 0xFF) == (mapleVersion & 0xFF)));
     }
 
     public boolean checkPacket(int packetHeader) {
-        byte packetHeaderBuf[] = new byte[2];
+        byte[] packetHeaderBuf = new byte[2];
         packetHeaderBuf[0] = (byte) ((packetHeader >> 24) & 0xFF);
         packetHeaderBuf[1] = (byte) ((packetHeader >> 16) & 0xFF);
         return checkPacket(packetHeaderBuf);
     }
 
-    public static byte[] getNewIv(byte oldIv[]) {
-        byte[] in = {(byte) 0xf2, 0x53, (byte) 0x50, (byte) 0xc6};
-        for (int x = 0; x < 4; x++) {
-            funnyShit(oldIv[x], in);
+    private void doInnoHash() {
+        byte[] bHash = MaplePacketWriter.Encode4(CipherHashKey);
+        for (int i = 0; i < 4; i++) {
+            modifyHash(bHash, seqKey[i]);
         }
-        return in;
+        seqKey = bHash;
     }
 
-    @Override
-    public String toString() {
-        return "IV: " + HexTool.toString(this.iv);
-    }
-
-    private static byte[] funnyShit(byte inputByte, byte[] in) {
-        byte elina = in[1];
-        byte anna = inputByte;
-        byte moritz = funnyBytes[(int) elina & 0xFF];
-        moritz -= inputByte;
-        in[0] += moritz;
-        moritz = in[2];
-        moritz ^= funnyBytes[(int) anna & 0xFF];
-        elina -= (int) moritz & 0xFF;
-        in[1] = elina;
-        elina = in[3];
-        moritz = elina;
-        elina -= (int) in[0] & 0xFF;
-        moritz = funnyBytes[(int) moritz & 0xFF];
-        moritz += inputByte;
-        moritz ^= in[2];
-        in[2] = moritz;
-        elina += (int) funnyBytes[(int) anna & 0xFF] & 0xFF;
-        in[3] = elina;
-        int merry = ((int) in[0]) & 0xFF;
-        merry |= (in[1] << 8) & 0xFF00;
-        merry |= (in[2] << 16) & 0xFF0000;
-        merry |= (in[3] << 24) & 0xFF000000;
-        int ret_value = merry;
-        ret_value = ret_value >>> 0x1d;
-        merry = merry << 3;
-        ret_value = ret_value | merry;
-        in[0] = (byte) (ret_value & 0xFF);
-        in[1] = (byte) ((ret_value >> 8) & 0xFF);
-        in[2] = (byte) ((ret_value >> 16) & 0xFF);
-        in[3] = (byte) ((ret_value >> 24) & 0xFF);
-        return in;
+    private void modifyHash(byte[] hash, byte bKey) {
+        final int tableIndex = bKey & 0xFF;
+        hash[0] += (CipherTable[hash[1] & 0xFF] - bKey);
+        hash[1] -= (CipherTable[tableIndex] ^ hash[2]);
+        hash[2] ^= (CipherTable[hash[3] & 0xFF] + bKey);
+        hash[3] = (byte) ((hash[3] - (hash[0] & 0xFF)) + (CipherTable[tableIndex] & 0xFF));
+        /*
+        shr     edx, 29
+        shl     ecx, 3
+        or      edx, ecx
+         */
+        int nHash = MaplePacketReader.Decode4(hash);
+        int result = (nHash >>> 29) | (nHash << 3);
+        System.arraycopy(MaplePacketWriter.Encode4(result), 0, hash, 0, hash.length);
     }
 }

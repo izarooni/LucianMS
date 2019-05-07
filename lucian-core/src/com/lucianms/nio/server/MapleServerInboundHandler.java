@@ -21,7 +21,7 @@ import io.netty.util.Attribute;
 import io.netty.util.concurrent.GlobalEventExecutor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import tools.MapleAESOFB;
+import tools.AESCipher;
 import tools.MaplePacketCreator;
 
 import java.io.FileWriter;
@@ -54,15 +54,15 @@ public class MapleServerInboundHandler extends ChannelInboundHandlerAdapter {
     @Override
     public void channelRegistered(ChannelHandlerContext ctx) throws Exception {
         channels.add(ctx.channel());
-        byte[] keyReceive = {70, 114, 122, 82};
-        byte[] keySend = {82, 48, 120, 115};
-        keyReceive[3] = (byte) (Math.random() * 255);
-        keySend[3] = (byte) (Math.random() * 255);
+        byte[] seqRecv = {70, 114, 122, 82};
+        byte[] seqSend = {82, 48, 120, 115};
+        seqRecv[3] = (byte) (Math.random() * 255);
+        seqSend[3] = (byte) (Math.random() * 255);
 
-        MapleAESOFB sendCypher = new MapleAESOFB(keySend, (short) (0xFFFF - ServerConstants.VERSION));
-        MapleAESOFB recvCypher = new MapleAESOFB(keyReceive, ServerConstants.VERSION);
+        AESCipher sendCypher = new AESCipher(seqSend, (short) (0xFFFF - ServerConstants.VERSION));
+        AESCipher recvCypher = new AESCipher(seqRecv, ServerConstants.VERSION);
 
-        byte[] handshake = MaplePacketCreator.getHello(ServerConstants.VERSION, keySend, keyReceive);
+        byte[] handshake = MaplePacketCreator.getHello(ServerConstants.VERSION, seqSend, seqRecv);
         ctx.channel().writeAndFlush(handshake);
 
         MapleClient client = new MapleClient(sendCypher, recvCypher, ctx.channel());
@@ -92,10 +92,6 @@ public class MapleServerInboundHandler extends ChannelInboundHandlerAdapter {
     }
 
     @Override
-    public void channelActive(ChannelHandlerContext ctx) throws Exception {
-    }
-
-    @Override
     public void channelInactive(ChannelHandlerContext ctx) throws Exception {
         MapleClient client = ctx.channel().attr(MapleClient.CLIENT_KEY).get();
         if (client == null) {
@@ -106,10 +102,6 @@ public class MapleServerInboundHandler extends ChannelInboundHandlerAdapter {
             player.saveToDB();
         }
         client.sendPing();
-    }
-
-    @Override
-    public void userEventTriggered(ChannelHandlerContext ctx, Object evt) throws Exception {
     }
 
     @Override

@@ -11,6 +11,18 @@ import java.io.ByteArrayOutputStream;
  */
 public class MaplePacketWriter extends LittleEndianWriter {
 
+    /**
+     * @return Little-Endian encoding representation of the specified integer
+     */
+    public static byte[] Encode4(int i) {
+        return new byte[]{
+                (byte) (i & 0xFF),
+                (byte) ((i >>> 8) & 0xFF),
+                (byte) ((i >>> 16) & 0xFF),
+                (byte) ((i >>> 24) & 0xFF)
+        };
+    }
+
     private final ByteArrayOutputStream baos;
 
     public MaplePacketWriter() {

@@ -9,6 +9,13 @@ import java.awt.*;
  */
 public class MaplePacketReader extends LittleEndianAccessor {
 
+    public static int Decode4(byte[] arr) {
+        return (arr[0] & 0xFF) +
+                ((arr[1] & 0xFF) << 8) +
+                ((arr[2] & 0xFF) << 16) +
+                ((arr[3] & 0xFF) << 24);
+    }
+
     public MaplePacketReader(byte[] arr) {
         super(arr);
     }

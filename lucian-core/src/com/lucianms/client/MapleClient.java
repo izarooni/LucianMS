@@ -55,8 +55,8 @@ public class MapleClient implements Disposable {
     public static final AttributeKey<MapleClient> CLIENT_KEY = AttributeKey.newInstance(MapleClient.class.getName());
     private static final Logger LOGGER = LoggerFactory.getLogger(MapleClient.class);
     private final Lock mutex = new ReentrantLock(true);
-    private MapleAESOFB send;
-    private MapleAESOFB receive;
+    private AESCipher send;
+    private AESCipher receive;
     private Channel session;
     private MapleCharacter player;
     private Calendar birthday;
@@ -88,7 +88,7 @@ public class MapleClient implements Disposable {
     private long discordId;
     private String discordKey;
 
-    public MapleClient(MapleAESOFB send, MapleAESOFB receive, Channel session) {
+    public MapleClient(AESCipher send, AESCipher receive, Channel session) {
         this.send = send;
         this.receive = receive;
         this.session = session;
@@ -102,11 +102,11 @@ public class MapleClient implements Disposable {
         macs = new HashSet<>(3);
     }
 
-    public MapleAESOFB getSendCrypto() {
+    public AESCipher getSendCrypto() {
         return send;
     }
 
-    public MapleAESOFB getReceiveCrypto() {
+    public AESCipher getReceiveCrypto() {
         return receive;
     }
 

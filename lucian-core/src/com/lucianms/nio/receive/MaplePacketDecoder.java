@@ -1,13 +1,13 @@
 package com.lucianms.nio.receive;
 
 import com.lucianms.client.MapleClient;
-import com.lucianms.nio.MapleCustomEncryption;
+import com.lucianms.nio.MaplePacketManipulator;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.ByteToMessageDecoder;
 import io.netty.util.AttributeKey;
-import tools.MapleAESOFB;
+import tools.AESCipher;
 
 import java.util.List;
 
@@ -39,7 +39,7 @@ public class MaplePacketDecoder extends ByteToMessageDecoder {
                     client.getSession().close();
                     return;
                 }
-                decodeState.PacketLength = MapleAESOFB.getPacketLength(packetHeader);
+                decodeState.PacketLength = AESCipher.getPacketLength(packetHeader);
             } else if (b.readableBytes() < 4 && decodeState.PacketLength == -1) {
                 return;
             }
@@ -48,7 +48,7 @@ public class MaplePacketDecoder extends ByteToMessageDecoder {
                 b.readBytes(decryptedPacket);
                 decodeState.PacketLength = -1;
                 client.getReceiveCrypto().crypt(decryptedPacket);
-                MapleCustomEncryption.decryptData(decryptedPacket);
+                MaplePacketManipulator.decryptData(decryptedPacket);
                 list.add(decryptedPacket);
             }
         }

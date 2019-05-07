@@ -102,8 +102,10 @@ public class Server {
                 if (Defaults.createDefaultIfAbsent(null, "whitelist.json")) {
                     LOGGER.info("Whitelist file created");
                 }
-                Whitelist.loadAccounts();
-                LOGGER.info(Whitelist.getAccounts().size() + " whitelisted accounts loaded");
+                LOGGER.info("{} whitelisted accounts loaded", Whitelist.createCache());
+            }
+            if (getConfig().getBoolean("UseNewEncryption")) {
+                LOGGER.info("New packet encryption enabled");
             }
         } catch (URISyntaxException | IOException e) {
             e.printStackTrace();

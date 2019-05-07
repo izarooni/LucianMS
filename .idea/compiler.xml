@@ -11,7 +11,7 @@
     </annotationProcessing>
     <bytecodeTargetLevel>
       <module name="Harambae source" target="10" />
-      <module name="LucianMS" target="11" />
+      <module name="LucianMS" target="10" />
     </bytecodeTargetLevel>
   </component>
 </project>

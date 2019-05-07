@@ -8,6 +8,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -15,17 +16,21 @@ import java.util.List;
  */
 public class Whitelist {
 
-    private static List<Integer> accounts = null;
+    private static List<Integer> accounts = Collections.emptyList();
 
-    public static void loadAccounts() throws IOException, URISyntaxException {
-        if (accounts != null) {
-            accounts.clear();
-        }
-        accounts = new ArrayList<>();
+    public static int createCache() throws IOException, URISyntaxException {
         Defaults.createDefaultIfAbsent(null, "whitelist.json");
         JSONObject json = new JSONObject(new JSONTokener(new FileInputStream("whitelist.json")));
         String aString = json.getString("accounts");
-        for (String split : aString.split(", ")) {
+        String[] sp = aString.split(", ");
+
+        if (accounts != null) {
+            accounts.clear();
+        } else {
+            accounts = new ArrayList<>(sp.length);
+        }
+
+        for (String split : sp) {
             try {
                 int accountID = Integer.parseInt(split);
                 accounts.add(accountID);
@@ -33,6 +38,7 @@ public class Whitelist {
                 System.err.println(String.format("Unable to parse account id '%s' for whitelisting", split));
             }
         }
+        return accounts.size();
     }
 
     public static List<Integer> getAccounts() {

@@ -1,11 +1,11 @@
 package com.lucianms.nio.send;
 
 import com.lucianms.client.MapleClient;
+import com.lucianms.nio.MaplePacketManipulator;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.MessageToByteEncoder;
-import com.lucianms.nio.MapleCustomEncryption;
 
 import java.nio.ByteBuffer;
 
@@ -27,7 +27,7 @@ public class MaplePacketEncoder extends MessageToByteEncoder<Object> {
 
         byte[] encrypted = new byte[unencrypted.length + 4];
         byte[] header = client.getSendCrypto().getPacketHeader(unencrypted.length);
-        MapleCustomEncryption.encryptData(unencrypted);
+        MaplePacketManipulator.encryptData(unencrypted);
 
         client.getLock().lock();
         try {

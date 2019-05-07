@@ -68,9 +68,7 @@ public class ChannelConsoleCommands extends ConsoleCommands {
                     case "whitelist":
                         try {
                             final int bCount = Whitelist.getAccounts().size();
-                            Whitelist.loadAccounts();
-                            final int aCount = Whitelist.getAccounts().size();
-                            LOGGER.info("Whitelist reloaded. Previously had {} accounts, now {}", bCount, aCount);
+                            LOGGER.info("Whitelist reloaded. Previously had {} accounts, now {}", bCount, Whitelist.createCache());
                         } catch (IOException | URISyntaxException e) {
                             e.printStackTrace();
                         }
