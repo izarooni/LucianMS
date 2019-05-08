@@ -11,6 +11,15 @@ public class GameConstants {
     private GameConstants() {
     }
 
+    public static boolean isSkillNeedMasterLevel(int skillID) {
+        int jobID = skillID / 10000;
+        if (jobID / 100 != 22 && jobID != 2001) {
+            if ((jobID % 100) == 0) return false;
+            return jobID % 10 == 2;
+        }
+        return MapleJob.getJobLevel(jobID) == 9 || MapleJob.getJobLevel(jobID) == 10;
+    }
+
     public static boolean isCarnivalField(int mapID) {
         return mapID == 980000101 || mapID == 980000201 || mapID == 980000301 || mapID == 980000401 || mapID == 980000501 || mapID == 980000601;
     }

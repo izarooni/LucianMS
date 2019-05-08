@@ -8,7 +8,6 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 /**
@@ -16,7 +15,7 @@ import java.util.List;
  */
 public class Whitelist {
 
-    private static List<Integer> accounts = Collections.emptyList();
+    private static List<Integer> accounts;
 
     public static int createCache() throws IOException, URISyntaxException {
         Defaults.createDefaultIfAbsent(null, "whitelist.json");

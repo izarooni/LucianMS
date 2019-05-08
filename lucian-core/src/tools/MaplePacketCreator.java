@@ -21,7 +21,6 @@
 package tools;
 
 import com.lucianms.client.*;
-import com.lucianms.client.MapleCharacter.SkillEntry;
 import com.lucianms.client.inventory.*;
 import com.lucianms.client.inventory.Equip.ScrollResult;
 import com.lucianms.client.status.MonsterStatus;
@@ -353,43 +352,37 @@ public class MaplePacketCreator {
         mplew.write(chr.getSkinColor().getId()); // skin color
         mplew.writeInt(chr.getFace()); // face
         mplew.writeInt(chr.getHair()); // hair
-
-        for (int i = 0; i < 3; i++) {
-            if (chr.getPet(i) != null) //Checked GMS.. and your pets stay when going into the cash shop.
-            {
-                mplew.writeLong(chr.getPet(i).getUniqueId());
-            } else {
-                mplew.writeLong(0);
-            }
+        for (MaplePet pet : chr.getPets()) {
+            long petID = Optional.ofNullable(pet).map(MaplePet::getUniqueId).orElse(0);
+            mplew.writeLong(petID);
         }
-
-        mplew.write(chr.getLevel()); // level
+        mplew.write(chr.getLevel());
         final MapleJob job = chr.getJob();
-        mplew.writeShort(job.getId()); // job
-        mplew.writeShort(chr.getStr()); // str
-        mplew.writeShort(chr.getDex()); // dex
-        mplew.writeShort(chr.getInt()); // int
-        mplew.writeShort(chr.getLuk()); // luk
-        mplew.writeShort(chr.getHp()); // hp (?)
-        mplew.writeShort(chr.getMaxHp()); // maxhp
-        mplew.writeShort(chr.getMp()); // mp (?)
-        mplew.writeShort(chr.getMaxMp()); // maxmp
-        mplew.writeShort(chr.getRemainingAp()); // remaining ap
+        mplew.writeShort(job.getId());
+        mplew.writeShort(chr.getStr());
+        mplew.writeShort(chr.getDex());
+        mplew.writeShort(chr.getInt());
+        mplew.writeShort(chr.getLuk());
+        mplew.writeShort(chr.getHp());
+        mplew.writeShort(chr.getMaxHp());
+        mplew.writeShort(chr.getMp());
+        mplew.writeShort(chr.getMaxMp());
+        mplew.writeShort(chr.getRemainingAp());
         if (job.isEvan()) {
             encodeEvanSkillPoints(mplew, job.getId());
         } else {
-            mplew.writeShort(chr.getRemainingSp()); // remaining sp
+            mplew.writeShort(chr.getRemainingSp());
         }
-        mplew.writeInt(chr.getExp()); // current exp
-        mplew.writeShort(chr.getFame()); // fame
-        mplew.writeInt(chr.getGachaExp()); //Gacha Exp
-        mplew.writeInt(chr.getMapId()); // current map id
-        mplew.write(chr.getInitialSpawnpoint()); // spawnpoint
+        mplew.writeInt(chr.getExp());
+        mplew.writeShort(chr.getFame());
+        mplew.writeInt(chr.getGachaExp());
+        mplew.writeInt(chr.getMapId());
+        mplew.write(chr.getInitialSpawnpoint());
         mplew.writeInt(0);
     }
 
     private static void addCharacterInfo(final MaplePacketLittleEndianWriter mplew, MapleCharacter chr) {
-        mplew.writeLong(-1);
+        mplew.writeLong(-1); // GW_CharacterStat flags?
         mplew.write(0);
         addCharStats(mplew, chr);
         mplew.write(chr.getBuddylist().getCapacity());
@@ -797,24 +790,14 @@ public class MaplePacketCreator {
 
     private static void addSkillInfo(final MaplePacketLittleEndianWriter mplew, MapleCharacter chr) {
         mplew.write(0); // start of skills
-        Map<Skill, MapleCharacter.SkillEntry> skills = chr.getSkills();
-        int skillsSize = skills.size();
-        // We don't want to include any hidden skill in this, so subtract them from the size list and ignore them.
-        for (Entry<Skill, SkillEntry> skill : skills.entrySet()) {
-            if (GameConstants.isHiddenSkills(skill.getKey().getId())) {
-                skillsSize--;
-            }
-        }
-        mplew.writeShort(skillsSize);
-        for (Entry<Skill, SkillEntry> skill : skills.entrySet()) {
-            if (GameConstants.isHiddenSkills(skill.getKey().getId())) {
-                continue;
-            }
-            mplew.writeInt(skill.getKey().getId());
-            mplew.writeInt(skill.getValue().skillevel);
+        Map<Integer, SkillEntry> skills = chr.getSkills();
+        mplew.writeShort(skills.size());
+        for (Entry<Integer, SkillEntry> skill : skills.entrySet()) {
+            mplew.writeInt(skill.getKey());
+            mplew.writeInt(skill.getValue().level);
             addExpirationTime(mplew, skill.getValue().expiration);
-            if (skill.getKey().isFourthJob()) {
-                mplew.writeInt(skill.getValue().masterlevel);
+            if (GameConstants.isSkillNeedMasterLevel(skill.getKey())) {
+                mplew.writeInt(skill.getValue().masterLevel);
             }
         }
         mplew.writeShort(chr.getAllCooldowns().size());

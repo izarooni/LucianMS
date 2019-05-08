@@ -6,6 +6,7 @@ import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.codec.ByteToMessageDecoder;
 import io.netty.handler.codec.MessageToByteEncoder;
+import io.netty.handler.timeout.IdleStateHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -37,19 +38,21 @@ public class NettyDiscardServer implements AutoCloseable {
         ServerBootstrap b = new ServerBootstrap();
         b.group(parentGroup)
                 .channel(NioServerSocketChannel.class)
+                .option(ChannelOption.SO_BACKLOG, 100)
+                .childOption(ChannelOption.SO_KEEPALIVE, true)
+                .childOption(ChannelOption.TCP_NODELAY, true)
                 .childHandler(new ChannelInitializer<SocketChannel>() {
                     @Override
                     public void initChannel(SocketChannel ch) throws Exception {
+                        ChannelPipeline pipeline = ch.pipeline();
+                        pipeline.addLast("idleStateHandler", new IdleStateHandler(60, 30, 0));
 
-                        ch.pipeline()
-                                .addLast("decoder", decoder.getDeclaredConstructor().newInstance())
-                                .addLast("encoder", encoder.getDeclaredConstructor().newInstance())
-                                .addLast(serverInboundHandler);
+                        pipeline.addLast("decoder", decoder.getDeclaredConstructor().newInstance());
+                        pipeline.addLast("encoder", encoder.getDeclaredConstructor().newInstance());
+
+                        pipeline.addLast(serverInboundHandler);
                     }
-                })
-                .option(ChannelOption.SO_BACKLOG, 128)
-                .childOption(ChannelOption.TCP_NODELAY, true)
-                .childOption(ChannelOption.SO_KEEPALIVE, true);
+                });
 
         // Bind and start to accept incoming connections.
         channelFuture = b.bind(address, port).sync();

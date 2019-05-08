@@ -49,6 +49,7 @@ public class FieldUpdateTask implements Runnable {
                     while (iterator.hasNext()) {
                         MapleCharacter player = iterator.next();
 
+                        player.checkExpirations();
                         if (map.getHPDec() > 0) {
                             if (player.getInventory(MapleInventoryType.EQUIPPED).findById(map.getHPDecProtect()) != null) {
                                 player.addHP(-map.getHPDec());

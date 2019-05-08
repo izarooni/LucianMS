@@ -101,7 +101,7 @@ public class AESCipher {
 
     private static byte[] multiplyBytes(byte[] in) {
         byte[] ret = new byte[16];
-        for (int i = 0; i < ret.length; i++) {
+        for (int i = 0; i < 16; i++) {
             ret[i] = in[i % 4];
         }
         return ret;
@@ -120,29 +120,28 @@ public class AESCipher {
 
     public synchronized void crypt(byte[] data) {
         int bufferSize = data.length;
-        int bufferAlloc = bufferSize;
-        int srcIndex = 0;
+        int bufferAlloc = 1456;
+        int startIndex = 0;
 
-        if (bufferSize >= 1456) {
-            bufferAlloc = 1456;
-        }
         while (bufferSize > 0) {
-            byte[] myIv = multiplyBytes(this.seqKey);
-            for (int x = srcIndex; x < (srcIndex + bufferAlloc); x++) {
-                if ((x - srcIndex) % myIv.length == 0) {
+            byte[] IV = multiplyBytes(this.seqKey);
+            if (bufferSize < bufferAlloc) {
+                bufferAlloc = bufferSize;
+            }
+            for (int i = startIndex; i < (startIndex + bufferAlloc); i++) {
+                if ((i - startIndex) % IV.length == 0) {
                     try {
-                        byte[] newIv = cipher.doFinal(myIv);
-                        System.arraycopy(newIv, 0, myIv, 0, myIv.length);
-                    } catch (IllegalBlockSizeException | BadPaddingException ignored) {
+                        byte[] newIv = cipher.doFinal(IV);
+                        System.arraycopy(newIv, 0, IV, 0, IV.length);
+                    } catch (IllegalBlockSizeException | BadPaddingException e) {
+                        e.printStackTrace();
                     }
                 }
-                data[x] ^= myIv[(x - srcIndex) % myIv.length];
+                data[i] ^= IV[(i - startIndex) % IV.length];
             }
-            srcIndex += bufferAlloc;
+            startIndex += bufferAlloc;
             bufferSize -= bufferAlloc;
-            if (bufferSize >= 1460) {
-                bufferAlloc = 1460;
-            }
+            bufferAlloc = 1460;
         }
         doInnoHash();
     }

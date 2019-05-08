@@ -118,10 +118,21 @@ public enum MapleJob {
     }
 
     public boolean isEvan() {
-        return getId() / 100 == 22 || getId() == 2001;
+        return isEvanJob(getId());
     }
 
     public boolean isA(MapleJob basejob) {
         return getId() >= basejob.getId() && getId() / 100 == basejob.getId() / 100;
+    }
+
+    public static boolean isEvanJob(int jobID) {
+        return jobID / 100 == 22 || jobID == 2001;
+    }
+
+    public static int getJobLevel(int jobID) {
+        if ((jobID % 100) == 0 || jobID == 2001) return 1;
+        int jobLevel = jobID % 10 + 2;
+        if (jobLevel < 2 || jobLevel > 4 && (jobLevel > 10 || jobID / 100 != 22)) return 0;
+        return jobID % 10 + 2;
     }
 }

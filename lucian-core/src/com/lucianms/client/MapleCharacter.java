@@ -186,7 +186,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Di
 
     private GProperties<Boolean> toggles = new GProperties<>();
 
-    private HashMap<Skill, SkillEntry> skills = new HashMap<>();
+    private HashMap<Integer, SkillEntry> skills = new HashMap<>();
     private Map<Short, String> area_info = new LinkedHashMap<>();
     private Map<Short, MapleQuestStatus> quests = new LinkedHashMap<>();
     private Map<Integer, String> entered = new LinkedHashMap<>();
@@ -229,7 +229,6 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Di
     private EnumMap<MapleBuffStat, MapleBuffStatValueHolder> effects = new EnumMap<>(MapleBuffStat.class);
 
     private Task recoveryTask;
-    private Task expirationTask;
     private Task spiritPendantTask; // 1122017
     private Task dragonBloodTask;
     private Task beholderHealingTask;
@@ -800,7 +799,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Di
                             continue;
                         }
                         SkillEntry sentry = new SkillEntry(rs.getByte("skilllevel"), rs.getInt("masterlevel"), rs.getLong("expiration"));
-                        ret.skills.put(s, sentry);
+                        ret.skills.put(s.getId(), sentry);
                     }
                 }
             }
@@ -1668,41 +1667,44 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Di
     }
 
     public void applyHiddenSkillFixes(Skill skill) {
-        SkillEntry entry;
+        Optional<SkillEntry> opt;
         switch (skill.getId()) {
             case Aran.FULL_SWING:
             case Aran.HIDDEN_FULL_SWING_DOUBLE:
             case Aran.HIDDEN_FULL_SWING_TRIPLE:
-                entry = getSkills().get(SkillFactory.getSkill(Aran.FULL_SWING)); // one time index
-                changeSkillLevel(SkillFactory.getSkill(Aran.HIDDEN_FULL_SWING_DOUBLE), entry.skillevel, entry.masterlevel, entry.expiration);
-                changeSkillLevel(SkillFactory.getSkill(Aran.HIDDEN_FULL_SWING_TRIPLE), entry.skillevel, entry.masterlevel, entry.expiration);
+                opt = getSkill(Aran.FULL_SWING);
+                if (opt.isPresent()) {
+                    SkillEntry entry = opt.get();
+                    changeSkillLevel(Aran.HIDDEN_FULL_SWING_DOUBLE, entry.level, entry.masterLevel, entry.expiration);
+                    changeSkillLevel(Aran.HIDDEN_FULL_SWING_TRIPLE, entry.level, entry.masterLevel, entry.expiration);
+                }
                 break;
             case Aran.OVER_SWING:
             case Aran.HIDDEN_OVER_SWING_DOUBLE:
             case Aran.HIDDEN_OVER_SWING_TRIPLE:
-                entry = getSkills().get(SkillFactory.getSkill(Aran.OVER_SWING)); // one time index
-                changeSkillLevel(SkillFactory.getSkill(Aran.HIDDEN_OVER_SWING_DOUBLE), entry.skillevel, entry.masterlevel, entry.expiration);
-                changeSkillLevel(SkillFactory.getSkill(Aran.HIDDEN_OVER_SWING_TRIPLE), entry.skillevel, entry.masterlevel, entry.expiration);
+                opt = getSkill(Aran.OVER_SWING);
+                if (opt.isPresent()) {
+                    SkillEntry entry = opt.get();
+                    changeSkillLevel(SkillFactory.getSkill(Aran.HIDDEN_OVER_SWING_DOUBLE), entry.level, entry.masterLevel, entry.expiration);
+                    changeSkillLevel(SkillFactory.getSkill(Aran.HIDDEN_OVER_SWING_TRIPLE), entry.level, entry.masterLevel, entry.expiration);
+                }
                 break;
         }
     }
 
-    public void changeSkillLevel(Skill skill, byte newLevel, int newMasterlevel, long expiration) {
+    public void changeSkillLevel(Skill skill, byte newLevel, int masterLevel, long expiration) {
+        changeSkillLevel(skill.getId(), newLevel, masterLevel, expiration);
+    }
+
+    public void changeSkillLevel(int skillID, byte newLevel, int masterLevel, long expiration) {
         if (newLevel > -1) {
-            skills.put(skill, new SkillEntry(newLevel, newMasterlevel, expiration));
-            if (!GameConstants.isHiddenSkills(skill.getId())) {
-                this.client.announce(MaplePacketCreator.updateSkill(skill.getId(), newLevel, newMasterlevel, expiration));
+            skills.put(skillID, new SkillEntry(newLevel, masterLevel, expiration));
+            if (!GameConstants.isHiddenSkills(skillID)) {
+                announce(MaplePacketCreator.updateSkill(skillID, newLevel, masterLevel, expiration));
             }
         } else {
-            skills.remove(skill);
-            this.client.announce(MaplePacketCreator.updateSkill(skill.getId(), newLevel, newMasterlevel, -1)); // Shouldn't
-            try (Connection con = client.getWorldServer().getConnection();
-                 PreparedStatement ps = con.prepareStatement("DELETE FROM skills WHERE skillid = ? AND characterid = ?")) {
-                ps.setInt(1, skill.getId());
-                ps.setInt(2, id);
-                ps.executeUpdate();
-            } catch (SQLException e) {
-                LOGGER.error("Unable to delete skill {} from player '{}':{}", skill.getId(), getName(), getId(), e);
+            if (skills.remove(skillID) != null) {
+                announce(MaplePacketCreator.updateSkill(skillID, newLevel, masterLevel, -1));
             }
         }
     }
@@ -2027,53 +2029,33 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Di
                 && inventory.findById(1022999) != null; // Red Eye Scanner
     }
 
-    public void cancelExpirationTask() {
-        if (expirationTask != null) {
-            expirationTask.cancel();
-            expirationTask = null;
+    public void checkExpirations() {
+        long expiration, now = System.currentTimeMillis();
+        var skills = new HashSet<>(getSkills().entrySet());
+        for (Entry<Integer, SkillEntry> entry : skills) {
+            if (entry.getValue().expiration != -1 && entry.getValue().expiration < now) {
+                changeSkillLevel(entry.getKey(), (byte) -1, 0, -1);
+            }
         }
-    }
 
-    public void expirationTask() {
-        if (expirationTask == null) {
-            expirationTask = TaskExecutor.createRepeatingTask(new Runnable() {
-                @Override
-                public void run() {
-                    long expiration, currenttime = System.currentTimeMillis();
-                    Set<Skill> keys = getSkills().keySet();
-                    for (Iterator<Skill> i = keys.iterator(); i.hasNext(); ) {
-                        Skill key = i.next();
-                        SkillEntry skill = getSkills().get(key);
-                        if (skill.expiration != -1 && skill.expiration < currenttime) {
-                            changeSkillLevel(key, (byte) -1, 0, -1);
-                        }
-                    }
-
-                    List<Item> toberemove = new ArrayList<>();
-                    for (MapleInventory inv : inventory) {
-                        for (Item item : inv.list()) {
-                            expiration = item.getExpiration();
-                            if (expiration != -1 && (expiration < currenttime) && ((item.getFlag() & ItemConstants.LOCK) == ItemConstants.LOCK)) {
-                                byte aids = item.getFlag();
-                                aids &= ~(ItemConstants.LOCK);
-                                item.setFlag(aids); // Probably need a check,
-                                // else people can make
-                                // expiring items into
-                                // permanent items...
-                                item.setExpiration(-1);
-                                forceUpdateItem(item); // TEST :3
-                            } else if (expiration != -1 && expiration < currenttime) {
-                                client.announce(MaplePacketCreator.itemExpired(item.getItemId()));
-                                toberemove.add(item);
-                            }
-                        }
-                        for (Item item : toberemove) {
-                            MapleInventoryManipulator.removeFromSlot(client, inv.getType(), item.getPosition(), item.getQuantity(), true);
-                        }
-                        toberemove.clear();
-                    }
+        List<Item> removeItems = new ArrayList<>();
+        for (MapleInventory inv : inventory) {
+            for (Item item : inv.list()) {
+                expiration = item.getExpiration();
+                if (expiration > 0 && expiration < now && (item.getFlag() & ItemConstants.LOCK) != 0) {
+                    byte removeLock = (byte) (item.getFlag() & ~ItemConstants.LOCK);
+                    item.setFlag(removeLock);
+                    item.setExpiration(-1);
+                    forceUpdateItem(item);
+                } else if (expiration > 0 && expiration < now) {
+                    removeItems.add(item);
+                    client.announce(MaplePacketCreator.itemExpired(item.getItemId()));
                 }
-            }, 60000);
+            }
+            for (Item item : removeItems) {
+                MapleInventoryManipulator.removeFromSlot(client, inv.getType(), item.getPosition(), item.getQuantity(), true);
+            }
+            removeItems.clear();
         }
     }
 
@@ -2717,10 +2699,10 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Di
     }
 
     public int getMasterLevel(Skill skill) {
-        if (skills.get(skill) == null) {
+        if (skills.get(skill.getId()) == null) {
             return 0;
         }
-        return skills.get(skill).masterlevel;
+        return skills.get(skill.getId()).masterLevel;
     }
 
     public int getMaxHp() {
@@ -3024,38 +3006,28 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Di
         this.shop = shop;
     }
 
-    public Map<Skill, SkillEntry> getSkills() {
+    public Optional<SkillEntry> getSkill(int skillID) {
+        return Optional.ofNullable(skills.get(skillID));
+    }
+
+    public Map<Integer, SkillEntry> getSkills() {
         return Collections.unmodifiableMap(skills);
     }
 
-    public int getSkillLevel(int skill) {
-        SkillEntry ret = skills.get(SkillFactory.getSkill(skill));
-        if (ret == null) {
-            return 0;
-        }
-        return ret.skillevel;
+    public byte getSkillLevel(int skillID) {
+        return getSkill(skillID).map(SkillEntry::getLevel).orElse((byte) 0);
     }
 
     public byte getSkillLevel(Skill skill) {
-        if (skills.get(skill) == null) {
-            return 0;
-        }
-        return skills.get(skill).skillevel;
+        return getSkill(skill.getId()).map(SkillEntry::getLevel).orElse((byte) 0);
     }
 
-    public long getSkillExpiration(int skill) {
-        SkillEntry ret = skills.get(SkillFactory.getSkill(skill));
-        if (ret == null) {
-            return -1;
-        }
-        return ret.expiration;
+    public long getSkillExpiration(int skillID) {
+        return getSkill(skillID).map(SkillEntry::getExpiration).orElse(-1L);
     }
 
     public long getSkillExpiration(Skill skill) {
-        if (skills.get(skill) == null) {
-            return -1;
-        }
-        return skills.get(skill).expiration;
+        return getSkill(skill.getId()).map(SkillEntry::getExpiration).orElse(-1L);
     }
 
     public MapleSkinColor getSkinColor() {
@@ -3734,7 +3706,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Di
             magic += matkbuff;
         }
 
-        Integer blessing = getSkillLevel(10000000 * getJobType() + 12);
+        byte blessing = getSkillLevel(10000000 * getJobType() + 12);
         if (blessing > 0) {
             watk += blessing;
             magic += blessing * 2;
@@ -4257,7 +4229,6 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Di
                     ps.addBatch();
                 }
                 ps.executeBatch();
-                con.commit();
             }
             deleteWhereCharacterId(con, "DELETE FROM keymap WHERE characterid = ?");
             try (PreparedStatement ps = con.prepareStatement("INSERT INTO keymap (characterid, `key`, `type`, `action`) VALUES (?, ?, ?, ?)")) {
@@ -4269,7 +4240,6 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Di
                     ps.addBatch();
                 }
                 ps.executeBatch();
-                con.commit();
             }
             deleteWhereCharacterId(con, "DELETE FROM skillmacros WHERE characterid = ?");
             try (PreparedStatement ps = con.prepareStatement("INSERT INTO skillmacros (characterid, skill1, skill2, skill3, name, shout, position) VALUES (?, ?, ?, ?, ?, ?, ?)")) {
@@ -4287,7 +4257,6 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Di
                     }
                 }
                 ps.executeBatch();
-                con.commit();
             }
 
             List<Pair<Item, MapleInventoryType>> itemsWithType = new ArrayList<>();
@@ -4300,19 +4269,17 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Di
             con.commit();
 
             relationship.save(con);
-
             deleteWhereCharacterId(con, "DELETE FROM skills WHERE characterid = ?");
             try (PreparedStatement ps = con.prepareStatement("INSERT INTO skills VALUES (?, ?, ?, ?, ?)")) {
                 ps.setInt(2, id);
-                for (Entry<Skill, SkillEntry> skill : skills.entrySet()) {
-                    ps.setInt(1, skill.getKey().getId());
-                    ps.setInt(3, skill.getValue().skillevel);
-                    ps.setInt(4, skill.getValue().masterlevel);
-                    ps.setLong(5, skill.getValue().expiration);
+                for (Entry<Integer, SkillEntry> skill : skills.entrySet()) {
+                    ps.setInt(1, skill.getKey());
+                    ps.setInt(3, skill.getValue().getLevel());
+                    ps.setInt(4, skill.getValue().getMasterLevel());
+                    ps.setLong(5, skill.getValue().getExpiration());
                     ps.addBatch();
                 }
                 ps.executeBatch();
-                con.commit();
             }
             deleteWhereCharacterId(con, "DELETE FROM savedlocations WHERE characterid = ?");
             try (PreparedStatement ps = con.prepareStatement("INSERT INTO savedlocations (characterid, `locationtype`, `map`, `portal`) VALUES (?, ?, ?, ?)")) {
@@ -4376,7 +4343,6 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Di
                     if (rs.next() && rs.getInt("total") > 0) {
                         deleteWhereCharacterId(con, "delete from cquest where characterid = ?");
                         deleteWhereCharacterId(con, "delete from cquestdata where qtableid = (select id from cquest where characterid = ?)");
-
                     }
                 }
             }
@@ -5212,7 +5178,6 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Di
         beholderBuffTask = TaskExecutor.cancelTask(beholderBuffTask);
         berserkTask = TaskExecutor.cancelTask(berserkTask);
         recoveryTask = TaskExecutor.cancelTask(recoveryTask);
-        expirationTask = TaskExecutor.cancelTask(expirationTask);
         tasks.forEach(Task::cancel);
         tasks.clear();
         effects.clear();
@@ -5661,21 +5626,4 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Di
         }
     }
 
-    public static class SkillEntry {
-
-        public int masterlevel;
-        public byte skillevel;
-        public long expiration;
-
-        public SkillEntry(byte skillevel, int masterlevel, long expiration) {
-            this.skillevel = skillevel;
-            this.masterlevel = masterlevel;
-            this.expiration = expiration;
-        }
-
-        @Override
-        public String toString() {
-            return skillevel + ":" + masterlevel;
-        }
-    }
 }

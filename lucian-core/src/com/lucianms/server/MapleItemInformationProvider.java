@@ -1035,21 +1035,25 @@ public class MapleItemInformationProvider {
         }
         for (Item item : items) {
             Equip equip = (Equip) item;
-            int reqLevel = getEquipStats(equip.getItemId()).get("reqLevel");
-            if (reqLevel > chr.getLevel()) {
-                continue;
-            } else if (getEquipStats(equip.getItemId()).get("reqDEX") > tdex) {
-                continue;
-            } else if (getEquipStats(equip.getItemId()).get("reqSTR") > tstr) {
-                continue;
-            } else if (getEquipStats(equip.getItemId()).get("reqLUK") > tluk) {
-                continue;
-            } else if (getEquipStats(equip.getItemId()).get("reqINT") > tint) {
+            Map<String, Integer> equipStats = getEquipStats(equip.getItemId());
+            if (equipStats == null) {
                 continue;
             }
-            int reqPOP = getEquipStats(equip.getItemId()).get("reqPOP");
+            int reqLevel = equipStats.get("reqLevel");
+            if (reqLevel > chr.getLevel()) {
+                continue;
+            } else if (equipStats.get("reqDEX") > tdex) {
+                continue;
+            } else if (equipStats.get("reqSTR") > tstr) {
+                continue;
+            } else if (equipStats.get("reqLUK") > tluk) {
+                continue;
+            } else if (equipStats.get("reqINT") > tint) {
+                continue;
+            }
+            int reqPOP = equipStats.get("reqPOP");
             if (reqPOP > 0) {
-                if (getEquipStats(equip.getItemId()).get("reqPOP") > fame) {
+                if (equipStats.get("reqPOP") > fame) {
                     continue;
                 }
             }

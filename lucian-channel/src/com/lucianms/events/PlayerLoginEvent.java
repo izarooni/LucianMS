@@ -83,13 +83,6 @@ public class PlayerLoginEvent extends PacketEvent {
         if (JailManager.isJailed(player.getId())) {
             player.setMapId(JailManager.getRandomField());
         }
-
-        channel.addPlayer(player);
-        List<PlayerBuffValueHolder> buffs = Server.getPlayerBuffStorage().remove(playerID);
-        if (buffs != null) {
-            player.silentGiveBuffs(buffs);
-            buffs.clear();
-        }
         try (Connection con = getClient().getWorldServer().getConnection()) {
             try (PreparedStatement ps = con.prepareStatement("SELECT Mesos FROM dueypackages WHERE RecieverId = ? AND Checked = 1")) {
                 ps.setInt(1, player.getId());
@@ -107,17 +100,24 @@ public class PlayerLoginEvent extends PacketEvent {
             e.printStackTrace();
         }
 
+        getClient().announce(MaplePacketCreator.getCharInfo(player));
+        getClient().announce(MaplePacketCreator.updateGender((byte) player.getGender()));
+        getClient().announce(MaplePacketCreator.enableReport());
+        player.sendKeymap();
+        player.sendMacros();
+
+        channel.addPlayer(player);
+        player.getMap().addPlayer(player);
+
+        List<PlayerBuffValueHolder> buffs = Server.getPlayerBuffStorage().remove(playerID);
+        if (buffs != null) {
+            player.silentGiveBuffs(buffs);
+            buffs.clear();
+        }
         if (player.isGM() && !player.isHidden()) {
             player.setHidingLevel(player.getGMLevel());
             player.setHide(true);
         }
-
-        getClient().announce(MaplePacketCreator.getCharInfo(player));
-        getClient().announce(MaplePacketCreator.updateGender((byte) player.getGender()));
-        getClient().announce(MaplePacketCreator.enableReport());
-        player.getMap().addPlayer(player);
-        player.sendKeymap();
-        player.sendMacros();
 
         if (player.getKeymap().get(91) != null) {
             player.announce(MaplePacketCreator.sendAutoHpPot(player.getKeymap().get(91).getAction()));
@@ -208,10 +208,6 @@ public class PlayerLoginEvent extends PacketEvent {
             player.scheduleSpiritPendant();
         }
 
-        player.changeSkillLevel(SkillFactory.getSkill(10000000 * player.getJobType() + 12), (byte) (player.getLinkedLevel() / 10), 20, -1);
-        player.changeSkillLevel(SkillFactory.getSkill(5001005), (byte) 0, 0, 0);
-        player.changeSkillLevel(SkillFactory.getSkill(15001003), (byte) 0, 0, 0);
-
         MapleMessenger messenger = player.getMessenger();
         if (messenger != null) {
             MapleMessengerCharacter member = messenger.get(player.getId());
@@ -222,9 +218,19 @@ public class PlayerLoginEvent extends PacketEvent {
             }
         }
 
+        byte skillBlessingLevel = (byte) (player.getLinkedLevel() / 10);
+        if (skillBlessingLevel > 0) {
+            int blessingSkillID = 10000000 * player.getJobType() + 12;
+            Skill blessingSkill = SkillFactory.getSkill(blessingSkillID);
+            if (blessingSkill != null) {
+                player.changeSkillLevel(blessingSkillID, skillBlessingLevel, 20, -1);
+            }
+        }
+        player.changeSkillLevel(5001005, (byte) -1, 0, 0);
+        player.changeSkillLevel(15001003, (byte) -1, 0, 0);
+
         player.showNote();
         player.checkBerserk();
-        player.expirationTask();
         player.setRates();
         Achievements.testFor(player, -1);
         return null;

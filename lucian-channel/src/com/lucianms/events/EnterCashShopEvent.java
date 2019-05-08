@@ -26,7 +26,6 @@ public class EnterCashShopEvent extends PacketEvent {
         Server.getPlayerBuffStorage().put(player.getId(), player.getAllBuffs());
 
         player.cancelBuffEffects();
-        player.cancelExpirationTask();
 
         getClient().announce(MaplePacketCreator.openCashShop(getClient(), false));
 

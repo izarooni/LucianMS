@@ -123,11 +123,12 @@ public class HGMCommands extends CommandExecutor {
                 target = player;
             }
             int totalSP = 0;
-            for (Map.Entry<Skill, MapleCharacter.SkillEntry> set : new HashMap<>(target.getSkills()).entrySet()) {
-                Skill sk = set.getKey();
-                MapleCharacter.SkillEntry entry = set.getValue();
-                totalSP += set.getValue().skillevel;
-                target.changeSkillLevel(sk, (byte) (sk.isHidden() ? -1 : 0), sk.isHidden() ? 0 : entry.masterlevel, entry.expiration);
+            for (Map.Entry<Integer, SkillEntry> entry : new HashMap<>(target.getSkills()).entrySet()) {
+                Integer skillID = entry.getKey();
+                SkillEntry value = entry.getValue();
+                Skill skill = SkillFactory.getSkill(skillID);
+                totalSP += value.getLevel();
+                target.changeSkillLevel(entry.getKey(), (byte) (skill.isHidden() ? -1 : 0), skill.isHidden() ? 0 : value.getMasterLevel(), value.getExpiration());
             }
             target.setRemainingSp(totalSP);
             target.updateSingleStat(MapleStat.AVAILABLESP, totalSP);
