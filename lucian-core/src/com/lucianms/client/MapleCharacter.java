@@ -1304,46 +1304,37 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Di
         }
     }
 
-    public void setHide(boolean hide) {
-        this.hidden = hide;
-    }
-
     public void setHidden(boolean hidden, boolean login) {
-        if (isGM()) {
-            if (!hidden) {
-                List<MapleBuffStat> dsstat = Collections.singletonList(MapleBuffStat.DARKSIGHT);
-                getMap().broadcastGMMessage(this, MaplePacketCreator.cancelForeignBuff(id, dsstat), false);
-                getMap().broadcastMessage(this, MaplePacketCreator.spawnPlayerMapobject(this), false);
-                updatePartyMemberHP();
-                getMap().getMonsters().forEach(getMap()::updateMonsterController);
-                if (this.hidden && getFakePlayer() != null) {
-                    getMap().addFakePlayer(getFakePlayer());
-                }
-            } else {
-                if (!login) {
-                    getMap().broadcastMessage(this, MaplePacketCreator.removePlayerFromMap(getId()), false);
-                }
-                List<Pair<MapleBuffStat, Integer>> dsstat = Collections.singletonList(new Pair<>(MapleBuffStat.DARKSIGHT, 0));
-                getMap().broadcastGMMessage(this, MaplePacketCreator.spawnPlayerMapobject(this), false);
-                getMap().broadcastGMMessage(this, MaplePacketCreator.giveForeignBuff(id, dsstat), false);
-                for (MapleMonster mon : getControlledMonsters()) {
-                    mon.setController(null);
-                    mon.setControllerHasAggro(false);
-                    mon.setControllerKnowsAboutAggro(false);
-                    mon.getMap().updateMonsterController(mon);
-                }
-                if (getFakePlayer() != null) {
-                    getMap().removeFakePlayer(getFakePlayer());
-                }
+        if (hidden) {
+            if (!login) {
+                // toggle from being visible
+                getMap().sendPacket(MaplePacketCreator.removePlayerFromMap(getId()), p -> p.getGMLevel() < getGMLevel());
             }
-            setHide(hidden);
-            announce(MaplePacketCreator.getGMEffect(0x10, (byte) (hidden ? 1 : 0)));
-            announce(MaplePacketCreator.enableActions());
-        }
-    }
+            List<Pair<MapleBuffStat, Integer>> darkSightBuff = Collections.singletonList(new Pair<>(MapleBuffStat.DARKSIGHT, 0));
+            getMap().sendPacket(MaplePacketCreator.giveForeignBuff(getId(), darkSightBuff), p -> p.getGMLevel() >= getGMLevel());
 
-    public void toggleHide() {
-        setHidden(!isHidden(), false);
+            for (MapleMonster mon : getControlledMonsters()) {
+                mon.setController(null);
+                mon.setControllerHasAggro(false);
+                mon.setControllerKnowsAboutAggro(false);
+                mon.getMap().updateMonsterController(mon);
+            }
+            if (getFakePlayer() != null) {
+                getMap().removeFakePlayer(getFakePlayer());
+            }
+        } else {
+            List<MapleBuffStat> darkSightBuff = Collections.singletonList(MapleBuffStat.DARKSIGHT);
+            getMap().sendPacket(MaplePacketCreator.cancelForeignBuff(getId(), darkSightBuff), p -> p.getGMLevel() >= getGMLevel());
+            getMap().sendPacket(MaplePacketCreator.spawnPlayerMapobject(this));
+
+            updatePartyMemberHP();
+            getMap().getMonsters().forEach(getMap()::updateMonsterController);
+            if (this.hidden && getFakePlayer() != null) {
+                getMap().addFakePlayer(getFakePlayer());
+            }
+        }
+        this.hidden = hidden;
+        announce(MaplePacketCreator.getAdminResult(0x10, (byte) (hidden ? 1 : 0)));
     }
 
     private void cancelFullnessSchedule(int petSlot) {

@@ -113,9 +113,9 @@ public class PlayerLoginEvent extends PacketEvent {
             player.silentGiveBuffs(buffs);
             buffs.clear();
         }
-        if (player.isGM() && !player.isHidden()) {
+        if (player.isGM()) {
             player.setHidingLevel(player.getGMLevel());
-            player.setHide(true);
+            player.setHidden(true, true);
         }
 
         if (player.getKeymap().get(91) != null) {

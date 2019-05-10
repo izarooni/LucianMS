@@ -742,7 +742,7 @@ public class GameMasterCommands extends CommandExecutor {
                 player.dropMessage(6, "Your hiding value is " + player.getHidingLevel());
             }
         } else if (command.equals("sethide")) {
-            player.toggleHide();
+            player.setHidden(!player.isHidden(), false);
         } else if (command.equals("maxstats")) {
             player.setStr(32767);
             player.setDex(32767);

@@ -49,4 +49,10 @@ public interface PacketAnnouncer {
         players.stream().filter(p -> p.getId() != exclude.getId()).forEach(p -> p.announce(packet));
         players.clear();
     }
+
+    default void sendPacket(byte[] packet, Predicate<MapleCharacter> cond) {
+        Collection<MapleCharacter> players = getPlayers();
+        players.stream().filter(cond).forEach(p -> p.announce(packet));
+        players.clear();
+    }
 }

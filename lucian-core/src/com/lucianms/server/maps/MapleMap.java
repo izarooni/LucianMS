@@ -1488,7 +1488,7 @@ public class MapleMap implements PacketAnnouncer {
         }
         if (chr.isHidden()) {
             broadcastGMMessage(chr, MaplePacketCreator.spawnPlayerMapobject(chr), false);
-            chr.announce(MaplePacketCreator.getGMEffect(0x10, (byte) 1));
+            chr.announce(MaplePacketCreator.getAdminResult(0x10, (byte) 1));
 
             List<Pair<MapleBuffStat, Integer>> dsstat = Collections.singletonList(new Pair<>(MapleBuffStat.DARKSIGHT, 0));
             broadcastGMMessage(chr, MaplePacketCreator.giveForeignBuff(chr.getId(), dsstat), false);

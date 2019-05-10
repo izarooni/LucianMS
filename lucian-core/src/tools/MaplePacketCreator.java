@@ -1912,7 +1912,7 @@ public class MaplePacketCreator {
      *
      * @return The gm effect packet
      */
-    public static byte[] getGMEffect(int type, byte mode) {
+    public static byte[] getAdminResult(int type, byte mode) {
         final MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
         mplew.writeShort(SendOpcode.ADMIN_RESULT.getValue());
         mplew.write(type);

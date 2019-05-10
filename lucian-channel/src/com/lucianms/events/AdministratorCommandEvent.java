@@ -26,7 +26,7 @@ public class AdministratorCommandEvent extends PacketEvent {
             case 0x11:
                 break;
             case 0x10:
-                bool = reader.readByte() == 1;
+                bool = reader.readByte() != 0;
                 break;
         }
     }
