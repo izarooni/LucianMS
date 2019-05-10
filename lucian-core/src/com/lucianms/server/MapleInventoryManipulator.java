@@ -53,7 +53,7 @@ public class MapleInventoryManipulator {
         for (CQuestData data : player.getCustomQuests().values()) {
             if (!data.isCompleted()) {
                 CQuestItemRequirement toLoot = data.getToCollect();
-                toLoot.incrementRequirement(itemID, -quantity);
+                toLoot.incrementRequirement(itemID, quantity);
                 boolean checked = toLoot.isFinished(); // local bool before updating requirement checks; if false, quest is not finished
                 if (data.checkRequirements() && !checked) { // update requirement checks - it is important that checkRequirements is executed first
                 /*
@@ -553,7 +553,7 @@ public class MapleInventoryManipulator {
         if ((!ItemConstants.isRechargable(itemId) && player.getItemQuantity(itemId, true) < quantity) || quantity < 0) {
             return null;
         }
-        checkItemQuestProgress(player, itemId, quantity);
+        checkItemQuestProgress(player, itemId, (short) -quantity);
         Point dropPos = new Point(player.getPosition());
         if (quantity < source.getQuantity() && !ItemConstants.isRechargable(itemId)) {
             Item target = source.copy();

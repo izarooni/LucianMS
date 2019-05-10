@@ -5,14 +5,18 @@ var status = 0;
 var in_progress = [];
 var completed = [];
 
-player.getCustomQuests().values().forEach(function(cq) {
-    if (cq.isCompleted()) {
-        completed.push(cq);
-    } else {
-        in_progress.push(cq);
-    }
-});
+function populateCache() {
+    in_progress = []; completed = [];
+    player.getCustomQuests().values().forEach(function (cq) {
+        if (cq.isCompleted()) {
+            completed.push(cq);
+        } else {
+            in_progress.push(cq);
+        }
+    });
+}
 
+populateCache();
 function action(mode, type, selection) {
     if (mode < 1) {
         cm.dispose();
@@ -21,6 +25,7 @@ function action(mode, type, selection) {
         status++;
     }
     if (status == 1) {
+        if (player.isDebug()) populateCache();
         cm.sendSimple("#b\r\n#L0#View in progress quests#l \r\n #L1#View completed quests#l");
     } else if (status == 2) {
         this.sub = selection;
@@ -60,7 +65,7 @@ function action(mode, type, selection) {
     } else if (status == 3 && selection > -1 && this.sub == 1) {
         player.getCustomQuests().remove(selection);
         cm.sendNext("Quest removed");
-        cm.dispose();
+        status = 0;
     } else {
         if (this.questId == null) this.questId = selection;
         if (this.sub == 0) Progress(this.questId);
