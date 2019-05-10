@@ -15,10 +15,20 @@ public class Relationship {
     }
 
     private Status status = Status.Single;
-    private int marriageId = 0;
-    private int groomId = 0;
-    private int brideId = 0;
-    private int engagementBoxId = 0; // engagement box that was used to propose
+    private int marriageId;
+    private int groomId;
+    private String groomUsername;
+    private int brideId;
+    private String brideUsername;
+    private int engagementBoxId; // engagement box that was used to propose
+
+    public void reset() {
+        setMarriageId(0);
+        setEngagementBoxId(0);
+        setGroomId(0);
+        setBrideId(0);
+        setStatus(Relationship.Status.Single);
+    }
 
     public void load(Connection con, int marriageId) throws SQLException {
         try (PreparedStatement ps = con.prepareStatement("select * from marriages where id = ?")) {
@@ -30,6 +40,22 @@ public class Relationship {
                     this.groomId = rs.getInt("groom");
                     this.brideId = rs.getInt("bride");
                     this.engagementBoxId = rs.getInt("engagementbox");
+                } else {
+                    return;
+                }
+            }
+        }
+        // saving overhead of querying the usernames in npcs several times
+        try (PreparedStatement ps = con.prepareStatement("select id, name from characters where id = ? or id = ?")) {
+            ps.setInt(1, groomId);
+            ps.setInt(2, brideId);
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    if (rs.getInt("id") == groomId) {
+                        groomUsername = rs.getString("name");
+                    } else if (rs.getInt("id") == brideId) {
+                        brideUsername = rs.getString("name");
+                    }
                 }
             }
         }
@@ -88,12 +114,20 @@ public class Relationship {
         this.groomId = groomId;
     }
 
+    public String getGroomUsername() {
+        return groomUsername;
+    }
+
     public int getBrideId() {
         return brideId;
     }
 
     public void setBrideId(int brideId) {
         this.brideId = brideId;
+    }
+
+    public String getBrideUsername() {
+        return brideUsername;
     }
 
     public int getEngagementBoxId() {

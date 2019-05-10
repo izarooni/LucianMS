@@ -149,10 +149,10 @@ public class PlayerRingActionEvent extends PacketEvent {
                     // can't cancel a proposal if there isn't a proposal :thinking:
                     return null;
                 }
-                resetRelationship(rltn);
+                rltn.reset();
                 if (pplayer != null) {
                     pplayer.announce(getEngagementResult((byte) 0x1d));
-                    resetRelationship(prltn);
+                    prltn.reset();
                 }
                 break;
             }
@@ -192,8 +192,8 @@ public class PlayerRingActionEvent extends PacketEvent {
                     } else {
                         pplayer.announce(getEngagementResult((byte) 0x1e));
 
-                        resetRelationship(rltn);
-                        resetRelationship(prltn);
+                        rltn.reset();
+                        prltn.reset();
                     }
                 }
                 break;
@@ -210,13 +210,13 @@ public class PlayerRingActionEvent extends PacketEvent {
                 }
                 getClient().announce(getEngagementResult((byte) 0xd));
                 MapleInventoryManipulator.removeById(getClient(), MapleInventoryType.ETC, itemID, 1, false, false);
-                resetRelationship(rltn);
+                rltn.reset();
 
                 if (pplayer != null) {
                     pplayer.announce(getEngagementResult((byte) 0xd)); // am i supposed to send this to both players? hmmm
                     itemID = (itemID == box.getLeft() ? box.getRight() : box.getLeft());
                     MapleInventoryManipulator.removeById(pplayer.getClient(), MapleInventoryType.ETC, itemID, 1, false, false);
-                    resetRelationship(prltn);
+                    prltn.reset();
                 }
                 break;
             }
@@ -248,14 +248,6 @@ public class PlayerRingActionEvent extends PacketEvent {
             return Boxes.get(engagementBox).getRight();
         }
         return -1;
-    }
-
-    private static void resetRelationship(Relationship rltn) {
-        rltn.setMarriageId(0);
-        rltn.setEngagementBoxId(0);
-        rltn.setGroomId(0);
-        rltn.setBrideId(0);
-        rltn.setStatus(Relationship.Status.Single);
     }
 
     private static byte[] getEngagementResult(byte action) {

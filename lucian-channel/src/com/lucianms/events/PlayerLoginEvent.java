@@ -74,7 +74,6 @@ public class PlayerLoginEvent extends PacketEvent {
                 MapleCharacter found = ch.getPlayerStorage().get(p.getLeft());
                 if (found != null) {
                     found.getClient().disconnect();
-                    break;
                 }
             }
         }

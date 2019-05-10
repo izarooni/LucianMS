@@ -1,93 +1,73 @@
-/*
-	This file is part of the OdinMS Maple Story Server
-    Copyright (C) 2008 Patrick Huy <patrick.huy@frz.cc>
-		       Matthias Butz <matze@odinms.de>
-		       Jan Christian Meyer <vimes@odinms.de>
+const ServerConstants = Java.type('com.lucianms.constants.ServerConstants');
+const InventoryType = Java.type('com.lucianms.client.inventory.MapleInventoryType');
+const ItemConstants = Java.type('com.lucianms.constants.ItemConstants');
+const InventoryModifier = Java.type('com.lucianms.server.MapleInventoryManipulator');
+/* izarooni */
+const DIVORCE_COST = 8;
+let status = 0;
 
-    This program is free software: you can redistribute it and/or modify
-    it under the terms of the GNU Affero General Public License as
-    published by the Free Software Foundation version 3 as published by
-    the Free Software Foundation. You may not use, modify or distribute
-    this program under any other version of the GNU Affero General Public
-    License.
-
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU Affero General Public License for more details.
-
-    You should have received a copy of the GNU Affero General Public License
-    along with this program.  If not, see <http://www.gnu.org/licenses/>.
-*/
-/**
-	Pila Present
--- By ---------------------------------------------------------------------------------------------
-	Angel (get31720 ragezone)
--- Extra Info -------------------------------------------------------------------------------------
-	Fixed by  [happydud3] & [XotiCraze]
----------------------------------------------------------------------------------------------------
-**/
-
-var status;
-
-function start() {
-    status = -1;
-    action(1, 0, 0);
+let inventory = InventoryType.EQUIP;
+let ring = findRing(player, inventory);
+if (!ring.isPresent()) {
+    ring = findRing(player, (inventory = InventoryType.EQUIPPED));
 }
 
-function action(mode, type, selection) { 
-    if (mode == -1 || mode == 0) {
-        cm.sendOk("Goodbye then"); 
+function findRing(target, inventoryType) {
+    return target.getInventory(inventoryType).list().stream()
+        .filter(i => ItemConstants.isWeddingRing(i.getItemId()))
+        .findFirst();
+}
+
+function action(mode, type, selection) {
+    if (mode < 1) {
         cm.dispose();
         return;
-    } else if (mode == 1) {
-        status++;
     } else {
-        status--;
+        status++;
     }
-		
-    if (status == 0) {
-        var msg = "Hello I exchange Onyx Chest for Bride and Groom and the Onyx Chest for prizes!";
-        var choice1 = new Array("I have an Onyx Chest for Bride and Groom", "I have an Onyx Chest");
-        for (var i = 0; i < choice1.length; i++) {
-            msg += "\r\n#L" + i + "#" + choice1[i] + "#l";
-        }
-        cm.sendSimple(msg);
-    } else if (status == 1) {
-        if (selection == 0) {
-            if (cm.haveItem(4031424)) {
-                var rand = Math.floor(Math.random() * 4);
-                if (rand == 0)
-                    cm.gainItem(2022179,10);
-                else if (rand == 1)
-                    cm.gainItem(2022282,10);
-                else if (rand == 2)
-                    cm.gainItem(2210005,5);
-                else if (rand == 3)
-                    cm.gainItem(2210003,5);
-                cm.gainItem(4031424,-1);
-            } else {
-                cm.sendOk("You don't have an Onyx Chest for Bride and Groom.");
-                cm.dispose();
-            }
-        } else if (selection == 1) {
-            if (cm.haveItem(4031423)) {
-                cm.sendSimple("You may choose your prize.\r\n#L0#Triangular Sushi#l\r\n#L1#50 power elixers#l\r\n#L2#10 Swiss Cheese#l\r\n#L3#3 Onyx Apples#l");
-            } else {
-                cm.sendOk("You don't have an Onyx Chest");
-                cm.dispose();
-            }
-        }
+    let rel = player.getRelationship();
+    let formal = rel.getStatus();
+    cm.gainItem(ServerConstants.CURRENCY, -DIVORCE_COST, true);
+    if (formal != formal.class.static.Married) {
+        cm.sendOk("You must be married before you can get divorced.");
+        cm.dispose();
+        return;
+    }
+
+    let partnerName;
+    if (rel.getGroomId() == player.getId()) partnerName = rel.getBrideUsername();
+    else if (rel.getBrideId() == player.getId()) partnerName = rel.getGroomUsername();
+    let partner = client.getWorldServer().findPlayer(p => p.getName().equalsIgnoreCase(partnerName));
+
+    if (status == 1) {
+        cm.sendNext("Unlucky. You want out of your relationship? It'll cost you, though."
+            + `\r\nA divorce will cost #b8 #z${ServerConstants.CURRENCY}##k. Are you able to pay that?`);
     } else if (status == 2) {
-        if (selection == 0)
-            cm.gainItem(2022011,10);
-        else if (selection == 1)
-            cm.gainItem(2000005,50);
-        else if (selection == 2)
-            cm.gainItem(2022273,10);
-        else if (selection == 3)
-            cm.gainItem(2022179,3);
-        cm.gainItem(4031423,-1);
+        if (cm.haveItem(ServerConstants.CURRENCY, DIVORCE_COST)) {
+            cm.sendYesNo(`Are you sure you want to divorce from #b${partnerName}#k?`);
+        } else {
+            cm.sendOk("No. You don't have that much.");
+            cm.dispose();
+        }
+    } else if (status == 3) {
+        cm.gainItem(ServerConstants.CURRENCY -DIVORCE_COST, true);
+        if (ring.isPresent()) {
+            let r = ring.get();
+            InventoryModifier.removeFromSlot(client, inventory, r.getPosition(), 1, false);
+        }
+        rel.reset();
+        if (partner != null) {
+            ring = findRing(partner, (inventory = InventoryType.EQUIP));
+            if (!ring.isPresent()) {
+                ring = findRing(partner, (inventory = InventoryType.EQUIPPED));
+                if (ring.isPresent()) {
+                    InventoryModifier.removeFromSlot(partner.getClient(), inventory, ring.get().getPosition(), 1, false);
+                }
+            }
+            partner.getRelationship().reset();
+        }
+
+        cm.sendOk(`You are now divorced from ${partnerName}`)
         cm.dispose();
     }
-} 
+}
