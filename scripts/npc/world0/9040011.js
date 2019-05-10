@@ -32,7 +32,7 @@ function action(m, t, s) {
         + "\r\n#eWhat are the rates for Chirithy?#n\r\nEXP: 250x // Mesos: 100x // Drop: 3x");
         cm.dispose();
     } else if (s == 1) {
-        cm.openNPC(9000037, "daily_login");
+        cm.openNpc(9000037, "daily_login");
         cm.dispose();
     } else if (s == 2) {
         cm.sendOk("Features here");

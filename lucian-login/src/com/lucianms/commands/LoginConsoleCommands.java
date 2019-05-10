@@ -27,6 +27,8 @@ public class LoginConsoleCommands extends ConsoleCommands {
             } else {
                 LOGGER.info("Failed to find any user account via username '{}", username);
             }
+        } else if (command.equals("help")) {
+            System.out.println("unban <account name> - Attempts an un-ban");
         }
     }
 }
