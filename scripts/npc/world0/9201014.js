@@ -27,7 +27,6 @@ function action(mode, type, selection) {
     }
     let rel = player.getRelationship();
     let formal = rel.getStatus();
-    cm.gainItem(ServerConstants.CURRENCY, -DIVORCE_COST, true);
     if (formal != formal.class.static.Married) {
         cm.sendOk("You must be married before you can get divorced.");
         cm.dispose();
@@ -50,7 +49,7 @@ function action(mode, type, selection) {
             cm.dispose();
         }
     } else if (status == 3) {
-        cm.gainItem(ServerConstants.CURRENCY -DIVORCE_COST, true);
+        cm.gainItem(ServerConstants.CURRENCY, -DIVORCE_COST, true);
         if (ring.isPresent()) {
             let r = ring.get();
             InventoryModifier.removeFromSlot(client, inventory, r.getPosition(), 1, false);
