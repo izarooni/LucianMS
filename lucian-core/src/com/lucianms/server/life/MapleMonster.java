@@ -183,11 +183,12 @@ public class MapleMonster extends AbstractLoadedMapleLife {
         this.venomMultiplier = multiplier;
     }
 
+    public int getSummonEffect() {
+        return getStats().getSummonEffect();
+    }
+
     public MapleMonsterStats getStats() {
-        if (overrideStats != null) {
-            return overrideStats;
-        }
-        return stats;
+        return overrideStats == null ? stats : overrideStats;
     }
 
     public boolean isBoss() {

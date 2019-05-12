@@ -33,19 +33,38 @@ import java.util.*;
  */
 public class MapleMonsterStats {
 
-    private int exp, hp, mp, level, PADamage, PDDamage, MADamage, MDDamage, dropPeriod, cp, buffToGive, removeAfter;
-    private boolean boss, undead, ffaLoot, isExplosiveReward, firstAttack, removeOnMiss;
+    private int exp;
+    private int hp;
+    private int mp;
+    private int level;
+    private int PADamage;
+    private int PDDamage;
+    private int MADamage;
+    private int MDDamage;
+    private int dropPeriod;
+    private int CP;
+    private int buffToGive;
+    private int removeAfter;
+    private int summonEffect;
+    private byte tagColor;
+    private byte tagBgColor;
+    private boolean boss;
+    private boolean undead;
+    private boolean ffaLoot;
+    private boolean isExplosiveReward;
+    private boolean firstAttack;
+    private boolean removeOnMiss;
+    private boolean friendly;
+
     private String name;
     private Map<String, Integer> animationTimes = new HashMap<>();
     private Map<Element, ElementalEffectiveness> resistance = new HashMap<>();
     private ArrayList<Pair<Integer, Integer>> skills = new ArrayList<>();
-    private ArrayList<LoseItem> loseItem = null;
     private ArrayList<Integer> revives = new ArrayList<>();
-    private byte tagColor, tagBgColor;
-    private Pair<Integer, Integer> cool = null;
-    private BanishInfo banish = null;
-    private SelfDestruction selfDestruction = null;
-    private boolean friendly;
+    private ArrayList<LoseItem> loseItem;
+    private Pair<Integer, Integer> cool;
+    private BanishInfo banish;
+    private SelfDestruction selfDestruction;
 
     public MapleMonsterStats() {
     }
@@ -70,7 +89,7 @@ public class MapleMonsterStats {
         MADamage = stats.MADamage;
         MDDamage = stats.MDDamage;
         dropPeriod = stats.dropPeriod;
-        cp = stats.cp;
+        CP = stats.CP;
         buffToGive = stats.buffToGive;
         removeAfter = stats.removeAfter;
         //endregion
@@ -137,6 +156,14 @@ public class MapleMonsterStats {
 
     public void setRemoveAfter(int removeAfter) {
         this.removeAfter = removeAfter;
+    }
+
+    public int getSummonEffect() {
+        return summonEffect;
+    }
+
+    public void setSummonEffect(int summonEffect) {
+        this.summonEffect = summonEffect;
     }
 
     public int getDropPeriod() {
@@ -292,11 +319,11 @@ public class MapleMonsterStats {
     }
 
     public int getCP() {
-        return cp;
+        return CP;
     }
 
-    public void setCP(int cp) {
-        this.cp = cp;
+    public void setCP(int CP) {
+        this.CP = CP;
     }
 
     public List<LoseItem> loseItem() {

@@ -999,6 +999,10 @@ public class MapleMap implements PacketAnnouncer {
     }
 
     public void spawnMonsterOnGroundBelow(MapleMonster mob, Point pos) {
+        if (mob.getSummonEffect() > 0) {
+            spawnMonsterWithEffect(mob, mob.getSummonEffect(), pos);
+            return;
+        }
         Point spos = new Point(pos.x, pos.y - 1);
         spos = calcPointBelow(spos);
         if (spos != null) {

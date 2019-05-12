@@ -59,13 +59,13 @@ public class MapleServerInboundHandler extends ChannelInboundHandlerAdapter {
         seqRecv[3] = (byte) (Math.random() * 255);
         seqSend[3] = (byte) (Math.random() * 255);
 
-        AESCipher sendCypher = new AESCipher(seqSend, (short) (0xFFFF - ServerConstants.VERSION));
-        AESCipher recvCypher = new AESCipher(seqRecv, ServerConstants.VERSION);
+        AESCipher sendCipher = new AESCipher(seqSend, (short) (0xFFFF - ServerConstants.VERSION));
+        AESCipher recvCipher = new AESCipher(seqRecv, ServerConstants.VERSION);
 
         byte[] handshake = MaplePacketCreator.getHello(ServerConstants.VERSION, seqSend, seqRecv);
         ctx.channel().writeAndFlush(handshake);
 
-        MapleClient client = new MapleClient(sendCypher, recvCypher, ctx.channel());
+        MapleClient client = new MapleClient(sendCipher, recvCipher, ctx.channel());
         int channelBasePort = Server.getConfig().getNumber("ChannelBasePort").intValue();
         if (port >= channelBasePort) {
             client.setChannel((port - channelBasePort) + 1);

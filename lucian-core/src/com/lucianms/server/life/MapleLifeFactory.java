@@ -30,7 +30,10 @@ import tools.Pair;
 import tools.StringUtil;
 
 import java.io.File;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class MapleLifeFactory {
 
@@ -82,6 +85,7 @@ public class MapleLifeFactory {
             stats.setBuffToGive(MapleDataTool.getIntConvert("buff", monsterInfoData, -1));
             stats.setCP(MapleDataTool.getIntConvert("getCP", monsterInfoData, 0));
             stats.setRemoveOnMiss(MapleDataTool.getIntConvert("removeOnMiss", monsterInfoData, 0) > 0);
+            stats.setSummonEffect(MapleDataTool.getIntConvert("summonEffect", monsterInfoData, 0));
 
             MapleData special = monsterInfoData.getChildByPath("coolDamage");
             if (special != null) {
