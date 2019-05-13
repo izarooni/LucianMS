@@ -37,8 +37,8 @@ import java.util.Map;
 
 public class MapleLifeFactory {
 
-    private static MapleDataProvider data = MapleDataProviderFactory.getDataProvider(new File(System.getProperty("wzpath") + "/Mob.wz"));
-    private final static MapleDataProvider stringDataWZ = MapleDataProviderFactory.getDataProvider(new File(System.getProperty("wzpath") + "/String.wz"));
+    private static MapleDataProvider data = MapleDataProviderFactory.getWZ(new File(System.getProperty("wzpath") + "/Mob.wz"));
+    private final static MapleDataProvider stringDataWZ = MapleDataProviderFactory.getWZ(new File(System.getProperty("wzpath") + "/String.wz"));
     private static MapleData mobStringData = stringDataWZ.getData("Mob.img");
     private static MapleData npcStringData = stringDataWZ.getData("Npc.img");
     private static Map<Integer, MapleMonsterStats> monsterStats = new HashMap<>();

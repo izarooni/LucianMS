@@ -27,5 +27,9 @@ public interface AnimatedMapleMapObject extends MapleMapObject {
 
     void setStance(int stance);
 
+    int getFoothold();
+
+    void setFoothold(int foothold);
+
     boolean isFacingLeft();
 }

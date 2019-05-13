@@ -24,15 +24,29 @@ package com.lucianms.server.maps;
 public abstract class AbstractAnimatedMapleMapObject extends AbstractMapleMapObject implements AnimatedMapleMapObject {
 
     private int stance;
+    private int foothold;
 
+    @Override
     public int getStance() {
         return stance;
     }
 
+    @Override
     public void setStance(int stance) {
         this.stance = stance;
     }
 
+    @Override
+    public int getFoothold() {
+        return foothold;
+    }
+
+    @Override
+    public void setFoothold(int foothold) {
+        this.foothold = foothold;
+    }
+
+    @Override
     public boolean isFacingLeft() {
         return Math.abs(stance) % 2 == 1;
     }

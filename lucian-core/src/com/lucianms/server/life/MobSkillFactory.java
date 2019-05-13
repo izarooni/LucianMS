@@ -21,17 +21,18 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package com.lucianms.server.life;
 
-import java.awt.Point;
+import provider.MapleData;
+import provider.MapleDataProvider;
+import provider.MapleDataProviderFactory;
+import provider.MapleDataTool;
+
+import java.awt.*;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
-import provider.MapleData;
-import provider.MapleDataProvider;
-import provider.MapleDataProviderFactory;
-import provider.MapleDataTool;
 
 /**
  *
@@ -40,7 +41,7 @@ import provider.MapleDataTool;
 public class MobSkillFactory {
 
     private static Map<String, MobSkill> mobSkills = new HashMap<String, MobSkill>();
-    private final static MapleDataProvider dataSource = MapleDataProviderFactory.getDataProvider(new File(System.getProperty("wzpath") + "/Skill.wz"));
+    private final static MapleDataProvider dataSource = MapleDataProviderFactory.getWZ(new File(System.getProperty("wzpath") + "/Skill.wz"));
     private static MapleData skillRoot = dataSource.getData("MobSkill.img");
     private static ReentrantReadWriteLock dataLock = new ReentrantReadWriteLock();
 

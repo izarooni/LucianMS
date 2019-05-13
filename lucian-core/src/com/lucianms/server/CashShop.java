@@ -152,7 +152,7 @@ public class CashShop {
             packages.clear();
             specialcashitems.clear();
 
-            MapleDataProvider etc = MapleDataProviderFactory.getDataProvider(new File("wz/Etc.wz"));
+            MapleDataProvider etc = MapleDataProviderFactory.getWZ(new File("wz/Etc.wz"));
 
             for (MapleData item : etc.getData("Commodity.img").getChildren()) {
                 String imgdir = item.getName();

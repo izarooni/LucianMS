@@ -5943,21 +5943,13 @@ public class MaplePacketCreator {
         mplew.writeInt(life.getObjectId());
         mplew.write(life.getController() == null ? 5 : 1);
         mplew.writeInt(life.getId());
-        mplew.skip(15);
-        mplew.write(0x88);
-        mplew.skip(6);
+        mplew.skip(16); // temp_stat bitmask
         mplew.writePos(life.getPosition());
         mplew.write(life.getStance());
-        mplew.writeShort(0); //Origin FH //life.getStartFh()
+        mplew.writeShort(life.getFoothold());
         mplew.writeShort(life.getFh());
-
         if (effect > 0) {
-            mplew.write(effect);
-            mplew.write(0);
-            mplew.writeShort(0);
-            if (effect == 15) {
-                mplew.write(0);
-            }
+            mplew.writeInt(effect);
         }
         mplew.write(newSpawn ? -2 : -1);
         mplew.write(life.getTeam());

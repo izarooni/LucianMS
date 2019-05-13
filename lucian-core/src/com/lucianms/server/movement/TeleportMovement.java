@@ -36,16 +36,16 @@ public class TeleportMovement extends AbsoluteLifeMovement {
         return new TeleportMovement(getType(),
                 getPosition().getLocation(),
                 getDuration(),
-                getNewState(),
-                getUnk());
+                getStance(),
+                getFoothold());
     }
 
     @Override
     public void serialize(LittleEndianWriter lew) {
         lew.write(getType());
         lew.writePos(getPosition());
-        lew.writeShort(getUnk());
-        lew.write(getNewState());
+        lew.writeShort(getFoothold());
+        lew.write(getStance());
         lew.writeShort(getDuration());
     }
 }

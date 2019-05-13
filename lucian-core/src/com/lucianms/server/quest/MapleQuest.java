@@ -21,22 +21,19 @@
  */
 package com.lucianms.server.quest;
 
-import java.io.File;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
 import com.lucianms.client.MapleCharacter;
 import com.lucianms.client.MapleQuestStatus;
 import com.lucianms.client.MapleQuestStatus.Status;
-import java.util.EnumMap;
+import com.lucianms.server.quest.actions.*;
+import com.lucianms.server.quest.requirements.*;
 import provider.MapleData;
 import provider.MapleDataProvider;
 import provider.MapleDataProviderFactory;
 import provider.MapleDataTool;
-import com.lucianms.server.quest.actions.*;
-import com.lucianms.server.quest.requirements.*;
 import tools.MaplePacketCreator;
+
+import java.io.File;
+import java.util.*;
 
 /**
  *
@@ -56,7 +53,7 @@ public class MapleQuest {
     private boolean autoStart;
     private boolean autoPreComplete, autoComplete;
     private boolean repeatable = false;
-    private final static MapleDataProvider questData = MapleDataProviderFactory.getDataProvider(new File(System.getProperty("wzpath") + "/Quest.wz"));
+    private final static MapleDataProvider questData = MapleDataProviderFactory.getWZ(new File(System.getProperty("wzpath") + "/Quest.wz"));
 	private static MapleData questInfo;
 	private static MapleData questAct;
 	private static MapleData questReq;

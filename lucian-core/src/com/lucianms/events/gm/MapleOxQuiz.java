@@ -22,11 +22,11 @@
 package com.lucianms.events.gm;
 
 import com.lucianms.client.MapleCharacter;
+import com.lucianms.scheduler.TaskExecutor;
+import com.lucianms.server.maps.MapleMap;
 import provider.MapleDataProvider;
 import provider.MapleDataProviderFactory;
 import provider.MapleDataTool;
-import com.lucianms.scheduler.TaskExecutor;
-import com.lucianms.server.maps.MapleMap;
 import tools.MaplePacketCreator;
 import tools.Randomizer;
 
@@ -43,7 +43,7 @@ public final class MapleOxQuiz {
     private int question = 1;
     private MapleMap map = null;
     private int expGain = 200;
-    private static MapleDataProvider stringData = MapleDataProviderFactory.getDataProvider(new File(System.getProperty("wzpath") + "/Etc.wz"));
+    private static MapleDataProvider stringData = MapleDataProviderFactory.getWZ(new File(System.getProperty("wzpath") + "/Etc.wz"));
 
     public MapleOxQuiz(MapleMap map) {
         this.map = map;

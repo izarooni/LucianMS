@@ -24,10 +24,10 @@ public final class MovementPacketHelper {
                 case 17: { // Float
                     Point position = reader.readPoint();
                     Point velocity = reader.readPoint();
-                    short unk = reader.readShort();
-                    byte newState = reader.readByte();
+                    short foothold = reader.readShort();
+                    byte stance = reader.readByte();
                     short duration = reader.readShort();
-                    AbsoluteLifeMovement alm = new AbsoluteLifeMovement(moveType, position, duration, newState, velocity, unk);
+                    AbsoluteLifeMovement alm = new AbsoluteLifeMovement(moveType, position, duration, stance, velocity, foothold);
                     res.add(alm);
 
                     if (client != null) {
@@ -39,7 +39,7 @@ public final class MovementPacketHelper {
                                     cheatEntry.announce(client, 1000 * 60, "'{}' is fast walking (speed: {})", player.getName(), velocity.getX());
                                 }
                             }
-                            if (newState == 13 && !player.getMap().isSwimEnabled()) {
+                            if (stance == 13 && !player.getMap().isSwimEnabled()) {
                                 Cheater.CheatEntry cheatEntry = player.getCheater().getCheatEntry(Cheats.Swim);
                                 if (cheatEntry.testFor(1000 * 60)) {
                                     cheatEntry.announce(client, 1000 * 60, "'{}' is swimming in a swim disabled map {}", player.getName(), player.getMapId());
@@ -60,9 +60,9 @@ public final class MovementPacketHelper {
                 case 20: // Aran Combat Step
                 case 22: {
                     Point position = reader.readPoint();
-                    byte newState = reader.readByte();
+                    byte stance = reader.readByte();
                     short duration = reader.readShort();
-                    res.add(new RelativeLifeMovement(moveType, position, duration, newState));
+                    res.add(new RelativeLifeMovement(moveType, position, duration, stance));
                     break;
                 }
                 case 3:
@@ -73,9 +73,9 @@ public final class MovementPacketHelper {
                 case 11: { //chair
                     Point position = reader.readPoint();
                     short unk = reader.readShort();
-                    byte newState = reader.readByte();
+                    byte stance = reader.readByte();
                     short duration = reader.readShort();
-                    res.add(new TeleportMovement(moveType, position, duration, newState, unk));
+                    res.add(new TeleportMovement(moveType, position, duration, stance, unk));
                     break;
                 }
                 case 14:
@@ -107,11 +107,13 @@ public final class MovementPacketHelper {
         for (LifeMovementFragment move : movement) {
             if (move instanceof LifeMovement) {
                 if (move instanceof AbsoluteLifeMovement) {
-                    Point position = move.getPosition();
+                    AbsoluteLifeMovement abs = (AbsoluteLifeMovement) move;
+                    Point position = abs.getPosition();
                     position.y += yoffset;
                     target.setPosition(position);
+                    target.setFoothold(abs.getFoothold());
                 }
-                target.setStance(((LifeMovement) move).getNewState());
+                target.setStance(((LifeMovement) move).getStance());
             }
         }
     }

@@ -49,6 +49,7 @@ import com.lucianms.server.partyquest.Pyramid;
 import com.lucianms.server.world.MapleParty;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import provider.tools.EffectProvider;
 import tools.MaplePacketCreator;
 import tools.PacketAnnouncer;
 import tools.Pair;
@@ -802,7 +803,7 @@ public class MapleMap implements PacketAnnouncer {
             spawnedMonstersOnMap.decrementAndGet();
             monster.setHp(0);
             monster.killBy(null);
-            broadcastMessage(MaplePacketCreator.killMonster(monster.getObjectId(), true), monster.getPosition());
+            broadcastMessage(MaplePacketCreator.killMonster(monster.getObjectId(), true));
             removeMapObject(monster);
         }
     }
@@ -1003,14 +1004,8 @@ public class MapleMap implements PacketAnnouncer {
             spawnMonsterWithEffect(mob, mob.getSummonEffect(), pos);
             return;
         }
-        Point spos = new Point(pos.x, pos.y - 1);
-        spos = calcPointBelow(spos);
-        if (spos != null) {
-            spos.y--;
-        } else {
-            spos = mob.getPosition().getLocation();
-        }
-        mob.setPosition(spos);
+        Point newLocation = new Point(pos.x, pos.y - 5);
+        mob.setPosition(newLocation);
         spawnMonster(mob);
     }
 
@@ -1119,14 +1114,8 @@ public class MapleMap implements PacketAnnouncer {
 
     public void spawnMonsterWithEffect(final MapleMonster monster, final int effect, Point pos) {
         monster.setMap(this);
-        Point spos = new Point(pos.x, pos.y - 1);
-        spos = calcPointBelow(spos);
-        if (spos == null) {
-            LOGGER.warn("Unable to spawn monster {} with effect {} in map {} at position {}", monster.getId(), effect, getId(), pos.toString());
-            return;
-        }
-        spos.y--;
-        monster.setPosition(spos);
+        Point newLocation = new Point(pos.x, pos.y - 3);
+        monster.setPosition(newLocation);
         if (mapid < 925020000 || mapid > 925030000) {
             monster.disableDrops();
         }
@@ -1134,7 +1123,13 @@ public class MapleMap implements PacketAnnouncer {
         if (monster.hasBossHPBar()) {
             broadcastMessage(monster.makeBossHPBarPacket(), monster.getPosition());
         }
-        updateMonsterController(monster);
+        int summonEffect = EffectProvider.getSummonEffect(effect);
+        if (summonEffect > 0) {
+            // uhh don't waste the thread-pool i guess?
+            TaskExecutor.createTask(() -> updateMonsterController(monster), summonEffect);
+        } else {
+            updateMonsterController(monster);
+        }
 
         spawnedMonstersOnMap.incrementAndGet();
     }

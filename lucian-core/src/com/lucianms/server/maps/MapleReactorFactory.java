@@ -21,21 +21,22 @@
 */
 package com.lucianms.server.maps;
 
+import com.lucianms.server.maps.MapleReactorStats.StateData;
+import provider.MapleData;
+import provider.MapleDataProvider;
+import provider.MapleDataProviderFactory;
+import provider.MapleDataTool;
+import tools.Pair;
+import tools.StringUtil;
+
 import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import provider.MapleData;
-import provider.MapleDataProvider;
-import provider.MapleDataProviderFactory;
-import provider.MapleDataTool;
-import com.lucianms.server.maps.MapleReactorStats.StateData;
-import tools.Pair;
-import tools.StringUtil;
 
 public class MapleReactorFactory {
-    private static MapleDataProvider data = MapleDataProviderFactory.getDataProvider(new File(System.getProperty("wzpath") + "/Reactor.wz"));
+    private static MapleDataProvider data = MapleDataProviderFactory.getWZ(new File(System.getProperty("wzpath") + "/Reactor.wz"));
     private static Map<Integer, MapleReactorStats> reactorStats = new HashMap<>();
 
     public static MapleReactorStats getReactor(int rid) {

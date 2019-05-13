@@ -44,7 +44,7 @@ public class JumpDownMovement extends AbstractLifeMovement {
         lew.writePos(getPixelsPerSecond());
         lew.writeShort(getUnk());
         lew.writeShort(getFH());
-        lew.write(getNewState());
+        lew.write(getStance());
         lew.writeShort(getDuration());
     }
 
@@ -53,7 +53,7 @@ public class JumpDownMovement extends AbstractLifeMovement {
         return new JumpDownMovement(getType(),
                 getPosition().getLocation(),
                 getDuration(),
-                getNewState(),
+                getStance(),
                 getPixelsPerSecond(),
                 getUnk(),
                 getFH());

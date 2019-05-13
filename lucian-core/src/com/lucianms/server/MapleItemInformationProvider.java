@@ -89,9 +89,9 @@ public class MapleItemInformationProvider {
 
     private MapleItemInformationProvider() {
         loadCardIdData();
-        itemData = MapleDataProviderFactory.getDataProvider(new File(System.getProperty("wzpath") + "/Item.wz"));
-        equipData = MapleDataProviderFactory.getDataProvider(new File(System.getProperty("wzpath") + "/Character.wz"));
-        stringData = MapleDataProviderFactory.getDataProvider(new File(System.getProperty("wzpath") + "/String.wz"));
+        itemData = MapleDataProviderFactory.getWZ(new File(System.getProperty("wzpath") + "/Item.wz"));
+        equipData = MapleDataProviderFactory.getWZ(new File(System.getProperty("wzpath") + "/Character.wz"));
+        stringData = MapleDataProviderFactory.getWZ(new File(System.getProperty("wzpath") + "/String.wz"));
         cashStringData = stringData.getData("Cash.img");
         consumeStringData = stringData.getData("Consume.img");
         eqpStringData = stringData.getData("Eqp.img");

@@ -28,12 +28,12 @@ import java.awt.*;
 public class AbsoluteLifeMovement extends AbstractLifeMovement {
 
     private Point pixelsPerSecond;
-    private int unk;
+    private int foothold;
 
-    public AbsoluteLifeMovement(int type, Point position, int duration, int newstate, Point pixelsPerSecond, int unk) {
-        super(type, position, duration, newstate);
+    public AbsoluteLifeMovement(int type, Point position, int duration, int stance, Point pixelsPerSecond, int foothold) {
+        super(type, position, duration, stance);
         this.pixelsPerSecond = pixelsPerSecond;
-        this.unk = unk;
+        this.foothold = foothold;
     }
 
     @Override
@@ -41,9 +41,9 @@ public class AbsoluteLifeMovement extends AbstractLifeMovement {
         return new AbsoluteLifeMovement(getType(),
                 getPosition().getLocation(),
                 getDuration(),
-                getNewState(),
+                getStance(),
                 getPixelsPerSecond().getLocation(),
-                getUnk());
+                getFoothold());
     }
 
     @Override
@@ -51,8 +51,8 @@ public class AbsoluteLifeMovement extends AbstractLifeMovement {
         lew.write(getType());
         lew.writePos(getPosition());
         lew.writePos(getPixelsPerSecond());
-        lew.writeShort(getUnk());
-        lew.write(getNewState());
+        lew.writeShort(getFoothold());
+        lew.write(getStance());
         lew.writeShort(getDuration());
     }
 
@@ -64,11 +64,11 @@ public class AbsoluteLifeMovement extends AbstractLifeMovement {
         this.pixelsPerSecond = pixelsPerSecond;
     }
 
-    public int getUnk() {
-        return unk;
+    public int getFoothold() {
+        return foothold;
     }
 
-    public void setUnk(int unk) {
-        this.unk = unk;
+    public void setFoothold(int foothold) {
+        this.foothold = foothold;
     }
 }

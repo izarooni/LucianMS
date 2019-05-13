@@ -27,8 +27,8 @@ import java.util.List;
 public class FieldBuilder {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(FieldBuilder.class);
-    private static final MapleDataProvider source = MapleDataProviderFactory.getDataProvider(new File(System.getProperty("wzpath") + "/Map.wz"));
-    private static final MapleData nameData = MapleDataProviderFactory.getDataProvider(new File(System.getProperty("wzpath") + "/String.wz")).getData("Map.img");
+    private static final MapleDataProvider source = MapleDataProviderFactory.getWZ(new File(System.getProperty("wzpath") + "/Map.wz"));
+    private static final MapleData nameData = MapleDataProviderFactory.getWZ(new File(System.getProperty("wzpath") + "/String.wz")).getData("Map.img");
 
     private MapleData mapData;
     private MapleMap map;

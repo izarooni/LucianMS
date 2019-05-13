@@ -221,6 +221,7 @@ public class HGMCommands extends CommandExecutor {
                         stats.setExp(exp == null ? monster.getExp() : exp.intValue());
                         monster.setOverrideStats(stats);
                     }
+                    monster.setFh(player.getFoothold());
                     player.getMap().spawnMonsterOnGroudBelow(monster, player.getPosition());
                 }
             } else {

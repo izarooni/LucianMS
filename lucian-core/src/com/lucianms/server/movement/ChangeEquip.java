@@ -27,16 +27,16 @@ import java.awt.*;
 
 public class ChangeEquip implements LifeMovementFragment {
 
-    private int wui;
+    private int update;
 
-    public ChangeEquip(int wui) {
-        this.wui = wui;
+    public ChangeEquip(int update) {
+        this.update = update;
     }
 
     @Override
     public void serialize(LittleEndianWriter lew) {
         lew.write(10);
-        lew.write(wui);
+        lew.write(update);
     }
 
     @Override
@@ -46,6 +46,6 @@ public class ChangeEquip implements LifeMovementFragment {
 
     @Override
     public LifeMovementFragment duplicate() {
-        return new ChangeEquip(wui);
+        return new ChangeEquip(update);
     }
 }

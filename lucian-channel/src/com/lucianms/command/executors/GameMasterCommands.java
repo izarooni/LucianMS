@@ -894,7 +894,7 @@ public class GameMasterCommands extends CommandExecutor {
                 String type = args.get(0);
                 String search = args.concatFrom(1).toLowerCase().trim();
                 MapleData data;
-                MapleDataProvider dataProvider = MapleDataProviderFactory.getDataProvider(new File(System.getProperty("wzpath") + "/" + "String.wz"));
+                MapleDataProvider dataProvider = MapleDataProviderFactory.getWZ(new File(System.getProperty("wzpath") + "/" + "String.wz"));
                 player.message("<<Type: " + type + " | Search: \"" + search + "\">>");
 
                 BiPredicate<String, String> check = new BiPredicate<>() {

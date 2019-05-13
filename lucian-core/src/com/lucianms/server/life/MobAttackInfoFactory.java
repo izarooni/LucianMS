@@ -21,14 +21,15 @@
 */
 package com.lucianms.server.life;
 
-import java.io.File;
-import java.util.HashMap;
-import java.util.Map;
 import provider.MapleData;
 import provider.MapleDataProvider;
 import provider.MapleDataProviderFactory;
 import provider.MapleDataTool;
 import tools.StringUtil;
+
+import java.io.File;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  *
@@ -36,7 +37,7 @@ import tools.StringUtil;
  */
 public class MobAttackInfoFactory {
     private static Map<String, MobAttackInfo> mobAttacks = new HashMap<String, MobAttackInfo>();
-    private static MapleDataProvider dataSource = MapleDataProviderFactory.getDataProvider(new File(System.getProperty("wzpath") + "/Mob.wz"));
+    private static MapleDataProvider dataSource = MapleDataProviderFactory.getWZ(new File(System.getProperty("wzpath") + "/Mob.wz"));
 
     public static MobAttackInfo getMobAttackInfo(MapleMonster mob, int attack) {
         MobAttackInfo ret = mobAttacks.get(mob.getId() + "" + attack);

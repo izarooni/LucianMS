@@ -27,15 +27,15 @@ import java.awt.*;
 
 public class RelativeLifeMovement extends AbstractLifeMovement {
 
-    public RelativeLifeMovement(int type, Point position, int duration, int newstate) {
-        super(type, position, duration, newstate);
+    public RelativeLifeMovement(int type, Point position, int duration, int stance) {
+        super(type, position, duration, stance);
     }
 
     @Override
     public void serialize(LittleEndianWriter lew) {
         lew.write(getType());
         lew.writePos(getPosition());
-        lew.write(getNewState());
+        lew.write(getStance());
         lew.writeShort(getDuration());
     }
 
@@ -44,6 +44,6 @@ public class RelativeLifeMovement extends AbstractLifeMovement {
         return new RelativeLifeMovement(getType(),
                 getPosition().getLocation(),
                 getDuration(),
-                getNewState());
+                getStance());
     }
 }

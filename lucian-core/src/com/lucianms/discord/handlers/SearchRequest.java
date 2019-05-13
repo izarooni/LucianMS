@@ -36,7 +36,7 @@ public class SearchRequest extends DiscordRequest {
         writer.writeLong(channelID);
 
         MapleData data;
-        MapleDataProvider dataProvider = MapleDataProviderFactory.getDataProvider(new File(System.getProperty("wzpath") + "/" + "String.wz"));
+        MapleDataProvider dataProvider = MapleDataProviderFactory.getWZ(new File(System.getProperty("wzpath") + "/" + "String.wz"));
         if (type.equalsIgnoreCase("NPC") || type.equalsIgnoreCase("NPCS")) {
             List<String> retNpcs = new ArrayList<>();
             data = dataProvider.getData("Npc.img");

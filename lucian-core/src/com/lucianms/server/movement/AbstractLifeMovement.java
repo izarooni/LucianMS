@@ -27,14 +27,14 @@ public abstract class AbstractLifeMovement implements LifeMovement {
 
     private Point position;
     private int type;
-    private int newState;
+    private int stance;
     private int duration;
 
-    public AbstractLifeMovement(int type, Point position, int duration, int newState) {
+    public AbstractLifeMovement(int type, Point position, int duration, int stance) {
         this.type = type;
         this.position = position;
         this.duration = duration;
-        this.newState = newState;
+        this.stance = stance;
     }
 
     @Override
@@ -48,8 +48,8 @@ public abstract class AbstractLifeMovement implements LifeMovement {
     }
 
     @Override
-    public int getNewState() {
-        return newState;
+    public int getStance() {
+        return stance;
     }
 
     @Override

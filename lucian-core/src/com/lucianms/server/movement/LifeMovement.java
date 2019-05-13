@@ -27,7 +27,7 @@ public interface LifeMovement extends LifeMovementFragment {
 
     Point getPosition();
 
-    int getNewState();
+    int getStance();
 
     int getDuration();
 

@@ -46,7 +46,7 @@ public class AFlappyBird extends GAutoEvent {
             if (frags instanceof AbsoluteLifeMovement) {
                 AbsoluteLifeMovement mov = (AbsoluteLifeMovement) frags;
                 //                System.out.println(String.format("[%s] {unk=%d, player=%s}", getClass().getSimpleName(), mov.getUnk(), player.getName()));
-                if (mov.getUnk() != 0) { // unsure
+                if (mov.getFoothold() != 0) { // unsure
                     player.dropMessage("You are being kicked from the event for cheating");
                     unregisterPlayer(player);
                     break;

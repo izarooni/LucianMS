@@ -713,7 +713,7 @@ public class MapleStatEffect {
             }
         }
         if (isMagicDoor() && !FieldLimit.DOOR.check(applyto.getMap().getFieldLimit())) { // Magic Door
-            int y = applyto.getFh();
+            int y = applyto.getFoothold();
             if (y == 0) {
                 y = applyto.getPosition().y;
             }

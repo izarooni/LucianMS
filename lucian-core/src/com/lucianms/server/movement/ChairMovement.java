@@ -38,7 +38,7 @@ public class ChairMovement extends AbstractLifeMovement {
         lew.write(getType());
         lew.writePos(getPosition());
         lew.writeShort(getUnk());
-        lew.write(getNewState());
+        lew.write(getStance());
         lew.writeShort(getDuration());
     }
 
@@ -47,7 +47,7 @@ public class ChairMovement extends AbstractLifeMovement {
         return new ChairMovement(getType(),
                 getPosition().getLocation(),
                 getDuration(),
-                getNewState(),
+                getStance(),
                 getUnk());
     }
 

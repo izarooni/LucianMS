@@ -21,13 +21,9 @@
 */
 package tools;
 
-import java.util.AbstractMap;
-import java.util.AbstractSet;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
+@Deprecated
 public class ArrayMap<K, V> extends AbstractMap<K, V> {
 
     static class Entry<K, V> implements Map.Entry<K, V> {

@@ -1157,7 +1157,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Di
     }
 
     public void maxSkills() {
-        for (MapleData skill_ : MapleDataProviderFactory.getDataProvider(new File(System.getProperty("wzpath") + "/" + "String.wz")).getData("Skill.img").getChildren()) {
+        for (MapleData skill_ : MapleDataProviderFactory.getWZ(new File(System.getProperty("wzpath") + "/" + "String.wz")).getData("Skill.img").getChildren()) {
             try {
                 Skill skill = SkillFactory.getSkill(Integer.parseInt(skill_.getName()));
                 if (skill != null && ((skill.getId() / 100) != 9 || isGM())) {
@@ -2638,16 +2638,6 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Di
     public void setLuk(int luk) {
         this.luk = luk;
         updateLocalizedStats();
-    }
-
-    public int getFh() {
-        Point pos = this.getPosition();
-        pos.y -= 6;
-        if (getMap().getFootholds().findBelow(pos) == null) {
-            return 0;
-        } else {
-            return getMap().getFootholds().findBelow(pos).getY1();
-        }
     }
 
     public MapleMap getMap() {

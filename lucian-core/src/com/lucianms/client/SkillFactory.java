@@ -22,9 +22,9 @@
 package com.lucianms.client;
 
 import com.lucianms.constants.skills.*;
-import provider.*;
 import com.lucianms.server.MapleStatEffect;
 import com.lucianms.server.life.Element;
+import provider.*;
 
 import java.io.File;
 import java.util.Collections;
@@ -34,7 +34,7 @@ import java.util.Map;
 public class SkillFactory {
 
     private static Map<Integer, Skill> skills = new HashMap<>();
-    private static MapleDataProvider datasource = MapleDataProviderFactory.getDataProvider(MapleDataProviderFactory.fileInWZPath("Skill.wz"));
+    private static MapleDataProvider datasource = MapleDataProviderFactory.getWZ(new File(System.getProperty("wzpath"), "Skill.wz"));
 
     public static Skill getSkill(int id) {
         return skills.get(id);
@@ -334,7 +334,7 @@ public class SkillFactory {
     }
 
     public static String getSkillName(int skillid) {
-        MapleData data = MapleDataProviderFactory.getDataProvider(new File(System.getProperty("wzpath") + "/" + "String.wz")).getData("Skill.img");
+        MapleData data = MapleDataProviderFactory.getWZ(new File(System.getProperty("wzpath") + "/" + "String.wz")).getData("Skill.img");
         StringBuilder skill = new StringBuilder();
         skill.append(String.valueOf(skillid));
         if (skill.length() == 4) {

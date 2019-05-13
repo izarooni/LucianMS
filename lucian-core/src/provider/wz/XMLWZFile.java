@@ -21,11 +21,6 @@
 */
 package provider.wz;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xml.sax.SAXException;
@@ -33,27 +28,35 @@ import provider.MapleData;
 import provider.MapleDataDirectoryEntry;
 import provider.MapleDataProvider;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+
 public class XMLWZFile implements MapleDataProvider {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(XMLWZFile.class);
     private File root;
     private WZDirectoryEntry rootForNavigation;
 
-    public XMLWZFile(File fileIn) {
-        root = fileIn;
-        rootForNavigation = new WZDirectoryEntry(fileIn.getName(), 0, 0, null);
-        fillMapleDataEntitys(root, rootForNavigation);
+    public XMLWZFile(File root) {
+        this.root = root;
+        rootForNavigation = new WZDirectoryEntry(root.getName(), 0, 0, null);
+        fillMapleDataEntitys(this.root, rootForNavigation);
     }
 
-    private void fillMapleDataEntitys(File lroot, WZDirectoryEntry wzdir) {
-        for (File file : lroot.listFiles()) {
-            String fileName = file.getName();
-            if (file.isDirectory() && !fileName.endsWith(".img")) {
-                WZDirectoryEntry newDir = new WZDirectoryEntry(fileName, 0, 0, wzdir);
-                wzdir.addDirectory(newDir);
-                fillMapleDataEntitys(file, newDir);
-            } else if (fileName.endsWith(".xml")) {
-                wzdir.addFile(new WZFileEntry(fileName.substring(0, fileName.length() - 4), 0, 0, wzdir));
+    private void fillMapleDataEntitys(File root, WZDirectoryEntry wzdir) {
+        File[] files = root.listFiles();
+        if (files != null) {
+            for (File file : files) {
+                String fileName = file.getName();
+                if (file.isDirectory() && !fileName.endsWith(".img")) {
+                    WZDirectoryEntry newDir = new WZDirectoryEntry(fileName, 0, 0, wzdir);
+                    wzdir.addDirectory(newDir);
+                    fillMapleDataEntitys(file, newDir);
+                } else if (fileName.endsWith(".xml")) {
+                    wzdir.addFile(new WZFileEntry(fileName.substring(0, fileName.length() - 4), 0, 0, wzdir));
+                }
             }
         }
     }
@@ -65,7 +68,7 @@ public class XMLWZFile implements MapleDataProvider {
         if (!dataFile.exists()) {
             return null;
         }
-        try (FileInputStream fis = new FileInputStream(dataFile)){
+        try (FileInputStream fis = new FileInputStream(dataFile)) {
             return new XMLDomMapleData(fis, imageDataDir.getParentFile());
         } catch (FileNotFoundException e) {
             throw new RuntimeException("Datafile " + path + " does not exist in " + root.getAbsolutePath());

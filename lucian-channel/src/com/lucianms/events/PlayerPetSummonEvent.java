@@ -22,7 +22,7 @@ import java.sql.SQLException;
  */
 public class PlayerPetSummonEvent extends PacketEvent {
 
-    private static MapleDataProvider dataRoot = MapleDataProviderFactory.getDataProvider(new File(System.getProperty("wzpath") + "/Item.wz"));
+    private static MapleDataProvider dataRoot = MapleDataProviderFactory.getWZ(new File(System.getProperty("wzpath") + "/Item.wz"));
 
     private byte slot;
     private boolean leader;
