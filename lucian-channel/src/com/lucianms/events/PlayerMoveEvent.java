@@ -6,6 +6,7 @@ import com.lucianms.nio.receive.MaplePacketReader;
 import com.lucianms.server.life.FakePlayer;
 import com.lucianms.server.movement.LifeMovementFragment;
 import com.lucianms.server.movement.MovementPacketHelper;
+import tools.Functions;
 import tools.MaplePacketCreator;
 
 import java.awt.*;
@@ -17,12 +18,13 @@ import java.util.List;
  */
 public final class PlayerMoveEvent extends PacketEvent {
 
-    private List<LifeMovementFragment> movements = null;
+    private List<LifeMovementFragment> movements;
     private Point clientPosition;
 
     @Override
     public void clean() {
-        movements.clear();
+        Functions.requireNotNull(movements, List::clear);
+        movements = null;
     }
 
     @Override

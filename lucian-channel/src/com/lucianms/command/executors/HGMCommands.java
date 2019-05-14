@@ -160,12 +160,14 @@ public class HGMCommands extends CommandExecutor {
                     player.dropMessage(5, error);
                     return;
                 }
+                long expiration = -1;
                 int petId = -1;
                 if (ItemConstants.isPet(id)) {
                     petId = MaplePet.createPet(id);
+                    expiration = Long.MAX_VALUE;
                 }
                 if (command.equals("item")) {
-                    if (MapleInventoryManipulator.addById(client, id, quantity, player.getName(), petId, -1)) {
+                    if (MapleInventoryManipulator.addById(client, id, quantity, player.getName(), petId, expiration)) {
                         client.announce(MaplePacketCreator.getShowItemGain(id, quantity));
                     } else {
                         player.dropMessage(5, "This item does not exist, please try again.");
@@ -176,6 +178,9 @@ public class HGMCommands extends CommandExecutor {
                         toDrop = MapleItemInformationProvider.getInstance().getEquipById(id);
                     } else {
                         toDrop = new Item(id, (byte) 0, quantity);
+                        if (petId > 0) {
+                            toDrop.setExpiration(expiration);
+                        }
                     }
                     if (toDrop != null) {
                         player.getMap().spawnItemDrop(player, player, toDrop, player.getPosition(), true, true);
