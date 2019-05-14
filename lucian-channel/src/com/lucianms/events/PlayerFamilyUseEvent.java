@@ -31,7 +31,7 @@ public class PlayerFamilyUseEvent extends PacketEvent {
         MapleCharacter player = getClient().getPlayer();
         int[] repCost = {3, 5, 7, 8, 10, 12, 15, 20, 25, 40, 50};
         if (action == 0 || action == 1) {
-            MapleCharacter target = getClient().getChannelServer().getPlayerStorage().find(p -> p.getName().equalsIgnoreCase(username));
+            MapleCharacter target = getClient().getWorldServer().getPlayerStorage().find(p -> p.getName().equalsIgnoreCase(username));
             if (target == null) {
                 return null;
             }

@@ -25,7 +25,6 @@ package com.lucianms.server.expeditions;
 import com.lucianms.client.MapleCharacter;
 import com.lucianms.scheduler.Task;
 import com.lucianms.scheduler.TaskExecutor;
-import com.lucianms.server.Server;
 import com.lucianms.server.maps.MapleMap;
 import tools.MaplePacketCreator;
 
@@ -120,7 +119,6 @@ public class MapleExpedition {
         startMap.broadcastMessage(MaplePacketCreator.removeClock());
         broadcastExped(MaplePacketCreator.serverNotice(6, "The expedition has started! The expedition leader is waiting inside!"));
         startTime = System.currentTimeMillis();
-        Server.broadcastGMMessage(MaplePacketCreator.serverNotice(6, type.toString() + " Expedition started with leader: " + leader.getName()));
     }
 
     public String addMember(MapleCharacter player) {

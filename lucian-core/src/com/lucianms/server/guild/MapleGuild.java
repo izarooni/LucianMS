@@ -25,6 +25,7 @@ import com.lucianms.client.MapleCharacter;
 import com.lucianms.client.MapleClient;
 import com.lucianms.server.Server;
 import com.lucianms.server.channel.MapleChannel;
+import com.lucianms.server.world.MapleWorld;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import tools.MaplePacketCreator;
@@ -266,12 +267,8 @@ public class MapleGuild {
 
     public void guildMessage(final byte[] serverNotice) {
         for (MapleGuildCharacter mgc : members) {
-            for (MapleChannel cs : Server.getChannelsFromWorld(world)) {
-                if (cs.getPlayerStorage().get(mgc.getId()) != null) {
-                    cs.getPlayerStorage().get(mgc.getId()).getClient().announce(serverNotice);
-                    break;
-                }
-            }
+            MapleWorld world = Server.getWorld(this.world);
+            world.tryGetPlayer(mgc.getId()).map(MapleCharacter::getClient).ifPresent(c -> c.announce(serverNotice));
         }
     }
 
@@ -486,14 +483,14 @@ public class MapleGuild {
     }
 
     public static MapleGuildResponse sendInvite(MapleClient c, String targetName) {
-        MapleCharacter mc = c.getChannelServer().getPlayerStorage().find(p -> p.getName().equalsIgnoreCase(targetName));
-        if (mc == null) {
+        MapleCharacter target = c.getWorldServer().getPlayerStorage().find(p -> p.getName().equalsIgnoreCase(targetName));
+        if (target == null) {
             return MapleGuildResponse.NOT_IN_CHANNEL;
-        }
-        if (mc.getGuildId() > 0) {
+        } else if (target.getGuildId() > 0) {
             return MapleGuildResponse.ALREADY_IN_GUILD;
+        } else {
+            target.getClient().announce(MaplePacketCreator.guildInvite(c.getPlayer().getGuildId(), c.getPlayer().getName()));
         }
-        mc.getClient().announce(MaplePacketCreator.guildInvite(c.getPlayer().getGuildId(), c.getPlayer().getName()));
         return null;
     }
 

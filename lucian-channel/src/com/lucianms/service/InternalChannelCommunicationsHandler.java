@@ -74,7 +74,7 @@ public class InternalChannelCommunicationsHandler extends ChannelInboundHandlerA
         attemptConnection();
 
         for (MapleWorld world : Server.getWorlds()) {
-            world.broadcastPacket(MaplePacketCreator.serverMessage("The server is currently going under maintenance. Please refrain from logging-out until further notice."));
+            world.sendPacket(MaplePacketCreator.serverMessage("The server is currently going under maintenance. Please refrain from logging-out until further notice."));
         }
     }
 
@@ -85,14 +85,14 @@ public class InternalChannelCommunicationsHandler extends ChannelInboundHandlerA
         sendMessage("The server is now available.\r\nYou may login.");
 
         for (MapleWorld world : Server.getWorlds()) {
-            world.broadcastPacket(MaplePacketCreator.serverMessage("Server is now operational. Thank you for your patience."));
+            world.sendPacket(MaplePacketCreator.serverMessage("Server is now operational. Thank you for your patience."));
         }
         TaskExecutor.createTask(new Runnable() {
             @Override
             public void run() {
                 for (MapleWorld world : Server.getWorlds()) {
                     // empty message to remove scrolling notice
-                    world.broadcastPacket(MaplePacketCreator.serverMessage(""));
+                    world.sendPacket(MaplePacketCreator.serverMessage(""));
                 }
             }
         }, 10000);

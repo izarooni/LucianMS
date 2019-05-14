@@ -154,10 +154,10 @@ public class MapleClient implements Disposable {
         return false;
     }
 
-    public List<MapleCharacter> loadCharacters(int serverId) {
+    public List<MapleCharacter> loadCharacters() {
         try (Connection con = Server.getConnection()) {
             List<MapleCharacter> ret = new ArrayList<>();
-            for (Pair<Integer, String> pair : loadCharactersInternal(serverId)) {
+            for (Pair<Integer, String> pair : getCharacterIdentifiers()) {
                 MapleCharacter load = MapleCharacter.loadCharFromDB(con, pair.getLeft(), this, false);
                 if (load != null) {
                     ret.add(load);
@@ -172,12 +172,11 @@ public class MapleClient implements Disposable {
         }
     }
 
-    public List<Pair<Integer, String>> loadCharactersInternal(int serverId) {
+    public List<Pair<Integer, String>> getCharacterIdentifiers() {
         List<Pair<Integer, String>> ret = new ArrayList<>();
         try (Connection con = Server.getConnection();
-             PreparedStatement ps = con.prepareStatement("SELECT id, name FROM characters WHERE accountid = ? AND world = ?")) {
+             PreparedStatement ps = con.prepareStatement("SELECT id, name FROM characters WHERE accountid = ?")) {
             ps.setInt(1, getAccID());
-            ps.setInt(2, serverId);
             try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
                     ret.add(new Pair<>(rs.getInt("id"), rs.getString("name")));
@@ -476,7 +475,7 @@ public class MapleClient implements Disposable {
         try {
             if (player != null) {
                 player.getMap().removePlayer(player);
-                getWorldServer().removePlayer(player);
+                getWorldServer().getPlayerStorage().remove(player.getId());
                 player.getGenericEvents().forEach(e -> e.onPlayerDisconnect(player));
                 player.getGenericEvents().clear();
 
@@ -760,8 +759,8 @@ public class MapleClient implements Disposable {
         }
         player.getInventory(MapleInventoryType.EQUIPPED).checked(false); //test
         player.getMap().removePlayer(player);
-        player.getClient().getChannelServer().removePlayer(player);
-        player.getClient().setLoginState(LoginState.Transfer);
+        getWorldServer().getPlayerStorage().remove(player.getId());
+        setLoginState(LoginState.Transfer);
         announce(MaplePacketCreator.getChannelChange(cserv.getNetworkAddress(), cserv.getPort()));
         return true;
     }

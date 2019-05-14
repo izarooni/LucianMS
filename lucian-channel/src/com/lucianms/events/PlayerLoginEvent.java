@@ -46,43 +46,44 @@ public class PlayerLoginEvent extends PacketEvent {
 
     @Override
     public Object onPacket() {
-        MapleCharacter player = getClient().getWorldServer().getPlayer(playerID);
+        MapleClient client = getClient();
+        MapleWorld world = client.getWorldServer();
+        MapleChannel channel = client.getChannelServer();
+
+        MapleCharacter player = world.getPlayerStorage().get(playerID);
         if (player == null || player.getClient() == null) {
-            try (Connection con = getClient().getWorldServer().getConnection()) {
-                player = MapleCharacter.loadCharFromDB(con, playerID, getClient(), true);
+            try (Connection con = world.getConnection()) {
+                player = MapleCharacter.loadCharFromDB(con, playerID, client, true);
             } catch (SQLException e) {
                 getLogger().error("Unable to load player '{}", MapleCharacter.getNameById(playerID), e);
-                getClient().getSession().close();
+                client.getSession().close();
                 return null;
             }
         } else {
-            player.newClient(getClient());
+            player.newClient(client);
         }
-        getClient().setAccID(player.getAccountID());
-        getClient().setPlayer(player);
+        client.setAccID(player.getAccountID());
+        client.setPlayer(player);
 
-        final LoginState state = getClient().checkLoginState();
-        MapleChannel channel = getClient().getChannelServer();
+        final LoginState state = client.checkLoginState();
 
-        if (getClient().getAccID() == 0 || state != LoginState.Transfer) {
-            getClient().setPlayer(null);
-            getClient().announce(MaplePacketCreator.getAfterLoginError(7));
+        if (client.getAccID() == 0 || state != LoginState.Transfer) {
+            client.setPlayer(null);
+            client.announce(MaplePacketCreator.getAfterLoginError(7));
             return null;
         }
-        for (Pair<Integer, String> p : getClient().loadCharactersInternal(getClient().getWorld())) {
-            for (MapleChannel ch : getClient().getWorldServer().getChannels()) {
-                MapleCharacter found = ch.getPlayerStorage().get(p.getLeft());
-                if (found != null) {
-                    found.getClient().disconnect();
-                }
+        for (Pair<Integer, String> p : client.getCharacterIdentifiers()) {
+            MapleCharacter found = world.getPlayerStorage().get(p.getLeft());
+            if (found != null) {
+                found.getClient().disconnect();
             }
         }
-        getClient().setLoginState(LoginState.Login);
+        client.setLoginState(LoginState.Login);
 
         if (JailManager.isJailed(player.getId())) {
             player.setMapId(JailManager.getRandomField());
         }
-        try (Connection con = getClient().getWorldServer().getConnection()) {
+        try (Connection con = world.getConnection()) {
             try (PreparedStatement ps = con.prepareStatement("SELECT Mesos FROM dueypackages WHERE RecieverId = ? AND Checked = 1")) {
                 ps.setInt(1, player.getId());
                 try (ResultSet rs = ps.executeQuery()) {
@@ -91,7 +92,7 @@ public class PlayerLoginEvent extends PacketEvent {
                             pss.setInt(1, player.getId());
                             pss.executeUpdate();
                         }
-                        getClient().announce(MaplePacketCreator.sendDueyMSG((byte) 0x1B));
+                        client.announce(MaplePacketCreator.sendDueyMSG((byte) 0x1B));
                     }
                 }
             }
@@ -99,13 +100,13 @@ public class PlayerLoginEvent extends PacketEvent {
             e.printStackTrace();
         }
 
-        getClient().announce(MaplePacketCreator.getCharInfo(player));
-        getClient().announce(MaplePacketCreator.updateGender((byte) player.getGender()));
-        getClient().announce(MaplePacketCreator.enableReport());
+        client.announce(MaplePacketCreator.getCharInfo(player));
+        client.announce(MaplePacketCreator.updateGender((byte) player.getGender()));
+        client.announce(MaplePacketCreator.enableReport());
         player.sendKeymap();
         player.sendMacros();
 
-        channel.addPlayer(player);
+        world.getPlayerStorage().put(player.getId(), player);
         player.getMap().addPlayer(player);
 
         List<PlayerBuffValueHolder> buffs = Server.getPlayerBuffStorage().remove(playerID);
@@ -125,26 +126,24 @@ public class PlayerLoginEvent extends PacketEvent {
             player.announce(MaplePacketCreator.sendAutoMpPot(player.getKeymap().get(92).getAction()));
         }
 
-        MapleWorld world = getClient().getWorldServer();
-
         //region friends list
         int[] buddyIds = player.getBuddylist().getBuddyIds();
-        world.loggedOn(player.getName(), player.getId(), getClient().getChannel(), buddyIds);
+        world.loggedOn(player.getName(), player.getId(), client.getChannel(), buddyIds);
         for (CharacterIdChannelPair onlineBuddy : world.multiBuddyFind(player.getId(), buddyIds)) {
             BuddylistEntry ble = player.getBuddylist().get(onlineBuddy.getCharacterId());
             ble.setChannel(onlineBuddy.getChannel());
             player.getBuddylist().put(ble);
         }
-        getClient().announce(MaplePacketCreator.updateBuddylist(player.getBuddylist().getBuddies()));
+        client.announce(MaplePacketCreator.updateBuddylist(player.getBuddylist().getBuddies()));
 
         CharacterNameAndId pendingBuddyRequest = player.getBuddylist().pollPendingRequest();
         if (pendingBuddyRequest != null) {
-            getClient().announce(MaplePacketCreator.requestBuddylistAdd(pendingBuddyRequest.getId(), player.getId(), pendingBuddyRequest.getName()));
+            client.announce(MaplePacketCreator.requestBuddylistAdd(pendingBuddyRequest.getId(), player.getId(), pendingBuddyRequest.getName()));
         }
         //endregion
 
         //region family
-        getClient().announce(MaplePacketCreator.loadFamily(player));
+        client.announce(MaplePacketCreator.loadFamily(player));
         if (player.getFamilyId() > 0) {
             MapleFamily f = world.getFamily(player.getFamilyId());
             if (f == null) {
@@ -152,7 +151,7 @@ public class PlayerLoginEvent extends PacketEvent {
                 world.addFamily(player.getFamilyId(), f);
             }
             player.setFamily(f);
-            getClient().announce(MaplePacketCreator.getFamilyInfo(f.getMember(player.getId())));
+            client.announce(MaplePacketCreator.getFamilyInfo(f.getMember(player.getId())));
         }
         //endregion
 
@@ -164,8 +163,8 @@ public class PlayerLoginEvent extends PacketEvent {
                 player.resetMGC();
                 player.setGuildId(0);
             } else {
-                Server.setGuildMemberOnline(player.getMGC(), true, getClient().getChannel());
-                getClient().announce(MaplePacketCreator.showGuildInfo(player));
+                Server.setGuildMemberOnline(player.getMGC(), true, client.getChannel());
+                client.announce(MaplePacketCreator.showGuildInfo(player));
                 int allianceId = player.getGuild().getAllianceId();
                 if (allianceId > 0) {
                     MapleAlliance newAlliance = Server.getAlliance(allianceId);
@@ -178,8 +177,8 @@ public class PlayerLoginEvent extends PacketEvent {
                         }
                     }
                     if (newAlliance != null) {
-                        getClient().announce(MaplePacketCreator.getAllianceInfo(newAlliance));
-                        getClient().announce(MaplePacketCreator.getGuildAlliances(newAlliance, getClient()));
+                        client.announce(MaplePacketCreator.getAllianceInfo(newAlliance));
+                        client.announce(MaplePacketCreator.getGuildAlliances(newAlliance, client));
                         Server.allianceMessage(allianceId, MaplePacketCreator.allianceMemberOnline(player, true), player.getId(), -1);
                     }
                 }
@@ -227,6 +226,8 @@ public class PlayerLoginEvent extends PacketEvent {
         }
         player.changeSkillLevel(5001005, (byte) -1, 0, 0);
         player.changeSkillLevel(15001003, (byte) -1, 0, 0);
+
+        client.announce(MaplePacketCreator.serverMessage(world.getServerMessage()));
 
         player.showNote();
         player.checkBerserk();

@@ -1,8 +1,10 @@
 package com.lucianms.events;
 
 import com.lucianms.client.MapleCharacter;
+import com.lucianms.client.MapleClient;
 import com.lucianms.nio.receive.MaplePacketReader;
 import com.lucianms.server.Server;
+import com.lucianms.server.world.MapleWorld;
 import tools.MaplePacketCreator;
 
 import java.sql.Connection;
@@ -36,21 +38,24 @@ public class PlayerReportedEvent extends PacketEvent {
 
     @Override
     public Object onPacket() {
-        MapleCharacter player = getClient().getPlayer();
+        MapleClient client = getClient();
+        MapleWorld world = client.getWorldServer();
+        MapleCharacter player = client.getPlayer();
+
         if (action == 0) {
             if (player.getPossibleReports() > 0) {
                 if (player.getMeso() > 299) {
                     player.decreaseReports();
                     player.gainMeso(-300, true);
                 } else {
-                    getClient().announce(MaplePacketCreator.reportResponse((byte) 4));
+                    client.announce(MaplePacketCreator.reportResponse((byte) 4));
                     return null;
                 }
             } else {
-                getClient().announce(MaplePacketCreator.reportResponse((byte) 2));
+                client.announce(MaplePacketCreator.reportResponse((byte) 2));
                 return null;
             }
-            Server.broadcastGMMessage(MaplePacketCreator.serverNotice(6, username + " was reported for: " + content));
+            world.sendMessage(p -> p.getGMLevel() > 0, 6, "[Report] '{}' reported '{}' for: {}", player.getName(), username, content);
             addReport(player.getId(), MapleCharacter.getIdByName(username), 0, content, null);
         } else if (action == 1) {
             if (log == null) {
@@ -61,14 +66,12 @@ public class PlayerReportedEvent extends PacketEvent {
                     player.decreaseReports();
                     player.gainMeso(-300, true);
                 } else {
-                    getClient().announce(MaplePacketCreator.reportResponse((byte) 4));
+                    client.announce(MaplePacketCreator.reportResponse((byte) 4));
                     return null;
                 }
             }
-            Server.broadcastGMMessage(MaplePacketCreator.serverNotice(6, username + " was reported for: " + content));
+            world.sendMessage(p -> p.getGMLevel() > 0, 6, "[Report] '{}' reported '{}' for: {}", player.getName(), username, content);
             addReport(player.getId(), MapleCharacter.getIdByName(username), reason, content, log);
-        } else {
-            Server.broadcastGMMessage(MaplePacketCreator.serverNotice(6, player.getName() + " is probably packet editing. Got unknown report type, which is impossible."));
         }
         return null;
     }

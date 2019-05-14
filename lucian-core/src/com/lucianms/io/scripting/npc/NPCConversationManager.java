@@ -335,7 +335,7 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
         sendNext("You have obtained a #b#t" + item.getId() + "##k.");
         String map = c.getChannelServer().getMap(maps[(getNpc() != 9100117 && getNpc() != 9100109) ? (getNpc() - 9100100) : getNpc() == 9100109 ? 8 : 9]).getMapName();
         if (item.getTier() > 0) { //Uncommon and Rare
-            Server.broadcastMessage(MaplePacketCreator.gachaponMessage(itemGained, map, getPlayer()));
+            getClient().getWorldServer().sendPacket(MaplePacketCreator.gachaponMessage(itemGained, map, getPlayer()));
         }
     }
 
@@ -437,10 +437,6 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
         if (getEvent() != null) {
             getPlayer().setTeam(getEvent().getLimit() % 2); //muhaha :D
         }
-    }
-
-    public MapleCharacter getMapleCharacter(String username) {
-        return getClient().getChannelServer().getPlayerStorage().find(p -> p.getName().equalsIgnoreCase(username));
     }
 
     public boolean createPyramid(String mode, boolean party) {//lol

@@ -16,7 +16,6 @@ import com.lucianms.helpers.JailManager;
 import com.lucianms.io.scripting.npc.NPCScriptManager;
 import com.lucianms.nio.InterPacketOperation;
 import com.lucianms.nio.send.MaplePacketWriter;
-import com.lucianms.server.ConcurrentMapStorage;
 import com.lucianms.server.MapleInventoryManipulator;
 import com.lucianms.server.MapleItemInformationProvider;
 import com.lucianms.server.channel.MapleChannel;
@@ -76,7 +75,7 @@ public class GameMasterCommands extends CommandExecutor {
                 int qnty = args.parseNumber(1, int.class);
                 sb.append("Online users: \r\n\r\n");
                 if (args.getFirstError() == null) {
-                    for (MapleCharacter target : ch.getPlayerStorage().values()) {
+                    for (MapleCharacter target : world.getPlayerStorage().values()) {
                         int actualQuantity = target.getItemQuantity(itemId, true);
                         if (actualQuantity >= qnty && !target.isGM()) {
                             sb.append("account id ").append(target.getAccountID()).append(" | ")
@@ -88,7 +87,7 @@ public class GameMasterCommands extends CommandExecutor {
 
                     if (args.length() == 3 && Boolean.parseBoolean(args.get(2))) {
                         sb.append("\r\nOffline users: \r\n\r\n");
-                        try (Connection con = client.getWorldServer().getConnection();
+                        try (Connection con = world.getConnection();
                              PreparedStatement stmt = con.prepareStatement(
                                      "SELECT c.accountid, c.name, SUM(ii.quantity) as 'quantity' FROM characters c" +
                                              " JOIN inventoryitems ii ON c.id = ii.characterid" +
@@ -145,7 +144,7 @@ public class GameMasterCommands extends CommandExecutor {
                     }
                     player.dropMessage(6, "Done!");
                 } else {
-                    MapleCharacter target = client.getWorldServer().findPlayer(p -> p.getName().equalsIgnoreCase(username));
+                    MapleCharacter target = world.findPlayer(p -> p.getName().equalsIgnoreCase(username));
                     if (target != null) {
                         target.getClient().disconnect();
                     } else {
@@ -160,7 +159,7 @@ public class GameMasterCommands extends CommandExecutor {
                 boolean exact = command.getName().endsWith("x");
                 if (args.length() > 0) {
                     String username = args.get(0);
-                    MapleCharacter target = client.getWorldServer().findPlayer(p -> p.getName().equalsIgnoreCase(username));
+                    MapleCharacter target = world.findPlayer(p -> p.getName().equalsIgnoreCase(username));
                     if (target != null && command.equals("warp", "wh", "whx")) { // !<warp_cmd> <username/map>
                         if (args.length() == 1 && command.equals("warp", "wh", "whx")) { // !<warp_cmd> <username>
                             MapleCharacter warpie = (command.equals("warp") ? player : target); // person to warp
@@ -295,7 +294,7 @@ public class GameMasterCommands extends CommandExecutor {
                 String muteText = (mute ? "muted" : "unmuted");
                 for (int i = 0; i < args.length(); i++) {
                     final String username = args.get(i);
-                    MapleCharacter target = ch.getPlayerStorage().find(p -> p.getName().equalsIgnoreCase(username));
+                    MapleCharacter target = world.getPlayerStorage().find(p -> p.getName().equalsIgnoreCase(username));
                     if (target != null) {
                         target.setMuted(mute);
                         player.sendMessage(6, "'{}' has been {}", target.getName(), muteText);
@@ -323,7 +322,7 @@ public class GameMasterCommands extends CommandExecutor {
                 if (args.length() > 1) {
                     for (int i = 1; i < args.length(); i++) {
                         String username = args.get(i);
-                        MapleCharacter target = ch.getPlayerStorage().find(p -> p.getName().equalsIgnoreCase(username));
+                        MapleCharacter target = world.getPlayerStorage().find(p -> p.getName().equalsIgnoreCase(username));
                         if (target != null) {
                             target.setJob(job);
                             target.updateSingleStat(MapleStat.JOB, job.getId());
@@ -440,7 +439,7 @@ public class GameMasterCommands extends CommandExecutor {
                 if (args.length() > 1) {
                     for (int i = 1; i < args.length(); i++) {
                         String username = args.get(i);
-                        MapleCharacter target = ch.getPlayerStorage().find(p -> p.getName().equalsIgnoreCase(username));
+                        MapleCharacter target = world.getPlayerStorage().find(p -> p.getName().equalsIgnoreCase(username));
                         if (target != null) {
                             target.setLevel(level);
                             target.setExp(0);
@@ -479,7 +478,7 @@ public class GameMasterCommands extends CommandExecutor {
             if (args.length() > 1) {
                 String username = args.get(0);
                 String reason = args.concatFrom(1);
-                MapleCharacter target = client.getWorldServer().findPlayer(p -> p.getName().equalsIgnoreCase(username));
+                MapleCharacter target = world.findPlayer(p -> p.getName().equalsIgnoreCase(username));
                 if (target != null) {
                     BanManager.setBanned(target.getAccountID(), reason);
                     target.getClient().disconnect();
@@ -531,7 +530,7 @@ public class GameMasterCommands extends CommandExecutor {
             } else if (args.length() > 0) {
                 for (int i = 0; i < args.length(); i++) {
                     String username = args.get(i);
-                    MapleCharacter target = ch.getPlayerStorage().find(p -> p.getName().equalsIgnoreCase(username));
+                    MapleCharacter target = world.getPlayerStorage().find(p -> p.getName().equalsIgnoreCase(username));
                     if (target != null) {
                         target.setHp(target.getMaxHp());
                         target.setMp(target.getMaxMp());
@@ -550,7 +549,7 @@ public class GameMasterCommands extends CommandExecutor {
         } else if (command.equals("notice")) {
             if (args.length() > 0) {
                 String message = args.concatFrom(0);
-                ch.broadcastPacket(MaplePacketCreator.serverNotice(6, player.getName() + " : " + message));
+                world.sendMessage(6, "{} : {}", player.getName(), message);
             } else {
                 player.dropMessage(5, "You must specify a message");
             }
@@ -612,7 +611,7 @@ public class GameMasterCommands extends CommandExecutor {
                 if (args.length() > 0) {
                     for (int i = 0; i < args.length(); i++) {
                         String username = args.get(i);
-                        MapleCharacter target = ch.getPlayerStorage().find(p -> p.getName().equalsIgnoreCase(username));
+                        MapleCharacter target = world.getPlayerStorage().find(p -> p.getName().equalsIgnoreCase(username));
                         if (target != null) {
                             target.setHpMp(0);
                         }
@@ -646,7 +645,7 @@ public class GameMasterCommands extends CommandExecutor {
             }
         } else if (command.equals("reloadmap")) {
             if (args.length() == 0) {
-                for (MapleChannel channel : client.getWorldServer().getChannels()) {
+                for (MapleChannel channel : world.getChannels()) {
                     channel.reloadMap(player.getMapId());
                 }
             } else if (args.length() == 1) {
@@ -654,14 +653,14 @@ public class GameMasterCommands extends CommandExecutor {
                 String error = args.getFirstError();
                 if (error != null) {
                     player.dropMessage(5, error);
-                    MapleCharacter target = client.getWorldServer().findPlayer(p -> p.getName().equalsIgnoreCase(args.get(0)));
+                    MapleCharacter target = world.findPlayer(p -> p.getName().equalsIgnoreCase(args.get(0)));
                     if (target != null) {
                         mapId = target.getMapId();
                     } else {
                         return;
                     }
                 }
-                for (MapleChannel channel : client.getWorldServer().getChannels()) {
+                for (MapleChannel channel : world.getChannels()) {
                     channel.reloadMap(mapId);
                 }
                 player.dropMessage("Map " + mapId + " reloaded!");
@@ -704,7 +703,7 @@ public class GameMasterCommands extends CommandExecutor {
                         if (ItemConstants.isPet(itemId)) {
                             if (item.getPetId() > -1) {
                                 // maybe skip pets instead?
-                                try (Connection con = client.getWorldServer().getConnection()) {
+                                try (Connection con = world.getConnection()) {
                                     Database.executeSingle(con, "delete from pets where petid = ?", item.getPet().getUniqueId());
                                 } catch (SQLException e) {
                                     e.printStackTrace();
@@ -768,7 +767,7 @@ public class GameMasterCommands extends CommandExecutor {
                 } else {
                     for (int i = 0; i < args.length(); i++) {
                         String username = args.get(i);
-                        MapleCharacter target = ch.getPlayerStorage().find(p -> p.getName().equalsIgnoreCase(username));
+                        MapleCharacter target = world.getPlayerStorage().find(p -> p.getName().equalsIgnoreCase(username));
                         if (target != null) {
                             target.dispelDebuffs();
                         }
@@ -781,27 +780,29 @@ public class GameMasterCommands extends CommandExecutor {
         } else if (command.equals("online")) {
             if (args.length() == 0) {
                 for (MapleChannel channel : player.getClient().getWorldServer().getChannels()) {
+                    Collection<MapleCharacter> players = channel.getPlayers();
                     StringBuilder sb = new StringBuilder();
-                    ConcurrentMapStorage<Integer, MapleCharacter> storage = channel.getPlayerStorage();
-                    for (MapleCharacter players : storage.values()) {
-                        sb.append(players.getName()).append(", ");
+                    for (MapleCharacter online : players) {
+                        sb.append(online.getName()).append(", ");
                     }
                     if (sb.length() > 0) {
                         sb.setLength(sb.length() - 2);
                     }
-                    player.sendMessage("Channel {} - {} players", channel.getId(), storage.size());
+                    player.sendMessage("Channel {} - {} players", channel.getId(), players.size());
+                    players.clear();
                     player.sendMessage("{}", sb.toString());
                 }
             } else if (args.get(0).equalsIgnoreCase("npc")) {
                 StringBuilder sb = new StringBuilder();
                 for (MapleChannel channel : player.getClient().getWorldServer().getChannels()) {
-                    ConcurrentMapStorage<Integer, MapleCharacter> storage = channel.getPlayerStorage();
+                    Collection<MapleCharacter> players = channel.getPlayers();
                     sb.append("#echannel ").append(channel.getId()).append(" - ");
                     StringBuilder usernames = new StringBuilder();
-                    for (MapleCharacter players : storage.values()) {
-                        usernames.append(players.getName()).append(" ");
+                    for (MapleCharacter online : players) {
+                        usernames.append(online.getName()).append(" ");
                     }
-                    sb.append(storage.size()).append(" players#n\r\n");
+                    sb.append(players.size()).append(" players#n\r\n");
+                    players.clear();
                     sb.append(usernames.toString());
                     sb.append("\r\n");
                     usernames.setLength(0);
@@ -812,7 +813,7 @@ public class GameMasterCommands extends CommandExecutor {
         } else if (command.equals("!")) {
             if (args.length() > 0) {
                 String message = args.concatFrom(0);
-                client.getWorldServer().broadcastGMPacket(MaplePacketCreator.serverNotice(2, String.format("[GM] %s : %s", player.getName(), message)));
+                world.sendMessage(p -> p.getGMLevel() > 0, 2, "[GM] %s : %s", player.getName(), message);
             } else {
                 player.dropMessage(5, "You must specify a message");
             }
@@ -823,7 +824,7 @@ public class GameMasterCommands extends CommandExecutor {
                 String username = args.get(0);
                 ArrayList<String> usernames = new ArrayList<>();
                 // will this statement work? who knows
-                try (Connection con = client.getWorldServer().getConnection();
+                try (Connection con = world.getConnection();
                      PreparedStatement ps = con.prepareStatement("select name from characters where accountid = (select accountid from characters where name = ?)")) {
                     ps.setString(1, username);
                     try (ResultSet rs = ps.executeQuery()) {
@@ -858,7 +859,7 @@ public class GameMasterCommands extends CommandExecutor {
                         JailManager.insertJail(target.getId(), player.getId(), reason);
                         target.changeMap(JailManager.getRandomField());
                         target.sendMessage(5, "You have been jailed by '{}'", player.getName());
-                        client.getWorldServer().broadcastMessage(6, "'{}' has been jailed for '{}'", target.getName(), reason);
+                        world.sendMessage(6, "'{}' has been jailed for '{}'", target.getName(), reason);
                     } else {
                         player.sendMessage(5, "You must provide a reason for your jail");
                     }
@@ -1037,7 +1038,7 @@ public class GameMasterCommands extends CommandExecutor {
                 if (args.length() > 1) {
                     for (int i = 1; i < args.length(); i++) {
                         final String username = args.get(i);
-                        MapleCharacter target = ch.getPlayerStorage().find(p -> p.getName().equalsIgnoreCase(username));
+                        MapleCharacter target = world.getPlayerStorage().find(p -> p.getName().equalsIgnoreCase(username));
                         if (target != null) {
                             if (ap) {
                                 target.setRemainingAp(amount);
@@ -1063,7 +1064,7 @@ public class GameMasterCommands extends CommandExecutor {
             int[] skills = {1001003, 2001002, 1101006, 1101007, 1301007, 2201001, 2121004, 2111005, 2311003, 1121002, 4211005, 3121002, 1121000, 2311003, 1101004, 1101006, 4101004, 4111001, 2111005, 1111002, 2321005, 3201002, 4101003, 4201002, 5101006, 1321010, 1121002, 1120003};
             MapleCharacter target = player;
             if (args.length() == 1) {
-                target = ch.getPlayerStorage().find(p -> p.getName().equalsIgnoreCase(args.get(0)));
+                target = world.getPlayerStorage().find(p -> p.getName().equalsIgnoreCase(args.get(0)));
                 if (target == null) {
                     player.sendMessage(5, "Unable to find any player named '{}'", args.get(0));
                     return;
@@ -1085,7 +1086,7 @@ public class GameMasterCommands extends CommandExecutor {
                 } else if (args.length() > 1) {
                     for (int i = 1; i < args.length(); i++) {
                         String username = args.get(i);
-                        MapleCharacter target = client.getChannelServer().getPlayerStorage().find(p -> p.getName().equalsIgnoreCase(username));
+                        MapleCharacter target = world.getPlayerStorage().find(p -> p.getName().equalsIgnoreCase(username));
                         if (target != null) {
                             target.setFame(amount);
                             target.updateSingleStat(MapleStat.FAME, amount);
@@ -1111,7 +1112,7 @@ public class GameMasterCommands extends CommandExecutor {
                 if (args.length() > 1) {
                     for (int i = 1; i < args.length(); i++) {
                         String username = args.get(i);
-                        MapleCharacter chr = ch.getPlayerStorage().find(p -> p.getName().equalsIgnoreCase(username));
+                        MapleCharacter chr = world.getPlayerStorage().find(p -> p.getName().equalsIgnoreCase(username));
                         if (chr != null) {
                             chr.gainMeso(mesos, true);
                         } else {
@@ -1126,7 +1127,7 @@ public class GameMasterCommands extends CommandExecutor {
             }
         } else if (command.equals("gender")) {
             if (args.length() == 2) {
-                MapleCharacter target = ch.getPlayerStorage().find(p -> p.getName().equalsIgnoreCase(args.get(0)));
+                MapleCharacter target = world.getPlayerStorage().find(p -> p.getName().equalsIgnoreCase(args.get(0)));
                 byte gender;
                 switch (args.get(1)) {
                     case "male":
@@ -1163,7 +1164,7 @@ public class GameMasterCommands extends CommandExecutor {
                 }
                 MapleCharacter target = player;
                 if (args.length() == 2) {
-                    target = ch.getPlayerStorage().find(p -> p.getName().equalsIgnoreCase(args.get(1)));
+                    target = world.getPlayerStorage().find(p -> p.getName().equalsIgnoreCase(args.get(1)));
                     if (target == null) {
                         player.dropMessage(String.format("Unable to find any player named '%s'", args.get(1)));
                         return;

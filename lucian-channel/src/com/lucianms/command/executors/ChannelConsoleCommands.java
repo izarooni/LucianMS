@@ -22,6 +22,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
+import java.util.Collection;
 
 /**
  * @author izarooni
@@ -100,14 +101,16 @@ public class ChannelConsoleCommands extends ConsoleCommands {
                 LOGGER.info("Available operations: cs, whitelist, cquests, achievements, houses, config");
             }
         } else if (command.equals("online")) {
-            for (MapleWorld worlds : Server.getWorlds()) {
-                System.out.printf("World %d:\r\n", (worlds.getId() + 1));
-                for (MapleChannel channels : worlds.getChannels()) {
-                    System.out.printf("\tChannel %d: ", channels.getId());
+            for (MapleWorld world : Server.getWorlds()) {
+                System.out.printf("World %d:\r\n", (world.getId() + 1));
+                for (MapleChannel ch : world.getChannels()) {
+                    System.out.printf("\tChannel %d: ", ch.getId());
                     StringBuilder usernames = new StringBuilder();
-                    for (MapleCharacter players : channels.getPlayerStorage().values()) {
-                        usernames.append(players.getName()).append(", ");
+                    Collection<MapleCharacter> players = world.getPlayers(p -> p.getClient().getChannel() == ch.getId());
+                    for (MapleCharacter player : players) {
+                        usernames.append(player.getName()).append(", ");
                     }
+                    players.clear();
                     if (usernames.length() > 2) {
                         usernames.setLength(usernames.length() - 2);
                     }
@@ -126,7 +129,7 @@ public class ChannelConsoleCommands extends ConsoleCommands {
                 for (MapleWorld world : Server.getWorlds()) {
                     MapleCharacter player = world.findPlayer(p -> p.getName().equalsIgnoreCase(username));
                     if (player != null) {
-                        world.removePlayer(player);
+                        world.getPlayerStorage().remove(player.getId());
                         player.getClient().disconnect();
                         LOGGER.info("{} disconnected", player.getName());
                         return;

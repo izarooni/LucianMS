@@ -8,13 +8,13 @@ import com.lucianms.client.inventory.Item;
 import com.lucianms.client.inventory.MapleInventory;
 import com.lucianms.client.inventory.MapleInventoryType;
 import com.lucianms.nio.receive.MaplePacketReader;
-import com.lucianms.events.PacketEvent;
-import com.lucianms.constants.ItemConstants;
 import com.lucianms.server.CashShop;
 import com.lucianms.server.CashShop.CashItem;
 import com.lucianms.server.CashShop.CashItemFactory;
 import com.lucianms.server.MapleInventoryManipulator;
 import com.lucianms.server.MapleItemInformationProvider;
+import com.lucianms.server.channel.MapleChannel;
+import com.lucianms.server.world.MapleWorld;
 import tools.MaplePacketCreator;
 
 import java.util.Calendar;
@@ -134,10 +134,14 @@ public class PlayerCashShopOperationEvent extends PacketEvent {
 
     @Override
     public Object onPacket() {
-        MapleCharacter player = getClient().getPlayer();
+        MapleClient client = getClient();
+        MapleCharacter player = client.getPlayer();
+        MapleWorld world = client.getWorldServer();
+        MapleChannel ch = client.getChannelServer();
         CashShop cs = player.getCashShop();
+
         if (!cs.isOpened()) {
-            getClient().announce(MaplePacketCreator.enableActions());
+            client.announce(MaplePacketCreator.enableActions());
             return null;
         }
         switch (action) {
@@ -152,34 +156,34 @@ public class PlayerCashShopOperationEvent extends PacketEvent {
                     content += "\r\nImgdir: " + cItem.getImgdir();
                     content += "\r\nItem ID: " + cItem.getItemId();
                     content += "\r\nSN: " + SN;
-                    getClient().announce(MaplePacketCreator.serverNotice(1, content));
-                    getClient().announce(MaplePacketCreator.showCash(player));
+                    client.announce(MaplePacketCreator.serverNotice(1, content));
+                    client.announce(MaplePacketCreator.showCash(player));
                     return null;
                 }
-                    int itemID = cItem.getItemId();
-                    if (itemID == 5000011 || itemID == 5000014 || itemID == 5000022) {
-                        getClient().announce(MaplePacketCreator.serverNotice(1, "These pets are available for our donors only!"));
-                        getClient().announce(MaplePacketCreator.showCash(player));
-                        return null;
-                    }
+                int itemID = cItem.getItemId();
+                if (itemID == 5000011 || itemID == 5000014 || itemID == 5000022) {
+                    client.announce(MaplePacketCreator.serverNotice(1, "These pets are available for our donors only!"));
+                    client.announce(MaplePacketCreator.showCash(player));
+                    return null;
+                }
                 if (action == 0x03) { // Item
                     Item item = cItem.toItem();
                     cs.addToInventory(item);
-                    getClient().announce(MaplePacketCreator.showBoughtCashItem(item, getClient().getAccID()));
+                    client.announce(MaplePacketCreator.showBoughtCashItem(item, client.getAccID()));
                 } else { // Package
                     List<Item> cashPackage = CashItemFactory.getPackage(cItem.getItemId());
                     for (Item item : cashPackage) {
                         if (item == null) {
                             player.sendMessage(1, "We failed to create an item in this package.\r\nCode: 0x{}", Integer.toHexString(SN));
-                            getClient().announce(MaplePacketCreator.showCash(player));
+                            client.announce(MaplePacketCreator.showCash(player));
                             return null;
                         }
                         cs.addToInventory(item);
                     }
-                    getClient().announce(MaplePacketCreator.showBoughtCashPackage(cashPackage, getClient().getAccID()));
+                    client.announce(MaplePacketCreator.showBoughtCashPackage(cashPackage, client.getAccID()));
                 }
                 cs.gainCash(cost, -cItem.getPrice());
-                getClient().announce(MaplePacketCreator.showCash(player));
+                client.announce(MaplePacketCreator.showCash(player));
                 break;
             }
             case 0x04: {
@@ -188,27 +192,27 @@ public class PlayerCashShopOperationEvent extends PacketEvent {
                 if (!canBuy(cItem, cs.getCash(4)) || content.length() < 1 || content.length() > 73) {
                     return null;
                 }
-                if (!checkBirthday(getClient(), birthday)) {
-                    getClient().announce(MaplePacketCreator.showCashShopMessage((byte) 0xC4));
+                if (!checkBirthday(client, birthday)) {
+                    client.announce(MaplePacketCreator.showCashShopMessage((byte) 0xC4));
                     return null;
                 } else if (recipient == null) {
-                    getClient().announce(MaplePacketCreator.showCashShopMessage((byte) 0xA9));
+                    client.announce(MaplePacketCreator.showCashShopMessage((byte) 0xA9));
                     return null;
-                } else if (recipient.get("accountid").equals(String.valueOf(getClient().getAccID()))) {
-                    getClient().announce(MaplePacketCreator.showCashShopMessage((byte) 0xA8));
+                } else if (recipient.get("accountid").equals(String.valueOf(client.getAccID()))) {
+                    client.announce(MaplePacketCreator.showCashShopMessage((byte) 0xA8));
                     return null;
                 }
                 cs.gift(Integer.parseInt(recipient.get("id")), player.getName(), content, cItem.getSN());
-                getClient().announce(MaplePacketCreator.showGiftSucceed(recipient.get("name"), cItem));
+                client.announce(MaplePacketCreator.showGiftSucceed(recipient.get("name"), cItem));
                 cs.gainCash(4, -cItem.getPrice());
-                getClient().announce(MaplePacketCreator.showCash(player));
+                client.announce(MaplePacketCreator.showCash(player));
                 player.sendNote(recipient.get("name"), player.getName() + " has sent you a gift! Go check out the Cash Shop.", (byte) 0); //fame or not
-                MapleCharacter receiver = getClient().getChannelServer().getPlayerStorage().find(p -> p.getName().equalsIgnoreCase(recipient.get("name")));
+                MapleCharacter receiver = world.getPlayerStorage().find(p -> p.getName().equalsIgnoreCase(recipient.get("name")));
                 if (receiver != null) receiver.showNote();
                 break;
             }
             case 0x05: {
-                getClient().announce(MaplePacketCreator.showWishList(player, true));
+                client.announce(MaplePacketCreator.showWishList(player, true));
                 break;
             }
             case 0x06: {
@@ -217,9 +221,9 @@ public class PlayerCashShopOperationEvent extends PacketEvent {
                         return null;
                     }
                     if (player.gainSlots(inventoryType, 4, false)) {
-                        getClient().announce(MaplePacketCreator.showBoughtInventorySlots(inventoryType, player.getSlots(inventoryType)));
+                        client.announce(MaplePacketCreator.showBoughtInventorySlots(inventoryType, player.getSlots(inventoryType)));
                         cs.gainCash(cashType, -4000);
-                        getClient().announce(MaplePacketCreator.showCash(player));
+                        client.announce(MaplePacketCreator.showCash(player));
                     }
                 } else {
                     CashItem cItem = CashItemFactory.getItem(itemID);
@@ -228,9 +232,9 @@ public class PlayerCashShopOperationEvent extends PacketEvent {
                         return null;
                     }
                     if (player.gainSlots(type, 8, false)) {
-                        getClient().announce(MaplePacketCreator.showBoughtInventorySlots(type, player.getSlots(type)));
+                        client.announce(MaplePacketCreator.showBoughtInventorySlots(type, player.getSlots(type)));
                         cs.gainCash(type, -cItem.getPrice());
-                        getClient().announce(MaplePacketCreator.showCash(player));
+                        client.announce(MaplePacketCreator.showCash(player));
                     }
                 }
                 break;
@@ -241,9 +245,9 @@ public class PlayerCashShopOperationEvent extends PacketEvent {
                         return null;
                     }
                     if (player.getStorage().gainSlots(4)) {
-                        getClient().announce(MaplePacketCreator.showBoughtStorageSlots(player.getStorage().getSlots()));
+                        client.announce(MaplePacketCreator.showBoughtStorageSlots(player.getStorage().getSlots()));
                         cs.gainCash(cashType, -4000);
-                        getClient().announce(MaplePacketCreator.showCash(player));
+                        client.announce(MaplePacketCreator.showCash(player));
                     }
                 } else {
                     CashItem cItem = CashItemFactory.getItem(itemID);
@@ -252,9 +256,9 @@ public class PlayerCashShopOperationEvent extends PacketEvent {
                         return null;
                     }
                     if (player.getStorage().gainSlots(8)) {
-                        getClient().announce(MaplePacketCreator.showBoughtStorageSlots(player.getStorage().getSlots()));
+                        client.announce(MaplePacketCreator.showBoughtStorageSlots(player.getStorage().getSlots()));
                         cs.gainCash(cashType, -cItem.getPrice());
-                        getClient().announce(MaplePacketCreator.showCash(player));
+                        client.announce(MaplePacketCreator.showCash(player));
                     }
                 }
                 break;
@@ -266,10 +270,10 @@ public class PlayerCashShopOperationEvent extends PacketEvent {
                     return null;
                 }
 
-                if (getClient().gainCharacterSlot()) {
-                    getClient().announce(MaplePacketCreator.showBoughtCharacterSlot(getClient().getCharacterSlots()));
+                if (client.gainCharacterSlot()) {
+                    client.announce(MaplePacketCreator.showBoughtCharacterSlot(client.getCharacterSlots()));
                     cs.gainCash(cashType, -cItem.getPrice());
-                    getClient().announce(MaplePacketCreator.showCash(player));
+                    client.announce(MaplePacketCreator.showCash(player));
                 }
                 break;
             }
@@ -280,7 +284,7 @@ public class PlayerCashShopOperationEvent extends PacketEvent {
                 }
                 if (player.getInventory(MapleItemInformationProvider.getInstance().getInventoryType(item.getItemId())).addItem(item) != -1) {
                     cs.removeFromInventory(item);
-                    getClient().announce(MaplePacketCreator.takeFromCashInventory(item));
+                    client.announce(MaplePacketCreator.takeFromCashInventory(item));
                     if (item instanceof Equip) {
                         Equip equip = (Equip) item;
                         if (equip.getRingId() >= 0) {
@@ -303,7 +307,7 @@ public class PlayerCashShopOperationEvent extends PacketEvent {
                 }
                 cs.addToInventory(item);
                 mi.removeSlot(item.getPosition());
-                getClient().announce(MaplePacketCreator.putIntoCashInventory(item, getClient().getAccID()));
+                client.announce(MaplePacketCreator.putIntoCashInventory(item, client.getAccID()));
                 break;
             }
             case 0x1d: {
@@ -313,12 +317,12 @@ public class PlayerCashShopOperationEvent extends PacketEvent {
                     content += "\r\nImgdir: " + ring.getImgdir();
                     content += "\r\nItem ID: " + ring.getItemId();
                     content += "\r\nSN: " + SN;
-                    getClient().announce(MaplePacketCreator.serverNotice(1, content));
-                    getClient().announce(MaplePacketCreator.showCash(player));
+                    client.announce(MaplePacketCreator.serverNotice(1, content));
+                    client.announce(MaplePacketCreator.showCash(player));
                     return null;
                 }
-                MapleCharacter partner = getClient().getChannelServer().getPlayerStorage().find(p -> p.getName().equalsIgnoreCase(username));
-                if (partner == null) {
+                MapleCharacter partner = world.getPlayerStorage().find(p -> p.getName().equalsIgnoreCase(username));
+                if (partner == null || partner.getClient().getChannel() != client.getChannel()) {
                     player.getClient().announce(MaplePacketCreator.serverNotice(1, "The partner you specified cannot be found.\r\nPlease make sure your partner is online and in the same channel."));
                 } else {
                     if (ring.toItem() instanceof Equip) {
@@ -326,7 +330,7 @@ public class PlayerCashShopOperationEvent extends PacketEvent {
                         int ringid = MapleRing.createRing(ring.getItemId(), player, partner);
                         item.setRingId(ringid);
                         cs.addToInventory(item);
-                        getClient().announce(MaplePacketCreator.showBoughtCashItem(item, getClient().getAccID()));
+                        client.announce(MaplePacketCreator.showBoughtCashItem(item, client.getAccID()));
                         cs.gift(partner.getId(), player.getName(), content, item.getSN(), (ringid + 1));
                         cs.gainCash(cashType, -ring.getPrice());
                         player.addCrushRing(MapleRing.loadFromDb(ringid));
@@ -334,7 +338,7 @@ public class PlayerCashShopOperationEvent extends PacketEvent {
                         partner.showNote();
                     }
                 }
-                getClient().announce(MaplePacketCreator.showCash(player));
+                client.announce(MaplePacketCreator.showCash(player));
                 break;
             }
             case 0x20: {
@@ -342,11 +346,11 @@ public class PlayerCashShopOperationEvent extends PacketEvent {
                 if (player.getMeso() > 0) {
                     if (itemId == 4031180 || itemId == 4031192 || itemId == 4031191) {
                         player.gainMeso(-1, false);
-                        MapleInventoryManipulator.addById(getClient(), itemId, (short) 1);
-                        getClient().announce(MaplePacketCreator.showBoughtQuestItem(itemId));
+                        MapleInventoryManipulator.addById(client, itemId, (short) 1);
+                        client.announce(MaplePacketCreator.showBoughtQuestItem(itemId));
                     }
                 }
-                getClient().announce(MaplePacketCreator.showCash(player));
+                client.announce(MaplePacketCreator.showCash(player));
                 break;
             }
             case 0x23: {
@@ -356,12 +360,12 @@ public class PlayerCashShopOperationEvent extends PacketEvent {
                     content += "\r\nImgdir: " + ring.getImgdir();
                     content += "\r\nItem ID: " + ring.getItemId();
                     content += "\r\nSN: " + SN;
-                    getClient().announce(MaplePacketCreator.serverNotice(1, content));
-                    getClient().announce(MaplePacketCreator.showCash(player));
+                    client.announce(MaplePacketCreator.serverNotice(1, content));
+                    client.announce(MaplePacketCreator.showCash(player));
                     return null;
                 }
-                MapleCharacter partner = getClient().getChannelServer().getPlayerStorage().find(p -> p.getName().equalsIgnoreCase(username));
-                if (partner == null) {
+                MapleCharacter partner = world.getPlayerStorage().find(p -> p.getName().equalsIgnoreCase(username));
+                if (partner == null || partner.getClient().getChannel() != ch.getId()) {
                     player.dropMessage("The partner you specified cannot be found.\r\nPlease make sure your partner is online and in the same channel.");
                 } else {
                     // Need to check to make sure its actually an equip and the right SN...
@@ -370,7 +374,7 @@ public class PlayerCashShopOperationEvent extends PacketEvent {
                         int ringid = MapleRing.createRing(ring.getItemId(), player, partner);
                         item.setRingId(ringid);
                         cs.addToInventory(item);
-                        getClient().announce(MaplePacketCreator.showBoughtCashItem(item, getClient().getAccID()));
+                        client.announce(MaplePacketCreator.showBoughtCashItem(item, client.getAccID()));
                         cs.gift(partner.getId(), player.getName(), content, item.getSN(), (ringid + 1));
                         cs.gainCash(cashType, -ring.getPrice());
                         player.addFriendshipRing(MapleRing.loadFromDb(ringid));
@@ -378,7 +382,7 @@ public class PlayerCashShopOperationEvent extends PacketEvent {
                         partner.showNote();
                     }
                 }
-                getClient().announce(MaplePacketCreator.showCash(player));
+                client.announce(MaplePacketCreator.showCash(player));
                 break;
             }
         }

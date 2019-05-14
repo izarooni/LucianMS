@@ -1,6 +1,7 @@
 package com.lucianms.events;
 
 import com.lucianms.client.MapleCharacter;
+import com.lucianms.client.MapleClient;
 import com.lucianms.client.Relationship;
 import com.lucianms.client.inventory.Item;
 import com.lucianms.client.inventory.MapleInventoryType;
@@ -8,6 +9,7 @@ import com.lucianms.nio.SendOpcode;
 import com.lucianms.nio.receive.MaplePacketReader;
 import com.lucianms.server.MapleInventoryManipulator;
 import com.lucianms.server.channel.MapleChannel;
+import com.lucianms.server.world.MapleWorld;
 import tools.MaplePacketCreator;
 import tools.Pair;
 import tools.StringUtil;
@@ -76,16 +78,17 @@ public class PlayerRingActionEvent extends PacketEvent {
 
     @Override
     public Object onPacket() {
-        MapleChannel ch = getClient().getChannelServer();
-
-        MapleCharacter player = getClient().getPlayer();
+        MapleClient client = getClient();
+        MapleWorld world = client.getWorldServer();
+        MapleChannel ch = client.getChannelServer();
+        MapleCharacter player = client.getPlayer();
         Relationship rltn = player.getRelationship();
 
         MapleCharacter pplayer = null; // partner player
         Relationship prltn = null; // partner relationship
         int partnerId = (rltn.getGroomId() == player.getId()) ? rltn.getBrideId() : rltn.getGroomId();
         if (partnerId > 0) {
-            pplayer = getClient().getWorldServer().getPlayer(partnerId);
+            pplayer = world.getPlayerStorage().get(partnerId);
             if (pplayer != null) {
                 prltn = pplayer.getRelationship();
             }
@@ -94,9 +97,9 @@ public class PlayerRingActionEvent extends PacketEvent {
         switch (action) {
             case 0: { // proposal
                 if (username.equalsIgnoreCase(player.getName())) {
-                    getClient().announce(getEngagementResult((byte) 0x12));
+                    client.announce(getEngagementResult((byte) 0x12));
                 } else if (rltn.getStatus() == Relationship.Status.Single && rltn.getBrideId() > 0) {
-                    getClient().announce(getEngagementResult((byte) 0x1b));
+                    client.announce(getEngagementResult((byte) 0x1b));
                 } else {
                     if (!Boxes.containsKey(itemID)) {
                         getLogger().warn("'{}' attempting to propose with a non-engagement box item ({})", player.getName(), itemID);
@@ -105,27 +108,27 @@ public class PlayerRingActionEvent extends PacketEvent {
                         getLogger().warn("'{}' attempting to propose with an invalid item ({})", player.getName(), itemID);
                         return null;
                     }
-                    pplayer = ch.getPlayerStorage().find(p -> p.getName().equalsIgnoreCase(username));
-                    if (pplayer != null) {
+                    pplayer = world.getPlayerStorage().find(p -> p.getName().equalsIgnoreCase(username));
+                    if (pplayer != null && pplayer.getClient().getChannel() == ch.getId()) {
                         prltn = pplayer.getRelationship();
                         if (pplayer.getMapId() != player.getMapId()) {
                             // Both players must be in the same map
-                            getClient().announce(getEngagementResult((byte) 0x13));
+                            client.announce(getEngagementResult((byte) 0x13));
                         } else if (prltn.getStatus() == Relationship.Status.Married) {
                             // partner is already married
-                            getClient().announce(getEngagementResult((byte) 0x18));
+                            client.announce(getEngagementResult((byte) 0x18));
                         } else if (rltn.getStatus() == Relationship.Status.Married) {
                             // player is already married
-                            getClient().announce(getEngagementResult((byte) 0x1a));
+                            client.announce(getEngagementResult((byte) 0x1a));
                         } else if (prltn.getStatus() == Relationship.Status.Engaged) {
                             // partner is already engaged
-                            getClient().announce(getEngagementResult((byte) 0x19));
+                            client.announce(getEngagementResult((byte) 0x19));
                         } else if (rltn.getStatus() == Relationship.Status.Engaged) {
                             // player is already engaged
-                            getClient().announce(getEngagementResult((byte) 0x17));
+                            client.announce(getEngagementResult((byte) 0x17));
                         } else if (prltn.getStatus() == Relationship.Status.Single && prltn.getGroomId() > 0) {
                             // partner is already being proposed to
-                            getClient().announce(getEngagementResult((byte) 0x1c));
+                            client.announce(getEngagementResult((byte) 0x1c));
                         } else {
                             // holy finally
                             rltn.setEngagementBoxId(itemID);
@@ -139,7 +142,7 @@ public class PlayerRingActionEvent extends PacketEvent {
                             pplayer.announce(sendEngagementRequest(player.getName(), player.getId(), username));
                         }
                     } else {
-                        getClient().announce(getEngagementResult((byte) 0x12));
+                        client.announce(getEngagementResult((byte) 0x12));
                     }
                 }
                 break;
@@ -181,7 +184,7 @@ public class PlayerRingActionEvent extends PacketEvent {
                             MapleInventoryManipulator.removeById(pplayer.getClient(), MapleInventoryType.USE, pplayer.getRelationship().getEngagementBoxId(), 1, false, false);
                             // male gets box and female gets ring :D
                             MapleInventoryManipulator.addById(pplayer.getClient(), p.getLeft(), (short) 1); // (empty) engagement box
-                            MapleInventoryManipulator.addById(getClient(), p.getRight(), (short) 1); // engagement ring
+                            MapleInventoryManipulator.addById(client, p.getRight(), (short) 1); // engagement ring
 
                             try (Connection con = player.getClient().getWorldServer().getConnection()) {
                                 rltn.save(con);
@@ -208,8 +211,8 @@ public class PlayerRingActionEvent extends PacketEvent {
                     getLogger().warn("'{}' dropped an invalid ring/box ({})", player.getName(), itemID);
                     return null;
                 }
-                getClient().announce(getEngagementResult((byte) 0xd));
-                MapleInventoryManipulator.removeById(getClient(), MapleInventoryType.ETC, itemID, 1, false, false);
+                client.announce(getEngagementResult((byte) 0xd));
+                MapleInventoryManipulator.removeById(client, MapleInventoryType.ETC, itemID, 1, false, false);
                 rltn.reset();
 
                 if (pplayer != null) {
@@ -228,7 +231,7 @@ public class PlayerRingActionEvent extends PacketEvent {
                 break;
             }
             case 9: { // groom's wish list
-                getClient().announce(MaplePacketCreator.sendGroomWishlist());
+                client.announce(MaplePacketCreator.sendGroomWishlist());
                 break;
             }
         }

@@ -21,6 +21,7 @@ import com.lucianms.server.Server;
 import com.lucianms.server.channel.MapleChannel;
 import com.lucianms.server.life.SpawnPoint;
 import com.lucianms.server.maps.MapleMap;
+import com.lucianms.server.world.MapleWorld;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import tools.MaplePacketCreator;
@@ -77,9 +78,10 @@ public class ChangeMapEvent extends PacketEvent {
     @Override
     public Object onPacket() {
         MapleClient client = getClient();
+        MapleWorld world = client.getWorldServer();
+        MapleChannel ch = client.getChannelServer();
         MapleCharacter player = client.getPlayer();
         MaplePortal portal = player.getMap().getPortal(startwp);
-        MapleChannel cserv = client.getChannelServer();
 
         if (portal != null && player.isGM() && player.isDebug()) {
             player.sendMessage("[DEBUG] ID: {}, Name: {}, Script: {}, Target map: {}:{}, Location: x:{}/y:{}", portal.getId(), portal.getName(), portal.getScriptName(), portal.getTarget(), portal.getTargetMapId(), portal.getPosition().x, portal.getPosition().y);
@@ -97,13 +99,13 @@ public class ChangeMapEvent extends PacketEvent {
                 return null;
             }
             player.getCashShop().open(false);
-            cserv.removePlayer(player);
+            world.getPlayerStorage().remove(player.getId());
             client.setLoginState(LoginState.Transfer);
             if (player.getFakePlayer() != null) {
                 player.getFakePlayer().setFollowing(true);
                 player.getMap().addFakePlayer(player.getFakePlayer());
             }
-            client.announce(MaplePacketCreator.getChannelChange(cserv.getNetworkAddress(), cserv.getPort()));
+            client.announce(MaplePacketCreator.getChannelChange(ch.getNetworkAddress(), ch.getPort()));
         } else {
             if (player.getCashShop().isOpened()) {
                 client.disconnect();
@@ -131,7 +133,7 @@ public class ChangeMapEvent extends PacketEvent {
                             if (to == null) {
                                 LOGGER.warn("Player '{}' unable to return to map {}", player.getName(), player.getMap().getReturnMapId());
                                 player.sendMessage("The return map is obstructed");
-                                to = cserv.getMap(ServerConstants.HOME_MAP);
+                                to = ch.getMap(ServerConstants.HOME_MAP);
                             }
                             player.setStance(0);
                         }
@@ -139,7 +141,7 @@ public class ChangeMapEvent extends PacketEvent {
                         player.changeMap(to, to.getPortal(0));
                     }
                 } else if (targetMapId != -1 && player.isGM()) {
-                    MapleMap to = cserv.getMap(targetMapId);
+                    MapleMap to = ch.getMap(targetMapId);
                     if (to != null) {
                         player.changeMap(to);
                     }
@@ -174,7 +176,7 @@ public class ChangeMapEvent extends PacketEvent {
                         }
                     }
                     if (warp) {
-                        final MapleMap to = cserv.getMap(targetMapId);
+                        final MapleMap to = ch.getMap(targetMapId);
                         player.changeMap(to, to.getPortal(0));
                     }
                 }

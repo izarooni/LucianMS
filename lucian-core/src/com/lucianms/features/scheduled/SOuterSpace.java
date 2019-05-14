@@ -99,7 +99,7 @@ public class SOuterSpace extends SAutoEvent {
         setOpen(true);
         start = System.currentTimeMillis();
         mapInstances.clear();
-        world.broadcastMessage(0, "The Space Slime has spawned in Outer Space, Planet Aura");
+        world.sendMessage(0, "The Space Slime has spawned in Outer Space, Planet Aura");
         TaskExecutor.createTask(this::end, 1000 * 60 * 5);
     }
 

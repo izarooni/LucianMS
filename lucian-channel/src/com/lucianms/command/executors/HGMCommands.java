@@ -21,10 +21,8 @@ import java.awt.*;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @author izarooni, lucasdieswagger
@@ -34,6 +32,8 @@ public class HGMCommands extends CommandExecutor {
     public static void execute(MapleClient client, Command command, CommandArgs args) {
 
         MapleCharacter player = client.getPlayer();
+        MapleChannel ch = client.getChannelServer();
+        MapleWorld world = client.getWorldServer();
 
         if (command.equals("hgmcommands")) {
             ArrayList<String> commands = new ArrayList<>();
@@ -86,13 +86,13 @@ public class HGMCommands extends CommandExecutor {
         } else if (command.equals("popup")) {
             if (args.length() > 0) {
                 String content = args.concatFrom(0);
-                client.getWorldServer().broadcastPacket(MaplePacketCreator.serverNotice(1, content));
+                world.sendMessage(1, content);
             } else {
                 player.sendMessage(5, "You must type a message!");
             }
         } else if (command.equals("setname")) {
             if (args.length() == 2) {
-                MapleCharacter target = client.getWorldServer().findPlayer(p -> p.getName().equalsIgnoreCase(args.get(0)));
+                MapleCharacter target = world.findPlayer(p -> p.getName().equalsIgnoreCase(args.get(0)));
                 if (target != null) {
                     String oldName = target.getName();
                     target.setName(args.get(1));
@@ -111,7 +111,7 @@ public class HGMCommands extends CommandExecutor {
         } else if (command.equals("clearskills")) {
             MapleCharacter target;
             if (args.length() == 1) {
-                target = client.getChannelServer().getPlayerStorage().find(p -> p.getName().equalsIgnoreCase(args.get(0)));
+                target = world.getPlayerStorage().find(p -> p.getName().equalsIgnoreCase(args.get(0)));
                 if (target == null) {
                     player.sendMessage(5, "Unable to find any player named '{}'", args.get(0));
                     return;
@@ -227,273 +227,276 @@ public class HGMCommands extends CommandExecutor {
             } else {
                 player.dropMessage(5, "You must specify a monster ID");
             }
-        } else if (command.equals("npc", "pnpc")) { // !pnpc <npc_id> [script_name]
-            if (args.length() > 0) {
-                boolean permanent = command.equals("pnpc");
-                Integer npcId = args.parseNumber(0, int.class);
-                String script = (args.length() == 2) ? args.get(1) : null;
-                String error = args.getFirstError();
-                if (error != null) {
-                    player.dropMessage(5, error);
-                    return;
-                }
-                MapleNPC npc = MapleLifeFactory.getNPC(npcId);
-                npc.setPosition(player.getPosition());
-                npc.setCy(player.getPosition().y);
-                npc.setRx0(player.getPosition().x + 50);
-                npc.setRx1(player.getPosition().x - 50);
-                npc.setF(player.isFacingLeft() ? 0 : 1);
-                npc.setScript(script);
-                npc.setFh(0);
-                for (MapleChannel channel : player.getClient().getWorldServer().getChannels()) {
-                    MapleMap map = channel.getMap(player.getMapId());
-                    if (map != null) {
-                        map.addMapObject(npc);
-                        map.broadcastMessage(MaplePacketCreator.spawnNPC(npc));
+        } else {
+            if (command.equals("npc", "pnpc")) { // !pnpc <npc_id> [script_name]
+                if (args.length() > 0) {
+                    boolean permanent = command.equals("pnpc");
+                    Integer npcId = args.parseNumber(0, int.class);
+                    String script = (args.length() == 2) ? args.get(1) : null;
+                    String error = args.getFirstError();
+                    if (error != null) {
+                        player.dropMessage(5, error);
+                        return;
                     }
-                }
-                if (permanent) {
-                    try (Connection con = client.getWorldServer().getConnection();
-                         PreparedStatement ps = con.prepareStatement("INSERT INTO spawns (idd, f, fh, cy, rx0, rx1, type , x, mid, mobtime, script) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)")) {
-                        ps.setInt(1, npcId);
-                        ps.setInt(2, npc.getF());
-                        ps.setInt(3, npc.getFh());
-                        ps.setInt(4, npc.getCy());
-                        ps.setInt(5, npc.getRx0());
-                        ps.setInt(6, npc.getRx1());
-                        ps.setString(7, "n");
-                        ps.setInt(8, (int) npc.getPosition().getX());
-                        ps.setInt(9, player.getMapId());
-                        ps.setInt(10, 1);
-                        ps.setString(11, script);
-                        ps.executeUpdate();
-                    } catch (SQLException e) {
-                        e.printStackTrace();
-                        player.dropMessage(5, "An error occurred");
+                    MapleNPC npc = MapleLifeFactory.getNPC(npcId);
+                    npc.setPosition(player.getPosition());
+                    npc.setCy(player.getPosition().y);
+                    npc.setRx0(player.getPosition().x + 50);
+                    npc.setRx1(player.getPosition().x - 50);
+                    npc.setF(player.isFacingLeft() ? 0 : 1);
+                    npc.setScript(script);
+                    npc.setFh(0);
+                    for (MapleChannel channel : world.getChannels()) {
+                        MapleMap map = channel.getMap(player.getMapId());
+                        if (map != null) {
+                            map.addMapObject(npc);
+                            map.broadcastMessage(MaplePacketCreator.spawnNPC(npc));
+                        }
                     }
-                }
-            } else {
-                player.dropMessage(5, "You must specify an NPC ID");
-            }
-        } else if (command.equals("pmob")) {
-            if (args.length() > 0) {
-                Integer mobId = args.parseNumber(0, int.class);
-                Integer amount = args.parseNumber(1, 1, int.class);
-                String error = args.getFirstError();
-                if (error != null) {
-                    player.dropMessage(5, error);
-                    return;
-                }
-                int xpos = player.getPosition().x;
-                int ypos = player.getPosition().y;
-                int fh = player.getMap().getFootholds().findBelow(player.getPosition()).getId();
-                for (int i = 0; i < amount; i++) {
-                    MapleMonster mob = MapleLifeFactory.getMonster(mobId);
-                    if (mob != null) {
-                        mob.setPosition(player.getPosition());
-                        mob.setCy(ypos);
-                        mob.setRx0(xpos + 50);
-                        mob.setRx1(xpos - 50);
-                        mob.setFh(fh);
-                        try (Connection con = client.getWorldServer().getConnection();
-                             PreparedStatement ps = con.prepareStatement("INSERT INTO spawns ( idd, f, fh, cy, rx0, rx1, type, x, mid, mobtime) VALUES ( ?, ?, ?, ?, ?, ?, ?, ?, ?, ? )")) {
-                            ps.setInt(1, mobId);
-                            ps.setInt(2, 0);
-                            ps.setInt(3, fh);
-                            ps.setInt(4, ypos);
-                            ps.setInt(5, xpos - 50);
-                            ps.setInt(6, xpos + 50);
-                            ps.setString(7, "m");
-                            ps.setInt(8, xpos);
+                    if (permanent) {
+                        try (Connection con = world.getConnection();
+                             PreparedStatement ps = con.prepareStatement("INSERT INTO spawns (idd, f, fh, cy, rx0, rx1, type , x, mid, mobtime, script) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)")) {
+                            ps.setInt(1, npcId);
+                            ps.setInt(2, npc.getF());
+                            ps.setInt(3, npc.getFh());
+                            ps.setInt(4, npc.getCy());
+                            ps.setInt(5, npc.getRx0());
+                            ps.setInt(6, npc.getRx1());
+                            ps.setString(7, "n");
+                            ps.setInt(8, (int) npc.getPosition().getX());
                             ps.setInt(9, player.getMapId());
-                            ps.setInt(10, 1000);
+                            ps.setInt(10, 1);
+                            ps.setString(11, script);
                             ps.executeUpdate();
                         } catch (SQLException e) {
-                            player.dropMessage(5, "An error occurred while trying to insert the mob into the database: " + e.getMessage());
+                            e.printStackTrace();
+                            player.dropMessage(5, "An error occurred");
                         }
-                        player.getMap().addMonsterSpawn(mob, 0, -1);
+                    }
+                } else {
+                    player.dropMessage(5, "You must specify an NPC ID");
+                }
+            } else if (command.equals("pmob")) {
+                if (args.length() > 0) {
+                    Integer mobId = args.parseNumber(0, int.class);
+                    Integer amount = args.parseNumber(1, 1, int.class);
+                    String error = args.getFirstError();
+                    if (error != null) {
+                        player.dropMessage(5, error);
+                        return;
+                    }
+                    int xpos = player.getPosition().x;
+                    int ypos = player.getPosition().y;
+                    int fh = player.getMap().getFootholds().findBelow(player.getPosition()).getId();
+                    for (int i = 0; i < amount; i++) {
+                        MapleMonster mob = MapleLifeFactory.getMonster(mobId);
+                        if (mob != null) {
+                            mob.setPosition(player.getPosition());
+                            mob.setCy(ypos);
+                            mob.setRx0(xpos + 50);
+                            mob.setRx1(xpos - 50);
+                            mob.setFh(fh);
+                            try (Connection con = world.getConnection();
+                                 PreparedStatement ps = con.prepareStatement("INSERT INTO spawns ( idd, f, fh, cy, rx0, rx1, type, x, mid, mobtime) VALUES ( ?, ?, ?, ?, ?, ?, ?, ?, ?, ? )")) {
+                                ps.setInt(1, mobId);
+                                ps.setInt(2, 0);
+                                ps.setInt(3, fh);
+                                ps.setInt(4, ypos);
+                                ps.setInt(5, xpos - 50);
+                                ps.setInt(6, xpos + 50);
+                                ps.setString(7, "m");
+                                ps.setInt(8, xpos);
+                                ps.setInt(9, player.getMapId());
+                                ps.setInt(10, 1000);
+                                ps.executeUpdate();
+                            } catch (SQLException e) {
+                                player.dropMessage(5, "An error occurred while trying to insert the mob into the database: " + e.getMessage());
+                            }
+                            player.getMap().addMonsterSpawn(mob, 0, -1);
+                        } else {
+                            player.dropMessage(5, String.format("'%s' is an invalid monster", args.get(0)));
+                            return;
+                        }
+                    }
+                } else {
+                    player.dropMessage(5, "You must specify a monster ID");
+                }
+            } else if (command.equals("playernpc")) {
+                if (args.length() > 1) {
+                    Integer npcId = args.parseNumber(0, int.class);
+                    String username = args.get(1);
+                    String script = (args.length() == 3) ? args.get(2) : null;
+                    String error = args.getFirstError();
+                    if (error != null) {
+                        player.dropMessage(5, error);
+                        return;
+                    }
+                    MapleCharacter target = world.getPlayerStorage().find(p -> p.getName().equalsIgnoreCase(username));
+                    if (target != null) {
+                        if (npcId >= 9901000 && npcId <= 9901909) {
+                            player.createPlayerNPC(target, npcId, script);
+                        } else {
+                            player.dropMessage(5, "Player NPCs ID must be between 9901000 and 9901909");
+                        }
                     } else {
-                        player.dropMessage(5, String.format("'%s' is an invalid monster", args.get(0)));
+                        player.dropMessage(5, String.format("Unable to find any player named '%s'", username));
+                    }
+                } else {
+                    player.dropMessage(5, "Syntax: !playernpc <npc_id> <username> [script_name]");
+                }
+            } else if (command.equals("pos")) {
+                player.dropMessage(player.getPosition().toString());
+            } else if (command.equals("shout", "say")) {
+                if (args.length() > 0) {
+                    if (command.equals("say")) {
+                        world.sendMessage(6, "{} : {}", player.getName(), args.concatFrom(0));
+                    } else {
+                        world.sendPacket(MaplePacketCreator.earnTitleMessage(args.concatFrom(0)));
+                    }
+                } else {
+                    player.dropMessage("You must enter a message");
+                }
+            } else if (command.equals("whereami")) {
+                player.dropMessage(6, "Map id - " + player.getMapId());
+                player.dropMessage(6, "Map name - " + player.getMap().getMapName());
+                player.dropMessage(6, "Map street name - " + player.getMap().getStreetName());
+                player.dropMessage(6, "Map onUserEnter - " + player.getMap().getOnUserEnter());
+                player.dropMessage(6, "Map onFirstUserEnter - " + player.getMap().getOnFirstUserEnter());
+            } else if (command.equals("oshop")) {
+                if (args.length() == 1) {
+                    Integer shopId = args.parseNumber(0, int.class);
+                    String error = args.getFirstError();
+                    if (error != null) {
+                        player.dropMessage(5, error);
+                        return;
+                    }
+                    MapleShop shop = MapleShopFactory.getInstance().getShop(shopId);
+                    if (shop != null) {
+                        shop.sendShop(client);
+                    } else {
+                        player.dropMessage(5, "This shop doesn't exist");
+                    }
+                }
+            } else if (command.equals("cnpc")) {
+                byte mode = 1, type = 1;
+                int selection = -1;
+                if (args.length() > 0) {
+                    mode = args.parseNumber(0, byte.class);
+                    type = args.parseNumber(1, byte.class);
+                    selection = args.parseNumber(2, int.class);
+                    String error = args.getFirstError();
+                    if (error != null) {
+                        player.sendMessage(5, error);
                         return;
                     }
                 }
-            } else {
-                player.dropMessage(5, "You must specify a monster ID");
-            }
-        } else if (command.equals("playernpc")) {
-            if (args.length() > 1) {
-                Integer npcId = args.parseNumber(0, int.class);
-                String username = args.get(1);
-                String script = (args.length() == 3) ? args.get(2) : null;
-                String error = args.getFirstError();
-                if (error != null) {
-                    player.dropMessage(5, error);
-                    return;
-                }
-                MapleCharacter target = player.getClient().getChannelServer().getPlayerStorage().find(p -> p.getName().equalsIgnoreCase(username));
-                if (target != null) {
-                    if (npcId >= 9901000 && npcId <= 9901909) {
-                        player.createPlayerNPC(target, npcId, script);
+                NPCScriptManager.action(client, mode, type, selection);
+            } else if (command.equals("onpc")) {
+                if (args.length() == 1) {
+                    Integer npcId = args.parseNumber(0, int.class);
+                    String error = args.getFirstError();
+                    if (error == null && npcId < 9901000) {
+                        NPCScriptManager.start(client, npcId);
                     } else {
-                        player.dropMessage(5, "Player NPCs ID must be between 9901000 and 9901909");
-                    }
-                } else {
-                    player.dropMessage(5, String.format("Unable to find any player named '%s'", username));
-                }
-            } else {
-                player.dropMessage(5, "Syntax: !playernpc <npc_id> <username> [script_name]");
-            }
-        } else if (command.equals("pos")) {
-            player.dropMessage(player.getPosition().toString());
-        } else if (command.equals("shout", "say")) {
-            if (args.length() > 0) {
-                if (command.equals("say")) {
-                    String message = String.format("%s : %s", player.getName(), args.concatFrom(0));
-                    client.getWorldServer().broadcastPacket(MaplePacketCreator.serverNotice(6, message));
-                } else {
-                    client.getWorldServer().broadcastPacket(MaplePacketCreator.earnTitleMessage(args.concatFrom(0)));
-                }
-            } else {
-                player.dropMessage("You must enter a message");
-            }
-        } else if (command.equals("whereami")) {
-            player.dropMessage(6, "Map id - " + player.getMapId());
-            player.dropMessage(6, "Map name - " + player.getMap().getMapName());
-            player.dropMessage(6, "Map street name - " + player.getMap().getStreetName());
-            player.dropMessage(6, "Map onUserEnter - " + player.getMap().getOnUserEnter());
-            player.dropMessage(6, "Map onFirstUserEnter - " + player.getMap().getOnFirstUserEnter());
-        } else if (command.equals("oshop")) {
-            if (args.length() == 1) {
-                Integer shopId = args.parseNumber(0, int.class);
-                String error = args.getFirstError();
-                if (error != null) {
-                    player.dropMessage(5, error);
-                    return;
-                }
-                MapleShop shop = MapleShopFactory.getInstance().getShop(shopId);
-                if (shop != null) {
-                    shop.sendShop(client);
-                } else {
-                    player.dropMessage(5, "This shop doesn't exist");
-                }
-            }
-        } else if (command.equals("cnpc")) {
-            byte mode = 1, type = 1;
-            int selection = -1;
-            if (args.length() > 0) {
-                mode = args.parseNumber(0, byte.class);
-                type = args.parseNumber(1, byte.class);
-                selection = args.parseNumber(2, int.class);
-                String error = args.getFirstError();
-                if (error != null) {
-                    player.sendMessage(5, error);
-                    return;
-                }
-            }
-            NPCScriptManager.action(client, mode, type, selection);
-        } else if (command.equals("onpc")) {
-            if (args.length() == 1) {
-                Integer npcId = args.parseNumber(0, int.class);
-                String error = args.getFirstError();
-                if (error == null && npcId < 9901000) {
-                    NPCScriptManager.start(client, npcId);
-                } else {
-                    String script = args.get(0);
-                    if (script.startsWith("`")) {
-                        script = script.substring(1);
-                    }
-                    NPCScriptManager.start(client, 10200, script);
-                }
-            } else {
-                player.dropMessage(5, "Usage: !onpc <npc_id/script>");
-            }
-        } else if (command.equals("saveall")) {
-            for (MapleWorld worlds : Server.getWorlds()) {
-                worlds.getChannels().forEach(ch -> ch.getPlayerStorage().values().forEach(MapleCharacter::saveToDB));
-            }
-            player.dropMessage(6, "All characters saved!");
-        } else if (command.equals("resetreactors")) {
-            player.getMap().resetReactors();
-            player.dropMessage("Reactors reset");
-        } else if (command.equals("sudo")) {
-            if (args.length() > 1) {
-                MapleCharacter target = client.getWorldServer().findPlayer(p -> p.getName().equalsIgnoreCase(args.get(0)));
-                if (target != null) {
-                    String cmd = args.concatFrom(1);
-                    CommandWorker.process(target.getClient(), cmd, true);
-                } else {
-                    player.sendMessage("Unable to find any player named '{}'", args.get(0));
-                }
-            }
-        } else if (command.equals("stalker")) {
-            NPCScriptManager.start(client, 10200, "f_stalker");
-        } else if (command.equals("godmeup")) {
-            if (args.length() > 0) {
-                List<ModifyInventory> mods = new ArrayList<>();
-                Short stat = args.parseNumber(0, short.class);
-                String error = args.getFirstError();
-                if (error != null) {
-                    player.dropMessage(5, error);
-                    return;
-                }
-                for (Item item : player.getInventory(MapleInventoryType.EQUIPPED).list()) {
-                    if (item instanceof Equip) {
-                        Equip eq = (Equip) item;
-                        if (args.length() > 2) {
-                            for (int i = 2; i < args.length(); i++) {
-                                eq.setStat(args.get(i), stat);
-                            }
-                        } else {
-                            eq.setStr(stat);
-                            eq.setDex(stat);
-                            eq.setInt(stat);
-                            eq.setLuk(stat);
-                            eq.setMdef(stat);
-                            eq.setWdef(stat);
-                            eq.setAvoid(stat);
-                            eq.setAcc(stat);
-                            eq.setWatk(stat);
-                            eq.setMatk(stat);
-                            eq.setSpeed(stat);
-                            eq.setJump(stat);
+                        String script = args.get(0);
+                        if (script.startsWith("`")) {
+                            script = script.substring(1);
                         }
-                        mods.add(new ModifyInventory(3, eq));
-                        mods.add(new ModifyInventory(0, eq));
+                        NPCScriptManager.start(client, 10200, script);
+                    }
+                } else {
+                    player.dropMessage(5, "Usage: !onpc <npc_id/script>");
+                }
+            } else if (command.equals("saveall")) {
+                for (MapleWorld worlds : Server.getWorlds()) {
+                    Collection<MapleCharacter> players = worlds.getPlayers();
+                    players.forEach(MapleCharacter::saveToDB);
+                    players.clear();
+                }
+                player.dropMessage(6, "All characters saved!");
+            } else if (command.equals("resetreactors")) {
+                player.getMap().resetReactors();
+                player.dropMessage("Reactors reset");
+            } else if (command.equals("sudo")) {
+                if (args.length() > 1) {
+                    MapleCharacter target = world.findPlayer(p -> p.getName().equalsIgnoreCase(args.get(0)));
+                    if (target != null) {
+                        String cmd = args.concatFrom(1);
+                        CommandWorker.process(target.getClient(), cmd, true);
+                    } else {
+                        player.sendMessage("Unable to find any player named '{}'", args.get(0));
                     }
                 }
-                client.announce(MaplePacketCreator.modifyInventory(true, mods));
-                player.equipChanged();
-                mods.clear();
-            }
-        } else if (command.equals("footholds")) {
-            final int itemId = 3990022;
-            List<MapleFoothold> footholds = player.getMap().getFootholds().getFootholds();
-            for (MapleFoothold foothold : footholds) {
-                Item item = new Item(itemId, (short) 0, (short) 1);
-                item.setObtainable(false);
-                item.setOwner("fh_id:" + foothold.getId());
-                Point position = new Point(foothold.getX1(), foothold.getY1());
-                player.getMap().spawnItemDrop(player, player, item, position, true, true);
-            }
-            player.dropMessage("Don't forget to !cleardrops when you're done");
-        } else if (command.equals("ring")) {
-            if (args.length() == 2) {
-                MapleCharacter partner = client.getChannelServer().getPlayerStorage().find(p -> p.getName().equalsIgnoreCase(args.get(0)));
-                if (partner == null) {
-                    player.sendMessage(5, "Unable to find any player named '{}'", args.get(0));
-                    return;
+            } else if (command.equals("stalker")) {
+                NPCScriptManager.start(client, 10200, "f_stalker");
+            } else if (command.equals("godmeup")) {
+                if (args.length() > 0) {
+                    List<ModifyInventory> mods = new ArrayList<>();
+                    Short stat = args.parseNumber(0, short.class);
+                    String error = args.getFirstError();
+                    if (error != null) {
+                        player.dropMessage(5, error);
+                        return;
+                    }
+                    for (Item item : player.getInventory(MapleInventoryType.EQUIPPED).list()) {
+                        if (item instanceof Equip) {
+                            Equip eq = (Equip) item;
+                            if (args.length() > 2) {
+                                for (int i = 2; i < args.length(); i++) {
+                                    eq.setStat(args.get(i), stat);
+                                }
+                            } else {
+                                eq.setStr(stat);
+                                eq.setDex(stat);
+                                eq.setInt(stat);
+                                eq.setLuk(stat);
+                                eq.setMdef(stat);
+                                eq.setWdef(stat);
+                                eq.setAvoid(stat);
+                                eq.setAcc(stat);
+                                eq.setWatk(stat);
+                                eq.setMatk(stat);
+                                eq.setSpeed(stat);
+                                eq.setJump(stat);
+                            }
+                            mods.add(new ModifyInventory(3, eq));
+                            mods.add(new ModifyInventory(0, eq));
+                        }
+                    }
+                    client.announce(MaplePacketCreator.modifyInventory(true, mods));
+                    player.equipChanged();
+                    mods.clear();
                 }
-                Integer ringItemID = args.parseNumber(1, int.class);
-                final int ringID = MapleRing.createRing(ringItemID, player, partner);
-                Equip equip = new Equip(ringItemID, (short) 0);
-                equip.setRingId(ringID);
-                MapleInventoryManipulator.addFromDrop(player.getClient(), equip, true);
+            } else if (command.equals("footholds")) {
+                final int itemId = 3990022;
+                List<MapleFoothold> footholds = player.getMap().getFootholds().getFootholds();
+                for (MapleFoothold foothold : footholds) {
+                    Item item = new Item(itemId, (short) 0, (short) 1);
+                    item.setObtainable(false);
+                    item.setOwner("fh_id:" + foothold.getId());
+                    Point position = new Point(foothold.getX1(), foothold.getY1());
+                    player.getMap().spawnItemDrop(player, player, item, position, true, true);
+                }
+                player.dropMessage("Don't forget to !cleardrops when you're done");
+            } else if (command.equals("ring")) {
+                if (args.length() == 2) {
+                    MapleCharacter partner = world.getPlayerStorage().find(p -> p.getName().equalsIgnoreCase(args.get(0)));
+                    if (partner == null) {
+                        player.sendMessage(5, "Unable to find any player named '{}'", args.get(0));
+                        return;
+                    }
+                    Integer ringItemID = args.parseNumber(1, int.class);
+                    final int ringID = MapleRing.createRing(ringItemID, player, partner);
+                    Equip equip = new Equip(ringItemID, (short) 0);
+                    equip.setRingId(ringID);
+                    MapleInventoryManipulator.addFromDrop(player.getClient(), equip, true);
 
-                equip = new Equip(ringItemID, (short) 0);
-                equip.setRingId(ringID + 1);
-                MapleInventoryManipulator.addFromDrop(partner.getClient(), equip, true);
-            } else {
-                player.sendMessage(5, "usage: !ring <partner> <itemid>");
+                    equip = new Equip(ringItemID, (short) 0);
+                    equip.setRingId(ringID + 1);
+                    MapleInventoryManipulator.addFromDrop(partner.getClient(), equip, true);
+                } else {
+                    player.sendMessage(5, "usage: !ring <partner> <itemid>");
+                }
             }
         }
     }

@@ -85,7 +85,7 @@ function action(mode, type, selection) {
                     var t = getPlayer(this.stalk.id);
                     if (t != null) {
                         var otherChars = "\t";
-                        var idNamePair = t.getClient().loadCharactersInternal(client.getWorldServer());
+                        var idNamePair = t.getClient().getCharacterIdentifiers();
                         for (var i = 0; i < idNamePair.size(); i++) {
                             otherChars += idNamePair.get(i).getRight() + ", ";
                         }
@@ -98,7 +98,7 @@ function action(mode, type, selection) {
                             + "\r\nOther characters: \r\n" + otherChars
                             + "\r\n\r\nRemote address: " + t.getClient().getRemoteAddress()
                             + "\r\n\r\nMACs: " + t.getClient().getMacs()
-                            + "\r\nHWID: " + t.getClient().getHWID()
+                            + "\r\nHWID: " + t.getClient().getHardwareIDs()
                             + "\r\n\r\nCalcualted ATK: " + t.calculateMaxBaseDamage(t.getTotalWatk())
                             + "\r\nEXP, Meso, Drop rate: " + `${t.getExpRate()}x, ${t.getMesoRate()}x, ${t.getDropRate()}x`
                             + "\r\nCrush rings: " + t.getCrushRings()
@@ -213,34 +213,26 @@ function action(mode, type, selection) {
 
 /* ********** functions ********** */
 function getPlayer(playerId) {
-    for (let i = 0; i < client.getWorldServer().getChannels().size(); i++) {
-        let ch = client.getWorldServer().getChannel(i + 1);
-        let chr = ch.getPlayerStorage().get(playerId);
-        if (chr != null) {
-            return chr;
-        }
-    }
-    return null;
+    return world.getPlayerStorage().get(playerId);
 }
 
 // Get all online players in the player's world server
 // and return them as an array of Player object
 function onlinePlayers(filter) {
     let ret = [];
-    for (let i = 0; i < client.getWorldServer().getChannels().size(); i++) {
-        let ch = client.getWorldServer().getChannel(i + 1);
-        let iter = ch.getPlayerStorage().values().iterator();
-        while (iter.hasNext()) {
-            let p = iter.next();
-            if (filter != null) {
-                if (!p.getName().toUpperCase().contains(filter.toUpperCase())) {
-                    continue;
-                }
+    let players = world.getPlayers();
+    let iter = players.iterator();
+    while (iter.hasNext()) {
+        let p = iter.next();
+        if (filter != undefined) {
+            if (!p.getName().toUpperCase().contains(filter.toUpperCase())) {
+                continue;
             }
-            let chr = new Player(p.getId(), p.getName());
-            ret.push(chr);
         }
+        let chr = new Player(p.getId(), p.getName());
+        ret.push(chr);
     }
+    players.clear();
     return ret;
 }
 

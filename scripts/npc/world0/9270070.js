@@ -119,7 +119,7 @@ function action(mode, type, selection) {
         if (username == null || username.length == 0) {
             usernameError = "#r#eYou must specify a username!#k#n";
         } else {
-            let target = ch.getPlayerStorage().find((p) => p.getName().equalsIgnoreCase(username));
+            let target = world.getPlayerStorage().find((p) => p.getName().equalsIgnoreCase(username));
             if (target != null && !target.isGM()) {
                 target.setHp(0);
                 target.updateSingleStat(MapleStat.HP, 0);

@@ -20,6 +20,7 @@ import tools.data.output.MaplePacketLittleEndianWriter;
 
 import java.awt.*;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -81,7 +82,8 @@ public class AEmergencyTrial extends GAutoEvent {
     public void start() {
         for (MapleChannel channel : getWorld().getChannels()) {
             channel.removeMap(BossMapID);
-            for (MapleCharacter player : channel.getPlayerStorage().values()) {
+            Collection<MapleCharacter> players = getWorld().getPlayers(p -> p.getClient().getChannel() == channel.getId());
+            for (MapleCharacter player : players) {
                 MapleMap map = player.getMap();
                 if (!map.getMonsterSpawnPoints().isEmpty()) {
                     Integer objectID = spawnLocations.get(map.getId());
@@ -98,6 +100,7 @@ public class AEmergencyTrial extends GAutoEvent {
                     player.sendMessage(5, "A mysterious portal has appeared in the map");
                 }
             }
+            players.clear();
         }
 
         endTimestamp = System.currentTimeMillis() + (1000 * 30);

@@ -59,7 +59,7 @@ public class NettyDiscardServer implements AutoCloseable {
     }
 
     @Override
-    public void close() throws Exception {
+    public void close() throws InterruptedException {
         channelFuture.channel().close();
         channelFuture.channel().closeFuture().sync();
         parentGroup.shutdownGracefully().sync();

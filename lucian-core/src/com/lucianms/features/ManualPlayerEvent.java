@@ -3,10 +3,8 @@ package com.lucianms.features;
 import com.lucianms.client.MapleCharacter;
 import com.lucianms.scheduler.Task;
 import com.lucianms.scheduler.TaskExecutor;
-import com.lucianms.server.Server;
 import com.lucianms.server.channel.MapleChannel;
 import com.lucianms.server.maps.MapleMap;
-import tools.MaplePacketCreator;
 
 import java.awt.*;
 import java.util.Collections;
@@ -54,7 +52,7 @@ public class ManualPlayerEvent extends GenericEvent {
     }
 
     public void broadcastMessage(String message) {
-        Server.getWorld(getChannel().getWorld()).broadcastPacket(MaplePacketCreator.serverNotice(6, "[Event] " + message));
+        getChannel().getWorldServer().sendMessage(6, "[Event] {}", message);
     }
 
     /**

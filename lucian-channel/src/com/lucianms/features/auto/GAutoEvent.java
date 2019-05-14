@@ -5,7 +5,6 @@ import com.lucianms.features.GenericEvent;
 import com.lucianms.server.FieldBuilder;
 import com.lucianms.server.maps.MapleMap;
 import com.lucianms.server.world.MapleWorld;
-import tools.MaplePacketCreator;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -36,7 +35,7 @@ public abstract class GAutoEvent extends GenericEvent {
         if (message == null || message.toString().isEmpty()) {
             throw new IllegalArgumentException("Can't broadcast an empty messeage");
         }
-        world.broadcastPacket(MaplePacketCreator.serverNotice(6, "[AutoEvent] " + message.toString()));
+        world.sendMessage(6, "[AutoEvent] {}", message.toString());
     }
 
     public final void loadMapInstance(int mapId, boolean skipMonsters) {

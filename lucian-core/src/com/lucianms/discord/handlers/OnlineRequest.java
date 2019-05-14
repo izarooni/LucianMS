@@ -11,6 +11,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import tools.data.output.MaplePacketLittleEndianWriter;
 
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -32,10 +33,12 @@ public class OnlineRequest extends DiscordRequest {
             List<MapleChannel> channels = world.getChannels();
             writer.write(channels.size());
             for (MapleChannel channel : channels) {
-                writer.writeShort(channel.getPlayerStorage().size());
-                for (MapleCharacter players : channel.getPlayerStorage().values()) {
-                    writer.writeMapleAsciiString(players.getName());
+                Collection<MapleCharacter> players = world.getPlayers(p -> p.getClient().getChannel() == channel.getId());
+                writer.writeShort(players.size());
+                for (MapleCharacter player : players) {
+                    writer.writeMapleAsciiString(player.getName());
                 }
+                players.clear();
             }
         }
 

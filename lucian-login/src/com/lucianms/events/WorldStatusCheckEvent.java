@@ -1,10 +1,8 @@
 package com.lucianms.events;
 
-import com.lucianms.nio.receive.MaplePacketReader;
-import com.lucianms.events.PacketEvent;
 import com.lucianms.constants.ServerConstants;
+import com.lucianms.nio.receive.MaplePacketReader;
 import com.lucianms.server.Server;
-import com.lucianms.server.channel.MapleChannel;
 import tools.MaplePacketCreator;
 
 /**
@@ -22,13 +20,10 @@ public class WorldStatusCheckEvent extends PacketEvent {
     @Override
     public Object onPacket() {
         int status;
-        int num = 0;
-        for (MapleChannel ch : Server.getWorld(world).getChannels()) {
-            num += ch.getConnectedClients();
-        }
-        if (num >= ServerConstants.CHANNEL_LOAD) {
+        int userCount = Server.getWorld(world).getPlayerStorage().size();
+        if (userCount >= ServerConstants.CHANNEL_LOAD) {
             status = 2;
-        } else if (num >= ServerConstants.CHANNEL_LOAD * 0.8) {
+        } else if (userCount >= ServerConstants.CHANNEL_LOAD * 0.8) {
             status = 1;
         } else {
             status = 0;

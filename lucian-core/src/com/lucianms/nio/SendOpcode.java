@@ -306,9 +306,9 @@ public enum SendOpcode {
     KEYMAP                                     (335),
     AUTO_HP_POT                                (336),
     AUTO_MP_POT                                (337),
-    SEND_TV                                    (341),
-    REMOVE_TV                                  (342),
-    ENABLE_TV                                  (343),
+    MAPLE_TV_SET_MESSAGE                       (341),
+    MAPLE_TV_CLEAR_MESSAGE                     (342),
+    MAPLE_TV_SEND_MESSAGE                      (343),
     MTS_OPERATION2                             (347),
     MTS_OPERATION                              (348),
     VICIOUS_HAMMER                             (354);

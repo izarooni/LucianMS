@@ -16,7 +16,6 @@ import com.lucianms.features.auto.GAutoEventManager;
 import com.lucianms.io.scripting.npc.NPCScriptManager;
 import com.lucianms.nio.SendOpcode;
 import com.lucianms.nio.send.MaplePacketWriter;
-import com.lucianms.server.ConcurrentMapStorage;
 import com.lucianms.server.Server;
 import com.lucianms.server.channel.MapleChannel;
 import com.lucianms.server.life.MapleMonster;
@@ -115,7 +114,7 @@ public class PlayerCommands extends CommandExecutor {
         }
         String username = args.get(0);
         MapleClient client = player.getClient();
-        MapleCharacter target = client.getChannelServer().getPlayerStorage().find(p -> p.getName().equalsIgnoreCase(username));
+        MapleCharacter target = client.getWorldServer().getPlayerStorage().find(p -> p.getName().equalsIgnoreCase(username));
         if (target == null) {
             player.sendMessage("Unable to find any player named '{}'", username);
             return;
@@ -283,7 +282,7 @@ public class PlayerCommands extends CommandExecutor {
 
     private void SetAFK(MapleCharacter player, Command cmd, CommandArgs args) {
         if (args.length() >= 1) {
-            MapleCharacter target = player.getClient().getChannelServer().getPlayerStorage().find(p -> p.getName().equalsIgnoreCase(args.get(0)));
+            MapleCharacter target = player.getClient().getWorldServer().getPlayerStorage().find(p -> p.getName().equalsIgnoreCase(args.get(0)));
             if (target != null) {
                 player.dropMessage(String.format("%s is currently %s", target.getName(), (target.getClient().getSession().isActive() ? "AFK" : "not AFK")));
             } else {
@@ -312,7 +311,7 @@ public class PlayerCommands extends CommandExecutor {
         MapleCharacter target = player;
         if (cmd.equals("spy")) {
             if (args.length() == 1) {
-                target = player.getClient().getChannelServer().getPlayerStorage().find(p -> p.getName().equalsIgnoreCase(args.get(0)));
+                target = player.getClient().getWorldServer().getPlayerStorage().find(p -> p.getName().equalsIgnoreCase(args.get(0)));
                 if (target == null) {
                     player.sendMessage("Unable to find any player named '{}'", args.get(0));
                     return;
@@ -474,7 +473,7 @@ public class PlayerCommands extends CommandExecutor {
             MapleWorld world = player.getClient().getWorldServer();
             MapleCharacter target = world.findPlayer(p -> p.getName().equalsIgnoreCase(username));
             if (target != null) {
-                world.broadcastGMPacket(MaplePacketCreator.serverNotice(6, String.format("[REPORT] %s : (%s) %s", player.getName(), username, message)));
+                world.sendMessage(p -> p.getGMLevel() > 0, 6, "[Report] %s : (%s) %s", player.getName(), username, message);
             } else {
                 player.dropMessage(5, String.format("Unable to find any player named '%s'", username));
             }
@@ -488,8 +487,7 @@ public class PlayerCommands extends CommandExecutor {
             String message = args.concatFrom(0);
             if (!message.isEmpty()) {
                 String content = String.format("%s: %s", player.getName(), message);
-                player.getClient().getWorldServer().broadcastGMPacket(MaplePacketCreator.serverNotice(6, "[GM_CALL] " + content));
-//                DiscordConnection.sendMessage(502056539251671040L, content);
+                player.getClient().getWorldServer().sendMessage(p -> p.getGMLevel() > 0, 6, "[GM-Call] {}", content);
                 player.dropMessage(6, "Help message sent");
             } else {
                 player.dropMessage(5, "You must specify a message");
@@ -554,16 +552,20 @@ public class PlayerCommands extends CommandExecutor {
     }
 
     private void Online(MapleCharacter player, Command cmd, CommandArgs args) {
+        MapleWorld world = player.getClient().getWorldServer();
+
         if (args.length() == 0) {
-            for (MapleChannel channel : player.getClient().getWorldServer().getChannels()) {
+            for (MapleChannel channel : world.getChannels()) {
                 int playerCount = 0;
                 StringBuilder sb = new StringBuilder();
-                for (MapleCharacter players : channel.getPlayerStorage().values()) {
-                    if (!players.isGM()) {
+                Collection<MapleCharacter> players = channel.getPlayers();
+                for (MapleCharacter online : players) {
+                    if (!online.isGM() || !online.isHidden()) {
                         playerCount++;
-                        sb.append(players.getName()).append(", ");
+                        sb.append(online.getName()).append(", ");
                     }
                 }
+                players.clear();
                 if (sb.length() > 0) {
                     sb.setLength(sb.length() - 2);
                 }
@@ -572,17 +574,18 @@ public class PlayerCommands extends CommandExecutor {
             }
         } else if (args.get(0).equalsIgnoreCase("npc")) {
             StringBuilder sb = new StringBuilder();
-            for (MapleChannel channel : player.getClient().getWorldServer().getChannels()) {
-                ConcurrentMapStorage<Integer, MapleCharacter> storage = channel.getPlayerStorage();
+            for (MapleChannel channel : world.getChannels()) {
+                Collection<MapleCharacter> players = channel.getPlayers();
                 sb.append("#echannel ").append(channel.getId()).append(" - ");
                 int playerCount = 0;
                 StringBuilder usernames = new StringBuilder();
-                for (MapleCharacter players : storage.values()) {
-                    if (!players.isGM()) {
+                for (MapleCharacter online : players) {
+                    if (!online.isGM() || !online.isHidden()) {
                         playerCount++;
-                        usernames.append(players.getName()).append(" ");
+                        usernames.append(online.getName()).append(" ");
                     }
                 }
+                players.clear();
                 sb.append(playerCount).append(" players#n\r\n");
                 sb.append(usernames.toString());
                 sb.append("\r\n");

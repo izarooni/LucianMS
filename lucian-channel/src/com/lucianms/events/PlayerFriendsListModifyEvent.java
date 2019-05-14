@@ -96,7 +96,7 @@ public class PlayerFriendsListModifyEvent extends PacketEvent {
                         MapleWorld world = getClient().getWorldServer();
                         CharacterIdNameBuddyCapacity charWithId;
                         int channel;
-                        MapleCharacter otherChar = getClient().getChannelServer().getPlayerStorage().find(p -> p.getName().equalsIgnoreCase(username));
+                        MapleCharacter otherChar = getClient().getWorldServer().getPlayerStorage().find(p -> p.getName().equalsIgnoreCase(username));
                         if (otherChar != null) {
                             channel = getClient().getChannel();
                             charWithId = new CharacterIdNameBuddyCapacity(otherChar.getId(), otherChar.getName(), otherChar.getBuddylist().getCapacity());
@@ -164,7 +164,7 @@ public class PlayerFriendsListModifyEvent extends PacketEvent {
                 if (!buddylist.isFull()) {
                     int channel = getClient().getWorldServer().find(playerID);
                     String otherName = null;
-                    MapleCharacter otherChar = getClient().getChannelServer().getPlayerStorage().get(playerID);
+                    MapleCharacter otherChar = getClient().getWorldServer().getPlayerStorage().get(playerID);
                     if (otherChar == null) {
                         try (Connection con = getClient().getWorldServer().getConnection();
                              PreparedStatement ps = con.prepareStatement("SELECT name FROM characters WHERE id = ?")) {

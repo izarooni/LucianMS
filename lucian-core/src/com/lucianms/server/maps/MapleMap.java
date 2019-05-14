@@ -700,7 +700,7 @@ public class MapleMap implements PacketAnnouncer {
             }
         }
         if (monster.getId() == 8810018 && chr.getMapId() == 240060200) {
-            chr.getClient().getWorldServer().broadcastMessage(6, "To the crew that have finally conquered Horned Tail after numerous attempts, I salute thee! You are the true heroes of Leafre!!");
+            chr.getClient().getWorldServer().sendMessage(6, "To the crew that have finally conquered Horned Tail after numerous attempts, I salute thee! You are the true heroes of Leafre!!");
         }
         if (monster.getId() == 9895253 && getId() == 97) { // Black Mage
             List<MapleCharacter> warp = new ArrayList<>(getCharacters());

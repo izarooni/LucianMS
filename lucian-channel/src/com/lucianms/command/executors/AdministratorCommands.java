@@ -120,9 +120,9 @@ public class AdministratorCommands extends CommandExecutor {
                 player.sendMessage(5, "Invalid engagement box ID");
                 return;
             }
-            MapleChannel ch = player.getClient().getChannelServer();
-            MapleCharacter target1 = ch.getPlayerStorage().find(p -> p.getName().equalsIgnoreCase(args.get(1)));
-            MapleCharacter target2 = ch.getPlayerStorage().find(p -> p.getName().equalsIgnoreCase(args.get(2)));
+            MapleWorld world = player.getClient().getWorldServer();
+            MapleCharacter target1 = world.getPlayerStorage().find(p -> p.getName().equalsIgnoreCase(args.get(1)));
+            MapleCharacter target2 = world.getPlayerStorage().find(p -> p.getName().equalsIgnoreCase(args.get(2)));
             if (target1 == null) {
                 player.sendMessage(5, "Unable to find any player named '{}'", args.get(2));
                 return;
@@ -182,8 +182,8 @@ public class AdministratorCommands extends CommandExecutor {
                 player.sendMessage(5, args.getFirstError());
                 return;
             }
-            MapleChannel cserv = player.getClient().getChannelServer();
-            MapleCharacter target = cserv.getPlayerStorage().find(p -> p.getName().equalsIgnoreCase(args.get(0)));
+            MapleWorld world = player.getClient().getWorldServer();
+            MapleCharacter target = world.getPlayerStorage().find(p -> p.getName().equalsIgnoreCase(args.get(0)));
             if (target != null) {
                 target.setGM(GMLevel);
                 target.sendMessage(6, "Your GM level has been updated");

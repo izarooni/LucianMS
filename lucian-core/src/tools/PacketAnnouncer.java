@@ -34,7 +34,13 @@ public interface PacketAnnouncer {
 
     default void sendMessage(int type, String content, Object... args) {
         Collection<MapleCharacter> players = getPlayers();
-        players.forEach(p -> p.sendMessage(5, content, args));
+        players.forEach(p -> p.sendMessage(type, content, args));
+        players.clear();
+    }
+
+    default void sendMessage(Predicate<MapleCharacter> cond, int type, String content, Object... args) {
+        Collection<MapleCharacter> players = getPlayers();
+        players.stream().filter(cond).forEach(p -> p.sendMessage(type, content, args));
         players.clear();
     }
 

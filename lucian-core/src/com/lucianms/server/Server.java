@@ -2,7 +2,6 @@ package com.lucianms.server;
 
 import com.lucianms.BanManager;
 import com.lucianms.Whitelist;
-import com.lucianms.client.MapleCharacter;
 import com.lucianms.io.Config;
 import com.lucianms.io.defaults.Defaults;
 import com.lucianms.lang.GProperties;
@@ -254,14 +253,6 @@ public class Server {
         }
     }
 
-    public static void clearGuilds() {// remake
-        synchronized (guilds) {
-            guilds.clear();
-        }
-        // for (List<Channel> world : worlds.values()) {
-        // reloadGuildCharacters();
-    }
-
     public static void setGuildMemberOnline(MapleGuildCharacter mgc, boolean bOnline, int channel) {
         MapleGuild g = getGuild(mgc.getGuildId(), mgc.getWorld(), mgc);
         g.setOnline(mgc.getId(), bOnline, channel);
@@ -384,31 +375,6 @@ public class Server {
             leaveGuild(mgc);
         } else {
             disbandGuild(mgc.getGuildId());
-        }
-    }
-
-    public static void reloadGuildCharacters(int world) {
-        MapleWorld worlda = getWorld(world);
-        for (MapleChannel channel : worlda.getChannels()) {
-            for (MapleCharacter mc : channel.getPlayerStorage().values()) {
-                if (mc.getGuildId() > 0) {
-                    setGuildMemberOnline(mc.getMGC(), true, worlda.getId());
-                    memberLevelJobUpdate(mc.getMGC());
-                }
-            }
-            worlda.reloadGuildSummary();
-        }
-    }
-
-    public static void broadcastMessage(final byte[] packet) {
-        for (MapleChannel ch : getChannelsFromWorld(0)) {
-            ch.broadcastPacket(packet);
-        }
-    }
-
-    public static void broadcastGMMessage(final byte[] packet) {
-        for (MapleChannel ch : getChannelsFromWorld(0)) {
-            ch.broadcastGMPacket(packet);
         }
     }
 

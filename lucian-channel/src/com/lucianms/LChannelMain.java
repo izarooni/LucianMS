@@ -1,6 +1,5 @@
 package com.lucianms;
 
-import com.lucianms.client.MapleCharacter;
 import com.lucianms.client.SkillFactory;
 import com.lucianms.command.executors.ChannelConsoleCommands;
 import com.lucianms.cquest.CQuestBuilder;
@@ -62,17 +61,14 @@ public class LChannelMain {
 
                 System.out.printf("Disposing %d worlds\r\n", Server.getWorlds().size());
                 for (MapleWorld world : Server.getWorlds()) {
+                    world.dispose();
                     for (MapleChannel channel : world.getChannels()) {
                         if (channel.getServerHandler() != null) {
-                            for (MapleCharacter player : channel.getPlayerStorage().values()) {
-                                player.saveToDB();
-                            }
-                            System.out.printf("Saved players in world %d channel %d\r\n", world.getId(), channel.getId());
                             try {
                                 channel.getServerHandler().getDiscardServer().close();
                                 System.out.printf("World %d channel %d discard server closed\r\n", world.getId(), channel.getId());
-                            } catch (Exception e) {
-                                e.printStackTrace();
+                            } catch (InterruptedException e) {
+                                LOGGER.error("Failed to close discard server for channel {}", channel.getId());
                             }
                         }
                     }

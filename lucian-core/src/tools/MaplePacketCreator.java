@@ -946,11 +946,7 @@ public class MaplePacketCreator {
         return mplew.getPacket();
     }
 
-    /*
-     * Sends a packet to remove the tiger megaphone
-     * @return
-     */
-    public static byte[] byeAvatarMega() {
+    public static byte[] getByteAvatarMegaphone() {
         final MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
         mplew.writeShort(SendOpcode.CLEAR_AVATAR_MEGAPHONE.getValue());
         mplew.write(1);
@@ -1433,9 +1429,9 @@ public class MaplePacketCreator {
         return mplew.getPacket();
     }
 
-    public static byte[] enableTV() {
+    public static byte[] getMapleTvSendMessage() {
         final MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter(7);
-        mplew.writeShort(SendOpcode.ENABLE_TV.getValue());
+        mplew.writeShort(SendOpcode.MAPLE_TV_SEND_MESSAGE.getValue());
         mplew.writeInt(0);
         mplew.write(0);
         return mplew.getPacket();
@@ -1624,7 +1620,7 @@ public class MaplePacketCreator {
      *
      * @return
      */
-    public static byte[] getAvatarMega(MapleCharacter chr, String medal, int channel, int itemId, List<String> message, boolean ear) {
+    public static byte[] getAvatarMega(MapleCharacter chr, String medal, int channel, int itemId, String[] message, boolean ear) {
         final MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
         mplew.writeShort(SendOpcode.SET_AVATAR_MEGAPHONE.getValue());
         mplew.writeInt(itemId);
@@ -1705,7 +1701,7 @@ public class MaplePacketCreator {
         final MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
         mplew.writeShort(SendOpcode.CHARLIST.getValue());
         mplew.write(0);
-        List<MapleCharacter> chars = c.loadCharacters(serverId);
+        List<MapleCharacter> chars = c.loadCharacters();
         mplew.write((byte) chars.size());
         for (MapleCharacter chr : chars) {
             addCharEntry(mplew, chr, false);
@@ -2785,7 +2781,7 @@ public class MaplePacketCreator {
         mplew.write(channelLoad.size());
         for (MapleChannel ch : channelLoad) {
             mplew.writeMapleAsciiString(serverName + "-" + ch.getId());
-            mplew.writeInt((ch.getConnectedClients() * 1200) / ServerConstants.CHANNEL_LOAD);
+            mplew.writeInt((ch.getUserCount() * 1200) / ServerConstants.CHANNEL_LOAD);
             mplew.write(1);
             mplew.writeShort(ch.getId() - 1);
         }
@@ -4081,7 +4077,7 @@ public class MaplePacketCreator {
                 mplew.writeInt(item.getPrice());
                 mplew.writeInt(hm.getOwnerId());
                 mplew.write(hm.getFreeSlot() == -1 ? 1 : 0);
-                MapleCharacter chr = c.getChannelServer().getPlayerStorage().get(hm.getOwnerId());
+                MapleCharacter chr = c.getWorldServer().getPlayerStorage().get(hm.getOwnerId());
                 if ((chr != null) && (c.getChannel() == hm.getChannel())) {
                     mplew.write(1);
                 } else {
@@ -4543,9 +4539,9 @@ public class MaplePacketCreator {
      *
      * @return The Remove TV Packet
      */
-    public static byte[] removeTV() {
+    public static byte[] getMapleTvClearMessage() {
         final MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter(2);
-        mplew.writeShort(SendOpcode.REMOVE_TV.getValue());
+        mplew.writeShort(SendOpcode.MAPLE_TV_CLEAR_MESSAGE.getValue());
         return mplew.getPacket();
     }
 
@@ -4908,9 +4904,9 @@ public class MaplePacketCreator {
      *
      * @return the SEND_TV packet
      */
-    public static byte[] sendTV(MapleCharacter chr, List<String> messages, int type, MapleCharacter partner) {
+    public static byte[] getMapleTvSetMessage(MapleCharacter chr, String[] messages, int type, MapleCharacter partner) {
         final MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(SendOpcode.SEND_TV.getValue());
+        mplew.writeShort(SendOpcode.MAPLE_TV_SET_MESSAGE.getValue());
         mplew.write(partner != null ? 3 : 1);
         mplew.write(type); //Heart = 2  Star = 1  Normal = 0
         addCharLook(mplew, chr, false);
@@ -4920,12 +4916,8 @@ public class MaplePacketCreator {
         } else {
             mplew.writeShort(0);
         }
-        for (int i = 0; i < messages.size(); i++) {
-            if (i == 4 && messages.get(4).length() > 15) {
-                mplew.writeMapleAsciiString(messages.get(4).substring(0, 15));
-            } else {
-                mplew.writeMapleAsciiString(messages.get(i));
-            }
+        for (int i = 0; i < messages.length; i++) {
+            mplew.writeMapleAsciiString(messages[i].substring(0, 15));
         }
         mplew.writeInt(1337); // time limit shit lol 'Your thing still start in blah blah seconds'
         if (partner != null) {
@@ -6099,7 +6091,7 @@ public class MaplePacketCreator {
         mplew.writeInt(ItemConstants.getInventoryType(chr.getChair()) == MapleInventoryType.SETUP ? chr.getChair() : 0);
         mplew.writePos(chr.getPosition());
         mplew.write(chr.getStance());
-        mplew.writeShort(0);//chr.getFh()
+        mplew.writeShort(chr.getFoothold());
         mplew.write(0);
         MaplePet[] pet = chr.getPets();
         for (int i = 0; i < 3; i++) {

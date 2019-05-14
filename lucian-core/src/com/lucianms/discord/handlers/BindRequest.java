@@ -5,7 +5,6 @@ import com.lucianms.discord.DiscordConnection;
 import com.lucianms.discord.Headers;
 import com.lucianms.nio.receive.MaplePacketReader;
 import com.lucianms.server.Server;
-import com.lucianms.server.channel.MapleChannel;
 import com.lucianms.server.world.MapleWorld;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -75,13 +74,11 @@ public class BindRequest extends DiscordRequest {
                             DiscordConnection.sendPacket(writer.getPacket());
 
                             for (MapleWorld world : Server.getWorlds()) {
-                                for (MapleChannel channel : world.getChannels()) {
-                                    MapleCharacter player = channel.getPlayerStorage().get(rs.getInt("id"));
-                                    if (player != null) {
-                                        player.getClient().setDiscordId(authorId);
-                                        player.getClient().setDiscordKey(key);
-                                        return;
-                                    }
+                                MapleCharacter player = world.getPlayerStorage().get(rs.getInt("id"));
+                                if (player != null) {
+                                    player.getClient().setDiscordId(authorId);
+                                    player.getClient().setDiscordKey(key);
+                                    return;
                                 }
                             }
                         }

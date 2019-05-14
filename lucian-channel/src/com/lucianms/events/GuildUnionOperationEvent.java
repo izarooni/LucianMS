@@ -1,7 +1,6 @@
 package com.lucianms.events;
 
 import com.lucianms.client.MapleCharacter;
-import com.lucianms.events.PacketEvent;
 import com.lucianms.nio.SendOpcode;
 import com.lucianms.nio.receive.MaplePacketReader;
 import com.lucianms.server.Server;
@@ -91,23 +90,21 @@ public class GuildUnionOperationEvent extends PacketEvent {
                 Server.allianceMessage(alliance.getId(), sendChangeGuild(player.getGuildId(), player.getId(), player.getGuildId(), 2), -1, -1);
                 break;
             }
-            case 0x03: // send alliance invite
-                int channel = getClient().getWorldServer().find(username);
-                if (channel == -1) {
+            case 0x03: {// send alliance invite
+                MapleCharacter target = getClient().getWorldServer().findPlayer(p -> p.getName().equalsIgnoreCase(username));
+                if (target == null) {
                     player.dropMessage("The player is not online.");
                 } else {
-                    MapleCharacter victim = Server.getChannel(getClient().getWorld(), channel).getPlayerStorage().find(p -> p.getName().equalsIgnoreCase(username));
-                    if (victim == null) {
-                        player.dropMessage("The person could not be found");
-                    } else if (victim.getGuildId() == 0) {
+                    if (target.getGuildId() == 0) {
                         player.dropMessage("The person you are trying to invite does not have a guild.");
-                    } else if (victim.getGuildRank() != 1) {
+                    } else if (target.getGuildRank() != 1) {
                         player.dropMessage("The player is not the leader of his/her guild.");
                     } else {
                         Server.allianceMessage(alliance.getId(), sendInvitation(player.getGuild().getAllianceId(), player.getId(), name), -1, -1);
                     }
                 }
                 break;
+            }
             case 0x04: {
                 if (player.getGuild().getAllianceId() != 0 || player.getGuildRank() != 1 || player.getGuildId() < 1) {
                     return null;

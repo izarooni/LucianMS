@@ -2,7 +2,6 @@ package com.lucianms.helpers;
 
 import com.lucianms.io.scripting.Achievements;
 import com.lucianms.server.Server;
-import com.lucianms.server.channel.MapleChannel;
 import com.lucianms.server.world.MapleWorld;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,15 +25,13 @@ public class DailyWorker implements Runnable {
             }
             LOGGER.info("Entry limits reset!");
         } catch (SQLException e) {
-            LOGGER.error("Error while resetting entry limits", e.getMessage());
+            LOGGER.error("Error while resetting entry limits", e);
         }
 
         LOGGER.info("Testing for account age achievements");
         // testFor character data (character age)
         for (MapleWorld world : Server.getWorlds()) {
-            for (MapleChannel channel : world.getChannels()) {
-                channel.getPlayerStorage().values().forEach(p -> Achievements.testFor(p, -1));
-            }
+            world.forEachPlayer(p -> Achievements.testFor(p, -1));
         }
     }
 }

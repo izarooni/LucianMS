@@ -1,12 +1,9 @@
 package com.lucianms.events;
 
-import com.lucianms.constants.ServerConstants;
 import com.lucianms.client.MapleCharacter;
-import com.lucianms.client.MapleClient;
-import com.lucianms.events.PacketEvent;
+import com.lucianms.constants.ServerConstants;
 import com.lucianms.nio.receive.MaplePacketReader;
 import tools.MaplePacketCreator;
-import tools.data.input.LittleEndianReader;
 
 /**
  * @author Jay Estrella
@@ -27,7 +24,7 @@ public class PlayerFamilyInviteEvent extends PacketEvent {
         if (!ServerConstants.USE_FAMILY_SYSTEM){
     		return null;
     	}
-        MapleCharacter target = getClient().getChannelServer().getPlayerStorage().find(p -> p.getName().equalsIgnoreCase(username));
+        MapleCharacter target = getClient().getWorldServer().getPlayerStorage().find(p -> p.getName().equalsIgnoreCase(username));
         if (target != null) {
             target.getClient().announce(MaplePacketCreator.sendFamilyInvite(player.getId(), username));
             player.dropMessage("The invite has been sent.");

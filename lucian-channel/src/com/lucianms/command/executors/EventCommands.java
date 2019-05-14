@@ -198,7 +198,7 @@ public class EventCommands extends CommandExecutor {
                 case "close": {
                     if (playerEvent.isOpen()) {
                         playerEvent.setOpen(false);
-                        world.broadcastMessage(6, "[Event] The gates are now closed");
+                        world.sendMessage(6, "[Event] The gates are now closed");
                         if (playerEvent.getGateTime() == 0) {
                             // manual gate closing
                             playerEvent.broadcastMessage("The gate is now closed");

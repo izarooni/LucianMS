@@ -84,7 +84,7 @@ public class ShenronSummoner extends GenericEvent {
             if (item.getItemId() == (ReactionItemBase + balls.size())) { // dropped item is a ball
                 if (position.x >= min_x && position.x <= max_x && position.y == pos_y) { // ball is dropped within set boundaries
                     if (balls.size() == 6) { // all balls have been dropped
-                        event.getClient().getWorldServer().broadcastPacket(MaplePacketCreator.serverNotice(6, player.getName() + " summoned the eternal Shenron! Let's hope they choose wisely"));
+                        event.getClient().getWorldServer().sendMessage(6, "{} summoned the eternal Shenron! Let's hope they choose wisely", player.getName());
                         player.announce(MaplePacketCreator.playSound("Shenron/summoning"));
                         summoning = true;
                         wishing = true;

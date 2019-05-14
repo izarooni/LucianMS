@@ -3,7 +3,7 @@ load("scripts/npc/generic_shop.js");
 var pointsType = Java.type("com.lucianms.constants.ServerConstants").CURRENCY;
 
 try {
-    var file = new java.io.File("resources/data-timeless.json");
+    var file = new java.io.File("resources/data-chirithy_coin.json");
     var content = Packages.org.apache.commons.io.FileUtils.readFileToString(file);
     var json = JSON.parse(content);
 

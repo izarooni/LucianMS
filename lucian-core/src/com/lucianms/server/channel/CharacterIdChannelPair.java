@@ -22,16 +22,12 @@
 package com.lucianms.server.channel;
 
 /**
- *
  * @author Frz
  */
 @Deprecated
 public class CharacterIdChannelPair {
     private int charid;
     private int channel;
-
-    public CharacterIdChannelPair() {
-    }
 
     public CharacterIdChannelPair(int charid, int channel) {
         this.charid = charid;

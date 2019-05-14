@@ -2,7 +2,6 @@ package com.lucianms.events;
 
 import com.lucianms.client.MapleCharacter;
 import com.lucianms.nio.receive.MaplePacketReader;
-import com.lucianms.events.PacketEvent;
 import tools.MaplePacketCreator;
 
 /**
@@ -20,7 +19,7 @@ public class PlayerPartyInviteDenyEvent extends PacketEvent {
 
     @Override
     public Object onPacket() {
-        MapleCharacter sourcePlayer = getClient().getChannelServer().getPlayerStorage().find(p -> p.getName().equalsIgnoreCase(username));
+        MapleCharacter sourcePlayer = getClient().getWorldServer().getPlayerStorage().find(p -> p.getName().equalsIgnoreCase(username));
         if (sourcePlayer != null) {
             sourcePlayer.getClient().announce(MaplePacketCreator.partyStatusMessage(23, getClient().getPlayer().getName()));
         }

@@ -1351,14 +1351,12 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Di
         }
     }
 
-    private void cancelPlayerBuffs(List<MapleBuffStat> buffstats) {
-        if (client.getChannelServer().getPlayerStorage().get(getId()) != null) {
-            updateLocalizedStats();
-            enforceMaxHpMp();
-            client.announce(MaplePacketCreator.cancelBuff(buffstats));
-            if (buffstats.size() > 0) {
-                getMap().broadcastMessage(this, MaplePacketCreator.cancelForeignBuff(getId(), buffstats), false);
-            }
+    private void cancelPlayerBuffs(List<MapleBuffStat> buffs) {
+        updateLocalizedStats();
+        enforceMaxHpMp();
+        client.announce(MaplePacketCreator.cancelBuff(buffs));
+        if (buffs.size() > 0) {
+            getMap().broadcastMessage(this, MaplePacketCreator.cancelForeignBuff(getId(), buffs), false);
         }
     }
 
@@ -1641,16 +1639,14 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Di
 
         client.announce(warpPacket);
         map.removePlayer(this);
-        if (client.getChannelServer().getPlayerStorage().get(getId()) != null) {
-            map = to;
-            setPosition(pos);
-            if (getFakePlayer() != null) {
-                getFakePlayer().setMap(map);
-                getFakePlayer().setPosition(pos.getLocation());
-                map.addFakePlayer(getFakePlayer());
-            }
-            map.addPlayer(this);
+        map = to;
+        setPosition(pos);
+        if (getFakePlayer() != null) {
+            getFakePlayer().setMap(map);
+            getFakePlayer().setPosition(pos.getLocation());
+            map.addFakePlayer(getFakePlayer());
         }
+        map.addPlayer(this);
     }
 
     public void changePage(int page) {

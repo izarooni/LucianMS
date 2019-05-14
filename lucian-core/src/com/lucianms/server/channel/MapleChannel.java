@@ -10,13 +10,11 @@ import com.lucianms.server.Server;
 import com.lucianms.server.expeditions.MapleExpedition;
 import com.lucianms.server.maps.HiredMerchant;
 import com.lucianms.server.maps.MapleMap;
-import com.lucianms.server.world.MapleParty;
-import com.lucianms.server.world.MaplePartyCharacter;
 import com.lucianms.server.world.MapleWorld;
 import org.apache.commons.io.FilenameUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import tools.MaplePacketCreator;
+import tools.PacketAnnouncer;
 
 import java.io.File;
 import java.net.InetAddress;
@@ -25,7 +23,7 @@ import java.util.*;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock.WriteLock;
 
-public final class MapleChannel {
+public final class MapleChannel implements PacketAnnouncer {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MapleChannel.class);
 
@@ -33,8 +31,6 @@ public final class MapleChannel {
     private final int world, channel;
     private final int port;
     private final InetAddress networkAddress;
-    private String serverMessage;
-    private ConcurrentMapStorage<Integer, MapleCharacter> players = new ConcurrentMapStorage<>();
     private ConcurrentMapStorage<Integer, MapleMap> maps = new ConcurrentMapStorage<>();
     private EventScriptManager eventScriptManager;
     private Map<Integer, HiredMerchant> hiredMerchants = new HashMap<>();
@@ -78,9 +74,6 @@ public final class MapleChannel {
 
     public final void shutdown() {
         try {
-            ArrayList<MapleCharacter> arrPlayers = new ArrayList<>(getPlayerStorage().values());
-            arrPlayers.forEach(MapleCharacter::saveToDB);
-            arrPlayers.clear();
             if (eventScriptManager != null) {
                 eventScriptManager.close();
             }
@@ -148,27 +141,16 @@ public final class MapleChannel {
         return Server.getWorld(getWorld());
     }
 
-    public void addPlayer(MapleCharacter chr) {
-        players.put(chr.getId(), chr);
-        chr.announce(MaplePacketCreator.serverMessage(serverMessage));
+    @Override
+    public Collection<MapleCharacter> getPlayers() {
+        return getWorldServer().getPlayers(p -> p.getClient().getChannel() == getId());
     }
 
-    public ConcurrentMapStorage<Integer, MapleCharacter> getPlayerStorage() {
-        return players;
-    }
-
-    public void removePlayer(MapleCharacter chr) {
-        players.remove(chr.getId());
-    }
-
-    public int getConnectedClients() {
-        return players.values().size();
-    }
-
-    public void broadcastPacket(final byte[] data) {
-        for (MapleCharacter chr : players.values()) {
-            chr.announce(data);
-        }
+    public int getUserCount() {
+        Collection<MapleCharacter> players = getPlayers();
+        int sum = players.stream().mapToInt(p -> 1).sum();
+        players.clear();
+        return sum;
     }
 
     public final int getId() {
@@ -193,27 +175,6 @@ public final class MapleChannel {
 
     public EventScriptManager getEventScriptManager() {
         return eventScriptManager;
-    }
-
-    public void broadcastGMPacket(final byte[] data) {
-        for (MapleCharacter chr : players.values()) {
-            if (chr.isGM()) {
-                chr.announce(data);
-            }
-        }
-    }
-
-    public List<MapleCharacter> getPartyMembers(MapleParty party) {
-        List<MapleCharacter> partym = new ArrayList<>(8);
-        for (MaplePartyCharacter partychar : party.values()) {
-            if (partychar.getChannelID() == getId()) {
-                MapleCharacter chr = getPlayerStorage().find(c -> c.getName().equalsIgnoreCase(partychar.getUsername()));
-                if (chr != null) {
-                    partym.add(chr);
-                }
-            }
-        }
-        return partym;
     }
 
     public Map<Integer, HiredMerchant> getHiredMerchants() {
@@ -243,7 +204,7 @@ public final class MapleChannel {
     public int[] multiBuddyFind(int charIdFrom, int[] characterIds) {
         List<Integer> ret = new ArrayList<>(characterIds.length);
         for (int characterId : characterIds) {
-            MapleCharacter chr = getPlayerStorage().get(characterId);
+            MapleCharacter chr = getWorldServer().getPlayerStorage().get(characterId);
             if (chr != null) {
                 if (chr.getBuddylist().containsVisible(charIdFrom)) {
                     ret.add(characterId);
@@ -260,15 +221,6 @@ public final class MapleChannel {
 
     public List<MapleExpedition> getExpeditions() {
         return expeditions;
-    }
-
-    public boolean isConnected(String name) {
-        return getPlayerStorage().find(c -> c.getName().equalsIgnoreCase(name)) != null;
-    }
-
-    public void setServerMessage(String message) {
-        this.serverMessage = message;
-        broadcastPacket(MaplePacketCreator.serverMessage(message));
     }
 
     public int getStoredVar(int key) {

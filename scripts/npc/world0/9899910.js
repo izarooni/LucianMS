@@ -23,7 +23,6 @@
  * @author: FeinT
  */
 var MaplePacketCreator = Java.type("tools.MaplePacketCreator");
-/* izarooni */
 var status = 0;
 function start() {
     cm.warp(910000000, 5);

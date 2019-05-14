@@ -1,6 +1,7 @@
 package com.lucianms.events;
 
 import com.lucianms.client.MapleCharacter;
+import com.lucianms.client.MapleClient;
 import com.lucianms.nio.receive.MaplePacketReader;
 import com.lucianms.server.Server;
 import tools.MaplePacketCreator;
@@ -17,7 +18,8 @@ public class EnterCashShopEvent extends PacketEvent {
 
     @Override
     public Object onPacket() {
-        MapleCharacter player = getClient().getPlayer();
+        MapleClient client = getClient();
+        MapleCharacter player = client.getPlayer();
 
         if (player.getCashShop().isOpened()) {
             return null;
@@ -27,7 +29,7 @@ public class EnterCashShopEvent extends PacketEvent {
 
         player.cancelBuffEffects();
 
-        getClient().announce(MaplePacketCreator.openCashShop(getClient(), false));
+        client.announce(MaplePacketCreator.openCashShop(client, false));
 
         player.saveToDB();
         player.getCashShop().open(true);
@@ -38,11 +40,11 @@ public class EnterCashShopEvent extends PacketEvent {
         }
 
         player.getMap().removePlayer(player);
-        getClient().getChannelServer().removePlayer(player);
-        getClient().announce(MaplePacketCreator.showCashInventory(getClient()));
-        getClient().announce(MaplePacketCreator.showGifts(player.getCashShop().loadGifts()));
-        getClient().announce(MaplePacketCreator.showWishList(player, false));
-        getClient().announce(MaplePacketCreator.showCash(player));
+        client.getWorldServer().getPlayerStorage().remove(player.getId());
+        client.announce(MaplePacketCreator.showCashInventory(client));
+        client.announce(MaplePacketCreator.showGifts(player.getCashShop().loadGifts()));
+        client.announce(MaplePacketCreator.showWishList(player, false));
+        client.announce(MaplePacketCreator.showCash(player));
         return null;
     }
 }

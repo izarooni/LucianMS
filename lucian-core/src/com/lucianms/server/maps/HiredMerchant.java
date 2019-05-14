@@ -204,7 +204,7 @@ public class HiredMerchant extends AbstractMapleMapObject {
 
         map.removeMapObject(this);
 
-        MapleCharacter player = Server.getWorld(world).getPlayer(ownerId);
+        MapleCharacter player = Server.getWorld(world).getPlayerStorage().get(ownerId);
         if (player != null) {
             player.setHasMerchant(false);
         } else {
@@ -225,7 +225,7 @@ public class HiredMerchant extends AbstractMapleMapObject {
         map.removeMapObject(this);
         map.broadcastMessage(MaplePacketCreator.destroyHiredMerchant(ownerId));
         c.getChannelServer().removeHiredMerchant(ownerId);
-        MapleCharacter player = c.getWorldServer().getPlayer(ownerId);
+        MapleCharacter player = c.getWorldServer().getPlayerStorage().get(ownerId);
         try (Connection con = Server.getConnection()) {
             if (player != null) {
                 player.setHasMerchant(false);

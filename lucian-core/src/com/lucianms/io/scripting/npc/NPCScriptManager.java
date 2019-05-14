@@ -50,6 +50,7 @@ public class NPCScriptManager {
             binds.add(new Pair<>("client", client));
             binds.add(new Pair<>("player", player));
             binds.add(new Pair<>("ch", client.getChannelServer()));
+            binds.add(new Pair<>("world", client.getWorldServer()));
             binds.add(new Pair<>("cm", cm));
 
             Invocable iv;
