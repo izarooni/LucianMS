@@ -25,7 +25,7 @@ abstract class UserTransferEvent extends PacketEvent {
     }
 
     void issueConnect(InetAddress address, int port, int playerID) {
-        getClient().setLoginState(LoginState.Transfer);
+        getClient().updateLoginState(LoginState.Transfer);
         getClient().announce(MaplePacketCreator.getServerIP(address, port, playerID));
     }
 }

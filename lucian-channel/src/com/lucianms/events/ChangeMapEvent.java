@@ -100,7 +100,7 @@ public class ChangeMapEvent extends PacketEvent {
             }
             player.getCashShop().open(false);
             world.getPlayerStorage().remove(player.getId());
-            client.setLoginState(LoginState.Transfer);
+            client.updateLoginState(LoginState.Transfer);
             if (player.getFakePlayer() != null) {
                 player.getFakePlayer().setFollowing(true);
                 player.getMap().addFakePlayer(player.getFakePlayer());

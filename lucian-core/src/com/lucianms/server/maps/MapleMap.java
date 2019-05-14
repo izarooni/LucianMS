@@ -1486,11 +1486,11 @@ public class MapleMap implements PacketAnnouncer {
             }
         }
         if (chr.isHidden()) {
-            broadcastGMMessage(chr, MaplePacketCreator.spawnPlayerMapobject(chr), false);
+            sendPacket(MaplePacketCreator.spawnPlayerMapobject(chr), p -> p.getGMLevel() >= chr.getGMLevel());
             chr.announce(MaplePacketCreator.getAdminResult(0x10, (byte) 1));
 
-            List<Pair<MapleBuffStat, Integer>> dsstat = Collections.singletonList(new Pair<>(MapleBuffStat.DARKSIGHT, 0));
-            broadcastGMMessage(chr, MaplePacketCreator.giveForeignBuff(chr.getId(), dsstat), false);
+            List<Pair<MapleBuffStat, Integer>> darkSightBuff = Collections.singletonList(new Pair<>(MapleBuffStat.DARKSIGHT, 0));
+            sendPacket(MaplePacketCreator.giveForeignBuff(getId(), darkSightBuff), p -> p.getGMLevel() >= chr.getGMLevel());
         } else {
             broadcastMessage(chr, MaplePacketCreator.spawnPlayerMapobject(chr), false);
         }

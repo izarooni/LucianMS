@@ -6,10 +6,10 @@ import com.lucianms.client.inventory.MapleInventoryType;
 import com.lucianms.helpers.JailManager;
 import com.lucianms.io.scripting.Achievements;
 import com.lucianms.nio.receive.MaplePacketReader;
+import com.lucianms.scheduler.TaskExecutor;
 import com.lucianms.server.PlayerBuffValueHolder;
 import com.lucianms.server.Server;
 import com.lucianms.server.channel.CharacterIdChannelPair;
-import com.lucianms.server.channel.MapleChannel;
 import com.lucianms.server.guild.MapleAlliance;
 import com.lucianms.server.guild.MapleGuild;
 import com.lucianms.server.world.*;
@@ -48,19 +48,14 @@ public class PlayerLoginEvent extends PacketEvent {
     public Object onPacket() {
         MapleClient client = getClient();
         MapleWorld world = client.getWorldServer();
-        MapleChannel channel = client.getChannelServer();
 
-        MapleCharacter player = world.getPlayerStorage().get(playerID);
-        if (player == null || player.getClient() == null) {
-            try (Connection con = world.getConnection()) {
-                player = MapleCharacter.loadCharFromDB(con, playerID, client, true);
-            } catch (SQLException e) {
-                getLogger().error("Unable to load player '{}", MapleCharacter.getNameById(playerID), e);
-                client.getSession().close();
-                return null;
-            }
-        } else {
-            player.newClient(client);
+        MapleCharacter player;
+        try (Connection con = world.getConnection()) {
+            player = MapleCharacter.loadCharFromDB(con, playerID, client, true);
+        } catch (SQLException e) {
+            getLogger().error("Unable to load player '{}", MapleCharacter.getNameById(playerID), e);
+            client.getSession().close();
+            return null;
         }
         client.setAccID(player.getAccountID());
         client.setPlayer(player);
@@ -75,10 +70,13 @@ public class PlayerLoginEvent extends PacketEvent {
         for (Pair<Integer, String> p : client.getCharacterIdentifiers()) {
             MapleCharacter found = world.getPlayerStorage().get(p.getLeft());
             if (found != null) {
-                found.getClient().disconnect();
+                // to prevent any packet handlers i suppose
+                found.getClient().setLoginState(LoginState.LogOut);
+                found.getClient().announce(MaplePacketCreator.getNPCTalk(10200, (byte) 0, "You are being disconnected due to your account being logged-in from another location.", "00 00", (byte) 1));
+                TaskExecutor.createTask(() -> found.getClient().dispose(), 6500);
             }
         }
-        client.setLoginState(LoginState.Login);
+        client.updateLoginState(LoginState.Login);
 
         if (JailManager.isJailed(player.getId())) {
             player.setMapId(JailManager.getRandomField());
@@ -106,6 +104,10 @@ public class PlayerLoginEvent extends PacketEvent {
         player.sendKeymap();
         player.sendMacros();
 
+        if (player.isGM()) {
+            player.setHidingLevel(player.getGMLevel());
+            player.setHidden(true);
+        }
         world.getPlayerStorage().put(player.getId(), player);
         player.getMap().addPlayer(player);
 
@@ -113,10 +115,6 @@ public class PlayerLoginEvent extends PacketEvent {
         if (buffs != null) {
             player.silentGiveBuffs(buffs);
             buffs.clear();
-        }
-        if (player.isGM()) {
-            player.setHidingLevel(player.getGMLevel());
-            player.setHidden(true, true);
         }
 
         if (player.getKeymap().get(91) != null) {

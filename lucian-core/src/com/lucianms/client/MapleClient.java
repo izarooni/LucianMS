@@ -388,8 +388,17 @@ public class MapleClient implements Disposable {
         this.ID = accId;
     }
 
+    public LoginState getLoginState() {
+        return loginState;
+    }
+
     public void setLoginState(LoginState loginState) {
         this.loginState = loginState;
+    }
+
+
+    public void updateLoginState(LoginState loginState) {
+        setLoginState(loginState);
         try (Connection con = Server.getConnection()) {
             try (PreparedStatement ps = con.prepareStatement("update accounts set last_known_ip = ?, loggedin = ?, last_login = current_timestamp() where id = ?")) {
                 ps.setString(1, getLastKnownIP());
@@ -402,9 +411,6 @@ public class MapleClient implements Disposable {
         }
     }
 
-    public LoginState getLoginState() {
-        return loginState;
-    }
 
     public LoginState checkLoginState() {
         if (getAccID() == 0) return LoginState.LogOut;
@@ -429,7 +435,7 @@ public class MapleClient implements Disposable {
                             break;
                         case Login:
                             if (player == null) {
-                                setLoginState(LoginState.LogOut);
+                                updateLoginState(LoginState.LogOut);
                             }
                             break;
                     }
@@ -449,6 +455,12 @@ public class MapleClient implements Disposable {
 
     @Override
     public void dispose() {
+        // prevent any kind of fuck shit exploits pls
+        session.attr(CLIENT_KEY).set(null);
+        session.close();
+        ID = 0;
+        player = null;
+
         NPCScriptManager.dispose(this);
         QuestScriptManager.dispose(this);
     }
@@ -523,13 +535,11 @@ public class MapleClient implements Disposable {
             LoginState loginState = checkLoginState();
             if (loginState != LoginState.Transfer) {
                 if (loginState == LoginState.Login) {
-                    setLoginState(LoginState.LogOut);
+                    updateLoginState(LoginState.LogOut);
                 }
-                session.attr(CLIENT_KEY).set(null);
-                session.close();
                 Functions.requireNotNull(player, MapleCharacter::dispose);
-                dispose();
             }
+            dispose();
         }
     }
 
@@ -760,7 +770,7 @@ public class MapleClient implements Disposable {
         player.getInventory(MapleInventoryType.EQUIPPED).checked(false); //test
         player.getMap().removePlayer(player);
         getWorldServer().getPlayerStorage().remove(player.getId());
-        setLoginState(LoginState.Transfer);
+        updateLoginState(LoginState.Transfer);
         announce(MaplePacketCreator.getChannelChange(cserv.getNetworkAddress(), cserv.getPort()));
         return true;
     }

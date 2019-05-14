@@ -1211,9 +1211,9 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Di
      * @param client new client to assign to the player
      */
     public void newClient(MapleClient client) {
-        client.setAccountName(this.client.getAccountName());
         this.client = client;
-        map = this.client.getChannelServer().getMap(getMapId());
+        client.setAccountName(this.client.getAccountName());
+        setMap(client.getChannelServer().getMap(getMapId()));
         MaplePortal portal = map.findClosestSpawnpoint(getPosition());
         if (portal == null && (portal = map.getPortal(0)) != null) {
             setPosition(portal.getPosition());
@@ -1304,6 +1304,10 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Di
         }
     }
 
+    public void setHidden(boolean hidden) {
+        this.hidden = hidden;
+    }
+
     public void setHidden(boolean hidden, boolean login) {
         if (hidden) {
             if (!login) {
@@ -1333,7 +1337,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Di
                 getMap().addFakePlayer(getFakePlayer());
             }
         }
-        this.hidden = hidden;
+        setHidden(hidden);
         announce(MaplePacketCreator.getAdminResult(0x10, (byte) (hidden ? 1 : 0)));
     }
 

@@ -23,12 +23,12 @@ public class AccountPINSetEvent extends PacketEvent {
     @Override
     public Object onPacket() {
         if (action == 0) {
-            getClient().setLoginState(LoginState.LogOut);
+            getClient().updateLoginState(LoginState.LogOut);
         } else {
             if (PIN.length() == 4) {
                 getClient().setPin(PIN);
                 getClient().announce(MaplePacketCreator.pinRegistered());
-                getClient().setLoginState(LoginState.LogOut);
+                getClient().updateLoginState(LoginState.LogOut);
             }
         }
         return null;

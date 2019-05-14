@@ -79,7 +79,7 @@ public class AccountLoginEvent extends PacketEvent {
                 return null;
             }
 
-            getClient().setLoginState(LoginState.Login);
+            getClient().updateLoginState(LoginState.Login);
             client.announce(MaplePacketCreator.getAuthSuccess(client));
         }
         return null;

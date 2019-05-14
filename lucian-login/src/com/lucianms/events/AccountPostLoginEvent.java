@@ -33,7 +33,7 @@ public class AccountPostLoginEvent extends PacketEvent {
         } else if (c2 == 2 && c3 == 0) {
             getClient().announce(getClient().checkPin(pin) ? MaplePacketCreator.registerPin() : MaplePacketCreator.requestPinAfterFailure());
         } else if (c2 == 0 && c3 == 5) {
-            getClient().setLoginState(LoginState.LogOut);
+            getClient().updateLoginState(LoginState.LogOut);
         }
         return null;
     }
