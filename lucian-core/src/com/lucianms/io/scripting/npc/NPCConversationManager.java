@@ -279,8 +279,8 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
             while (pet.getCloseness() > ExpTable.getClosenessNeededForLevel(pet.getLevel())) {
                 pet.setLevel((byte) (pet.getLevel() + 1));
                 byte index = getPlayer().getPetIndex(pet);
-                getClient().announce(MaplePacketCreator.showOwnPetLevelUp(index));
-                getPlayer().getMap().broadcastMessage(getPlayer(), MaplePacketCreator.showPetLevelUp(getPlayer(), index));
+                getClient().announce(MaplePacketCreator.getLocalEffectPetLeveled(index));
+                getPlayer().getMap().broadcastMessage(getPlayer(), MaplePacketCreator.getEffectPetLeveled(getPlayer(), index));
             }
             Item petz = getPlayer().getInventory(MapleInventoryType.CASH).getItem(pet.getPosition());
             getPlayer().forceUpdateItem(petz);

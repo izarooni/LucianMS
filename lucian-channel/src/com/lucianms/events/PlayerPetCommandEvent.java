@@ -3,9 +3,9 @@ package com.lucianms.events;
 import com.lucianms.client.MapleCharacter;
 import com.lucianms.client.inventory.MaplePet;
 import com.lucianms.client.inventory.PetCommand;
-import com.lucianms.client.inventory.PetDataFactory;
 import com.lucianms.constants.ExpTable;
 import com.lucianms.nio.receive.MaplePacketReader;
+import provider.tools.PetDataProvider;
 import tools.MaplePacketCreator;
 import tools.Randomizer;
 
@@ -14,7 +14,7 @@ import tools.Randomizer;
  */
 public class PlayerPetCommandEvent extends PacketEvent {
 
-    private byte action;
+    private byte interaction;
     private int petID;
 
     @Override
@@ -22,40 +22,36 @@ public class PlayerPetCommandEvent extends PacketEvent {
         petID = reader.readInt();
         reader.readInt();
         reader.readByte();
-        action = reader.readByte();
+        interaction = reader.readByte();
     }
 
     @Override
     public Object onPacket() {
         MapleCharacter player = getClient().getPlayer();
-        byte petIndex = player.getPetIndex(petID);
-        MaplePet pet;
-        if (petIndex == -1) {
-            return null;
-        } else {
-            pet = player.getPet(petIndex);
-        }
-        PetCommand petCommand = PetDataFactory.getPetCommand(pet.getItemId(), action);
-        if (petCommand == null) {
+        byte petSlot = player.getPetIndex(petID);
+        if (petSlot == -1) {
             return null;
         }
-        boolean success = false;
-        if (Randomizer.nextInt(101) <= petCommand.getProbability()) {
-            success = true;
-            if (pet.getCloseness() < 30000) {
-                int newCloseness = pet.getCloseness() + petCommand.getIncrease();
-                if (newCloseness > 30000) {
-                    newCloseness = 30000;
-                }
-                pet.setCloseness(newCloseness);
-                if (newCloseness >= ExpTable.getClosenessNeededForLevel(pet.getLevel())) {
-                    pet.setLevel((byte) (pet.getLevel() + 1));
-                    getClient().announce(MaplePacketCreator.showOwnPetLevelUp(player.getPetIndex(pet)));
-                    player.getMap().broadcastMessage(MaplePacketCreator.showPetLevelUp(player, player.getPetIndex(pet)));
+        MaplePet pet = player.getPet(petSlot);
+        PetCommand cmd = PetDataProvider.getPetCommand(pet.getItemId(), interaction);
+        if (cmd == null) {
+            return null;
+        }
+        boolean failed = Randomizer.nextInt(100) >= cmd.getProbability();
+        if (!failed) {
+            int closeness = pet.getCloseness();
+            if (closeness < 30000) {
+                int sum = Math.min(30000, closeness + cmd.getIncrease());
+                pet.setCloseness(sum);
+                byte petLevel = pet.getLevel();
+                if (sum >= ExpTable.getClosenessNeededForLevel(petLevel)) {
+                    pet.setLevel(++petLevel);
+                    getClient().announce(MaplePacketCreator.getLocalEffectPetLeveled(player.getPetIndex(pet)));
+                    player.getMap().sendPacketCheckHidden(player, MaplePacketCreator.getEffectPetLeveled(player, petSlot));
                 }
             }
         }
-        player.getMap().broadcastMessage(player, MaplePacketCreator.commandResponse(player.getId(), petIndex, action, success), true);
+        player.getMap().sendPacketCheckHidden(player, MaplePacketCreator.getPetActionCommand(player.getId(), petSlot, (byte) 0, interaction, failed));
         return null;
     }
 }

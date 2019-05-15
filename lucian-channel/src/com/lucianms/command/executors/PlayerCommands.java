@@ -473,7 +473,7 @@ public class PlayerCommands extends CommandExecutor {
             MapleWorld world = player.getClient().getWorldServer();
             MapleCharacter target = world.findPlayer(p -> p.getName().equalsIgnoreCase(username));
             if (target != null) {
-                world.sendMessage(p -> p.getGMLevel() > 0, 6, "[Report] %s : (%s) %s", player.getName(), username, message);
+                world.sendMessageIf(p -> p.getGMLevel() > 0, 6, "[Report] %s : (%s) %s", player.getName(), username, message);
             } else {
                 player.dropMessage(5, String.format("Unable to find any player named '%s'", username));
             }
@@ -487,7 +487,7 @@ public class PlayerCommands extends CommandExecutor {
             String message = args.concatFrom(0);
             if (!message.isEmpty()) {
                 String content = String.format("%s: %s", player.getName(), message);
-                player.getClient().getWorldServer().sendMessage(p -> p.getGMLevel() > 0, 6, "[GM-Call] {}", content);
+                player.getClient().getWorldServer().sendMessageIf(p -> p.getGMLevel() > 0, 6, "[GM-Call] {}", content);
                 player.dropMessage(6, "Help message sent");
             } else {
                 player.dropMessage(5, "You must specify a message");

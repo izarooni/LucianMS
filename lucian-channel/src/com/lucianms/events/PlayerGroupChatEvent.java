@@ -39,7 +39,7 @@ public class PlayerGroupChatEvent extends PacketEvent {
         if (action == 0) {
             world.buddyChat(recipients, player.getId(), player.getName(), content);
         } else if (action == 1 && player.getParty() != null) {
-            player.getParty().sendPacket(MaplePacketCreator.multiChat(player.getName(), content, 1), player);
+            player.getParty().sendPacketExclude(MaplePacketCreator.multiChat(player.getName(), content, 1), player);
         } else if (action == 2 && player.getGuildId() > 0) {
             Server.guildChat(player.getGuildId(), player.getName(), player.getId(), content);
         } else if (action == 3 && player.getGuild() != null) {

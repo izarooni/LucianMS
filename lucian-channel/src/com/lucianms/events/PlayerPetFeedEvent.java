@@ -21,6 +21,7 @@ public class PlayerPetFeedEvent extends PacketEvent {
 
     @Override
     public void processInput(MaplePacketReader reader) {
+        reader.readInt();
         slot = reader.readShort();
         itemID = reader.readInt();
     }
@@ -51,7 +52,7 @@ public class PlayerPetFeedEvent extends PacketEvent {
             }
         }
         MaplePet pet = player.getPet(slot);
-        Item use = player.getInventory(MapleInventoryType.USE).getItem(slot);
+        Item use = player.getInventory(MapleInventoryType.USE).getItem(this.slot);
         if (use == null || (itemID / 10000) != 212 || use.getItemId() != itemID) {
             return null;
         }
@@ -73,11 +74,11 @@ public class PlayerPetFeedEvent extends PacketEvent {
                 pet.setCloseness(newCloseness);
                 if (newCloseness >= ExpTable.getClosenessNeededForLevel(pet.getLevel())) {
                     pet.setLevel((byte) (pet.getLevel() + 1));
-                    getClient().announce(MaplePacketCreator.showOwnPetLevelUp(player.getPetIndex(pet)));
-                    player.getMap().broadcastMessage(MaplePacketCreator.showPetLevelUp(player, player.getPetIndex(pet)));
+                    getClient().announce(MaplePacketCreator.getLocalEffectPetLeveled(player.getPetIndex(pet)));
+                    player.getMap().broadcastMessage(MaplePacketCreator.getEffectPetLeveled(player, player.getPetIndex(pet)));
                 }
             }
-            player.getMap().broadcastMessage(MaplePacketCreator.commandResponse(player.getId(), slot, 0, true));
+            player.getMap().broadcastMessage(MaplePacketCreator.getPetActionCommand(player.getId(), slot, (byte) 0, (byte) 0, false));
         } else {
             if (gainCloseness) {
                 int newCloseness = pet.getCloseness() - 1;
@@ -89,16 +90,9 @@ public class PlayerPetFeedEvent extends PacketEvent {
                     pet.setLevel((byte) (pet.getLevel() - 1));
                 }
             }
-            player.getMap().broadcastMessage(MaplePacketCreator.commandResponse(player.getId(), slot, 0, false));
+            player.getMap().broadcastMessage(MaplePacketCreator.getPetActionCommand(player.getId(), slot, (byte) 0, (byte) 0, false));
         }
-        MapleInventoryManipulator.removeFromSlot(getClient(), MapleInventoryType.USE, slot, (short) 1, false);
-
-        Item petz = player.getInventory(MapleInventoryType.CASH).getItem(pet.getPosition());
-        if (petz == null) { //Not a real fix but fuck it you know?
-            return null;
-        }
-
-        player.forceUpdateItem(petz);
+        MapleInventoryManipulator.removeFromSlot(getClient(), MapleInventoryType.USE, this.slot, (short) 1, false);
         return null;
     }
 }

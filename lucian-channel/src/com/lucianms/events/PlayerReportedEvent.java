@@ -55,7 +55,7 @@ public class PlayerReportedEvent extends PacketEvent {
                 client.announce(MaplePacketCreator.reportResponse((byte) 2));
                 return null;
             }
-            world.sendMessage(p -> p.getGMLevel() > 0, 6, "[Report] '{}' reported '{}' for: {}", player.getName(), username, content);
+            world.sendMessageIf(p -> p.getGMLevel() > 0, 6, "[Report] '{}' reported '{}' for: {}", player.getName(), username, content);
             addReport(player.getId(), MapleCharacter.getIdByName(username), 0, content, null);
         } else if (action == 1) {
             if (log == null) {
@@ -70,7 +70,7 @@ public class PlayerReportedEvent extends PacketEvent {
                     return null;
                 }
             }
-            world.sendMessage(p -> p.getGMLevel() > 0, 6, "[Report] '{}' reported '{}' for: {}", player.getName(), username, content);
+            world.sendMessageIf(p -> p.getGMLevel() > 0, 6, "[Report] '{}' reported '{}' for: {}", player.getName(), username, content);
             addReport(player.getId(), MapleCharacter.getIdByName(username), reason, content, log);
         }
         return null;

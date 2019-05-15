@@ -46,10 +46,15 @@ function StopMonsterControls(selection) {
     if (status == 1) {
         let text = "Your team: " + player.getTeam();
         player.setTeam(-1);
+        let textLength = text.length;
         player.getMap().getMonsters().forEach(m => {
             text += `\r\n#L${m.getObjectId()}#ID: ${m.getId()} \t Team: ${m.getTeam()}#l`;
         });
-        cm.sendSimple(text);
+        if (text.length > textLength) cm.sendSimple(text);
+        else {
+            cm.sendOk("No monsters");
+            cm.dispose();
+        }
     } else if (status == 2) {
         let monster = player.getMap().getMapObject(selection);
         if (monster != null) {

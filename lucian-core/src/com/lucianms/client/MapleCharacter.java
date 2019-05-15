@@ -1312,10 +1312,10 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Di
         if (hidden) {
             if (!login) {
                 // toggle from being visible
-                getMap().sendPacket(MaplePacketCreator.removePlayerFromMap(getId()), p -> p.getGMLevel() < getGMLevel());
+                getMap().sendPacketIf(MaplePacketCreator.removePlayerFromMap(getId()), p -> p.getGMLevel() < getGMLevel());
             }
             List<Pair<MapleBuffStat, Integer>> darkSightBuff = Collections.singletonList(new Pair<>(MapleBuffStat.DARKSIGHT, 0));
-            getMap().sendPacket(MaplePacketCreator.giveForeignBuff(getId(), darkSightBuff), p -> p.getGMLevel() >= getGMLevel());
+            getMap().sendPacketIf(MaplePacketCreator.giveForeignBuff(getId(), darkSightBuff), p -> p.getGMLevel() >= getGMLevel());
 
             for (MapleMonster mon : getControlledMonsters()) {
                 mon.setController(null);
@@ -1328,7 +1328,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Di
             }
         } else {
             List<MapleBuffStat> darkSightBuff = Collections.singletonList(MapleBuffStat.DARKSIGHT);
-            getMap().sendPacket(MaplePacketCreator.cancelForeignBuff(getId(), darkSightBuff), p -> p.getGMLevel() >= getGMLevel());
+            getMap().sendPacketIf(MaplePacketCreator.cancelForeignBuff(getId(), darkSightBuff), p -> p.getGMLevel() >= getGMLevel());
             getMap().sendPacket(MaplePacketCreator.spawnPlayerMapobject(this));
 
             updatePartyMemberHP();
@@ -2822,15 +2822,6 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Di
         this.name = name;
     }
 
-    public int getNextEmptyPetIndex() {
-        for (int i = 0; i < 3; i++) {
-            if (pets[i] == null) {
-                return i;
-            }
-        }
-        return 3;
-    }
-
     public int getNoPets() {
         int ret = 0;
         for (int i = 0; i < 3; i++) {
@@ -2839,10 +2830,6 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Di
             }
         }
         return ret;
-    }
-
-    public int getNumControlledMonsters() {
-        return controlled.size();
     }
 
     public MapleParty getParty() {
@@ -2877,10 +2864,10 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Di
         return pets[index];
     }
 
-    public byte getPetIndex(int petId) {
+    public byte getPetIndex(int petID) {
         for (byte i = 0; i < 3; i++) {
             if (pets[i] != null) {
-                if (pets[i].getUniqueId() == petId) {
+                if (pets[i].getUniqueId() == petID) {
                     return i;
                 }
             }

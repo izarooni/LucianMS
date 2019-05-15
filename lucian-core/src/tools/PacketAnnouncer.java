@@ -14,7 +14,10 @@ import java.util.stream.Collectors;
 public interface PacketAnnouncer {
 
     /**
-     * This assumes a new collection is created per call. Do not return collections directly
+     * This assumes a new collection is created per call.
+     * <p>
+     * Do not return collections directly as the collection is cleared afterwards for garbage collection.
+     * </p>
      */
     Collection<MapleCharacter> getPlayers();
 
@@ -32,31 +35,62 @@ public interface PacketAnnouncer {
         players.clear();
     }
 
+    /**
+     * Sends a packet to all players in the collection provided {@link PacketAnnouncer#getPlayers()}
+     *
+     * @see MapleCharacter#sendMessage(int, String, Object...)
+     */
     default void sendMessage(int type, String content, Object... args) {
         Collection<MapleCharacter> players = getPlayers();
         players.forEach(p -> p.sendMessage(type, content, args));
         players.clear();
     }
 
-    default void sendMessage(Predicate<MapleCharacter> cond, int type, String content, Object... args) {
+    /**
+     * Sends a packet to a collection of players if the predicate condition result is tested true
+     *
+     * @see MapleCharacter#sendMessage(int, String, Object...)
+     */
+    default void sendMessageIf(Predicate<MapleCharacter> cond, int type, String content, Object... args) {
         Collection<MapleCharacter> players = getPlayers();
         players.stream().filter(cond).forEach(p -> p.sendMessage(type, content, args));
         players.clear();
     }
 
+    /**
+     * Sends a packet to all players in the collection provided {@link PacketAnnouncer#getPlayers()}
+     */
     default void sendPacket(byte[] packet) {
         Collection<MapleCharacter> players = getPlayers();
         players.forEach(p -> p.announce(packet));
         players.clear();
     }
 
-    default void sendPacket(byte[] packet, MapleCharacter exclude) {
+    /**
+     * Sends a packet to (1) all players if the specified player is not hidden, (2) the receiving players GM level is
+     * equal to or higher than that of the specified player
+     *
+     * @param player the player that may be hidden
+     */
+    default void sendPacketCheckHidden(MapleCharacter player, byte[] packet) {
+        Collection<MapleCharacter> players = getPlayers();
+        players.stream().filter(p -> !player.isHidden() || p.getGMLevel() >= player.getGMLevel()).forEach(p -> p.announce(packet));
+        players.clear();
+    }
+
+    /**
+     * Sends a packet to the collection of players excluding the single specified player
+     */
+    default void sendPacketExclude(byte[] packet, MapleCharacter exclude) {
         Collection<MapleCharacter> players = getPlayers();
         players.stream().filter(p -> p.getId() != exclude.getId()).forEach(p -> p.announce(packet));
         players.clear();
     }
 
-    default void sendPacket(byte[] packet, Predicate<MapleCharacter> cond) {
+    /**
+     * Sends a packet to the collection of players if the predicate condition result is tested true
+     */
+    default void sendPacketIf(byte[] packet, Predicate<MapleCharacter> cond) {
         Collection<MapleCharacter> players = getPlayers();
         players.stream().filter(cond).forEach(p -> p.announce(packet));
         players.clear();

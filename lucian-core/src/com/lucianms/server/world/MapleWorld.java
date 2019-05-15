@@ -294,8 +294,8 @@ public class MapleWorld implements PacketAnnouncer, Disposable {
             mc.saveGuildStatus();
         }
         if (bDifferentGuild) {
-            mc.getMap().sendPacket(MaplePacketCreator.removePlayerFromMap(cid), mc);
-            mc.getMap().sendPacket(MaplePacketCreator.spawnPlayerMapobject(mc), mc);
+            mc.getMap().sendPacketExclude(MaplePacketCreator.removePlayerFromMap(cid), mc);
+            mc.getMap().sendPacketExclude(MaplePacketCreator.spawnPlayerMapobject(mc), mc);
         }
     }
 

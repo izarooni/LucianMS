@@ -1193,18 +1193,18 @@ public class MaplePacketCreator {
         return mplew.getPacket();
     }
 
-    public static byte[] commandResponse(int cid, byte index, int animation, boolean success) {
-        //AE 00 01 00 00 00 00 01 00 00
+    public static byte[] getPetActionCommand(int playerID, byte petSlot, byte type, byte action, boolean failed) {
         final MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
         mplew.writeShort(SendOpcode.PET_COMMAND.getValue());
-        mplew.writeInt(cid);
-        mplew.write(index);
-        mplew.write((animation == 1 || !success) ? 1 : 0);
-        mplew.write(animation);
-        if (animation == 1) {
+        mplew.writeInt(playerID);
+        mplew.write(petSlot);
+        mplew.write((type == 1 || failed) ? 1 : 0);
+        mplew.write(action);
+        if (action == 1) {
             mplew.write(0);
         } else {
-            mplew.writeShort(success ? 1 : 0);
+            mplew.writeBool(true);
+            mplew.write(action);
         }
         return mplew.getPacket();
     }
@@ -5554,12 +5554,12 @@ public class MaplePacketCreator {
         return mplew.getPacket();
     }
 
-    public static byte[] showOwnPetLevelUp(byte index) {
+    public static byte[] getLocalEffectPetLeveled(byte petSlot) {
         final MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
         mplew.writeShort(SendOpcode.SHOW_ITEM_GAIN_INCHAT.getValue());
         mplew.write(4);
         mplew.write(0);
-        mplew.write(index); // Pet Index
+        mplew.write(petSlot);
         return mplew.getPacket();
     }
 
@@ -5592,13 +5592,13 @@ public class MaplePacketCreator {
         return mplew.getPacket();
     }
 
-    public static byte[] showPetLevelUp(MapleCharacter chr, byte index) {
+    public static byte[] getEffectPetLeveled(MapleCharacter chr, byte petSlot) {
         final MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
         mplew.writeShort(SendOpcode.SHOW_FOREIGN_EFFECT.getValue());
         mplew.writeInt(chr.getId());
         mplew.write(4);
         mplew.write(0);
-        mplew.write(index);
+        mplew.write(petSlot);
         return mplew.getPacket();
     }
 

@@ -557,28 +557,23 @@ public class PlayerCashItemUseEvent extends PacketEvent implements Cleaner.Clean
             case 524: {
                 for (byte i = 0; i < 3; i++) {
                     MaplePet pet = player.getPet(i);
-                    if (pet != null) {
-                        if (pet.canConsume(itemID)) {
-                            pet.setFullness(100);
-                            if (pet.getCloseness() + 100 > 30000) {
-                                pet.setCloseness(30000);
-                            } else {
-                                pet.gainCloseness(100);
-                            }
-
-                            while (pet.getCloseness() >= ExpTable.getClosenessNeededForLevel(pet.getLevel())) {
-                                pet.setLevel((byte) (pet.getLevel() + 1));
-                                byte index = player.getPetIndex(pet);
-                                client.announce(MaplePacketCreator.showOwnPetLevelUp(index));
-                                player.getMap().broadcastMessage(MaplePacketCreator.showPetLevelUp(player, index));
-                            }
-                            Item item = player.getInventory(MapleInventoryType.CASH).getItem(pet.getPosition());
-                            player.forceUpdateItem(item);
-                            player.getMap().broadcastMessage(player, MaplePacketCreator.commandResponse(player.getId(), i, 1, true), true);
-                            remove(client, itemID);
-                            break;
+                    if (pet == null) break;
+                    if (pet.canConsume(itemID)) {
+                        pet.setFullness(100);
+                        if (pet.getCloseness() + 100 > 30000) {
+                            pet.setCloseness(30000);
+                        } else {
+                            pet.gainCloseness(100);
                         }
-                    } else {
+
+                        byte petLevel = pet.getLevel();
+                        while (pet.getCloseness() < ExpTable.getClosenessNeededForLevel(petLevel)) {
+                            pet.setLevel(++petLevel);
+                            client.announce(MaplePacketCreator.getLocalEffectPetLeveled(i));
+                            player.getMap().sendPacketCheckHidden(player, MaplePacketCreator.getEffectPetLeveled(player, i));
+                        }
+                        player.getMap().sendPacketCheckHidden(player, MaplePacketCreator.getPetActionCommand(player.getId(), i, (byte) 0, (byte) 0, false));
+                        remove(client, itemID);
                         break;
                     }
                 }
@@ -612,7 +607,7 @@ public class PlayerCashItemUseEvent extends PacketEvent implements Cleaner.Clean
                     medal = "<" + ii.getName(medalItem.getItemId()) + "> ";
                 }
 
-                world.sendPacket(MaplePacketCreator.getAvatarMega(player, medal, ch.getId(), itemID, messages, whisperEnabled), p -> !p.getCashShop().isOpened());
+                world.sendPacketIf(MaplePacketCreator.getAvatarMega(player, medal, ch.getId(), itemID, messages, whisperEnabled), p -> !p.getCashShop().isOpened());
                 remove(client, itemID);
                 break;
             }

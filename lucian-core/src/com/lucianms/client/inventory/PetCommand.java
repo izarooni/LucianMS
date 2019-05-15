@@ -1,52 +1,61 @@
-/*
-	This file is part of the OdinMS Maple Story Server
-    Copyright (C) 2008 Patrick Huy <patrick.huy@frz.cc>
-		       Matthias Butz <matze@odinms.de>
-		       Jan Christian Meyer <vimes@odinms.de>
-
-    This program is free software: you can redistribute it and/or modify
-    it under the terms of the GNU Affero General Public License as
-    published by the Free Software Foundation version 3 as published by
-    the Free Software Foundation. You may not use, modify or distribute
-    this program under any other version of the GNU Affero General Public
-    License.
-
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU Affero General Public License for more details.
-
-    You should have received a copy of the GNU Affero General Public License
-    along with this program.  If not, see <http://www.gnu.org/licenses/>.
-*/
 package com.lucianms.client.inventory;
 
-/*
- * @author Leifde
+/**
+ * @author izarooni
  */
 public class PetCommand {
-    private int petId, skillId, prob, inc;
 
-    public PetCommand(int petId, int skillId, int prob, int inc) {
-        this.petId = petId;
-        this.skillId = skillId;
-        this.prob = prob;
-        this.inc = inc;
+    private final int ID;
+    private final int increase;
+    private final int levelLower;
+    private final int levelUpper;
+    private final int probability;
+
+    public PetCommand(int ID, int increase, int levelLower, int levelUpper, int probability) {
+        this.ID = ID;
+        this.increase = increase;
+        this.levelLower = levelLower;
+        this.levelUpper = levelUpper;
+        this.probability = probability;
     }
 
-    public int getPetId() {
-        return petId;
+    @Override
+    public String toString() {
+        return String.format("PetCommand{ID=%d}", ID);
     }
 
-    public int getSkillId() {
-        return skillId;
+    /**
+     * the command ID as represented in WZ
+     */
+    public int getID() {
+        return ID;
     }
 
-    public int getProbability() {
-        return prob;
-    }
-
+    /**
+     * @return Closeness increase value should the command succeed
+     */
     public int getIncrease() {
-        return inc;
+        return increase;
+    }
+
+    /**
+     * @return Lower bound value of level requirement to use the command
+     */
+    public int getLevelLower() {
+        return levelLower;
+    }
+
+    /**
+     * @return Upper bound value of level requirement ot use the command
+     */
+    public int getLevelUpper() {
+        return levelUpper;
+    }
+
+    /**
+     * @return Out of 100 percentage chance the command should succeed
+     */
+    public int getProbability() {
+        return probability;
     }
 }

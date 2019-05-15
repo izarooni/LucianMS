@@ -210,7 +210,7 @@ public class PlayerLoginEvent extends PacketEvent {
             if (member != null) {
                 member.setPlayer(player);
                 member.updateWithPlayer(player);
-                messenger.sendPacket(MaplePacketCreator.updateMessengerPlayer(member), player);
+                messenger.sendPacketExclude(MaplePacketCreator.updateMessengerPlayer(member), player);
             }
         }
 
