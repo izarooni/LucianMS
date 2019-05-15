@@ -91,10 +91,12 @@ public class PlayerDealDamageMagicEvent extends AbstractDealDamageEvent {
             applyAttack(fakePlayer, attackInfo, effect.getAttackCount());
         }
         Skill eaterSkill = SkillFactory.getSkill((player.getJob().getId() - (player.getJob().getId() % 10)) * 10000);// MP Eater, works with right job
-        int eaterLevel = player.getSkillLevel(eaterSkill);
-        if (eaterLevel > 0) {
-            for (Integer singleDamage : attackInfo.allDamage.keySet()) {
-                eaterSkill.getEffect(eaterLevel).applyPassive(player, player.getMap().getMapObject(singleDamage), 0);
+        if (eaterSkill != null) {
+            int eaterLevel = player.getSkillLevel(eaterSkill);
+            if (eaterLevel > 0) {
+                for (Integer singleDamage : attackInfo.allDamage.keySet()) {
+                    eaterSkill.getEffect(eaterLevel).applyPassive(player, player.getMap().getMapObject(singleDamage), 0);
+                }
             }
         }
         return null;

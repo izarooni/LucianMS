@@ -1,9 +1,10 @@
 package com.lucianms.events;
 
 import com.lucianms.client.MapleCharacter;
-import com.lucianms.client.inventory.*;
+import com.lucianms.client.inventory.MaplePet;
+import com.lucianms.client.inventory.PetCommand;
+import com.lucianms.client.inventory.PetDataFactory;
 import com.lucianms.constants.ExpTable;
-import com.lucianms.events.PacketEvent;
 import com.lucianms.nio.receive.MaplePacketReader;
 import tools.MaplePacketCreator;
 import tools.Randomizer;
@@ -52,8 +53,6 @@ public class PlayerPetCommandEvent extends PacketEvent {
                     getClient().announce(MaplePacketCreator.showOwnPetLevelUp(player.getPetIndex(pet)));
                     player.getMap().broadcastMessage(MaplePacketCreator.showPetLevelUp(player, player.getPetIndex(pet)));
                 }
-                Item petz = player.getInventory(MapleInventoryType.CASH).getItem(pet.getPosition());
-                player.forceUpdateItem(petz);
             }
         }
         player.getMap().broadcastMessage(player, MaplePacketCreator.commandResponse(player.getId(), petIndex, action, success), true);
