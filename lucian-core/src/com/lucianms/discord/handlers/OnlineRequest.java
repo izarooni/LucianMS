@@ -33,7 +33,7 @@ public class OnlineRequest extends DiscordRequest {
             List<MapleChannel> channels = world.getChannels();
             writer.write(channels.size());
             for (MapleChannel channel : channels) {
-                Collection<MapleCharacter> players = world.getPlayers(p -> p.getClient().getChannel() == channel.getId());
+                Collection<MapleCharacter> players = world.getPlayers(p -> !p.isGM() && p.getClient().getChannel() == channel.getId());
                 writer.writeShort(players.size());
                 for (MapleCharacter player : players) {
                     writer.writeMapleAsciiString(player.getName());
