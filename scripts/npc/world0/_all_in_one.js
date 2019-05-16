@@ -7,7 +7,7 @@ const Shops = {
     
     "Warrior": [new Shop("Warrior Shoes", 10016), new Shop("Warrior Pants", 10017), new Shop("Warrior Top", 10018), new Shop("Warrior Overalls", 10019), new Shop("Warrior Gloves", 10020), new Shop("Warrior Hats", 10021), new Shop("Warrior Shield", 10022), new Shop("One-Handed Axe", 10023), new Shop("Two-Handed Axe", 10024), new Shop("One-Handed Mace", 10025), new Shop("Two-Handed Mace", 10026), new Shop("One-Handed Sword", 10027), new Shop("Two-Handed Sword", 10028), new Shop("Spear", 10029), new Shop("Pole Arm", 10030)],
     
-    "Archer": [new Shop("Archer Shoes", 10031), new Shop("Archer Overalls", 10032), new Shop("Archer Gloves", 10033), new Shop("Archer Hats", 10034), new Shop("Bow", 10035), new Shop("a", 10036), new Shop("Arrows/Projectiles", 10037)],
+    "Archer": [new Shop("Archer Shoes", 10031), new Shop("Archer Overalls", 10032), new Shop("Archer Gloves", 10033), new Shop("Archer Hats", 10034), new Shop("Bow", 10035), new Shop("Arrows/Projectiles", 10037)],
     
     "Common": [new Shop("Earrings", 10039), new Shop("Face Accessory", 10040), new Shop("Cape", 10041), new Shop("Shoes", 10042), new Shop("Hats", 10043), new Shop("Gloves", 10044), new Shop("Overalls", 10045), new Shop("Shields", 10046), new Shop("Weapons", 10047), new Shop("Rocks/Super Megaphones", 10048), new Shop("Potions", 10049), new Shop("Boss Pieces", 10050), new Shop("Maple Weapons", 10051), new Shop("Mounts", 10052), new Shop("Scrolls", 10053), new Shop("Pet Equips", 10055), new Shop("Chairs", 10056), new Shop("Summon Sacks", 10057)]
 };
