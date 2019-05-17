@@ -92,7 +92,7 @@ function action(mode, type, selection) {
         if (status == 0) {
             cm.sendNext("#eHello #d#h ##k! My name is #rGaga#k and I have a mission for you.");
         } else if (status == 1) {
-            cm.sendSimple("#eI want you to collect many items for me. If you collect the items you will recieve an eraser and 25,000 EXP. Once you have gathered up all the erasers, I will give you a reward!#b(5,000,000 EXP, 10 Gachapon Tickets, and 300 Maple Leaves and 2 Lucian Crystals)#k \r\n\r\n#b#L0#What items do I have to collect?#l \r\n#L1#I have the erasers!#l");
+            cm.sendSimple("#eI want you to collect many items for me. If you collect the items you will recieve an eraser and 25,000 EXP. Once you have gathered up all the erasers, I will give you a reward!#b(5,000,000 EXP, 10 Gachapon Tickets, and 300 Maple Leaves and 2 Chirithy Coins)#k \r\n\r\n#b#L0#What items do I have to collect?#l \r\n#L1#I have the erasers!#l");
         } else {
             if (selection == 0) {
                 cm.sendSimple("#eWell, you will need to collect a lot of items. You need to collect 50 of each item. There will be 5 items per city. Once you turn in the required amount of items for the city, you will be rewarded an #beraser#k. If you collect all 7 erasers you can turn them in for the grand reward. \r\n#b#L2#See the items for Henesys#l\r\n#L3#See the items for Ariant#l\r\n#L4#See the items for Orbis#l\r\n#L5#See the items for Ludibrium#l\r\n#L6#See the items for Leafre#l\r\n#L7#See the items for Mu Lung#l\r\n#L8#See the items for Aquarium#l");
