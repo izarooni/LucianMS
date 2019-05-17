@@ -148,7 +148,7 @@ public enum RecvOpcode {
     ITEM_PICKUP             (202, ReceivePacketState.ChannelServer),
     DAMAGE_REACTOR          (205, ReceivePacketState.ChannelServer),
     TOUCHING_REACTOR        (206, ReceivePacketState.ChannelServer),
-    TEMP_SKILL              (207, ReceivePacketState.ChannelServer, IgnoredPacketEvent.class),
+    FIELD_INITIALIZE        (207, ReceivePacketState.ChannelServer),
     SNOWBALL                (211, ReceivePacketState.ChannelServer),
     LEFT_KNOCKBACK          (212, ReceivePacketState.ChannelServer),
     COCONUT                 (213, ReceivePacketState.ChannelServer),

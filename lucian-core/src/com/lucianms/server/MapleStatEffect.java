@@ -114,25 +114,8 @@ public class MapleStatEffect {
         if (!ret.skill && ret.duration > -1) {
             ret.overTime = true;
         } else {
-            ret.duration *= 1000; // items have their times stored in ms, of course
-
-            // @formatter:off
-            if ((sourceid == Marauder.TRANSFORMATION // pink bean
-                    || sourceid == Buccaneer.SUPER_TRANSFORMATION) // super pink bean \o/
-                    || (!ret.isMist()
-                    && !ret.isMorph()
-                    && !ret.isPoison()
-                    && !ret.isMagicDoor()
-                    && !ret.isDs()
-                    && ret.isEnergy()
-                    && sourceid != Sniper.PUPPET && sourceid != Ranger.PUPPET
-                    && sourceid != Pirate.DASH && sourceid != ThunderBreaker.DASH
-                    && sourceid != Shadower.NINJA_AMBUSH
-                    && summon == null)) {
-                ret.duration = Integer.MAX_VALUE;
-            }
+            ret.duration *= 1000;
             ret.overTime = overTime;
-            // @formatter:on
         }
         ArrayList<Pair<MapleBuffStat, Integer>> statups = new ArrayList<>();
         ret.watk = (short) MapleDataTool.getInt("pad", source, 0);

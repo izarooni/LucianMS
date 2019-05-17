@@ -1457,20 +1457,6 @@ public class MapleMap implements PacketAnnouncer {
             if (eim != null) {
                 eim.movePlayer(chr, this);
             }
-        } else if (MapleMiniDungeon.isDungeonMap(mapid)) {
-            final MapleMiniDungeon dungeon = MapleMiniDungeon.getDungeon(mapid);
-            if (dungeon != null) {
-                chr.getClient().announce(MaplePacketCreator.getClock(30 * 60));
-                TaskExecutor.createTask(new Runnable() {
-
-                    @Override
-                    public void run() {
-                        if (MapleMiniDungeon.isDungeonMap(chr.getMapId())) {
-                            chr.changeMap(dungeon.getBase());
-                        }
-                    }
-                }, 30 * 60 * 1000);
-            }
         }
         MaplePet[] pets = chr.getPets();
         for (int i = 0; i < chr.getPets().length; i++) {
@@ -1533,40 +1519,15 @@ public class MapleMap implements PacketAnnouncer {
             chr.getMap().spawnSummon(summon);
             updateMapObjectVisibility(chr, summon);
         }
-        if (mapEffect != null) {
-            mapEffect.sendStartData(chr.getClient());
-        }
         chr.getClient().announce(MaplePacketCreator.resetForcedStats());
         if (mapid == 914000200 || mapid == 914000210 || mapid == 914000220) {
             chr.getClient().announce(MaplePacketCreator.aranGodlyStats());
         }
-        if (eim != null && eim.isTimerStarted()) {
-            chr.getClient().announce(MaplePacketCreator.getClock((int) (eim.getTimeLeft() / 1000)));
-        }
-        if (chr.getFitness() != null && chr.getFitness().isTimerStarted()) {
-            chr.getClient().announce(MaplePacketCreator.getClock((int) (chr.getFitness().getTimeLeft() / 1000)));
-        }
 
-        if (chr.getOla() != null && chr.getOla().isTimerStarted()) {
-            chr.getClient().announce(MaplePacketCreator.getClock((int) (chr.getOla().getTimeLeft() / 1000)));
-        }
-
-        if (mapid == 109060000) {
-            chr.announce(MaplePacketCreator.rollSnowBall(true, 0, null, null));
-        }
-
-        if (hasClock()) {
-            Calendar cal = Calendar.getInstance();
-            chr.getClient().announce((MaplePacketCreator.getClockTime(cal.get(Calendar.HOUR_OF_DAY), cal.get(Calendar.MINUTE), cal.get(Calendar.SECOND))));
-        }
         if (hasBoat() == 2) {
             chr.getClient().announce((MaplePacketCreator.boatPacket(true)));
         } else if (hasBoat() == 1 && (chr.getMapId() != 200090000 || chr.getMapId() != 200090010)) {
             chr.getClient().announce(MaplePacketCreator.boatPacket(false));
-        }
-        if (chr.getDragon() == null && GameConstants.hasSPTable(chr.getJob())) {
-            chr.createDragon();
-            broadcastMessage(MaplePacketCreator.spawnDragon(chr.getDragon()));
         }
     }
 
