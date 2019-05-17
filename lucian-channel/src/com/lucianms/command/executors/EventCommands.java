@@ -61,8 +61,52 @@ public class EventCommands extends CommandExecutor {
         addCommand("weenie", this::CommandWeenie);
         addCommand("fstat", this::CommandForceStat);
         addCommand("rules", this::CommandEventRules);
+        addCommand("fstatm", this::CommandForceStatMap);
 
         reloadEventRules();
+    }
+
+    private void CommandForceStatMap(MapleCharacter player, Command cmd, CommandArgs args) {
+        Collection<MapleCharacter> players = player.getMap().getPlayers();
+        if (args.length() == 0) {
+            for (MapleCharacter target : players) {
+                target.setForcedStat(null);
+                target.announce(MaplePacketCreator.getForcedStatReset());
+            }
+            player.getMap().sendMessage(5, "Forced stats cleared");
+        } else if (args.length() == 1) {
+            Number n = args.parseNumber(0, int.class);
+            if (n == null) {
+                player.sendMessage("{} is not a number", args.get(0));
+                return;
+            }
+            for (MapleCharacter target : players) {
+                ForcedStat fstat = new ForcedStat();
+                fstat.enableAll(n.intValue());
+                target.setForcedStat(fstat);
+                target.announce(MaplePacketCreator.getForcedStats(fstat));
+            }
+            player.getMap().sendMessage(5, "Forced stats set");
+        } else {
+            ForcedStat fstat = new ForcedStat();
+            for (ForcedStat.Type type : ForcedStat.Type.values()) {
+                int typeIdx = args.findArg(type.name().toLowerCase());
+                if (typeIdx > -1) {
+                    Number n = args.parseNumber(typeIdx, int.class);
+                    if (n == null) {
+                        player.sendMessage("{} is not a number", args.get(0));
+                        return;
+                    }
+                    fstat.enable(type, n.intValue());
+                }
+            }
+            for (MapleCharacter target : players) {
+                target.setForcedStat(fstat);
+                target.announce(MaplePacketCreator.getForcedStats(fstat));
+            }
+            player.getMap().sendMessage(5, "Forced stats set");
+        }
+        players.clear();
     }
 
     private static TreeMap<String, List<String>> EVENT_RULES = new TreeMap<>();

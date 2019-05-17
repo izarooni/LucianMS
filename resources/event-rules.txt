@@ -1,4 +1,4 @@
-50/50
+﻿50/50
 Welcome to 50/50. 
 There will be two sides. The O side <-- and the X side --> . 
 You will have 15 seconds to pick one of them. 
@@ -75,7 +75,6 @@ There will be a total of 5 hints given by notices.
 The first person to find me wins 1 ep.
 There will be a total of x rounds.
 Any questions?
-
 
 Hitman (Elimination)
 Welcome to Elimination Hitman.
@@ -502,7 +501,6 @@ If you are caught saying any of the following, you'll be out.
 If you are caught repeating a word, you're also out. 
 Last person remaining wins. 3/2/1 Event Point.
 Any questions? 
-
 
 Reverse Tag
 Welcome to Reverse Tag.
