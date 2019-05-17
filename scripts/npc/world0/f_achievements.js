@@ -52,7 +52,7 @@ function action(mode, type, selection) {
         let achieve = achievements[(lastSelection == 0) ? "completed" : "other"][selection];
         let content = "You " + ((lastSelection == 0) ? "received" : "will receieve") + ` the following thinigs for completing the achievement '#b${achieve[0]}'\r\n`;
         let rewards = SAchievements.getRewards(achieve[0]);
-        if (rewards.size() > 0) {
+        if (rewards != null && rewards.size() > 0) {
             for (let reward in rewards) {
                 content += `\r\n${rewards[reward]}`;
             }

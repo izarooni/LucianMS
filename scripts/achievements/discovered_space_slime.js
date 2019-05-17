@@ -3,7 +3,7 @@ const OuterSpaceFieldID = 98;
 /* izarooni */
 
 function getName() {
-    return "Discord Outer Space, Planet Aura";
+    return "Discover Outer Space, Planet Aura";
 }
 
 function testForPlayer(player) {

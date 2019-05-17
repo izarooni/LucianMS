@@ -6,6 +6,7 @@ import org.slf4j.LoggerFactory;
 import tools.MaplePacketCreator;
 import tools.Pair;
 
+import javax.script.CompiledScript;
 import javax.script.Invocable;
 import javax.script.ScriptException;
 import java.io.File;
@@ -21,8 +22,9 @@ import java.util.HashMap;
  */
 public class Achievements {
 
+    private static final String ROOT_DIRECTORY = "achievements/";
     private static final Logger LOGGER = LoggerFactory.getLogger(Achievements.class);
-    private static ArrayList<Pair<String, Invocable>> invocables = null;
+    private static ArrayList<Pair<String, CompiledScript>> invocables = null;
     private static HashMap<String, ArrayList<String>> rewards = new HashMap<>();
 
     private Achievements() {
@@ -53,11 +55,12 @@ public class Achievements {
             invocables = new ArrayList<>(files.length);
             for (File file : files) {
                 try {
-                    Invocable iv = ScriptUtil.eval("achievements/" + file.getName(), Collections.emptyList());
-                    String name = (String) iv.invokeFunction("getName");
+                    CompiledScript compile = ScriptUtil.compile(ROOT_DIRECTORY + file.getName(), Collections.emptyList());
+                    Invocable engine = (Invocable) compile.getEngine();
+                    String name = (String) engine.invokeFunction("getName");
                     ArrayList<String> rr = new ArrayList<>();
-                    iv.invokeFunction("readableRewards", rr);
-                    invocables.add(new Pair<>(name, iv));
+                    engine.invokeFunction("readableRewards", rr);
+                    invocables.add(new Pair<>(name, compile));
                     rewards.put(name, rr);
                 } catch (Exception e) {
                     LOGGER.error("Unable to execute achievement '{}': {}", file.getName(), e.getMessage());
@@ -76,17 +79,18 @@ public class Achievements {
     }
 
     /**
-     * Iterate through achievement scripts and test for player and kill requirements against the player and player achievement data
+     * Iterate through achievement scripts and test for player and kill requirements against the player and player
+     * achievement data
      *
      * @param player    playerr to pass as a parameter
      * @param monsterId a monster id to pass as a parameter for kill requirements
      */
     public static void testFor(MapleCharacter player, int monsterId) {
         if (invocables != null) {
-            for (Pair<String, Invocable> pair : invocables) {
+            for (Pair<String, CompiledScript> pair : invocables) {
                 if (!player.getAchievement(pair.getLeft()).isCompleted()) {
                     try {
-                        Invocable iv = pair.getRight();
+                        Invocable iv = (Invocable) pair.getRight().getEngine();
                         if (testForKill(iv, player, monsterId) && testForPlayer(iv, player)) {
                             player.announce(MaplePacketCreator.showEffect("PSO2/stuff/2"));
                             try {
@@ -108,9 +112,8 @@ public class Achievements {
     /**
      * @param invocable the achievement script invocable
      * @param player    player to pass as a parameter
+     *
      * @return true if the reward was given to the player, false otherwise
-     * @throws ScriptException
-     * @throws NoSuchMethodException
      */
     private static boolean reward(Invocable invocable, MapleCharacter player) throws ScriptException, NoSuchMethodException {
         return (boolean) invocable.invokeFunction("reward", player);
@@ -122,6 +125,7 @@ public class Achievements {
      * @param invocable the achievement script invocable
      * @param player    player to pass as a parameter
      * @param monsterId a monster id to pass a parameter
+     *
      * @return true if the test for kill requirement passes, false otherwise
      */
     private static boolean testForKill(Invocable invocable, MapleCharacter player, int monsterId) throws ScriptException {
@@ -138,6 +142,7 @@ public class Achievements {
      *
      * @param invocable the achievement script invocable
      * @param player    player to pass as a parameter to the script function
+     *
      * @return true if the test for kill requirement passes, false otherwise
      */
     private static boolean testForPlayer(Invocable invocable, MapleCharacter player) throws ScriptException {
