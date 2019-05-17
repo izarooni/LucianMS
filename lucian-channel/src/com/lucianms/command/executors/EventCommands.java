@@ -24,7 +24,9 @@ import tools.MaplePacketCreator;
 import tools.Randomizer;
 
 import java.awt.*;
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileReader;
 import java.io.IOException;
 import java.util.List;
 import java.util.*;
@@ -63,20 +65,25 @@ public class EventCommands extends CommandExecutor {
         reloadEventRules();
     }
 
-    private static Map<String, List<String>> EVENT_RULES = new HashMap<>(60);
+    private static TreeMap<String, List<String>> EVENT_RULES = new TreeMap<>();
 
     private static boolean reloadEventRules() {
         EVENT_RULES.clear();
         File file = new File("resources/event-rules.txt");
         if (file.exists()) {
-            try (Scanner scanner = new Scanner(file)) {
+            try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
                 String title = null;
-                while (scanner.hasNext()) {
-                    String text = scanner.nextLine();
+                String text;
+                while ((text = reader.readLine()) != null) {
                     if (!text.isEmpty()) {
-                        if (title == null) EVENT_RULES.put((title = text), new ArrayList<>());
-                        else EVENT_RULES.get(title).add(text);
-                    } else title = null;
+                        if (title == null) {
+                            EVENT_RULES.put((title = text), new ArrayList<>());
+                        } else {
+                            EVENT_RULES.get(title).add(text);
+                        }
+                    } else {
+                        title = null;
+                    }
                 }
                 return true;
             } catch (IOException e) {
