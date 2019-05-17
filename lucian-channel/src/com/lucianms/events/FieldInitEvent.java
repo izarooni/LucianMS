@@ -25,12 +25,18 @@ public class FieldInitEvent extends PacketEvent {
         MapleClient client = getClient();
         MapleCharacter player = client.getPlayer();
         MapleMap map = player.getMap();
+        final int mapID = map.getId();
         EventInstanceManager eim = player.getEventInstance();
+
+        if (player.getForcedStat() != null) {
+            player.setForcedStat(null);
+            client.announce(MaplePacketCreator.getForcedStatReset());
+        }
 
         player.setRates();
 
-        if (MapleMiniDungeon.isDungeonMap(map.getId())) {
-            MapleMiniDungeon dungeon = MapleMiniDungeon.getDungeon(map.getId());
+        if (MapleMiniDungeon.isDungeonMap(mapID)) {
+            MapleMiniDungeon dungeon = MapleMiniDungeon.getDungeon(mapID);
             if (dungeon != null) {
                 client.announce(MaplePacketCreator.getClock(30 * 60));
                 TaskExecutor.createTask(new Runnable() {
@@ -56,8 +62,11 @@ public class FieldInitEvent extends PacketEvent {
             client.announce(MaplePacketCreator.getClock((int) (player.getOla().getTimeLeft() / 1000)));
         }
 
-        if (map.getId() == 109060000) {
+        if (mapID == 109060000) {
             client.announce(MaplePacketCreator.rollSnowBall(true, 0, null, null));
+        }
+        if (mapID == 914000200 || mapID == 914000210 || mapID == 914000220) {
+            client.announce(MaplePacketCreator.aranGodlyStats());
         }
 
         if (map.hasClock()) {

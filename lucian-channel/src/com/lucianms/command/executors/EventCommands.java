@@ -2,6 +2,7 @@ package com.lucianms.command.executors;
 
 import com.lucianms.client.MapleCharacter;
 import com.lucianms.client.MapleDisease;
+import com.lucianms.client.meta.ForcedStat;
 import com.lucianms.command.Command;
 import com.lucianms.command.CommandArgs;
 import com.lucianms.command.CommandWorker;
@@ -50,6 +51,42 @@ public class EventCommands extends CommandExecutor {
         addCommand("warpout", this::CommandOXWarp);
         addCommand("potato", this::CommandPotato);
         addCommand("weenie", this::CommandWeenie);
+        addCommand("fstat", this::CommandForceStat);
+    }
+
+    private void CommandForceStat(MapleCharacter player, Command cmd, CommandArgs args) {
+        if (args.length() == 0) {
+            player.setForcedStat(null);
+            player.announce(MaplePacketCreator.getForcedStatReset());
+            player.sendMessage("Forced stats cleared");
+        } else if (args.length() == 1) {
+            Number n = args.parseNumber(0, int.class);
+            if (n == null) {
+                player.sendMessage("{} is not a number", args.get(0));
+                return;
+            }
+            ForcedStat fstat = new ForcedStat();
+            fstat.enableAll(n.intValue());
+            player.setForcedStat(fstat);
+            player.announce(MaplePacketCreator.getForcedStats(fstat));
+            player.sendMessage("Forced stats set");
+        } else {
+            ForcedStat fstat = new ForcedStat();
+            for (ForcedStat.Type type : ForcedStat.Type.values()) {
+                int typeIdx = args.findArg(type.name().toLowerCase());
+                if (typeIdx > -1) {
+                    Number n = args.parseNumber(typeIdx, int.class);
+                    if (n == null) {
+                        player.sendMessage("{} is not a number", args.get(0));
+                        return;
+                    }
+                    fstat.enable(type, n.intValue());
+                }
+            }
+            player.setForcedStat(fstat);
+            player.announce(MaplePacketCreator.getForcedStats(fstat));
+            player.sendMessage("Forced stats set");
+        }
     }
 
     private void CommandWeenie(MapleCharacter player, Command cmd, CommandArgs args) {

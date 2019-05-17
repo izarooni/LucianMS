@@ -26,6 +26,7 @@ import com.lucianms.client.arcade.RPSGame;
 import com.lucianms.client.autoban.Cheater;
 import com.lucianms.client.inventory.*;
 import com.lucianms.client.meta.Achievement;
+import com.lucianms.client.meta.ForcedStat;
 import com.lucianms.client.meta.Occupation;
 import com.lucianms.constants.ExpTable;
 import com.lucianms.constants.GameConstants;
@@ -251,6 +252,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Di
     private Relationship relationship = new Relationship();
     private RPSGame RPSGame;
     private Occupation occupation;
+    private ForcedStat forcedStat;
     private final SpamTracker spamTracker = new SpamTracker();
 
     // EVENTS
@@ -5433,6 +5435,14 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Di
     public void setOccupation(Occupation occupation) {
         this.occupation = occupation;
         setRates();
+    }
+
+    public ForcedStat getForcedStat() {
+        return forcedStat;
+    }
+
+    public void setForcedStat(ForcedStat forcedStat) {
+        this.forcedStat = forcedStat;
     }
 
     public SpamTracker.SpamData getSpamTracker(SpamTracker.SpamOperation operation) {

@@ -1519,10 +1519,6 @@ public class MapleMap implements PacketAnnouncer {
             chr.getMap().spawnSummon(summon);
             updateMapObjectVisibility(chr, summon);
         }
-        chr.getClient().announce(MaplePacketCreator.resetForcedStats());
-        if (mapid == 914000200 || mapid == 914000210 || mapid == 914000220) {
-            chr.getClient().announce(MaplePacketCreator.aranGodlyStats());
-        }
 
         if (hasBoat() == 2) {
             chr.getClient().announce((MaplePacketCreator.boatPacket(true)));

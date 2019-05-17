@@ -23,6 +23,7 @@ package tools;
 import com.lucianms.client.*;
 import com.lucianms.client.inventory.*;
 import com.lucianms.client.inventory.Equip.ScrollResult;
+import com.lucianms.client.meta.ForcedStat;
 import com.lucianms.client.status.MonsterStatus;
 import com.lucianms.client.status.MonsterStatusEffect;
 import com.lucianms.constants.GameConstants;
@@ -883,6 +884,13 @@ public class MaplePacketCreator {
         mplew.writeShort(SendOpcode.FORCED_STAT_SET.getValue());
         mplew.write(new byte[]{(byte) 0x1F, (byte) 0x0F, 0, 0, (byte) 0xE7, 3, (byte) 0xE7, 3, (byte) 0xE7, 3, (byte) 0xE7, 3, (byte) 0xFF, 0, (byte) 0xE7, 3, (byte) 0xE7, 3, (byte) 0x78, (byte) 0x8C});
         return mplew.getPacket();
+    }
+
+    public static byte[] getForcedStats(ForcedStat stats) {
+        MaplePacketWriter w = new MaplePacketWriter();
+        w.writeShort(SendOpcode.FORCED_STAT_SET.getValue());
+        stats.encode(w);
+        return w.getPacket();
     }
 
     /**
@@ -4588,7 +4596,7 @@ public class MaplePacketCreator {
         return pinOperation((byte) 2);
     }
 
-    public static byte[] resetForcedStats() {
+    public static byte[] getForcedStatReset() {
         final MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter(2);
         mplew.writeShort(SendOpcode.FORCED_STAT_RESET.getValue());
         return mplew.getPacket();
