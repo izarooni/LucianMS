@@ -521,6 +521,7 @@ public class GameMasterCommands extends CommandExecutor {
                 player.getSkills().put(skill.getId(), new SkillEntry(skill.getMaxLevel(), skill.getMaxLevel(), -1));
             }
             player.announce(MaplePacketCreator.getCharInfo(player));
+            player.changeMap(player.getMap(), player.getPosition());
         } else if (command.equals("heal", "healmap")) {
             if (command.equals("healmap")) {
                 for (MapleCharacter players : player.getMap().getCharacters()) {
