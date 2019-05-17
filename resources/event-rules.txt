@@ -1,0 +1,554 @@
+50/50
+Welcome to 50/50. 
+There will be two sides. The O side <-- and the X side --> . 
+You will have 15 seconds to pick one of them. 
+After the time is up, I will be using a command to randomly pick a side. 
+If you're on the chosen side, you're out. 
+If you're not in any of the sides, you're out as well. 
+This will continue until there are 1-3 winners. 1 Event Point each.
+Any questions?
+
+Around the World (ATW)
+Welcome to Around the World.
+In this event, players will go "Around the World" on the "O" side of the map. 
+Players progress by answering my questions correctly. 
+Each question allows players to progress one platform. We will be going clockwise. 
+The following events that will be used are:  NTI, Hitman, Unscramble, Blink, Rhyme etc.
+First person to make it to my platform wins. 3 winners. 2 Event Points each.
+Any questions?
+
+Blink
+Welcome to Blink.
+In this event, your goal is to type what is written  on the chalkboard. 
+It may be symbols, numbers, and letters. 
+Capitalization counts. First person to type it out correctly wins a point. 
+The first three players to get to 10 points win. 1 Event Point each.
+Any questions?
+
+Bongo
+Welcome to Bongo. 
+In this event, you will be on a platform on the O side. 
+I'll be giving a range set of numbers and you will be picking a random number in my range. 
+Whoever gets my number will be bombed off of their platform and if they fall off the platforms then they are out. 
+If you were also bombed off because another person got the number and you're off the platform, then you're also out. 
+If the bomb misses, then you're still in. If you take too long, I put up 15 seconds on the clock and you're still afk, then you'll be bombed as well. 
+If I catch anyone going back up the plats, I will warp them out of the map. 
+Last person remaining wins, 2 Event Points.
+Any questions?
+
+Box of Doom
+Welcome to Box of Doom. 
+During this event, I will be spawning a black box on the middle platform. 
+The box will contain a set amount of HP that varies each time.
+Every participant will either be on the left or right of the box. 
+When I call your name, you will step onto the middle platform and attack the box 1~5 times. 
+If the box is killed on your turn, you are out of the event.
+No skills are allowed, regular attack only. Whoever uses skills will automatically be disqualified. 
+Last person remaining wins, 2 Event Points.
+Any questions?
+
+Dodge Bomb
+Welcome to Dodge Bomb.
+You will all be spread out on platform 16 (second lane) of the map.
+I will be spawning bombs that you will have to dodge to stay on platform 16.
+If you fall off the platform or touch any of the platforms with the red bombs then you are out. 
+You may move freely on the platform to avoid being pushed off. 
+If you fall, you may NOT go back on the platform or else you will be disqualified.
+Last person remaining wins 1 Event Point.
+Any questions?
+
+Four Corners
+Welcome to Four Corners. 
+I'll be hiding here in the map with my minimap disabled. 
+I'll randomly warp one of 4 "corner" locations in the map. 
+You will then have 15 seconds to pick a "corner" location.
+These "corner" locations are: the entire top platform, the O side, the X side, and the middle platform.
+1-3 winners, 2 Event Points each.
+Any questions?
+
+Hide and Seek
+(Open portal to OX Quiz map, explain then go hide)
+Welcome to Hide and Seek.
+In this event I will be hiding in maps.
+Your objective is to find the map I'm hiding in.
+There will be a total of 5 hints given by notices.
+The first person to find me wins 1 ep.
+There will be a total of x rounds.
+Any questions?
+
+
+Hitman (Elimination)
+Welcome to Elimination Hitman.
+In this event, I will be using a command to randomly pick 1~5 player's igns for participants to type.
+The first person to type the names of the chosen players correctly will get to eliminate a player. 
+There will be a certain amount of warp-ins allowed, which will be listed in my chalk.
+Capitalization and spelling counts. Last 1-2 people win, 2 Event Points each.
+Any questions?
+
+Hitman (Points)
+Welcome to Hitman.
+In this event, I will be using a command to randomly pick 1~5 player's igns for participants to type.
+The first person to type the names of the chosen players correctly will win a point. 
+Capitalization and spelling counts. First player to a certain amount of points win.
+2 winners, 2 Event Points each. No need for commas.
+Any questions?
+
+Hitman (Team)
+Welcome to Team Hitman.
+In this event, I will randomly split (using a command) players into two teams. Team O (<----) and Team X (---->). If the teams are large, then players will be split into smaller groups to compete against teach other.
+I will be using a command to randomly pick 1~5 player's for participants to type.
+The first team to type the names of the chosen players correctly will win a point.
+The first team to 10 points wins.
+Capitalization, spelling, gender tags all count. The person with the most points wins. Each player in the winning team wins 1 Event Point.
+Any questions?
+
+iSpy
+Welcome to iSpy.
+I will describe someone in this map wearing a specific item(s) and players will have to type out the correct IGN of the person matching my description. 
+The first player who gets the correct IGN will earn (1) point.
+SPELLING, CAPITALIZATION, AND PUNCTUATION COUNT. 
+First four winners to 8 points win. 3/2/1/1.
+Any questions?
+
+King of Hitman
+Welcome to King of Hitman.
+Two people will be randomly chosen by a command to come up and compete.
+1~5 names will be chosen for players go type out.
+The goal is to beat your competitor by being the first to type out the stated IGNs correctly and in consecutive order.
+The loser is warped out and another person is randomly chosen to compete against the winner.
+If you win 3 times in a row, you have the choice to go down, warp someone in, choose someone to compete against or keep playing.
+You do not have to type the commas.  
+For example: The chosen players are: IGN, IGN, IGN
+You will type: IGN, IGN, IGN
+Spelling and capitalization counts.
+The last 3 players in the map win regardless if you’ve been chosen or not.
+2 Event Points each winner.
+Any questions?
+
+King of Name the Item
+Welcome to King of Name the Item. 
+Two people will be randomly chosen by a command to come up and compete against each other.
+I will spawn a random item (equip, use, cash shop, etc). First person to name the item correctly wins.
+Spelling, capitalization, punctuation, and gender tags COUNT.
+The loser is warped out and another person is randomly chosen to compete against the winner.
+If you win 3 times in a row, you have the choice to go down, warp someone in, choose someone to compete against or keep playing.
+The last 3 players in the map wins regardless if you’ve been chosen or not.
+2 Event Points each winner.
+Any questions?
+
+King of Rhyme
+Welcome to King of Rhyme.
+Two people will be randomly chosen by a command to come up and compete against each other.
+In this event, I will write out a word. The first player to type out a word that correctly rhymes with the word wins.
+For instance, let's say I type out "cat", the first person to say a correct word (fat, bat, sat, etc).
+Spelling and grammar count. Profanities and slang do not.
+****ONLY WORDS IN THE ENGLISH (American or British) DICTIONARY ARE ALLOWED****
+The loser is warped out and another person is randomly chosen to compete against the winner.
+If you win 3 times in a row, you have the choice to go down, warp someone in, choose someone to compete against or keep playing.
+The last 3 players in the map wins regardless if you’ve been chosen or not.
+2 Event Points each winner.
+Any questions?
+
+King of Reverse
+Welcome to King of Reverse.
+Two people will be randomly chosen by a command to come up and compete against each other.
+I will type a word and the first person to type it correctly in reverse (backwards) wins.
+For instance, I type out " Little". The correct answer would be "elttiL".
+Spelling, punctuation and capitalization count!!!!
+The loser is warped out and another person is randomized.
+If you win 3 in a row, you have the choice to go down, warp someone in, choose someone to compete against or keep playing.
+The last 3 players in the map wins regardless if you’ve been chosen or not.
+2 Event Points each winner.
+Any questions?
+
+King of Speed Typing
+Welcome to King of Speed Typing.
+Two people will be randomly chosen by a command to come up and compete.
+The loser is warped out and another person is randomized.
+If you win 3 in a row, you have the choice to go down, warp someone in, choose someone to compete against or keep playing.
+A command will be used to create a sentence or word.  If the sentence is too long, it will be said by me in All chat.
+The aim is to be the first one to type out the entire statement/word the way it is written.
+Punctuation, grammar and capitalization counts.
+The last 3 players in the map wins regardless if you’ve been chosen or not.
+2 Event Points each winner.
+Any questions?
+
+King of Trivia
+Welcome to King of Trivia.
+Two people will be randomly chosen by a command to come up and compete.
+The loser is warped out and another person is randomized.
+If you win 3 in a row, you have the choice to go down, warp someone in, choose someone to compete against or keep playing.
+This is a mixture of Name the Item, Server Trivia, Rhyme, Hitman, Blink, Unscramble, Speed Typing and Reverse.
+Punctuation, grammar and capitalization counts.
+The last 3 players in the map wins regardless if you’ve been chosen or not.
+2 Event Points each winner.
+Any questions?
+
+King of Unscramble
+Welcome to King of Unscramble.
+Two people will be randomly chosen by a command to come up and compete.
+The loser is warped out and another person is randomized.
+If you win 3 in a row, you have the choice to go down, warp someone in, choose someone to compete against or keep playing.
+I will be having a scrambled word in my chalkboard.
+The goal is to say the correct unscrambled form of the word.
+Eg.  The word is “riormr”
+You would type: “mirror”
+Only spelling counts.
+The last 3 players in the map wins regardless if you’ve been chosen or not.
+2 Event Points each winner.
+Any questions?
+
+Luck of the Draw
+Welcome to Luck of the Draw.
+I will be dropping an item.
+The first person to name the item comes up and breaks 5 boxes.
+If they get a _____________, they can randomly warp a random person out depending on how many dropped.
+If they get a __________, they are allowed to choose a person to warp in or out.
+If you do not get anything, you go back down and the event goes on.
+You are not allowed to loot the items.
+The last 3 players remaining wins the event.
+3 winners, 2 Event Points each.
+Any Questions?
+
+Name the Item (Elimination)
+Welcome to Elimination NTI (Name the Item). 
+The objective of this event is to be the first person to correctly type out the name of the item I drop. 
+The first person to accurately type the item will get to eliminate a player. 
+There will be a certain amount of warp-ins allowed, which will be listed in my chalk.
+Capitalization, spelling, gender tags all count. Last person remaining wins 2 Event Points.
+
+Name the Item (Points)
+Welcome to NTI (Name the Item). 
+The objective of this event is to be the first person to correctly type out the name of the item I drop. 
+The first person to accurately type the item will get a point. 
+Capitalization, spelling, gender tags all count. The person with the most points wins. 
+3 winners, 2 Event Points each.
+Any questions?
+
+Name the Item (Team)
+Welcome to NTI (Name the Item). 
+The objective of this event is to be the first person to correctly type out the name of the item I drop. 
+You will be split into two random teams using a randomized command.
+The first team to 10 points wins.
+If the teams are too big, you will be split into smaller teams to compete against each other.
+Capitalization, spelling, gender tags all count. The person with the most points wins. 
+3 winners, 2 Event Points each.
+Any questions?
+
+Red Light Green Light (RLGL)
+Welcome to Red Light Green Light (RLGL).
+Your goal is to reach the other wall on the other side of the map while I'll be seducing you back to the left. 
+To avoid being seduced, you need to sit on a chair. 
+Using skills or anything that will disable the seduction, using ALT + Enter to lag seduce yourself or anything else will lead to a disqualification. 
+First 1-3 people to reach the other side wins, 1 Event Point each.
+Any questions?
+
+Reverse (Points)
+Welcome to Reverse.
+A command will be used to create word or statement.  
+You are to type it out backwards - reversed.
+Eg.  The word was “Little”
+You would type: “elttiL”
+First 3 people to reach a certain amount of points win.
+Symbols, capitalization and spelling count.
+3 winners, 2 Event Points each winner.
+Any questions?
+
+Reverse (Elimination)
+Welcome to Reverse.
+A command will be used to create word or statement.  
+You are to type it out backwards - reversed.
+Eg.  The word was “Little”
+You would type: “elttiL”
+The first player to type it out correctly gets to warp someone out.
+This will continue until there are 3 players remaining.
+Only 5 warp ins are allowed.
+Symbols, capitalization and spelling count.
+3 winners, 2 Event Points each winner.
+Any questions?
+
+Rhyme (Points)
+Welcome to Rhyme.
+In this event, I will be saying a word and you will have to find a word that rhymes it. 
+For example: My word is Cat, and the first to come up with a rhyme for that wins a point. 
+Spelling and grammar counts, profanity and slang are not allowed.
+For example: if I say "Luck", don't say "Fuck". <- That’s an automatic disqualification. 
+Real words can only be allowed. (English dictionary wise)
+First 3 people to reach a certain amount of points win.
+3 winners, 2 Event Points each.
+Any questions?
+
+Rhyme (Elimination)
+Welcome to Rhyme.
+In this event, I will be saying a word and you will have to find a word that rhymes it. 
+For example: My word is Cat, and the first to come up with a rhyme for that wins a point. 
+Spelling and grammar counts, profanity and slang are not allowed.
+For example: if I say "Luck", don't say "Fuck". <- That’s an automatic disqualification. 
+Real words can only be allowed. (English dictionary wise)
+The first player to type it out correctly gets to warp someone out.
+This will continue until there are 3 players remaining.
+Only 5 warp ins are allowed.
+3 winners, 2 Event Points each.
+Any questions?
+ 
+Russian Roulette
+Welcome to Russian Roulette. 
+In this event, you will stand on one of these platforms.
+I will be using a command to randomly select a number.
+If you are on that number platform, you will be warped out.
+Last person standing wins, 1 Event Point each.
+Any questions? 
+hidden street stage 3 - twisted switcher map for this one* refer to top of event section.
+
+Scattergories
+This event is called Scattergories. 
+You will name an object/thing/etc relevant to the topic + letter on my chalkboard. 
+Correct Example: Animal - B "Bear". 
+Incorrect Example: Animal B - "Brick. 
+The answer must be relevant to the topic. 
+For example, you can't use "Pegasus" as an "animal" unless it's a mythical animal. 
+The player who answers first & correctly will earn a point. 
+First player to reach a certain amount of points win. 
+Total of 3 winners, 2 Event Points each.
+Any questions?
+
+Sit Down, Shut Up (Silencio)
+Welcome to Sit Down, Shut Up.
+This event is simple.
+For two hours, you are all required to sit down.
+You are not allowed to talk in All chat.
+You are not allowed to move.
+You are not allowed to use emotes.
+If you are caught doing the following, you will be warped out.
+Whoever survives the entire two hours wins 3 Event Points.
+Any questions?
+
+Speed Typing
+Welcome to Speed Typing.
+Your goal is to type what I put on chalkboard. 
+It has to match exactly how it's shown on the board. 
+Caps count. First person to type it out wins a point. 
+(Points) 
+First 3 people to reach a certain amount of points win.
+(Elimination)
+The first player to type it out correctly gets to warp someone out.
+This will continue until there are 3 players remaining.
+Only 5 warp ins are allowed.
+3 winners, 2 Event Point. 
+Any questions?
+
+Swim Tag
+This event is called Swim Tag. 
+Your goal is to swim around the map to avoid me tagging you.
+I will be using “Threaten” to kill the player(s) near me.
+You will be given some time to 'run' before the event starts. 
+Resurrection is NOT allowed in this event. You may use Teleport and Flash Jump.
+The last person that survives wins the event, 1 Event Point.
+Any questions?
+
+[Rounds] Tag (Solo) 
+Welcome to Tag (Rounds). 
+In this event, you will run around this map to avoid me from tagging you.
+I will be tagging with “Threaten”.
+You will be on your own in this event, no parties whatsoever. 
+Once you have been tagged, you are to stay dead for the remaining time of the event. 
+If you are caught being in a party and/or ressing other people, you're disqualified. 
+The number of rounds and type of tag will vary.
+Use @jointag to rejoin the event dead.  There is a 5 minute cooldown.
+Last person remaining wins the round. 1 Event Point per winner.
+Any questions?
+
+[Points] Tag (Solo) 
+Welcome to Tag (Points). 
+In this event, you will run around this map to avoid me from tagging you.
+I will be tagging with “Threaten”.
+You will be on your own in this event, no parties whatsoever. 
+Once you have been tagged, you are to stay dead for the remaining time of the event. 
+If you are caught being in a party and/or ressing other people, you're disqualified. 
+The number of rounds and type of tag will vary.
+Use @jointag to rejoin the event dead.  There is a 5 minute cooldown.
+I will not be using minimap.
+Last person remaining wins a point.  Get a total of 3 points to win. 2 Event Points per winner.
+Any questions?
+
+[Rounds] Tag (Partner)
+Welcome to Partner Tag (Rounds). 
+In this event, you will run around this map to avoid me from tagging you. 
+I will be tagging with “Threaten”.
+Parties of 1~2 only. You are allowed to solo.
+Resurrection is allowed. 
+Use @jointag to rejoin the event dead.  There is a 5 minute cooldown.
+I will not be using minimap.
+Last party remaining wins the round. 1 Event Point per winner.
+Any questions?
+
+[Points] Tag (Partner)
+Welcome to Partner Tag (Points). 
+In this event, you will run around this map to avoid me from tagging you. 
+I will be tagging with “Threaten”.
+Parties of 1~2 only. You are allowed to solo.
+Resurrection is allowed. 
+Use @jointag to rejoin the event dead.  There is a 5 minute cooldown.
+I will not be using minimap.
+Last party remaining wins a point.  
+Get a total of 3 points to win. 
+2 Event Points per winner.
+Any questions?
+
+[Rounds] Tag (Team)
+Welcome to Team Tag (Rounds). 
+In this event, you will run around this map to avoid me from tagging you.
+I will be tagging with “Threaten”.
+Parties of 1~3 only.  You are allowed to solo.
+Resurrection is allowed. 
+Use @jointag to rejoin the event dead.  There is a 5 minute cooldown.
+I will not be using minimap.
+Last team remaining wins the round, each winner earns 1 Event Point each.
+Any questions?
+
+[Points] Tag (Team)
+Welcome to Team Tag (Points). 
+In this event, you will run around this map to avoid me from tagging you.
+I will be tagging with “Threaten”.
+Parties of 1~3 only.  You are allowed to solo. 
+Resurrection is allowed. 
+Use @jointag to rejoin the event dead.  There is a 5 minute cooldown.
+I will not be using minimap.
+Last team remaining wins, each winner earns 2 Event Points each.
+Any questions?
+
+[Points] Double Tag (Team)
+Welcome to Team Tag (Points). 
+In this event, there are two taggers.
+We will be tagging with “Threaten”.
+The aim of the game is to run away from the tagger/s.
+Parties of 1~6 only.  You are allowed to solo. 
+Resurrection is allowed. 
+Use @jointag to rejoin the event dead.  There is a 5 minute cooldown.
+We will not be using minimap.
+Last team remaining wins the round, each winner earns 2 Event Points each.
+Any questions?
+
+[Team] Double Tag (Team)
+Welcome to Team Tag (Points). 
+In this event, there are two taggers.
+The aim of the game is to run away from the tagger/s.
+Parties of 1~6 only.  You are allowed to solo. 
+Resurrection is allowed. 
+Use @jointag to rejoin the event dead.  There is a 5 minute cooldown.
+Last team remaining wins a point.
+The first team to each 3 points wins the event.
+We will not be using minimap.
+Each winner earns 2 Event Points each.
+Any questions?
+
+Terrorist
+Welcome to Terrorist. 
+In this event, you will be jumping around the "O" side of the map in a clockwise manner. 
+I will be randomly bombing platforms and if you fall off, you cannot get back on.
+You cannot stop, wait, or skip platforms especially to try to dodge the bomb or else you're out. Last person remaining wins. 1 Event Point each.
+Questions?
+
+True Or False
+This event is True Or False.
+I will be stating an statement or naming an item.
+You will have to determine if my statement or the name of the item is true or false.
+You will be given 10 seconds to move to either the true side or the false side.
+If you think the statement or an item is true move to the ''O'' side.
+If you think the statement or an item is false move to the ''X'' side.
+If you’re not on a side or on the middle or top, you will be warped out with the incorrect side.
+Everything counts like Spelling, Gender Tags and ETC.
+Last 3 winners will earn 2 Event Points each.
+Any Questions?
+
+Tower Scattergories
+This event is called Tower Scattergories. 
+You will name an object/thing/etc relevant to the topic + letter on my chalkboard. 
+Correct Example: Animal - B "Bear". 
+Incorrect Example: Animal B - "Brick. 
+The answer must be relevant to the topic. 
+For example, you can't use "Pegasus" as an "animal" unless it's a mythical animal. 
+The player who answers first & correctly will go up a platform. 
+There will be a limit to how many players can go up, which will be decided later. 
+Total of 3 winners, 2 Event Points each.
+Any questions?
+
+Watermelon Race
+Welcome to the Watermelon Race.
+Your goal is to reach to the top of the map where I'll be standing. 
+Once you reach me, I will have a chalkboard with a question. 
+Beware of the tigers, you will be warped back to the start of the map.
+Hitting/attacking the tigers will not be allowed. 
+If you are caught doing the following, you will be warped out of the event.
+First one to reach the top and answers the question correctly wins. 1 Event Point each.
+Any questions?
+
+What the Fuck 
+Welcome to What the Fuck.
+You will be given statements to complete throughout the event. 
+If you are unable to complete it within the time specified, you will be warped out. 
+If the statement cannot be done legitimately or does not apply, do not do it. 
+If you do it, or attempt to do it, you will be warped out regardless of the time on the clock. Example: Everyone go to the left wall within 20 seconds. Anyone not at the left wall in 20 seconds will be warped out. 
+Example 2: Everyone swim to the top of the map. Anyone who tries to swim to the top of the map will be banned.
+3 winners, 2 Event Points each.
+Any questions?
+
+Word Rumble
+Welcome to Word Rumble.
+In this event, a person starts off with a word and you have to say a word that starts with the last letter of the previous person's word. 
+For example: I say Cat, and then next person says Tea and so on. 
+Names/places, typos, curse words, and repeated words will be not allowed. 
+If you are caught saying any of the following, you'll be out. 
+If you are caught repeating a word, you're also out. 
+Last person remaining wins. 3/2/1 Event Point.
+Any questions? 
+
+
+Reverse Tag
+Welcome to Reverse Tag.
+In this event, you will run around this map to avoid me from tagging you while reversed.
+I will be tagging with "Threaten".
+You will be on your own in this event, no parties, no resurrection.
+Once you have been tagged, you are to stay dead for the remaining time of the event.
+If you are caught being in a party and/or ressing other people, you will be jailed.
+Any questions?
+
+Guess the Mob
+Welcome to Guess the Mob. 
+In this event, I will be spawning a variety monsters. 
+I will give a clue and you will use that to guess which mob I am selecting. 
+For instance, say I have a red ribbon pig and a blue snail, and I say the clue like "red", the first player in like will pick an animal that they believe matches the criteria and guess it. 
+If they get it right, they may warp someone out, if they get it wrong, the next player in line may guess. 
+If none of the players guess correctly, I will give another clue. 
+At the end of that round, if no one guesses correctly, I will move onto another clue/mob. 
+Three winners, 4/3/2. 
+Any questions?
+
+Suicide Bomber
+Welcome to Suicide Bomber.
+A random person will be chosen as the bomber.
+You will have 10 seconds to run away from them.
+They will be killed + a bomb will spawn on them. If you are hit by the bomb, you are out.
+If the suicide bomber hits nobody, they are out.
+You must remain on the O platforms.
+The last 1-3 players remaining will earn 1 Event Point each.
+Any Questions?
+
+Dodge Bob
+Welcome to Dodge Bob.
+Your goal in this event is to make it to the other side of the map without touching the Bob.
+If you come in contact with the Bob, you will die.
+There will be a timer for 1 minute.
+When the timer ends, the map is killed.
+1-3 players who are furthest from the wall will be warped out each time until there are only 1-3 players left.
+There will be 1-3 winners, 1 Event Point each.
+
+Tip Top Tower
+Welcome to Tip Top Tower.
+Your objective is to reach Platform 2.
+If you come into contact with a Necki, you will die.
+The event gates will be left open, Use @joinevent to return to the map if you die.
+The first 3 people to reach the top will win.
+There will be a timer of 3 minutes.
+If no one wins within the 3 minutes, the round will restart.
+Each winner will receive 1 Event Point.
