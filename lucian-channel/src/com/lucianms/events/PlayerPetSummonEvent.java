@@ -1,7 +1,6 @@
 package com.lucianms.events;
 
 import com.lucianms.client.MapleCharacter;
-import com.lucianms.client.SkillFactory;
 import com.lucianms.client.inventory.MapleInventoryType;
 import com.lucianms.client.inventory.MaplePet;
 import com.lucianms.nio.receive.MaplePacketReader;
@@ -73,7 +72,7 @@ public class PlayerPetSummonEvent extends PacketEvent {
         if (player.getPetIndex(pet) != -1) {
             player.unequipPet(pet, true);
         } else {
-            if (player.getSkillLevel(SkillFactory.getSkill(8)) == 0 && player.getPet(0) != null) {
+            if (player.getSkillLevel(8) == 0 && player.getPet(0) != null) {
                 player.unequipPet(player.getPet(0), false);
             }
             if (leader) {
