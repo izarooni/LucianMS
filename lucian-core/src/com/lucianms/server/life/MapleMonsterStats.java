@@ -34,7 +34,7 @@ import java.util.*;
 public class MapleMonsterStats {
 
     private int exp;
-    private int hp;
+    private long hp;
     private int mp;
     private int level;
     private int PADamage;
@@ -126,11 +126,11 @@ public class MapleMonsterStats {
         this.exp = exp;
     }
 
-    public int getHp() {
+    public long getHp() {
         return hp;
     }
 
-    public void setHp(int hp) {
+    public void setHp(long hp) {
         this.hp = hp;
     }
 

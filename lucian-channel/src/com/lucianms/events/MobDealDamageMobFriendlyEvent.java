@@ -1,9 +1,8 @@
 package com.lucianms.events;
 
 import com.lucianms.client.MapleCharacter;
-import com.lucianms.nio.receive.MaplePacketReader;
-import com.lucianms.events.PacketEvent;
 import com.lucianms.io.scripting.event.EventInstanceManager;
+import com.lucianms.nio.receive.MaplePacketReader;
 import com.lucianms.server.life.MapleMonster;
 import tools.MaplePacketCreator;
 import tools.Randomizer;
@@ -33,7 +32,10 @@ public class MobDealDamageMobFriendlyEvent extends PacketEvent {
         if (dMonster == null || aMonster == null) {
             return null;
         }
-        int damage = Randomizer.nextInt(((dMonster.getMaxHp() / 13 + dMonster.getPADamage() * 10)) * 2 + 500) / 10; // Beng's forumla.
+
+        int localMaxHP = (int) Math.min(Integer.MAX_VALUE, dMonster.getMaxHp());
+
+        int damage = Randomizer.nextInt((((localMaxHP / 13) + (dMonster.getPADamage() * 10)) * 2) + 500) / 10; // Beng's forumla.
         if (dMonster.getId() == 9300061) { // Moon Bunny
             if (dMonster.getHp() - damage < 1) {
                 dMonster.getMap().broadcastMessage(MaplePacketCreator.serverNotice(6, "The Moon Bunny went home because he was sick."));
@@ -43,7 +45,13 @@ public class MobDealDamageMobFriendlyEvent extends PacketEvent {
             }
             dMonster.getMap().addBunnyHit();
         }
-        dMonster.getMap().broadcastMessage(MaplePacketCreator.MobDamageMobFriendly(dMonster, damage), dMonster.getPosition());
+
+        dMonster.setHp(dMonster.getHp() - damage);
+        if (dMonster.getHp() < 0) {
+            dMonster.setHp(0);
+        }
+        int localHP = (int) Math.min(Integer.MAX_VALUE, dMonster.getHp());
+        dMonster.getMap().broadcastMessage(MaplePacketCreator.MobDamageMobFriendly(dMonster, damage, localHP, localMaxHP), dMonster.getPosition());
         getClient().announce(MaplePacketCreator.enableActions());
         return null;
     }

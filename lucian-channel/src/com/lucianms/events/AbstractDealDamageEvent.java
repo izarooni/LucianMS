@@ -75,7 +75,7 @@ public abstract class AbstractDealDamageEvent extends PacketEvent {
             if (skillLevel == 0) {
                 return null;
             }
-            if (display > 80) { //Hmm
+            if (display > 80) {
                 if (!theSkill.getAction()) {
                     return null;
                 }
@@ -112,32 +112,6 @@ public abstract class AbstractDealDamageEvent extends PacketEvent {
                         player.getClient().announce(MaplePacketCreator.enableActions());
                     }
                 }
-//                int mobCount = attackEffect.getMobCount();
-//                if (attack.skill == DawnWarrior.FINAL_ATTACK
-//                        || attack.skill == Page.FINAL_ATTACK_BW
-//                        || attack.skill == Page.FINAL_ATTACK_SWORD
-//                        || attack.skill == Fighter.FINAL_ATTACK_SWORD
-//                        || attack.skill == Fighter.FINAL_ATTACK_AXE
-//                        || attack.skill == Spearman.FINAL_ATTACK_SPEAR
-//                        || attack.skill == Spearman.FINAL_ATTACK_POLE_ARM
-//                        || attack.skill == WindArcher.FINAL_ATTACK
-//                        || attack.skill == Hunter.FINAL_ATTACK_BOW
-//                        || attack.skill == Crossbowman.FINAL_ATTACK) {
-//                    mobCount = 15;//:(
-//                }
-//
-//                if (attack.skill == Aran.HIDDEN_FULL_SWING_DOUBLE
-//                        || attack.skill == Aran.HIDDEN_FULL_SWING_TRIPLE
-//                        || attack.skill == Aran.HIDDEN_OVER_SWING_DOUBLE
-//                        || attack.skill == Aran.HIDDEN_OVER_SWING_TRIPLE) {
-//                    mobCount = 12;
-//                }
-
-//                if (attack.numAttacked > mobCount) {
-//                    Cheater.CheatEntry entry = player.getCheater().getCheatEntry(Cheats.ConcurrentAttacks);
-//                    entry.incrementCheatCount();
-//                    entry.announce(player.getClient(), 10000, "[{}] {} attacking too many monsters at once ({} monsters, should be {}) skill: {}", entry.cheatCount, player.getName(), attack.numAttacked, attackEffect.getMobCount(), attack.skill);
-//                }
             }
             if (!player.isAlive()) {
                 return;
@@ -207,7 +181,12 @@ public abstract class AbstractDealDamageEvent extends PacketEvent {
                             }
                         }
                     } else if (attack.skill == Marauder.ENERGY_DRAIN || attack.skill == ThunderBreaker.ENERGY_DRAIN || attack.skill == NightWalker.VAMPIRE || attack.skill == Assassin.DRAIN) {
-                        player.addHP(Math.min(monster.getMaxHp(), Math.min((int) ((double) totDamage * (double) SkillFactory.getSkill(attack.skill).getEffect(player.getSkillLevel(SkillFactory.getSkill(attack.skill))).getX() / 100.0), player.getMaxHp() / 2)));
+                        Optional<SkillEntry> skill = player.getSkill(attack.skill);
+                        if (skill.isPresent()) {
+                            int maxHP = (int) Math.max(MapleCharacter.MAX_HEALTH, monster.getMaxHp());
+                            long localDamage = totDamage * SkillFactory.getSkill(attack.skill).getEffect(skill.get().getLevel()).getX() / 100;
+                            player.addHP((int) Math.min(maxHP, Math.min(localDamage, player.getHp() / 2)));
+                        }
                     } else if (attack.skill == Bandit.STEAL) {
                         Skill steal = SkillFactory.getSkill(Bandit.STEAL);
                         if (monster.getStolen().size() < 1) { // One steal per mob <3
@@ -345,12 +324,12 @@ public abstract class AbstractDealDamageEvent extends PacketEvent {
                         map.damageMonster(player, monster, monster.getHp());
                     } else if (attack.isHH) {
                         int HHDmg = (player.calculateMaxBaseDamage(player.getTotalWatk()) * (SkillFactory.getSkill(Paladin.HEAVENS_HAMMER).getEffect(player.getSkillLevel(SkillFactory.getSkill(Paladin.HEAVENS_HAMMER))).getDamage() / 100));
-                        map.damageMonster(player, monster, (int) (Math.floor(Math.random() * (HHDmg / 5) + HHDmg * .8)));
+                        map.damageMonster(player, monster, (int) (Math.floor(Math.random() * (HHDmg / 5f) + HHDmg * .8)));
                     } else if (attack.isTempest && !monster.isBoss()) {
                         map.damageMonster(player, monster, monster.getHp());
                     } else if (attack.isTempest) {
                         int TmpDmg = (player.calculateMaxBaseDamage(player.getTotalWatk()) * (SkillFactory.getSkill(Aran.COMBO_TEMPEST).getEffect(player.getSkillLevel(SkillFactory.getSkill(Aran.COMBO_TEMPEST))).getDamage() / 100));
-                        map.damageMonster(player, monster, (int) (Math.floor(Math.random() * (TmpDmg / 5) + TmpDmg * .8)));
+                        map.damageMonster(player, monster, (int) (Math.floor(Math.random() * (TmpDmg / 5f) + TmpDmg * .8)));
                     } else {
                         map.damageMonster(player, monster, totDamageToOneMonster);
                     }
@@ -372,7 +351,7 @@ public abstract class AbstractDealDamageEvent extends PacketEvent {
                         }
                     }
                     Equip weapon = (Equip) player.getInventory(MapleInventoryType.EQUIPPED).getItem((short) -11);
-                    if (weapon != null && weapon.isRegalia() && !monster.isDamagedOvertime()) {
+                    if (weapon != null && weapon.isRegalia() && monster.getDamageTask() == null) {
                         monster.applyDamageOvertime(player, 5 * 1000);
                     }
                 }
@@ -471,7 +450,7 @@ public abstract class AbstractDealDamageEvent extends PacketEvent {
             ret.speed = reader.readByte();
             reader.skip(4);
         }
-        int calcDmgMax = 1;
+        long calcDmgMax;
 
         // Find the base damage to base futher calculations on.
         // Several skills have their own formula in this section.
@@ -540,13 +519,13 @@ public abstract class AbstractDealDamageEvent extends PacketEvent {
             if (comboBuff > 6) {
                 // Advanced Combo
                 MapleStatEffect ceffect = SkillFactory.getSkill(advcomboid).getEffect(player.getSkillLevel(advcomboid));
-                calcDmgMax = (int) Math.floor(calcDmgMax * (ceffect.getDamage() + 50) / 100 + 0.20 + (comboBuff - 5) * 0.04);
+                calcDmgMax = (int) Math.floor(calcDmgMax * (ceffect.getDamage() + 50) / 100f + 0.20 + (comboBuff - 5) * 0.04);
             } else {
                 // Normal Combo
                 int skillLevel = player.getSkillLevel(oid);
                 if (skillLevel > 0) {
                     MapleStatEffect ceffect = SkillFactory.getSkill(oid).getEffect(skillLevel);
-                    calcDmgMax = (int) Math.floor(calcDmgMax * (ceffect.getDamage() + 50) / 100 + Math.floor((comboBuff - 1) * (skillLevel / 6)) / 100);
+                    calcDmgMax = (int) Math.floor(calcDmgMax * (ceffect.getDamage() + 50) / 100f + Math.floor((comboBuff - 1) * (skillLevel / 6)) / 100);
                 } else {
                     getLogger().info("Invalid skill level {} for skill {}", skillLevel, oid);
                 }
@@ -651,12 +630,7 @@ public abstract class AbstractDealDamageEvent extends PacketEvent {
                         calcDmgMax *= 1.5;
                     }
                 }
-                if (ret.skill == FPWizard.POISON_BREATH || ret.skill == FPMage.POISON_MIST || ret.skill == FPArchMage.FIRE_DEMON || ret.skill == ILArchMage.ICE_DEMON) {
-                    if (monster != null) {
-                        // Turns out poison is completely server side, so I don't know why I added this. >.<
-                        //calcDmgMax = monster.getHp() / (70 - chr.getSkillLevel(skill));
-                    }
-                } else if (ret.skill == Hermit.SHADOW_WEB) {
+                if (ret.skill == Hermit.SHADOW_WEB) {
                     if (monster != null) {
                         calcDmgMax = monster.getHp() / (50 - player.getSkillLevel(skill));
                     }
@@ -664,16 +638,15 @@ public abstract class AbstractDealDamageEvent extends PacketEvent {
             }
 
             for (int j = 0; j < ret.numDamage; j++) {
-                int damage = reader.readInt();
-                int hitDmgMax = calcDmgMax;
+                int damage = reader.readInt() & 0x7FFFFFFF;
+                long hitDmgMax = calcDmgMax;
                 if (ret.skill == Buccaneer.BARRAGE) {
                     if (j > 3) {
                         hitDmgMax *= Math.pow(2, (j - 3));
                     }
                 }
                 if (shadowPartner) {
-                    // For shadow partner, the second half of the hits only do 50% damage. So calc that
-                    // in for the crit effects.
+                    // For shadow partner, the second half of the hits only do 50% damage. So calc that in for the crit effects.
                     if (j >= ret.numDamage / 2) {
                         hitDmgMax *= 0.5;
                     }

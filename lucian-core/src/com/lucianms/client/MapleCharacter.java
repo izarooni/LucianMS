@@ -76,6 +76,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Di
 
     public static final int[] FISHING_MAPS = {749050500, 749050501, 749050502};
     public static final int[] FISHING_CHAIRS = {3011000, 3010151, 3010184};
+    public static final int MAX_HEALTH = 30000;
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MapleCharacter.class);
     private static final String LEVEL_200 = "[Congrats] %s has reached Level 200! Congratulate %s on such an amazing achievement!";
@@ -5301,7 +5302,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Di
         // damage all monsters in the screen
         for (MapleMapObject object : getMap().getMapObjectsInRange(getPosition(), 100000, Collections.singletonList(MapleMapObjectType.MONSTER))) {
             MapleMonster monster = (MapleMonster) object;
-            int damage = monster.getMaxHp();
+            int damage = calculateMaxBaseDamage(getTotalWatk());
             getMap().broadcastMessage(MaplePacketCreator.damageMonster(monster.getObjectId(), damage));
             getMap().damageMonster(this, monster, damage);
         }

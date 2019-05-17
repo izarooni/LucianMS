@@ -35,6 +35,7 @@ import com.lucianms.server.maps.MapleMap;
 import com.lucianms.server.maps.MapleMapObject;
 import com.lucianms.server.maps.MapleMapObjectType;
 import com.lucianms.server.world.MapleParty;
+import tools.Functions;
 import tools.MaplePacketCreator;
 import tools.Pair;
 import tools.Randomizer;
@@ -49,7 +50,8 @@ import java.util.concurrent.locks.ReentrantLock;
 
 public class MapleMonster extends AbstractLoadedMapleLife {
 
-    private int hp, mp;
+    private long hp;
+    private int mp;
     private int team;
     private int venomMultiplier;
     private boolean controllerHasAggro;
@@ -68,7 +70,7 @@ public class MapleMonster extends AbstractLoadedMapleLife {
     private final HashMap<Integer, AtomicLong> takenDamage = new HashMap<>();
     private boolean fake;
     private boolean dropsDisabled;
-    private boolean damagedOvertime;
+    private Task damageTask;
 
     public ReentrantLock monsterLock = new ReentrantLock();
 
@@ -103,27 +105,27 @@ public class MapleMonster extends AbstractLoadedMapleLife {
         return dropsDisabled;
     }
 
-    public boolean isDamagedOvertime() {
-        return damagedOvertime;
+    public Task getDamageTask() {
+        return damageTask;
     }
 
-    public void setDamagedOvertime(boolean damagedOvertime) {
-        this.damagedOvertime = damagedOvertime;
+    public void setDamageTask(Task damageTask) {
+        this.damageTask = damageTask;
     }
 
     public void setMap(MapleMap map) {
         this.map = map;
     }
 
-    public int getHp() {
+    public long getHp() {
         return hp;
     }
 
-    public void setHp(int hp) {
+    public void setHp(long hp) {
         this.hp = hp;
     }
 
-    public int getMaxHp() {
+    public long getMaxHp() {
         if (overrideStats != null && overrideStats.getHp() > 0) {
             return overrideStats.getHp();
         }
@@ -240,7 +242,7 @@ public class MapleMonster extends AbstractLoadedMapleLife {
     }
 
     public void heal(int hp, int mp) {
-        int hp2Heal = getHp() + hp;
+        long hp2Heal = getHp() + hp;
         int mp2Heal = getMp() + mp;
         if (hp2Heal >= getMaxHp()) {
             hp2Heal = getMaxHp();
@@ -309,7 +311,7 @@ public class MapleMonster extends AbstractLoadedMapleLife {
             return;
         }
         int exp = getExp();
-        int totalHealth = getMaxHp();
+        long totalHealth = getMaxHp();
         Map<Integer, Integer> partyExp = new HashMap<>();
         // 80% of pool is split amongst all the attackers
         for (Entry<Integer, AtomicLong> entry : takenDamage.entrySet()) {
@@ -523,7 +525,9 @@ public class MapleMonster extends AbstractLoadedMapleLife {
     }
 
     public byte[] makeBossHPBarPacket() {
-        return MaplePacketCreator.showBossHP(getId(), getHp(), getMaxHp(), getTagColor(), getTagBgColor());
+        int hp = (int) Math.max(getHp(), Integer.MAX_VALUE);
+        int maxHp = (int) Math.max(getMaxHp(), Integer.MAX_VALUE);
+        return MaplePacketCreator.showBossHP(getId(), hp, maxHp, getTagColor(), getTagBgColor());
     }
 
     public boolean hasBossHPBar() {
@@ -602,16 +606,18 @@ public class MapleMonster extends AbstractLoadedMapleLife {
         MonsterStatusEffect statusEffect = new MonsterStatusEffect(Map.of(MonsterStatus.POISON, 1), skill, mSkill, true);
         applyStatus(from, statusEffect, false, duration);
 
-        setDamagedOvertime(true);
         int calcDamage = (int) (from.calculateMaxBaseDamage(from.getTotalWatk()) * 0.75);
-        Task damageTask = TaskExecutor.createRepeatingTask(new DamageTask(calcDamage, from, null, null, 1), 1000);
-        TaskExecutor.createTask(new Runnable() {
-            @Override
-            public void run() {
-                damageTask.cancel();
-                setDamagedOvertime(false);
-            }
-        }, duration);
+        if (calcDamage > 0) {
+            Runnable cancelTask = new Runnable() {
+                @Override
+                public void run() {
+                    Functions.requireNotNull(getDamageTask(), Task::cancel);
+                    setDamageTask(null);
+                }
+            };
+            Task damageTask = TaskExecutor.createRepeatingTask(new DamageTask(calcDamage, from, null, cancelTask, 1), 1000);
+            setDamageTask(damageTask);
+        }
     }
 
     public boolean applyStatus(MapleCharacter from, final MonsterStatusEffect status, boolean poison, long duration) {
@@ -664,12 +670,10 @@ public class MapleMonster extends AbstractLoadedMapleLife {
             if (oldEffect != null) {
                 oldEffect.removeActiveStatus(stat);
                 if (oldEffect.getStati().isEmpty()) {
-                    if (oldEffect.getCancelTask() != null) {
-                        oldEffect.getCancelTask().cancel();
-                    }
-                    if (oldEffect.getDamageTask() != null) {
-                        oldEffect.getDamageTask().cancel();
-                    }
+                    Functions.requireNotNull(oldEffect.getCancelTask(), Task::cancel);
+                    oldEffect.setCancelTask(null);
+                    Functions.requireNotNull(oldEffect.getDamageTask(), Task::cancel);
+                    oldEffect.setDamageTask(null);
                 }
             }
         }
@@ -689,7 +693,8 @@ public class MapleMonster extends AbstractLoadedMapleLife {
                     stati.remove(stat);
                 }
                 setVenomMulti(0);
-                status.getDamageTask().cancel();
+                Functions.requireNotNull(status.getDamageTask(), Task::cancel);
+                status.setDamageTask(null);
             }
         };
         if (poison) {
@@ -891,11 +896,11 @@ public class MapleMonster extends AbstractLoadedMapleLife {
     private final class DamageTask implements Runnable {
 
         private final int dealDamage;
-        private final MapleCharacter chr;
-        private final MonsterStatusEffect status;
-        private final Runnable cancelTask;
+        private MapleCharacter chr;
+        private MonsterStatusEffect status;
+        private Runnable cancelTask;
         private final int type;
-        private final MapleMap map;
+        private MapleMap map;
 
         private DamageTask(int dealDamage, MapleCharacter chr, MonsterStatusEffect status, Runnable cancelTask, int type) {
             this.dealDamage = dealDamage;
@@ -908,18 +913,23 @@ public class MapleMonster extends AbstractLoadedMapleLife {
 
         @Override
         public void run() {
-            final int localHP = hp;
+            long localHP = getHp();
+            int localDamage = dealDamage;
 
-            if (localHP > 1 && dealDamage > 0) {
-                int damage = dealDamage;
-                if (localHP - dealDamage < 1) {
-                    // damage run would kill the monster
-                    damage = (hp - 1);
+            if (localHP > 1) {
+                if (dealDamage > localHP) {
+                    localDamage = (int) (localHP - 1);
                 }
-                damage(chr, damage);
+                damage(chr, localDamage);
                 if (type == 1) {
-                    map.broadcastMessage(MaplePacketCreator.damageMonster(getObjectId(), damage), getPosition());
+                    map.broadcastMessage(MaplePacketCreator.damageMonster(getObjectId(), localDamage), getPosition());
                 }
+            } else {
+                Functions.requireNotNull(cancelTask, Runnable::run);
+                // remove references
+                chr = null;
+                status = null;
+                map = null;
             }
         }
     }

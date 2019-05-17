@@ -87,7 +87,7 @@ public final class LifeMoveEvent extends PacketEvent {
             int random = Randomizer.nextInt(monster.getNoSkills());
             Pair<Integer, Integer> skillToUse = monster.getSkills().get(random);
             toUse = MobSkillFactory.getMobSkill(skillToUse.getLeft(), skillToUse.getRight());
-            int percHpLeft = (monster.getHp() / monster.getMaxHp()) * 100;
+            int percHpLeft = (int) ((monster.getHp() / monster.getMaxHp()) * 100);
             if (player.getOccupation() != null && player.getOccupation().getType() == Occupation.Type.Demon) {
                 toUse = null;
             }

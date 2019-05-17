@@ -157,11 +157,16 @@ public final class PlayerTakeDamageEvent extends PacketEvent {
                     int jobid = player.getJob().getId();
                     if (jobid == 212 || jobid == 222 || jobid == 232) {
                         int id = jobid * 10000 + 1002;
-                        Skill manaReflectSkill = SkillFactory.getSkill(id);
-                        if (player.isBuffFrom(MapleBuffStat.MANA_REFLECTION, manaReflectSkill) && player.getSkillLevel(manaReflectSkill) > 0 && manaReflectSkill.getEffect(player.getSkillLevel(manaReflectSkill)).makeChanceResult()) {
-                            int bouncedamage = (damage * manaReflectSkill.getEffect(player.getSkillLevel(manaReflectSkill)).getX() / 100);
+                        Skill mrSkill = SkillFactory.getSkill(id);
+                        byte mrSkillLevel = player.getSkillLevel(mrSkill);
+                        MapleStatEffect mrEffect = mrSkill.getEffect(mrSkillLevel);
+
+                        if (mrSkillLevel > 0
+                                && player.isBuffFrom(MapleBuffStat.MANA_REFLECTION, mrSkill)
+                                && mrEffect.makeChanceResult()) {
+                            int bouncedamage = (damage * mrEffect.getX() / 100);
                             if (bouncedamage > attacker.getMaxHp() / 5) {
-                                bouncedamage = attacker.getMaxHp() / 5;
+                                bouncedamage = (int) (attacker.getMaxHp() / 5);
                             }
                             map.damageMonster(player, attacker, bouncedamage);
                             map.broadcastMessage(player, MaplePacketCreator.damageMonster(objectId, bouncedamage), true);
@@ -188,12 +193,15 @@ public final class PlayerTakeDamageEvent extends PacketEvent {
         }
         cheatEntry.record();
         if (damage > 0 && !player.isHidden()) {
-            if (attacker != null && damageFrom == -1 && player.getBuffedValue(MapleBuffStat.POWERGUARD) != null) { // PG works on bosses, but only at half of the rate.
-                int bouncedamage = (int) (damage * (player.getBuffedValue(MapleBuffStat.POWERGUARD).doubleValue() / (attacker.isBoss() ? 200 : 100)));
+            Integer buffPowerGuard = player.getBuffedValue(MapleBuffStat.POWERGUARD);
+            if (attacker != null && damageFrom == -1 && buffPowerGuard != null) { // PG works on bosses, but only at half of the rate.
+                long bouncedamage = (int) (damage * (buffPowerGuard.doubleValue() / (attacker.isBoss() ? 200 : 100)));
                 bouncedamage = Math.min(bouncedamage, attacker.getMaxHp() / 10);
                 damage -= bouncedamage;
                 map.damageMonster(player, attacker, bouncedamage);
-                map.broadcastMessage(player, MaplePacketCreator.damageMonster(objectId, bouncedamage), false, true);
+
+                int localDamage = (int) Math.min(Integer.MAX_VALUE, bouncedamage);
+                map.broadcastMessage(player, MaplePacketCreator.damageMonster(objectId, localDamage), false, true);
                 player.checkMonsterAggro(attacker);
             }
             if (attacker != null && damageFrom == -1 && player.getBuffedValue(MapleBuffStat.BODY_PRESSURE) != null) {

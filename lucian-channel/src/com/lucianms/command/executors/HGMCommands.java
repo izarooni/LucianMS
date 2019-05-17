@@ -204,8 +204,8 @@ public class HGMCommands extends CommandExecutor {
             if (args.length() > 0) {
                 Integer monsterId = args.parseNumber(0, int.class);
                 Integer amount = args.parseNumber(1, 1, int.class);
-                Float hp = args.parseNumber(args.findArg("hp"), float.class);
-                Float exp = args.parseNumber(args.findArg("exp"), float.class);
+                Long hp = args.parseNumber(args.findArg("hp"), long.class);
+                Integer exp = args.parseNumber(args.findArg("exp"), int.class);
                 String error = args.getFirstError();
                 if (error != null) {
                     player.dropMessage(5, error);
@@ -219,11 +219,11 @@ public class HGMCommands extends CommandExecutor {
                     }
                     if (args.length() > 3) {
                         MapleMonsterStats stats = new MapleMonsterStats();
-                        stats.setHp(hp == null ? monster.getHp() : hp.intValue());
+                        stats.setHp(hp == null ? monster.getHp() : hp);
                         if (exp != null && exp < 0) {
                             exp = monster.getExp() * Math.abs(exp);
                         }
-                        stats.setExp(exp == null ? monster.getExp() : exp.intValue());
+                        stats.setExp(exp == null ? monster.getExp() : exp);
                         monster.setOverrideStats(stats);
                     }
                     monster.setFh(player.getFoothold());

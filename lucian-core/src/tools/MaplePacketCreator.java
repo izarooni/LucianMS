@@ -149,20 +149,14 @@ public class MaplePacketCreator {
         return mplew.getPacket();
     }
 
-    public static byte[] MobDamageMobFriendly(MapleMonster mob, int damage) {
+    public static byte[] MobDamageMobFriendly(MapleMonster mob, int damage, int hp, int maxHP) {
         final MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
         mplew.writeShort(SendOpcode.DAMAGE_MONSTER.getValue());
         mplew.writeInt(mob.getObjectId());
         mplew.write(1); // direction ?
         mplew.writeInt(damage);
-        int remainingHp = mob.getHp() - damage;
-        if (remainingHp <= 1) {
-            remainingHp = 0;
-            mob.getMap().removeMapObject(mob);
-        }
-        mob.setHp(remainingHp);
-        mplew.writeInt(remainingHp);
-        mplew.writeInt(mob.getMaxHp());
+        mplew.writeInt(hp);
+        mplew.writeInt(maxHP);
         return mplew.getPacket();
     }
 

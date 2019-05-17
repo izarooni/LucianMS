@@ -40,7 +40,7 @@ public class AEmergencyTrial extends GAutoEvent {
     private HashMap<Integer, Integer> spawnLocations = new HashMap<>();
     private HashMap<Integer, Integer> returnLocations = new HashMap<>();
 
-    private int bonusExperience = 0;
+    private long bonusExperience = 0;
     private long endTimestamp;
 
     private static byte[] createNpc(MapleNPC life, Point location) {
@@ -143,8 +143,8 @@ public class AEmergencyTrial extends GAutoEvent {
         return returnLocations.remove(playerID);
     }
 
-    public int getExpGain(int level) {
-        return (int) ((ExpTable.getExpNeededForLevel(level) * 0.35) + bonusExperience);
+    public long getExpGain(int level) {
+        return (long) ((ExpTable.getExpNeededForLevel(level) * 0.35) + bonusExperience);
     }
 
     private void returnPlayers(MapleChannel channel) {
@@ -170,7 +170,7 @@ public class AEmergencyTrial extends GAutoEvent {
                         map.killAllMonsters();
                         if (monster.isAlive()) {
                             // 100% - HP loss as percentage
-                            int dealt = 100 - (((100 / monster.getMaxHp()) * monster.getHp()) / 100);
+                            long dealt = 100 - (((100 / monster.getMaxHp()) * monster.getHp()) / 100);
                             // give exp based on damage done to boss
                             bonusExperience = (monster.getExp() * dealt);
                         }
