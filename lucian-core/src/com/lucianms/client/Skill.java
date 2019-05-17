@@ -21,19 +21,21 @@
 */
 package com.lucianms.client;
 
-import java.util.ArrayList;
-import java.util.List;
 import com.lucianms.server.MapleStatEffect;
 import com.lucianms.server.life.Element;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class Skill {
+
     public int id;
-    public List<MapleStatEffect> effects = new ArrayList<>();
     public Element element;
-    public int animationTime;
     public int job;
     public int weapon;
     public boolean action;
+    List<MapleStatEffect> effects = new ArrayList<>();
+    int animationTime;
     boolean hidden = false;
 
     public Skill(int id) {
@@ -49,18 +51,22 @@ public class Skill {
         return effects.get(level - 1);
     }
 
-    public int getMaxLevel() {
-        return effects.size();
+    public byte getMaxLevel() {
+        return (byte) effects.size();
+    }
+
+    public int getJob() {
+        return job;
     }
 
     public boolean isFourthJob() {
         if (job == 2212) {
-        	return false;
+            return false;
         }
         if (id == 22170001 || id == 22171003 || id == 22171004 || id == 22181002 || id == 22181003) {
-        	return true;
+            return true;
         }
-    	return job % 10 == 2;
+        return job % 10 == 2;
     }
 
     public Element getElement() {

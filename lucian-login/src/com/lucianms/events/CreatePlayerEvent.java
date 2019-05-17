@@ -20,7 +20,7 @@ import java.sql.SQLException;
 /**
  * @author izarooni
  */
-public class AccountPlayerCreateEvent extends PacketEvent {
+public class CreatePlayerEvent extends PacketEvent {
 
     private static int[] IDs = {
             1302000, 1312004, 1322005, 1442079,// weapons
@@ -47,7 +47,7 @@ public class AccountPlayerCreateEvent extends PacketEvent {
     private int hair, face, skin;
     private int top, bottom, shoes, weapon;
 
-    public AccountPlayerCreateEvent() {
+    public CreatePlayerEvent() {
         onPost(new Runnable() {
             @Override
             public void run() {

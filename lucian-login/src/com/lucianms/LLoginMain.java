@@ -1,5 +1,6 @@
 package com.lucianms;
 
+import com.lucianms.client.SkillFactory;
 import com.lucianms.commands.LoginConsoleCommands;
 import com.lucianms.events.*;
 import com.lucianms.io.Config;
@@ -30,6 +31,8 @@ public class LLoginMain {
         TaskExecutor.initPoolSize(1);
         Server.createServer();
         Config config = Server.getConfig();
+
+        SkillFactory.createCache();
 
         String address = config.getString("ServerHost");
         Long port = config.getNumber("LoginBasePort");
@@ -76,7 +79,7 @@ public class LLoginMain {
         RecvOpcode.PICK_ALL_CHAR.clazz = PickCharHandler.class;
         RecvOpcode.CHAR_SELECT.clazz = AccountPlayerSelectEvent.class;
         RecvOpcode.CHECK_CHAR_NAME.clazz = AccountPlayerCreateUsernameCheckEvent.class;
-        RecvOpcode.CREATE_CHAR.clazz = AccountPlayerCreateEvent.class;
+        RecvOpcode.CREATE_CHAR.clazz = CreatePlayerEvent.class;
         RecvOpcode.DELETE_CHAR.clazz = AccountPlayerDeleteEvent.class;
         RecvOpcode.RELOG.clazz = AccountRelogEvent.class;
         RecvOpcode.REGISTER_PIC.clazz = AccountRegisterPICEvent.class;

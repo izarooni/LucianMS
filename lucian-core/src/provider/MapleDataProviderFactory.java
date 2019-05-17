@@ -15,6 +15,7 @@ public class MapleDataProviderFactory {
         return getWZ(new File(WZ_PATH, directory));
     }
 
+    @Deprecated
     public static MapleDataProvider getWZ(File in) {
         return new XMLWZFile(in);
     }

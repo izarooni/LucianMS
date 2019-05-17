@@ -1,5 +1,7 @@
 package tools;
 
+import com.lucianms.client.Skill;
+import com.lucianms.client.SkillFactory;
 import com.lucianms.io.Config;
 import com.lucianms.io.defaults.Defaults;
 import com.lucianms.server.Server;
@@ -7,7 +9,6 @@ import org.json.JSONObject;
 import org.json.JSONTokener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import provider.tools.EffectProvider;
 
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -28,7 +29,11 @@ public class Tester {
         initConfig();
 //        HikariDataSource hikari = Database.createDataSource("test");
 
-        System.out.println(EffectProvider.getSummonEffect(31));
+        SkillFactory.createCache();
+        for (Skill skill : SkillFactory.getSkills().values()) {
+            int baseJob = skill.getJob() / 100;
+            LOGGER.info("{} {}", skill.getJob(), baseJob);
+        }
     }
 
     private static void initConfig() {

@@ -98,7 +98,7 @@ public class LChannelMain {
         LOGGER.info("Item data loaded in {}s", ((System.currentTimeMillis() - timeToTake) / 1000d));
 
         timeToTake = System.currentTimeMillis();
-        SkillFactory.loadAllSkills();
+        SkillFactory.createCache();
         LOGGER.info("Skill data loaded in {}s", ((System.currentTimeMillis() - timeToTake) / 1000d));
 
         int achievements = Achievements.loadAchievements();

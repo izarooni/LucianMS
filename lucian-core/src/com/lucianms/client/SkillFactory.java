@@ -24,96 +24,95 @@ package com.lucianms.client;
 import com.lucianms.constants.skills.*;
 import com.lucianms.server.MapleStatEffect;
 import com.lucianms.server.life.Element;
-import provider.*;
+import org.apache.commons.io.FilenameUtils;
+import provider.MapleData;
+import provider.MapleDataFileEntry;
+import provider.MapleDataProvider;
+import provider.MapleDataTool;
+import provider.tools.SkillDataProvider;
 
-import java.io.File;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
 public class SkillFactory {
 
-    private static Map<Integer, Skill> skills = new HashMap<>();
-    private static MapleDataProvider datasource = MapleDataProviderFactory.getWZ(new File(System.getProperty("wzpath"), "Skill.wz"));
+    private static Map<Integer, Skill> SKILLS_CACHE = new HashMap<>();
 
     public static Skill getSkill(int id) {
-        return skills.get(id);
+        return SKILLS_CACHE.get(id);
     }
 
     public static Map<Integer, Skill> getSkills() {
-        return Collections.unmodifiableMap(skills);
+        return Collections.unmodifiableMap(SKILLS_CACHE);
     }
 
-    public static void loadAllSkills() {
-        skills.clear();
-        Map<Integer, Skill> ret = new HashMap<>();
-        final MapleDataDirectoryEntry root = datasource.getRoot();
-        int skillid;
-        for (MapleDataFileEntry topDir : root.getFiles()) { // Loop thru jobs
-            if (topDir.getName().length() <= 8) {
-                for (MapleData data : datasource.getData(topDir.getName())) { // Loop thru each jobs
-                    if (data.getName().equals("skill")) {
-                        for (MapleData data2 : data) { // Loop thru each jobs
-                            if (data2 != null) {
-                                skillid = Integer.parseInt(data2.getName());
-                                ret.put(skillid, loadFromData(skillid, data2));
-                            }
-                        }
-                    }
+    public static void createCache() {
+        SKILLS_CACHE.clear();
+
+        MapleDataProvider WZ = SkillDataProvider.getProvider();
+        for (MapleDataFileEntry file : WZ.getRoot().getFiles()) {
+            String baseName = FilenameUtils.getBaseName(file.getName());
+            int jobID;
+            try {
+                jobID = Integer.parseInt(baseName);
+            } catch (NumberFormatException ignore) {
+                continue;
+            }
+            MapleData data = SkillDataProvider.getJob(jobID);
+            if (data != null && (data = data.getChildByPath("skill")) != null) {
+                for (MapleData skills : data.getChildren()) {
+                    int skillID = Integer.parseInt(skills.getName());
+                    Skill skill = loadFromData(skillID, skills);
+                    SKILLS_CACHE.put(skillID, skill);
                 }
             }
         }
-        skills = ret;
         System.gc();
     }
 
     private static Skill loadFromData(int id, MapleData data) {
         Skill ret = new Skill(id);
-        boolean isBuff = false;
-        int skillType = MapleDataTool.getInt("skillType", data, -1);
         ret.weapon = MapleDataTool.getInt("weapon", data, 0);
         ret.hidden = MapleDataTool.getInt("invisible", data, 0) == 1;
         String elem = MapleDataTool.getString("elemAttr", data, null);
-        if (elem != null) {
-            ret.element = Element.getFromChar(elem.charAt(0));
-        } else {
-            ret.element = Element.NEUTRAL;
-        }
+        ret.element = (elem == null) ? Element.NEUTRAL : Element.getFromChar(elem.charAt(0));
         MapleData effect = data.getChildByPath("effect");
-        if (skillType != -1) {
-            if (skillType == 2) {
-                isBuff = true;
-            }
+
+        boolean isBuff;
+        int skillType = MapleDataTool.getInt("skillType", data, -1);
+        if (skillType == 2) {
+            isBuff = true;
         } else {
-            MapleData action_ = data.getChildByPath("action");
-            boolean action = false;
-            if (action_ == null) {
-                if (data.getChildByPath("prepare/action") != null) {
-                    action = true;
+            MapleData actionData = data.getChildByPath("action");
+            boolean isAction = false;
+            if (actionData == null) {
+                if (data.getChildByPath("prepare/action") == null) {
+                    isAction = true;
                 } else {
                     switch (id) {
                         case Gunslinger.INVISIBLE_SHOT:
                         case Corsair.HYPNOTIZE:
-                            action = true;
+                            isAction = true;
                             break;
                     }
                 }
             } else {
-                action = true;
+                isAction = true;
             }
-            ret.action = action;
+            ret.action = isAction;
             MapleData hit = data.getChildByPath("hit");
             MapleData ball = data.getChildByPath("ball");
             isBuff = effect != null && hit == null && ball == null;
-            isBuff |= action_ != null && MapleDataTool.getString("0", action_, "").equals("alert2");
+            isBuff |= actionData != null && MapleDataTool.getString("0", actionData, "").equals("alert2");
             switch (id) {
                 case Hero.RUSH:
-                case Hero.MONSTER_MAGNET:
                 case Paladin.RUSH:
-                case Paladin.MONSTER_MAGNET:
-                case DragonKnight.SACRIFICE:
                 case DarkKnight.RUSH:
+                case Hero.MONSTER_MAGNET:
+                case Paladin.MONSTER_MAGNET:
                 case DarkKnight.MONSTER_MAGNET:
+                case DragonKnight.SACRIFICE:
                 case FPMage.EXPLOSION:
                 case FPMage.POISON_MIST:
                 case Cleric.HEAL:

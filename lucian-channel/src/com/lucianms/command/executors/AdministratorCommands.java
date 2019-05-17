@@ -323,7 +323,7 @@ public class AdministratorCommands extends CommandExecutor {
                     player.sendMessage("Achievement scripts reloaded");
                     break;
                 case "skills":
-                    SkillFactory.loadAllSkills();
+                    SkillFactory.createCache();
                     player.sendMessage("Skill data reloaded");
                     break;
                 case "shops":

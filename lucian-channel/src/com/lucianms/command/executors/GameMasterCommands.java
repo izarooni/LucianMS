@@ -517,8 +517,10 @@ public class GameMasterCommands extends CommandExecutor {
                 }
             }
         } else if (command.equals("maxskills")) {
-            player.maxSkills();
-            player.dropMessage(6, "Your skills are now maxed!");
+            for (Skill skill : SkillFactory.getSkills().values()) {
+                player.getSkills().put(skill.getId(), new SkillEntry(skill.getMaxLevel(), skill.getMaxLevel(), -1));
+            }
+            player.announce(MaplePacketCreator.getCharInfo(player));
         } else if (command.equals("heal", "healmap")) {
             if (command.equals("healmap")) {
                 for (MapleCharacter players : player.getMap().getCharacters()) {

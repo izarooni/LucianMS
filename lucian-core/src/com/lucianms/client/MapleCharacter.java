@@ -60,12 +60,9 @@ import com.lucianms.server.world.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.helpers.MessageFormatter;
-import provider.MapleData;
-import provider.MapleDataProviderFactory;
 import tools.*;
 
 import java.awt.*;
-import java.io.File;
 import java.lang.ref.WeakReference;
 import java.sql.*;
 import java.util.List;
@@ -1158,19 +1155,6 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Di
         cancelPlayerBuffs(buffStatList);
     }
 
-    public void maxSkills() {
-        for (MapleData skill_ : MapleDataProviderFactory.getWZ(new File(System.getProperty("wzpath") + "/" + "String.wz")).getData("Skill.img").getChildren()) {
-            try {
-                Skill skill = SkillFactory.getSkill(Integer.parseInt(skill_.getName()));
-                if (skill != null && ((skill.getId() / 100) != 9 || isGM())) {
-                    changeSkillLevel(skill, (byte) skill.getMaxLevel(), skill.getMaxLevel(), -1);
-                }
-            } catch (NumberFormatException | NullPointerException e) {
-                e.printStackTrace();
-            }
-        }
-    }
-
     public short getCombo() {
         return combocounter;
     }
@@ -2030,6 +2014,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Di
                 changeSkillLevel(entry.getKey(), (byte) -1, 0, -1);
             }
         }
+        skills.clear();
 
         List<Item> removeItems = new ArrayList<>();
         for (MapleInventory inv : inventory) {
@@ -2981,7 +2966,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Di
     }
 
     public Map<Integer, SkillEntry> getSkills() {
-        return Collections.unmodifiableMap(skills);
+        return skills;
     }
 
     public byte getSkillLevel(int skillID) {
@@ -3978,6 +3963,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Di
                 }
             }
 
+            con.setAutoCommit(false);
             try (PreparedStatement ps = con.prepareStatement("INSERT INTO keymap (characterid, `key`, `type`, `action`) VALUES (?, ?, ?, ?)")) {
                 ps.setInt(1, id);
                 for (int i = 0; i < DEFAULT_KEY.length; i++) {
@@ -3997,9 +3983,26 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Di
             }
 
             ItemFactory.INVENTORY.saveItems(itemsWithType, id, con);
+
+            try (PreparedStatement ps = con.prepareStatement("INSERT INTO skills VALUES (?, ?, ?, ?, ?)")) {
+                ps.setInt(2, id);
+                ps.setInt(3, 1);
+                ps.setLong(5, -1);
+                for (Skill skill : SkillFactory.getSkills().values()) {
+                    if (isGM() || (skill.getJob() / 100 != 9
+                            && !GameConstants.isHiddenSkills(skill.getId())
+                            && !GameConstants.isPqSkill(skill.getId()))) {
+                        ps.setInt(1, skill.getId());
+                        ps.setInt(4, skill.getMaxLevel());
+                        ps.addBatch();
+                    }
+                }
+                ps.executeBatch();
+            }
+            con.setAutoCommit(true);
             return true;
         } catch (Throwable t) {
-            LOGGER.info("Error while creating character", t);
+            LOGGER.error("Error while creating character", t);
             return false;
         }
     }
@@ -5287,6 +5290,8 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Di
         exp.set(0);
         updateSingleStat(MapleStat.EXP, 0);
 
+        gainSp(20);
+        updateSingleStat(MapleStat.AVAILABLESP, getRemainingSp());
         setRebirthPoints(getRebirthPoints() + 50);
         dropMessage("You have received 50 rebirth points");
 

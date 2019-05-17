@@ -41,6 +41,6 @@ public enum Element {
             case 'P':
                 return NEUTRAL;
         }
-        throw new IllegalArgumentException("unknown elemnt char " + c);
+        throw new IllegalArgumentException("unknown element char " + c);
     }
 }

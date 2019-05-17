@@ -15,9 +15,6 @@ public class AdministratorCommandEvent extends PacketEvent {
 
     @Override
     public void processInput(MaplePacketReader reader) {
-        if (getClient().getPlayer().getGMLevel() < 5) {
-            return;
-        }
         action = reader.readByte();
         switch (action) {
             default:
@@ -34,6 +31,9 @@ public class AdministratorCommandEvent extends PacketEvent {
     @Override
     public Object onPacket() {
         MapleCharacter player = getClient().getPlayer();
+        if (!player.isGM()) {
+            return null;
+        }
         switch (action) {
             case 0x11: {
                 StringBuilder sb = new StringBuilder();
