@@ -77,6 +77,7 @@ public class CommandArgs {
         for (int i = index; i < args.length; i++) {
             sb.append(args[i]).append(" ");
         }
+        if (sb.length() > 0) sb.setLength(sb.length() - 1); // remove trailing whitespace
         return sb.toString();
     }
 

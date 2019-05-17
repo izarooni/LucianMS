@@ -57,20 +57,10 @@ public class CommandWorker {
 
         if (h == '!' && (player.isGM() || noCheck)) {
             try {
-                if ((noCheck || player.getGMLevel() >= 1) && !EVENT_COMMANDS.executeCommand(client, command, args)) {
-                    if (noCheck || player.getGMLevel() >= 6) {
-                        TaskExecutor.execute(() -> ADMIN_COMMANDS.executeCommand(client, command, args));
-                    }
-                    if (noCheck || player.getGMLevel() >= 3) {
-                        TaskExecutor.execute(() -> HGMCommands.execute(client, command, args));
-                    }
-                    if (noCheck || player.getGMLevel() >= 2) {
-                        TaskExecutor.execute(() -> GameMasterCommands.execute(client, command, args));
-                    }
-                }
+                TaskExecutor.execute(tryExecuteCommand(client, command, args));
             } catch (Exception e) {
-                e.printStackTrace();
                 player.sendMessage(5, "An error occurred in this command.");
+                e.printStackTrace();
             }
             return true;
         } else if (h == '@') {
@@ -104,4 +94,23 @@ public class CommandWorker {
         return false;
     }
 
+    private static Runnable tryExecuteCommand(MapleClient client, Command cmd, CommandArgs args) {
+        return new Runnable() {
+            @Override
+            public void run() {
+                MapleCharacter player = client.getPlayer();
+                if (!EVENT_COMMANDS.executeCommand(client, cmd, args)) {
+                    if (player.getGMLevel() >= 6) {
+                        TaskExecutor.execute(() -> ADMIN_COMMANDS.executeCommand(client, cmd, args));
+                    }
+                    if (player.getGMLevel() >= 3) {
+                        TaskExecutor.execute(() -> HGMCommands.execute(client, cmd, args));
+                    }
+                    if (player.getGMLevel() >= 2) {
+                        TaskExecutor.execute(() -> GameMasterCommands.execute(client, cmd, args));
+                    }
+                }
+            }
+        };
+    }
 }

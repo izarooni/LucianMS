@@ -1,7 +1,5 @@
 package tools;
 
-import com.lucianms.client.Skill;
-import com.lucianms.client.SkillFactory;
 import com.lucianms.io.Config;
 import com.lucianms.io.defaults.Defaults;
 import com.lucianms.server.Server;
@@ -28,12 +26,6 @@ public class Tester {
     public static void main(String[] args) {
         initConfig();
 //        HikariDataSource hikari = Database.createDataSource("test");
-
-        SkillFactory.createCache();
-        for (Skill skill : SkillFactory.getSkills().values()) {
-            int baseJob = skill.getJob() / 100;
-            LOGGER.info("{} {}", skill.getJob(), baseJob);
-        }
     }
 
     private static void initConfig() {

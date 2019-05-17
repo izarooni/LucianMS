@@ -61,10 +61,10 @@ public class PlayerAllChatEvent extends PacketEvent {
                 return null;
             }
             if (!player.isHidden()) {
-                player.getChatType().sendChat(player, content, shout);
+                player.getChatType().sendChat(player, content, shout != 0);
             } else {
                 player.getMap().broadcastGMMessage(MaplePacketCreator.serverNotice(2, player.getClient().getChannel(), String.format("[hide] %s : %s", player.getName(), content)));
-                player.getMap().broadcastGMMessage(MaplePacketCreator.getChatText(player.getId(), content, false, 1));
+                player.getMap().broadcastGMMessage(MaplePacketCreator.getChatText(player.getId(), content, false, true));
             }
         } else {
             player.dropMessage(5, "You have been muted, meaning you cannot speak.");

@@ -1727,13 +1727,13 @@ public class MaplePacketCreator {
      *
      * @return The general chat packet.
      */
-    public static byte[] getChatText(int cidfrom, String text, boolean gm, int hide) {
+    public static byte[] getChatText(int cidfrom, String text, boolean gm, boolean hide) {
         final MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
         mplew.writeShort(SendOpcode.CHATTEXT.getValue());
         mplew.writeInt(cidfrom);
         mplew.writeBool(gm);
         mplew.writeMapleAsciiString(text);
-        mplew.write(hide);
+        mplew.writeBool(hide);
         return mplew.getPacket();
     }
 

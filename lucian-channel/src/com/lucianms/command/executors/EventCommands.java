@@ -18,14 +18,18 @@ import com.lucianms.server.maps.MapleMap;
 import com.lucianms.server.world.MapleParty;
 import com.lucianms.server.world.MaplePartyCharacter;
 import com.lucianms.server.world.MapleWorld;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import tools.MaplePacketCreator;
 import tools.Randomizer;
 
 import java.awt.*;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Map;
-import java.util.Optional;
+import java.io.File;
+import java.io.IOException;
+import java.util.List;
+import java.util.*;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 /**
  * This can get messy so I'm separating event related commands from regular GM commands
@@ -33,6 +37,8 @@ import java.util.Optional;
  * @author izarooni
  */
 public class EventCommands extends CommandExecutor {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(EventCommands.class);
 
     public EventCommands() {
         addCommand("help", this::CommandHelp);
@@ -52,6 +58,74 @@ public class EventCommands extends CommandExecutor {
         addCommand("potato", this::CommandPotato);
         addCommand("weenie", this::CommandWeenie);
         addCommand("fstat", this::CommandForceStat);
+        addCommand("rules", this::CommandEventRules);
+
+        reloadEventRules();
+    }
+
+    private static Map<String, List<String>> EVENT_RULES = new HashMap<>(60);
+
+    private static boolean reloadEventRules() {
+        EVENT_RULES.clear();
+        File file = new File("resources/event-rules.txt");
+        if (file.exists()) {
+            try (Scanner scanner = new Scanner(file)) {
+                String title = null;
+                while (scanner.hasNext()) {
+                    String text = scanner.nextLine();
+                    if (!text.isEmpty()) {
+                        if (title == null) EVENT_RULES.put((title = text), new ArrayList<>());
+                        else EVENT_RULES.get(title).add(text);
+                    } else title = null;
+                }
+                return true;
+            } catch (IOException e) {
+                LOGGER.error("Error while reading {}", file.getName(), e);
+            }
+        }
+        return false;
+    }
+
+    private void CommandEventRules(MapleCharacter player, Command cmd, CommandArgs args) {
+        if (args.length() == 0) {
+            EVENT_RULES.keySet().forEach(player::sendMessage);
+            player.sendMessage("syntax: !{} <event name/reload>", cmd.getName());
+            player.sendMessage("Available event rules are listed above");
+            return;
+        }
+        String input = args.concatFrom(0);
+        if (input.equalsIgnoreCase("reload")) {
+            if (reloadEventRules()) {
+                player.sendMessage("Found {} event rules", EVENT_RULES.size());
+            } else {
+                player.sendMessage("Failed to reload event rules");
+            }
+        } else {
+            Collection<String> found = EVENT_RULES.keySet().stream()
+                    .filter(k -> Pattern.compile(input.replaceAll(" ", ".*"), Pattern.CASE_INSENSITIVE).matcher(k).find())
+                    .collect(Collectors.toList());
+            if (!found.isEmpty()) {
+                if (found.size() == 1) {
+                    String eventName = found.iterator().next();
+                    List<String> rules = EVENT_RULES.get(eventName);
+                    for (String line : rules) {
+                        try {
+                            Thread.sleep(100);
+                        } catch (Exception ignore) {
+                            // oh well, it's just for visual effect; continue displaying the message
+                        }
+                        player.getMap().sendPacket(MaplePacketCreator.getChatText(player.getId(), line, true, false));
+                    }
+                    player.announce(MaplePacketCreator.serverNotice(2, player.getClient().getChannel(), String.format("[Rules] : Showing rules for event '%s'", eventName)));
+                } else {
+                    player.sendMessage("Found rules matching event name '{}'", input);
+                    found.forEach(player::sendMessage);
+                }
+            } else {
+                player.sendMessage("Unable to find any rules for an event named '{}'", input);
+            }
+            found.clear();
+        }
     }
 
     private void CommandForceStat(MapleCharacter player, Command cmd, CommandArgs args) {
