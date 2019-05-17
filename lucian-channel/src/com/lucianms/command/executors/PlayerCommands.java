@@ -89,7 +89,6 @@ public class PlayerCommands extends CommandExecutor {
         addCommand("check", this::CheckPlayer);
         addCommand("spy", this::CheckPlayer);
 
-        addCommand("maxskills", this::MaxSkills);
         addCommand("fixexp", this::FixExp);
         addCommand("quests", this::Quests);
         addCommand("afk", this::SetAFK);
@@ -302,12 +301,7 @@ public class PlayerCommands extends CommandExecutor {
         player.updateSingleStat(MapleStat.EXP, 0);
     }
 
-    private void MaxSkills(MapleCharacter player, Command cmd, CommandArgs args) {
-        player.maxSkills();
-    }
-
     private void CheckPlayer(MapleCharacter player, Command cmd, CommandArgs args) {
-
         MapleCharacter target = player;
         if (cmd.equals("spy")) {
             if (args.length() == 1) {
