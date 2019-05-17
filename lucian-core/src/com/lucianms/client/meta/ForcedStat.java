@@ -10,11 +10,11 @@ import java.util.EnumMap;
 public class ForcedStat {
 
     public enum Type {
-        WHAT(0x1),
-        STR(0x2),
-        DEX(0x4),
-        INT(0x8),
-        LUK(0x10),
+        STR(0x1),
+        DEX(0x2),
+        INT(0x4),
+        LUK(0x8),
+        PAD(0x10),
         PDD(0x20),
         MAD(0x40),
         MDD(0x80),
