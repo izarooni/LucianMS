@@ -90,7 +90,7 @@ public class NPCScriptManager {
             }
             response += "\r\nNPC ID: " + npc;
             player.dropMessage(1, response);
-            LOGGER.error("Unable to execute script '{}' npc '{}' using player '{}'", path, npc, player.getName(), e.getMessage());
+            LOGGER.error("Unable to execute script '{}' npc '{}' using player '{}'", path, npc, player.getName(), e);
             dispose(client);
         }
     }

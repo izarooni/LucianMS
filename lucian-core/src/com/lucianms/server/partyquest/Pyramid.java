@@ -270,7 +270,7 @@ public class Pyramid extends PartyQuest {
         chr.gainExp(exp, true, true);
     }
 
-    public void hit(int damage, Pair<Integer, Integer> cool) {
+    public void hit(long damage, Pair<Integer, Integer> cool) {
         if (damage > 0) {
             if (damage >= cool.getLeft()) {
                 if ((Math.random() * 100) < cool.getRight()) {

@@ -506,7 +506,7 @@ public class MapleMap implements PacketAnnouncer {
         return count;
     }
 
-    public boolean damageMonster(final MapleCharacter chr, final MapleMonster monster, final int damage) {
+    public boolean damageMonster(final MapleCharacter chr, final MapleMonster monster, final long damage) {
         if (monster.getId() == 8800000) { // zakum
             for (MapleMapObject object : chr.getMap().getMapObjects()) {
                 MapleMonster mons = chr.getMap().getMonsterByOid(object.getObjectId());

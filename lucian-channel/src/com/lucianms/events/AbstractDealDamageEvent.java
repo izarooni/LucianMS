@@ -143,7 +143,7 @@ public abstract class AbstractDealDamageEvent extends PacketEvent {
                 return;
             }
 
-            int totDamage = 0;
+            long totDamage = 0;
             final MapleMap map = player.getMap();
 
             if (attack.skill == ChiefBandit.MESO_EXPLOSION) {
@@ -177,42 +177,7 @@ public abstract class AbstractDealDamageEvent extends PacketEvent {
             for (Integer oned : attack.allDamage.keySet()) {
                 final MapleMonster monster = map.getMonsterByOid(oned);
                 if (monster != null) {
-                    double distance = player.getPosition().distanceSq(monster.getPosition());
-                    double distanceToDetect = 200000.0;
-
-                    if (attack.ranged) {
-                        distanceToDetect += 400000;
-                    }
-
-                    if (attack.magic) {
-                        distanceToDetect += 200000;
-                    }
-
-                    if (player.getJob().isA(MapleJob.ARAN1)) {
-                        distanceToDetect += 200000; // Arans have extra range over normal warriors.
-                    }
-
-                    if (attack.skill == Aran.COMBO_SMASH || attack.skill == Aran.BODY_PRESSURE) {
-                        distanceToDetect += 40000;
-                    }
-
-                    if (attack.skill == Bishop.GENESIS || attack.skill == ILArchMage.BLIZZARD || attack.skill == FPArchMage.METEOR_SHOWER) {
-                        distanceToDetect += 275000;
-                    }
-
-                    if (attack.skill == Hero.BRANDISH || attack.skill == DragonKnight.SPEAR_CRUSHER || attack.skill == DragonKnight.POLE_ARM_CRUSHER) {
-                        distanceToDetect += 40000;
-                    }
-
-                    if (attack.skill == DragonKnight.DRAGON_ROAR || attack.skill == SuperGM.SUPER_DRAGON_ROAR) {
-                        distanceToDetect += 250000;
-                    }
-
-                    if (attack.skill == Shadower.BOOMERANG_STEP) {
-                        distanceToDetect += 60000;
-                    }
-
-                    int totDamageToOneMonster = 0;
+                    long totDamageToOneMonster = 0;
                     List<Integer> onedList = attack.allDamage.get(oned);
                     for (Integer eachd : onedList) {
                         if (eachd < 0) {
@@ -325,7 +290,9 @@ public abstract class AbstractDealDamageEvent extends PacketEvent {
                         Skill skill;
                         if (player.getBuffedValue(MapleBuffStat.COMBO_DRAIN) != null) {
                             skill = SkillFactory.getSkill(21100005);
-                            player.setHp(player.getHp() + ((totDamage * skill.getEffect(player.getSkillLevel(skill)).getX()) / 100), true);
+                            long decHP = totDamage * skill.getEffect(player.getSkillLevel(skill.getId())).getX() / 100;
+                            int currentHealth = player.getHp();
+                            player.setHp((int) Math.max(1, decHP - currentHealth), true);
                             player.updateSingleStat(MapleStat.HP, player.getHp());
                         }
                     } else if (job == 412 || job == 422 || job == 1411) {
@@ -443,7 +410,7 @@ public abstract class AbstractDealDamageEvent extends PacketEvent {
 
         if (ret.skill > 0 && getClient().getPlayer().getMapId() == ServerConstants.HOME_MAP) {
             SpamTracker.SpamData spamTracker = player.getSpamTracker(SpamTracker.SpamOperation.SkillUsage);
-            if (spamTracker.testFor(8000)) {
+            if (!spamTracker.testFor(8000)) {
                 player.sendMessage(5, "Skills are disabled in this map and will not show for other players.");
                 spamTracker.record();
             }

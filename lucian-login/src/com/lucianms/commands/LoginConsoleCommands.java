@@ -29,6 +29,9 @@ public class LoginConsoleCommands extends ConsoleCommands {
             }
         } else if (command.equals("help")) {
             System.out.println("unban <account name> - Attempts an un-ban");
+        } else if (command.equals("stop")) {
+            setReading(false);
+            System.exit(0);
         }
     }
 }

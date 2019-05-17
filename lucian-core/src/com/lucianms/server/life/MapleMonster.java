@@ -44,7 +44,7 @@ import java.lang.ref.WeakReference;
 import java.util.List;
 import java.util.*;
 import java.util.Map.Entry;
-import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.locks.ReentrantLock;
 
 public class MapleMonster extends AbstractLoadedMapleLife {
@@ -65,7 +65,7 @@ public class MapleMonster extends AbstractLoadedMapleLife {
     private ArrayList<MonsterListener> listeners = new ArrayList<>();
     private Map<Pair<Integer, Integer>, Integer> skillsUsed = new HashMap<>();
     private EnumMap<MonsterStatus, MonsterStatusEffect> stati = new EnumMap<>(MonsterStatus.class);
-    private final HashMap<Integer, AtomicInteger> takenDamage = new HashMap<>();
+    private final HashMap<Integer, AtomicLong> takenDamage = new HashMap<>();
     private boolean fake;
     private boolean dropsDisabled;
     private boolean damagedOvertime;
@@ -214,18 +214,12 @@ public class MapleMonster extends AbstractLoadedMapleLife {
         return stats.getTagBgColor();
     }
 
-    public synchronized void damage(MapleCharacter from, int damage) { // may be pointless synchronization
+    public synchronized void damage(MapleCharacter from, long damage) {
         if (!isAlive()) {
             return;
         }
-        int trueDamage = Math.min(hp, damage); // since magic happens otherwise B^)
-
         hp -= damage;
-        if (takenDamage.containsKey(from.getId())) {
-            takenDamage.get(from.getId()).addAndGet(trueDamage);
-        } else {
-            takenDamage.put(from.getId(), new AtomicInteger(trueDamage));
-        }
+        takenDamage.computeIfAbsent(from.getId(), id -> new AtomicLong()).addAndGet(damage);
 
         if (hasBossHPBar()) {
             from.getMap().broadcastMessage(makeBossHPBarPacket(), getPosition());
@@ -257,10 +251,6 @@ public class MapleMonster extends AbstractLoadedMapleLife {
         setHp(hp2Heal);
         setMp(mp2Heal);
         getMap().broadcastMessage(MaplePacketCreator.healMonster(getObjectId(), hp));
-    }
-
-    public Collection<Integer> test() {
-        return takenDamage.keySet();
     }
 
     public boolean isAttackedBy(MapleCharacter chr) {
@@ -296,7 +286,7 @@ public class MapleMonster extends AbstractLoadedMapleLife {
             }
         }
 
-        final int mostDamageCid = getHighestDamagerId();
+        final int mostDamageCid = getHighestAttackerID();
 
         for (MapleCharacter mc : members) {
             int id = mc.getId();
@@ -322,10 +312,11 @@ public class MapleMonster extends AbstractLoadedMapleLife {
         int totalHealth = getMaxHp();
         Map<Integer, Integer> partyExp = new HashMap<>();
         // 80% of pool is split amongst all the attackers
-        for (Entry<Integer, AtomicInteger> damage : takenDamage.entrySet()) {
-            MapleCharacter mc = getMap().getCharacterById(damage.getKey());
+        for (Entry<Integer, AtomicLong> entry : takenDamage.entrySet()) {
+            MapleCharacter mc = getMap().getCharacterById(entry.getKey());
             if (mc != null) {
-                int xp = (int) (0.80f * exp * damage.getValue().get() / totalHealth);
+                AtomicLong atomicDamage = entry.getValue();
+                int xp = (int) (0.80f * exp * atomicDamage.get() / totalHealth);
                 boolean isKiller = mc.getId() == killerId;
                 if (isKiller) {
                     xp += exp / 5;
@@ -455,7 +446,7 @@ public class MapleMonster extends AbstractLoadedMapleLife {
             }
         }
         listeners.forEach(listener -> listener.monsterKilled(this, killer));
-        MapleCharacter looter = map.getCharacterById(getHighestDamagerId());
+        MapleCharacter looter = map.getCharacterById(getHighestAttackerID());
         if (killer != null) {
             Achievements.testFor(killer, getId());
         }
@@ -464,11 +455,11 @@ public class MapleMonster extends AbstractLoadedMapleLife {
     }
 
     // should only really be used to determine drop owner
-    private int getHighestDamagerId() {
+    private int getHighestAttackerID() {
         int curId = 0;
-        int curDmg = 0;
+        long curDmg = 0;
 
-        for (Entry<Integer, AtomicInteger> damage : takenDamage.entrySet()) {
+        for (Entry<Integer, AtomicLong> damage : takenDamage.entrySet()) {
             curId = damage.getValue().get() >= curDmg ? damage.getKey() : curId;
             curDmg = damage.getKey() == curId ? damage.getValue().get() : curDmg;
         }
