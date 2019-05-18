@@ -192,7 +192,7 @@ public class LChannelMain {
         RecvOpcode.NPC_TALK_MORE.clazz = NpcMoreTalkEvent.class;
         RecvOpcode.STORAGE.clazz = PlayerStorageOperationEvent.class;
         RecvOpcode.HIRED_MERCHANT_REQUEST.clazz = HiredMerchantEvent.class;
-        RecvOpcode.ITEM_SORT.clazz = PlayerInventorySortEvent.class;
+        RecvOpcode.ITEM_SORT.clazz = InventoryGatherItemsEvent.class;
         RecvOpcode.ITEM_MOVE.clazz = PlayerInventoryMoveEvent.class;
         RecvOpcode.USE_ITEM.clazz = PlayerItemUseEvent.class;
         RecvOpcode.CANCEL_ITEM_EFFECT.clazz = PlayerItemEffectCancelEvent.class;
@@ -273,7 +273,7 @@ public class LChannelMain {
         RecvOpcode.USE_GACHA_EXP.clazz = PlayerGachaponUsedEvent.class;
         RecvOpcode.USE_DEATHITEM.clazz = PlayerDeathItemUseEvent.class;
         RecvOpcode.USE_MAPLELIFE.clazz = PlayerLifeUseEvent.class;
-        RecvOpcode.ITEM_SORT2.clazz = PlayerInventorySortByIDEvent.class;
+        RecvOpcode.ITEM_SORT2.clazz = InventorySortItemsEvent.class;
         RecvOpcode.LEFT_KNOCKBACK.clazz = PlayerLeftKnockbackEvent.class;
         RecvOpcode.REMOTE_STORE.clazz = PlayerRemoteStoreEvent.class;
         RecvOpcode.WEDDING_ACTION.clazz = PlayerWeddingEvent.class;

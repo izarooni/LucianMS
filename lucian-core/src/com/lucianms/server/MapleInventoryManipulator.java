@@ -468,7 +468,7 @@ public class MapleInventoryManipulator {
         final List<ModifyInventory> mods = new ArrayList<>();
         if (itemChanged) {
             mods.add(new ModifyInventory(3, source));
-            mods.add(new ModifyInventory(0, source.copy()));//to prevent crashes
+            mods.add(new ModifyInventory(0, source.copy()));
         }
 
         source.setPosition(dst);

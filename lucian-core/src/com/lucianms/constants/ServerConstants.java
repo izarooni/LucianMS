@@ -14,7 +14,6 @@ public class ServerConstants {
     // Game play Configurations
     public static final boolean USE_MTS = false;
     public static final boolean USE_FAMILY_SYSTEM = false;
-    public static final boolean USE_ITEM_SORT = true;
     public static final boolean USE_PARTY_SEARCH = false;
     public static final int HOME_MAP = 910000000;
     public static final int CURRENCY = 4260002;

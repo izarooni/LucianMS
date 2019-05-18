@@ -3,7 +3,6 @@ package com.lucianms.client.inventory;
 import com.lucianms.constants.ItemConstants;
 
 /**
- *
  * @author kevin
  */
 public class ModifyInventory {
@@ -12,6 +11,14 @@ public class ModifyInventory {
     private Item item;
     private short oldPos;
 
+    /**
+     * mode types
+     * <ol start=0>
+     * <li>add</li>
+     * <li>update</li>
+     * <li value=3>remove</li>
+     * </ol>
+     */
     public ModifyInventory(final int mode, final Item item) {
         this.mode = mode;
         this.item = item.copy();
@@ -22,7 +29,7 @@ public class ModifyInventory {
         this.item = item.copy();
         this.oldPos = oldPos;
     }
-    
+
     public final int getMode() {
         return mode;
     }
@@ -38,7 +45,7 @@ public class ModifyInventory {
     public final short getOldPosition() {
         return oldPos;
     }
-    
+
     public final short getQuantity() {
         return item.getQuantity();
     }

@@ -22,8 +22,12 @@
 package com.lucianms.client.inventory;
 
 import com.lucianms.client.MapleCharacter;
+import com.lucianms.client.MapleClient;
 import com.lucianms.constants.ItemConstants;
+import com.lucianms.nio.SendOpcode;
+import tools.MaplePacketCreator;
 import tools.Pair;
+import tools.data.output.MaplePacketLittleEndianWriter;
 
 import java.util.*;
 
@@ -40,6 +44,43 @@ public class MapleInventory implements Iterable<Item> {
     public MapleInventory(MapleInventoryType type, byte slotLimit) {
         this.type = type;
         this.slotLimit = slotLimit;
+    }
+
+    public static boolean checkSpot(MapleCharacter chr, Item item) {
+        return !chr.getInventory(MapleInventoryType.getByType(item.getType())).isFull();
+    }
+
+    public static boolean checkSpots(MapleCharacter chr, List<Pair<Item, MapleInventoryType>> items) {
+        int equipSlot = 0, useSlot = 0, setupSlot = 0, etcSlot = 0, cashSlot = 0;
+        for (Pair<Item, MapleInventoryType> item : items) {
+            if (item.getRight().getType() == MapleInventoryType.EQUIP.getType()) {
+                equipSlot++;
+            }
+            if (item.getRight().getType() == MapleInventoryType.USE.getType()) {
+                useSlot++;
+            }
+            if (item.getRight().getType() == MapleInventoryType.SETUP.getType()) {
+                setupSlot++;
+            }
+            if (item.getRight().getType() == MapleInventoryType.ETC.getType()) {
+                etcSlot++;
+            }
+            if (item.getRight().getType() == MapleInventoryType.CASH.getType()) {
+                cashSlot++;
+            }
+        }
+
+        if (chr.getInventory(MapleInventoryType.EQUIP).isFull(equipSlot - 1)) {
+            return false;
+        } else if (chr.getInventory(MapleInventoryType.USE).isFull(useSlot - 1)) {
+            return false;
+        } else if (chr.getInventory(MapleInventoryType.SETUP).isFull(setupSlot - 1)) {
+            return false;
+        } else if (chr.getInventory(MapleInventoryType.ETC).isFull(etcSlot - 1)) {
+            return false;
+        } else {
+            return !chr.getInventory(MapleInventoryType.CASH).isFull(cashSlot - 1);
+        }
     }
 
     public boolean isExtendableInventory() { // not sure about cash, basing this on the previous one.
@@ -106,14 +147,14 @@ public class MapleInventory implements Iterable<Item> {
 
     public void addFromDB(Item item) {
         if (item.getPosition() < 0 && type != MapleInventoryType.EQUIPPED) {
-            return;
+            throw new RuntimeException("Adding item of negative slot value to non-equip inventory");
         }
         inventory.put(item.getPosition(), item);
     }
 
     public void move(short sSlot, short dSlot, short slotMax) {
-        Item source = (Item) inventory.get(sSlot);
-        Item target = (Item) inventory.get(dSlot);
+        Item source = inventory.get(sSlot);
+        Item target = inventory.get(dSlot);
         if (source == null) {
             return;
         }
@@ -207,48 +248,6 @@ public class MapleInventory implements Iterable<Item> {
         return free;
     }
 
-    public static boolean checkSpot(MapleCharacter chr, Item item) {
-        if (chr.getInventory(MapleInventoryType.getByType(item.getType())).isFull()) {
-            return false;
-        }
-        return true;
-    }
-
-    public static boolean checkSpots(MapleCharacter chr, List<Pair<Item, MapleInventoryType>> items) {
-        int equipSlot = 0, useSlot = 0, setupSlot = 0, etcSlot = 0, cashSlot = 0;
-        for (Pair<Item, MapleInventoryType> item : items) {
-            if (item.getRight().getType() == MapleInventoryType.EQUIP.getType()) {
-                equipSlot++;
-            }
-            if (item.getRight().getType() == MapleInventoryType.USE.getType()) {
-                useSlot++;
-            }
-            if (item.getRight().getType() == MapleInventoryType.SETUP.getType()) {
-                setupSlot++;
-            }
-            if (item.getRight().getType() == MapleInventoryType.ETC.getType()) {
-                etcSlot++;
-            }
-            if (item.getRight().getType() == MapleInventoryType.CASH.getType()) {
-                cashSlot++;
-            }
-        }
-
-        if (chr.getInventory(MapleInventoryType.EQUIP).isFull(equipSlot - 1)) {
-            return false;
-        } else if (chr.getInventory(MapleInventoryType.USE).isFull(useSlot - 1)) {
-            return false;
-        } else if (chr.getInventory(MapleInventoryType.SETUP).isFull(setupSlot - 1)) {
-            return false;
-        } else if (chr.getInventory(MapleInventoryType.ETC).isFull(etcSlot - 1)) {
-            return false;
-        } else if (chr.getInventory(MapleInventoryType.CASH).isFull(cashSlot - 1)) {
-            return false;
-        }
-        return true;
-    }
-
-
     public MapleInventoryType getType() {
         return type;
     }
@@ -256,10 +255,6 @@ public class MapleInventory implements Iterable<Item> {
     @Override
     public Iterator<Item> iterator() {
         return Collections.unmodifiableCollection(inventory.values()).iterator();
-    }
-
-    public Collection<MapleInventory> allInventories() {
-        return Collections.singletonList(this);
     }
 
     public Item findByCashId(int cashId) {
@@ -274,7 +269,6 @@ public class MapleInventory implements Iterable<Item> {
                 return item;
             }
         }
-
         return null;
     }
 
@@ -285,5 +279,25 @@ public class MapleInventory implements Iterable<Item> {
 
     public void checked(boolean yes) {
         checked = yes;
+    }
+
+    public void updateItem(MapleClient client, Item item) {
+        MaplePacketLittleEndianWriter writer = new MaplePacketLittleEndianWriter();
+        writer.writeShort(SendOpcode.INVENTORY_OPERATION.getValue());
+        writer.writeBool(true);
+        writer.write(2);
+
+        writer.write(3);
+        writer.write(ItemConstants.getInventoryType(item.getItemId()).getType());
+        writer.writeShort(item.getPosition());
+
+        writer.write(0);
+        writer.write(ItemConstants.getInventoryType(item.getItemId()).getType());
+        writer.writeShort(item.getPosition());
+        MaplePacketCreator.addItemInfo(writer, item, true);
+
+        writer.write(2);
+
+        client.announce(writer.getPacket());
     }
 }

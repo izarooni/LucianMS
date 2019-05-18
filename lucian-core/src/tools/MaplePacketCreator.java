@@ -479,7 +479,7 @@ public class MaplePacketCreator {
         addItemInfo(mplew, item, false);
     }
 
-    private static void addItemInfo(final MaplePacketLittleEndianWriter mplew, Item item, boolean zeroPosition) {
+    public static void addItemInfo(final MaplePacketLittleEndianWriter mplew, Item item, boolean zeroPosition) {
         MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
         boolean isCash = ii.isCash(item.getItemId());
         boolean isPet = item.getPetId() > -1;
@@ -1483,7 +1483,7 @@ public class MaplePacketCreator {
         return mplew.getPacket();
     }
 
-    public static byte[] finishedSort(int inv) {
+    public static byte[] getInventoryGatherItems(int inv) {
         final MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter(4);
         mplew.writeShort(SendOpcode.GATHER_ITEM_RESULT.getValue());
         mplew.write(0);
@@ -1491,7 +1491,7 @@ public class MaplePacketCreator {
         return mplew.getPacket();
     }
 
-    public static byte[] finishedSort2(int inv) {
+    public static byte[] getInventorySortItems(int inv) {
         final MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter(4);
         mplew.writeShort(SendOpcode.SORT_ITEM_RESULT.getValue());
         mplew.write(0);

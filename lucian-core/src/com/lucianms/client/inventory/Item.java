@@ -122,13 +122,9 @@ public class Item implements Comparable<Item> {
         this.petid = id;
     }
 
+    @Override
     public int compareTo(Item other) {
-        if (this.id < other.getItemId()) {
-            return -1;
-        } else if (this.id > other.getItemId()) {
-            return 1;
-        }
-        return 0;
+        return Integer.compare(getItemId(), other.getItemId());
     }
 
     @Override

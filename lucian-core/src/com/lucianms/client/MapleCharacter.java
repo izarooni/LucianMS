@@ -4711,10 +4711,10 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Di
     }
 
     public void unequipPet(MaplePet pet, boolean shift_left, boolean hunger) {
-        if (this.getPet(this.getPetIndex(pet)) != null) {
-            this.getPet(this.getPetIndex(pet)).setSummoned(false);
+        if (getPet(getPetIndex(pet)) != null) {
+            getPet(getPetIndex(pet)).setSummoned(false);
             try (Connection con = getClient().getWorldServer().getConnection()) {
-                this.getPet(this.getPetIndex(pet)).saveToDb(con);
+                getPet(getPetIndex(pet)).saveToDb(con);
             } catch (SQLException ignore) {
             }
         }
