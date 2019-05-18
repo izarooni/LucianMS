@@ -204,7 +204,6 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Di
     private MapleGuildCharacter mgc;
     private EventInstanceManager eventInstance;
 
-    private Task[] fullnessSchedule = new Task[3];
     private MaplePet[] pets = new MaplePet[3];
     private SkillMacro[] skillMacros = new SkillMacro[5];
     private MapleInventory[] creativeInventory;
@@ -1326,12 +1325,6 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Di
         }
         setHidden(hidden);
         announce(MaplePacketCreator.getAdminResult(0x10, (byte) (hidden ? 1 : 0)));
-    }
-
-    private void cancelFullnessSchedule(int petSlot) {
-        if (fullnessSchedule[petSlot] != null) {
-            fullnessSchedule[petSlot].cancel();
-        }
     }
 
     public void cancelMagicDoor() {
@@ -4711,14 +4704,14 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Di
     }
 
     public void unequipPet(MaplePet pet, boolean shift_left, boolean hunger) {
-        if (getPet(getPetIndex(pet)) != null) {
-            getPet(getPetIndex(pet)).setSummoned(false);
+        byte petIdx = getPetIndex(pet);
+        if (petIdx > 0) {
+            pet.setSummoned(false);
             try (Connection con = getClient().getWorldServer().getConnection()) {
-                getPet(getPetIndex(pet)).saveToDb(con);
+                pet.saveToDb(con);
             } catch (SQLException ignore) {
             }
         }
-        cancelFullnessSchedule(getPetIndex(pet));
         getMap().broadcastMessage(this, MaplePacketCreator.showPet(this, pet, true, hunger), true);
         client.announce(MaplePacketCreator.petStatUpdate(this));
         client.announce(MaplePacketCreator.enableActions());
