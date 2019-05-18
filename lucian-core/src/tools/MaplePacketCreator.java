@@ -742,14 +742,12 @@ public class MaplePacketCreator {
         Relationship rltn = player.getRelationship();
         if (rltn.getStatus() == Relationship.Status.Married && player.getMarriageRing() != null) {
             MapleRing ring = player.getMarriageRing();
-            // they could change genders at any time so who fuckin cares my dude
             int mPartnerId = (player.getGender() == 0) ? player.getId() : ring.getPartnerChrId();
             int fPartnerId = (player.getGender() == 0) ? ring.getPartnerChrId() : player.getId();
-            mplew.writeInt(30000);
+            mplew.writeInt(30000); // dwMarriageNo
             mplew.writeInt(mPartnerId);
             mplew.writeInt(fPartnerId);
-            mplew.writeShort(3); // married ? 3 : 1
-            // if marriage, wedding rings -- otherwise engagement box & ring
+            mplew.writeShort(3); // usStatus
             mplew.writeInt(ring.getItemId());
             mplew.writeInt(ring.getItemId());
             mplew.writeAsciiString(StringUtil.getRightPaddedStr(MapleCharacter.getNameById(mPartnerId), '\0', 13));

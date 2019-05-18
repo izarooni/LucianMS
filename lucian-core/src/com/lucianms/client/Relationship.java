@@ -138,4 +138,7 @@ public class Relationship {
         this.engagementBoxId = engagementBoxId;
     }
 
+    public int getPartnerID(MapleCharacter player) {
+        return groomId == player.getId() ? brideId : groomId;
+    }
 }

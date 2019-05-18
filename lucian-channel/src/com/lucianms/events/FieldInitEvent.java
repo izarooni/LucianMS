@@ -2,12 +2,16 @@ package com.lucianms.events;
 
 import com.lucianms.client.MapleCharacter;
 import com.lucianms.client.MapleClient;
+import com.lucianms.client.Relationship;
 import com.lucianms.constants.GameConstants;
 import com.lucianms.io.scripting.event.EventInstanceManager;
+import com.lucianms.nio.SendOpcode;
 import com.lucianms.nio.receive.MaplePacketReader;
+import com.lucianms.nio.send.MaplePacketWriter;
 import com.lucianms.scheduler.TaskExecutor;
 import com.lucianms.server.maps.MapleMap;
 import com.lucianms.server.maps.MapleMiniDungeon;
+import com.lucianms.server.world.MapleWorld;
 import tools.MaplePacketCreator;
 
 import java.util.Calendar;
@@ -16,6 +20,15 @@ import java.util.Calendar;
  * @author izarooni
  */
 public class FieldInitEvent extends PacketEvent {
+
+    public static byte[] getMarriedPartnerFieldTransfer(int fieldID, int playerID) {
+        MaplePacketWriter w = new MaplePacketWriter(10);
+        w.writeShort(SendOpcode.NOTIFY_MARRIED_PARTNER_MAP_TRANSFER.getValue());
+        w.writeInt(fieldID);
+        w.writeInt(playerID);
+        return w.getPacket();
+    }
+
     @Override
     public void processInput(MaplePacketReader reader) {
     }
@@ -23,10 +36,11 @@ public class FieldInitEvent extends PacketEvent {
     @Override
     public Object onPacket() {
         MapleClient client = getClient();
+        MapleWorld world = client.getWorldServer();
         MapleCharacter player = client.getPlayer();
         MapleMap map = player.getMap();
         final int mapID = map.getId();
-        EventInstanceManager eim = player.getEventInstance();
+
 
         if (player.getForcedStat() != null) {
             player.setForcedStat(null);
@@ -51,6 +65,7 @@ public class FieldInitEvent extends PacketEvent {
             }
         }
 
+        EventInstanceManager eim = player.getEventInstance();
         if (eim != null && eim.isTimerStarted()) {
             client.announce(MaplePacketCreator.getClock((int) (eim.getTimeLeft() / 1000)));
         }
@@ -77,6 +92,16 @@ public class FieldInitEvent extends PacketEvent {
         if (player.getDragon() == null && GameConstants.hasSPTable(player.getJob())) {
             player.createDragon();
             map.sendPacket(MaplePacketCreator.spawnDragon(player.getDragon()));
+        }
+
+        Relationship rltn = player.getRelationship();
+        if (rltn.getStatus() != Relationship.Status.Single) {
+            int partnerID = rltn.getPartnerID(player);
+            MapleCharacter target = world.getPlayerStorage().get(partnerID);
+            if (target != null && target.getMap() == map) {
+                player.announce(getMarriedPartnerFieldTransfer(mapID, partnerID));
+                target.announce(getMarriedPartnerFieldTransfer(mapID, player.getId()));
+            }
         }
         return null;
     }
