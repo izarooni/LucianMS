@@ -116,6 +116,7 @@ public enum RecvOpcode {
     RING_ACTION             (137, ReceivePacketState.ChannelServer),
     UNKNOWN3                (143, ReceivePacketState.Both, IgnoredPacketEvent.class),
     WEDDING_ACTION          (138, ReceivePacketState.ChannelServer),
+    VIEW_FAMILY_PEDIGREE    (145, ReceivePacketState.ChannelServer),
     OPEN_FAMILY             (146, ReceivePacketState.ChannelServer),
     ADD_FAMILY              (147, ReceivePacketState.ChannelServer),
     ACCEPT_FAMILY           (150, ReceivePacketState.ChannelServer),
