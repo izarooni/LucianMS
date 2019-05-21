@@ -1,313 +1,293 @@
 /* izarooni */
-var InventoryType = Java.type("com.lucianms.client.inventory.MapleInventoryType");
-var ItemConstants = Java.type("com.lucianms.constants.ItemConstants");
-var InventoryManipulator = Java.type("com.lucianms.server.MapleInventoryManipulator");
+const InventoryType = Java.type("com.lucianms.client.inventory.MapleInventoryType");
+const ItemConstants = Java.type("com.lucianms.constants.ItemConstants");
+const InventoryManipulator = Java.type("com.lucianms.server.MapleInventoryManipulator");
 
-var status = 0;
-var players = null;
+let status = 0;
+let target = {
+    p: undefined, // the targeted Player object
+    inv: undefined, // the targeted Player's Inventory object
+    item: undefined, // the targeted Player's Item object
+    stat: undefined, // the stat to change on the targeted Player's Item Object
+    error: undefined, // the output message for Item object stat change result
+    events: [], // array of targeted Player's GenericEvent objects
+    reset() {
+        target.p = undefined;
+        target.inv = undefined;
+        target.item = undefined;
+        target.events = [];
+    }
+};
 
 function action(mode, type, selection) {
     if (!player.isGM()) {
-        cm.sendOk("you do not have permission to view this NPC")
-        cm.dispose();
-        return;
+        cm.sendOk("you do not have permission to view this NPC");
+        return cm.dispose();
     }
-    if (mode === -1) {
-        cm.dispose();
-        return;
-    } else if (mode === 0) {
-        status--;
-        if (status === 0) {
-            cm.dispose();
-            return;
+         if (mode == 0) status--;
+    else if (mode == 1) status++;
+    else if (mode < 0 || status < 1) return cm.dispose();
+
+    if (status == 1) {
+        target.reset();
+        let content = "Who you lookin' for?\r\n#b";
+        content += "\r\n#L0#Search#l\r\n";
+        let online = GetPlayers();
+        for (let i = 0; i < online.length; i++) {
+            content += `\r\n#L${online[i].id}#${online[i].name}#l`;
         }
-    } else {
-        status++;
-    }
-    if (players == null) {
-        players = onlinePlayers();
-    }
-    if (status === 1) {
-        this.stalk = null; // reset for viewing a different player's information
-        var text = "Who you lookin' for?\r\n#b";
-        text += "\r\n#L0#Search#l\r\n";
-        for (var i = 0; i < players.length; i++) {
-            var chr = players[i];
-            text += "\r\n#L" + chr.id + "# " + chr.name + "#l";
+        cm.sendSimple(content);
+    } else if (status == 2) {
+        if (selection == 0) {
+            return cm.sendGetText("");
         }
-        cm.sendSimple(text);
-    } else if (status === 2) {
-        if (this.stalk != null || selection > 0) { // coming from a future status || coming from previous status
-            this.inventory = null; // reset for viewing other inventory items
-            if (this.stalk == null) { // first time viewing player information
-                this.stalk = getPlayerById(selection);
-            }
-            cm.sendSimple("What would you like to do with #b" + this.stalk.name + "#k?\r\n#b"
-                    + "\r\n#L0#View equipped#l"
-                    + "\r\n#L1#View equips#l"
-                    + "\r\n#L2#View use#l"
-                    + "\r\n#L3#View setup#l"
-                    + "\r\n#L4#View ETC#l"
-                    + "\r\n#L5#View cash#l"
-                    + "\r\n"
-                    + "\r\n#L6#Give item#l"
-                    + "\r\n#L7#View information#l"
-                    );
-        } else {
-            cm.sendGetText("Who you lookin' for?");
+        if (target.p == undefined) target.p = GetPlayer(selection);
+        target.inv = undefined;
+        let content = "What would you like to do with #b" + target.p.name + "#k?\r\n#b";
+        let types = InventoryType.values();
+        for (let i = 1; i < types.length; i++) {
+            content += `\r\n#L${i}#${types[i].name()}#l`;
         }
-    } else if (status === 3) {
-        if (cm.getText() == null) {
-            if (this.inventory != null || getInventoryType(selection) != null) { // coming from a future status || coming from a previous status
-                if (this.inventory == null) { // first time viewing this inventory (i.e previoous status was inventory selection)
-                    this.inventory = getPlayer(this.stalk.id).getInventory(getInventoryType(selection));
-                }
-                this.item = null;
-                var text = "\r\n";
-                for (var i = (this.inventory.getType() == InventoryType.EQUIPPED ? -128 : 0); i < inventory.getSlotLimit(); i++) { // equip inventory positions have negative integers
-                    var item = inventory.getItem(i);
-                    if (item != null) {
-                        text += "\t#L" + i + "##v" + item.getItemId() + "##l";
-                        if (Math.abs(i) % 5 == 0)
-                            text += "\r\n"; // looks clean
-                    }
-                }
-                if (text.length > 4) { // because "\r\n".length == 4; make sure items have been added
-                    cm.sendSimple(text);
-                } else {
-                    cm.sendNext("This inventory is empty!");
-                    status = 1;
-                }
-            } else {
-                if (selection == 6) {
-                    cm.sendGetText("What is the Id of the item you want to give?");
-                } else if (selection == 7) {
-                    var t = getPlayer(this.stalk.id);
-                    if (t != null) {
-                        var otherChars = "\t";
-                        var idNamePair = t.getClient().getCharacterIdentifiers();
-                        for (var i = 0; i < idNamePair.size(); i++) {
-                            otherChars += idNamePair.get(i).getRight() + ", ";
-                        }
-                        cm.sendOk(
-                            "#e" + this.stalk.name + "'s stats#n\r\n"
-                            + "\r\nGM Level: " + t.getGMLevel()
-                            + "\r\nAccount Name: " + t.getClient().getAccountName()
-                            + "\r\nAccount Id: " + t.getAccountID()
-                            + "\r\nCharacter Id: " + t.getId()
-                            + "\r\nOther characters: \r\n" + otherChars
-                            + "\r\n\r\nRemote address: " + t.getClient().getRemoteAddress()
-                            + "\r\n\r\nMACs: " + t.getClient().getMacs()
-                            + "\r\nHWID: " + t.getClient().getHardwareIDs()
-                            + "\r\n\r\nCalcualted ATK: " + t.calculateMaxBaseDamage(t.getTotalWatk())
-                            + "\r\nEXP, Meso, Drop rate: " + `${t.getExpRate()}x, ${t.getMesoRate()}x, ${t.getDropRate()}x`
-                            + "\r\nCrush rings: " + t.getCrushRings()
-                            + "\r\nFriendship rings: " + t.getFriendshipRings());
-                        cm.dispose();
-                    } else {
-                        cm.sendNext("The player could not be found");
-                        status = 0;
-                    }
-                } else {
-                    cm.sendOk("Error");
-                    cm.dispose();
-                }
-            }
-        } else {
-            // get all online players again but filter by matching name
-            players = onlinePlayers(cm.getText());
-            cm.setGetText(null);
-            status = 0;
-            action(1, 0, -1);
-        }
-    } else if (status === 4) {
-        if (cm.getText() == null) { // viewing inventory
-            if (this.inventory == null) {
-                // prevent bug occurrences i guess
-                cm.sendOk("Something's not right!");
-                cm.dispose();
-                return;
-            }
-            this.changeStat = null; // reset for changing another item stat
-            if (this.item == null) { // first time viewing item information
-                this.item = this.inventory.getItem(selection);
-                if (this.item == null) { // item disappeared/moved from player inventory
-                    cm.sendNext("Invalid item");
-                    status = 1; // go back and view inventories again
-                    return;
-                }
-            }
-            var isEquip = ItemConstants.getInventoryType(this.item.getItemId()) == InventoryType.EQUIP;
-            var text = "#b#v" + this.item.getItemId() + "#\t#z" + this.item.getItemId() + "# (" + this.item.getPosition() + " // " + this.item.getItemId() + ")\r\n";
-            if (isEquip) {
-                text += "\r\n#L0#STR: " + this.item.getStr() + "#l";
-                text += "\r\n#L1#DEX: " + this.item.getDex() + "#l";
-                text += "\r\n#L2#INT: " + this.item.getInt() + "#l";
-                text += "\r\n#L3#LUK: " + this.item.getLuk() + "#l";
-                text += "\r\n#L4#WATK: " + this.item.getWatk() + "#l";
-                text += "\r\n#L5#MATK: " + this.item.getMatk() + "#l";
-                text += "\r\n#L6#WDEF: " + this.item.getWdef() + "#l";
-                text += "\r\n#L7#MDEF: " + this.item.getMdef() + "#l";
-                text += "\r\n#L8#HP: " + this.item.getHp() + "#l";
-                text += "\r\n#L9#MP: " + this.item.getMp() + "#l";
-                text += "\r\n#L10#SPEED: " + this.item.getSpeed() + "#l";
-                text += "\r\n#L11#JUMP: " + this.item.getJump() + "#l";
-                text += "\r\n#L12#Ring ID: " + this.item.getRingId() + "#l";
-            } else {
-                text += "\r\n#L13#QUANTITY: " + this.item.getQuantity() + "#l";
-            }
-            text += "\r\n#L14#EXPIRATION: " + this.item.getExpiration() + "#l";
-            text += "\r\n#L15#OWNER: " + this.item.getOwner() + "#l";
-            text += "\r\n#L16#Remove#l";
-            cm.sendSimple(text);
-        } else { // giving item
-            let itemID = parseInt(cm.getText());
-            if (!isNaN(itemID)) {
-                let target = getPlayer(this.stalk.id);
-                if (InventoryManipulator.checkSpace(target.getClient(), itemID, 1, "")) {
-                    InventoryManipulator.addById(target.getClient(), itemID, 1);
-                    player.sendMessage(5, `Given 1 of ${itemID} to player '${this.stalk.name}'`);
-                    target.sendMessage(5, `You have received an item from '${player.getName()} in your ${ItemConstants.getInventoryType(itemID).name()} inventory`);
-                } else {
-                    cm.sendOk("The player's inventory is full");
-                }
-            } else {
-                cm.sendOk(`#r${itemID}#k is not a number!`);
-            }
-            cm.dispose();
-        }
-    } else if (status === 5) {
-        if (selection === 16) {
-            InventoryManipulator.removeFromSlot(getPlayer(this.stalk.id).getClient(), this.inventory.getType(), this.item.getPosition(), this.item.getQuantity(), false);
-            status = 2;
-            action(1, 0, 0);
-        } else {
-            if (this.changeStat == null) { // first time changing item stat
-                this.changeStat = selection;
-            }
-            let text = "What do you want to set the #b" + getUpdateName(this.changeStat).toUpperCase() + "#k stat to?";
-            if (this.error != null) {
-                text = this.error + text;
-            }
-            cm.sendGetText(text);
-        }
-    } else if (status === 6) {
-        if (this.changeStat === 13) { // changing item tag
-            updateItem(getPlayer(this.stalk.id), this.item, this.changeStat, cm.getText());
-            status -= 3; // go back to item information
-        } else {
-            let newval = parseInt(cm.getText()); // the new value for the item stat
-            this.error = null; // reset error message
-            if (isNaN(newval) || (newval < 0 && this.changeStat != 16)) {
-                this.error = "#r'" + cm.getText() + "' is an invalid number#k\r\n"; // set error message
-                status -= 2; // return to previous status to display error message
-            } else {
-                updateItem(getPlayer(this.stalk.id), this.item, this.changeStat, newval); // any other stat we can just apply the new value
-                status -= 3; // go back to item information
-            }
+        content += "\r\n";
+        content += "\r\n#L7#Give item#l";               
+        content += "\r\n#L8#View information#l";               
+        content += "\r\b#L9#Manage Generic Events#l";           
+        cm.sendSimple(content);
+    } else if (status == 3) {
+        if (cm.getText() != null) {
+            // player list filter
+            status = 0; // redirect to player list (1st status) with text
+            return action(1, 0, 0);
         }
         cm.setGetText(null);
-        action(1, 0, 0); // we didn't display any chat dialogues but we modified the status so just recall the function
+        switch (selection) {
+            case 7: {
+                cm.sendGetText("What is the ID of the item you want to give?");
+                break;
+            }
+            case 8: {
+                let relatedPlayers = "\t";
+                let pair = target.p.getClient().getCharacterIdentifiers();
+                pair.forEach(p => {
+                    relatedPlayers += `${p.getRight()}, `;
+                });
+                pair.clear();
+                cm.sendPrev(
+                    "#e" + target.p.name + "'s stats#n\r\n"
+                    + "\r\nGM Level: " + target.p.getGMLevel()
+                    + "\r\nAccount Name: " + target.p.getClient().getAccountName()
+                    + "\r\nAccount Id: " + target.p.getAccountID()
+                    + "\r\nCharacter Id: " + target.p.getId()
+                    + "\r\nOther characters: \r\n" + relatedPlayers
+                    + "\r\n\r\nRemote address: " + target.p.getClient().getRemoteAddress()
+                    + "\r\n\r\nMACs: " + target.p.getClient().getMacs()
+                    + "\r\nHWID: " + target.p.getClient().getHardwareIDs()
+                    + "\r\n\r\nCalcualted ATK: " + target.p.calculateMaxBaseDamage(target.p.getTotalWatk())
+                    + "\r\nEXP, Meso, Drop rate: " + `${target.p.getExpRate()}x, ${target.p.getMesoRate()}x, ${target.p.getDropRate()}x`
+                    + "\r\nCrush rings: " + target.p.getCrushRings()
+                    + "\r\nFriendship rings: " + target.p.getFriendshipRings());
+                break;
+            }
+            case 9: {
+                let content = "";
+                let events = target.p.getGenericEvents();
+                events.forEach(g => {
+                    target.events.push(g);
+                    content += `#L${target.events.length - 1}# ${g.getClass().getSimpleName()} #l`;
+                });
+                if (target.events.length == 0) cm.sendPrev(`${target.p.name} is not registered in any generic events`);
+                else cm.sendSimple(content);
+                break;
+            }
+            default: {
+                if (target.inv == undefined && selection > 0 && selection < 7) {
+                    target.inv = target.p.getInventory(InventoryType.values()[selection]);
+                }
+                if (target.inv != undefined) {
+                    let content = "";
+                    let items = target.inv.list();
+                    items.forEach(item => {
+                        content += `#L${item.getPosition()}# #v${item.getItemId()}# #l\t`;
+                    });
+                    if (content.length == 0) cm.sendPrev(`#b${target.inv.getType()}#k inventory is empty`);
+                    else cm.sendSimple(content);
+                }
+                break;
+            }
+        }
+    } else if (status == 4) {
+        if (cm.getText() != null) {
+            let itemID = parseInt(cm.getText());
+            if (!isNaN(itemID)) {
+                let type = ItemConstants.getInventoryType(itemID);
+                if (type == InventoryType.UNDEFINED) {
+                    cm.sendPrev(`${itemID} is not a valid item ID`);
+                } else if (InventoryManipulator.checkSpace(target.p.getClient(), itemID, 1, "")) {
+                    InventoryManipulator.addById(target.p.getClient(), itemID, 1);
+                    target.p.sendMessage(5, `You have received an item from '${player.getName()} in your ${type.name()} inventory`);
+                    cm.sendNext(`Given 1 of #b#v${itemID}# #z${itemID}##k to player #b${target.p.name}#k`);
+                    status = 1;
+                } else {
+                    cm.sendOk(`#b${target.p.name}#k's #b${type.name()}#k inventory is full and cannot receive the item`);
+                }
+            } else {
+                status = 1;
+                cm.sendNext(`#b'${cm.getText()}'#k is not a number`);
+            }
+            cm.setGetText(null);
+            return;
+        }
+        if (target.inv == undefined) {
+            status = 1;
+            return action(1, 0, -1);
+        } else if (target.item == undefined && (target.item = target.inv.getItem(selection)) == null) {
+            status = 1;
+            return cm.sendNext("Item not found. Possibly removed?");
+        }
+        target.stat = undefined;
+        let item = target.item;
+        let isEquip = ItemConstants.getInventoryType(target.item.getItemId()) == InventoryType.EQUIP;
+        let content = `#b#v${item.getItemId()}# #z${item.getItemId}# (${item.getPosition()} // ${item.getItemId()})\r\n`;
+        content += "\r\n#L16#Remove#l";
+        content += "\r\n#L17#Send to another player#l";
+        content += "\r\n";
+        if (isEquip) {
+            content += "\r\n#L0#STR: " + item.getStr() + "#l";
+            content += "\r\n#L1#DEX: " + item.getDex() + "#l";
+            content += "\r\n#L2#INT: " + item.getInt() + "#l";
+            content += "\r\n#L3#LUK: " + item.getLuk() + "#l";
+            content += "\r\n#L4#WATK: " + item.getWatk() + "#l";
+            content += "\r\n#L5#MATK: " + item.getMatk() + "#l";
+            content += "\r\n#L6#WDEF: " + item.getWdef() + "#l";
+            content += "\r\n#L7#MDEF: " + item.getMdef() + "#l";
+            content += "\r\n#L8#HP: " + item.getHp() + "#l";
+            content += "\r\n#L9#MP: " + item.getMp() + "#l";
+            content += "\r\n#L10#SPEED: " + item.getSpeed() + "#l";
+            content += "\r\n#L11#JUMP: " + item.getJump() + "#l";
+            content += "\r\n#L12#Ring ID: " + item.getRingId() + "#l";
+        } else {
+            content += "\r\n#L13#QUANTITY: " + item.getQuantity() + "#l";
+        }
+        content += "\r\n#L14#EXPIRATION: " + item.getExpiration() + "#l";
+        content += "\r\n#L15#OWNER: " + item.getOwner() + "#l";
+        cm.sendSimple(content);
+    } else if (status == 5) {
+        if (target.stat == undefined) target.stat = selection;
+        if (target.stat == 16) {
+            InventoryManipulator.removeFromSlot(target.p.getClient(), target.inv.getType(), target.item.getPosition(), target.item.getQuantity(), false);
+            target.item = undefined;
+            status = 2;
+            action(1, 0, 0);
+        } else if (target.stat == 17) {
+            cm.sendGetText("Who will you give this item to?");
+        } else {
+            cm.sendGetText(`What will you to set the #b${getUpdateName(target.stat)}#k stat to?`);
+        }
+    } else if (status == 6) {
+        target.error = undefined;
+        let stat = target.stat;
+        if (stat == 15) { // changing item tag
+            updateItem(stat, cm.getText());
+            cm.setGetText(null);
+            status = 3;
+            action(1, 0, 0);
+        } else if (stat == 17) {
+            status = 3;
+            let item = target.item.getItemId();
+            let type = ItemConstants.getInventoryType(item);
+            let found = GetPlayer(cm.getText());
+            cm.setGetText(null);
+            if (found == null) {
+                cm.sendNext(`Unable to find anybody named '${found.getName()}'`);
+            } else if (InventoryManipulator.checkSpace(found.getClient(), item, 1, "")) {
+                InventoryManipulator.addById(found.getClient(), item, 1);
+                found.sendMessage(5, `You have received an item from '${player.getName()} in your ${type.name()} inventory`);
+                cm.sendNext(`Given 1 of #b#v${item}# #z${item}##k to player #b${found.getName()}#k`);
+                status = 1;
+            } else {
+                cm.sendNext(`#b${found.getName()}#k's #b${type.name()}#k inventory is full and cannot receive the item`);
+            }
+        } else {
+            let newval = parseInt(cm.getText()); // the new value for the item stat
+            if (isNaN(newval) || newval < 0) {
+                target.error = `'#b${cm.getText()}#k'#r is not a number and must be greater than or equal to 0\r\n'`;
+                status = 4;
+            } else {
+                updateItem(stat, newval);
+                status = 3;
+            }
+            cm.setGetText(null);
+            action(1, 0, 0);
+        }
     }
 }
 
 /* ********** functions ********** */
-function getPlayer(playerId) {
-    return world.getPlayerStorage().get(playerId);
+function GetPlayer(id) {
+    if (typeof id == "number") return world.getPlayerStorage().get(id);
+    else return world.getPlayerStorage().find(p => p.getName().equalsIgnoreCase(id));
 }
 
 // Get all online players in the player's world server
 // and return them as an array of Player object
-function onlinePlayers(filter) {
+function GetPlayers() {
     let ret = [];
-    let players = world.getPlayers();
-    let iter = players.iterator();
-    while (iter.hasNext()) {
-        let p = iter.next();
-        if (filter != undefined) {
+    let storage = world.getPlayers();
+    storage.forEach(p => {
+        let filter = cm.getText();
+        if (filter != null) {
             if (!p.getName().toUpperCase().contains(filter.toUpperCase())) {
-                continue;
+                return;
             }
         }
-        let chr = new Player(p.getId(), p.getName());
-        ret.push(chr);
-    }
-    players.clear();
+        ret.push(new Player(p.getId(), p.getName()));
+    });
+    storage.clear();
+    cm.setGetText(null);
     return ret;
-}
-
-// Get a Player object by iteration and matching player Ids
-function getPlayerById(id) {
-    if (players == null) {
-        return null;
-    }
-    for (let i = players.length - 1; i >= 0; i--) {
-        if (players[i].id === id) {
-            return players[i];
-        }
-    }
-    return null;
-}
-
-// Used to get inventory type by selection value
-function getInventoryType(i) {
-    switch (i) {
-        case 0: return InventoryType.EQUIPPED;
-        case 1: return InventoryType.EQUIP;
-        case 2: return InventoryType.USE;
-        case 3: return InventoryType.SETUP;
-        case 4: return InventoryType.ETC;
-        case 5: return InventoryType.CASH;
-    }
-    return null;
 }
 
 // Used to get stat name by selection value
 function getUpdateName(stat) {
     switch (stat) {
-        case 0: return "str";
-        case 1: return "dex";
-        case 2: return "int";
-        case 3: return "luk";
-        case 4: return "watk";
-        case 5: return "matk";
-        case 6: return "wdef";
-        case 7: return "mdef";
-        case 8: return "hp";
-        case 9: return "mp";
-        case 10: return "speed";
-        case 11: return "jump";
-        case 12: return "ring id";
-        case 13: return "quantity";
-        case 14: return "expiration";
-        case 15: return "owner";
+        case 0: return "STR";
+        case 1: return "DEX";
+        case 2: return "INT";
+        case 3: return "LUK";
+        case 4: return "WATK";
+        case 5: return "MATK";
+        case 6: return "WDEF";
+        case 7: return "MDEF";
+        case 8: return "HP";
+        case 9: return "MP";
+        case 10: return "SPEED";
+        case 11: return "JUMP";
+        case 12: return "RING ID";
+        case 13: return "QUANTITY";
+        case 14: return "EXPIRATION";
+        case 15: return "OWNER";
     }
 }
 
-// set the value of the item stat to the newval and
-// update the item
-function updateItem(player, item, stat, newval) {
-    if (player == null) {
-        cm.getPlayer().dropMesseage("The player could not be found");
-        return;
-    }
-    if (stat === 0) item.setStr(newval);
-    else if (stat === 1) item.setDex(newval);
-    else if (stat === 2) item.setInt(newval);
-    else if (stat === 3) item.setLuk(newval);
-    else if (stat === 4) item.setWatk(newval);
-    else if (stat === 5) item.setMatk(newval);
-    else if (stat === 6) item.setWdef(newval);
-    else if (stat === 7) item.setMdef(newval);
-    else if (stat === 8) item.setHp(newval);
-    else if (stat === 9) item.setMp(newval);
-    else if (stat === 10) item.setSpeed(newval);
-    else if (stat === 11) item.setJump(newval);
-    else if (stat === 12) item.setRingId(newval);
-    else if (stat === 13) item.setQuantity(newval);
-    else if (stat === 14) item.setExpiration(newval);
-    else if (stat === 15) item.setOwner(newval);
-    player.forceUpdateItem(item);
+// set the value of the item stat to the newval and update the item
+function updateItem(stat, newval) {
+         if (stat == 0) target.item.setStr(newval);
+    else if (stat == 1) target.item.setDex(newval);
+    else if (stat == 2) target.item.setInt(newval);
+    else if (stat == 3) target.item.setLuk(newval);
+    else if (stat == 4) target.item.setWatk(newval);
+    else if (stat == 5) target.item.setMatk(newval);
+    else if (stat == 6) target.item.setWdef(newval);
+    else if (stat == 7) target.item.setMdef(newval);
+    else if (stat == 8) target.item.setHp(newval);
+    else if (stat == 9) target.item.setMp(newval);
+    else if (stat == 10) target.item.setSpeed(newval);
+    else if (stat == 11) target.item.setJump(newval);
+    else if (stat == 12) target.item.setRingId(newval);
+    else if (stat == 13) target.item.setQuantity(newval);
+    else if (stat == 14) target.item.setExpiration(newval);
+    else if (stat == 15) target.item.setOwner(newval);
+    target.inv.updateItem(target.p.getClient(), target.item);
 }
 
 // objects
