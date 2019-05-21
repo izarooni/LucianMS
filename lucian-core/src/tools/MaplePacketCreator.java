@@ -3173,7 +3173,7 @@ public class MaplePacketCreator {
     public static byte[] giveDebuff(List<Pair<MapleDisease, Integer>> statups, MobSkill skill) {
         final MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
         mplew.writeShort(SendOpcode.GIVE_BUFF.getValue());
-        writeLongMaskD(mplew, statups);
+        encode16ByteMask(mplew, statups);
         for (Pair<MapleDisease, Integer> statup : statups) {
             mplew.writeShort(statup.getRight().shortValue());
             mplew.writeShort(skill.getSkillId());
@@ -3242,14 +3242,18 @@ public class MaplePacketCreator {
         return mplew.getPacket();
     }
 
-    public static byte[] giveForeignDebuff(int cid, List<Pair<MapleDisease, Integer>> statups, MobSkill skill) {
+    public static byte[] giveForeignDebuff(int cid, List<Pair<MapleDisease, Integer>> stats, MobSkill skill) {
         final MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
         mplew.writeShort(SendOpcode.GIVE_FOREIGN_BUFF.getValue());
         mplew.writeInt(cid);
-        writeLongMaskD(mplew, statups);
-        for (int i = 0; i < statups.size(); i++) {
+        encode16ByteMask(mplew, stats);
+        for (Pair<MapleDisease, Integer> pair : stats) {
             mplew.writeShort(skill.getSkillId());
-            mplew.writeShort(skill.getSkillLevel());
+            if (pair.getLeft().isFirst()) {
+                mplew.writeInt(skill.getSkillLevel());
+            } else {
+                mplew.writeShort(skill.getSkillLevel());
+            }
         }
         mplew.writeShort(0); // same as give_buff
         mplew.writeShort(900);//Delay
@@ -6741,7 +6745,7 @@ public class MaplePacketCreator {
         mplew.writeLong(secondmask);
     }
 
-    private static void writeLongMaskD(final MaplePacketLittleEndianWriter mplew, List<Pair<MapleDisease, Integer>> statups) {
+    private static void encode16ByteMask(final MaplePacketLittleEndianWriter mplew, List<Pair<MapleDisease, Integer>> statups) {
         long firstmask = 0;
         long secondmask = 0;
         for (Pair<MapleDisease, Integer> statup : statups) {

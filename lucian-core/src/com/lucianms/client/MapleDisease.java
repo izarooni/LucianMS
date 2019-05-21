@@ -22,37 +22,37 @@
 package com.lucianms.client;
 
 public enum MapleDisease {
+
     NULL(0x0),
     SLOW(0x1),
     SEDUCE(0x80),
     FISHABLE(0x100),
     CONFUSE(0x80000),
     STUN(0x2000000000000L),
-    POISON(0x4000000000000L),
+    POISON(0x4000000000000L, true),
     SEAL(0x8000000000000L),
     DARKNESS(0x10000000000000L),
     WEAKEN(0x4000000000000000L),
     CURSE(0x8000000000000000L);
-    
-    private long i;
-    private boolean first;
-    
-    private MapleDisease(long i) {
-        this.i = i;
-        this.first = false;
+
+    private final long bitmask;
+    private final boolean first;
+
+    MapleDisease(long bitmask) {
+        this(bitmask, false);
     }
 
-    private MapleDisease(long i, boolean first) {
-        this.i = i;
+    MapleDisease(long bitmask, boolean first) {
+        this.bitmask = bitmask;
         this.first = first;
     }
-    
+
     public long getValue() {
-        return i;
+        return bitmask;
     }
 
-	public boolean isFirst() {
-		return first;
-	}
-	
+    public boolean isFirst() {
+        return first;
+    }
+
 }
