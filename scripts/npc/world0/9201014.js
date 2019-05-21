@@ -27,7 +27,6 @@ function action(mode, type, selection) {
     }
     let rel = player.getRelationship();
     let formal = rel.getStatus();
-    cm.gainItem(ServerConstants.CURRENCY, -DIVORCE_COST, true);
     if (formal != formal.class.static.Married) {
         cm.sendOk("You must be married before you can get divorced.");
         cm.dispose();

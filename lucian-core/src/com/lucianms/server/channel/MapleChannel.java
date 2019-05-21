@@ -27,17 +27,18 @@ public final class MapleChannel implements PacketAnnouncer {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MapleChannel.class);
 
-    private MapleServerInboundHandler serverHandler;
     private final int world, channel;
     private final int port;
     private final InetAddress networkAddress;
+    private MapleServerInboundHandler serverHandler;
+    private ArrayList<MapleExpedition> expeditions = new ArrayList<>();
     private ConcurrentMapStorage<Integer, MapleMap> maps = new ConcurrentMapStorage<>();
+    private HashMap<Integer, HiredMerchant> hiredMerchants = new HashMap<>();
+    private HashMap<Integer, Integer> storedVars = new HashMap<>();
     private EventScriptManager eventScriptManager;
-    private Map<Integer, HiredMerchant> hiredMerchants = new HashMap<>();
-    private final Map<Integer, Integer> storedVars = new HashMap<>();
-    private ReentrantReadWriteLock merchant_lock = new ReentrantReadWriteLock(true);
-    private List<MapleExpedition> expeditions = new ArrayList<>();
     private MapleEvent event;
+
+    private ReentrantReadWriteLock merchant_lock = new ReentrantReadWriteLock(true);
 
     public MapleChannel(final int world, final int channel) throws UnknownHostException {
         this.world = world;

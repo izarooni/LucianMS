@@ -972,7 +972,7 @@ public class MapleItemInformationProvider {
         }
         MapleData data = getItemData(itemId);
         if (data == null) {
-            throw new NullPointerException("No data for item " + itemId);
+            return false;
         }
         boolean consume = MapleDataTool.getIntConvert("spec/consumeOnPickup", data, 0) == 1;
         if (!consume) {

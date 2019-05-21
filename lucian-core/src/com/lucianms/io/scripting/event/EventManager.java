@@ -33,7 +33,7 @@ public class EventManager extends GenericEvent {
     private Invocable invocable;
 
     private HashMap<String, EventInstanceManager> instances = new HashMap<>();
-    private Properties props = new Properties();
+    private Properties properties = new Properties();
 
     public EventManager(MapleChannel channel, String scriptName) {
         this.channel = channel;
@@ -139,12 +139,16 @@ public class EventManager extends GenericEvent {
         instances.remove(name);
     }
 
+    public Properties getProperties() {
+        return properties;
+    }
+
     public String getProperty(String key) {
-        return props.getProperty(key);
+        return properties.getProperty(key);
     }
 
     public void setProperty(String key, Object value) {
-        props.setProperty(key, value.toString());
+        properties.setProperty(key, value.toString());
     }
 
     /**
