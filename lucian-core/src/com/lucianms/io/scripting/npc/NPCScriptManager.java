@@ -83,7 +83,6 @@ public class NPCScriptManager {
                 }
             }
         } catch (Exception e) {
-            e.printStackTrace();
             String response = "An error occurred in this NPC";
             if (fileName != null) {
                 response += "\r\nName: " + fileName;

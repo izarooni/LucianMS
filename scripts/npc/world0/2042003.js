@@ -1,11 +1,13 @@
-const MaplePacketCreator = Java.type("tools.MaplePacketCreator");
-const Lobby = client.getChannelServer().getCarnivalLobbyManager();
 const LobbyState = Java.type("com.lucianms.features.carnival.MCarnivalLobby.State");
-const MCarnival = Java.type("com.lucianms.features.carnival.MCarnivalLobby");
 /* izarooni */
-const M_Office = 980000000;
 let status = 0;
-let carnival = player.getGenericEvents().stream().filter((g) => (g instanceof MCarnival)).findFirst().orElse(null);
+let Lobby = null;
+{
+    let em = cm.getEventManager("MonsterCarnival");
+    if (em != null) {
+        Lobby = em.getProperties().get("lobby");
+    }
+}
 
 function action(mode, type, selection) {
     if (mode < 1) {
@@ -17,15 +19,9 @@ function action(mode, type, selection) {
     if (status == 1) {
         cm.sendNext("If you have changed your mind about the battle, you may leave now");
     } else if (status == 2) {
-        if (carnival != null) {
-            // awaiting lobby
-            let lobby = Lobby.getLobby(player.getMapId());
-            lobby.setState(lobby.removeParty(cm.getParty()) ? LobbyState.Available : LobbyState.Waiting);
-
-            cm.warp(M_Office);
-        } else {
-            player.changeMap(M_Office);
-        }
+        // waiting lobby
+        let lobby = Lobby.getLobby(player.getMapId());
+        lobby.setState(lobby.removeParty(cm.getParty()) ? LobbyState.Available : LobbyState.Waiting);
         cm.dispose();
     }
 }

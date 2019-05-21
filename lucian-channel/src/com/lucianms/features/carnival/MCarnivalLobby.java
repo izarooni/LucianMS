@@ -3,6 +3,7 @@ package com.lucianms.features.carnival;
 import com.lucianms.scheduler.Task;
 import com.lucianms.scheduler.TaskExecutor;
 import com.lucianms.server.channel.MapleChannel;
+import com.lucianms.server.maps.MapleMap;
 import com.lucianms.server.world.MapleParty;
 import tools.MaplePacketCreator;
 import tools.Randomizer;
@@ -118,13 +119,17 @@ public class MCarnivalLobby {
                 break;
             }
             case Waiting: {
+                party1.getPlayers().forEach(p -> p.changeMap(getMapId()));
                 waitingTask = TaskExecutor.cancelTask(waitingTask);
                 broadcastPacket(MaplePacketCreator.getClock(300));
                 waitingTask = TaskExecutor.createTask(() -> setState(State.Available), 60000 * 5); // 5 minutes
                 break;
             }
             case Available: {
-                channel.removeMap(getBattlefieldMapId()); // resets
+                MapleMap room = channel.removeMap(getMapId());// resets
+                if (room != null) {
+                    room.forEachPlayer(p -> p.changeMap(M_Office));
+                }
                 waitingTask = TaskExecutor.cancelTask(waitingTask);
                 Optional.ofNullable(carnivalGame).ifPresent(MCarnivalGame::dispose);
                 break;
@@ -134,6 +139,7 @@ public class MCarnivalLobby {
 
     /**
      * @param party the party to add to the lobby
+     *
      * @return trye if both party slots in the lobby are filled, false otherwise
      */
     public boolean joiningParty(MapleParty party) {
@@ -146,9 +152,9 @@ public class MCarnivalLobby {
     }
 
     public boolean removeParty(MapleParty party) {
-        if (party1.getID() == party.getID()) {
+        if (party1 != null && party1.getID() == party.getID()) {
             party1 = null;
-        } else if (party2.getID() == party.getID()) {
+        } else if (party2 != null && party2.getID() == party.getID()) {
             party2 = null;
         }
         return party1 == null && party2 == null;
@@ -161,6 +167,7 @@ public class MCarnivalLobby {
      * </p>
      *
      * @param party the party attempt to enter the lobby
+     *
      * @return true if the party may enter, false otherwise
      */
     public boolean canEnter(MapleParty party) {

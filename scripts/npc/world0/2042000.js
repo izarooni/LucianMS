@@ -1,9 +1,15 @@
 const MaplePacketCreator = Java.type("tools.MaplePacketCreator");
-const Lobby = client.getChannelServer().getCarnivalLobbyManager();
 const LobbyState = Java.type("com.lucianms.features.carnival.MCarnivalLobby.State");
 /* izarooni */
 const M_Office = 980000000;
 let status = 0;
+let Lobby = null;
+{
+    let em = cm.getEventManager("MonsterCarnival");
+    if (em != null) {
+        Lobby = em.getProperties().get("lobby");
+    }
+}
 
 function action(mode, type, selection) {
     if (mode < 1) {
@@ -11,6 +17,10 @@ function action(mode, type, selection) {
         return;
     } else {
         status++;
+    }
+    if (Lobby == null) {
+        cm.sendOk("The Monster Carnival is unavailable at this time.");
+        return;
     }
     if (player.getMapId() != M_Office) {
         Entrance(selection);
@@ -27,7 +37,7 @@ function Entrance(selection) {
         +" \r\n#L2#I want to trade in my Maple Shiny Coins.#l");
     } else if (status == 2) {
         if (selection == 0) {
-
+            cm.warp(980000000);
         } else if (selection == 1) {
             cm.sendNext("The #bMonster Carnival#k is that magical place where you team up with others to obliterate hordes of monsters faster than the other folks.");
         } else if (selection == 2) {
@@ -69,7 +79,6 @@ function Queue(selection) {
             if (lobby.getState() == LobbyState.Waiting || lobby.getState() == LobbyState.Available) {
                 if (lobby.canEnter(cm.getParty())) {
                     // warp present party members to the lobby
-                    cm.getPartyMembers().forEach(chr => chr.changeMap(lobby.getMapId()));
                     if (lobby.joiningParty(cm.getParty())) {
                         // challenger found
                         lobby.setState(LobbyState.Starting);

@@ -1,10 +1,13 @@
-var MaplePacketCreator = Java.type("tools.MaplePacketCreator");
-var Lobby = client.getChannelServer().getCarnivalLobbyManager();
-var LobbyState = Java.type("com.lucianms.features.carnival.MCarnivalLobby.State");
-var MCarnival = Java.type("com.lucianms.features.carnival.MCarnivalLobby");
+const LobbyState = Java.type("com.lucianms.features.carnival.MCarnivalLobby.State");
 /* izarooni */
-var status = 0;
-var M_Office = 980000000;
+let status = 0;
+let Lobby = null;
+{
+    let em = cm.getEventManager("MonsterCarnival");
+    if (em != null) {
+        Lobby = em.getProperties().get("lobby");
+    }
+}
 
 function action(mode, type, selection) {
     if (mode < 1) {
@@ -13,27 +16,12 @@ function action(mode, type, selection) {
     } else {
         status++;
     }
-    if (this.carnival == null) {
-        this.carnival = player.getGenericEvents().stream().filter(function(g) { return (g instanceof MCarnival)} ).findFirst().orElse(null);
-    }
     if (status == 1) {
         cm.sendNext("If you have changed your mind about the battle, you may leave now");
     } else if (status == 2) {
-        if (this.carnival == null) {
-            cm.sendOk("You're not even participating in the Monster Carnival? Well, you should");
-            cm.dispose();
-            return;
-        }
-        // awaiting lobby
-        var game = Lobby.getLobby(player.getMapId());
-        game.removeParty(cm.getParty());
-
-        game.getWaitingTask().cancel();
-        game.setWaitingTask(null);
-
-        cm.warp(M_Office);
-
-        game.setState(LobbyState.Available);
+        // waiting lobby
+        let lobby = Lobby.getLobby(player.getMapId());
+        lobby.setState(lobby.removeParty(cm.getParty()) ? LobbyState.Available : LobbyState.Waiting);
         cm.dispose();
     }
 }

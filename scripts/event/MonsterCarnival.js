@@ -6,3 +6,7 @@ function init() {
     CarnivalLobby = new Lobby(em.getChannel());
     em.getProperties().put("lobby", CarnivalLobby);
 }
+
+function cancelSchedule() {
+    CarnivalLobby.reset();
+}

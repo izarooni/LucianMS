@@ -2032,10 +2032,11 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Di
     }
 
     public void forceUpdateItem(Item item) {
-        final List<ModifyInventory> mods = new LinkedList<>();
+        List<ModifyInventory> mods = new LinkedList<>();
         mods.add(new ModifyInventory(3, item));
         mods.add(new ModifyInventory(0, item));
         client.announce(MaplePacketCreator.modifyInventory(true, mods));
+        mods.clear();
     }
 
     public void gainGachaExp() {
