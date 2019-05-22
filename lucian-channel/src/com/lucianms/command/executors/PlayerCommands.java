@@ -316,11 +316,14 @@ public class PlayerCommands extends CommandExecutor {
             }
         }
         player.sendMessage("================ '{}''s Stats ================", target.getName());
-        player.sendMessage("EXP {}x, MESO {}x, DROP {}x", target.getExpRate(), target.getMesoRate(), target.getDropRate());
         player.sendMessage("Mesos: {}", StringUtil.formatNumber(target.getMeso()));
         player.sendMessage("Ability Points: {}", StringUtil.formatNumber(target.getRemainingAp()));
         player.sendMessage("Skill Points: {}", StringUtil.formatNumber(target.getRemainingSp()));
         player.sendMessage("Hair / Face: {} / {}", target.getHair(), target.getFace());
+        player.sendMessage("EXP {}x, MESO {}x, DROP {}x", target.getExpRate(), target.getMesoRate(), target.getDropRate());
+        if (player.isGM()) {
+            player.sendMessage("GM Level {}, PID {}, OID {}", player.getGMLevel(), player.getId(), player.getObjectId());
+        }
         player.sendMessage("========== Etc ==========");
         player.sendMessage("Currency: {}", target.getItemQuantity(ServerConstants.CURRENCY, false));
         Optional<Occupation> occupation = Optional.ofNullable(target.getOccupation());

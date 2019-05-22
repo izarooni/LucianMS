@@ -153,7 +153,7 @@ public class EventCommands extends CommandExecutor {
             }
         } else {
             Collection<String> found = EVENT_RULES.keySet().stream()
-                    .filter(k -> Pattern.compile(input.replaceAll(" ", ".*"), Pattern.CASE_INSENSITIVE).matcher(k).find())
+                    .filter(k -> Pattern.compile(input.replaceAll(" |[^a-zA-Z0-9]", ".*"), Pattern.CASE_INSENSITIVE).matcher(k).find())
                     .collect(Collectors.toList());
             if (!found.isEmpty()) {
                 if (found.size() == 1) {
