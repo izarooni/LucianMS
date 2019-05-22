@@ -2261,13 +2261,13 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Di
     }
 
     public final List<MapleQuestStatus> getCompletedQuests() {
-        List<MapleQuestStatus> ret = new LinkedList<>();
+        List<MapleQuestStatus> ret = new ArrayList<>();
         for (MapleQuestStatus q : quests.values()) {
-            if (q.getStatus().equals(MapleQuestStatus.Status.COMPLETED)) {
+            if (q.getStatus() == MapleQuestStatus.Status.COMPLETED) {
                 ret.add(q);
             }
         }
-        return Collections.unmodifiableList(ret);
+        return ret;
     }
 
     public Collection<MapleMonster> getControlledMonsters() {

@@ -64,6 +64,7 @@ import java.sql.Timestamp;
 import java.util.List;
 import java.util.*;
 import java.util.Map.Entry;
+import java.util.stream.Collectors;
 
 /**
  * @author Frz
@@ -700,6 +701,7 @@ public class MaplePacketCreator {
             mplew.writeShort(q.getQuest().getId());
             mplew.writeLong(getTime(q.getCompletionTime()));
         }
+        completed.clear();
     }
 
     public static byte[] addQuestTimeLimit(final short quest, final int time) {
@@ -1066,85 +1068,82 @@ public class MaplePacketCreator {
         return mplew.getPacket();
     }
 
-    public static byte[] charInfo(MapleCharacter chr) {
-        final MaplePacketWriter mplew = new MaplePacketWriter();
-        mplew.writeShort(SendOpcode.CHAR_INFO.getValue());
-        mplew.writeInt(chr.getId());
-        mplew.write(chr.getLevel());
-        mplew.writeShort(chr.getJob().getId());
-        mplew.writeShort(chr.getFame());
-        mplew.writeBoolean(!chr.getWeddingRings().isEmpty());
+    public static byte[] getCharacterInfo(MapleCharacter player) {
+        MapleInventory eqqInventory = player.getInventory(MapleInventoryType.EQUIPPED);
+
+        final MaplePacketWriter w = new MaplePacketWriter(150);
+        w.writeShort(SendOpcode.CHAR_INFO.getValue());
+        //region CUIUserInfo::SetAvatarInfo
+        w.writeInt(player.getId());
+        w.write(player.getLevel());
+        w.writeShort(player.getJob().getId());
+        w.writeShort(player.getFame());
+        w.writeBoolean(!player.getWeddingRings().isEmpty());
         String guildName = "";
         String allianceName = "";
-        MapleGuildSummary gs = chr.getClient().getWorldServer().getGuildSummary(chr.getGuildId(), chr.getWorld());
-        if (chr.getGuildId() > 0 && gs != null) {
+        MapleGuildSummary gs = player.getClient().getWorldServer().getGuildSummary(player.getGuildId(), player.getWorld());
+        if (player.getGuildId() > 0 && gs != null) {
             guildName = gs.getName();
             MapleAlliance alliance = Server.getAlliance(gs.getAllianceId());
             if (alliance != null) {
                 allianceName = alliance.getName();
             }
         }
-        mplew.writeMapleString(guildName);
-        mplew.writeMapleString(allianceName);
-        mplew.write(0);
-        MaplePet[] pets = chr.getPets();
-        Item inv = chr.getInventory(MapleInventoryType.EQUIPPED).getItem((short) -114);
-        for (int i = 0; i < 3; i++) {
-            if (pets[i] != null) {
-                mplew.write(pets[i].getUniqueId());
-                mplew.writeInt(pets[i].getItemId()); // petid
-                mplew.writeMapleString(pets[i].getName());
-                mplew.write(pets[i].getLevel()); // pet level
-                mplew.writeShort(pets[i].getCloseness()); // pet closeness
-                mplew.write(pets[i].getFullness()); // pet fullness
-                mplew.writeShort(0);
-                mplew.writeInt(inv != null ? inv.getItemId() : 0);
+        w.writeMapleString(guildName);
+        w.writeMapleString(allianceName);
+        w.write(0);
+        //endregion
+        //region CUIUserInfo::SetMultiPetInfo
+        int petCount = player.getNoPets();
+        w.writeBoolean(petCount > 0);
+        Item inv = eqqInventory.getItem((short) -114);
+        for (MaplePet pet : player.getPets()) {
+            if (pet != null) {
+                w.writeInt(pet.getItemId()); // nTemplateID
+                w.writeMapleString(pet.getName());
+                w.write(pet.getLevel());
+                w.writeShort(pet.getCloseness());
+                w.write(pet.getFullness());
+                w.writeShort(0);
+                w.writeInt(inv != null ? inv.getItemId() : 0);
+                w.writeBoolean(--petCount > 0);
             }
         }
-        mplew.write(0); //end of pets
-        if (chr.getMount() != null && chr.getInventory(MapleInventoryType.EQUIPPED).getItem((short) -18) != null) {
-            mplew.write(chr.getMount().getId()); //mount
-            mplew.writeInt(chr.getMount().getLevel()); //level
-            mplew.writeInt(chr.getMount().getExp()); //exp
-            mplew.writeInt(chr.getMount().getTiredness()); //tiredness
-        } else {
-            mplew.write(0);
+        //endregion
+        //region CUIUserInfo::SetTamingMobInfo
+        MapleMount mount = player.getMount();
+        w.write(mount == null ? 0 : mount.getId()); //mount
+        if (mount != null && eqqInventory.getItem((short) -18) != null) {
+            w.writeInt(mount.getLevel()); //level
+            w.writeInt(mount.getExp()); //exp
+            w.writeInt(mount.getTiredness()); //tiredness
         }
-        CashShop cashShop = chr.getCashShop();
-        if (cashShop != null) {
-            mplew.write(cashShop.getWishList().size());
-            for (int sn : cashShop.getWishList()) {
-                mplew.writeInt(sn);
-            }
-        } else {
-            mplew.write(0);
-        }
-        Optional<MonsterBook> monsterBook = Optional.ofNullable(chr.getMonsterBook());
-        mplew.writeInt(monsterBook.map(MonsterBook::getBookLevel).orElse(0));
-        mplew.writeInt(monsterBook.map(MonsterBook::getNormalCard).orElse(0));
-        mplew.writeInt(monsterBook.map(MonsterBook::getSpecialCard).orElse(0));
-        mplew.writeInt(monsterBook.map(MonsterBook::getTotalCards).orElse(0));
-        mplew.writeInt(chr.getMonsterBookCover() > 0 ? MapleItemInformationProvider.getInstance().getCardMobId(chr.getMonsterBookCover()) : 0);
-        Item medal = chr.getInventory(MapleInventoryType.EQUIPPED).getItem((short) -49);
-        if (medal != null) {
-            mplew.writeInt(medal.getItemId());
-        } else {
-            mplew.writeInt(0);
-        }
-        ArrayList<Short> medalQuests = new ArrayList<>();
-        List<MapleQuestStatus> completed = chr.getCompletedQuests();
-        for (MapleQuestStatus q : completed) {
-            if (q.getQuest().getId() >= 29000) { // && q.getQuest().getId() <= 29923
-                medalQuests.add(q.getQuest().getId());
-            }
-        }
-
-        Collections.sort(medalQuests);
-        mplew.writeShort(medalQuests.size());
-        for (Short s : medalQuests) {
-            mplew.writeShort(s);
-        }
-        return mplew.getPacket();
+        //endregion
+        //region CUIUserInfo::SetWishItemInfo
+        CashShop cashShop = player.getCashShop();
+        w.write(cashShop.getWishList().size());
+        cashShop.getWishList().forEach(w::writeInt);
+        //endregion
+        Optional<MonsterBook> book = Optional.ofNullable(player.getMonsterBook());
+        w.writeInt(book.map(MonsterBook::getBookLevel).orElse(0));
+        w.writeInt(book.map(MonsterBook::getNormalCard).orElse(0));
+        w.writeInt(book.map(MonsterBook::getSpecialCard).orElse(0));
+        w.writeInt(book.map(MonsterBook::getTotalCards).orElse(0));
+        w.writeInt(player.getMonsterBookCover() > 0 ? MapleItemInformationProvider.getInstance().getCardMobId(player.getMonsterBookCover()) : 0);
+        //region MedalAchievementInfo::Decode
+        Item medal = eqqInventory.getItem((short) -49);
+        w.writeInt(medal == null ? 0 : medal.getItemId());
+        List<MapleQuestStatus> cquests = player.getCompletedQuests();
+        List<Short> quests = cquests.stream()
+                .filter(q -> q.getQuestID() >= 29000)
+                .map(MapleQuestStatus::getQuestID).collect(Collectors.toList());
+        Collections.sort(quests);
+        w.writeShort(quests.size());
+        quests.forEach(w::writeShort);
+        quests.clear();
+        cquests.clear();
+        //endregion
+        return w.getPacket();
     }
 
     public static byte[] charNameResponse(String charname, boolean nameUsed) {

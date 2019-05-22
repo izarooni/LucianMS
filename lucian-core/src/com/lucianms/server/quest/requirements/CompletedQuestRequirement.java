@@ -22,32 +22,40 @@
 package com.lucianms.server.quest.requirements;
 
 import com.lucianms.client.MapleCharacter;
-import provider.MapleData;
-import provider.MapleDataTool;
+import com.lucianms.client.MapleQuestStatus;
 import com.lucianms.server.quest.MapleQuest;
 import com.lucianms.server.quest.MapleQuestRequirementType;
+import provider.MapleData;
+import provider.MapleDataTool;
+
+import java.util.List;
 
 /**
- *
  * @author Tyler (Twdtwd)
  */
 public class CompletedQuestRequirement extends MapleQuestRequirement {
-	private int reqQuest;
-	
-	
-	public CompletedQuestRequirement(MapleQuest quest, MapleData data) {
-		super(MapleQuestRequirementType.COMPLETED_QUEST);
-		processData(data);
-	}
-	
-	@Override
-	public void processData(MapleData data) {
-		reqQuest = MapleDataTool.getInt(data);
-	}
-	
-	
-	@Override
-	public boolean check(MapleCharacter chr, Integer npcid) {
-		return chr.getCompletedQuests().size() >= reqQuest;
-	}
+    private int reqQuest;
+
+
+    public CompletedQuestRequirement(MapleQuest quest, MapleData data) {
+        super(MapleQuestRequirementType.COMPLETED_QUEST);
+        processData(data);
+    }
+
+    @Override
+    public void processData(MapleData data) {
+        reqQuest = MapleDataTool.getInt(data);
+    }
+
+
+    @Override
+    public boolean check(MapleCharacter chr, Integer npcid) {
+        List<MapleQuestStatus> quests = chr.getCompletedQuests();
+        try {
+            return quests.size() >= reqQuest;
+        } finally {
+            // mother fuckin memory usage
+            quests.clear();
+        }
+    }
 }

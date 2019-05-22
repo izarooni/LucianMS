@@ -30,7 +30,7 @@ public class ViewCharacterInfoEvent extends PacketEvent {
             fakePlayer.setFollowing(!fakePlayer.isFollowing());
             player.sendMessage("{} is {} following", fakePlayer.getName(), (fakePlayer.isFollowing() ? "now" : "no longer"));
         } else if (target != null) {
-            client.announce(MaplePacketCreator.charInfo(target));
+            client.announce(MaplePacketCreator.getCharacterInfo(target));
         } else {
             client.announce(MaplePacketCreator.enableActions());
         }

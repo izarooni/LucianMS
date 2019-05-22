@@ -55,7 +55,6 @@ public class MapleDataTool {
         try {
             return getString(data.getChildByPath(path), def);
         } catch (NullPointerException e) {
-            LOGGER.info("No string value for path '{}/{}'", data.getName(), path);
             return def;
         }
     }
