@@ -254,8 +254,8 @@ public class PlayerCashShopOperationEvent extends PacketEvent {
                     if (cs.getCash(cashType) < 4000) {
                         return null;
                     }
-                    if (player.getStorage().gainSlots(4)) {
-                        client.announce(MaplePacketCreator.showBoughtStorageSlots(player.getStorage().getSlots()));
+                    if (player.getStorage().increaseSlotCount(4)) {
+                        client.announce(MaplePacketCreator.showBoughtStorageSlots(player.getStorage().getSlotCount()));
                         cs.gainCash(cashType, -4000);
                         client.announce(MaplePacketCreator.showCash(player));
                     }
@@ -265,8 +265,8 @@ public class PlayerCashShopOperationEvent extends PacketEvent {
                         client.announce(getCashItemMoveFailed((byte) 165));
                         return null;
                     }
-                    if (player.getStorage().gainSlots(8)) {
-                        client.announce(MaplePacketCreator.showBoughtStorageSlots(player.getStorage().getSlots()));
+                    if (player.getStorage().increaseSlotCount(8)) {
+                        client.announce(MaplePacketCreator.showBoughtStorageSlots(player.getStorage().getSlotCount()));
                         cs.gainCash(cashType, -cItem.getPrice());
                         client.announce(MaplePacketCreator.showCash(player));
                     }

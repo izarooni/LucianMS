@@ -32,7 +32,7 @@ public enum MapleInventoryType {
     SETUP(3),
     ETC(4),
     CASH(5),
-    EQUIPPED(-1); //Seems nexon screwed something when removing an item T_T
+    EQUIPPED(-1);
     final byte type;
 
     MapleInventoryType(int type) {
@@ -41,10 +41,6 @@ public enum MapleInventoryType {
 
     public byte getType() {
         return type;
-    }
-
-    public short getBitfieldEncoding() {
-        return (short) (2 << type);
     }
 
     public static MapleInventoryType getByType(byte type) {
@@ -65,7 +61,6 @@ public enum MapleInventoryType {
             case "Etc":
                 return ETC;
             case "Cash":
-                return CASH;
             case "Pet":
                 return CASH;
         }

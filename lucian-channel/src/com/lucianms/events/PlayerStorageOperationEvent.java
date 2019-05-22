@@ -1,15 +1,17 @@
 package com.lucianms.events;
 
 import com.lucianms.client.MapleCharacter;
+import com.lucianms.client.inventory.Equip;
 import com.lucianms.client.inventory.Item;
 import com.lucianms.client.inventory.MapleInventory;
 import com.lucianms.client.inventory.MapleInventoryType;
 import com.lucianms.constants.ItemConstants;
+import com.lucianms.nio.SendOpcode;
 import com.lucianms.nio.receive.MaplePacketReader;
+import com.lucianms.nio.send.MaplePacketWriter;
 import com.lucianms.server.MapleInventoryManipulator;
 import com.lucianms.server.MapleItemInformationProvider;
 import com.lucianms.server.MapleStorage;
-import com.lucianms.server.Server;
 import tools.MaplePacketCreator;
 
 /**
@@ -23,24 +25,52 @@ public class PlayerStorageOperationEvent extends PacketEvent {
     private int itemID;
     private int mesos;
     private short quantity;
-    private byte slot;
+    private short slot;
     private byte action;
     private byte type;
+
+    public static byte[] getResultFailed(byte type) {
+        final MaplePacketWriter w = new MaplePacketWriter(3);
+        w.writeShort(SendOpcode.STORAGE.getValue());
+        w.write(type);
+        if (type == 23) {
+            w.write(0);
+        }
+        return w.getPacket();
+    }
+
+    public static byte[] getResultFailedMessage(String content) {
+        MaplePacketWriter w = new MaplePacketWriter(3 + content.length());
+        w.writeShort(SendOpcode.STORAGE.getValue());
+        w.write(23);
+        w.writeBoolean(true);
+        w.writeMapleString(content);
+        return w.getPacket();
+    }
+
+    @Override
+    public boolean exceptionCaught(Throwable t) {
+        getClient().announce(getResultFailed((byte) 23));
+        return super.exceptionCaught(t);
+    }
 
     @Override
     public void processInput(MaplePacketReader reader) {
         action = reader.readByte();
         switch (action) {
-            case 4:
+            case 4: // take
                 type = reader.readByte();
                 slot = reader.readByte();
                 break;
-            case 5:
-                slot = (byte) reader.readShort(); // huh
+            case 5: // put
+                slot = reader.readShort();
                 itemID = reader.readInt();
                 quantity = reader.readShort();
                 break;
-            case 7:
+            case 6: // sort items
+            case 8: // close bank
+                break;
+            case 7: // withdraw & deposit
                 mesos = reader.readInt();
                 break;
         }
@@ -49,101 +79,127 @@ public class PlayerStorageOperationEvent extends PacketEvent {
     @Override
     public Object onPacket() {
         MapleCharacter player = getClient().getPlayer();
-        MapleStorage storage = player.getStorage();
-
-        if (player.getLevel() < 15) {
-            player.message("You may only use this storage once you have reached level 15.");
+        if (!player.getStorage().isOpened()) {
             return null;
         }
-        if (action == 4) { // take out
-            if (slot < 0 || slot > storage.getSlots()) { // removal starts at zero
-                return null;
-            }
-            slot = storage.getSlot(MapleInventoryType.getByType(type), (byte) slot);
-            Item item = storage.getItem((byte) slot);
-            if (item != null) {
-                if (MapleItemInformationProvider.getInstance().isPickupRestricted(item.getItemId()) && player.getItemQuantity(item.getItemId(), true) > 0) {
-                    getClient().announce(MaplePacketCreator.getStorageError((byte) 0x0C));
-                    return null;
+        boolean debugger = player.isDebug();
+
+        switch (action) {
+            case 4:
+                if (debugger) {
+                    player.sendMessage("type {}, slot {}", type, slot);
                 }
-                if (player.getMap().getId() == 910000000) {
-                    if (player.getMeso() < 1000) {
-                        getClient().announce(MaplePacketCreator.getStorageError((byte) 0x0B));
-                        return null;
-                    } else {
-                        player.gainMeso(-1000, false);
-                    }
+                OnItemRemoved(player);
+                break;
+            case 5:
+                if (debugger) {
+                    player.sendMessage("slot {}, itemID {}, quantity {}", slot, itemID, quantity);
                 }
-                if (MapleInventoryManipulator.checkSpace(getClient(), item.getItemId(), item.getQuantity(), item.getOwner())) {
-                    item = storage.takeOut(slot);//actually the same but idc
-                    Server.insertLog(getClass().getSimpleName(), "{} withdrew {} of {}", player.getName(), item.getQuantity(), item.getItemId());
-                    if ((item.getFlag() & ItemConstants.KARMA) == ItemConstants.KARMA) {
-                        item.setFlag((byte) (item.getFlag() ^ ItemConstants.KARMA)); //items with scissors of karma used on them are reset once traded
-                    } else if (item.getType() == 2 && (item.getFlag() & ItemConstants.SPIKES) == ItemConstants.SPIKES) {
-                        item.setFlag((byte) (item.getFlag() ^ ItemConstants.SPIKES));
-                    }
-                    MapleInventoryManipulator.addFromDrop(getClient(), item, false);
-                    storage.sendTakenOut(getClient(), ii.getInventoryType(item.getItemId()));
-                } else {
-                    getClient().announce(MaplePacketCreator.getStorageError((byte) 0x0A));
+                OnItemPut(player);
+                break;
+            case 6:
+                break;
+            case 7:
+                if (debugger) {
+                    player.sendMessage("money {}", mesos);
                 }
-            }
-        } else if (action == 5) { // store
-            MapleInventoryType slotType = ii.getInventoryType(itemID);
-            MapleInventory Inv = player.getInventory(slotType);
-            if (slot < 1 || slot > Inv.getSlotLimit()) { //player inv starts at one
-                return null;
-            }
-            if (quantity < 1 || player.getItemQuantity(itemID, false) < quantity) {
-                return null;
-            }
-            if (storage.isFull()) {
-                getClient().announce(MaplePacketCreator.getStorageError((byte) 0x11));
-                return null;
-            }
-            short meso = (short) (player.getMap().getId() == 910000000 ? -500 : -100);
-            if (player.getMeso() < meso) {
-                getClient().announce(MaplePacketCreator.getStorageError((byte) 0x0B));
-            } else {
-                MapleInventoryType type = ii.getInventoryType(itemID);
-                Item item = player.getInventory(type).getItem(slot).duplicate();
-                if (item.getItemId() == itemID && (item.getQuantity() >= quantity || ItemConstants.isRechargable(itemID))) {
-                    if (ItemConstants.isRechargable(itemID)) {
-                        quantity = item.getQuantity();
-                    }
-                    player.gainMeso(meso, false, true, false);
-                    MapleInventoryManipulator.removeFromSlot(getClient(), type, slot, quantity, false);
-                    item.setQuantity(quantity);
-                    storage.store(item);
-                    storage.sendStored(getClient(), ii.getInventoryType(itemID));
-                    Server.insertLog(getClass().getSimpleName(), "{} deposited {} of {}", player.getName(), item.getQuantity(), item.getItemId());
-                }
-            }
-        } else if (action == 7) { // meso
-            int storageMesos = storage.getMeso();
-            int playerMesos = player.getMeso();
-            if ((mesos > 0 && storageMesos >= mesos) || (mesos < 0 && playerMesos >= -mesos)) {
-                if (mesos < 0 && (storageMesos - mesos) < 0) {
-                    mesos = -2147483648 + storageMesos;
-                    if (mesos < playerMesos) {
-                        return null;
-                    }
-                } else if (mesos > 0 && (playerMesos + mesos) < 0) {
-                    mesos = 2147483647 - playerMesos;
-                    if (mesos > storageMesos) {
-                        return null;
-                    }
-                }
-                storage.setMeso(storageMesos - mesos);
-                player.gainMeso(mesos, false, true, false);
-                Server.insertLog(getClass().getSimpleName(), "{} {} {} mesos", player.getName(), (mesos > 0 ? "deposited" : "withdrew"), Math.abs(mesos));
-            } else {
-                return null;
-            }
-            storage.sendMeso(getClient());
-        } else if (action == 8) {// close
-            storage.close();
+                OnSetMoney(player);
+                break;
+            case 8:
+                OnClosed(player);
+                break;
         }
         return null;
+    }
+
+    private void OnItemRemoved(MapleCharacter player) {
+        MapleInventoryType iType = MapleInventoryType.values()[type];
+        if (iType == MapleInventoryType.UNDEFINED) {
+            player.announce(getResultFailed((byte) 23));
+            return;
+        }
+        MapleStorage storage = player.getStorage();
+        Item item = storage.get(iType, slot);
+        if (item == null) {
+            player.announce(getResultFailed((byte) 23));
+            return;
+        }
+        if (iType != ItemConstants.getInventoryType(item.getItemId())) {
+            player.announce(getResultFailed((byte) 23));
+            return;
+        }
+        if (MapleInventoryManipulator.checkSpace(player.getClient(), item.getItemId(), item.getQuantity(), item.getOwner())) {
+            if ((item = storage.remove(iType, slot)) != null) {
+                MapleInventoryManipulator.addFromDrop(player.getClient(), item, true);
+                player.announce(MaplePacketCreator.getStorageTakeItem(storage, iType));
+            } else {
+                player.announce(getResultFailed((byte) 23));
+            }
+        } else {
+            player.announce(getResultFailed((byte) 10));
+        }
+    }
+
+    private void OnItemPut(MapleCharacter player) {
+        MapleStorage storage = player.getStorage();
+        MapleInventoryType iType = ItemConstants.getInventoryType(itemID);
+        if (iType == MapleInventoryType.UNDEFINED) {
+            player.announce(getResultFailed((byte) 23));
+            return;
+        }
+        MapleInventory inventory = player.getInventory(iType);
+        Item item = inventory.getItem(slot);
+        if (item == null || item.getItemId() != itemID || quantity < 1) {
+            player.announce(getResultFailed((byte) 23));
+            return;
+        }
+        if (storage.countItems() >= storage.getSlotCount()) {
+            player.announce(getResultFailed((byte) 17));
+            return;
+        }
+        Item duplicate = item.duplicate();
+        if (!(duplicate instanceof Equip)) {
+            duplicate.setQuantity(quantity);
+        }
+        MapleInventoryManipulator.removeFromSlot(player.getClient(), iType, slot, quantity, false);
+        storage.add(iType, duplicate);
+        player.announce(MaplePacketCreator.getStoragePutItem(storage, iType));
+    }
+
+    private void OnSetMoney(MapleCharacter player) {
+        MapleStorage storage = player.getStorage();
+        if (mesos < 0) { // deposit
+            mesos = Math.abs(mesos);
+            if (player.getMeso() >= mesos) {
+                int localMoney = storage.getMoney() + mesos;
+                if (localMoney > 0) { // overflow
+                    player.gainMeso(-mesos, false);
+                    storage.setMoney(localMoney);
+                    player.announce(MaplePacketCreator.getStorageSetMoney(storage));
+                } else {
+                    player.announce(getResultFailedMessage("The bank is having a hard time holding all your money."));
+                }
+            } else {
+                player.announce(getResultFailed((byte) 16));
+            }
+        } else if (mesos > 0) { // withdraw
+            if (player.getMeso() + mesos > 0) {
+                int localMoney = storage.getMoney() - mesos;
+                if (localMoney >= 0) {
+                    player.gainMeso(mesos, false);
+                    storage.setMoney(localMoney);
+                    player.announce(MaplePacketCreator.getStorageSetMoney(storage));
+                } else {
+                    player.announce(getResultFailedMessage("Your bank does not hold that much money."));
+                }
+            } else {
+                player.announce(getResultFailedMessage("You would be holding too much money."));
+            }
+        }
+    }
+
+    private void OnClosed(MapleCharacter player) {
+        MapleStorage storage = player.getStorage();
+        storage.setOpened(false);
     }
 }

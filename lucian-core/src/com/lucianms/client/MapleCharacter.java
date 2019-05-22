@@ -600,7 +600,9 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Di
                 ret.getInventory(MapleInventoryType.USE).setSlotLimit(rs.getByte("useslots"));
                 ret.getInventory(MapleInventoryType.SETUP).setSlotLimit(rs.getByte("setupslots"));
                 ret.getInventory(MapleInventoryType.ETC).setSlotLimit(rs.getByte("etcslots"));
-                for (Pair<Item, MapleInventoryType> item : ItemFactory.INVENTORY.loadItems(con, ret.id, !channelserver)) {
+
+                List<Pair<Item, MapleInventoryType>> pairs = ItemFactory.INVENTORY.loadItems(con, ret.id, !channelserver);
+                for (Pair<Item, MapleInventoryType> item : pairs) {
                     ret.getInventory(item.getRight()).addFromDB(item.getLeft());
                     Item itemz = item.getLeft();
                     if (itemz.getPetId() > -1) {
@@ -629,6 +631,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Di
                         }
                     }
                 }
+                pairs.clear();
             }
         }
         if (channelserver) {
@@ -863,7 +866,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Di
                 }
             }
             ret.buddylist.loadFromDb(charid);
-            ret.storage = MapleStorage.loadOrCreateFromDB(ret.accountid, ret.world);
+            ret.storage = MapleStorage.load(ret.accountid, ret.world);
             ret.updateLocalizedStats();
             // ret.resetBattleshipHp();
             ret.silentEnforceMaxHpMp();

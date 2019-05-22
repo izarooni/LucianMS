@@ -2925,36 +2925,20 @@ public class MaplePacketCreator {
         return mplew.getPacket();
     }
 
-    public static byte[] getStorage(int npcId, byte slots, Collection<Item> items, int meso) {
-        final MaplePacketWriter mplew = new MaplePacketWriter();
-        mplew.writeShort(SendOpcode.STORAGE.getValue());
-        mplew.write(0x16);
-        mplew.writeInt(npcId);
-        mplew.write(slots);
-        mplew.writeShort(0x7E);
-        mplew.writeShort(0);
-        mplew.writeInt(0);
-        mplew.writeInt(meso);
-        mplew.writeShort(0);
-        mplew.write((byte) items.size());
-        for (Item item : items) {
-            addItemInfo(mplew, item, true);
-        }
-        mplew.writeShort(0);
-        mplew.write(0);
-        return mplew.getPacket();
-    }
+    public static byte[] getStorage(int npcId, MapleStorage storage) {
+        final MaplePacketWriter w = new MaplePacketWriter();
+        w.writeShort(SendOpcode.STORAGE.getValue());
+        w.write(22);
+        w.writeInt(npcId);
 
-    /*
-     * 0x0A = Inv full
-     * 0x0B = You do not have enough mesos
-     * 0x0C = One-Of-A-Kind error
-     */
-    public static byte[] getStorageError(byte i) {
-        final MaplePacketWriter mplew = new MaplePacketWriter();
-        mplew.writeShort(SendOpcode.STORAGE.getValue());
-        mplew.write(i);
-        return mplew.getPacket();
+        w.write(storage.getSlotCount());
+        w.writeLong(-1);
+        w.writeInt(storage.getMoney());
+        for (Entry<MapleInventoryType, Set<Item>> entry : storage.entrySet()) {
+            w.write(entry.getValue().size());
+            entry.getValue().forEach(item -> addItemInfo(w, item, true));
+        }
+        return w.getPacket();
     }
 
     private static long getTime(long realTimestamp) {
@@ -3710,16 +3694,14 @@ public class MaplePacketCreator {
         return mplew.getPacket();
     }
 
-    public static byte[] mesoStorage(byte slots, int meso) {
-        final MaplePacketWriter mplew = new MaplePacketWriter();
-        mplew.writeShort(SendOpcode.STORAGE.getValue());
-        mplew.write(0x13);
-        mplew.write(slots);
-        mplew.writeShort(2);
-        mplew.writeShort(0);
-        mplew.writeInt(0);
-        mplew.writeInt(meso);
-        return mplew.getPacket();
+    public static byte[] getStorageSetMoney(MapleStorage storage) {
+        MaplePacketWriter w = new MaplePacketWriter();
+        w.writeShort(SendOpcode.STORAGE.getValue());
+        w.write(19);
+        w.write(storage.getSlotCount());
+        w.writeLong(2); // dbcharFlag
+        w.writeInt(storage.getMoney());
+        return w.getPacket();
     }
 
     public static byte[] messengerChat(String text) {
@@ -5201,7 +5183,7 @@ public class MaplePacketCreator {
             addCashItemInformation(mplew, item, c.getAccID());
         }
 
-        mplew.writeShort(c.getPlayer().getStorage().getSlots());
+        mplew.writeShort(c.getPlayer().getStorage().getSlotCount());
         mplew.writeShort(c.getCharacterSlots());
 
         return mplew.getPacket();
@@ -6218,24 +6200,8 @@ public class MaplePacketCreator {
         return mplew.getPacket();
     }
 
-    public static byte[] storeStorage(byte slots, MapleInventoryType type, Collection<Item> items) {
-        final MaplePacketWriter mplew = new MaplePacketWriter();
-        mplew.writeShort(SendOpcode.STORAGE.getValue());
-        mplew.write(0xD);
-        mplew.write(slots);
-        mplew.writeShort(type.getBitfieldEncoding());
-        mplew.writeShort(0);
-        mplew.writeInt(0);
-        mplew.write(items.size());
-        for (Item item : items) {
-            addItemInfo(mplew, item, true);
-        }
-        return mplew.getPacket();
-    }
-
     public static byte[] summonAttack(int cid, int summonSkillId, byte direction, Pair<Integer, Integer>[] allDamage) {
         final MaplePacketWriter mplew = new MaplePacketWriter();
-        //b2 00 29 f7 00 00 9a a3 04 00 c8 04 01 94 a3 04 00 06 ff 2b 00
         mplew.writeShort(SendOpcode.SUMMON_ATTACK.getValue());
         mplew.writeInt(cid);
         mplew.writeInt(summonSkillId);
@@ -6270,19 +6236,28 @@ public class MaplePacketCreator {
         return mplew.getPacket();
     }
 
-    public static byte[] takeOutStorage(byte slots, MapleInventoryType type, Collection<Item> items) {
-        final MaplePacketWriter mplew = new MaplePacketWriter();
-        mplew.writeShort(SendOpcode.STORAGE.getValue());
-        mplew.write(0x9);
-        mplew.write(slots);
-        mplew.writeShort(type.getBitfieldEncoding());
-        mplew.writeShort(0);
-        mplew.writeInt(0);
-        mplew.write(items.size());
-        for (Item item : items) {
-            addItemInfo(mplew, item, true);
-        }
-        return mplew.getPacket();
+    public static byte[] getStorageTakeItem(MapleStorage storage, MapleInventoryType type) {
+        MaplePacketWriter w = new MaplePacketWriter();
+        w.writeShort(SendOpcode.STORAGE.getValue());
+        w.write(9);
+        w.write(storage.getSlotCount());
+        w.writeLong(2 << type.getType());
+        Set<Item> items = storage.get(type);
+        w.write(items.size());
+        items.forEach(i -> addItemInfo(w, i, true));
+        return w.getPacket();
+    }
+
+    public static byte[] getStoragePutItem(MapleStorage storage, MapleInventoryType type) {
+        MaplePacketWriter w = new MaplePacketWriter(13 + (storage.size() * 100));
+        w.writeShort(SendOpcode.STORAGE.getValue());
+        w.write(13);
+        w.write(storage.getSlotCount());
+        w.writeLong(2 << type.getType());
+        Set<Item> items = storage.get(type);
+        w.write(items.size());
+        items.forEach(i -> addItemInfo(w, i, true));
+        return w.getPacket();
     }
 
     public static byte[] talkGuide(String talk) {

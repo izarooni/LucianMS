@@ -1,6 +1,7 @@
 package com.lucianms.events;
 
 import com.lucianms.client.MapleCharacter;
+import com.lucianms.client.MapleClient;
 import com.lucianms.client.SpamTracker;
 import com.lucianms.client.inventory.MapleInventory;
 import com.lucianms.client.inventory.MapleInventoryType;
@@ -23,7 +24,16 @@ public class InventoryGatherItemsEvent extends PacketEvent {
 
     @Override
     public Object onPacket() {
-        MapleCharacter player = getClient().getPlayer();
+        MapleClient client = getClient();
+        MapleCharacter player = client.getPlayer();
+        if (player.getCashShop().isOpened()
+                || player.getStorage().isOpened()
+                || player.getTrade() != null
+                || player.getMiniGame() != null) {
+            client.announce(MaplePacketCreator.enableActions());
+            return null;
+        }
+
         SpamTracker.SpamData spamTracker = player.getSpamTracker(SpamTracker.SpamOperation.InventorySort);
         if (spamTracker.testFor(100)) {
             return null;
@@ -46,12 +56,12 @@ public class InventoryGatherItemsEvent extends PacketEvent {
                 }
             }
             if (itemSlot > 0) {
-                MapleInventoryManipulator.move(getClient(), iType, itemSlot, freeSlot);
+                MapleInventoryManipulator.move(client, iType, itemSlot, freeSlot);
             } else {
                 break;
             }
         }
-        getClient().announce(MaplePacketCreator.getInventoryGatherItems(iType.getType()));
+        client.announce(MaplePacketCreator.getInventoryGatherItems(iType.getType()));
         return null;
     }
 }

@@ -242,9 +242,11 @@ public class CashShop {
                 }
             }
 
-            for (Pair<Item, MapleInventoryType> item : factory.loadItems(con, accountId, false)) {
+            List<Pair<Item, MapleInventoryType>> pairs = factory.loadItems(con, accountId, false);
+            for (Pair<Item, MapleInventoryType> item : pairs) {
                 inventory.add(item.getLeft());
             }
+            pairs.clear();
 
             try (PreparedStatement ps = con.prepareStatement("SELECT `sn` FROM `wishlists` WHERE `charid` = ?")) {
                 ps.setInt(1, characterId);

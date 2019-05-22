@@ -202,11 +202,15 @@ public class MapleInventory implements Iterable<Item> {
         if (item == null) {
             return;
         }
-        item.setQuantity((short) (item.getQuantity() - quantity));
-        if (item.getQuantity() < 0) {
-            item.setQuantity((short) 0);
-        }
-        if (item.getQuantity() == 0 && !allowZero) {
+        if (!(item instanceof Equip)) {
+            item.setQuantity((short) (item.getQuantity() - quantity));
+            if (item.getQuantity() < 0) {
+                item.setQuantity((short) 0);
+            }
+            if (item.getQuantity() == 0 && !allowZero) {
+                removeSlot(slot);
+            }
+        } else {
             removeSlot(slot);
         }
     }

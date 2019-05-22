@@ -28,6 +28,14 @@ public class InventorySortItemsEvent extends PacketEvent {
     public Object onPacket() {
         MapleClient client = getClient();
         MapleCharacter player = client.getPlayer();
+        if (player.getCashShop().isOpened()
+                || player.getStorage().isOpened()
+                || player.getTrade() != null
+                || player.getMiniGame() != null) {
+            client.announce(MaplePacketCreator.enableActions());
+            return null;
+        }
+
         SpamTracker.SpamData spamTracker = player.getSpamTracker(SpamTracker.SpamOperation.InventorySort);
         if (spamTracker.testFor(500)) {
             client.announce(MaplePacketCreator.enableActions());
