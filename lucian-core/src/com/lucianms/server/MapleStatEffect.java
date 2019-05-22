@@ -37,7 +37,6 @@ import com.lucianms.server.world.MapleParty;
 import com.lucianms.server.world.MaplePartyCharacter;
 import provider.MapleData;
 import provider.MapleDataTool;
-import provider.wz.XMLDomMapleData;
 import tools.ArrayMap;
 import tools.MaplePacketCreator;
 import tools.Pair;
@@ -82,7 +81,7 @@ public class MapleStatEffect {
     }
 
     private static void addBuffStatPairToListIfNotZero(List<Pair<MapleBuffStat, Integer>> list, MapleBuffStat buffstat, Integer val) {
-        if (val.intValue() != 0) {
+        if (val != 0) {
             list.add(new Pair<>(buffstat, val));
         }
     }
@@ -107,14 +106,14 @@ public class MapleStatEffect {
 
         ret.sourceid = sourceid;
 
-        XMLDomMapleData parent = (XMLDomMapleData) source.getParent().getParent();
-        MapleData summon = parent.getChildByPath("summon");
+//        XMLDomMapleData parent = (XMLDomMapleData) source.getParent().getParent();
+//        MapleData summon = parent.getChildByPath("summon");
 
         ret.skill = skill;
         if (!ret.skill && ret.duration > -1) {
             ret.overTime = true;
         } else {
-            ret.duration *= 1000;
+            ret.duration = Integer.MAX_VALUE;
             ret.overTime = overTime;
         }
         ArrayList<Pair<MapleBuffStat, Integer>> statups = new ArrayList<>();

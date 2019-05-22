@@ -27,7 +27,6 @@ import com.lucianms.client.MapleQuestStatus;
 import com.lucianms.client.SkillFactory;
 import com.lucianms.client.inventory.*;
 import com.lucianms.constants.ItemConstants;
-import com.lucianms.constants.ServerConstants;
 import com.lucianms.io.scripting.event.EventManager;
 import com.lucianms.io.scripting.npc.NPCScriptManager;
 import com.lucianms.scheduler.Task;
@@ -404,9 +403,6 @@ public class AbstractPlayerInteraction {
             int exp = base * member.getExpRate();
             exp = exp * bonus / 100;
             member.gainExp(exp, true, true);
-            if (System.currentTimeMillis() <= ServerConstants.EVENT_END_TIMESTAMP) {
-                member.gainExp(exp, true, true);
-            }
         }
     }
 

@@ -24,7 +24,6 @@ package com.lucianms.server.life;
 import com.lucianms.client.*;
 import com.lucianms.client.status.MonsterStatus;
 import com.lucianms.client.status.MonsterStatusEffect;
-import com.lucianms.constants.ServerConstants;
 import com.lucianms.constants.skills.*;
 import com.lucianms.io.scripting.Achievements;
 import com.lucianms.io.scripting.event.EventInstanceManager;
@@ -357,7 +356,7 @@ public class MapleMonster extends AbstractLoadedMapleLife {
 
             if (exp > 0) {
                 if (partyModifier > 0) {
-                    partyExp = (int) (personalExp * ServerConstants.PARTY_EXPERIENCE_MOD * partyModifier / 1000f);
+                    partyExp = (int) (personalExp * partyModifier / 1000f);
                 }
                 Integer holySymbol = attacker.getBuffedValue(MapleBuffStat.HOLY_SYMBOL);
                 boolean GMHolySymbol = attacker.getBuffSource(MapleBuffStat.HOLY_SYMBOL) == SuperGM.HOLY_SYMBOL;

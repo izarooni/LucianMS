@@ -7,30 +7,34 @@ public class ServerConstants {
             "Yellonde", "Demethos", "Galicia", "El Nido", "Zenith", "Arcenia", "Kastia", "Judis", "Plana", "Kalluna",
             "Stius", "Croa", "Medere"};
 
-    // Login Configuration
-    public static final int CHANNEL_LOAD = 100;// Players per channel
-    public static final boolean ENABLE_PIC = true;
+    //region Login Settings
+    /**
+     * the player capacity per channel
+     */
+    public static final int CHANNEL_LOAD = 100;
 
-    // Game play Configurations
-    public static final boolean USE_MTS = false;
+    /**
+     * should the SPW be enabled upon character selection
+     */
+    public static final boolean ENABLE_PIC = true;
+    //endregion
+
+    //region Game Settings
     public static final boolean USE_FAMILY_SYSTEM = false;
     public static final boolean USE_PARTY_SEARCH = false;
+
+    public static final int PARTY_EXPERIENCE_MOD = 1;
+
     public static final int HOME_MAP = 910000000;
     public static final int CURRENCY = 4260002;
 
-    // Rates
-    public static final int PARTY_EXPERIENCE_MOD = 1; // change for event stuff
-
-    public static final long EVENT_END_TIMESTAMP = 1428897600000L;
-
-    // Gain nx from monsters
     public static final boolean NX_FROM_MONSTERS = true;
-
+    public static final double LEVEL_TO_NX_MULTIPLIER = 1.2;
     public static final int BELOW_LEVERANGEL_NX_CHANCE = 20;
     public static final int ABOVE_LEVELRANGE_NX_CHANCE = 10;
-
     public static final int MAX_LEVELS_BELOW = 20;
     public static final int MAX_LEVELS_ABOVE = 10;
+    //endregion
 
-    public static final double LEVEL_TO_NX_MULTIPLIER = 1.2;
+
 }
