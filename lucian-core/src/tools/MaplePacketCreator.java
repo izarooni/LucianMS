@@ -1112,7 +1112,7 @@ public class MaplePacketCreator {
         //endregion
         //region CUIUserInfo::SetTamingMobInfo
         MapleMount mount = player.getMount();
-        w.write(mount == null ? 0 : mount.getId()); //mount
+        w.write(mount == null || !mount.isActive() ? 0 : mount.getId()); //mount
         if (mount != null && eqqInventory.getItem((short) -18) != null) {
             w.writeInt(mount.getLevel()); //level
             w.writeInt(mount.getExp()); //exp
