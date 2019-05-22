@@ -94,7 +94,7 @@ public class HouseManager {
     public static void updateRent(int ownerID) {
         House house = getHouse(ownerID);
         if (house == null) {
-            LOGGER.warn("Unable to update rent for player {} as they do not own a home", ownerID);
+            LOGGER.warn("Unable to update rent for player {} (doesn't exist)", ownerID);
             return;
         }
         Calendar calendar = Calendar.getInstance();
@@ -107,6 +107,24 @@ public class HouseManager {
             ps.executeUpdate();
         } catch (SQLException e) {
             LOGGER.error("Unable to update rent for player {}", ownerID, e);
+        }
+    }
+
+    public static void updatePassword(int ownerID, String password) {
+        House house = getHouse(ownerID);
+        if (house == null) {
+            LOGGER.warn("Unable to update password for player {} (doesn't exist)", ownerID);
+            return;
+        }
+        house.setPassword(password);
+        try (Connection con = Server.getConnection()) {
+            try (PreparedStatement ps = con.prepareStatement("update houses set password = ? where ownerID = ?")){
+                ps.setString(1, password);
+                ps.setInt(2, ownerID);
+                ps.executeUpdate();
+            }
+        } catch (SQLException e) {
+            LOGGER.error("Unable to update password for player {}", ownerID, e);
         }
     }
 }

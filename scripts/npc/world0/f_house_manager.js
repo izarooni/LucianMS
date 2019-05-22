@@ -37,6 +37,7 @@ function action(mode, type, selection) {
             content += "\r\n#L2#Enter my home#l";
             content += "\r\n#L3#Sell my home#l";
             content += "\r\n#L4#Pay rent#l";
+            content += "\r\n#L6#Change password#l";
         }
         content += "\r\n#L5#What are homes for?#l";
         cm.sendSimple(content);
@@ -74,6 +75,8 @@ function action(mode, type, selection) {
                 cm.sendOk("You do not have enough mesos to purchase a home.");
                 cm.dispose();
             }
+        } else if (this.operation == 6) {
+            cm.sendGetText("What would you like to change your password to?");
         }
     } else if (status == 3) {
         if (this.operation == 0) {
@@ -120,6 +123,14 @@ function action(mode, type, selection) {
             }
         } else if (this.operation == 5) {
             cm.sendNext("You may purchase NPCs for your homes with set functions such as private minigames that you can play with party members who are also in your home");
+        } else if (this.operation == 6) {
+            if (cm.getText().length() > 4) {
+                HouseManager.updatePassword(player.getId(), cm.getText());
+                cm.sendOk("I've changed the password to your home!");
+                cm.dispose();
+            } else {
+                cm.sendNext("That is too short for a password. Please enter at least 4 characters");
+            }
         }
     } else if (status == 4) {
         if (this.operation == 0) {

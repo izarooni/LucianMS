@@ -16,7 +16,7 @@ public class House {
     private int mapID;
     private String password;
     private long billDate;
-    private MapleMap map = null;
+    private MapleMap map;
 
     public House(int ownerID, int mapID, String password, long billDate) {
         this.ownerID = ownerID;
