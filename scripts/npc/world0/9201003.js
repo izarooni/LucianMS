@@ -11,23 +11,23 @@ function action(mode, type, selection) {
     } else {
         status++;
     }
-    // player.getCustomQuests().remove(POL_ORBIS);
-    // player.getCustomQuests().remove(POL_LUDI);
-    // player.getCustomQuests().remove(POL_PARENTS);
     let quest = player.getCustomQuest(POL_PARENTS);
-    if (quest == null) return BeginQuest();
-    else if (!quest.checkRequirements()) {
-        cm.sendOk("Have you visited Nana the Fairy in Orbis and Ludibrium? Bring us their Proof of Love and you may have our blessing\r\n\r\n");
-        if (player.isDebug()) {
-            quest.getToCollect().getItems().values().forEach(item => {
-                cm.gainItem(item.getItemId(), item.getRequirement());
-            });
-        }
+    if (quest == null) {
+        return BeginQuest();
     } else if (!quest.isCompleted()) {
-        if (quest.complete(player)) {
-            cm.sendOk("Here is our blessing! Cherish each other forever~");
+        if (quest.checkRequirements()) {
+            if (quest.complete(player)) {
+                cm.sendOk("Here is our blessing! Cherish each other forever~");
+            } else {
+                cm.sendOk("Please make sure you have enough space in your inventory to receive our blessing");
+            }
         } else {
-            cm.sendOk("Please make sure you have enough space in your inventory to receive our blessing");
+            cm.sendOk("Have you visited Nana the Fairy in Orbis and Ludibrium? Bring us their Proof of Love and you may have our blessing\r\n\r\n");
+            if (player.isDebug()) {
+                quest.getToCollect().getItems().values().forEach(item => {
+                    cm.gainItem(item.getItemId(), item.getRequirement());
+                });
+            }
         }
     } else {
         cm.sendOk("We have given you our blessing already! We know you love each other very much. Go ahead, have your wedding~");
