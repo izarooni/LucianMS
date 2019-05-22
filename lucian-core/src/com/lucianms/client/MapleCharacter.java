@@ -70,6 +70,7 @@ import java.util.*;
 import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Predicate;
 import java.util.regex.Pattern;
 
 public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Disposable {
@@ -172,16 +173,17 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Di
     private AtomicInteger gachaexp = new AtomicInteger();
 
     //region collections
-    private ArrayList<Task> tasks = new ArrayList<>();
-    private ArrayList<String> blockedPortals = new ArrayList<>();
-    private ArrayList<Integer> excluded = new ArrayList<>();
-    private ArrayList<Integer> trockmaps = new ArrayList<>();
-    private ArrayList<Integer> viptrockmaps = new ArrayList<>();
-    private ArrayList<Integer> lastmonthfameids = new ArrayList<>(31);
-    private ArrayList<MapleDoor> doors = new ArrayList<>();
-    private ArrayList<MapleRing> crushRings = new ArrayList<>();
-    private ArrayList<MapleRing> friendshipRings = new ArrayList<>();
-    private ArrayList<GenericEvent> genericEvents = new ArrayList<>();
+    private final ArrayList<Task> tasks = new ArrayList<>();
+    private final ArrayList<String> blockedPortals = new ArrayList<>();
+    private final ArrayList<Integer> excluded = new ArrayList<>();
+    private final ArrayList<Integer> trockmaps = new ArrayList<>();
+    private final ArrayList<Integer> viptrockmaps = new ArrayList<>();
+    private final ArrayList<Integer> lastmonthfameids = new ArrayList<>(31);
+    private final ArrayList<MapleDoor> doors = new ArrayList<>(3);
+    private final ArrayList<MapleRing> weddingRings = new ArrayList<>(4);
+    private final ArrayList<MapleRing> crushRings = new ArrayList<>(4);
+    private final ArrayList<MapleRing> friendshipRings = new ArrayList<>(4);
+    private final ArrayList<GenericEvent> genericEvents = new ArrayList<>(5);
 
     private GProperties<Boolean> toggles = new GProperties<>();
 
@@ -236,7 +238,6 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Di
 
     private Cheater cheater = new Cheater();
     private CashShop cashshop;
-    private MapleRing marriageRing;
     private PartyQuest partyQuest;
     private MonsterBook monsterbook;
 
@@ -612,20 +613,18 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Di
                     if (item.getRight() == MapleInventoryType.EQUIP || item.getRight() == MapleInventoryType.EQUIPPED) {
                         Equip equip = (Equip) item.getLeft();
                         if (equip.getRingId() > -1) {
-                            MapleRing ring = MapleRing.loadFromDb(equip.getRingId());
-                            if (ring != null) {
-                                if (item.getRight() == MapleInventoryType.EQUIPPED) {
-                                    ring.equip();
-                                }
-                                if (ItemConstants.isWeddingRing(ring.getItemId())) {
-                                    ret.setMarriageRing(ring);
-                                } else if (ItemConstants.isFriendshipEquip(ring.getItemId())) {
-                                    ret.addFriendshipRing(ring);
-                                } else if (ItemConstants.isCoupleEquip(ring.getItemId())) {
-                                    ret.addCrushRing(ring);
-                                }
-                            } else {
-                                LOGGER.warn("'{}' loaded invalid ring item({}) ringID({})", ret.name, equip.getItemId(), equip.getRingId());
+                            MapleRing ring = MapleRing.load(equip.getRingId());
+                            if (ring == null) {
+                                equip.setRingId(-1);
+                                continue;
+                            }
+                            ring.setEquipped(item.getRight() == MapleInventoryType.EQUIPPED);
+                            if (ItemConstants.isWeddingRing(ring.getItemId())) {
+                                ret.getWeddingRings().add(ring);
+                            } else if (ItemConstants.isFriendshipEquip(ring.getItemId())) {
+                                ret.getFriendshipRings().add(ring);
+                            } else if (ItemConstants.isCoupleEquip(ring.getItemId())) {
+                                ret.getCrushRings().add(ring);
                             }
                         }
                     }
@@ -687,7 +686,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Di
             try (ResultSet rs = ps.executeQuery()) {
                 if (rs.next()) {
                     ret.relationship.load(con, rs.getInt("id"));
-                    if (ret.getMarriageRing() == null) {
+                    if (ret.getWeddingRings().isEmpty()) {
                         ret.relationship.setStatus(Relationship.Status.Single);
                     }
                 }
@@ -940,26 +939,18 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Di
         coolDowns.put(skillId, new MapleCoolDownValueHolder(skillId, startTime, length, task));
     }
 
-    public void addCrushRing(MapleRing r) {
-        crushRings.add(r);
-    }
-
     public MapleRing getRingById(int id) {
-        for (MapleRing ring : getCrushRings()) {
-            if (ring.getRingId() == id) {
-                return ring;
-            }
+        Predicate<MapleRing> isRing = r -> r.getRingId() == id;
+        Optional<MapleRing> first = getCrushRings().stream().filter(isRing).findFirst();
+        if (first.isPresent()) {
+            return first.get();
         }
-        for (MapleRing ring : getFriendshipRings()) {
-            if (ring.getRingId() == id) {
-                return ring;
-            }
+        first = getFriendshipRings().stream().filter(isRing).findFirst();
+        if (first.isPresent()) {
+            return first.get();
         }
-        if (getMarriageRing() != null && getMarriageRing().getRingId() == id) {
-            return getMarriageRing();
-        }
-
-        return null;
+        first = getWeddingRings().stream().filter(isRing).findFirst();
+        return first.orElse(null);
     }
 
     public int addDojoPointsByMap() {
@@ -984,10 +975,6 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Di
 
     public void addFame(int famechange) {
         this.fame += famechange;
-    }
-
-    public void addFriendshipRing(MapleRing r) {
-        friendshipRings.add(r);
     }
 
     public void addHP(int delta) {
@@ -1983,8 +1970,10 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Di
         }
     }
 
-    public void equipChanged() {
-        getMap().broadcastMessage(this, MaplePacketCreator.updateCharLook(this), false);
+    public void equipChanged(boolean sendAvatarModified) {
+        if (sendAvatarModified) {
+            getMap().sendPacketCheckHiddenExclude(this, MaplePacketCreator.getPlayerModified(this));
+        }
         updateLocalizedStats();
         enforceMaxHpMp();
         Functions.requireNotNull(getMessenger(), m -> m.sendPacket(MaplePacketCreator.updateMessengerPlayer(m.get(getId()))));
@@ -2282,8 +2271,11 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Di
         return Collections.unmodifiableCollection(controlled);
     }
 
+    public ArrayList<MapleRing> getWeddingRings() {
+        return weddingRings;
+    }
+
     public List<MapleRing> getCrushRings() {
-        Collections.sort(crushRings);
         return crushRings;
     }
 
@@ -2440,7 +2432,6 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Di
     }
 
     public List<MapleRing> getFriendshipRings() {
-        Collections.sort(friendshipRings);
         return friendshipRings;
     }
 
@@ -2647,14 +2638,6 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Di
 
     public void setMarkedMonster(int markedMonster) {
         this.markedMonster = markedMonster;
-    }
-
-    public MapleRing getMarriageRing() {
-        return marriageRing;
-    }
-
-    public void setMarriageRing(MapleRing marriageRing) {
-        this.marriageRing = marriageRing;
     }
 
     public int getMarried() {

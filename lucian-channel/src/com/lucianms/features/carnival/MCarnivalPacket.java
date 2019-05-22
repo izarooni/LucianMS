@@ -2,7 +2,7 @@ package com.lucianms.features.carnival;
 
 import com.lucianms.client.MapleCharacter;
 import com.lucianms.nio.SendOpcode;
-import tools.data.output.MaplePacketLittleEndianWriter;
+import com.lucianms.nio.send.MaplePacketWriter;
 
 /**
  * <p>
@@ -29,55 +29,55 @@ public final class MCarnivalPacket {
         MCarnivalTeam friendly = carnivalGame.getTeam(player.getTeam());
         MCarnivalTeam enemy = carnivalGame.getTeamOpposite(player.getTeam());
 
-        final MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter(25);
-        mplew.writeShort(SendOpcode.MONSTER_CARNIVAL_START.getValue());
-        mplew.write(player.getTeam()); // team
-        mplew.writeShort(player.getCP()); // Current points
-        mplew.writeShort(player.getObtainedCP()); // Total points
+        final MaplePacketWriter w = new MaplePacketWriter(25);
+        w.writeShort(SendOpcode.MONSTER_CARNIVAL_START.getValue());
+        w.write(player.getTeam()); // team
+        w.writeShort(player.getCP()); // Current points
+        w.writeShort(player.getObtainedCP()); // Total points
 
-        mplew.writeShort(friendly.getAvailableCarnivalPoints()); // Friendly team's current points
-        mplew.writeShort(friendly.getTotalCarnivalPoints()); // Friendly team's total points
-        mplew.writeShort(enemy.getAvailableCarnivalPoints()); // Enemy team's current points
-        mplew.writeShort(enemy.getTotalCarnivalPoints()); // Enemy team's total points
+        w.writeShort(friendly.getAvailableCarnivalPoints()); // Friendly team's current points
+        w.writeShort(friendly.getTotalCarnivalPoints()); // Friendly team's total points
+        w.writeShort(enemy.getAvailableCarnivalPoints()); // Enemy team's current points
+        w.writeShort(enemy.getTotalCarnivalPoints()); // Enemy team's total points
 
-        mplew.writeShort(0);
-        mplew.writeLong(0);
-        return mplew.getPacket();
+        w.writeShort(0);
+        w.writeLong(0);
+        return w.getPacket();
     }
 
     public static byte[] getMonsterCarnivalPointsUpdate(int available, int total) {
-        final MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter(6);
-        mplew.writeShort(SendOpcode.MONSTER_CARNIVAL_OBTAINED_CP.getValue());
-        mplew.writeShort(available); // Current points
-        mplew.writeShort(total); // Total points
-        return mplew.getPacket();
+        final MaplePacketWriter w = new MaplePacketWriter(6);
+        w.writeShort(SendOpcode.MONSTER_CARNIVAL_OBTAINED_CP.getValue());
+        w.writeShort(available); // Current points
+        w.writeShort(total); // Total points
+        return w.getPacket();
     }
 
     public static byte[] getMonsterCarnivalPointsUpdateParty(MCarnivalTeam team) {
-        final MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter(7);
-        mplew.writeShort(SendOpcode.MONSTER_CARNIVAL_PARTY_CP.getValue());
-        mplew.write(team.getId()); // Belonging team
-        mplew.writeShort(team.getAvailableCarnivalPoints()); // Team's current points
-        mplew.writeShort(team.getTotalCarnivalPoints()); // Team's total points
-        return mplew.getPacket();
+        final MaplePacketWriter w = new MaplePacketWriter(7);
+        w.writeShort(SendOpcode.MONSTER_CARNIVAL_PARTY_CP.getValue());
+        w.write(team.getId()); // Belonging team
+        w.writeShort(team.getAvailableCarnivalPoints()); // Team's current points
+        w.writeShort(team.getTotalCarnivalPoints()); // Team's total points
+        return w.getPacket();
     }
 
     public static byte[] getMonsterCarnivalSummon(int tab, int number, String name) {
-        final MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(SendOpcode.MONSTER_CARNIVAL_SUMMON.getValue());
-        mplew.write(tab); // Tab
-        mplew.write(number); // Summon index
-        mplew.writeMapleAsciiString(name); // Name of summoner
-        return mplew.getPacket();
+        final MaplePacketWriter w = new MaplePacketWriter();
+        w.writeShort(SendOpcode.MONSTER_CARNIVAL_SUMMON.getValue());
+        w.write(tab); // Tab
+        w.write(number); // Summon index
+        w.writeMapleString(name); // Name of summoner
+        return w.getPacket();
     }
 
     public static byte[] getMonsterCarnivalPlayerDeath(MapleCharacter player) {
-        final MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(SendOpcode.MONSTER_CARNIVAL_DIED.getValue());
-        mplew.write(player.getTeam());
-        mplew.writeMapleAsciiString(player.getName());
-        mplew.write(player.getAndRemoveCP());
-        return mplew.getPacket();
+        final MaplePacketWriter w = new MaplePacketWriter();
+        w.writeShort(SendOpcode.MONSTER_CARNIVAL_DIED.getValue());
+        w.write(player.getTeam());
+        w.writeMapleString(player.getName());
+        w.write(player.getAndRemoveCP());
+        return w.getPacket();
     }
 
     /**
@@ -91,18 +91,18 @@ public final class MCarnivalPacket {
      * </ol>
      */
     public static byte[] getMonsterCarnivalResponse(byte message) {
-        final MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter(3);
-        mplew.writeShort(SendOpcode.MONSTER_CARNIVAL_MESSAGE.getValue());
-        mplew.write(message);
-        return mplew.getPacket();
+        final MaplePacketWriter w = new MaplePacketWriter(3);
+        w.writeShort(SendOpcode.MONSTER_CARNIVAL_MESSAGE.getValue());
+        w.write(message);
+        return w.getPacket();
     }
 
     public static byte[] getMonsterCarnivalStop(byte team, boolean isLeader, String username) {
-        final MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(SendOpcode.MONSTER_CARNIVAL_LEAVE.getValue());
-        mplew.write((isLeader) ? 6 : 0); // v1 = CInPacket::Decode1(a1) == 6
-        mplew.write(team);
-        mplew.writeMapleAsciiString(username);
-        return mplew.getPacket();
+        final MaplePacketWriter w = new MaplePacketWriter();
+        w.writeShort(SendOpcode.MONSTER_CARNIVAL_LEAVE.getValue());
+        w.write((isLeader) ? 6 : 0); // v1 = CInPacket::Decode1(a1) == 6
+        w.write(team);
+        w.writeMapleString(username);
+        return w.getPacket();
     }
 }

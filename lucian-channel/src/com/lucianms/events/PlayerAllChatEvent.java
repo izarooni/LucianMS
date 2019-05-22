@@ -6,8 +6,8 @@ import com.lucianms.discord.DiscordConnection;
 import com.lucianms.discord.Headers;
 import com.lucianms.discord.handlers.BindRequest;
 import com.lucianms.nio.receive.MaplePacketReader;
+import com.lucianms.nio.send.MaplePacketWriter;
 import tools.MaplePacketCreator;
-import tools.data.output.MaplePacketLittleEndianWriter;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -31,12 +31,12 @@ public class PlayerAllChatEvent extends PacketEvent {
     public Object onPacket() {
         MapleCharacter player = getClient().getPlayer();
         if (getClient().getDiscordKey() != null && getClient().getDiscordId() > 0 && content.equals(getClient().getDiscordKey())) {
-            MaplePacketLittleEndianWriter writer = new MaplePacketLittleEndianWriter();
-            writer.write(Headers.Bind.value);
-            writer.writeLong(0); // ignore channel_id
-            writer.writeLong(getClient().getDiscordId());
-            writer.write(3);
-            DiscordConnection.sendPacket(writer.getPacket());
+            MaplePacketWriter w = new MaplePacketWriter();
+            w.write(Headers.Bind.value);
+            w.writeLong(0); // ignore channel_id
+            w.writeLong(getClient().getDiscordId());
+            w.write(3);
+            DiscordConnection.sendPacket(w.getPacket());
             BindRequest.keys.remove(getClient().getDiscordKey());
             getClient().setDiscordKey(null);
             try (Connection con = getClient().getWorldServer().getConnection();

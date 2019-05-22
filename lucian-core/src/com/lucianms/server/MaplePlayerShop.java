@@ -24,17 +24,17 @@ package com.lucianms.server;
 import com.lucianms.client.MapleCharacter;
 import com.lucianms.client.MapleClient;
 import com.lucianms.client.inventory.Item;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 import com.lucianms.nio.SendOpcode;
+import com.lucianms.nio.send.MaplePacketWriter;
 import com.lucianms.server.maps.AbstractMapleMapObject;
 import com.lucianms.server.maps.MapleMapObjectType;
 import tools.MaplePacketCreator;
-import tools.data.output.MaplePacketLittleEndianWriter;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 /**
- *
  * @author Matze
  */
 public class MaplePlayerShop extends AbstractMapleMapObject {
@@ -111,6 +111,7 @@ public class MaplePlayerShop extends AbstractMapleMapObject {
 
     /**
      * no warnings for now o.op
+     *
      * @param c
      * @param item
      * @param quantity
@@ -118,7 +119,7 @@ public class MaplePlayerShop extends AbstractMapleMapObject {
     public void buy(MapleClient c, int item, short quantity) {
         if (isVisitor(c.getPlayer())) {
             MaplePlayerShopItem pItem = items.get(item);
-            Item newItem = pItem.getItem().copy();
+            Item newItem = pItem.getItem().duplicate();
             newItem.setQuantity(newItem.getQuantity());
             if (quantity < 1 || pItem.getBundles() < 1 || newItem.getQuantity() > pItem.getBundles() || !pItem.isExist()) {
                 return;
@@ -173,12 +174,12 @@ public class MaplePlayerShop extends AbstractMapleMapObject {
     }
 
     public static byte[] shopErrorMessage(int error, int type) {
-        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(SendOpcode.PLAYER_INTERACTION.getValue());
-        mplew.write(0x0A);
-        mplew.write(type);
-        mplew.write(error);
-        return mplew.getPacket();
+        MaplePacketWriter w = new MaplePacketWriter();
+        w.writeShort(SendOpcode.PLAYER_INTERACTION.getValue());
+        w.write(0x0A);
+        w.write(type);
+        w.write(error);
+        return w.getPacket();
     }
 
     public void broadcast(final byte[] packet) {

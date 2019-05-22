@@ -69,7 +69,6 @@ public enum ItemFactory {
                     if (mit == MapleInventoryType.EQUIP || mit == MapleInventoryType.EQUIPPED) {
                         Equip equip = new Equip(rs.getInt("itemid"), (short) rs.getInt("position"));
                         equip.setOwner(rs.getString("owner"));
-                        equip.setQuantity((short) rs.getInt("quantity"));
                         equip.setAcc((short) rs.getInt("acc"));
                         equip.setAvoid((short) rs.getInt("avoid"));
                         equip.setDex((short) rs.getInt("dex"));

@@ -4,11 +4,11 @@ import com.lucianms.client.MapleCharacter;
 import com.lucianms.constants.ServerConstants;
 import com.lucianms.nio.SendOpcode;
 import com.lucianms.nio.receive.MaplePacketReader;
-import tools.data.output.MaplePacketLittleEndianWriter;
+import com.lucianms.nio.send.MaplePacketWriter;
 
 /**
  * @author Moogra
- * @auhor izarooni
+ * @author izarooni
  */
 public class PlayerFamilyUseEvent extends PacketEvent {
 
@@ -52,25 +52,24 @@ public class PlayerFamilyUseEvent extends PacketEvent {
     }
 
     private static byte[] useRep(int mode, int type, int erate, int drate, int time) {
-        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(0x60);//noty
-        mplew.write(mode);
-        mplew.writeInt(type);
+        MaplePacketWriter w = new MaplePacketWriter();
+        w.writeShort(SendOpcode.FAMILY_RESULT.getValue());
+        w.write(mode);
+        w.writeInt(type);
         if (mode < 4) {
-            mplew.writeInt(erate);
-            mplew.writeInt(drate);
+            w.writeInt(erate);
+            w.writeInt(drate);
         }
-        mplew.write(0);
-        mplew.writeInt(time);
-        return mplew.getPacket();
+        w.write(0);
+        w.writeInt(time);
+        return w.getPacket();
     }
 
     private static byte[] giveBuff() {
-        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(SendOpcode.GIVE_BUFF.getValue());
-        mplew.writeInt(0);
-        mplew.writeLong(0);
-
+        MaplePacketWriter w = new MaplePacketWriter();
+        w.writeShort(SendOpcode.GIVE_BUFF.getValue());
+        w.writeInt(0);
+        w.writeLong(0);
         return null;
     }
 }

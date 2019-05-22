@@ -4,9 +4,9 @@ import com.lucianms.client.MapleCharacter;
 import com.lucianms.discord.DiscordConnection;
 import com.lucianms.discord.Headers;
 import com.lucianms.nio.receive.MaplePacketReader;
+import com.lucianms.nio.send.MaplePacketWriter;
 import com.lucianms.server.Server;
 import com.lucianms.server.world.MapleWorld;
-import tools.data.output.MaplePacketLittleEndianWriter;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -26,7 +26,7 @@ public class DisconnectRequest extends DiscordRequest {
     public void handle(MaplePacketReader reader) {
         byte action = reader.readByte();
 
-        MaplePacketLittleEndianWriter writer = new MaplePacketLittleEndianWriter();
+        MaplePacketWriter writer = new MaplePacketWriter();
         writer.write(Headers.Disconnect.value);
         writer.write(action);
 
@@ -40,7 +40,7 @@ public class DisconnectRequest extends DiscordRequest {
     /**
      * Invoked via command usage in a private message
      */
-    private void DisconnectDM(MaplePacketReader reader, MaplePacketLittleEndianWriter writer) {
+    private void DisconnectDM(MaplePacketReader reader, MaplePacketWriter writer) {
         long userID = reader.readLong();
         writer.writeLong(userID);
 
@@ -55,7 +55,7 @@ public class DisconnectRequest extends DiscordRequest {
                                 world.getPlayerStorage().remove(target.getId());
                                 target.getClient().disconnect();
                                 writer.write(Result.Success.ordinal());
-                                writer.writeMapleAsciiString(target.getName());
+                                writer.writeMapleString(target.getName());
                                 DiscordConnection.sendPacket(writer.getPacket());
                                 return;
                             }
@@ -75,7 +75,7 @@ public class DisconnectRequest extends DiscordRequest {
     /**
      * Invoked via command usage in the Discord server
      */
-    private void DisconnectChannel(MaplePacketReader reader, MaplePacketLittleEndianWriter writer) {
+    private void DisconnectChannel(MaplePacketReader reader, MaplePacketWriter writer) {
         final long channelID = reader.readLong();
         String username = reader.readMapleAsciiString();
 
@@ -93,7 +93,7 @@ public class DisconnectRequest extends DiscordRequest {
         }
 
         if (online) {
-            writer.writeBool(true);
+            writer.writeBoolean(true);
         } else {
             try {
                 int accountID = 0;

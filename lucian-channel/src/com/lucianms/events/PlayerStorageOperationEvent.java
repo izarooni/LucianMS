@@ -106,7 +106,7 @@ public class PlayerStorageOperationEvent extends PacketEvent {
                 getClient().announce(MaplePacketCreator.getStorageError((byte) 0x0B));
             } else {
                 MapleInventoryType type = ii.getInventoryType(itemID);
-                Item item = player.getInventory(type).getItem(slot).copy();
+                Item item = player.getInventory(type).getItem(slot).duplicate();
                 if (item.getItemId() == itemID && (item.getQuantity() >= quantity || ItemConstants.isRechargable(itemID))) {
                     if (ItemConstants.isRechargable(itemID)) {
                         quantity = item.getQuantity();

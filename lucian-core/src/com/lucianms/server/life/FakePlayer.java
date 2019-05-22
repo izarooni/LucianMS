@@ -50,7 +50,7 @@ public class FakePlayer extends MapleCharacter {
             for (Item item : items) {
                 Equip eq = (Equip) item;
                 if (eq.getRingId() < 1) {
-                    getInventory(MapleInventoryType.EQUIPPED).addFromDB(item.copy());
+                    getInventory(MapleInventoryType.EQUIPPED).addFromDB(item.duplicate());
                 }
             }
         } finally {

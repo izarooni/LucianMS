@@ -5,13 +5,13 @@ import com.lucianms.constants.ItemConstants;
 import com.lucianms.discord.DiscordConnection;
 import com.lucianms.discord.Headers;
 import com.lucianms.nio.receive.MaplePacketReader;
+import com.lucianms.nio.send.MaplePacketWriter;
 import com.lucianms.server.MapleItemInformationProvider;
 import provider.MapleData;
 import provider.MapleDataProvider;
 import provider.MapleDataProviderFactory;
 import provider.MapleDataTool;
 import tools.Pair;
-import tools.data.output.MaplePacketLittleEndianWriter;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -31,9 +31,9 @@ public class SearchRequest extends DiscordRequest {
         String type = reader.readMapleAsciiString();
         String search = reader.readMapleAsciiString().toLowerCase().trim();
 
-        MaplePacketLittleEndianWriter writer = new MaplePacketLittleEndianWriter();
-        writer.write(Headers.Search.value);
-        writer.writeLong(channelID);
+        MaplePacketWriter w = new MaplePacketWriter();
+        w.write(Headers.Search.value);
+        w.writeLong(channelID);
 
         MapleData data;
         MapleDataProvider dataProvider = MapleDataProviderFactory.getWZ(new File(System.getProperty("wzpath") + "/" + "String.wz"));
@@ -51,7 +51,7 @@ public class SearchRequest extends DiscordRequest {
                     retNpcs.add(npcPair.getLeft() + " - " + npcPair.getRight());
                 }
             }
-            EncodeData(writer, retNpcs);
+            EncodeData(w, retNpcs);
             retNpcs.clear();
             npcPairList.clear();
         } else if (type.equalsIgnoreCase("MAP") || type.equalsIgnoreCase("MAPS")) {
@@ -70,7 +70,7 @@ public class SearchRequest extends DiscordRequest {
                     retMaps.add(mapPair.getLeft() + " - " + mapPair.getRight());
                 }
             }
-            EncodeData(writer, retMaps);
+            EncodeData(w, retMaps);
             retMaps.clear();
             mapPairList.clear();
         } else if (type.equalsIgnoreCase("MOB") || type.equalsIgnoreCase("MOBS") || type.equalsIgnoreCase("MONSTER") || type.equalsIgnoreCase("MONSTERS")) {
@@ -87,7 +87,7 @@ public class SearchRequest extends DiscordRequest {
                     retMobs.add(mobPair.getLeft() + " - " + mobPair.getRight());
                 }
             }
-            EncodeData(writer, retMobs);
+            EncodeData(w, retMobs);
             retMobs.clear();
             mobPairList.clear();
         } else if (type.equalsIgnoreCase("EQUIP") || type.equalsIgnoreCase("ITEM") || type.equalsIgnoreCase("ITEMS")) {
@@ -100,26 +100,26 @@ public class SearchRequest extends DiscordRequest {
                     retItems.add(itemPair.getLeft() + " - " + itemPair.getRight());
                 }
             }
-            EncodeData(writer, retItems);
+            EncodeData(w, retItems);
             retItems.clear();
         } else {
-            writer.writeInt(-1);
-            writer.writeMapleAsciiString("You must specify a search type");
+            w.writeInt(-1);
+            w.writeMapleString("You must specify a search type");
         }
-        DiscordConnection.sendPacket(writer.getPacket());
+        DiscordConnection.sendPacket(w.getPacket());
         System.gc();
     }
 
-    private void EncodeData(MaplePacketLittleEndianWriter writer, List<String> array) {
+    private void EncodeData(MaplePacketWriter w, List<String> array) {
         if (array.isEmpty()) {
-            writer.writeInt(-1);
-            writer.writeMapleAsciiString("No results found");
+            w.writeInt(-1);
+            w.writeMapleString("No results found");
         } else if (array.stream().mapToInt(String::length).sum() >= SearchLimit) {
-            writer.writeInt(-1);
-            writer.writeMapleAsciiString("There are too many results to display. Please be more specific with your search query");
+            w.writeInt(-1);
+            w.writeMapleString("There are too many results to display. Please be more specific with your search query");
         } else {
-            writer.writeInt(array.size());
-            array.forEach(writer::writeMapleAsciiString);
+            w.writeInt(array.size());
+            array.forEach(w::writeMapleString);
         }
     }
 }

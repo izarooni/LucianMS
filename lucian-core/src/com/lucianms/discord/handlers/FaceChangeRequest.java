@@ -5,10 +5,10 @@ import com.lucianms.client.MapleStat;
 import com.lucianms.discord.DiscordConnection;
 import com.lucianms.discord.Headers;
 import com.lucianms.nio.receive.MaplePacketReader;
+import com.lucianms.nio.send.MaplePacketWriter;
 import com.lucianms.server.Server;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import tools.data.output.MaplePacketLittleEndianWriter;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -28,17 +28,17 @@ public class FaceChangeRequest extends DiscordRequest {
         int faceId = reader.readInt();
         LOGGER.info("Updating {}'s face to {}", username, faceId);
 
-        MaplePacketLittleEndianWriter writer = new MaplePacketLittleEndianWriter();
+        MaplePacketWriter writer = new MaplePacketWriter();
         writer.write(Headers.SetFace.value);
         writer.writeLong(channelId);
-        writer.writeMapleAsciiString(username);
+        writer.writeMapleString(username);
 
 
         MapleCharacter player = Server.getWorld(0).findPlayer(p -> p.getName().equalsIgnoreCase(username));
         if (player != null) {
             player.setFace(faceId);
             player.updateSingleStat(MapleStat.FACE, faceId);
-            player.equipChanged();
+            player.equipChanged(true);
 
             writer.write(1);
         } else {

@@ -4,12 +4,12 @@ import com.lucianms.client.MapleCharacter;
 import com.lucianms.discord.DiscordConnection;
 import com.lucianms.discord.Headers;
 import com.lucianms.nio.receive.MaplePacketReader;
+import com.lucianms.nio.send.MaplePacketWriter;
 import com.lucianms.server.Server;
 import com.lucianms.server.world.MapleWorld;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import tools.Randomizer;
-import tools.data.output.MaplePacketLittleEndianWriter;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -31,10 +31,10 @@ public class BindRequest extends DiscordRequest {
         long authorId = reader.readLong();
         String accountUsername = reader.readMapleAsciiString();
 
-        MaplePacketLittleEndianWriter writer = new MaplePacketLittleEndianWriter();
-        writer.write(Headers.Bind.value);
-        writer.writeLong(channelId);
-        writer.writeLong(authorId);
+        MaplePacketWriter w = new MaplePacketWriter();
+        w.write(Headers.Bind.value);
+        w.writeLong(channelId);
+        w.writeLong(authorId);
 
         try (Connection con = DiscordConnection.getDatabaseConnection()) {
             int accountId = 0;
@@ -43,9 +43,9 @@ public class BindRequest extends DiscordRequest {
                 try (ResultSet rs = ps.executeQuery()) {
                     if (rs.next()) {
                         if (rs.getString("discord_id") != null) {
-                            writer.write(2);
-                            writer.writeMapleAsciiString(accountUsername);
-                            DiscordConnection.sendPacket(writer.getPacket());
+                            w.write(2);
+                            w.writeMapleString(accountUsername);
+                            DiscordConnection.sendPacket(w.getPacket());
                             return;
                         }
                         if (rs.getInt("loggedin") == 2) {
@@ -55,9 +55,9 @@ public class BindRequest extends DiscordRequest {
                 }
             }
             if (accountId == 0) {
-                writer.write(0);
-                writer.writeMapleAsciiString(accountUsername);
-                DiscordConnection.sendPacket(writer.getPacket());
+                w.write(0);
+                w.writeMapleString(accountUsername);
+                DiscordConnection.sendPacket(w.getPacket());
             } else {
                 try (PreparedStatement ps = con.prepareStatement("select id from characters where accountid = ?")) {
                     ps.setInt(1, accountId);
@@ -68,10 +68,10 @@ public class BindRequest extends DiscordRequest {
                                 key = Randomizer.nextString(8);
                             } while (keys.contains(key));
                             keys.add(key);
-                            writer.write(1);
-                            writer.writeMapleAsciiString(key);
-                            writer.writeMapleAsciiString(accountUsername);
-                            DiscordConnection.sendPacket(writer.getPacket());
+                            w.write(1);
+                            w.writeMapleString(key);
+                            w.writeMapleString(accountUsername);
+                            DiscordConnection.sendPacket(w.getPacket());
 
                             for (MapleWorld world : Server.getWorlds()) {
                                 MapleCharacter player = world.getPlayerStorage().get(rs.getInt("id"));
@@ -82,9 +82,9 @@ public class BindRequest extends DiscordRequest {
                                 }
                             }
                         }
-                        writer.write(0);
-                        writer.writeMapleAsciiString(accountUsername);
-                        DiscordConnection.sendPacket(writer.getPacket());
+                        w.write(0);
+                        w.writeMapleString(accountUsername);
+                        DiscordConnection.sendPacket(w.getPacket());
                     }
                 }
             }

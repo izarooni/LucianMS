@@ -623,7 +623,7 @@ public class MapleItemInformationProvider {
 
     public Equip getEquipById(int equipId) {
         if (equipCache.containsKey(equipId)) {
-            return (Equip) equipCache.get(equipId).copy();
+            return (Equip) equipCache.get(equipId).duplicate();
         }
         Map<String, Integer> stats = this.getEquipStats(equipId);
         if (ItemConstants.getInventoryType(equipId) != MapleInventoryType.EQUIP || stats == null) {
@@ -673,7 +673,7 @@ public class MapleItemInformationProvider {
             }
             equipCache.put(equipId, nEquip);
         }
-        return (Equip) nEquip.copy();
+        return (Equip) nEquip.duplicate();
     }
 
     private static short getRandStat(short defaultValue, int maxRange) {
@@ -898,7 +898,7 @@ public class MapleItemInformationProvider {
         if ((itemId / 10000) != 243) {
             return null;
         }
-        scriptedItem script = new scriptedItem(MapleDataTool.getInt("spec/npc", getItemData(itemId), 0), MapleDataTool.getString("spec/script", getItemData(itemId), ""), MapleDataTool.getInt("spec/runOnPickup", getItemData(itemId), 0) == 1);
+        scriptedItem script = new scriptedItem(MapleDataTool.getIntConvert("spec/npc", getItemData(itemId), 0), MapleDataTool.getString("spec/script", getItemData(itemId), ""), MapleDataTool.getIntConvert("spec/runOnPickup", getItemData(itemId), 0) == 1);
         scriptedItemCache.put(itemId, script);
         return scriptedItemCache.get(itemId);
     }

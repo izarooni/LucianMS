@@ -3,10 +3,10 @@ package com.lucianms.events;
 import com.lucianms.client.MapleCharacter;
 import com.lucianms.nio.SendOpcode;
 import com.lucianms.nio.receive.MaplePacketReader;
+import com.lucianms.nio.send.MaplePacketWriter;
 import com.lucianms.server.Server;
 import com.lucianms.server.guild.MapleAlliance;
 import tools.MaplePacketCreator;
-import tools.data.output.MaplePacketLittleEndianWriter;
 
 /**
  * @author XoticStory
@@ -146,47 +146,47 @@ public class GuildUnionOperationEvent extends PacketEvent {
     }
 
     private static byte[] sendShowInfo(int allianceid, int playerid) {
-        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(SendOpcode.ALLIANCE_OPERATION.getValue());
-        mplew.write(0x02);
-        mplew.writeInt(allianceid);
-        mplew.writeInt(playerid);
-        return mplew.getPacket();
+        MaplePacketWriter w = new MaplePacketWriter();
+        w.writeShort(SendOpcode.ALLIANCE_OPERATION.getValue());
+        w.write(0x02);
+        w.writeInt(allianceid);
+        w.writeInt(playerid);
+        return w.getPacket();
     }
 
     private static byte[] sendInvitation(int allianceid, int playerid, final String guildname) {
-        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(SendOpcode.ALLIANCE_OPERATION.getValue());
-        mplew.write(0x05);
-        mplew.writeInt(allianceid);
-        mplew.writeInt(playerid);
-        mplew.writeMapleAsciiString(guildname);
-        return mplew.getPacket();
+        MaplePacketWriter w = new MaplePacketWriter();
+        w.writeShort(SendOpcode.ALLIANCE_OPERATION.getValue());
+        w.write(0x05);
+        w.writeInt(allianceid);
+        w.writeInt(playerid);
+        w.writeMapleString(guildname);
+        return w.getPacket();
     }
 
     private static byte[] sendChangeGuild(int allianceid, int playerid, int guildid, int option) {
-        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(SendOpcode.ALLIANCE_OPERATION.getValue());
-        mplew.write(0x07);
-        mplew.writeInt(allianceid);
-        mplew.writeInt(guildid);
-        mplew.writeInt(playerid);
-        mplew.write(option);
-        return mplew.getPacket();
+        MaplePacketWriter w = new MaplePacketWriter();
+        w.writeShort(SendOpcode.ALLIANCE_OPERATION.getValue());
+        w.write(0x07);
+        w.writeInt(allianceid);
+        w.writeInt(guildid);
+        w.writeInt(playerid);
+        w.write(option);
+        return w.getPacket();
     }
 
     private static byte[] sendChangeLeader(int allianceid, int playerid, int victim) {
-        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(SendOpcode.ALLIANCE_OPERATION.getValue());
-        mplew.write(0x08);
-        mplew.writeInt(allianceid);
-        mplew.writeInt(playerid);
-        mplew.writeInt(victim);
-        return mplew.getPacket();
+        MaplePacketWriter w = new MaplePacketWriter();
+        w.writeShort(SendOpcode.ALLIANCE_OPERATION.getValue());
+        w.write(0x08);
+        w.writeInt(allianceid);
+        w.writeInt(playerid);
+        w.writeInt(victim);
+        return w.getPacket();
     }
 
     private static byte[] sendChangeRank(int allianceid, int playerid, int int1, byte byte1) {
-        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
+        MaplePacketWriter mplew = new MaplePacketWriter();
         mplew.writeShort(SendOpcode.ALLIANCE_OPERATION.getValue());
         mplew.write(0x09);
         mplew.writeInt(allianceid);

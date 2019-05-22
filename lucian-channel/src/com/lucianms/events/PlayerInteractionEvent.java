@@ -385,7 +385,7 @@ public class PlayerInteractionEvent extends PacketEvent {
                         if (shop.isOwner(player)) {
                             for (MaplePlayerShopItem mpsi : shop.getItems()) {
                                 if (mpsi.getBundles() > 2) {
-                                    Item iItem = mpsi.getItem().copy();
+                                    Item iItem = mpsi.getItem().duplicate();
                                     iItem.setQuantity((short) (mpsi.getBundles() * iItem.getQuantity()));
                                     MapleInventoryManipulator.addFromDrop(getClient(), iItem, false);
                                 } else if (mpsi.isExist()) {
@@ -445,7 +445,7 @@ public class PlayerInteractionEvent extends PacketEvent {
                                 return null;
                             }
                         }
-                        Item tradeItem = item.copy();
+                        Item tradeItem = item.duplicate();
                         if (ItemConstants.isRechargable(item.getItemId())) {
                             tradeItem.setQuantity(item.getQuantity());
                             MapleInventoryManipulator.removeFromSlot(getClient(), ivType, item.getPosition(), item.getQuantity(), true);
@@ -481,7 +481,7 @@ public class PlayerInteractionEvent extends PacketEvent {
                     return null;
                 }
                 Item ivItem = player.getInventory(type).getItem(slot);
-                Item sellItem = ivItem.copy();
+                Item sellItem = ivItem.duplicate();
                 if (player.getItemQuantity(ivItem.getItemId(), false) < perBundle * bundles) {
                     return null;
                 }
@@ -533,7 +533,7 @@ public class PlayerInteractionEvent extends PacketEvent {
                         return null;
                     }
                     MaplePlayerShopItem item = shop.getItems().get(slot);
-                    Item ivItem = item.getItem().copy();
+                    Item ivItem = item.getItem().duplicate();
                     shop.removeItem(slot);
                     ivItem.setQuantity(item.getBundles());
                     MapleInventoryManipulator.addFromDrop(getClient(), ivItem, false);

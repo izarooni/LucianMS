@@ -246,19 +246,19 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
     public void setHair(int hair) {
         getPlayer().setHair(hair);
         getPlayer().updateSingleStat(MapleStat.HAIR, hair);
-        getPlayer().equipChanged();
+        getPlayer().equipChanged(true);
     }
 
     public void setFace(int face) {
         getPlayer().setFace(face);
         getPlayer().updateSingleStat(MapleStat.FACE, face);
-        getPlayer().equipChanged();
+        getPlayer().equipChanged(true);
     }
 
     public void setSkin(int color) {
         getPlayer().setSkinColor(MapleSkinColor.getById(color));
         getPlayer().updateSingleStat(MapleStat.SKIN, color);
-        getPlayer().equipChanged();
+        getPlayer().equipChanged(true);
     }
 
     public int itemQuantity(int itemid) {

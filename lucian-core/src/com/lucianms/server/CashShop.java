@@ -337,14 +337,14 @@ public class CashShop {
         gift(recipient, from, message, sn, -1);
     }
 
-    public void gift(int recipient, String from, String message, int sn, int ringid) {
+    public void gift(int recipient, String from, String message, int sn, int ringID) {
         try (Connection con = Server.getConnection();
              PreparedStatement ps = con.prepareStatement("INSERT INTO `gifts` VALUES (DEFAULT, ?, ?, ?, ?, ?)")) {
             ps.setInt(1, recipient);
             ps.setString(2, from);
             ps.setString(3, message);
             ps.setInt(4, sn);
-            ps.setInt(5, ringid);
+            ps.setInt(5, ringID);
             ps.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();

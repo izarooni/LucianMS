@@ -9,6 +9,7 @@ import com.lucianms.discord.DiscordConnection;
 import com.lucianms.discord.Headers;
 import com.lucianms.helpers.HouseManager;
 import com.lucianms.io.scripting.Achievements;
+import com.lucianms.nio.send.MaplePacketWriter;
 import com.lucianms.scheduler.TaskExecutor;
 import com.lucianms.server.CashShop;
 import com.lucianms.server.Server;
@@ -16,7 +17,6 @@ import com.lucianms.server.channel.MapleChannel;
 import com.lucianms.server.world.MapleWorld;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import tools.data.output.MaplePacketLittleEndianWriter;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -35,9 +35,9 @@ public class ChannelConsoleCommands extends ConsoleCommands {
     public void execute(Command command, CommandArgs args) {
         if (command.equals("stop", "exit")) {
             if (DiscordConnection.getSession() != null) {
-                MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-                mplew.write(Headers.Shutdown.value);
-                DiscordConnection.sendPacket(mplew.getPacket());
+                MaplePacketWriter w = new MaplePacketWriter();
+                w.write(Headers.Shutdown.value);
+                DiscordConnection.sendPacket(w.getPacket());
             }
             setReading(false);
             System.exit(0);

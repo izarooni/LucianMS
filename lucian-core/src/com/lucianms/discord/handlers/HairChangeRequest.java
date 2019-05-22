@@ -5,10 +5,10 @@ import com.lucianms.client.MapleStat;
 import com.lucianms.discord.DiscordConnection;
 import com.lucianms.discord.Headers;
 import com.lucianms.nio.receive.MaplePacketReader;
+import com.lucianms.nio.send.MaplePacketWriter;
 import com.lucianms.server.Server;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import tools.data.output.MaplePacketLittleEndianWriter;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -28,17 +28,17 @@ public class HairChangeRequest extends DiscordRequest {
         int hairId = reader.readInt();
         LOGGER.info("Updating {}'s hair to {}", username, hairId);
 
-        MaplePacketLittleEndianWriter writer = new MaplePacketLittleEndianWriter();
-        writer.write(Headers.SetHair.value);
-        writer.writeLong(channelId);
-        writer.writeMapleAsciiString(username);
+        MaplePacketWriter w = new MaplePacketWriter();
+        w.write(Headers.SetHair.value);
+        w.writeLong(channelId);
+        w.writeMapleString(username);
 
         MapleCharacter player = Server.getWorld(0).findPlayer(p -> p.getName().equalsIgnoreCase(username));
         if (player != null) {
             player.setHair(hairId);
             player.updateSingleStat(MapleStat.HAIR, hairId);
-            player.equipChanged();
-            writer.write(1);
+            player.equipChanged(true);
+            w.write(1);
         } else {
             int playerId = MapleCharacter.getIdByName(username);
             if (playerId > 0) {
@@ -47,15 +47,15 @@ public class HairChangeRequest extends DiscordRequest {
                     ps.setInt(1, hairId);
                     ps.setInt(2, playerId);
                     ps.executeUpdate();
-                    writer.write(2);
+                    w.write(2);
                 } catch (SQLException e) {
-                    writer.write(-1);
+                    w.write(-1);
                     LOGGER.info("Unable to update {}'s hair", username, e);
                 }
             } else {
-                writer.write(0);
+                w.write(0);
             }
         }
-        DiscordConnection.sendPacket(writer.getPacket());
+        DiscordConnection.sendPacket(w.getPacket());
     }
 }

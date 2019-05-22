@@ -102,4 +102,12 @@ public final class ItemConstants {
         }
         return MapleInventoryType.getByType(type);
     }
+
+    public static boolean isWeapon(int itemId) {
+        return itemId >= 1302000 && itemId < 1492024;
+    }
+
+    public static boolean isOverall(int itemId) {
+        return itemId / 10000 == 105;
+    }
 }

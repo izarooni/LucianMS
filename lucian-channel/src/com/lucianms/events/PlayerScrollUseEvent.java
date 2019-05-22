@@ -106,7 +106,7 @@ public final class PlayerScrollUseEvent extends PacketEvent {
         player.announce(MaplePacketCreator.modifyInventory(true, mods));
         player.getMap().broadcastMessage(MaplePacketCreator.getScrollEffect(player.getId(), scrollResult, legendarySpirit));
         if (destination < 0 && (scrollResult == Equip.ScrollResult.SUCCESS || scrollResult == Equip.ScrollResult.CURSE)) {
-            player.equipChanged();
+            player.equipChanged(true);
         }
         return null;
     }

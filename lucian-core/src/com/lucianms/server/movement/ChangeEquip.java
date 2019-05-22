@@ -21,7 +21,7 @@
 */
 package com.lucianms.server.movement;
 
-import tools.data.output.LittleEndianWriter;
+import com.lucianms.nio.send.MaplePacketWriter;
 
 import java.awt.*;
 
@@ -34,9 +34,9 @@ public class ChangeEquip implements LifeMovementFragment {
     }
 
     @Override
-    public void serialize(LittleEndianWriter lew) {
-        lew.write(10);
-        lew.write(update);
+    public void serialize(MaplePacketWriter w) {
+        w.write(10);
+        w.write(update);
     }
 
     @Override

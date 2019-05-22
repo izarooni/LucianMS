@@ -26,33 +26,23 @@ import com.lucianms.server.MapleItemInformationProvider;
 import tools.MaplePacketCreator;
 import tools.Pair;
 
-import java.util.LinkedList;
+import java.util.ArrayList;
 import java.util.List;
 
 public class Equip extends Item {
 
     public enum ScrollResult {
-
-        FAIL(0), SUCCESS(1), CURSE(2);
-        private final int value;
-
-        ScrollResult(int value) {
-            this.value = value;
-        }
-
-        public int getValue() {
-            return value;
-        }
+        FAIL, SUCCESS, CURSE
     }
 
     private byte upgradeSlots;
     private byte level, flag, itemLevel;
-    private short str, dex, _int, luk, hp, mp, watk, matk, wdef, mdef, acc, avoid, hands, speed, jump, vicious;
+    private short str, dex, $int, luk, hp, mp, watk, matk, wdef, mdef, acc, avoid, hands, speed, jump, vicious;
     private float itemExp;
     private int ringid = -1;
     private int eliminations;
-    private boolean wear = false;
-    private boolean regalia = false;
+    private boolean wear;
+    private boolean regalia;
 
     public Equip(int id) {
         this(id, (short) 0);
@@ -72,11 +62,11 @@ public class Equip extends Item {
     }
 
     @Override
-    public Item copy() {
+    public Item duplicate() {
         Equip ret = new Equip(getItemId(), getPosition(), getUpgradeSlots());
         ret.str = str;
         ret.dex = dex;
-        ret._int = _int;
+        ret.$int = $int;
         ret.luk = luk;
         ret.hp = hp;
         ret.mp = mp;
@@ -95,9 +85,8 @@ public class Equip extends Item {
         ret.itemLevel = itemLevel;
         ret.itemExp = itemExp;
         ret.level = level;
-        ret.log = new LinkedList<>(log);
+        ret.log = new ArrayList<>(log);
         ret.setOwner(getOwner());
-        ret.setQuantity(getQuantity());
         ret.setExpiration(getExpiration());
         ret.setGiftFrom(getGiftFrom());
         return ret;
@@ -124,7 +113,7 @@ public class Equip extends Item {
                 this.dex = (short) value;
                 break;
             case "int":
-                this._int = (short) value;
+                this.$int = (short) value;
                 break;
             case "luk":
                 this.luk = (short) value;
@@ -184,7 +173,7 @@ public class Equip extends Item {
     }
 
     public short getInt() {
-        return _int;
+        return $int;
     }
 
     public short getLuk() {
@@ -253,7 +242,7 @@ public class Equip extends Item {
     }
 
     public void setInt(short _int) {
-        this._int = _int;
+        this.$int = _int;
     }
 
     public void setLuk(short luk) {
@@ -331,7 +320,7 @@ public class Equip extends Item {
                     str += stat.getRight();
                     break;
                 case "incINT":
-                    _int += stat.getRight();
+                    $int += stat.getRight();
                     break;
                 case "incLUK":
                     luk += stat.getRight();
@@ -401,10 +390,7 @@ public class Equip extends Item {
 
     @Override
     public void setQuantity(short quantity) {
-        if (quantity < 0 || quantity > 1) {
-            throw new RuntimeException("Setting the quantity to " + quantity + " on an equip (itemid: " + getItemId() + ")");
-        }
-        super.setQuantity(quantity);
+        throw new UnsupportedOperationException("Cannot change quantity of an Equip");
     }
 
     public void setUpgradeSlots(int i) {

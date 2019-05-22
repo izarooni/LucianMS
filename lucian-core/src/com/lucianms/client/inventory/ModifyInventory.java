@@ -21,12 +21,12 @@ public class ModifyInventory {
      */
     public ModifyInventory(final int mode, final Item item) {
         this.mode = mode;
-        this.item = item.copy();
+        this.item = item;
     }
 
     public ModifyInventory(final int mode, final Item item, final short oldPos) {
         this.mode = mode;
-        this.item = item.copy();
+        this.item = item;
         this.oldPos = oldPos;
     }
 

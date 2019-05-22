@@ -135,7 +135,7 @@ public class HiredMerchant extends AbstractMapleMapObject {
 
     public void buy(MapleClient c, int item, short quantity) {
         MaplePlayerShopItem pItem = items.get(item);
-        Item newItem = pItem.getItem().copy();
+        Item newItem = pItem.getItem().duplicate();
         newItem.setQuantity((short) ((pItem.getItem().getQuantity() * quantity)));
         if ((newItem.getFlag() & ItemConstants.KARMA) == ItemConstants.KARMA) {
             newItem.setFlag((byte) (newItem.getFlag() ^ ItemConstants.KARMA));

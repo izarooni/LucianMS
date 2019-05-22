@@ -6,6 +6,7 @@ import com.lucianms.constants.ServerConstants;
 import com.lucianms.events.ChangeMapEvent;
 import com.lucianms.lang.annotation.PacketWorker;
 import com.lucianms.nio.SendOpcode;
+import com.lucianms.nio.send.MaplePacketWriter;
 import com.lucianms.scheduler.TaskExecutor;
 import com.lucianms.server.channel.MapleChannel;
 import com.lucianms.server.life.MapleLifeFactory;
@@ -16,7 +17,6 @@ import com.lucianms.server.maps.MapleMap;
 import com.lucianms.server.maps.MapleMapObject;
 import com.lucianms.server.world.MapleWorld;
 import tools.MaplePacketCreator;
-import tools.data.output.MaplePacketLittleEndianWriter;
 
 import java.awt.*;
 import java.util.ArrayList;
@@ -44,18 +44,18 @@ public class AEmergencyTrial extends GAutoEvent {
     private long endTimestamp;
 
     private static byte[] createNpc(MapleNPC life, Point location) {
-        final MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter(24);
-        mplew.writeShort(SendOpcode.SPAWN_NPC.getValue());
-        mplew.writeInt(life.getObjectId());
-        mplew.writeInt(life.getId());
-        mplew.writeShort(location.x);
-        mplew.writeShort(location.y);
-        mplew.write(0);
-        mplew.writeShort(0);
-        mplew.writeShort(location.x - 50);
-        mplew.writeShort(location.x + 50);
-        mplew.write(1);
-        return mplew.getPacket();
+        final MaplePacketWriter w = new MaplePacketWriter(24);
+        w.writeShort(SendOpcode.SPAWN_NPC.getValue());
+        w.writeInt(life.getObjectId());
+        w.writeInt(life.getId());
+        w.writeShort(location.x);
+        w.writeShort(location.y);
+        w.write(0);
+        w.writeShort(0);
+        w.writeShort(location.x - 50);
+        w.writeShort(location.x + 50);
+        w.write(1);
+        return w.getPacket();
     }
 
     public AEmergencyTrial(MapleWorld world) {

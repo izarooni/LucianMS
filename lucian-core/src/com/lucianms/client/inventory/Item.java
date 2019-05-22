@@ -21,20 +21,22 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package com.lucianms.client.inventory;
 
+import tools.Duplicable;
+
+import java.util.ArrayList;
 import java.util.Collections;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
 
-public class Item implements Comparable<Item> {
+public class Item implements Comparable<Item>, Duplicable<Item> {
 
+    protected List<String> log;
     private int id, cashId, sn;
     private short position;
     private short quantity;
     private int petid = -1;
-    private MaplePet pet = null;
+    private MaplePet pet;
     private String owner = "";
-    protected List<String> log;
     private byte flag;
     private long expiration = -1;
     private String giftFrom = "";
@@ -49,7 +51,7 @@ public class Item implements Comparable<Item> {
         this.id = id;
         this.position = position;
         this.quantity = quantity;
-        this.log = new LinkedList<>();
+        this.log = new ArrayList<>();
         this.flag = 0;
     }
 
@@ -60,24 +62,18 @@ public class Item implements Comparable<Item> {
         this.petid = petid;
         if (petid > -1) this.pet = MaplePet.loadFromDb(id, position, petid);
         this.flag = 0;
-        this.log = new LinkedList<>();
+        this.log = new ArrayList<>();
     }
 
-    public Item copy() {
-        Item ret = new Item(id, position, quantity, petid);
-        ret.flag = flag;
-        ret.owner = owner;
-        ret.expiration = expiration;
-        ret.log = new LinkedList<>(log);
-        return ret;
-    }
-
-    public void setPosition(short position) {
-        this.position = position;
-    }
-
-    public void setQuantity(short quantity) {
-        this.quantity = quantity;
+    @Override
+    public Item duplicate() {
+        if (getPetId() > -1) throw new UnsupportedOperationException("Cannot duplicate an item that is a pet");
+        Item item = new Item(getItemId(), getPosition(), getQuantity());
+        item.flag = flag;
+        item.owner = owner;
+        item.expiration = expiration;
+        item.log.addAll(log);
+        return item;
     }
 
     public int getItemId() {
@@ -95,8 +91,16 @@ public class Item implements Comparable<Item> {
         return position;
     }
 
+    public void setPosition(short position) {
+        this.position = position;
+    }
+
     public short getQuantity() {
         return quantity;
+    }
+
+    public void setQuantity(short quantity) {
+        this.quantity = quantity;
     }
 
     public byte getType() {

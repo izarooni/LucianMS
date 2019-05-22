@@ -21,7 +21,7 @@
 */
 package com.lucianms.server.movement;
 
-import tools.data.output.LittleEndianWriter;
+import com.lucianms.nio.send.MaplePacketWriter;
 
 import java.awt.*;
 
@@ -47,13 +47,13 @@ public class AbsoluteLifeMovement extends AbstractLifeMovement {
     }
 
     @Override
-    public void serialize(LittleEndianWriter lew) {
-        lew.write(getType());
-        lew.writePos(getPosition());
-        lew.writePos(getPixelsPerSecond());
-        lew.writeShort(getFoothold());
-        lew.write(getStance());
-        lew.writeShort(getDuration());
+    public void serialize(MaplePacketWriter w) {
+        w.write(getType());
+        w.writeLocation(getPosition());
+        w.writeLocation(getPixelsPerSecond());
+        w.writeShort(getFoothold());
+        w.write(getStance());
+        w.writeShort(getDuration());
     }
 
     public Point getPixelsPerSecond() {

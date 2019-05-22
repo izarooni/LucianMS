@@ -2,11 +2,10 @@ package com.lucianms.events;
 
 import com.lucianms.client.MapleCharacter;
 import com.lucianms.client.arcade.RPSGame;
-import com.lucianms.nio.receive.MaplePacketReader;
-import com.lucianms.events.PacketEvent;
 import com.lucianms.nio.SendOpcode;
+import com.lucianms.nio.receive.MaplePacketReader;
+import com.lucianms.nio.send.MaplePacketWriter;
 import tools.Randomizer;
-import tools.data.output.MaplePacketLittleEndianWriter;
 
 /**
  * @author izarooni
@@ -35,15 +34,15 @@ public class RockPaperScissorsEvent extends PacketEvent {
             player.setRPSGame((game = new RPSGame()));
         }
 
-        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(SendOpcode.RPS_GAME.getValue());
+        MaplePacketWriter w = new MaplePacketWriter();
+        w.writeShort(SendOpcode.RPS_GAME.getValue());
         switch (operation) {
             case 0x0: // start
             case 0x5: { // retry
                 game.setSelection((byte) -1); // allow selection
 
-                mplew.write(0x9); // action
-                getClient().announce(mplew.getPacket());
+                w.write(0x9); // action
+                getClient().announce(w.getPacket());
                 break;
             }
             case 0x1: { // select
@@ -52,37 +51,37 @@ public class RockPaperScissorsEvent extends PacketEvent {
                     int round = game.getRound();
                     game.setSelection(choice);
 
-                    mplew.write(0xb); // action
-                    mplew.write(npc); // npc choice
+                    w.write(0xb); // action
+                    w.write(npc); // npc choice
 
                     if (choice == npc) {
                         game.setSelection((byte) -1);
-                        mplew.write(round); // draw
+                        w.write(round); // draw
                     } else if ((choice == 0 && npc == 1)  // P:Rock     Vs. C:Paper
                             || (choice == 1 && npc == 2)  // P:Paper    Vs. C:Scissors
                             || (choice == 2 && npc == 0)) // P:Scissors Vs  C:Rock
                     {
                         game.setRound(0);
-                        mplew.write(-1); // NPC win
+                        w.write(-1); // NPC win
                     } else {
-                        mplew.write(++round); // Player win
+                        w.write(++round); // Player win
                     }
-                    getClient().announce(mplew.getPacket());
+                    getClient().announce(w.getPacket());
                 }
                 break;
             }
             case 0x3: { // continue
                 game.setSelection((byte) -1); // allow selection
 
-                mplew.write(0xC); // action
-                getClient().announce(mplew.getPacket());
+                w.write(0xC); // action
+                getClient().announce(w.getPacket());
                 break;
             }
             case 0x4: { // exit
                 player.setRPSGame(null);
 
-                mplew.write(0xd); // action
-                getClient().announce(mplew.getPacket());
+                w.write(0xd); // action
+                getClient().announce(w.getPacket());
                 break;
             }
         }
@@ -92,10 +91,10 @@ public class RockPaperScissorsEvent extends PacketEvent {
     public static void startGame(MapleCharacter player) {
         player.setRPSGame(new RPSGame());
 
-        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter(5);
-        mplew.writeShort(SendOpcode.RPS_GAME.getValue());
-        mplew.write(8);
-        mplew.writeInt(9000019);
-        player.announce(mplew.getPacket());
+        MaplePacketWriter w = new MaplePacketWriter(5);
+        w.writeShort(SendOpcode.RPS_GAME.getValue());
+        w.write(8);
+        w.writeInt(9000019);
+        player.announce(w.getPacket());
     }
 }

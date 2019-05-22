@@ -28,6 +28,8 @@ import com.lucianms.server.maps.MapleMapObject;
 import com.lucianms.server.maps.MapleReactor;
 import com.lucianms.server.maps.PlayerNPC;
 import com.lucianms.server.world.MapleWorld;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import tools.HexTool;
 
 import javax.script.ScriptException;
@@ -42,6 +44,8 @@ import java.util.function.Function;
  * @author izarooni
  */
 public class AdministratorCommands extends CommandExecutor {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(AdministratorCommands.class);
 
     public AdministratorCommands() {
         addCommand("clearcache", this::CommandClearCache);
@@ -148,7 +152,18 @@ public class AdministratorCommands extends CommandExecutor {
             Relationship prltn = target2.getRelationship();
 
             final int ringItemID = PlayerRingActionEvent.getWeddingRingForEngagementBox(engagementBoxID);
-            final int ringID = MapleRing.createRing(ringItemID, target1, target2);
+            int ringID;
+            try {
+                ringID = MapleRing.create(ringItemID, target1, target2);
+            } catch (Exception e) {
+                LOGGER.error("Failed to create ring between {} and {}", target1.getName(), target2.getName(), e);
+                player.sendMessage(1, "Failed to create the ring.");
+                return;
+            }
+
+            MapleRing t1Ring = new MapleRing(ringID, ringID + 1, target2.getId(), ringItemID, target2.getName());
+            MapleRing t2Ring = new MapleRing(ringID + 1, ringID, player.getId(), ringItemID, player.getName());
+
             Equip equip = new Equip(ringItemID, (short) 0);
             equip.setRingId(ringID);
             MapleInventoryManipulator.addFromDrop(target1.getClient(), equip, true);
@@ -156,7 +171,8 @@ public class AdministratorCommands extends CommandExecutor {
             rltn.setEngagementBoxId(engagementBoxID);
             rltn.setBrideId(target2.getId());
             rltn.setGroomId(target1.getId());
-            target1.setMarriageRing(MapleRing.loadFromDb(equip.getRingId()));
+            target1.getWeddingRings().add(t1Ring);
+            target1.changeMap(target1.getMap(), target1.getPosition());
 
             equip = new Equip(ringItemID, (short) 0);
             equip.setRingId(ringID + 1);
@@ -165,10 +181,11 @@ public class AdministratorCommands extends CommandExecutor {
             prltn.setEngagementBoxId(engagementBoxID);
             prltn.setBrideId(target2.getId());
             prltn.setGroomId(target1.getId());
-            target2.setMarriageRing(MapleRing.loadFromDb(equip.getRingId()));
+            target2.getWeddingRings().add(t2Ring);
+            target2.changeMap(target2.getMap(), target2.getPosition());
 
-            target1.sendMessage(6, "You are now married to '{}'", target2.getName());
-            target2.sendMessage(6, "You are now married to '{}'", target1.getName());
+            target1.sendMessage(1, "You are now married to '{}'", target2.getName());
+            target2.sendMessage(1, "You are now married to '{}'", target1.getName());
             player.sendMessage(6, "Success!");
         } else {
             player.sendMessage(5, "usage: !setcouple <engagement_box> <groom> <bride>");

@@ -5,11 +5,11 @@ import com.lucianms.events.PlayerItemUseEvent;
 import com.lucianms.features.GenericEvent;
 import com.lucianms.lang.annotation.PacketWorker;
 import com.lucianms.nio.SendOpcode;
+import com.lucianms.nio.send.MaplePacketWriter;
 import com.lucianms.scheduler.Task;
 import com.lucianms.scheduler.TaskExecutor;
 import com.lucianms.server.life.MapleLifeFactory;
 import com.lucianms.server.life.MapleNPC;
-import tools.data.output.MaplePacketLittleEndianWriter;
 
 import java.awt.*;
 
@@ -82,25 +82,25 @@ public class FlappyBirdController extends GenericEvent {
     }
 
     private void sendFieldEnter(MapleCharacter player) {
-        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter(23);
-        mplew.writeShort(SendOpcode.SPAWN_NPC.getValue());
-        mplew.writeInt(npc.getObjectId());
-        mplew.writeInt(npc.getId());
-        mplew.writeShort(npc.getPosition().x);
-        mplew.writeShort(npc.getCy());
-        mplew.write(npc.getF() == 1 ? 0 : 1);
-        mplew.writeShort(npc.getFh());
-        mplew.writeShort(npc.getRx0());
-        mplew.writeShort(npc.getRx1());
-        mplew.write(1);
-        player.announce(mplew.getPacket());
+        MaplePacketWriter w = new MaplePacketWriter(23);
+        w.writeShort(SendOpcode.SPAWN_NPC.getValue());
+        w.writeInt(npc.getObjectId());
+        w.writeInt(npc.getId());
+        w.writeShort(npc.getPosition().x);
+        w.writeShort(npc.getCy());
+        w.write(npc.getF() == 1 ? 0 : 1);
+        w.writeShort(npc.getFh());
+        w.writeShort(npc.getRx0());
+        w.writeShort(npc.getRx1());
+        w.write(1);
+        player.announce(w.getPacket());
     }
 
     private void sendFieldLeave(MapleCharacter player) {
-        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter(6);
-        mplew.writeShort(SendOpcode.REMOVE_NPC.getValue());
-        mplew.writeInt(npc.getObjectId());
-        player.announce(mplew.getPacket());
+        MaplePacketWriter w = new MaplePacketWriter(6);
+        w.writeShort(SendOpcode.REMOVE_NPC.getValue());
+        w.writeInt(npc.getObjectId());
+        player.announce(w.getPacket());
     }
 
     private class Vector2D {

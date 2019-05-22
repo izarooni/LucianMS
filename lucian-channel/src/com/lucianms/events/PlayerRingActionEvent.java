@@ -7,6 +7,7 @@ import com.lucianms.client.inventory.Item;
 import com.lucianms.client.inventory.MapleInventoryType;
 import com.lucianms.nio.SendOpcode;
 import com.lucianms.nio.receive.MaplePacketReader;
+import com.lucianms.nio.send.MaplePacketWriter;
 import com.lucianms.server.MapleInventoryManipulator;
 import com.lucianms.server.channel.MapleChannel;
 import com.lucianms.server.world.MapleWorld;
@@ -14,7 +15,6 @@ import tools.MaplePacketCreator;
 import tools.Pair;
 import tools.StringUtil;
 import tools.Triple;
-import tools.data.output.MaplePacketLittleEndianWriter;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -254,26 +254,26 @@ public class PlayerRingActionEvent extends PacketEvent {
     }
 
     private static byte[] getEngagementResult(byte action) {
-        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(SendOpcode.MARRIAGE_RESULT.getValue());
-        mplew.write(action);
-        return mplew.getPacket();
+        MaplePacketWriter w = new MaplePacketWriter();
+        w.writeShort(SendOpcode.MARRIAGE_RESULT.getValue());
+        w.write(action);
+        return w.getPacket();
     }
 
     private static byte[] getEngagementSuccess(MapleCharacter groom, MapleCharacter bride) {
-        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(SendOpcode.MARRIAGE_RESULT.getValue());
+        MaplePacketWriter w = new MaplePacketWriter();
+        w.writeShort(SendOpcode.MARRIAGE_RESULT.getValue());
         Relationship rltn = groom.getRelationship();
-        mplew.write(0xb);
-        mplew.writeInt(0); // marriageId
-        mplew.writeInt(groom.getId());
-        mplew.writeInt(bride.getId());
-        mplew.writeShort(1); // ?
-        mplew.writeInt(Boxes.get(rltn.getEngagementBoxId()).getRight()); // wedding ring
-        mplew.writeInt(Boxes.get(rltn.getEngagementBoxId()).getRight()); // wedding ring
-        mplew.writeAsciiString(StringUtil.getRightPaddedStr(groom.getName(), '\0', 13));
-        mplew.writeAsciiString(StringUtil.getRightPaddedStr(bride.getName(), '\0', 13));
-        return mplew.getPacket();
+        w.write(0xb);
+        w.writeInt(0); // marriageId
+        w.writeInt(groom.getId());
+        w.writeInt(bride.getId());
+        w.writeShort(1); // ?
+        w.writeInt(Boxes.get(rltn.getEngagementBoxId()).getRight()); // wedding ring
+        w.writeInt(Boxes.get(rltn.getEngagementBoxId()).getRight()); // wedding ring
+        w.writeAsciiString(StringUtil.getRightPaddedStr(groom.getName(), '\0', 13));
+        w.writeAsciiString(StringUtil.getRightPaddedStr(bride.getName(), '\0', 13));
+        return w.getPacket();
     }
 
     /**
@@ -282,15 +282,16 @@ public class PlayerRingActionEvent extends PacketEvent {
      * @param username      the username of the player proposing
      * @param brideId       the player Id of the partner player
      * @param brideUsername the username of the partner player
+     *
      * @return a byte array containing the packet data
      */
     private static byte[] sendEngagementRequest(String username, int brideId, String brideUsername) {
-        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(SendOpcode.MARRIAGE_REQUEST.getValue());
-        mplew.write(0);
-        mplew.writeMapleAsciiString(username);
-        mplew.writeInt(brideId); // not sure
-        mplew.writeMapleAsciiString(brideUsername);
-        return mplew.getPacket();
+        MaplePacketWriter w = new MaplePacketWriter();
+        w.writeShort(SendOpcode.MARRIAGE_REQUEST.getValue());
+        w.write(0);
+        w.writeMapleString(username);
+        w.writeInt(brideId); // not sure
+        w.writeMapleString(brideUsername);
+        return w.getPacket();
     }
 }

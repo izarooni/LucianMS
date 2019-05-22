@@ -79,6 +79,19 @@ public interface PacketAnnouncer {
     }
 
     /**
+     * Sends a packet to (1) all players if the specified player is not hidden, (2) the receiving players GM level is
+     * equal to or higher than that of the specified player and (3) receiving player's is not the specified player
+     *
+     * @param player the player that should not receive the packet and will be used as the subject in the above
+     *               conditions
+     */
+    default void sendPacketCheckHiddenExclude(MapleCharacter player, byte[] packet) {
+        Collection<MapleCharacter> players = getPlayers();
+        players.stream().filter(p -> player.getId() != p.getId() && (!player.isHidden() || p.getGMLevel() >= player.getGMLevel())).forEach(p -> p.announce(packet));
+        players.clear();
+    }
+
+    /**
      * Sends a packet to the collection of players excluding the single specified player
      */
     default void sendPacketExclude(byte[] packet, MapleCharacter exclude) {

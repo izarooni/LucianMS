@@ -25,9 +25,9 @@ import com.lucianms.client.MapleCharacter;
 import com.lucianms.client.MapleClient;
 import com.lucianms.constants.ItemConstants;
 import com.lucianms.nio.SendOpcode;
+import com.lucianms.nio.send.MaplePacketWriter;
 import tools.MaplePacketCreator;
 import tools.Pair;
-import tools.data.output.MaplePacketLittleEndianWriter;
 
 import java.util.*;
 
@@ -189,8 +189,8 @@ public class MapleInventory implements Iterable<Item> {
         inventory.put(target.getPosition(), target);
     }
 
-    public Item getItem(short slot) {
-        return inventory.get(slot);
+    public <T extends Item> T getItem(short slot) {
+        return (T) inventory.get(slot);
     }
 
     public void removeItem(short slot) {
@@ -282,22 +282,22 @@ public class MapleInventory implements Iterable<Item> {
     }
 
     public void updateItem(MapleClient client, Item item) {
-        MaplePacketLittleEndianWriter writer = new MaplePacketLittleEndianWriter();
-        writer.writeShort(SendOpcode.INVENTORY_OPERATION.getValue());
-        writer.writeBool(true);
-        writer.write(2);
+        MaplePacketWriter w = new MaplePacketWriter();
+        w.writeShort(SendOpcode.INVENTORY_OPERATION.getValue());
+        w.writeBoolean(true); // record update_time
+        w.write(2);
 
-        writer.write(3);
-        writer.write(ItemConstants.getInventoryType(item.getItemId()).getType());
-        writer.writeShort(item.getPosition());
+        w.write(3);
+        w.write(ItemConstants.getInventoryType(item.getItemId()).getType());
+        w.writeShort(item.getPosition());
 
-        writer.write(0);
-        writer.write(ItemConstants.getInventoryType(item.getItemId()).getType());
-        writer.writeShort(item.getPosition());
-        MaplePacketCreator.addItemInfo(writer, item, true);
+        w.write(0);
+        w.write(ItemConstants.getInventoryType(item.getItemId()).getType());
+        w.writeShort(item.getPosition());
+        MaplePacketCreator.addItemInfo(w, item, true);
 
-        writer.write(2);
+        w.write(2);
 
-        client.announce(writer.getPacket());
+        client.announce(w.getPacket());
     }
 }

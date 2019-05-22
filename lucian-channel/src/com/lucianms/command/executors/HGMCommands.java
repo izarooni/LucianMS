@@ -15,6 +15,8 @@ import com.lucianms.server.life.*;
 import com.lucianms.server.maps.MapleFoothold;
 import com.lucianms.server.maps.MapleMap;
 import com.lucianms.server.world.MapleWorld;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import tools.MaplePacketCreator;
 
 import java.awt.*;
@@ -28,6 +30,8 @@ import java.util.*;
  * @author izarooni, lucasdieswagger
  */
 public class HGMCommands extends CommandExecutor {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(HGMCommands.class);
 
     public static void execute(MapleClient client, Command command, CommandArgs args) {
 
@@ -469,7 +473,7 @@ public class HGMCommands extends CommandExecutor {
                         }
                     }
                     client.announce(MaplePacketCreator.modifyInventory(true, mods));
-                    player.equipChanged();
+                    player.equipChanged(true);
                     mods.clear();
                 }
             } else if (command.equals("footholds")) {
@@ -491,12 +495,18 @@ public class HGMCommands extends CommandExecutor {
                         return;
                     }
                     Integer ringItemID = args.parseNumber(1, int.class);
-                    final int ringID = MapleRing.createRing(ringItemID, player, partner);
-                    Equip equip = new Equip(ringItemID, (short) 0);
+                    int ringID;
+                    try {
+                        ringID = MapleRing.create(ringItemID, player, partner);
+                    } catch (SQLException e) {
+                        LOGGER.error("Failed to create ring between {} and {}", player.getName(), partner.getName(), e);
+                        return;
+                    }
+                    Equip equip = new Equip(ringItemID);
                     equip.setRingId(ringID);
                     MapleInventoryManipulator.addFromDrop(player.getClient(), equip, true);
 
-                    equip = new Equip(ringItemID, (short) 0);
+                    equip = new Equip(ringItemID);
                     equip.setRingId(ringID + 1);
                     MapleInventoryManipulator.addFromDrop(partner.getClient(), equip, true);
                 } else {

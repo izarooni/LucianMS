@@ -4,7 +4,6 @@ import com.lucianms.client.MapleCharacter;
 import com.lucianms.client.Relationship;
 import com.lucianms.command.CommandWorker;
 import com.lucianms.nio.receive.MaplePacketReader;
-import com.lucianms.events.PacketEvent;
 import tools.MaplePacketCreator;
 
 /**
@@ -32,11 +31,11 @@ public class PlayerSpouseChatEvent extends PacketEvent {
         }
         if (rltn.getStatus() == Relationship.Status.Married) {
             MapleCharacter target = getClient().getWorldServer().findPlayer(p -> p.getName().equalsIgnoreCase(username));
-            if (target != null && target.getId() == player.getMarriageRing().getPartnerChrId()) {
+            if (target != null && target.getId() == player.getRelationship().getPartnerID(player)) {
                 getClient().announce(MaplePacketCreator.sendSpouseChat(target, content, false));
                 target.announce(MaplePacketCreator.sendSpouseChat(player, content, true));
             } else {
-                player.dropMessage(5, "Your significant other is currently offline.");
+                player.dropMessage(5, "Your significant other is offline.");
             }
         } else {
             player.dropMessage(5, "You are not married.");
