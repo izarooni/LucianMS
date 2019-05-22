@@ -4426,6 +4426,10 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Di
         mesoRate = w.getMesoRate();
         dropRate = w.getDropRate();
 
+        if (forcedStat != null) {
+            expRate += forcedStat.getBonusExpRate();
+        }
+
         if (occupation != null) {
             byte occupationLevel = (byte) Math.max(1, occupation.getLevel());
             switch (occupation.getType()) {

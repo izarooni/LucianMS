@@ -1,3 +1,4 @@
+const ForcedStat = Java.type('com.lucianms.client.meta.ForcedStat');
 /* izarooni */
 let Locations = [
     new Location(105300100, { min: 0, max: 150 }),
@@ -34,6 +35,10 @@ function action(mode, type, selection) {
         let destination = cm.vars.location;
         if (destination != undefined) {
             cm.warp(destination);
+
+            let fc = new ForcedStat();
+            fc.setBonusExpRate(8);
+            player.setForcedStat(fc);
         }
         cm.dispose();
     }

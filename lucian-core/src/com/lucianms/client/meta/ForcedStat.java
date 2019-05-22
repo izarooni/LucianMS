@@ -36,6 +36,7 @@ public class ForcedStat {
 
     private int bitMask;
     private EnumMap<Type, Integer> forcedStats = new EnumMap<>(Type.class);
+    private float bonusExpRate;
 
     public ForcedStat() {
         bitMask = 0;
@@ -73,5 +74,13 @@ public class ForcedStat {
                 }
             }
         }
+    }
+
+    public float getBonusExpRate() {
+        return bonusExpRate;
+    }
+
+    public void setBonusExpRate(float bonusExpRate) {
+        this.bonusExpRate = bonusExpRate;
     }
 }

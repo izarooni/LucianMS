@@ -41,13 +41,12 @@ public class FieldInitEvent extends PacketEvent {
         MapleMap map = player.getMap();
         final int mapID = map.getId();
 
+        player.setRates();
 
         if (player.getForcedStat() != null) {
             player.setForcedStat(null);
             client.announce(MaplePacketCreator.getForcedStatReset());
         }
-
-        player.setRates();
 
         if (MapleMiniDungeon.isDungeonMap(mapID)) {
             MapleMiniDungeon dungeon = MapleMiniDungeon.getDungeon(mapID);
