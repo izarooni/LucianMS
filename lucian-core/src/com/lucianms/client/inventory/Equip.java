@@ -49,14 +49,12 @@ public class Equip extends Item {
     }
 
     public Equip(int id, short position) {
-        super(id, position, (short) 1);
-        this.itemExp = 0;
-        this.itemLevel = 1;
+        this(id, position, 0);
     }
 
-    public Equip(int id, short position, int slots) {
+    public Equip(int id, short position, int upgradeSlots) {
         super(id, position, (short) 1);
-        this.upgradeSlots = (byte) slots;
+        this.upgradeSlots = (byte) upgradeSlots;
         this.itemExp = 0;
         this.itemLevel = 1;
     }

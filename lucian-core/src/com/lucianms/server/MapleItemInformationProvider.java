@@ -629,8 +629,7 @@ public class MapleItemInformationProvider {
         if (ItemConstants.getInventoryType(equipId) != MapleInventoryType.EQUIP || stats == null) {
             return null;
         }
-        Equip nEquip = new Equip(equipId, (byte) 0, -1);
-        nEquip.setQuantity((short) 1);
+        Equip nEquip = new Equip(equipId);
         for (Entry<String, Integer> stat : stats.entrySet()) {
             if (stat.getKey().equals("STR")) {
                 nEquip.setStr((short) stat.getValue().intValue());

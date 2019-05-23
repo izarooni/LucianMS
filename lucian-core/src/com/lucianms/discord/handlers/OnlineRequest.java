@@ -8,8 +8,6 @@ import com.lucianms.nio.send.MaplePacketWriter;
 import com.lucianms.server.Server;
 import com.lucianms.server.channel.MapleChannel;
 import com.lucianms.server.world.MapleWorld;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.Collection;
 import java.util.List;
@@ -18,8 +16,6 @@ import java.util.List;
  * @author izarooni
  */
 public class OnlineRequest extends DiscordRequest {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(OnlineRequest.class);
 
     @Override
     public void handle(MaplePacketReader reader) {
@@ -33,7 +29,7 @@ public class OnlineRequest extends DiscordRequest {
             List<MapleChannel> channels = world.getChannels();
             w.write(channels.size());
             for (MapleChannel channel : channels) {
-                Collection<MapleCharacter> players = world.getPlayers(p -> !p.isGM() && p.getClient().getChannel() == channel.getId());
+                Collection<MapleCharacter> players = world.getPlayers(p -> (!p.isGM() || !p.isHidden()) && p.getClient().getChannel() == channel.getId());
                 w.writeShort(players.size());
                 for (MapleCharacter player : players) {
                     w.writeMapleString(player.getName());
