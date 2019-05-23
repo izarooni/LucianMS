@@ -2,9 +2,9 @@ package com.lucianms.events;
 
 import com.lucianms.client.MapleCharacter;
 import com.lucianms.nio.receive.MaplePacketReader;
+import com.lucianms.server.maps.MapleReactor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import com.lucianms.server.maps.MapleReactor;
 
 /**
  * @author izarooni
@@ -20,13 +20,12 @@ public class PlayerReactorHitEvent extends PacketEvent {
     private short stance;
 
     @Override
-    public boolean exceptionCaught(Throwable t) {
-        super.exceptionCaught(t);
+    public void exceptionCaught(MaplePacketReader reader, Throwable t) {
         MapleReactor reactor = getClient().getPlayer().getMap().getReactorById(objectId);
         if (reactor != null) {
             LOGGER.warn("An occurred occurred within the reactor '{}'", reactor.getId());
+            super.exceptionCaught(reader, t);
         }
-        return false;
     }
 
     @Override

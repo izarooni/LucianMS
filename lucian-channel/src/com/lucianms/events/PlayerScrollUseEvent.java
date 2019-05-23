@@ -29,14 +29,13 @@ public final class PlayerScrollUseEvent extends PacketEvent {
     private boolean legendarySpirit;
 
     @Override
-    public boolean exceptionCaught(Throwable t) {
+    public void exceptionCaught(MaplePacketReader reader, Throwable t) {
         MapleCharacter player = getClient().getPlayer();
         Item scroll = player.getInventory(MapleInventoryType.USE).getItem(slot);
         Item equip = player.getInventory(destination < 0 ? MapleInventoryType.EQUIP : MapleInventoryType.EQUIPPED).getItem(destination);
         LOGGER.warn("Unable to use scroll {} on item {}",
                 (scroll == null ? null : scroll.getItemId()),
                 (equip == null ? null : equip.getItemId()), t);
-        return false;
     }
 
     @Override

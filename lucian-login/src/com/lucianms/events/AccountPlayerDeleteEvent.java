@@ -17,9 +17,9 @@ public class AccountPlayerDeleteEvent extends PacketEvent {
     private int playerID;
 
     @Override
-    public boolean exceptionCaught(Throwable t) {
+    public void exceptionCaught(MaplePacketReader reader, Throwable t) {
         getClient().announce(MaplePacketCreator.deleteCharResponse(playerID, 9));
-        return super.exceptionCaught(t);
+        super.exceptionCaught(reader, t);
     }
 
     @Override

@@ -26,9 +26,9 @@ public class AccountLoginEvent extends PacketEvent {
     private String machineID;
 
     @Override
-    public boolean exceptionCaught(Throwable t) {
+    public void exceptionCaught(MaplePacketReader reader, Throwable t) {
         getClient().announce(MaplePacketCreator.getLoginFailed(6));
-        return super.exceptionCaught(t);
+        super.exceptionCaught(reader, t);
     }
 
     @Override

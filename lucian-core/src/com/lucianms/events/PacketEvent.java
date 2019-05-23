@@ -67,9 +67,8 @@ public abstract class PacketEvent implements Cleaner.Cleanable {
         return client.getLoginState() == LoginState.Login;
     }
 
-    public boolean exceptionCaught(Throwable t) {
-        getLogger().error("{}", getClient().toString(), t);
-        return false;
+    public void exceptionCaught(MaplePacketReader reader, Throwable t) {
+        getLogger().error("{}\r\n{}", getClient().toString(), reader.toString(), t);
     }
 
     public abstract void processInput(MaplePacketReader reader);

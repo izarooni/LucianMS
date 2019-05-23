@@ -49,9 +49,9 @@ public class PlayerStorageOperationEvent extends PacketEvent {
     }
 
     @Override
-    public boolean exceptionCaught(Throwable t) {
+    public void exceptionCaught(MaplePacketReader reader, Throwable t) {
         getClient().announce(getResultFailed((byte) 23));
-        return super.exceptionCaught(t);
+        super.exceptionCaught(reader, t);
     }
 
     @Override

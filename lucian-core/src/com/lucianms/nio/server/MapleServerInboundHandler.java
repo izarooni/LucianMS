@@ -128,13 +128,7 @@ public class MapleServerInboundHandler extends ChannelInboundHandlerAdapter {
                     }
                 }
             } catch (Throwable t) {
-                if (!packetEvent.exceptionCaught(t)) {
-                    try (FileWriter fw = new FileWriter("errors.log", true)) {
-                        try (PrintWriter pw = new PrintWriter(fw)) {
-                            t.printStackTrace(pw);
-                        }
-                    }
-                }
+                packetEvent.exceptionCaught(reader, t);
             } finally {
                 packetEvent.packetCompleted();
             }

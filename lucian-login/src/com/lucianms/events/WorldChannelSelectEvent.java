@@ -20,10 +20,10 @@ public class WorldChannelSelectEvent extends PacketEvent {
     private byte world, channel;
 
     @Override
-    public boolean exceptionCaught(Throwable t) {
+    public void exceptionCaught(MaplePacketReader reader, Throwable t) {
         getClient().announce(getErrorResponse((byte) 6));
         getClient().announce(MaplePacketCreator.serverNotice(1, "An error occurred trying to retrieve one or more of your characters.\r\nFor your safety, logging into this world has been prevented."));
-        return super.exceptionCaught(t);
+        super.exceptionCaught(reader, t);
     }
 
     @Override
