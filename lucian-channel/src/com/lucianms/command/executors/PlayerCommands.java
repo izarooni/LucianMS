@@ -322,7 +322,7 @@ public class PlayerCommands extends CommandExecutor {
         player.sendMessage("Hair / Face: {} / {}", target.getHair(), target.getFace());
         player.sendMessage("EXP {}x, MESO {}x, DROP {}x", target.getExpRate(), target.getMesoRate(), target.getDropRate());
         if (player.isGM()) {
-            player.sendMessage("GM Level {}, PID {}, OID {}", player.getGMLevel(), player.getId(), player.getObjectId());
+            player.sendMessage("GM Level {}, PID {}, OID {}", target.getGMLevel(), target.getId(), target.getObjectId());
         }
         player.sendMessage("========== Etc ==========");
         player.sendMessage("Currency: {}", target.getItemQuantity(ServerConstants.CURRENCY, false));
