@@ -24,11 +24,16 @@ package provider.wz;
 import provider.MapleDataEntity;
 import provider.MapleDataFileEntry;
 
+import java.io.File;
+
 public class WZFileEntry extends WZEntry implements MapleDataFileEntry {
+
+    private File file;
     private int offset;
 
-    public WZFileEntry(String name, int size, int checksum, MapleDataEntity parent) {
-        super(name, size, checksum, parent);
+    public WZFileEntry(File file, int size, int checksum, MapleDataEntity parent) {
+        super(file.getName().substring(0, file.getName().length() - 4), size, checksum, parent);
+        this.file = file;
     }
 
     @Override
@@ -38,5 +43,10 @@ public class WZFileEntry extends WZEntry implements MapleDataFileEntry {
 
     public void setOffset(int offset) {
         this.offset = offset;
+    }
+
+    @Override
+    public File getFile() {
+        return file;
     }
 }

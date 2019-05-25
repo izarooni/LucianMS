@@ -34,11 +34,11 @@ import com.lucianms.constants.skills.NightWalker;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import provider.*;
+import provider.tools.CharacterProvider;
 import provider.wz.MapleDataType;
 import tools.Pair;
 import tools.Randomizer;
 
-import java.io.File;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -52,16 +52,16 @@ import java.util.Map.Entry;
 public class MapleItemInformationProvider {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MapleItemInformationProvider.class);
-    private static MapleItemInformationProvider instance = null;
-    private MapleDataProvider itemData;
-    private MapleDataProvider equipData;
-    private MapleDataProvider stringData;
-    private MapleData cashStringData;
-    private MapleData consumeStringData;
-    private MapleData eqpStringData;
-    private MapleData etcStringData;
-    private MapleData insStringData;
-    private MapleData petStringData;
+    private static final MapleItemInformationProvider instance = new MapleItemInformationProvider();
+    private MapleDataProvider WzItem;
+    private MapleDataProvider WzString;
+    private MapleData StringCashImg;
+    private MapleData StringConsumeImg;
+    private MapleData CashEquipImg;
+    private MapleData CashEtcImg;
+    private MapleData CashInstallImg;
+    private MapleData CashPetImg;
+
     private HashMap<Integer, Short> slotMaxCache = new HashMap<>();
     private HashMap<Integer, MapleStatEffect> itemEffects = new HashMap<>();
     private HashMap<Integer, Map<String, Integer>> equipStatsCache = new HashMap<>();
@@ -89,22 +89,26 @@ public class MapleItemInformationProvider {
 
     private MapleItemInformationProvider() {
         loadCardIdData();
-        itemData = MapleDataProviderFactory.getWZ(new File(System.getProperty("wzpath") + "/Item.wz"));
-        equipData = MapleDataProviderFactory.getWZ(new File(System.getProperty("wzpath") + "/Character.wz"));
-        stringData = MapleDataProviderFactory.getWZ(new File(System.getProperty("wzpath") + "/String.wz"));
-        cashStringData = stringData.getData("Cash.img");
-        consumeStringData = stringData.getData("Consume.img");
-        eqpStringData = stringData.getData("Eqp.img");
-        etcStringData = stringData.getData("Etc.img");
-        insStringData = stringData.getData("Ins.img");
-        petStringData = stringData.getData("Pet.img");
+        WzItem = MapleDataProviderFactory.getWZ("Item.wz");
+        WzString = MapleDataProviderFactory.getWZ("String.wz");
+        StringCashImg = WzString.getData("Cash.img");
+        StringConsumeImg = WzString.getData("Consume.img");
+        CashEquipImg = WzString.getData("Eqp.img");
+        CashEtcImg = WzString.getData("Etc.img");
+        CashInstallImg = WzString.getData("Ins.img");
+        CashPetImg = WzString.getData("Pet.img");
     }
 
     public static MapleItemInformationProvider getInstance() {
-        if (instance == null) {
-            instance = new MapleItemInformationProvider();
-        }
         return instance;
+    }
+
+    private static short getRandStat(short defaultValue, int maxRange) {
+        if (defaultValue == 0) {
+            return 0;
+        }
+        int lMaxRange = (int) Math.min(Math.ceil(defaultValue * 0.1), maxRange);
+        return (short) ((defaultValue - lMaxRange) + Math.floor(Randomizer.nextDouble() * (lMaxRange * 2 + 1)));
     }
 
     public void clearCache() {
@@ -134,6 +138,7 @@ public class MapleItemInformationProvider {
         equipmentSlotCache.clear();
     }
 
+    @Deprecated
     public MapleInventoryType getInventoryType(int itemId) {
         final byte type = (byte) (itemId / 1000000);
         if (type < 1 || type > 5) {
@@ -142,36 +147,36 @@ public class MapleItemInformationProvider {
         return MapleInventoryType.getByType(type);
     }
 
+    @Deprecated
     public List<Pair<Integer, String>> getAllItems() {
         if (!itemNameCache.isEmpty()) {
             return itemNameCache;
         }
         List<Pair<Integer, String>> itemPairs = new ArrayList<>();
         MapleData itemsData;
-        itemsData = stringData.getData("Cash.img");
+        itemsData = WzString.getData("Cash.img");
         for (MapleData itemFolder : itemsData.getChildren()) {
             itemPairs.add(new Pair<>(Integer.parseInt(itemFolder.getName()), MapleDataTool.getString("name", itemFolder, "NO-NAME")));
         }
-        itemsData = stringData.getData("Consume.img");
+        itemsData = WzString.getData("Consume.img");
         for (MapleData itemFolder : itemsData.getChildren()) {
             itemPairs.add(new Pair<>(Integer.parseInt(itemFolder.getName()), MapleDataTool.getString("name", itemFolder, "NO-NAME")));
         }
-        itemsData = stringData.getData("Eqp.img").getChildByPath("Eqp");
+        itemsData = WzString.getData("Eqp.img").getChildByPath("Eqp");
         for (MapleData eqpType : itemsData.getChildren()) {
             for (MapleData itemFolder : eqpType.getChildren()) {
-//                LOGGER.info("[{}] {} - {}", eqpType.getName(), itemFolder.getName(), MapleDataTool.getString("name", itemFolder, "NO-NAME"));
                 itemPairs.add(new Pair<>(Integer.parseInt(itemFolder.getName()), MapleDataTool.getString("name", itemFolder, "NO-NAME")));
             }
         }
-        itemsData = stringData.getData("Etc.img").getChildByPath("Etc");
+        itemsData = WzString.getData("Etc.img").getChildByPath("Etc");
         for (MapleData itemFolder : itemsData.getChildren()) {
             itemPairs.add(new Pair<>(Integer.parseInt(itemFolder.getName()), MapleDataTool.getString("name", itemFolder, "NO-NAME")));
         }
-        itemsData = stringData.getData("Ins.img");
+        itemsData = WzString.getData("Ins.img");
         for (MapleData itemFolder : itemsData.getChildren()) {
             itemPairs.add(new Pair<>(Integer.parseInt(itemFolder.getName()), MapleDataTool.getString("name", itemFolder, "NO-NAME")));
         }
-        itemsData = stringData.getData("Pet.img");
+        itemsData = WzString.getData("Pet.img");
         for (MapleData itemFolder : itemsData.getChildren()) {
             itemPairs.add(new Pair<>(Integer.parseInt(itemFolder.getName()), MapleDataTool.getString("name", itemFolder, "NO-NAME")));
         }
@@ -186,7 +191,7 @@ public class MapleItemInformationProvider {
         List<Pair<Integer, String>> itemPairs = new ArrayList<>();
         MapleData itemsData;
 
-        itemsData = stringData.getData("Etc.img").getChildByPath("Etc");
+        itemsData = WzString.getData("Etc.img").getChildByPath("Etc");
         for (MapleData itemFolder : itemsData.getChildren()) {
             itemPairs.add(new Pair<>(Integer.parseInt(itemFolder.getName()), MapleDataTool.getString("name", itemFolder, "NO-NAME")));
         }
@@ -197,60 +202,60 @@ public class MapleItemInformationProvider {
         String cat = "null";
         MapleData theData;
         if (itemId >= 5010000) {
-            theData = cashStringData;
+            theData = StringCashImg;
         } else if (itemId >= 2000000 && itemId < 3000000) {
-            theData = consumeStringData;
+            theData = StringConsumeImg;
         } else if ((itemId >= 1010000 && itemId < 1040000) || (itemId >= 1122000 && itemId < 1123000) || (itemId >= 1142000 && itemId < 1143000)) {
-            theData = eqpStringData;
+            theData = CashEquipImg;
             cat = "Eqp/Accessory";
         } else if (itemId >= 1000000 && itemId < 1010000) {
-            theData = eqpStringData;
+            theData = CashEquipImg;
             cat = "Eqp/Cap";
         } else if (itemId >= 1102000 && itemId < 1103000) {
-            theData = eqpStringData;
+            theData = CashEquipImg;
             cat = "Eqp/Cape";
         } else if (itemId >= 1040000 && itemId < 1050000) {
-            theData = eqpStringData;
+            theData = CashEquipImg;
             cat = "Eqp/Coat";
         } else if (itemId >= 20000 && itemId < 22000) {
-            theData = eqpStringData;
+            theData = CashEquipImg;
             cat = "Eqp/Face";
         } else if (itemId >= 1080000 && itemId < 1090000) {
-            theData = eqpStringData;
+            theData = CashEquipImg;
             cat = "Eqp/Glove";
         } else if (itemId >= 30000 && itemId < 32000) {
-            theData = eqpStringData;
+            theData = CashEquipImg;
             cat = "Eqp/Hair";
         } else if (itemId >= 1050000 && itemId < 1060000) {
-            theData = eqpStringData;
+            theData = CashEquipImg;
             cat = "Eqp/Longcoat";
         } else if (itemId >= 1060000 && itemId < 1070000) {
-            theData = eqpStringData;
+            theData = CashEquipImg;
             cat = "Eqp/Pants";
         } else if (ItemConstants.isPetEquip(itemId)) {
-            theData = eqpStringData;
+            theData = CashEquipImg;
             cat = "Eqp/PetEquip";
         } else if (itemId >= 1112000 && itemId < 1120000) {
-            theData = eqpStringData;
+            theData = CashEquipImg;
             cat = "Eqp/Ring";
         } else if (itemId >= 1092000 && itemId < 1100000) {
-            theData = eqpStringData;
+            theData = CashEquipImg;
             cat = "Eqp/Shield";
         } else if (itemId >= 1070000 && itemId < 1080000) {
-            theData = eqpStringData;
+            theData = CashEquipImg;
             cat = "Eqp/Shoes";
         } else if (itemId >= 1900000 && itemId < 2000000) {
-            theData = eqpStringData;
+            theData = CashEquipImg;
             cat = "Eqp/Taming";
         } else if (itemId >= 1300000 && itemId < 1800000) {
-            theData = eqpStringData;
+            theData = CashEquipImg;
             cat = "Eqp/Weapon";
         } else if (itemId >= 4000000 && itemId < 5000000) {
-            theData = etcStringData;
+            theData = CashEtcImg;
         } else if (itemId >= 3000000 && itemId < 4000000) {
-            theData = insStringData;
+            theData = CashInstallImg;
         } else if (itemId >= 5000000 && itemId < 5010000) {
-            theData = petStringData;
+            theData = CashPetImg;
         } else {
             return null;
         }
@@ -268,26 +273,26 @@ public class MapleItemInformationProvider {
 
     private MapleData getItemData(int itemId) {
         String idStr = "0" + String.valueOf(itemId);
-        MapleDataDirectoryEntry root = itemData.getRoot();
+        MapleDataDirectoryEntry root = WzItem.getRoot();
         for (MapleDataDirectoryEntry topDir : root.getSubdirectories()) {
             for (MapleDataFileEntry iFile : topDir.getFiles()) {
                 if (iFile.getName().equals(idStr.substring(0, 4) + ".img")) {
-                    MapleData ret = itemData.getData(topDir.getName() + "/" + iFile.getName());
+                    MapleData ret = WzItem.getData(topDir.getName() + "/" + iFile.getName());
                     if (ret == null) {
                         LOGGER.warn("Unable to find data node for item {}", itemId);
                         return null;
                     }
                     return ret.getChildByPath(idStr);
                 } else if (iFile.getName().equals(idStr.substring(1) + ".img")) {
-                    return itemData.getData(topDir.getName() + "/" + iFile.getName());
+                    return WzItem.getData(topDir.getName() + "/" + iFile.getName());
                 }
             }
         }
-        root = equipData.getRoot();
+        root = CharacterProvider.getProvider().getRoot();
         for (MapleDataDirectoryEntry topDir : root.getSubdirectories()) {
             for (MapleDataFileEntry iFile : topDir.getFiles()) {
                 if (iFile.getName().equals(idStr + ".img")) {
-                    return equipData.getData(topDir.getName() + "/" + iFile.getName());
+                    return CharacterProvider.getProvider().getData(topDir.getName() + "/" + iFile.getName());
                 }
             }
         }
@@ -675,14 +680,6 @@ public class MapleItemInformationProvider {
         return (Equip) nEquip.duplicate();
     }
 
-    private static short getRandStat(short defaultValue, int maxRange) {
-        if (defaultValue == 0) {
-            return 0;
-        }
-        int lMaxRange = (int) Math.min(Math.ceil(defaultValue * 0.1), maxRange);
-        return (short) ((defaultValue - lMaxRange) + Math.floor(Randomizer.nextDouble() * (lMaxRange * 2 + 1)));
-    }
-
     public Equip randomizeStats(Equip equip) {
         equip.setStr(getRandStat(equip.getStr(), 5));
         equip.setDex(getRandStat(equip.getDex(), 5));
@@ -873,7 +870,7 @@ public class MapleItemInformationProvider {
                 }
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            LOGGER.error("Failed to load monster cards from database", e);
         }
     }
 
@@ -1158,6 +1155,13 @@ public class MapleItemInformationProvider {
         return list;
     }
 
+    public static final class RewardItem {
+
+        public int itemid, period;
+        public short prob, quantity;
+        public String effect, worldmsg;
+    }
+
     public class scriptedItem {
 
         private boolean runOnPickup;
@@ -1181,12 +1185,5 @@ public class MapleItemInformationProvider {
         public boolean runOnPickup() {
             return runOnPickup;
         }
-    }
-
-    public static final class RewardItem {
-
-        public int itemid, period;
-        public short prob, quantity;
-        public String effect, worldmsg;
     }
 }

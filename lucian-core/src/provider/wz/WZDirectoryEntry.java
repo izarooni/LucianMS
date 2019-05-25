@@ -26,20 +26,23 @@ import provider.MapleDataEntity;
 import provider.MapleDataEntry;
 import provider.MapleDataFileEntry;
 
+import java.io.File;
 import java.util.*;
 
 public class WZDirectoryEntry extends WZEntry implements MapleDataDirectoryEntry {
 
+    private final File file;
     private List<MapleDataDirectoryEntry> subdirs = new ArrayList<>();
     private List<MapleDataFileEntry> files = new ArrayList<>();
     private Map<String, MapleDataEntry> entries = new HashMap<>();
 
-    public WZDirectoryEntry(String name, int size, int checksum, MapleDataEntity parent) {
-        super(name, size, checksum, parent);
+    public WZDirectoryEntry(File file, int size, int checksum, MapleDataEntity parent) {
+        super(file.getName(), size, checksum, parent);
+        this.file = file;
     }
 
-    public WZDirectoryEntry() {
-        super(null, 0, 0, null);
+    public File getFile() {
+        return file;
     }
 
     public void addDirectory(MapleDataDirectoryEntry dir) {

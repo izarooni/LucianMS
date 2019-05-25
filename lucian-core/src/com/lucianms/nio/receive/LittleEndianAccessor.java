@@ -75,7 +75,7 @@ public class LittleEndianAccessor {
     }
 
     public String readAsciiString(int n) {
-        char ret[] = new char[n];
+        char[] ret = new char[n & 0xFF];
         for (int x = 0; x < n; x++) {
             ret[x] = readChar();
         }

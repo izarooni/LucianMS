@@ -21,10 +21,16 @@
 */
 package provider;
 
+import java.io.File;
+
 /**
  * @author Matze
  */
 public interface MapleDataEntry extends MapleDataEntity {
+
+    default File getFile() {
+        return null;
+    }
 
     String getName();
 

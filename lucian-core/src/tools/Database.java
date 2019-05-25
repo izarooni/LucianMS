@@ -7,11 +7,19 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.function.Consumer;
 
 /**
  * @author izarooni
  */
 public class Database {
+
+    public static HikariDataSource createDataSource(String name, Consumer<HikariConfig> consumer) {
+        HikariConfig config = new HikariConfig("hikari-db.properties");
+        consumer.accept(config);
+        config.setPoolName(name);
+        return new HikariDataSource(config);
+    }
 
     public static HikariDataSource createDataSource(String name) {
         HikariConfig config = new HikariConfig("hikari-db.properties");

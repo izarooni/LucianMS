@@ -41,7 +41,7 @@ public class XMLWZFile implements MapleDataProvider {
 
     public XMLWZFile(File root) {
         this.root = root;
-        rootForNavigation = new WZDirectoryEntry(root.getName(), 0, 0, null);
+        rootForNavigation = new WZDirectoryEntry(root, 0, 0, null);
         fillMapleDataEntitys(this.root, rootForNavigation);
     }
 
@@ -51,11 +51,11 @@ public class XMLWZFile implements MapleDataProvider {
             for (File file : files) {
                 String fileName = file.getName();
                 if (file.isDirectory() && !fileName.endsWith(".img")) {
-                    WZDirectoryEntry newDir = new WZDirectoryEntry(fileName, 0, 0, wzdir);
+                    WZDirectoryEntry newDir = new WZDirectoryEntry(file, 0, 0, wzdir);
                     wzdir.addDirectory(newDir);
                     fillMapleDataEntitys(file, newDir);
                 } else if (fileName.endsWith(".xml")) {
-                    wzdir.addFile(new WZFileEntry(fileName.substring(0, fileName.length() - 4), 0, 0, wzdir));
+                    wzdir.addFile(new WZFileEntry(file, 0, 0, wzdir));
                 }
             }
         }

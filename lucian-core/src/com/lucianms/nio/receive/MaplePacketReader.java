@@ -47,4 +47,25 @@ public class MaplePacketReader extends LittleEndianAccessor {
     public Point readPoint() {
         return new Point(readShort(), readShort());
     }
+
+    /**
+     * From the Microsoft's .NET API for BinaryReader#ReadString
+     * <p>
+     * Reads a string from the current stream. The string is prefixed with the length, encoded as an integer seven bits
+     * at a time.
+     * </p>
+     * <p>
+     * Should there be data still present after reading an unsigned byte, shift the bytes over and read the next byte
+     * until all data has been decoded
+     * </p>
+     */
+    public String read7BitEncodedString() {
+        int value = 0;
+        for (int i = 0; ; i++) {
+            int b = read();
+            value |= (b & 0xFF) << (i * 7);
+            if ((b & 0x80) == 0) break;
+        }
+        return readAsciiString(value);
+    }
 }

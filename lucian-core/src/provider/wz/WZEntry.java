@@ -25,6 +25,7 @@ import provider.MapleDataEntity;
 import provider.MapleDataEntry;
 
 public class WZEntry implements MapleDataEntry {
+
     private String name;
     private int size;
     private int checksum;
@@ -32,7 +33,6 @@ public class WZEntry implements MapleDataEntry {
     private MapleDataEntity parent;
 
     public WZEntry(String name, int size, int checksum, MapleDataEntity parent) {
-        super();
         this.name = name;
         this.size = size;
         this.checksum = checksum;
