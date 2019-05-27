@@ -61,6 +61,10 @@ public class AdministratorCommands extends CommandExecutor {
         addCommand("fakeplayer", this::CommandCreateClone);
         addCommand("pb", this::CommandBakePacket);
         addCommand("wipe", this::CommandWipePlayer);
+        addCommand("test", this::CommandTest);
+    }
+
+    private void CommandTest(MapleCharacter player, Command cmd, CommandArgs args) {
     }
 
     private void CommandWipePlayer(MapleCharacter player, Command cmd, CommandArgs args) {

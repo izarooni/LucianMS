@@ -32,6 +32,33 @@ public class Tester {
 
     public static void main(String[] args) {
         initConfig();
+    }
+
+    private static void initConfig() {
+        try {
+            if (Defaults.createDefaultIfAbsent(null, "server-config.json")) {
+                LOGGER.info("Server config created. Configure settings and restart the server");
+                System.exit(0);
+            } else {
+                config = new Config(new JSONObject(new JSONTokener(new FileInputStream("server-config.json"))));
+            }
+        } catch (URISyntaxException | IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private static void createAccount(String name, String password) {
+        try (Connection con = Server.getConnection();
+             PreparedStatement ps = con.prepareStatement("insert into accounts (name, password) values (?, ?)")) {
+            ps.setString(1, name);
+            ps.setString(2, password);
+            ps.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private static void exportBINtoDatabase() {
         TaskExecutor.initPoolSize(Runtime.getRuntime().availableProcessors());
         Server.createServer();
         HikariDataSource src = Database.createDataSource("wz", c -> {
@@ -89,30 +116,6 @@ public class Tester {
             LOGGER.info("Now auto-committing");
             con.setAutoCommit(true);
         } catch (IOException | SQLException e) {
-            e.printStackTrace();
-        }
-    }
-
-    private static void initConfig() {
-        try {
-            if (Defaults.createDefaultIfAbsent(null, "server-config.json")) {
-                LOGGER.info("Server config created. Configure settings and restart the server");
-                System.exit(0);
-            } else {
-                config = new Config(new JSONObject(new JSONTokener(new FileInputStream("server-config.json"))));
-            }
-        } catch (URISyntaxException | IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    private static void createAccount(String name, String password) {
-        try (Connection con = Server.getConnection();
-             PreparedStatement ps = con.prepareStatement("insert into accounts (name, password) values (?, ?)")) {
-            ps.setString(1, name);
-            ps.setString(2, password);
-            ps.executeUpdate();
-        } catch (SQLException e) {
             e.printStackTrace();
         }
     }
