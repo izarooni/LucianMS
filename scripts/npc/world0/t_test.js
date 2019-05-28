@@ -1,7 +1,9 @@
-const Equip = Java.type("com.lucianms.client.inventory.Equip");
-const MaplePacketCreator = Java.type("tools.MaplePacketCreator");
-const MapleInventoryType = Java.type("com.lucianms.client.inventory.MapleInventoryType");
-const MapleInventoryManipulator = Java.type("com.lucianms.server.MapleInventoryManipulator");
+const Pair = Java.type('tools.Pair');
+const Equip = Java.type('com.lucianms.client.inventory.Equip');
+const MapleStat = Java.type('com.lucianms.client.MapleStat');
+const MaplePacketCreator = Java.type('tools.MaplePacketCreator');
+const MapleInventoryType = Java.type('com.lucianms.client.inventory.MapleInventoryType');
+const MapleInventoryManipulator = Java.type('com.lucianms.server.MapleInventoryManipulator');
 /* izarooni */
 const features = [];
 let feature = null;
@@ -68,6 +70,23 @@ function StopMonsterControls(selection) {
     } else reset();
 }
 features.push(new Selector("Check Monsters", StopMonsterControls));
+
+function SendUpdates(selection) {
+    let statup = new java.util.ArrayList(10);
+    statup.add(new Pair(MapleStat.AVAILABLEAP, player.getRemainingAp()));
+    statup.add(new Pair(MapleStat.HP, player.getCurrentMaxHp()));
+    statup.add(new Pair(MapleStat.MP, player.getCurrentMaxMp()));
+    statup.add(new Pair(MapleStat.EXP, player.getExp()));
+    statup.add(new Pair(MapleStat.LEVEL, player.getLevel()));
+    statup.add(new Pair(MapleStat.MAXHP, player.getMaxHp()));
+    statup.add(new Pair(MapleStat.MAXMP, player.getMaxMp()));
+    statup.add(new Pair(MapleStat.STR, player.getStr()));
+    statup.add(new Pair(MapleStat.DEX, player.getDex()));
+    client.announce(MaplePacketCreator.updatePlayerStats(statup, player));
+    statup.clear();
+    cm.dispose();
+}
+features.push(new Selector("Send Stat Updates", SendUpdates));
 
 function action(mode, type, selection) {
     if (mode < 1) {

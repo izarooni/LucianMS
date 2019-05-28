@@ -35,6 +35,12 @@ public interface PacketAnnouncer {
         players.clear();
     }
 
+    default void forEachPlayer(Consumer<MapleCharacter> action, Predicate<MapleCharacter> condition) {
+        Collection<MapleCharacter> players = getPlayers();
+        players.stream().filter(condition).forEach(action);
+        players.clear();
+    }
+
     /**
      * Sends a packet to all players in the collection provided {@link PacketAnnouncer#getPlayers()}
      *

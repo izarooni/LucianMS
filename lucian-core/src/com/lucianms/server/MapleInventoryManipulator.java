@@ -473,8 +473,8 @@ public class MapleInventoryManipulator {
             }
         }
         //endregion
-        if (srcItem.getItemId() == 1122017) {
-            player.scheduleSpiritPendant();
+        if (srcItem.getItemId() == ItemConstants.SpiritPendant) {
+            player.setSpiritPendantModifier((byte) 0);
         }
         // remove from inventory
         srcInventory.removeSlot(srcPosition);
@@ -524,11 +524,11 @@ public class MapleInventoryManipulator {
             c.announce(MaplePacketCreator.getInventoryFull());
             return;
         }
-        if (srcItem.getItemId() == 1122017) {
-            c.getPlayer().unequipPendantOfSpirit();
+        if (srcItem.getItemId() == ItemConstants.SpiritPendant) {
+            player.setSpiritPendantModifier((byte) 0);
         }
         if (srcItem.getRingId() > -1) {
-            MapleRing ring = c.getPlayer().getRingById(srcItem.getRingId());
+            MapleRing ring = player.getRingById(srcItem.getRingId());
             Functions.requireNotNull(ring, r -> r.setEquipped(false));
             if (ring == null) {
                 srcItem.setRingId(-1);
@@ -563,8 +563,8 @@ public class MapleInventoryManipulator {
         if (itemId >= 5000000 && itemId <= 5002000) {
             return null;
         }
-        if (type == MapleInventoryType.EQUIPPED && itemId == 1122017) {
-            player.unequipPendantOfSpirit();
+        if (type == MapleInventoryType.EQUIPPED && itemId == ItemConstants.SpiritPendant) {
+            player.setSpiritPendantModifier((byte) 0);
         }
         if (player.getItemEffect() == itemId && source.getQuantity() == 1) {
             player.setItemEffect(0);

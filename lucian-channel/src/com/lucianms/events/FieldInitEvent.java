@@ -80,6 +80,7 @@ public class FieldInitEvent extends PacketEvent {
             client.announce(MaplePacketCreator.rollSnowBall(true, 0, null, null));
         }
         if (mapID == 914000200 || mapID == 914000210 || mapID == 914000220) {
+            // aran tutorial map
             client.announce(MaplePacketCreator.aranGodlyStats());
         }
 

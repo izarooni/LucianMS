@@ -1,8 +1,6 @@
 package com.lucianms.events;
 
 import com.lucianms.client.*;
-import com.lucianms.client.inventory.MapleInventory;
-import com.lucianms.client.inventory.MapleInventoryType;
 import com.lucianms.helpers.JailManager;
 import com.lucianms.io.scripting.Achievements;
 import com.lucianms.nio.receive.MaplePacketReader;
@@ -198,11 +196,6 @@ public class PlayerLoginEvent extends PacketEvent {
             player.updatePartyMemberHP();
         }
         //endregion
-
-        MapleInventory eqd = player.getInventory(MapleInventoryType.EQUIPPED);
-        if (eqd.findById(1122017) != null) {
-            player.scheduleSpiritPendant();
-        }
 
         MapleMessenger messenger = player.getMessenger();
         if (messenger != null) {

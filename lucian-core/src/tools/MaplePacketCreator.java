@@ -2760,14 +2760,6 @@ public class MaplePacketCreator {
         return mplew.getPacket();
     }
 
-    /**
-     * Gets a packet telling the client to show an EXP increase.
-     *
-     * @param gain   The amount of EXP gained.
-     * @param inChat In the chat box?
-     * @param white  White text or yellow?
-     * @return The exp gained packet.
-     */
     public static byte[] getShowExpGain(int gain, int equip, int party, boolean inChat, boolean white) {
         final MaplePacketWriter mplew = new MaplePacketWriter();
         mplew.writeShort(SendOpcode.SHOW_STATUS_INFO.getValue());
@@ -6508,15 +6500,14 @@ public class MaplePacketCreator {
      * @return The stat update packet.
      */
     public static byte[] updatePlayerStats(List<Pair<MapleStat, Integer>> stats, boolean itemReaction, MapleCharacter chr) {
+        stats.sort(Comparator.comparingInt(p -> p.getLeft().getValue()));
+
         final MaplePacketWriter mplew = new MaplePacketWriter();
         mplew.writeShort(SendOpcode.STAT_CHANGED.getValue());
         mplew.write(itemReaction ? 1 : 0);
         int updateMask = 0;
         for (Pair<MapleStat, Integer> statupdate : stats) {
             updateMask |= statupdate.getLeft().getValue();
-        }
-        if (stats.size() > 1) {
-            stats.sort((o1, o2) -> (Integer.compare(o1.getLeft().getValue(), o2.getLeft().getValue())));
         }
         mplew.writeInt(updateMask);
         for (Pair<MapleStat, Integer> statupdate : stats) {

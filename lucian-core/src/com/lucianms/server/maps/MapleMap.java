@@ -681,7 +681,7 @@ public class MapleMap implements PacketAnnouncer {
                     }
                 }
             }
-            Equip weapon = (Equip) chr.getInventory(MapleInventoryType.EQUIPPED).getItem((short) -11);
+            Equip weapon = chr.getInventory(MapleInventoryType.EQUIPPED).getItem((short) -11);
             if (weapon != null) {
                 weapon.setEliminations(weapon.getEliminations() + 1);
             }

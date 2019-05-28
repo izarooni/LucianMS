@@ -41,6 +41,7 @@ public final class ItemConstants {
     public static final boolean EXPIRING_ITEMS = true;
 
     public final static int ExpTicket = 2002031;
+    public static final int SpiritPendant = 1122017;
 
     public static int getFlagByInt(int type) {
         if (type == 128) {

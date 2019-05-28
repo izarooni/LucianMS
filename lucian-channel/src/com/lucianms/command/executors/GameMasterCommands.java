@@ -408,23 +408,24 @@ public class GameMasterCommands extends CommandExecutor {
                     break;
             }
         } else if (command.equals("levelup")) {
+            Integer levels = args.parseNumber(0, int.class);
+            if (args.length() > 0 && levels == null) {
+                player.sendMessage(args.getFirstError());
+                return;
+            }
             if (args.length() == 2) {
-                Integer levels = args.parseNumber(1, int.class);
-                if (levels == null) {
-                    player.sendMessage(args.getFirstError());
-                    return;
-                }
-                MapleCharacter target = world.findPlayer(p -> p.getName().equalsIgnoreCase(args.get(0)));
-                if (target != null) {
-                    for (int i = 0; i < levels; i++) {
-                        target.levelUp(false);
+                for (int i = 1; i < args.length(); i++) {
+                    String username = args.get(i);
+                    MapleCharacter target = world.findPlayer(p -> p.getName().equalsIgnoreCase(username));
+                    if (target != null) {
+                        target.gainLevels(levels);
+                        player.sendMessage(5, "'{}' has leveled up {} times", target.getName(), levels);
+                    } else {
+                        player.sendMessage(5, "Unable to find any player named '{}'", args.get(0));
                     }
-                    player.sendMessage(5, "'{}' has leveled up {} times", target.getName(), levels);
-                } else {
-                    player.sendMessage(5, "Unable to find any player named '{}'", args.get(0));
                 }
-            } else if (args.length() == 0) {
-                player.levelUp(false);
+            } else if (args.length() < 2) {
+                player.gainLevels(levels == null ? 1 : levels);
             } else {
                 player.sendMessage(5, "syntax: !{} <username> <levels>", command.getName());
             }

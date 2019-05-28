@@ -27,7 +27,10 @@ public final class ExpTable {
     private static final int[] mount = {1, 24, 50, 105, 134, 196, 254, 263, 315, 367, 430, 543, 587, 679, 725, 897, 1146, 1394, 1701, 2247, 2543, 2898, 3156, 3313, 3584, 3923, 4150, 4305, 4550};
 
     public static int getExpNeededForLevel(int level) {
-        return level > 200 ? 2000000000 : exp[level];
+        // [0078D166]
+        if (level > 200) return 0x7FFFFFFF;
+        else if (level < 1) return 1;
+        else return exp[level];
     }
 
     public static int getClosenessNeededForLevel(int level) {

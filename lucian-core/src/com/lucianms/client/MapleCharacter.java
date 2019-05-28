@@ -89,8 +89,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Di
     private static int[] ariantroomslot = new int[3];
     private static int FRECEIVAL_ITEM = 2022323;
 
-    private byte pendantExp, lastmobcount;
-
+    private byte spiritPendantModifier;
     private short combocounter;
 
     //region integers
@@ -229,7 +228,6 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Di
     private EnumMap<MapleBuffStat, MapleBuffStatValueHolder> effects = new EnumMap<>(MapleBuffStat.class);
 
     private Task recoveryTask;
-    private Task spiritPendantTask; // 1122017
     private Task dragonBloodTask;
     private Task beholderHealingTask;
     private Task beholderBuffTask;
@@ -308,67 +306,6 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Di
     @Override
     public int hashCode() {
         return Objects.hash(id);
-    }
-
-    public static boolean ban(String username, String reason, boolean isAccountName) {
-        try (Connection con = Server.getConnection()) {
-            int accountID;
-            // get account id from character username
-            try (PreparedStatement ps = con.prepareStatement("select accountid from characters where name = ?")) {
-                ps.setString(1, username);
-                try (ResultSet rs = ps.executeQuery()) {
-                    if (rs.next()) {
-                        accountID = rs.getInt("accountid");
-                    } else {
-                        return false;
-                    }
-                }
-            }
-
-            // ban the associated account
-            try (PreparedStatement ps = con.prepareStatement("update accounts set banned = 1, banreason = ? where id = ?")) {
-                ps.setString(1, username);
-                ps.setInt(2, accountID);
-                if (ps.executeUpdate() == 0) {
-                    return false;
-                }
-            }
-
-            // ban the ips, hwid and macs associated with the account
-            try (PreparedStatement ps = con.prepareStatement("select ip, hwid, macs from accounts where id = ?")) {
-                ps.setInt(1, accountID);
-                try (ResultSet rs = ps.executeQuery()) {
-                    if (rs.next()) {
-                        String IP = rs.getString("ip");
-                        String hwid = rs.getString("hwid");
-                        String mac = rs.getString("macs").split(", ")[0];
-
-                        if (IP != null && !IP.isEmpty() && !IP.equals("127.0.0.1")) {
-                            try (PreparedStatement ip = con.prepareStatement("insert into ipbans values (?)")) {
-                                ip.setString(1, IP);
-                                ip.executeUpdate();
-                            }
-                        }
-                        if (!hwid.isEmpty()) {
-                            try (PreparedStatement h = con.prepareStatement("insert into hwidbans values (?)")) {
-                                h.setString(1, hwid);
-                                h.executeUpdate();
-                            }
-                        }
-                        if (!mac.isEmpty()) {
-                            try (PreparedStatement m = con.prepareStatement("insert into macbans values (?)")) {
-                                m.setString(1, mac);
-                                m.executeUpdate();
-                            }
-                        }
-                    }
-                }
-            }
-            return true;
-        } catch (SQLException e) {
-            LOGGER.error("Unable to ban character '{}''s account", username);
-        }
-        return false;
     }
 
     public static boolean canCreateChar(String name) {
@@ -1169,15 +1106,6 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Di
 
     public void setLastCombo(long time) {
         lastcombo = time;
-    }
-
-    public int getLastMobCount() { // Used for skills that have mobCount at 1.
-        // (a/b)
-        return lastmobcount;
-    }
-
-    public void setLastMobCount(byte count) {
-        lastmobcount = count;
     }
 
     /**
@@ -2052,11 +1980,18 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Di
         updateSingleStat(MapleStat.GACHAEXP, gachaexp.addAndGet(gain));
     }
 
-    public void gainExp(int gain, boolean show, boolean inChat) {
+    public void gainExp(long gain, boolean show, boolean inChat) {
         gainExp(gain, 0, show, inChat, true);
     }
 
-    public void gainExp(int gain, int party, boolean show, boolean inChat, boolean white) {
+    public void gainExp(long gain, int party, boolean show, boolean inChat, boolean white) {
+        if (getLevel() >= getMaxLevel()) {
+            if (exp.get() != 0) {
+                setExp(0);
+                updateSingleStat(MapleStat.EXP, 0);
+            }
+            return;
+        }
         if (getOccupation() != null) {
             if (getOccupation().getType() == Occupation.Type.Trainer) {
                 gain += gain * (getOccupation().getLevel() / 10);
@@ -2066,35 +2001,37 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Di
             gain *= 0.5;
             party *= 0.5;
         }
-        int equip = (gain / 10) * pendantExp;
-        int total = gain + equip + party;
-
-        if (level < getMaxLevel()) {
-            if ((long) this.exp.get() + (long) total > (long) Integer.MAX_VALUE) {
-                int gainFirst = ExpTable.getExpNeededForLevel(level) - this.exp.get();
-                total -= gainFirst + 1;
-                this.gainExp(gainFirst + 1, party, false, inChat, white);
-            }
-            updateSingleStat(MapleStat.EXP, this.exp.addAndGet(total));
-            if (show && gain != 0) {
-                client.announce(MaplePacketCreator.getShowExpGain(gain, equip, party, inChat, white));
-            }
-            if (exp.get() >= ExpTable.getExpNeededForLevel(level)) {
-                levelUp(true);
-                while (exp.get() >= ExpTable.getExpNeededForLevel(level)) {
-                    levelUp(true);
-                }
-                int need = ExpTable.getExpNeededForLevel(level);
-                if (exp.get() >= need) {
-                    setExp(need - 1);
-                    updateSingleStat(MapleStat.EXP, need);
-                }
-            }
-        } else {
-            if (autoRebirth) {
-                doRebirth();
-            }
+        int equip = 0;
+        if (spiritPendantModifier > 0 ) {
+            equip = (int) Math.max(Integer.MAX_VALUE, gain * (spiritPendantModifier / 10));
         }
+
+        if (autoRebirth && level >= getMaxLevel()) {
+            doRebirth();
+        }
+
+        long totalExpGain = gain + equip + party;
+        int localLevel = level;
+        long newExp = exp.get() + totalExpGain;
+        if (show) {
+            do {
+                int visual = (int) Math.min(totalExpGain, Integer.MAX_VALUE);
+                if (visual > 0) {
+                    announce(MaplePacketCreator.getShowExpGain(visual, equip, party, inChat, white));
+                }
+                totalExpGain -= visual;
+            } while (totalExpGain > 0);
+        }
+
+        int neededExp;
+        while (newExp >= (neededExp = ExpTable.getExpNeededForLevel(localLevel))) {
+            localLevel++;
+            newExp -= neededExp;
+        }
+        newExp = Math.max(0, newExp);
+        exp.set((int) newExp);
+        updateSingleStat(MapleStat.EXP, (int) newExp);
+        gainLevels((localLevel - level));
     }
 
     public void gainFame(int delta) {
@@ -2604,7 +2541,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Di
     }
 
     public void setLevel(int level) {
-        this.level = level;
+        this.level = Math.min(getMaxLevel(), level);
     }
 
     public int getLuk() {
@@ -2658,8 +2595,8 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Di
         return maxhp;
     }
 
-    public void setMaxHp(int hp) {
-        this.maxhp = hp;
+    public void setMaxHp(int maxhp) {
+        this.maxhp = Math.min(30000, maxhp);
         updateLocalizedStats();
     }
 
@@ -2671,8 +2608,8 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Di
         return maxmp;
     }
 
-    public void setMaxMp(int mp) {
-        this.maxmp = mp;
+    public void setMaxMp(int maxmp) {
+        this.maxmp = Math.min(30000, maxmp);
         updateLocalizedStats();
     }
 
@@ -3276,84 +3213,83 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Di
         }
     }
 
-    public void levelUp(boolean takeexp) {
+    public void gainLevels(int levels) {
         Skill improvingMaxHP = null;
         Skill improvingMaxMP = null;
         int improvingMaxHPLevel = 0;
         int improvingMaxMPLevel = 0;
 
-        gainAp(5);
+        int localMaxHp = 0;
+        int localMaxMp = 0;
 
-        if (job == MapleJob.BEGINNER || job == MapleJob.NOBLESSE || job == MapleJob.LEGEND) {
-            maxhp += Randomizer.rand(12, 16);
-            maxmp += Randomizer.rand(10, 12);
+        //region inc hp/mp
+        if (job == MapleJob.BEGINNER || job == MapleJob.NOBLESSE || job == MapleJob.LEGEND || job == MapleJob.EVAN) {
+            localMaxHp = Randomizer.rand(12, 16);
+            localMaxMp = Randomizer.rand(10, 12);
         } else if (job.isA(MapleJob.WARRIOR) || job.isA(MapleJob.DAWNWARRIOR1)) {
-            improvingMaxHP = isCygnus() ? SkillFactory.getSkill(DawnWarrior.MAX_HP_ENHANCEMENT) : SkillFactory.getSkill(Swordsman.IMPROVED_MAXHP_INCREASE);
-            if (job.isA(MapleJob.CRUSADER)) {
-                improvingMaxMP = SkillFactory.getSkill(1210000);
-            } else if (job.isA(MapleJob.DAWNWARRIOR2)) {
-                improvingMaxMP = SkillFactory.getSkill(11110000);
-            }
+            if (isCygnus()) improvingMaxHP = SkillFactory.getSkill(DawnWarrior.MAX_HP_ENHANCEMENT);
+            else improvingMaxHP = SkillFactory.getSkill(Swordsman.IMPROVED_MAXHP_INCREASE);
             improvingMaxHPLevel = getSkillLevel(improvingMaxHP);
-            maxhp += Randomizer.rand(24, 28);
-            maxmp += Randomizer.rand(4, 6);
+
+            if (job.isA(MapleJob.CRUSADER)) improvingMaxMP = SkillFactory.getSkill(WhiteKnight.IMPROVING_MP_RECOVERY);
+            else if (job.isA(MapleJob.DAWNWARRIOR2))
+                improvingMaxMP = SkillFactory.getSkill(DawnWarrior.MP_RECOVERY_RATE_ENHANCEMENT);
+
+            localMaxHp = Randomizer.rand(24, 28);
+            localMaxMp = Randomizer.rand(4, 6);
         } else if (job.isA(MapleJob.MAGICIAN) || job.isA(MapleJob.BLAZEWIZARD1)) {
-            improvingMaxMP = isCygnus() ? SkillFactory.getSkill(BlazeWizard.INCREASING_MAX_MP) : SkillFactory.getSkill(Magician.IMPROVED_MAXMP_INCREASE);
+            if (isCygnus()) improvingMaxMP = SkillFactory.getSkill(BlazeWizard.INCREASING_MAX_MP);
+            else improvingMaxMP = SkillFactory.getSkill(Magician.IMPROVED_MAXMP_INCREASE);
             improvingMaxMPLevel = getSkillLevel(improvingMaxMP);
-            maxhp += Randomizer.rand(10, 14);
-            maxmp += Randomizer.rand(22, 24);
+
+            localMaxHp = Randomizer.rand(10, 14);
+            localMaxMp = Randomizer.rand(22, 24);
         } else if (job.isA(MapleJob.BOWMAN) || job.isA(MapleJob.THIEF) || (job.getId() > 1299 && job.getId() < 1500)) {
-            maxhp += Randomizer.rand(20, 24);
-            maxmp += Randomizer.rand(14, 16);
+            localMaxHp = Randomizer.rand(20, 24);
+            localMaxMp = Randomizer.rand(14, 16);
         } else if (job.isA(MapleJob.PIRATE) || job.isA(MapleJob.THUNDERBREAKER1)) {
-            improvingMaxHP = isCygnus() ? SkillFactory.getSkill(ThunderBreaker.IMPROVE_MAXHP) : SkillFactory.getSkill(5100000);
+            if (isCygnus()) improvingMaxHP = SkillFactory.getSkill(ThunderBreaker.IMPROVE_MAXHP);
+            else improvingMaxHP = SkillFactory.getSkill(Brawler.IMPROVE_MAXHP);
             improvingMaxHPLevel = getSkillLevel(improvingMaxHP);
-            maxhp += Randomizer.rand(22, 28);
-            maxmp += Randomizer.rand(18, 23);
+            localMaxHp = Randomizer.rand(22, 28);
+            localMaxMp = Randomizer.rand(18, 23);
         } else if (job.isA(MapleJob.ARAN1)) {
-            maxhp += Randomizer.rand(44, 48);
+            localMaxHp = Randomizer.rand(44, 48);
             int aids = Randomizer.rand(4, 8);
-            maxmp += aids + Math.floor(aids * 0.1);
+            localMaxMp = (int) (aids + Math.floor(aids * 0.1));
         }
+        //endregion
+
         if (improvingMaxHPLevel > 0 && (job.isA(MapleJob.WARRIOR) || job.isA(MapleJob.PIRATE) || job.isA(MapleJob.DAWNWARRIOR1))) {
-            maxhp += improvingMaxHP.getEffect(improvingMaxHPLevel).getX();
+            localMaxHp += improvingMaxHP.getEffect(improvingMaxHPLevel).getX();
         }
         if (improvingMaxMPLevel > 0 && (job.isA(MapleJob.MAGICIAN) || job.isA(MapleJob.CRUSADER) || job.isA(MapleJob.BLAZEWIZARD1))) {
-            maxmp += improvingMaxMP.getEffect(improvingMaxMPLevel).getX();
+            localMaxMp += improvingMaxMP.getEffect(improvingMaxMPLevel).getX();
         }
-        maxmp += localint_ / 10;
-        if (takeexp) {
-            exp.addAndGet(-ExpTable.getExpNeededForLevel(level));
-            if (exp.get() < 0) {
-                exp.set(0);
-            }
-        }
-        level++;
-        Achievements.testFor(this, -1);
-        maxhp = Math.min(30000, maxhp);
-        maxmp = Math.min(30000, maxmp);
+        localMaxMp += localint_ / 10;
+
+        remainingAp += (5 * levels);
+        setLevel(level + levels);
+        setMaxHp(maxhp + (localMaxHp * levels));
+        setMaxMp(maxmp + (localMaxMp * levels));
         hp = maxhp;
         mp = maxmp;
         updateLocalizedStats();
-        List<Pair<MapleStat, Integer>> statup = new ArrayList<>(10);
-        statup.add(new Pair<>(MapleStat.AVAILABLEAP, remainingAp));
-        statup.add(new Pair<>(MapleStat.HP, localmaxhp));
-        statup.add(new Pair<>(MapleStat.MP, localmaxmp));
-        statup.add(new Pair<>(MapleStat.EXP, exp.get()));
-        statup.add(new Pair<>(MapleStat.LEVEL, level));
-        statup.add(new Pair<>(MapleStat.MAXHP, maxhp));
-        statup.add(new Pair<>(MapleStat.MAXMP, maxmp));
-        statup.add(new Pair<>(MapleStat.STR, str));
-        statup.add(new Pair<>(MapleStat.DEX, dex));
-        if (job.getId() % 1000 > 0) {
-            remainingSp[GameConstants.getSkillBook(job.getId())] += 3;
-            statup.add(new Pair<>(MapleStat.AVAILABLESP, remainingSp[GameConstants.getSkillBook(job.getId())]));
-        }
-        client.announce(MaplePacketCreator.updatePlayerStats(statup, this));
-        getMap().broadcastMessage(this, MaplePacketCreator.showForeignEffect(getId(), 0), false);
-        updateLocalizedStats();
+        ArrayList<Pair<MapleStat, Integer>> stats = new ArrayList<>(10);
+        stats.add(new Pair<>(MapleStat.AVAILABLEAP, remainingAp));
+        stats.add(new Pair<>(MapleStat.HP, localmaxhp));
+        stats.add(new Pair<>(MapleStat.MP, localmaxmp));
+        stats.add(new Pair<>(MapleStat.MAXHP, maxhp));
+        stats.add(new Pair<>(MapleStat.MAXMP, maxmp));
+        stats.add(new Pair<>(MapleStat.LEVEL, level));
+        client.announce(MaplePacketCreator.updatePlayerStats(stats, this));
+        stats.clear();
+
+        getMap().sendPacketExclude(MaplePacketCreator.showForeignEffect(getId(), 0), this);
         Functions.requireNotNull(getParty(), party -> party.get(getId()).updateWithPlayer(this));
         guildUpdate();
+
+        Achievements.testFor(this, -1);
 
         Occupation occupation = getOccupation();
         if (occupation != null) {
@@ -4520,24 +4456,6 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Di
         this.mapid = PmapId;
     }
 
-    public void setMaxHp(int hp, boolean ap) {
-        hp = Math.min(30000, hp);
-        if (ap) {
-            setHpMpApUsed(getHpMpApUsed() + 1);
-        }
-        this.maxhp = hp;
-        updateLocalizedStats();
-    }
-
-    public void setMaxMp(int mp, boolean ap) {
-        mp = Math.min(30000, mp);
-        if (ap) {
-            setHpMpApUsed(getHpMpApUsed() + 1);
-        }
-        this.maxmp = mp;
-        updateLocalizedStats();
-    }
-
     public void setMiniGamePoints(MapleCharacter visitor, int winnerslot, boolean omok) {
         if (omok) {
             if (winnerslot == 1) {
@@ -4877,22 +4795,6 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Di
         return area_info;
     }
 
-    public void block(int reason, int days, String desc) {
-        Calendar cal = Calendar.getInstance();
-        cal.add(Calendar.DATE, days);
-        Timestamp TS = new Timestamp(cal.getTimeInMillis());
-        try (Connection con = client.getWorldServer().getConnection();
-             PreparedStatement ps = con.prepareStatement("UPDATE accounts SET banreason = ?, tempban = ?, greason = ? WHERE id = ?")) {
-            ps.setString(1, desc);
-            ps.setTimestamp(2, TS);
-            ps.setInt(3, reason);
-            ps.setInt(4, accountid);
-            ps.executeUpdate();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }
-
     public boolean isBanned() {
         return isbanned;
     }
@@ -5031,28 +4933,12 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Di
         return removed;
     }
 
-    public void scheduleSpiritPendant() {
-        if (spiritPendantTask == null) {
-            spiritPendantTask = TaskExecutor.createTask(new Runnable() {
-                @Override
-                public void run() {
-                    if (pendantExp < 3) {
-                        pendantExp++;
-                        spiritPendantTask = null;
-                        message("Pendant of the Spirit has been equipped for " + pendantExp + " hour(s), you will now receive " + pendantExp + "0% bonus exp.");
-                        scheduleSpiritPendant();
-                    }
-                }
-            }, 3600000); // 1 hour
-        }
+    public byte getSpiritPendantModifier() {
+        return spiritPendantModifier;
     }
 
-    public void unequipPendantOfSpirit() {
-        if (spiritPendantTask != null) {
-            spiritPendantTask.cancel();
-            spiritPendantTask = null;
-        }
-        pendantExp = 0;
+    public void setSpiritPendantModifier(byte spiritPendantModifier) {
+        this.spiritPendantModifier = spiritPendantModifier;
     }
 
     public void increaseEquipExp(int mobexp) {
@@ -5322,18 +5208,6 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Di
             case "rp":
                 setRebirthPoints(getRebirthPoints() + amount);
                 return true;
-        }
-        return false;
-    }
-
-    public boolean tempban(Timestamp tempban) {
-        try (Connection con = client.getWorldServer().getConnection();
-             PreparedStatement ps = con.prepareStatement("UPDATE accounts SET tempban = ? WHERE id = ?")) {
-            ps.setTimestamp(1, tempban);
-            ps.setInt(2, getAccountID());
-            return ps.execute();
-        } catch (SQLException e) {
-            LOGGER.error("Unable to temp ban player '{}' timestamp '{}'", getName(), tempban.getTime());
         }
         return false;
     }

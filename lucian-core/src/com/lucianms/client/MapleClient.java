@@ -134,7 +134,6 @@ public class MapleClient implements Disposable {
      * Looks for a player in the database with an ID that matches the account ID of this client
      *
      * @param playerId ID of a character
-     *
      * @return true if the account the specified character belongs to this account, false otherwise
      */
     @SuppressWarnings("BooleanMethodIsAlwaysInverted")
@@ -401,7 +400,7 @@ public class MapleClient implements Disposable {
         setLoginState(loginState);
         try (Connection con = Server.getConnection()) {
             try (PreparedStatement ps = con.prepareStatement("update accounts set last_known_ip = ?, loggedin = ?, last_login = current_timestamp() where id = ?")) {
-                ps.setString(1, getLastKnownIP());
+                ps.setString(1, getRemoteAddress());
                 ps.setInt(2, loginState.ordinal());
                 ps.setInt(3, getAccID());
                 ps.executeUpdate();
@@ -415,12 +414,13 @@ public class MapleClient implements Disposable {
     public LoginState checkLoginState() {
         if (getAccID() == 0) return LoginState.LogOut;
         try (Connection con = Server.getConnection()) {
-            try (PreparedStatement ps = con.prepareStatement("select loggedin, last_login, UNIX_TIMESTAMP(birthday) as birthday from accounts where id = ?")) {
+            try (PreparedStatement ps = con.prepareStatement("select loggedin, last_login, UNIX_TIMESTAMP(birthday) as birthday, last_known_ip from accounts where id = ?")) {
                 ps.setInt(1, getAccID());
                 try (ResultSet rs = ps.executeQuery()) {
                     if (!rs.next()) {
                         throw new NullPointerException();
                     }
+                    lastKnownIP = rs.getString("last_known_ip");
                     birthday = Calendar.getInstance();
                     long unixBirthday = rs.getLong("birthday");
                     if (unixBirthday > 0) {

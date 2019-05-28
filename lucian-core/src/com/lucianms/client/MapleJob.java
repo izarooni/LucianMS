@@ -113,16 +113,24 @@ public enum MapleJob {
     }
 
     public boolean isBeginner(MapleJob beginners) {
-        return MAGICIAN == beginners || WARRIOR == beginners || THIEF == beginners || PIRATE == beginners || BOWMAN == beginners || ARAN1 == beginners || THUNDERBREAKER1 == beginners
-                || DAWNWARRIOR1 == beginners || NIGHTWALKER1 == beginners || BLAZEWIZARD1 == beginners;
+        return MAGICIAN == beginners
+                || WARRIOR == beginners
+                || THIEF == beginners
+                || PIRATE == beginners
+                || BOWMAN == beginners
+                || ARAN1 == beginners
+                || THUNDERBREAKER1 == beginners
+                || DAWNWARRIOR1 == beginners
+                || NIGHTWALKER1 == beginners
+                || BLAZEWIZARD1 == beginners;
     }
 
     public boolean isEvan() {
         return isEvanJob(getId());
     }
 
-    public boolean isA(MapleJob basejob) {
-        return getId() >= basejob.getId() && getId() / 100 == basejob.getId() / 100;
+    public boolean isA(MapleJob base) {
+        return getId() >= base.getId() && getId() / 100 == base.getId() / 100;
     }
 
     public static boolean isEvanJob(int jobID) {
