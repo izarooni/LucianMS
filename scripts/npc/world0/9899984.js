@@ -1,15 +1,12 @@
 /*
- 
-   Author: Lucasdieswagger @ discord
- 
+Author: Lucasdieswagger @ discord
 */
+const moveTo = 90000004;
+const MobToKill = 100126;
 
 var sections = {};
 var method = null;
-var status = 0;
-var text = "";
-
-var moveTo = 90000004;
+var status = 0; 
 
 function start() {
     action(1, 0, 0);
@@ -30,7 +27,7 @@ function action(mode, type, selection) {
     }
     if (status === 1) {
         method = null;
-        if (cm.getPlayer().getKillType() == 9895226) {
+        if (cm.getPlayer().getKillType() == MobToKill) {
             if (cm.getPlayer().getCurrent() >= cm.getPlayer().getGoal()) {
                 // complete quest
                 cm.getPlayer().gainExp(1000, 0, true, true, false);
@@ -42,7 +39,7 @@ function action(mode, type, selection) {
             }
         } else {
             text = "You have erased the darkness! Great job. Now you must collect the pieces of the memory you have lost. Kill 10 #rPieces of wandering Memory#k. You can kill them by standing nearby them and clicking on your attack key (default: #bctrl#k).";
-            cm.getPlayer().setKillType(9895226);
+            cm.getPlayer().setKillType(MobToKill);
             cm.getPlayer().setGoal(10);
             cm.getPlayer().setCurrent(0);
         }
