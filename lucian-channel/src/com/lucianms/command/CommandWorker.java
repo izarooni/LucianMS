@@ -72,7 +72,7 @@ public class CommandWorker {
                     player.sendMessage(5, "You cannot use commands here.");
                     return true;
                 } else if (!command.equals("dispose", "quests")) {
-                    if ((player.getMapId() >= 90000000 && player.getMapId() <= 90000004) // starter area
+                    if ((player.getMapId() >= 90000000 && player.getMapId() <= 90000011) // starter area
                             || player.getMapId() == 80 || player.getMapId() == 81) { // jail
                         player.dropMessage("Commands are disabled in this area.");
                         return true;
