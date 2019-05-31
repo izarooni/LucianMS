@@ -106,7 +106,9 @@ public class CQuestBuilder {
             XMLDomMapleData xml = new XMLDomMapleData(fis, file);
             int questId = MapleDataTool.getInt(xml.getChildByPath("info/questId"));
             if (questId <= 0) {
-                LOGGER.warn("Invalid quest id {} for custom quest {}", questId, file.getName());
+                if (questId < 0) { // 0 is the example quest, stop logging it as a warning :weary:
+                    LOGGER.warn("Invalid quest id {} for custom quest {}", questId, file.getName());
+                }
                 return null;
             }
             MapleData pqdata = xml.getChildByPath("info/preQuest");

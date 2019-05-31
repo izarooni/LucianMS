@@ -1,23 +1,37 @@
-<imgdir name="Helping Hiyori">
+<imgdir name="Recreating the mask">
     <imgdir name="info">
         <int name="questId" value="113"/>
-		<int name="preQuest" value="108"/>
-		<int name="daily" value="0"/>
+        <int name="preQuest" value="108"/>
+        <int name="daily" value="0"/>
     </imgdir>
 
     <imgdir name="toKill">
     </imgdir>
 
     <imgdir name="toCollect">
-
-        <!-- ToDo: change -->
-       <imgdir name="0">
-            <int name="itemId" value="1302000"/>
+        <imgdir name="0">
+            <int name="itemId" value="4011028"/>
             <int name="quantity" value="1"/>
         </imgdir>
-    </imgdir>
-    
-    <imgdir name="rewards">
-        <float name="exp" value="35"/>
+        <imgdir name="0">
+            <int name="itemId" value="4011029"/>
+            <int name="quantity" value="1"/>
+            <imgdir name="0">
+                <int name="itemId" value="4011030"/>
+                <int name="quantity" value="1"/>
+            </imgdir>
+            <imgdir name="0">
+                <int name="itemId" value="4011031"/>
+                <int name="quantity" value="1"/>
+            </imgdir>
+        </imgdir>
+        <imgdir name="rewards">
+            <imgdir name="items">
+                <imgdir name="0">
+                    <int name="itemId" value="1012205"/>
+                    <int name="quantity" value="1"/>
+                </imgdir>
+            </imgdir>
+        </imgdir>
     </imgdir>
 </imgdir>

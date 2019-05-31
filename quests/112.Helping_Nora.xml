@@ -1,4 +1,4 @@
-<imgdir name="Helping Nora">
+<imgdir name="Nora and the darkness">
     <imgdir name="info">
         <int name="questId" value="112"/>
 		<int name="preQuest" value="111"/>
@@ -9,32 +9,13 @@
     </imgdir>
 
     <imgdir name="toCollect">
-       <imgdir name="0">
-            <int name="itemId" value="4011029"/>
-            <int name="quantity" value="1"/>
-        </imgdir>
-        <imgdir name="1">
-            <int name="itemId" value="4011028"/>
-            <int name="quantity" value="1"/>
-        </imgdir>
-        <imgdir name="2">
-            <int name="itemId" value="4011030"/>
-            <int name="quantity" value="1"/>
-        </imgdir>
-        <imgdir name="3">
-            <int name="itemId" value="4011031"/>
+        <imgdir name="0">
+            <int name="itemId" value="4011017"/>
             <int name="quantity" value="1"/>
         </imgdir>
     </imgdir>
-    
     <imgdir name="rewards">
-
-        <imgdir name="items">
-
-            <imgdir name="0">
-                <int name="itemId" value="1012205"/>
-                <int name="quantity" value="1"/>
-            </imgdir>>
-        </imgdir>
+        <int name="meso" value="15000000"/>
+        <int name="exp" value="1718500"/>
     </imgdir>
 </imgdir>
