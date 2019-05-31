@@ -10,7 +10,7 @@ function action(mode, type, selection) {
         + "\r\n\t\t\t\t\t#eArchmage (Ice/Lightning)#k - Luminous"
         + "\r\n\t\t\t\t\t\t\t\t\t\t#eBishop#k - Evan\r\n"
 
-        + "\r\n\t\t\t\t\t\t\t   #eBowmaster#k - Mercedes"
+        + "\r\n\t\t\t\t\t\t\t   #eBowmaster#k - PathFinder"
         + "\r\n\t\t\t\t\t\t\t   #eMarksman#k - Marksman\r\n"
 
         + "\r\n\t\t\t\t\t\t\t\t\t#eNight Lord#k - Dancer"

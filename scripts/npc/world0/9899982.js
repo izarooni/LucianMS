@@ -1,5 +1,4 @@
 var status = 0;  
-var MaplePacketCreator = Java.type("tools.MaplePacketCreator");
 
 function start() {  
     status = -1;  
@@ -25,13 +24,10 @@ function action(mode, type, selection) {
             status--;  
         }  
             if (status == 0) { 
-            cm.sendOk("#eNeed some help?");
+            cm.sendOk("You are beginning to feel different..You are beginning to remember your past. You are beginning to feel who you used to be.\r\n\r\nIt all makes sense now..I....\r\nI.......\r\n#eI...\r\n\r\n#eI AM \r\n#e...#r#h #");
         }
         else if (status == 1) {
-            cm.warp(90000012,0);
-            cm.getPlayer().getMap().broadcastMessage(MaplePacketCreator.showEffect("quest/party/clear4"));
-            cm.getPlayer().getMap().broadcastMessage(MaplePacketCreator.playSound("customJQ/quest"));
-            cm.player.dropMessage("You just received a blessing from the Light");
+            cm.warp(90000011,0);
             cm.dispose();
             }
         }

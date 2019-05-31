@@ -30,7 +30,7 @@ function action(mode, type, selection) {
     }
     if (status === 1) {
         method = null;
-        if (cm.getPlayer().getKillType() == 9899998) {
+        if (cm.getPlayer().getKillType() == 8130101) {
             if (cm.getPlayer().getCurrent() >= cm.getPlayer().getGoal()) {
                 // complete quest
                 cm.getPlayer().gainExp(1000, 0, true, true, false);
@@ -42,8 +42,8 @@ function action(mode, type, selection) {
             }
         } else {
             text = "Lets begin to erase the darkness from your heart, body and mind. Kill 15 #rHeartless#k. You can kill them by standing nearby them and clicking on your attack key (default: #bctrl#k).";
-            cm.getPlayer().setKillType(9899998);
-            cm.getPlayer().setGoal(15);
+            cm.getPlayer().setKillType(8130101);
+            cm.getPlayer().setGoal(10);
             cm.getPlayer().setCurrent(0);
         }
         cm.sendOk(text);

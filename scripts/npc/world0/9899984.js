@@ -7,6 +7,7 @@ const MobToKill = 100126;
 var sections = {};
 var method = null;
 var status = 0; 
+var text = "";
 
 function start() {
     action(1, 0, 0);

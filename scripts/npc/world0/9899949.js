@@ -28,26 +28,26 @@ function action(mode, type, selection) {
     }
 
     if (status == 0) { // pre-quest status
-        cm.sendOk("I don't need help. I'm very busy right now.");
+        cm.sendOk("We need to find the noragami mask pieces and recreate it to stop this #edarkness#k#n from spreading even more!");
         cm.dispose();
     } else if (status == 1) { // quest begining
-        cm.sendNext("I lost it! I lost it! I'm so irresponsible how could I lose it...");
+        cm.sendNext("I lost it! I lost the mask it! I'm so irresponsible how could I lose it...");
     } else if (status == 2) {
-        cm.sendNext("Hey you! #b#h ##k, can you help me find something? It's around here somewhere. I know it is!");
+        cm.sendNext("Hey you! #b#h ##k, can you help me find the mask pieces? They are around here somewhere. I know it is!");
     } else if (status == 3) { // quest progress
         DisplaySummary(metadata);
     } else if (status == 4) {
-        cm.sendAcceptDecline("I'm not gonna find it anytime soon alone...");
+        cm.sendAcceptDecline("I'm not gonna find the pieces anytime soon alone...");
     } else if (status == 5) {
         CQuests.beginQuest(player, QuestID);
         cm.dispose();
     } else if (status == 6) { // quest complete
         if (quest.isCompleted()) {
-            cm.sendOk("I wonder where Yato is.");
+            cm.sendOk("Please..Do not use the mask irresponsible else you could turn the world against itself!");
         } else if (quest.complete(player)) {
-            cm.sendOk("You found it? You did! Thank you so much I'll never lose it again. I promise!");
+            cm.sendOk("You found all the pieces? You did! Thank you so much I'll recreate the mask and you may have it, hehe.");
         } else {
-            cm.sendOk("Check if your inventory is full, you must accept my rewards!");
+            cm.sendOk("Check if your inventory is full, you must accept my reward!");
         }
         cm.dispose();
     } else cm.dispose();

@@ -1,5 +1,4 @@
 var status = 0;  
-var MaplePacketCreator = Java.type("tools.MaplePacketCreator");
 
 function start() {  
     status = -1;  
@@ -25,13 +24,10 @@ function action(mode, type, selection) {
             status--;  
         }  
             if (status == 0) { 
-            cm.sendOk("#eNeed some help?");
+            cm.sendOk("Hello, #h #. I see that you have returned. Well..as you know you were striked down by #eXehanort#k to then be resurrected by #bKill#k.\r\n\r\nArghh..It saddens me too see that two of my disciple went their seperate ways. One to restore light to the world and the other to have a world full of #edarkness#k#n");
         }
         else if (status == 1) {
             cm.warp(90000012,0);
-            cm.getPlayer().getMap().broadcastMessage(MaplePacketCreator.showEffect("quest/party/clear4"));
-            cm.getPlayer().getMap().broadcastMessage(MaplePacketCreator.playSound("customJQ/quest"));
-            cm.player.dropMessage("You just received a blessing from the Light");
             cm.dispose();
             }
         }

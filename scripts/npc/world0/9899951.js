@@ -28,9 +28,9 @@ function action(mode, type, selection) {
         let metadata = CQuests.getMetaData(QuestID[0]);
         testFor(pquest, 6); // the status to jump to if true
         if (status == 1) { // quest beginning
-            cm.sendNext("It seems that our world somehow has been attacked by darkness and we might need a hand.");
+            cm.sendNext("I don't know what's going on..It all happened so fast. A dark portal of some sort, a guy with white spikey hair and yellow eyes and some magic? Now there's demons and evil wolves. We need your help!");
         } else if (status == 2) {
-            cm.sendNext("Do you have a moment? First we need to make sure to get rid of the #rPhantom Wolves#k.");
+            cm.sendNext("Okay, so while you help me out saving this world I will try to think what the name of the mysterious guy was. Meanwhile help us kill the #rPhantom Wolves#k.");
         } else if (status == 3) { // quest progress
             DisplaySummary(metadata);
         } else if (status == 4) {
@@ -40,7 +40,7 @@ function action(mode, type, selection) {
             cm.dispose();
         } else if (status == 6) { // quest complete
             if (pquest.complete(player)) {
-                cm.sendNext("Thank you so much for helping me! I'll be sure to ask for help the next time I need it!");
+                cm.sendNext("Thank you so much for helping us! Umm..I also remembered something..He said something about Xeha....\r\n\r\nUmm..I cant remember the rest but while you continue helping us I will try to remember the rest!");
             } else {
                 cm.sendOk("You must accept my rewards! Please clear up some space in your inventory and speak to me again.");
             }
@@ -52,9 +52,9 @@ function action(mode, type, selection) {
         let metadata = CQuests.getMetaData(QuestID[1]);
         testFor(pquest, 6); // jump
         if  (status == 1) { // quest beginning
-            cm.sendNext("Kofuku must have opened a vent, there are so many phantom wolves have appeared throughout this land.");
+            cm.sendNext("Oh, I remember!! His name was #eXehanort#k#n, and I am very afraid that he has corrupted Kofuku to have opened a vent, there are so many phantom wolves that have appeared throughout this land.");
         } else if (status == 2) {
-            cm.sendNext("Keep on eliminiating them while I find out the cause for this outburst!");
+            cm.sendNext("Keep on eliminiating them while I find out more information!");
         } else if (status == 3) { // quest progress
             DisplaySummary(metadata);
         } else if (status == 4) {
@@ -64,7 +64,7 @@ function action(mode, type, selection) {
             cm.dispose();
         } else if (status == 6) { // quest complete
             if (pquest.complete(player)) {
-                cm.sendNext("Thank you so much for helping me! I'll be sure to ask for help the next time I need it!");
+                cm.sendNext("Yes! You did it. We mustn't stop now though..Let's continue!");
             } else {
                 cm.sendOk("You must accept my rewards! Please clear up some space in your inventory and speak to me again.");
             }
@@ -80,13 +80,13 @@ function action(mode, type, selection) {
         } else if (status == 3) { // quest progress
             DisplaySummary(metadata);
         } else if (status == 4) {
-            cm.sendAcceptDecline("Finish defeating these last few phantoms and follow me...\r\nI'll put an end to this before it's too late");
+            cm.sendAcceptDecline("It seems that a mysterious creature is in our world somewhere. #eXehanort#k#ncame from a dark portal right? Go search for a similiar one and stop this creature!\r\nI'll put an end to the remaining chaos before it's too late");
         } else if (status == 5) {
             CQuests.beginQuest(player, QuestID[2]);
             cm.dispose();
         } else if (status == 6) { // quest complete
             if (pquest.complete(player)) {
-                cm.sendNext("Thank you so much for helping me! I'll be sure to ask for help the next time I need it!");
+                cm.sendNext("So I found this weird sword key looking thingy and I was considering keeping it for myself but I think you deserve it instead!");
             } else {
                 cm.sendOk("You must accept my rewards! Please clear up some space in your inventory and speak to me again.");
             }

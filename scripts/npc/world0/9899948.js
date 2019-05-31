@@ -28,7 +28,7 @@ function action(mode, type, selection) {
         let metadata = CQuests.getMetaData(QuestID[0]);
         testFor(pquest, 6); // the status to jump to if true
         if (status == 1) { // quest beginning
-            cm.sendNext(`Have you noticed the influx of #bflying#k phantoms in the area?`);
+            cm.sendNext(`Have you noticed the influx of #bflying#k phantoms in the area? They are not my doing but I cannot let them kill Yato before I do!`);
         } else if (status == 2) {
             cm.sendNext(`I need you to defeat some as they are interfering with my work`);
         } else if (status == 3) { // quest progress
@@ -40,7 +40,7 @@ function action(mode, type, selection) {
             cm.dispose();
         } else if (status == 6) { // quest complete
             if (pquest.complete(player)) {
-                cm.sendNext("I appreciate your efforts, I'll let you know if I need your assistance again.");
+                cm.sendNext("I appreciate your efforts, very well done for a rookie.");
             } else {
                 cm.sendOk("You must accept my rewards! Please clear up some space in your inventory and speak to me again.");
             }
@@ -71,26 +71,26 @@ function action(mode, type, selection) {
         let metadata = CQuests.getMetaData(QuestID[2]);
         testFor(pquest, 6); // jump
         if (status == 1) { // quest begeining
-            cm.sendNext(`Placeholder text 1.2 #b${metadata.getName()}#k`);
+            cm.sendNext(`We are not fully done yet..I still see more demons`);
         } else if (status == 2) {
-            cm.sendNext(`Placeholder text 2.2 #b${metadata.getName()}#k`);
+            cm.sendNext(`I can feel the demons aura close to me..I sense that you have some kind of anger inside you from a past incident. Take it out on the demons.`);
         } else if (status == 3) { // quest progress
             DisplaySummary(metadata);
         } else if (status == 4) {
-            cm.sendAcceptDecline("Where are they coming from? I have never seen so many appear at once...\r\nWe must put an end to this before it's too late");
+            cm.sendAcceptDecline("Where do they coming from? It must have been this white haired guy that came by recently...\r\nWe must stop the demons before it is too late!");
         } else if (status == 5) {
             CQuests.beginQuest(player, QuestID[2]);
             cm.dispose();
         } else if (status == 6) { // quest complete
             if (pquest.complete(player)) {
-                cm.sendNext("Thank you so much for helping me! I'll be sure to ask for help the next time I need it!");
+                cm.sendNext("I suppose you might become something one day..hmm, take my mask as your reward, rookie.");
             } else {
                 cm.sendOk("You must accept my rewards! Please clear up some space in your inventory and speak to me again.");
             }
             cm.dispose();
         } else cm.dispose();
     } else {
-        cm.sendOk("Have you spoken to #bNora#k?");
+        cm.sendOk("Have you spoken to #bNora#k yet?");
         cm.dispose();
     }
 }
@@ -100,7 +100,7 @@ function isQuestCompleted(pquest) {
     if (pquest.checkRequirements()) {
         let completed = pquest.complete(player);
         if (completed)
-            cm.sendOk("Thank you for helping me! I'll be sure to ask you first if I ever need help again!");
+            cm.sendOk("Your power is..something different.");
         else
             cm.sendOk("Please clear out some space in your inventory.\r\nYou must take my rewards!");
         cm.dispose();

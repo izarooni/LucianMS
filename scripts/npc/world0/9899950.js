@@ -28,21 +28,21 @@ function action(mode, type, selection) {
     }
 
     if (status == 0) { // pre-quest status
-        cm.sendOk("I don't need help. I'm very busy right now.");
+        cm.sendOk("Darkness is a dangerous weapon in this world..");
         cm.dispose();
     } else if (status == 1) { // quest beginning
-        cm.sendNext("");
+        cm.sendNext("I feel weird..I can't control..I..I need your help. This man with yellow eyes did something to me, he stared at me and suddenly I began to feel weird.");
     } else if (status == 2) {
-        cm.sendNext("");
+        cm.sendNext("I can only feel #edarkness#k#n inside. Please, help me!");
     } else if (status == 3) { // quest progress
         DisplaySummary(metadata);
     } else if (status == 4) {
-        cm.sendAcceptDecline("uwu");
+        cm.sendAcceptDecline("I have my faith in you.");
     } else if (status == 5) {
         CQuests.beginQuest(player, QuestID);
         cm.dispose();
     } else if (status == 6) { // complete
-        cm.sendOk("Complete!");
+        cm.sendOk("I cannot thank you enough! Try to find this weird man, I do not know his name but we need to stop him!");
         quest.complete(player);
         cm.dispose();
     } else cm.dispose();

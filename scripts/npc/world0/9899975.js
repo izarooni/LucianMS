@@ -33,7 +33,7 @@ function action(mode, type, selection) {
         status++;
     }
     if (status == 1) {
-        let content = "Hello, #h #!\r\nIt seems like all my friends are stuck and needs a hand! Could you help them out?\r\nEvery JQ completion rewards Monster coins! Depending on the JQ difficulity, you will reward a different coin.\r\nEither a \r\n#gGreen Monster coin#k - Hard\r\n#bBlue Monster coin#k - Medium\r\n#rRed Monster coin#k - Easy\r\n#eThey can be used to buy special prizes!#k";
+        let content = "Hello, #h #!\r\nIt seems like all my friends are stuck and need a hand! \tCould you help them out?\r\n\r\n#eEvery JQ completion rewards Monster coins! Depending on the JQ difficulty, you will be rewarded different coins.\r\n\r\n\t\t\t\t\t#gGreen Monster coin#k - Hard\r\n\t\t\t\t\t#bBlue Monster coin#k - Medium\r\n\t\t\t\t\t#rRed Monster coin#k - Easy";
         for (let i = 0; i < maps.length; i++) {
             let map_name = maps[i][1];
             content += `\r\n#L${i}#${map_name}#l`;
