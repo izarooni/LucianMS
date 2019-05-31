@@ -107,7 +107,7 @@ public class CQuestBuilder {
             int questId = MapleDataTool.getInt(xml.getChildByPath("info/questId"));
             if (questId <= 0) {
                 if (questId < 0) { // 0 is the example quest, stop logging it as a warning :weary:
-                    LOGGER.warn("Invalid quest id {} for custom quest {}", questId, file.getName());
+                    LOGGER.warn("Invalid id {} for quest '{}'", questId, file.getName());
                 }
                 return null;
             }
@@ -139,7 +139,7 @@ public class CQuestBuilder {
                     int monsterId = MapleDataTool.getInt(toKill.getChildByPath("monsterId"));
                     int amount = MapleDataTool.getInt(toKill.getChildByPath("amount"), -1);
                     if (monsterId == 0 || amount == -1) {
-                        LOGGER.warn("Invalid monster kill requirement for quest {}", qData.getName());
+                        LOGGER.warn("Invalid monster kill requirement for quest '{}'", file.getName());
                         continue;
                     }
                     qData.getToKill().add(monsterId, amount);
@@ -158,7 +158,7 @@ public class CQuestBuilder {
                     int minQuantity = MapleDataTool.getInt(toCollect.getChildByPath("minDrop"));
                     int maxQuantity = MapleDataTool.getInt(toCollect.getChildByPath("maxDrop"));
                     if (itemId == 0 || quantity == 0) {
-                        LOGGER.warn("Invalid item requirement for quest {}", qData.getName());
+                        LOGGER.warn("Invalid item requirement for quest '{}'", file.getName());
                         continue;
                     }
                     CQuestItemRequirement.CQuestItem qItem = new CQuestItemRequirement.CQuestItem(itemId, quantity, false);
@@ -190,7 +190,7 @@ public class CQuestBuilder {
                     int itemId = MapleDataTool.getInt(items.getChildByPath("itemId"));
                     short quantity = (short) MapleDataTool.getInt(items.getChildByPath("quantity"));
                     if (itemId == 0 || quantity == 0) {
-                        LOGGER.warn("Invalid reward item for quest {}", qData.getName());
+                        LOGGER.warn("Invalid reward item for quest '{}'", file.getName());
                         continue;
                     }
                     qData.rewards.add(new CQuestItemReward(itemId, quantity));
