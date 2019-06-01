@@ -4322,20 +4322,6 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Di
         client.announce(MaplePacketCreator.getMacros(skillMacros));
     }
 
-    public void sendNote(String to, String msg, byte fame) {
-        try (Connection con = Server.getConnection();
-             PreparedStatement ps = con.prepareStatement("INSERT INTO notes (`to`, `from`, `message`, `timestamp`, `fame`) VALUES (?, ?, ?, ?, ?)", Statement.RETURN_GENERATED_KEYS)) {
-            ps.setString(1, to);
-            ps.setString(2, this.getName());
-            ps.setString(3, msg);
-            ps.setLong(4, System.currentTimeMillis());
-            ps.setByte(5, fame);
-            ps.executeUpdate();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }
-
     public void setBuddyCapacity(int capacity) {
         buddylist.setCapacity(capacity);
         client.announce(MaplePacketCreator.updateBuddyCapacity(capacity));
@@ -4555,6 +4541,20 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Di
                 }
             }
         }, time * 1000 + 3000); // let the TIMES UP display for 3 seconds, then
+    }
+
+    public void sendNote(String to, String msg, byte fame) {
+        try (Connection con = Server.getConnection();
+             PreparedStatement ps = con.prepareStatement("INSERT INTO notes (`to`, `from`, `message`, `timestamp`, `fame`) VALUES (?, ?, ?, ?, ?)", Statement.RETURN_GENERATED_KEYS)) {
+            ps.setString(1, to);
+            ps.setString(2, this.getName());
+            ps.setString(3, msg);
+            ps.setLong(4, System.currentTimeMillis());
+            ps.setByte(5, fame);
+            ps.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 
     public void showNote() {

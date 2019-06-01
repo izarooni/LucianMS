@@ -33,10 +33,15 @@ function action(mode, type, selection) {
         return;
     }
 
-    let partnerName;
+    let partnerName = undefined;
     if (rel.getGroomId() == player.getId()) partnerName = rel.getBrideUsername();
     else if (rel.getBrideId() == player.getId()) partnerName = rel.getGroomUsername();
+    if (partnerName == undefined) {
+        cm.sendOk("You are not married");
+        return cm.dispose();
+    }
     let partner = client.getWorldServer().findPlayer(p => p.getName().equalsIgnoreCase(partnerName));
+
 
     if (status == 1) {
         cm.sendNext("Unlucky. You want out of your relationship? It'll cost you, though."
@@ -64,6 +69,10 @@ function action(mode, type, selection) {
                 }
             }
             partner.getRelationship().reset();
+        } else {
+            // the ring has been removed from 1 party and because the other party is offline,
+            // the server will realize a divorce has been settled and remove the ring
+            player.sendNote(partnerName, player.getName() + " has divorced you.", 1);
         }
 
         cm.sendOk(`You are now divorced from ${partnerName}`)
