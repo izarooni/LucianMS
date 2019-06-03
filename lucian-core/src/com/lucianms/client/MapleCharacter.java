@@ -540,7 +540,6 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Di
 
                 List<Pair<Item, MapleInventoryType>> pairs = ItemFactory.INVENTORY.loadItems(con, ret.id, !channelserver);
                 for (Pair<Item, MapleInventoryType> item : pairs) {
-                    ret.getInventory(item.getRight()).addFromDB(item.getLeft());
                     Item itemz = item.getLeft();
                     if (itemz.getPetId() > -1) {
                         MaplePet pet = itemz.getPet();
@@ -554,7 +553,6 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Di
                         if (equip.getRingId() > -1) {
                             MapleRing ring = MapleRing.load(equip.getRingId());
                             if (ring == null) {
-                                equip.setRingId(-1);
                                 continue;
                             }
                             ring.setEquipped(item.getRight() == MapleInventoryType.EQUIPPED);
@@ -567,6 +565,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Di
                             }
                         }
                     }
+                    ret.getInventory(item.getRight()).addFromDB(item.getLeft());
                 }
                 pairs.clear();
             }
@@ -1501,7 +1500,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Di
         changeMap(map_, map_.getPortal(portal));
     }
 
-    private void changeMapInternal(final MapleMap to, final Point pos, final byte[] warpPacket) {
+    public void changeMapInternal(final MapleMap to, final Point pos, final byte[] warpPacket) {
         if (getTrade() != null) {
             MapleTrade.cancelTrade(this);
         }

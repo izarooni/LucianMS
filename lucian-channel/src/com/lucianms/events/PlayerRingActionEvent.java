@@ -178,7 +178,8 @@ public class PlayerRingActionEvent extends PacketEvent {
                             pplayer.announce(getEngagementResult((byte) 0x15));
                         } else {
                             Pair<Integer, Integer> p = getEngagementItems(rltn.getEngagementBoxId());
-                            pplayer.announce(getEngagementSuccess(pplayer, player)); // do i need to send this to both players? HMMM
+                            player.announce(getEngagementSuccess(pplayer, player));
+                            pplayer.announce(getEngagementSuccess(pplayer, player));
                             rltn.setStatus(Relationship.Status.Engaged);
                             prltn.setStatus(Relationship.Status.Engaged);
                             MapleInventoryManipulator.removeById(pplayer.getClient(), MapleInventoryType.USE, pplayer.getRelationship().getEngagementBoxId(), 1, false, false);
@@ -260,7 +261,7 @@ public class PlayerRingActionEvent extends PacketEvent {
         return w.getPacket();
     }
 
-    private static byte[] getEngagementSuccess(MapleCharacter groom, MapleCharacter bride) {
+    public static byte[] getEngagementSuccess(MapleCharacter groom, MapleCharacter bride) {
         MaplePacketWriter w = new MaplePacketWriter();
         w.writeShort(SendOpcode.MARRIAGE_RESULT.getValue());
         Relationship rltn = groom.getRelationship();
@@ -282,7 +283,6 @@ public class PlayerRingActionEvent extends PacketEvent {
      * @param username      the username of the player proposing
      * @param brideId       the player Id of the partner player
      * @param brideUsername the username of the partner player
-     *
      * @return a byte array containing the packet data
      */
     private static byte[] sendEngagementRequest(String username, int brideId, String brideUsername) {

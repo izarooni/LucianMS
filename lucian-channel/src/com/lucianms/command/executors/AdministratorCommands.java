@@ -31,6 +31,7 @@ import com.lucianms.server.world.MapleWorld;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import tools.HexTool;
+import tools.MaplePacketCreator;
 
 import javax.script.ScriptException;
 import java.awt.*;
@@ -176,7 +177,6 @@ public class AdministratorCommands extends CommandExecutor {
             rltn.setBrideId(target2.getId());
             rltn.setGroomId(target1.getId());
             target1.getWeddingRings().add(t1Ring);
-            target1.changeMap(target1.getMap(), target1.getPosition());
 
             equip = new Equip(ringItemID, (short) 0);
             equip.setRingId(ringID + 1);
@@ -186,10 +186,14 @@ public class AdministratorCommands extends CommandExecutor {
             prltn.setBrideId(target2.getId());
             prltn.setGroomId(target1.getId());
             target2.getWeddingRings().add(t2Ring);
-            target2.changeMap(target2.getMap(), target2.getPosition());
 
-            target1.sendMessage(1, "You are now married to '{}'", target2.getName());
-            target2.sendMessage(1, "You are now married to '{}'", target1.getName());
+            target1.changeMapInternal(target1.getMap(), target1.getPosition(), MaplePacketCreator.getCharInfo(target1));
+            target2.changeMapInternal(target2.getMap(), target2.getPosition(), MaplePacketCreator.getCharInfo(target2));
+
+            target1.announce(PlayerRingActionEvent.getEngagementSuccess(target1, target2));
+            target2.announce(PlayerRingActionEvent.getEngagementSuccess(target1, target2));
+            target1.sendMessage(6, "You are now married to '{}'", target2.getName());
+            target2.sendMessage(6, "You are now married to '{}'", target1.getName());
             player.sendMessage(6, "Success!");
         } else {
             player.sendMessage(5, "usage: !setcouple <engagement_box> <groom> <bride>");

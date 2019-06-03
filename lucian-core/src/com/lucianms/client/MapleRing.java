@@ -43,7 +43,7 @@ public class MapleRing {
             }
             if (ring != null) {
                 // ring exists, so find its partner
-                try (PreparedStatement ps = con.prepareStatement("select * from rings where id = ?")) {
+                try (PreparedStatement ps = con.prepareStatement("select * from inventoryequipment where ringid = ?")) {
                     ps.setInt(1, ring.getPartnerRingId());
                     try (ResultSet rs = ps.executeQuery()) {
                         if (!rs.next()) {

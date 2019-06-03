@@ -325,7 +325,7 @@ public class MapleInventoryManipulator {
         boolean allowZero = consume && ItemConstants.isRechargable(item.getItemId());
 
         player.getInventory(type).removeItem(slot, quantity, allowZero);
-        if (item.getQuantity() == 0 && !allowZero) {
+        if (item instanceof Equip || item.getQuantity() == 0 && !allowZero) {
             c.announce(MaplePacketCreator.modifyInventory(fromDrop, Collections.singletonList(new ModifyInventory(3, item))));
         } else {
             c.announce(MaplePacketCreator.modifyInventory(fromDrop, Collections.singletonList(new ModifyInventory(1, item))));
