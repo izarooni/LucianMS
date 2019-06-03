@@ -1,9 +1,11 @@
 {
   "WhitelistEnabled": "true",
+  "UseNewEncryption": "true",
 
-  "ServerHost": "127.0.0.1",
+  "ServerHost": "0.0.0.0",
+  "ChannelServer": "REMOTE_ADDRESS",
+  "LoginBasePort": "8484",
+  "ChannelBasePort": "7575",
 
-  "DatabaseURL": "jdbc:mysql://localhost:3306/DATABASE?autoReconnect=true",
-  "DatabaseUsername": "root",
-  "DatabasePassword": ""
+  "EmergencyExcludes": ""
 }

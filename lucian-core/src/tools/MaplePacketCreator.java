@@ -2512,7 +2512,7 @@ public class MaplePacketCreator {
      *
      * @return The packet.
      */
-    public static byte[] getPing() {
+    public static byte[] getKeepAliveRequest() {
         final MaplePacketWriter mplew = new MaplePacketWriter(2);
         mplew.writeShort(SendOpcode.PING.getValue());
         return mplew.getPacket();

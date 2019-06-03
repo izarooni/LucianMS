@@ -105,6 +105,15 @@ public class PlayerCommands extends CommandExecutor {
         addCommand("tradeep", this::TradePoints);
         addCommand("tradevp", this::TradePoints);
         addCommand("tradejq", this::TradePoints);
+
+        addCommand("ping", this::Ping);
+    }
+
+    private void Ping(MapleCharacter player, Command cmd, CommandArgs args) {
+        MapleClient client = player.getClient();
+        client.setNetworkLatency(-1);
+        client.setKeepAliveRequest(System.currentTimeMillis());
+        client.announce(MaplePacketCreator.getKeepAliveRequest());
     }
 
     private void TradePoints(MapleCharacter player, Command cmd, CommandArgs args) {
@@ -698,6 +707,7 @@ public class PlayerCommands extends CommandExecutor {
         commands.add("@house - View the housing system NPC");
         commands.add("@jobs - View a list of the customized jobs");
         commands.add("@chalktalk - Created a chalkboard with a message above your player");
+        commands.add("@ping - Check the round-trip time between the server and your client");
         commands.add("@rebirth - Do a rebirth for your player");
         commands.add("@pvp - Enable or disable PVP for your player");
         commands.add("@bosshp - View HP for all boss monsters in the map");
@@ -706,8 +716,12 @@ public class PlayerCommands extends CommandExecutor {
         commands.sort(String::compareTo);
         if (npc) {
             StringBuilder sb = new StringBuilder();
-            commands.forEach(s -> sb.append("\r\n").append(s));
+            for (String s : commands) {
+                String[] split = s.split(" - ");
+                sb.append("\r\n#b").append(split[0]).append("#k - #r").append(split[1]);
+            }
             player.announce(MaplePacketCreator.getNPCTalk(2007, (byte) 0, sb.toString(), "00 00", (byte) 0));
+            sb.setLength(0);
         } else {
             commands.forEach(player::dropMessage);
             player.dropMessage("If you'd like to view this list in an NPC window, use the command < @help npc >");

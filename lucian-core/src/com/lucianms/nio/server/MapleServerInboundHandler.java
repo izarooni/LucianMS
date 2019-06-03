@@ -72,7 +72,7 @@ public class MapleServerInboundHandler extends ChannelInboundHandlerAdapter {
         }
         ctx.channel().attr(MapleClient.CLIENT_KEY).set(client);
 
-        TaskExecutor.createTask(client::sendPing, 1500);
+        TaskExecutor.createTask(() -> client.announce(MaplePacketCreator.getKeepAliveRequest()), 1500);
     }
 
     @Override
@@ -101,7 +101,7 @@ public class MapleServerInboundHandler extends ChannelInboundHandlerAdapter {
         if (player != null) {
             player.saveToDB();
         }
-        client.sendPing();
+        client.announce(MaplePacketCreator.getKeepAliveRequest());
     }
 
     @Override

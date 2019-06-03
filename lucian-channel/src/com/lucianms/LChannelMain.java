@@ -138,7 +138,7 @@ public class LChannelMain {
                     LOGGER.info("Created folder 'scripts/features'");
                 }
                 try {
-                    MapleServerInboundHandler handler = new MapleServerInboundHandler(ReceivePacketState.ChannelServer, channel.getNetworkAddress().getHostName(), channel.getPort(), new NioEventLoopGroup());
+                    MapleServerInboundHandler handler = new MapleServerInboundHandler(ReceivePacketState.ChannelServer, Server.getConfig().getString("ServerHost"), channel.getPort(), new NioEventLoopGroup());
                     channel.setServerHandler(handler);
                     channel.reloadEventScriptManager();
                 } catch (Exception e) {

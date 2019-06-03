@@ -27,7 +27,6 @@ import com.lucianms.io.scripting.npc.NPCConversationManager;
 import com.lucianms.io.scripting.npc.NPCScriptManager;
 import com.lucianms.io.scripting.quest.QuestActionManager;
 import com.lucianms.io.scripting.quest.QuestScriptManager;
-import com.lucianms.scheduler.TaskExecutor;
 import com.lucianms.server.MapleTrade;
 import com.lucianms.server.Server;
 import com.lucianms.server.channel.MapleChannel;
@@ -61,7 +60,8 @@ public class MapleClient implements Disposable {
     private MapleCharacter player;
     private Calendar birthday;
     private long sessionId;
-    private long lastPong;
+    private long keepAliveRequest;
+    private float networkLatency;
     private int channel;
     private int ID;
     private int world;
@@ -579,24 +579,20 @@ public class MapleClient implements Disposable {
         this.world = world;
     }
 
-    public void pongReceived() {
-        lastPong = System.currentTimeMillis();
+    public long getKeepAliveRequest() {
+        return keepAliveRequest;
     }
 
-    public void sendPing() {
-        final long then = System.currentTimeMillis();
-        announce(MaplePacketCreator.getPing());
-        TaskExecutor.createTask(new Runnable() {
+    public void setKeepAliveRequest(long keepAliveRequest) {
+        this.keepAliveRequest = keepAliveRequest;
+    }
 
-            @Override
-            public void run() {
-                if (lastPong < then) {
-                    if (getSession() != null && getSession().isActive()) {
-                        getSession().close();
-                    }
-                }
-            }
-        }, 1000 * 60 * 3);
+    public float getNetworkLatency() {
+        return networkLatency;
+    }
+
+    public void setNetworkLatency(float networkLatency) {
+        this.networkLatency = networkLatency;
     }
 
     public String getLastKnownIP() {

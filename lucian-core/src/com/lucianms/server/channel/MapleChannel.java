@@ -44,7 +44,7 @@ public final class MapleChannel implements PacketAnnouncer {
         this.world = world;
         this.channel = channel;
         this.port = (7575 + (this.channel - 1)) + (world * 100);
-        networkAddress = InetAddress.getByName(Server.getConfig().getString("ServerHost"));
+        networkAddress = InetAddress.getByName(Server.getConfig().getString("ChannelServer"));
     }
 
     public MapleServerInboundHandler getServerHandler() {

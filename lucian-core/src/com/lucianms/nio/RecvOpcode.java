@@ -23,7 +23,7 @@ public enum RecvOpcode {
     CHECK_CHAR_NAME         (21, ReceivePacketState.LoginServer),
     CREATE_CHAR             (22, ReceivePacketState.LoginServer),
     DELETE_CHAR             (23, ReceivePacketState.LoginServer),
-    PONG                    (24, ReceivePacketState.Both, PongEvent.class),
+    PONG                    (24, ReceivePacketState.Both, KeepAliveEvent.class),
     CLIENT_START_ERROR      (25, ReceivePacketState.LoginServer, ClientCrashReportEvent.class),
     CLIENT_ERROR            (26, ReceivePacketState.LoginServer),
     STRANGE_DATA            (27, ReceivePacketState.Both),
