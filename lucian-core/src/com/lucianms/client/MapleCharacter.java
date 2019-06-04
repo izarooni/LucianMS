@@ -538,24 +538,25 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Di
                 ret.getInventory(MapleInventoryType.SETUP).setSlotLimit(rs.getByte("setupslots"));
                 ret.getInventory(MapleInventoryType.ETC).setSlotLimit(rs.getByte("etcslots"));
 
-                List<Pair<Item, MapleInventoryType>> pairs = ItemFactory.INVENTORY.loadItems(con, ret.id, !channelserver);
-                for (Pair<Item, MapleInventoryType> item : pairs) {
-                    Item itemz = item.getLeft();
-                    if (itemz.getPetId() > -1) {
-                        MaplePet pet = itemz.getPet();
-                        if (pet != null && pet.isSummoned()) {
+                List<Pair<Item, MapleInventoryType>> load = ItemFactory.INVENTORY.loadItems(con, ret.id, !channelserver);
+                for (Pair<Item, MapleInventoryType> pair : load) {
+                    Item item = pair.getLeft();
+                    if (item.getPetId() > -1) {
+                        MaplePet pet = item.getPet();
+                        if (pet == null) {
+                            continue;
+                        } else if (pet.isSummoned()) {
                             ret.addPet(pet);
                         }
-                        continue;
                     }
-                    if (item.getRight() == MapleInventoryType.EQUIP || item.getRight() == MapleInventoryType.EQUIPPED) {
-                        Equip equip = (Equip) item.getLeft();
+                    if (pair.getRight() == MapleInventoryType.EQUIP || pair.getRight() == MapleInventoryType.EQUIPPED) {
+                        Equip equip = (Equip) pair.getLeft();
                         if (equip.getRingId() > -1) {
                             MapleRing ring = MapleRing.load(equip.getRingId());
                             if (ring == null) {
                                 continue;
                             }
-                            ring.setEquipped(item.getRight() == MapleInventoryType.EQUIPPED);
+                            ring.setEquipped(pair.getRight() == MapleInventoryType.EQUIPPED);
                             if (ItemConstants.isWeddingRing(ring.getItemId())) {
                                 ret.getWeddingRings().add(ring);
                             } else if (ItemConstants.isFriendshipEquip(ring.getItemId())) {
@@ -565,9 +566,9 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Di
                             }
                         }
                     }
-                    ret.getInventory(item.getRight()).addFromDB(item.getLeft());
+                    ret.getInventory(pair.getRight()).addFromDB(pair.getLeft());
                 }
-                pairs.clear();
+                load.clear();
             }
         }
         if (channelserver) {

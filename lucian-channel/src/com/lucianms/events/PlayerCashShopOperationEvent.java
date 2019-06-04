@@ -159,18 +159,13 @@ public class PlayerCashShopOperationEvent extends PacketEvent {
                 if (cItem == null || !cItem.isOnSale() || cs.getCash(cost) < cItem.getPrice()) {
                     return null;
                 }
+                int itemID = cItem.getItemId();
                 if (player.isDebug()) {
                     String content = "[Debug]";
                     content += "\r\nImgdir: " + cItem.getImgdir();
-                    content += "\r\nItem ID: " + cItem.getItemId();
+                    content += "\r\nItem ID: " + itemID;
                     content += "\r\nSN: " + SN;
                     client.announce(MaplePacketCreator.serverNotice(1, content));
-                    client.announce(MaplePacketCreator.showCash(player));
-                    return null;
-                }
-                int itemID = cItem.getItemId();
-                if (itemID == 5000011 || itemID == 5000014 || itemID == 5000022) {
-                    client.announce(MaplePacketCreator.serverNotice(1, "These pets are available for our donors only!"));
                     client.announce(MaplePacketCreator.showCash(player));
                     return null;
                 }

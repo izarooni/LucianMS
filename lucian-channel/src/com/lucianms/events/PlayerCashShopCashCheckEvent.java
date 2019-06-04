@@ -1,5 +1,7 @@
 package com.lucianms.events;
 
+import com.lucianms.client.MapleCharacter;
+import com.lucianms.client.MapleClient;
 import com.lucianms.nio.receive.MaplePacketReader;
 import tools.MaplePacketCreator;
 
@@ -15,7 +17,9 @@ public final class PlayerCashShopCashCheckEvent extends PacketEvent {
 
     @Override
     public Object onPacket() {
-        getClient().announce(MaplePacketCreator.showCash(getClient().getPlayer()));
+        MapleClient client = getClient();
+        MapleCharacter player = client.getPlayer();
+        client.announce(MaplePacketCreator.showCash(player));
         return null;
     }
 }
