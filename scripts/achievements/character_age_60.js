@@ -1,4 +1,4 @@
-load('scripts/util_imports.js');
+load('scripts/util_achievements.js');
 /* izarooni */
 
 function getName() {
@@ -10,23 +10,13 @@ function testForPlayer(player) {
     timestamp = parseInt(timestamp);
     let diff = Date.now() - timestamp;
     let days = (diff / (1000 * 60 * 60 * 24));
-    if (days >= 60) {
-        return true;
-    }
-    return false;
+    return days >= 60;
 }
 
 function reward(player) {
-    if (player.getMeso() <= 2144483647) { // int.max_value - 3m
-        player.gainMeso(3000000, true);
-        let achieve = player.getAchievement(getName());
-        achieve.setCompleted(true);
-        return true;
-    }
-    player.sendMessage(`Unable to receive achievement reward '${getName()}' due to mesos overflow`);
-    return false;
+    return tryGiveItem(player, [new RewardItem(ServerConstants.CURRENCY, 20)]);
 }
 
 function readableRewards(rr) {
-    return rr.add("3,000,000 mesos");
+    return rr.add(`20x #z${ServerConstants.CURRENCY}#`);
 }

@@ -36,5 +36,4 @@ public class ServerConstants {
     public static final int MAX_LEVELS_ABOVE = 10;
     //endregion
 
-
 }

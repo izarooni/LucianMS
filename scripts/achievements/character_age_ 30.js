@@ -1,4 +1,4 @@
-load('scripts/util_imports.js');
+load('scripts/util_achievements.js');
 /* izarooni */
 
 function getName() {
@@ -10,17 +10,13 @@ function testForPlayer(player) {
     timestamp = parseInt(timestamp);
     let diff = Date.now() - timestamp;
     let days = (diff / (1000 * 60 * 60 * 24));
-    if (days >= 30) {
-        return true;
-    }
-    return false;
+    return days >= 30;
 }
 
 function reward(player) {
-    let achieve = player.getAchievement(getName());
-    achieve.setCompleted(true);
-    return true;
+    return tryGiveItem(player, [new RewardItem(ServerConstants.CURRENCY, 10)]);
 }
 
 function readableRewards(rr) {
+    return rr.add(`10x #z${ServerConstants.CURRENCY}#`);
 }

@@ -1,3 +1,4 @@
+load('scripts/util_achievements.js');
 /* izarooni */
 
 function getName() {
@@ -10,10 +11,9 @@ function testForPlayer(player) {
 }
 
 function reward(player) {
-    let achieve = player.getAchievement(getName());
-    achieve.setCompleted(true);
-    return true;
+    return tryGiveItem(player, [new RewardItem(ServerConstants.CURRENCY, 1)]);
 }
 
 function readableRewards(rr) {
+    return rr.add(`1x #z${ServerConstants.CURRENCY}#`);
 }

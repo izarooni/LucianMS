@@ -10,17 +10,25 @@ package com.lucianms.client.meta;
  */
 public class Achievement {
 
-    private boolean completed = false;
-    private boolean casino1Completed = false;
-    private boolean casino2Completed = false;
-    private int monstersKilled = 0;
-
-    public boolean isCompleted() {
-        return completed;
+    public enum Status {
+        Incomplete, Complete, RewardGiven
     }
 
-    public void setCompleted(boolean completed) {
-        this.completed = completed;
+    private Status status;
+    private boolean casino1Completed;
+    private boolean casino2Completed;
+    private int monstersKilled;
+
+    public Status getStatus() {
+        return status;
+    }
+
+    public void setStatus(byte status) {
+        this.status = Status.values()[status];
+    }
+
+    public void setStatus(Status status) {
+        this.status = status;
     }
 
     public boolean isCasino1Completed() {

@@ -1,16 +1,17 @@
+load('scripts/util_achievements.js');
 /* izarooni */
-let _monsterId = 9895257;
-let _killRequire = 1;
+let MonsterID = 9895257;
+let KillCount = 1;
 
 function getName() {
     return "Kill the Black Mage Commander";
 }
 
 function testForKill(player, monsterId) {
-    if (monsterId == _monsterId) {
+    if (monsterId == MonsterID) {
         let achieve = player.getAchievement(getName());
         let current = achieve.getMonstersKilled() + 1;
-        if (current >= _killRequire) {
+        if (current >= KillCount) {
             achieve.setMonstersKilled(current);
             return true;
         }
@@ -19,10 +20,9 @@ function testForKill(player, monsterId) {
 }
 
 function reward(player) {
-    let achieve = player.getAchievement(getName());
-    achieve.setCompleted(true);
-    return true;
+    return tryGiveItem(player, [new RewardItem(ServerConstants.CURRENCY, 10)]);
 }
 
 function readableRewards(rr) {
+    return rr.add(`10x #z${ServerConstants.CURRENCY}#`);
 }

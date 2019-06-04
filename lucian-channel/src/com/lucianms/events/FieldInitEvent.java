@@ -4,6 +4,7 @@ import com.lucianms.client.MapleCharacter;
 import com.lucianms.client.MapleClient;
 import com.lucianms.client.Relationship;
 import com.lucianms.constants.GameConstants;
+import com.lucianms.io.scripting.Achievements;
 import com.lucianms.io.scripting.event.EventInstanceManager;
 import com.lucianms.nio.SendOpcode;
 import com.lucianms.nio.receive.MaplePacketReader;
@@ -41,6 +42,7 @@ public class FieldInitEvent extends PacketEvent {
         MapleMap map = player.getMap();
         final int mapID = map.getId();
 
+        Achievements.testFor(player, -1);
         player.setRates();
 
         if (player.getForcedStat() != null) {

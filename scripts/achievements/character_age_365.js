@@ -1,4 +1,4 @@
-load('scripts/util_imports.js');
+load('scripts/util_achievements.js');
 /* izarooni */
 
 function getName() {
@@ -9,22 +9,13 @@ function testForPlayer(player) {
     let timestamp = player.getCreateDate();
     let diff = Date.now() - timestamp;
     let days = (diff / (1000 * 60 * 60 * 24));
-    if (days >= 365) {
-        return true;
-    }
-    return false;
+    return days >= 365;
 }
 
 function reward(player) {
-    if (player.getMeso() <= 2144483647) { // int.max_value - 3m
-        player.gainMeso(3000000, true);
-        let achieve = player.getAchievement(getName());
-        achieve.setCompleted(true);
-        return true;
-    }
-    return false;
+    return tryGiveItem(player, [new RewardItem(ServerConstants.CURRENCY, 100)]);
 }
 
 function readableRewards(rr) {
-    return rr.add("3,000,000 mesos");
+    return rr.add(`100x #z${ServerConstants.CURRENCY}#`);
 }

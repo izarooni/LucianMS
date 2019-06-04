@@ -1,65 +1,103 @@
-const SAchievements = Java.type("com.lucianms.io.scripting.Achievements");
+const Achievements = Java.type('com.lucianms.io.scripting.Achievements');
+const AStatus = Java.type('com.lucianms.client.meta.Achievement').Status;
 /* izarooni */
 let status = 0;
-let achievements = {completed:[], other:[]};
-let lastSelection;
+let achievements = {
+    incomplete: [],
+    completed: [],
+    rewarded: [],
+};
 
-player.getAchievements().entrySet().forEach(function(e) {
+player.getAchievements().entrySet().forEach(function (e) {
+    let name = e.getKey();
     let achieve = e.getValue();
-    if (achieve.isCompleted()) achievements.completed.push([e.getKey(), achieve]);
-    else achievements.other.push([e.getKey(), achieve]);
+    switch (achieve.getStatus().ordinal()) {
+        case 0: return achievements.incomplete.push(new Achievement(name, achieve));
+        case 1: return achievements.completed.push(new Achievement(name, achieve));
+        case 2: return achievements.rewarded.push(new Achievement(name, achieve));
+    }
 });
 
 function action(mode, type, selection) {
     if (mode < 1) {
-        cm.dispose();
-        return;
+        status--;
+        if (status == 0) {
+            return cm.dispose();
+        }
     } else {
         status++;
     }
     if (status == 1) {
-        let total = achievements.completed.length + achievements.other.length;
-        let text = "You've completed #b" + achievements.completed.length + " of " + total + "#k discovered achievements\r\n#b";
-        text += "\r\n#L0#Completed achievements#l";
-        text += "\r\n#L1#Incomplete achievements#l"
-        cm.sendSimple(text, 2);
-    } else if (status == 2) {
-        let text = "";
-        lastSelection = selection;
-        if (selection == 0) {
-            if (achievements.completed.length == 0) {
-                cm.sendOk("You have not completed any achievements");
-                cm.dispose();
-                return;
-            }
-            for (let i = 0; i < achievements.completed.length; i++) {
-                let achieve = achievements.completed[i];
-                text += "\r\n#L" + i + "##FUI/UIWindow/Memo/check1#  #b" + achieve[0] + "#l";
-            }
-        } else {
-            if (achievements.other.length == 0) {
-                cm.sendOk("There are no achievements");
-                cm.dispose();
-                return;
-            }
-            for (let i = 0; i < achievements.other.length; i++) {
-                let achieve = achievements.other[i];
-                text += "\r\n#L" + i + "##FUI/UIWindow/Memo/check0#  #r" + achieve[0] + "#l";
-            }
+        cm.vars = { section: undefined };
+        let completedCount = achievements.completed.length + achievements.rewarded.length;
+        let totalCount = player.getAchievements().size();
+        let text = `You have completed #b ${completedCount} / ${totalCount} achievements\r\n#b`
+            + "\r\n#L0#Completed Achievements#l"
+            + "\r\n#L1#Incomplete Achievements#l";
+        if (achievements.completed.length > 0) {
+            text += "\r\n#L2#Claim rewards#l"
         }
         cm.sendSimple(text, 2);
+    } else if (status == 2) {
+        let text = "#b\r\n";
+        let section = cm.vars.section;
+        if (section == undefined) {
+            if (selection == 0) section = achievements.rewarded; // complete (rewards given)
+            else if (selection == 1) section = achievements.incomplete; // incomplete
+            else if (selection == 2) section = achievements.completed; // complete (rewards available)
+            cm.vars.section = section;
+        }
+
+        if (section == undefined) {
+            cm.sendOk("#bHello from the developer!#k\r\n\t\t- izarooni");
+            return cm.dispose();
+        } else if (section.length == 0) {
+            cm.sendNext("There is nothing here\r\n");
+            status = 0;
+            return;
+        }
+        let prevLength = text.length;
+        for (let i = 0; i < section.length; i++) {
+            let a = section[i];
+            if (a == undefined) continue;
+            text += `\r\n#L${i}##FUI/UIWindow/Memo/check${a.obj.getStatus().ordinal() == 2 ? 1 : 0}# ${a.name}#l`;
+        }
+        if (prevLength < text.length) cm.sendSimple(text, 2);
+        else {
+            status = 0;
+            action(1, 0, 0);
+        }
     } else if (status == 3) {
-        let achieve = achievements[(lastSelection == 0) ? "completed" : "other"][selection];
-        let content = "You " + ((lastSelection == 0) ? "received" : "will receieve") + ` the following thinigs for completing the achievement '#b${achieve[0]}'\r\n`;
-        let rewards = SAchievements.getRewards(achieve[0]);
-        if (rewards != null && rewards.size() > 0) {
+        let section = cm.vars.section;
+        if (section == undefined) {
+            cm.sendOk("#bHello from the developer!#k\r\n\t\t- izarooni");
+            return cm.dispose();
+        }
+        let achieve = section[selection];
+        let naStatus = achieve.obj.getStatus().ordinal();
+        let content = `Here are the rewards for completing the\r\n'#b${achieve.name}#k' achievement\r\n#b`;
+        let rewards = Achievements.getRewards(achieve.name);
+        if (rewards != null && !rewards.isEmpty()) {
             for (let reward in rewards) {
                 content += `\r\n${rewards[reward]}`;
             }
         } else {
             content = "There are no rewards for completing this achievement";
         }
+        if (naStatus == 1) {
+            if (!Achievements.reward(achieve.name, player)) {
+                content = "#rYou are still unable to receive the rewards. Please make room in your inventory and try again.#k\r\n\r\n" + content;
+            } else {
+                delete section[selection];
+                achieve.obj.setStatus(AStatus.RewardGiven);
+            }
+        }
         cm.sendNext(content);
-        status = 0;
+        status = 1;
     }
+}
+
+function Achievement(name, obj) {
+    this.name = name;
+    this.obj = obj;
 }

@@ -1,4 +1,4 @@
-const MaplePacketCreator = Java.type('tools.MaplePacketCreator');
+load('scripts/util_achievements.js');
 const OuterSpaceFieldID = 98;
 /* izarooni */
 
@@ -11,11 +11,9 @@ function testForPlayer(player) {
 }
 
 function reward(player) {
-    player.announce(MaplePacketCreator.showEffect("quest/party/clear2"));
-    let achieve = player.getAchievement(getName());
-    achieve.setCompleted(true);
-    return true;
+    return tryGiveItem(player, [new RewardItem(ServerConstants.CURRENCY, 3)]);
 }
 
 function readableRewards(rr) {
+    return rr.add(`3x #z${ServerConstants.CURRENCY}#`);
 }

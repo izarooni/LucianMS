@@ -665,7 +665,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Di
                 try (ResultSet rs = ps.executeQuery()) {
                     while (rs.next()) {
                         Achievement achievement = ret.getAchievement(rs.getString("achievement_name"));
-                        achievement.setCompleted(rs.getInt("completed") == 1);
+                        achievement.setStatus(rs.getByte("completed"));
                         achievement.setMonstersKilled(rs.getInt("killed_monster"));
                         achievement.setCasino1Completed(rs.getInt("casino_one") == 1);
                         achievement.setCasino1Completed(rs.getInt("casino_two") == 1);
@@ -2069,7 +2069,6 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Di
             if (MapleInventoryManipulator.checkSpace(getClient(), ServerConstants.CURRENCY, 1, "")) {
                 gainMeso(-2000000000, true);
                 MapleInventoryManipulator.addById(getClient(), ServerConstants.CURRENCY, (short) 1);
-
             }
         }
     }
@@ -4107,7 +4106,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Di
                 for (Entry<String, Achievement> entry : achievements.entrySet()) {
                     String name = entry.getKey();
                     Achievement achievement = entry.getValue();
-                    ps.setInt(1, achievement.isCompleted() ? 1 : 0);
+                    ps.setInt(1, achievement.getStatus().ordinal());
                     ps.setInt(2, getId());
                     ps.setString(3, name);
                     ps.setInt(4, achievement.getMonstersKilled());

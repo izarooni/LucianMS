@@ -1,6 +1,7 @@
 package com.lucianms.io.scripting;
 
 import com.lucianms.client.MapleCharacter;
+import com.lucianms.client.meta.Achievement;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import tools.MaplePacketCreator;
@@ -13,6 +14,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.Optional;
 
 /**
  * Could be a a bad implementation of this feature
@@ -63,7 +65,7 @@ public class Achievements {
                     invocables.add(new Pair<>(name, compile));
                     rewards.put(name, rr);
                 } catch (Exception e) {
-                    LOGGER.error("Unable to execute achievement '{}': {}", file.getName(), e.getMessage());
+                    LOGGER.error("Unable to compile achievement '{}': {}", file.getName(), e.getMessage());
                 }
             }
             LOGGER.info("{} achievement scripts loaded in {}s", invocables.size(), ((System.currentTimeMillis() - start) / 1000d));
@@ -87,25 +89,35 @@ public class Achievements {
      */
     public static void testFor(MapleCharacter player, int monsterId) {
         if (invocables != null) {
+            boolean failed = false;
             for (Pair<String, CompiledScript> pair : invocables) {
-                if (!player.getAchievement(pair.getLeft()).isCompleted()) {
+                String name = pair.getLeft();
+                Achievement achievement = player.getAchievement(name);
+                if (achievement.getStatus() == Achievement.Status.Incomplete) {
                     try {
                         Invocable iv = (Invocable) pair.getRight().getEngine();
                         if (testForKill(iv, player, monsterId) && testForPlayer(iv, player)) {
+                            achievement.setStatus(Achievement.Status.Complete);
                             player.announce(MaplePacketCreator.showEffect("quest/party/clear4"));
                             player.announce(MaplePacketCreator.mapSound("customJQ/quest"));
                             try {
                                 if (reward(iv, player)) {
-                                    player.sendMessage("You completed the '{}' achievement!", pair.getLeft());
+                                    player.sendMessage("You completed the '{}' achievement!", name);
+                                } else {
+                                    failed = true;
                                 }
                             } catch (NoSuchMethodException e) {
-                                LOGGER.warn("Achievement script {} contains no reward function", pair.getLeft());
+                                LOGGER.warn("Achievement script {} contains no reward function", name);
                             }
                         }
                     } catch (ScriptException e) {
-                        LOGGER.error("Achievement script error {}", pair.getLeft(), e);
+                        LOGGER.error("Achievement script error {}", name, e);
                     }
                 }
+            }
+            if (failed) {
+                player.sendMessage("You are unable to receive achievement rewards");
+                player.sendMessage("Use the @achievements command to claim your rewards");
             }
         }
     }
@@ -113,11 +125,18 @@ public class Achievements {
     /**
      * @param invocable the achievement script invocable
      * @param player    player to pass as a parameter
-     *
      * @return true if the reward was given to the player, false otherwise
      */
     private static boolean reward(Invocable invocable, MapleCharacter player) throws ScriptException, NoSuchMethodException {
         return (boolean) invocable.invokeFunction("reward", player);
+    }
+
+    public static boolean reward(String achievement, MapleCharacter player) throws ScriptException, NoSuchMethodException {
+        Optional<Pair<String, CompiledScript>> first = invocables.stream().filter(p -> p.getLeft().equals(achievement)).findFirst();
+        if (first.isPresent()) {
+            return reward((Invocable) first.get().getRight().getEngine(), player);
+        }
+        throw new NullPointerException(achievement);
     }
 
     /**
@@ -126,7 +145,6 @@ public class Achievements {
      * @param invocable the achievement script invocable
      * @param player    player to pass as a parameter
      * @param monsterId a monster id to pass a parameter
-     *
      * @return true if the test for kill requirement passes, false otherwise
      */
     private static boolean testForKill(Invocable invocable, MapleCharacter player, int monsterId) throws ScriptException {
@@ -143,7 +161,6 @@ public class Achievements {
      *
      * @param invocable the achievement script invocable
      * @param player    player to pass as a parameter to the script function
-     *
      * @return true if the test for kill requirement passes, false otherwise
      */
     private static boolean testForPlayer(Invocable invocable, MapleCharacter player) throws ScriptException {

@@ -165,6 +165,7 @@ function action(mode, type, selection) {
             content += "\r\n#L10#SPEED: " + item.getSpeed() + "#l";
             content += "\r\n#L11#JUMP: " + item.getJump() + "#l";
             content += "\r\n#L12#Ring ID: " + item.getRingId() + "#l";
+            content += "\r\n#L18#Eliminations: " + item.getEliminations() + "#l";
         } else {
             content += "\r\n#L13#QUANTITY: " + item.getQuantity() + "#l";
         }
