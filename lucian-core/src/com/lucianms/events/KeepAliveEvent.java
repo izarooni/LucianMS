@@ -22,7 +22,7 @@ public class KeepAliveEvent extends PacketEvent {
     public Object onPacket() {
         MapleClient client = getClient();
         MapleCharacter player = client.getPlayer();
-
+        player.saveToDB();
         float latency = System.currentTimeMillis() - client.getKeepAliveRequest();
 
         if (client.getNetworkLatency() < 0) {

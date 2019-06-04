@@ -17,6 +17,7 @@ import io.netty.channel.ChannelInboundHandlerAdapter;
 import io.netty.channel.EventLoopGroup;
 import io.netty.channel.group.ChannelGroup;
 import io.netty.channel.group.DefaultChannelGroup;
+import io.netty.handler.timeout.IdleStateEvent;
 import io.netty.util.Attribute;
 import io.netty.util.concurrent.GlobalEventExecutor;
 import org.slf4j.Logger;
@@ -92,19 +93,6 @@ public class MapleServerInboundHandler extends ChannelInboundHandlerAdapter {
     }
 
     @Override
-    public void channelInactive(ChannelHandlerContext ctx) throws Exception {
-        MapleClient client = ctx.channel().attr(MapleClient.CLIENT_KEY).get();
-        if (client == null) {
-            return;
-        }
-        MapleCharacter player = client.getPlayer();
-        if (player != null) {
-            player.saveToDB();
-        }
-        client.announce(MaplePacketCreator.getKeepAliveRequest());
-    }
-
-    @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
         MapleClient client = ctx.channel().attr(MapleClient.CLIENT_KEY).get();
         if (client == null) {
@@ -148,6 +136,18 @@ public class MapleServerInboundHandler extends ChannelInboundHandlerAdapter {
             }
         } catch (Exception e) {
             e.printStackTrace();
+        }
+    }
+
+    @Override
+    public void userEventTriggered(ChannelHandlerContext ctx, Object evt) throws Exception {
+        if (evt instanceof IdleStateEvent) {
+            MapleClient client = ctx.channel().attr(MapleClient.CLIENT_KEY).get();
+            if (client != null) {
+                client.setNetworkLatency(-1);
+                client.setKeepAliveRequest(System.currentTimeMillis());
+                ctx.writeAndFlush(MaplePacketCreator.getKeepAliveRequest());
+            }
         }
     }
 

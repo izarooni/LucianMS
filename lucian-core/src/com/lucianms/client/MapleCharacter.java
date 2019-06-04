@@ -4953,12 +4953,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Di
     }
 
     public Achievement getAchievement(String achievementName) {
-        Achievement ret = achievements.get(achievementName);
-        if (ret == null) {
-            ret = new Achievement();
-            achievements.put(achievementName, ret);
-        }
-        return ret;
+        return achievements.computeIfAbsent(achievementName, s -> new Achievement());
     }
 
     public PartyQuest getPartyQuest() {
