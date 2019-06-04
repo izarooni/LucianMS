@@ -767,6 +767,7 @@ public class MapleClient implements Disposable {
         player.getMap().removePlayer(player);
         getWorldServer().getPlayerStorage().remove(player.getId());
         updateLoginState(LoginState.Transfer);
+        player.saveToDB();
         announce(MaplePacketCreator.getChannelChange(cserv.getNetworkAddress(), cserv.getPort()));
         return true;
     }
