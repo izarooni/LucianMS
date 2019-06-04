@@ -102,6 +102,7 @@ public class Achievements {
                             player.announce(MaplePacketCreator.mapSound("customJQ/quest"));
                             try {
                                 if (reward(iv, player)) {
+                                    achievement.setStatus(Achievement.Status.RewardGiven);
                                     player.sendMessage("You completed the '{}' achievement!", name);
                                 } else {
                                     failed = true;

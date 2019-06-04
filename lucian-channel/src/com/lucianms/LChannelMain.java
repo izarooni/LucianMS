@@ -58,6 +58,12 @@ public class LChannelMain {
             @Override
             public void run() {
                 System.out.println("Shutting 'er down!");
+                try {
+                    communicationsHandler.close();
+                    System.out.println("Internal server communicator closed");
+                } catch (Exception e) {
+                    LOGGER.error("Failed to close Netty socket", e);
+                }
 
                 System.out.printf("Disposing %d worlds\r\n", Server.getWorlds().size());
                 for (MapleWorld world : Server.getWorlds()) {
@@ -73,14 +79,6 @@ public class LChannelMain {
                         }
                     }
                 }
-
-                try {
-                    communicationsHandler.close();
-                    System.out.println("Internal server communicator closed");
-                } catch (Exception e) {
-                    LOGGER.error("Failed to close Netty socket", e);
-                }
-
                 TaskExecutor.getExecutor().shutdownNow();
                 System.out.println("Task executor shutdown");
             }
