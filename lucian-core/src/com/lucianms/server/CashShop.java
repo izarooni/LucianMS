@@ -99,7 +99,7 @@ public class CashShop {
             if (ii.getInventoryType(itemId) == MapleInventoryType.EQUIP) {
                 item = ii.getEquipById(itemId);
                 if (item == null) {
-                    return null;
+                    return new Equip(itemId);
                 }
             } else {
                 item = new Item(itemId, (byte) 0, count, petid);

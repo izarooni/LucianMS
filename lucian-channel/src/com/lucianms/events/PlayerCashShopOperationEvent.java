@@ -177,7 +177,7 @@ public class PlayerCashShopOperationEvent extends PacketEvent {
                     List<Item> cashPackage = CashItemFactory.getPackage(cItem.getItemId());
                     for (Item item : cashPackage) {
                         if (item == null) {
-                            player.sendMessage(1, "We failed to create an item in this package.\r\nCode: 0x{}", Integer.toHexString(SN));
+                            player.sendMessage(1, "We failed to create an item in this package.\r\nCode: {}", SN);
                             client.announce(MaplePacketCreator.showCash(player));
                             return null;
                         }

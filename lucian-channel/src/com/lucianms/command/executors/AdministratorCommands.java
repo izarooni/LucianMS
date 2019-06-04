@@ -17,6 +17,8 @@ import com.lucianms.io.scripting.event.EventManager;
 import com.lucianms.io.scripting.map.FieldScriptExecutor;
 import com.lucianms.io.scripting.portal.PortalScriptManager;
 import com.lucianms.io.scripting.reactor.ReactorScriptManager;
+import com.lucianms.nio.SendOpcode;
+import com.lucianms.nio.send.MaplePacketWriter;
 import com.lucianms.scheduler.TaskExecutor;
 import com.lucianms.server.MapleInventoryManipulator;
 import com.lucianms.server.MapleItemInformationProvider;
@@ -66,6 +68,11 @@ public class AdministratorCommands extends CommandExecutor {
     }
 
     private void CommandTest(MapleCharacter player, Command cmd, CommandArgs args) {
+        MaplePacketWriter w = new MaplePacketWriter();
+        w.writeShort(SendOpcode.SET_OBJECT_STATE.getValue());
+        w.writeMapleString(args.concatFrom(1));
+        w.writeInt(args.parseNumber(0, int.class));
+        player.announce(w.getPacket());
     }
 
     private void CommandWipePlayer(MapleCharacter player, Command cmd, CommandArgs args) {

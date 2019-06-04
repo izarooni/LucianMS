@@ -30,7 +30,7 @@ import java.util.concurrent.locks.ReentrantLock;
  */
 public class PlayerBattle extends GenericEvent {
 
-    private static byte[] setKnockBackForce(boolean left, byte force) {
+    public static byte[] setKnockBackForce(boolean left, byte force) {
         MaplePacketWriter w = new MaplePacketWriter(4);
         w.writeShort(SendOpcode.SNOWBALL_MESSAGE.getValue());
         w.write(force);
@@ -190,11 +190,11 @@ public class PlayerBattle extends GenericEvent {
             for (Map.Entry<Integer, Point> entry : neighbors.entrySet()) { // iterate nearby targets and display damage dealt
                 MapleCharacter mPlayer = attacker.getMap().getCharacterById(entry.getKey());
                 if (mPlayer != null) {
-                    byte missingHPPercentage = (byte) ((100f / mPlayer.getMaxHp()) * mPlayer.getHp());
+                    byte force = (byte) ((20 / mPlayer.getMaxHp()) * mPlayer.getHp());
                     if (attacker.isDebug()) {
-                        attacker.sendMessage("applying {} force to {}", (150 + (25 * missingHPPercentage)), mPlayer.getName());
+                        attacker.sendMessage("applying {} force to {}", (150 + (15 * force)), mPlayer.getName());
                     }
-                    mPlayer.announce(setKnockBackForce(!facingLeft, (byte) (100 - missingHPPercentage)));
+                    mPlayer.announce(setKnockBackForce(!facingLeft, force));
                     mPlayer.announce(MaplePacketCreator.getSnowBallTouch());
                     attacker.announce(MaplePacketCreator.playSound("Cokeplay/Hit"));
                     mPlayer.addHP(-damage);
