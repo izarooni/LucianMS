@@ -49,8 +49,8 @@ public class InternalChannelCommunicationsHandler extends ChannelInboundHandlerA
             @Override
             public void operationComplete(ChannelFuture channelFuture) throws Exception {
                 if (!channelFuture.isSuccess()) {
-                    LOGGER.info("Failed to connect to login server... Retrying in 5 seconds");
-                    channelFuture.channel().eventLoop().schedule(() -> attemptConnection(), 5000, TimeUnit.MILLISECONDS);
+                    LOGGER.info("Failed to connect to login server... Retrying in 10 seconds");
+                    channelFuture.channel().eventLoop().schedule(() -> attemptConnection(), 10, TimeUnit.SECONDS);
                 }
             }
         });
