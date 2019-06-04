@@ -1991,20 +1991,22 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Di
             }
             return;
         }
-        if (getOccupation() != null) {
-            if (getOccupation().getType() == Occupation.Type.Trainer) {
-                gain += gain * (getOccupation().getLevel() / 10);
+        int equip = 0;
+
+        if (gain > 0) {
+            if (getOccupation() != null) {
+                if (getOccupation().getType() == Occupation.Type.Trainer) {
+                    gain += gain * (getOccupation().getLevel() / 10);
+                }
+            }
+            if (hasDisease(MapleDisease.CURSE)) {
+                gain *= 0.5;
+                party *= 0.5;
+            }
+            if (spiritPendantModifier > 0) {
+                equip = (int) Math.max(Integer.MAX_VALUE, gain * (spiritPendantModifier / 10));
             }
         }
-        if (hasDisease(MapleDisease.CURSE)) {
-            gain *= 0.5;
-            party *= 0.5;
-        }
-        int equip = 0;
-        if (spiritPendantModifier > 0 ) {
-            equip = (int) Math.max(Integer.MAX_VALUE, gain * (spiritPendantModifier / 10));
-        }
-
         if (autoRebirth && level >= getMaxLevel()) {
             doRebirth();
         }
@@ -2030,7 +2032,9 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Di
         newExp = Math.max(0, newExp);
         exp.set((int) newExp);
         updateSingleStat(MapleStat.EXP, (int) newExp);
-        gainLevels((localLevel - level));
+        if (localLevel > level) {
+            gainLevels((localLevel - level));
+        }
     }
 
     public void gainFame(int delta) {
@@ -2442,8 +2446,8 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Di
         return hp;
     }
 
-    public void setHp(int newhp) {
-        setHp(newhp, false);
+    public void setHp(int hp) {
+        setHp(hp, false);
     }
 
     public int getHpMpApUsed() {
@@ -2694,15 +2698,8 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Di
         return mp;
     }
 
-    public void setMp(int newmp) {
-        int tmp = newmp;
-        if (tmp < 0) {
-            tmp = 0;
-        }
-        if (tmp > localmaxmp) {
-            tmp = localmaxmp;
-        }
-        this.mp = tmp;
+    public void setMp(int mp) {
+        this.mp = Math.max(0, Math.min(mp, localmaxmp));
     }
 
     public MapleMessenger getMessenger() {
@@ -4412,20 +4409,12 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Di
         merchantmeso += add;
     }
 
-    public void setHp(int newhp, boolean silent) {
-        int oldHp = hp;
-        int thp = newhp;
-        if (thp < 0) {
-            thp = 0;
-        }
-        if (thp > localmaxhp) {
-            thp = localmaxhp;
-        }
-        this.hp = thp;
+    public void setHp(int hp, boolean silent) {
+        this.hp = Math.max(0, Math.min(localmaxhp, hp));
         if (!silent) {
             updatePartyMemberHP();
         }
-        if (oldHp > hp && !isAlive()) {
+        if (!isAlive()) {
             playerDead();
         }
     }
@@ -4433,8 +4422,8 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Di
     public void setHpMp(int x) {
         setHp(x);
         setMp(x);
-        updateSingleStat(MapleStat.HP, hp);
-        updateSingleStat(MapleStat.MP, mp);
+        updateSingleStat(MapleStat.HP, this.hp);
+        updateSingleStat(MapleStat.MP, this.mp);
     }
 
     public void setMap(int PmapId) {
