@@ -69,7 +69,7 @@ public class LoginConsoleCommands extends ConsoleCommands {
                 LOGGER.info("Failed to find any user account via username '{}", username);
             }
         } else if (command.equals("stop")) {
-            setReading(false);
+            stopReading();
             System.exit(0);
         } else {
             LOGGER.info("Unknown command '{}'", command.getName());

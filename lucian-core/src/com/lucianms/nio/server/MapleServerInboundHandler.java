@@ -144,7 +144,7 @@ public class MapleServerInboundHandler extends ChannelInboundHandlerAdapter {
         if (evt instanceof IdleStateEvent) {
             MapleClient client = ctx.channel().attr(MapleClient.CLIENT_KEY).get();
             if (client != null) {
-                client.setNetworkLatency(-1);
+                client.setNetworkLatency(0);
                 client.setKeepAliveRequest(System.currentTimeMillis());
                 ctx.writeAndFlush(MaplePacketCreator.getKeepAliveRequest());
             }

@@ -39,7 +39,7 @@ public class ChannelConsoleCommands extends ConsoleCommands {
                 w.write(Headers.Shutdown.value);
                 DiscordConnection.sendPacket(w.getPacket());
             }
-            setReading(false);
+            stopReading();
             System.exit(0);
         } else if (command.equals("reloadmap")) {
             if (args.length() == 1) {

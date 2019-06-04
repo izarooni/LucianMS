@@ -2,6 +2,7 @@ package com.lucianms;
 
 import com.lucianms.client.SkillFactory;
 import com.lucianms.command.executors.ChannelConsoleCommands;
+import com.lucianms.command.executors.ConsoleCommands;
 import com.lucianms.cquest.CQuestBuilder;
 import com.lucianms.discord.DiscordConnection;
 import com.lucianms.events.*;
@@ -167,7 +168,9 @@ public class LChannelMain {
             e.printStackTrace();
         }
 
-        new ChannelConsoleCommands().beginReading();
+        ChannelConsoleCommands cmd = new ChannelConsoleCommands();
+        cmd.beginReading();
+        ConsoleCommands.setInstance(cmd);
     }
 
     private static void initReceiveHeaders() {

@@ -1,6 +1,7 @@
 package com.lucianms;
 
 import com.lucianms.client.SkillFactory;
+import com.lucianms.command.executors.ConsoleCommands;
 import com.lucianms.commands.LoginConsoleCommands;
 import com.lucianms.events.*;
 import com.lucianms.io.Config;
@@ -58,7 +59,9 @@ public class LLoginMain {
             System.exit(0);
         }
 
-        new LoginConsoleCommands().beginReading();
+        LoginConsoleCommands cmd = new LoginConsoleCommands();
+        cmd.beginReading();
+        ConsoleCommands.setInstance(cmd);
     }
 
     public static MapleServerInboundHandler getServerHandler() {

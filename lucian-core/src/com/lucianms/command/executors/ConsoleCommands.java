@@ -10,8 +10,18 @@ import java.util.Scanner;
  */
 public abstract class ConsoleCommands {
 
+    private static ConsoleCommands instance;
+
     private volatile boolean reading;
     private Scanner scanner;
+
+    public final static ConsoleCommands getInstance() {
+        return instance;
+    }
+
+    public final static void setInstance(ConsoleCommands instance) {
+        ConsoleCommands.instance = instance;
+    }
 
     public final boolean isReading() {
         return reading;
@@ -58,7 +68,7 @@ public abstract class ConsoleCommands {
         }, "ConsoleReader").start();
     }
 
-    public void stopReading() {
+    public final void stopReading() {
         if (scanner != null) {
             scanner.close();
         }

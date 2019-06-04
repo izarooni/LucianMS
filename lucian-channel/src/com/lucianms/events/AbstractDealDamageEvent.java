@@ -466,8 +466,9 @@ public abstract class AbstractDealDamageEvent extends PacketEvent {
             calcDmgMax = player.calculateMaxBaseDamage(player.getTotalWatk());
         }
 
+        Skill skill = SkillFactory.getSkill(ret.skill);
+
         if (ret.skill != 0) {
-            Skill skill = SkillFactory.getSkill(ret.skill);
             player.applyHiddenSkillFixes(skill);
             MapleStatEffect effect = skill.getEffect(ret.skillLevel);
 
@@ -572,12 +573,6 @@ public abstract class AbstractDealDamageEvent extends PacketEvent {
             shadowPartner = true;
         }
 
-        if (ret.skill != 0) {
-            int fixed = ret.getAttackEffect(player, SkillFactory.getSkill(ret.skill)).getFixDamage();
-            if (fixed > 0) {
-                calcDmgMax = fixed;
-            }
-        }
         for (int i = 0; i < ret.numAttacked; i++) {
             int oid = reader.readInt();
             reader.skip(14);
@@ -614,7 +609,6 @@ public abstract class AbstractDealDamageEvent extends PacketEvent {
             }
 
             if (ret.skill != 0) {
-                Skill skill = SkillFactory.getSkill(ret.skill);
                 if (skill.getElement() != Element.NEUTRAL && player.getBuffedValue(MapleBuffStat.ELEMENTAL_RESET) == null) {
                     // The skill has an element effect, so we need to factor that in.
                     if (monster != null) {
@@ -633,6 +627,13 @@ public abstract class AbstractDealDamageEvent extends PacketEvent {
                 if (ret.skill == Hermit.SHADOW_WEB) {
                     if (monster != null) {
                         calcDmgMax = monster.getHp() / (50 - player.getSkillLevel(skill));
+                    }
+                }
+                MapleStatEffect effect = ret.getAttackEffect(player, skill);
+                if (effect != null) {
+                    int fixed = effect.getFixDamage();
+                    if (fixed > 0) {
+                        calcDmgMax = fixed;
                     }
                 }
             }

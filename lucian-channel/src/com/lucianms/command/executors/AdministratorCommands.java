@@ -8,6 +8,8 @@ import com.lucianms.client.inventory.Equip;
 import com.lucianms.command.Command;
 import com.lucianms.command.CommandArgs;
 import com.lucianms.cquest.CQuestBuilder;
+import com.lucianms.discord.DiscordConnection;
+import com.lucianms.discord.Headers;
 import com.lucianms.events.PlayerRingActionEvent;
 import com.lucianms.features.auto.GAutoEvent;
 import com.lucianms.features.auto.GAutoEventManager;
@@ -34,6 +36,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import tools.HexTool;
 import tools.MaplePacketCreator;
+import tools.StringUtil;
 
 import javax.script.ScriptException;
 import java.awt.*;
@@ -65,6 +68,37 @@ public class AdministratorCommands extends CommandExecutor {
         addCommand("pb", this::CommandBakePacket);
         addCommand("wipe", this::CommandWipePlayer);
         addCommand("test", this::CommandTest);
+        addCommand("stop", this::CommandExit);
+    }
+
+    private void DoShutDownServer() {
+        if (DiscordConnection.getSession() != null) {
+            MaplePacketWriter w = new MaplePacketWriter();
+            w.write(Headers.Shutdown.value);
+            DiscordConnection.sendPacket(w.getPacket());
+        }
+        ConsoleCommands.getInstance().stopReading();
+        System.exit(0);
+    }
+
+    private void CommandExit(MapleCharacter player, Command cmd, CommandArgs args) {
+        if (args.length() == 0) {
+            player.sendMessage("Please specify the delay (in seconds) that the server should wait before shutting down");
+        } else {
+            Number nTime = args.parseNumber(0, int.class);
+            if (nTime == null) {
+                player.sendMessage("{} is not a number", args.get(0));
+                return;
+            } else if (nTime.intValue() > 180) {
+                player.sendMessage("Please do not specify such a long delay");
+                return;
+            }
+            long time = (nTime.intValue() + 1) * 1000;
+            for (MapleWorld world : Server.getWorlds()) {
+                world.sendPacket(MaplePacketCreator.serverMessage(String.format("The server will shutdown in %s seconds. Please complete your tasks and log-out safely.", StringUtil.getTimeElapse(time))));
+            }
+            TaskExecutor.createTask(this::DoShutDownServer, time);
+        }
     }
 
     private void CommandTest(MapleCharacter player, Command cmd, CommandArgs args) {
