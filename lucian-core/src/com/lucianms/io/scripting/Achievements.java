@@ -92,7 +92,8 @@ public class Achievements {
                     try {
                         Invocable iv = (Invocable) pair.getRight().getEngine();
                         if (testForKill(iv, player, monsterId) && testForPlayer(iv, player)) {
-                            player.announce(MaplePacketCreator.showEffect("PSO2/stuff/2"));
+                            player.announce(MaplePacketCreator.showEffect("quest/party/clear4"));
+                            player.announce(MaplePacketCreator.mapSound("customJQ/quest"));
                             try {
                                 if (reward(iv, player)) {
                                     player.sendMessage("You completed the '{}' achievement!", pair.getLeft());

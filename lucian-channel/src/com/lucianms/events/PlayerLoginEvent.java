@@ -2,7 +2,6 @@ package com.lucianms.events;
 
 import com.lucianms.client.*;
 import com.lucianms.helpers.JailManager;
-import com.lucianms.io.scripting.Achievements;
 import com.lucianms.nio.receive.MaplePacketReader;
 import com.lucianms.scheduler.TaskExecutor;
 import com.lucianms.server.PlayerBuffValueHolder;
@@ -223,7 +222,6 @@ public class PlayerLoginEvent extends PacketEvent {
         player.showNote();
         player.checkBerserk();
         player.setRates();
-        Achievements.testFor(player, -1);
         return null;
     }
 }
