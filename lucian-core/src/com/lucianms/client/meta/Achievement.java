@@ -19,6 +19,10 @@ public class Achievement {
     private boolean casino2Completed;
     private int monstersKilled;
 
+    public Achievement() {
+        status = Status.Incomplete;
+    }
+
     public Status getStatus() {
         return status;
     }
