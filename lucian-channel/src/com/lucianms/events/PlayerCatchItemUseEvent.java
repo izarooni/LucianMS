@@ -3,9 +3,9 @@ package com.lucianms.events;
 import com.lucianms.client.MapleCharacter;
 import com.lucianms.client.SpamTracker;
 import com.lucianms.client.inventory.MapleInventoryType;
+import com.lucianms.constants.ItemConstants;
 import com.lucianms.nio.receive.MaplePacketReader;
 import com.lucianms.server.MapleInventoryManipulator;
-import com.lucianms.server.MapleItemInformationProvider;
 import com.lucianms.server.life.MapleMonster;
 import tools.MaplePacketCreator;
 
@@ -31,7 +31,7 @@ public class PlayerCatchItemUseEvent extends PacketEvent {
         SpamTracker.SpamData spamTracker = player.getSpamTracker(SpamTracker.SpamOperation.CatchItem);
 
         MapleMonster mob = player.getMap().getMonsterByOid(monsterID);
-        if (mob == null || player.getInventory(MapleItemInformationProvider.getInstance().getInventoryType(itemID)).countById(itemID) <= 0) {
+        if (mob == null || player.getInventory(ItemConstants.getInventoryType(itemID)).countById(itemID) <= 0) {
             return null;
         }
         switch (itemID) {

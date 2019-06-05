@@ -37,16 +37,13 @@ import com.lucianms.server.world.MapleParty;
 import com.lucianms.server.world.MaplePartyCharacter;
 import provider.MapleData;
 import provider.MapleDataTool;
-import tools.ArrayMap;
 import tools.MaplePacketCreator;
 import tools.Pair;
 
 import java.awt.*;
 import java.lang.ref.WeakReference;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @author Matze
@@ -156,7 +153,7 @@ public class MapleStatEffect {
         ret.itemCon = MapleDataTool.getInt("itemCon", source, 0);
         ret.itemConNo = MapleDataTool.getInt("itemConNo", source, 0);
         ret.moveTo = MapleDataTool.getInt("moveTo", source, -1);
-        Map<MonsterStatus, Integer> monsterStatus = new ArrayMap<>();
+        Map<MonsterStatus, Integer> monsterStatus = new HashMap<>();
         if (skill) {
             switch (sourceid) {
                 // BEGINNER
@@ -589,7 +586,7 @@ public class MapleStatEffect {
 
         if (primary) {
             if (itemConNo != 0) {
-                MapleInventoryManipulator.removeById(applyto.getClient(), MapleItemInformationProvider.getInstance().getInventoryType(itemCon), itemCon, itemConNo, false, true);
+                MapleInventoryManipulator.removeById(applyto.getClient(), ItemConstants.getInventoryType(itemCon), itemCon, itemConNo, false, true);
             }
         }
         List<Pair<MapleStat, Integer>> hpmpupdate = new ArrayList<>(2);

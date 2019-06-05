@@ -21,17 +21,13 @@
 */
 package com.lucianms.server;
 
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-
-import tools.MaplePacketCreator;
 import com.lucianms.client.MapleCharacter;
 import com.lucianms.client.inventory.Item;
 import com.lucianms.client.inventory.MapleInventoryType;
 import com.lucianms.constants.ItemConstants;
+import tools.MaplePacketCreator;
+
+import java.util.*;
 
 /**
  *
@@ -185,15 +181,10 @@ public class MapleTrade {
     }
     
     private boolean fitsInInventory() {
-        MapleItemInformationProvider mii = MapleItemInformationProvider.getInstance();
         Map<MapleInventoryType, Integer> neededSlots = new LinkedHashMap<>();
         for (Item item : exchangeItems) {
-            MapleInventoryType type = mii.getInventoryType(item.getItemId());
-            if (neededSlots.get(type) == null) {
-                neededSlots.put(type, 1);
-            } else {
-                neededSlots.put(type, neededSlots.get(type) + 1);
-            }
+            MapleInventoryType type = ItemConstants.getInventoryType(item.getItemId());
+            neededSlots.merge(type, 1, Integer::sum);
         }
         for (Map.Entry<MapleInventoryType, Integer> entry : neededSlots.entrySet()) {
             if (chr.getInventory(entry.getKey()).isFull(entry.getValue() - 1)) {

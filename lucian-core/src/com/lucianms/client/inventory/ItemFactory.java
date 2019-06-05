@@ -121,12 +121,13 @@ public enum ItemFactory {
         }
         try (PreparedStatement ps = con.prepareStatement("INSERT INTO `inventoryitems` VALUES (DEFAULT, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", Statement.RETURN_GENERATED_KEYS)) {
             if (!items.isEmpty()) {
+                ps.setInt(1, value);
+                ps.setString(2, account ? null : String.valueOf(id));
+                ps.setString(3, account ? String.valueOf(id) : null);
                 for (Pair<Item, MapleInventoryType> pair : items) {
                     Item item = pair.getLeft();
                     MapleInventoryType mit = pair.getRight();
-                    ps.setInt(1, value);
-                    ps.setString(2, account ? null : String.valueOf(id));
-                    ps.setString(3, account ? String.valueOf(id) : null);
+
                     ps.setInt(4, item.getItemId());
                     ps.setInt(5, mit.getType());
                     ps.setInt(6, item.getPosition());

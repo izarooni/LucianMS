@@ -27,6 +27,7 @@ import com.lucianms.client.inventory.ItemFactory;
 import com.lucianms.client.inventory.MapleInventoryType;
 import com.lucianms.client.inventory.MaplePet;
 import com.lucianms.constants.ExpTable;
+import com.lucianms.constants.ItemConstants;
 import com.lucianms.events.gm.MapleEvent;
 import com.lucianms.io.scripting.AbstractPlayerInteraction;
 import com.lucianms.server.MapleItemInformationProvider;
@@ -41,11 +42,8 @@ import com.lucianms.server.partyquest.Pyramid;
 import com.lucianms.server.partyquest.Pyramid.PyramidMode;
 import com.lucianms.server.quest.MapleQuest;
 import com.lucianms.server.world.MapleParty;
-import provider.MapleData;
-import provider.MapleDataProviderFactory;
 import tools.MaplePacketCreator;
 
-import java.io.File;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -262,7 +260,7 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
     }
 
     public int itemQuantity(int itemid) {
-        return getPlayer().getInventory(MapleItemInformationProvider.getInstance().getInventoryType(itemid)).countById(itemid);
+        return getPlayer().getInventory(ItemConstants.getInventoryType(itemid)).countById(itemid);
     }
 
     public void displayGuildRanks() {
@@ -313,19 +311,6 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
 
     public void resetStats() {
         getPlayer().resetStats();
-    }
-
-    public void maxMastery() {
-        for (MapleData skill_ : MapleDataProviderFactory.getWZ(new File(System.getProperty("wzpath") + "/" + "String.wz")).getData("Skill.img").getChildren()) {
-            try {
-                Skill skill = SkillFactory.getSkill(Integer.parseInt(skill_.getName()));
-                getPlayer().changeSkillLevel(skill, (byte) 0, skill.getMaxLevel(), -1);
-            } catch (NumberFormatException nfe) {
-                break;
-            } catch (NullPointerException e) {
-                e.printStackTrace();
-            }
-        }
     }
 
     public void doGachapon() {

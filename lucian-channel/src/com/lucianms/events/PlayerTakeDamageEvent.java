@@ -31,12 +31,12 @@ import com.lucianms.client.inventory.Item;
 import com.lucianms.client.inventory.MapleInventoryType;
 import com.lucianms.client.status.MonsterStatus;
 import com.lucianms.client.status.MonsterStatusEffect;
+import com.lucianms.constants.ItemConstants;
 import com.lucianms.constants.skills.Aran;
 import com.lucianms.constants.skills.Corsair;
 import com.lucianms.lang.GProperties;
 import com.lucianms.nio.receive.MaplePacketReader;
 import com.lucianms.server.MapleInventoryManipulator;
-import com.lucianms.server.MapleItemInformationProvider;
 import com.lucianms.server.MapleStatEffect;
 import com.lucianms.server.life.*;
 import com.lucianms.server.life.MapleLifeFactory.LoseItem;
@@ -122,7 +122,7 @@ public final class PlayerTakeDamageEvent extends PacketEvent {
                     byte d = 1;
                     Point pos = new Point(0, player.getPosition().y);
                     for (LoseItem loseItem : loseItems) {
-                        type = MapleItemInformationProvider.getInstance().getInventoryType(loseItem.getId());
+                        type = ItemConstants.getInventoryType(loseItem.getId());
                         for (byte b = 0; b < loseItem.getX(); b++) {//LOL?
                             if (Randomizer.nextInt(101) >= loseItem.getChance()) {
                                 if (player.haveItem(loseItem.getId())) {

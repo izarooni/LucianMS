@@ -2,7 +2,7 @@ package com.lucianms.events;
 
 import com.lucianms.client.MapleCharacter;
 import com.lucianms.client.inventory.Item;
-import com.lucianms.events.PacketEvent;
+import com.lucianms.constants.ItemConstants;
 import com.lucianms.io.scripting.item.ItemScriptManager;
 import com.lucianms.nio.receive.MaplePacketReader;
 import com.lucianms.server.MapleItemInformationProvider;
@@ -35,7 +35,7 @@ public class PlayerItemScriptedUseEvent extends PacketEvent {
             return null;
         }
         ItemScriptManager ism = ItemScriptManager.getInstance();
-        Item item = player.getInventory(ii.getInventoryType(itemID)).getItem(slot);
+        Item item = player.getInventory(ItemConstants.getInventoryType(itemID)).getItem(slot);
         if (item == null || item.getItemId() != itemID || item.getQuantity() < 1 || !ism.scriptExists(info.getScript())) {
             return null;
         }

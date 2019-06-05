@@ -157,7 +157,7 @@ public class AbstractPlayerInteraction {
     }
 
     public boolean canHold(int itemid) {
-        return getPlayer().getInventory(MapleItemInformationProvider.getInstance().getInventoryType(itemid)).getNextFreeSlot() > -1;
+        return getPlayer().getInventory(ItemConstants.getInventoryType(itemid)).getNextFreeSlot() > -1;
     }
 
     public void openNpc(int npcid) {
@@ -224,7 +224,7 @@ public class AbstractPlayerInteraction {
         }
         if (quantity >= 0) {
             MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
-            if (ii.getInventoryType(id).equals(MapleInventoryType.EQUIP)) {
+            if (ItemConstants.getInventoryType(id).equals(MapleInventoryType.EQUIP)) {
                 item = ii.getEquipById(id);
             } else {
                 item = new Item(id, (short) 0, quantity);
@@ -234,21 +234,21 @@ public class AbstractPlayerInteraction {
             }
 
             if (!MapleInventoryManipulator.checkSpace(c, id, quantity, "")) {
-                c.getPlayer().dropMessage(1, "Your inventory is full. Please remove an item from your " + ii.getInventoryType(id).name() + " inventory.");
+                c.getPlayer().dropMessage(1, "Your inventory is full. Please remove an item from your " + ItemConstants.getInventoryType(id).name() + " inventory.");
                 return null;
             }
-            if (ii.getInventoryType(id).equals(MapleInventoryType.EQUIP) && !ItemConstants.isRechargable(item.getItemId())) {
-                if (randomStats) {
-                    item = ii.randomizeStats((Equip) item);
+            if (ItemConstants.getInventoryType(id).equals(MapleInventoryType.EQUIP) && !ItemConstants.isRechargable(item.getItemId())) {
+                if (randomStats && item instanceof Equip) {
+                    ii.randomizeStats((Equip) item);
                     MapleInventoryManipulator.addFromDrop(c, ii.randomizeStats((Equip) item), false);
                 } else {
-                    MapleInventoryManipulator.addFromDrop(c, (Equip) item, false);
+                    MapleInventoryManipulator.addFromDrop(c, item, false);
                 }
             } else {
                 MapleInventoryManipulator.addFromDrop(c, item, false);
             }
         } else {
-            MapleInventoryManipulator.removeById(c, MapleItemInformationProvider.getInstance().getInventoryType(id), id, -quantity, true, false);
+            MapleInventoryManipulator.removeById(c, ItemConstants.getInventoryType(id), id, -quantity, true, false);
         }
         if (showMessage) {
             c.announce(MaplePacketCreator.getShowItemGain(id, quantity, true));
@@ -343,7 +343,7 @@ public class AbstractPlayerInteraction {
             if (quantity >= 0) {
                 MapleInventoryManipulator.addById(cl, id, quantity);
             } else {
-                MapleInventoryManipulator.removeById(cl, MapleItemInformationProvider.getInstance().getInventoryType(id), id, -quantity, true, false);
+                MapleInventoryManipulator.removeById(cl, ItemConstants.getInventoryType(id), id, -quantity, true, false);
             }
             cl.announce(MaplePacketCreator.getShowItemGain(id, quantity, true));
         }
@@ -415,7 +415,7 @@ public class AbstractPlayerInteraction {
             MapleInventory iv = chr.getInventory(ItemConstants.getInventoryType(itemId));
             int count = iv.countById(itemId);
             if (count > 0) {
-                MapleInventoryManipulator.removeById(c, MapleItemInformationProvider.getInstance().getInventoryType(itemId), itemId, count, true, false);
+                MapleInventoryManipulator.removeById(c, ItemConstants.getInventoryType(itemId), itemId, count, true, false);
                 chr.announce(MaplePacketCreator.getShowItemGain(itemId, (short) -count, true));
             }
         }
@@ -427,10 +427,10 @@ public class AbstractPlayerInteraction {
     }
 
     public void removeAll(int id, MapleClient cl) {
-        MapleInventoryType invType = MapleItemInformationProvider.getInstance().getInventoryType(id);
+        MapleInventoryType invType = ItemConstants.getInventoryType(id);
         int possessed = cl.getPlayer().getInventory(invType).countById(id);
         if (possessed > 0) {
-            MapleInventoryManipulator.removeById(cl, MapleItemInformationProvider.getInstance().getInventoryType(id), id, possessed, true, false);
+            MapleInventoryManipulator.removeById(cl, ItemConstants.getInventoryType(id), id, possessed, true, false);
             cl.announce(MaplePacketCreator.getShowItemGain(id, (short) -possessed, true));
         }
 

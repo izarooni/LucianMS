@@ -51,38 +51,16 @@ import java.util.*;
 
 public abstract class AbstractDealDamageEvent extends PacketEvent {
 
-    public static class AttackInfo {
-
-        public int numAttacked, numDamage, numAttackedAndDamage, skill, skillLevel, stance, direction, rangeDirection, charge, display;
-        public Map<Integer, List<Integer>> allDamage;
-        public boolean isHH = false, isTempest = false, ranged, magic;
-        public int speed = 4;
-        public Point position = new Point();
-
-        public MapleStatEffect getAttackEffect(MapleCharacter chr, Skill theSkill) {
-            Skill mySkill = theSkill;
-            if (mySkill == null) {
-                mySkill = SkillFactory.getSkill(GameConstants.getHiddenSkill(skill));
-            }
-            int skillLevel = chr.getSkillLevel(mySkill);
-            if (mySkill.getId() % 10000000 == 1020) {
-                if (chr.getPartyQuest() instanceof Pyramid) {
-                    if (((Pyramid) chr.getPartyQuest()).useSkill()) {
-                        skillLevel = 1;
-                    }
-                }
-            }
-            if (skillLevel == 0) {
-                return null;
-            }
-            if (display > 80) {
-                if (!theSkill.getAction()) {
-                    return null;
-                }
-            }
-            return mySkill.getEffect(skillLevel);
+    @Override
+    public void exceptionCaught(MaplePacketReader reader, Throwable t) {
+        AttackInfo attackInfo = getAttackInfo();
+        if (attackInfo != null) {
+            getLogger().error("{}", attackInfo.toString());
         }
+        super.exceptionCaught(reader, t);
     }
+
+    public abstract AttackInfo getAttackInfo();
 
     synchronized void applyAttack(MapleCharacter player, AttackInfo attack, int attackCount) {
         Skill theSkill = null;
@@ -691,6 +669,44 @@ public abstract class AbstractDealDamageEvent extends PacketEvent {
                     player.addCooldown(attackInfo.skill, System.currentTimeMillis(), effect_.getCooldown() * 1000, TaskExecutor.createTask(new MapleCharacter.CancelCooldownAction(player, attackInfo.skill), effect_.getCooldown() * 1000));
                 }
             }
+        }
+    }
+
+    public static class AttackInfo {
+
+        public int numAttacked, numDamage, numAttackedAndDamage, skill, skillLevel, stance, direction, rangeDirection, charge, display;
+        public Map<Integer, List<Integer>> allDamage;
+        public boolean isHH = false, isTempest = false, ranged, magic;
+        public int speed = 4;
+        public Point position = new Point();
+
+        @Override
+        public String toString() {
+            return String.format("AttackInfo{skill=%d, skillLevel=%d}", skill, skillLevel);
+        }
+
+        public MapleStatEffect getAttackEffect(MapleCharacter chr, Skill theSkill) {
+            Skill mySkill = theSkill;
+            if (mySkill == null) {
+                mySkill = SkillFactory.getSkill(GameConstants.getHiddenSkill(skill));
+            }
+            int skillLevel = chr.getSkillLevel(mySkill);
+            if (mySkill.getId() % 10000000 == 1020) {
+                if (chr.getPartyQuest() instanceof Pyramid) {
+                    if (((Pyramid) chr.getPartyQuest()).useSkill()) {
+                        skillLevel = 1;
+                    }
+                }
+            }
+            if (skillLevel == 0) {
+                return null;
+            }
+            if (display > 80) {
+                if (!theSkill.getAction()) {
+                    return null;
+                }
+            }
+            return mySkill.getEffect(skillLevel);
         }
     }
 }

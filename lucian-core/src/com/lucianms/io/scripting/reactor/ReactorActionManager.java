@@ -22,12 +22,11 @@
 package com.lucianms.io.scripting.reactor;
 
 import com.lucianms.client.MapleClient;
-import com.lucianms.client.inventory.Equip;
 import com.lucianms.client.inventory.Item;
 import com.lucianms.client.inventory.MapleInventoryType;
 import com.lucianms.constants.ItemConstants;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import com.lucianms.cquest.CQuestData;
+import com.lucianms.cquest.requirement.CQuestItemRequirement;
 import com.lucianms.io.scripting.AbstractPlayerInteraction;
 import com.lucianms.server.MapleItemInformationProvider;
 import com.lucianms.server.life.MapleLifeFactory;
@@ -35,14 +34,13 @@ import com.lucianms.server.life.MapleNPC;
 import com.lucianms.server.maps.MapMonitor;
 import com.lucianms.server.maps.MapleReactor;
 import com.lucianms.server.maps.ReactorDropEntry;
-import com.lucianms.cquest.CQuestData;
-import com.lucianms.cquest.requirement.CQuestItemRequirement;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import tools.MaplePacketCreator;
 import tools.Randomizer;
 
 import java.awt.*;
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -131,7 +129,7 @@ public class ReactorActionManager extends AbstractPlayerInteraction {
                 } else {
                     Item drop;
                     MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
-                    if (ii.getInventoryType(d.itemId) != MapleInventoryType.EQUIP) {
+                    if (ItemConstants.getInventoryType(d.itemId) != MapleInventoryType.EQUIP) {
                         drop = new Item(d.itemId, (short) 0, (short) 1);
                     } else {
                         drop = ii.randomizeStats(ii.getEquipById(d.itemId));

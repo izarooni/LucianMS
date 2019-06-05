@@ -29,7 +29,6 @@ import provider.MapleDataProviderFactory;
 import provider.MapleDataTool;
 import tools.Pair;
 
-import java.io.File;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -96,7 +95,7 @@ public class CashShop {
                 petid = MaplePet.createPet(itemId);
             }
 
-            if (ii.getInventoryType(itemId) == MapleInventoryType.EQUIP) {
+            if (ItemConstants.getInventoryType(itemId) == MapleInventoryType.EQUIP) {
                 item = ii.getEquipById(itemId);
                 if (item == null) {
                     return new Equip(itemId);
@@ -152,7 +151,7 @@ public class CashShop {
             packages.clear();
             specialcashitems.clear();
 
-            MapleDataProvider etc = MapleDataProviderFactory.getWZ(new File("wz/Etc.wz"));
+            MapleDataProvider etc = MapleDataProviderFactory.getWZ("Etc.wz");
 
             for (MapleData item : etc.getData("Commodity.img").getChildren()) {
                 String imgdir = item.getName();
@@ -418,7 +417,7 @@ public class CashShop {
         List<Pair<Item, MapleInventoryType>> itemsWithType = new ArrayList<>();
 
         for (Item item : inventory) {
-            itemsWithType.add(new Pair<>(item, MapleItemInformationProvider.getInstance().getInventoryType(item.getItemId())));
+            itemsWithType.add(new Pair<>(item, ItemConstants.getInventoryType(item.getItemId())));
         }
 
         factory.saveItems(itemsWithType, accountId, con);

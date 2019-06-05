@@ -1,6 +1,7 @@
 package com.lucianms.events;
 
 import com.lucianms.client.MapleCharacter;
+import com.lucianms.constants.ItemConstants;
 import com.lucianms.nio.receive.MaplePacketReader;
 import com.lucianms.server.MakerItemFactory;
 import com.lucianms.server.MakerItemFactory.MakerItemCreateEntry;
@@ -28,10 +29,10 @@ public class PlayerSkillItemMakerEvent extends PacketEvent {
     public Object onPacket() {
         MapleCharacter player = getClient().getPlayer();
         MakerItemCreateEntry recipe = MakerItemFactory.getItemCreateEntry(itemID);
-        if (canCreate(player, recipe) && !player.getInventory(ii.getInventoryType(itemID)).isFull()) {
+        if (canCreate(player, recipe) && !player.getInventory(ItemConstants.getInventoryType(itemID)).isFull()) {
             for (Pair<Integer, Integer> p : recipe.getReqItems()) {
                 int toRemove = p.getLeft();
-                MapleInventoryManipulator.removeById(getClient(), ii.getInventoryType(toRemove), toRemove, p.getRight(), false, false);
+                MapleInventoryManipulator.removeById(getClient(), ItemConstants.getInventoryType(toRemove), toRemove, p.getRight(), false, false);
             }
             MapleInventoryManipulator.addById(getClient(), itemID, (short) recipe.getRewardAmount());
         }
@@ -45,7 +46,7 @@ public class PlayerSkillItemMakerEvent extends PacketEvent {
     private static boolean hasItems(MapleCharacter player, MakerItemCreateEntry recipe) {
         for (Pair<Integer, Integer> p : recipe.getReqItems()) {
             int itemId = p.getLeft();
-            if (player.getInventory(ii.getInventoryType(itemId)).countById(itemId) < p.getRight()) {
+            if (player.getInventory(ItemConstants.getInventoryType(itemId)).countById(itemId) < p.getRight()) {
                 return false;
             }
         }

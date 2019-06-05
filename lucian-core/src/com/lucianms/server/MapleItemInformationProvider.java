@@ -139,15 +139,6 @@ public class MapleItemInformationProvider {
     }
 
     @Deprecated
-    public MapleInventoryType getInventoryType(int itemId) {
-        final byte type = (byte) (itemId / 1000000);
-        if (type < 1 || type > 5) {
-            return MapleInventoryType.UNDEFINED;
-        }
-        return MapleInventoryType.getByType(type);
-    }
-
-    @Deprecated
     public List<Pair<Integer, String>> getAllItems() {
         if (!itemNameCache.isEmpty()) {
             return itemNameCache;

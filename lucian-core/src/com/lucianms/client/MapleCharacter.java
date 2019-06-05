@@ -1641,7 +1641,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Di
     }
 
     public int countItem(int itemid) {
-        return getInventory(MapleItemInformationProvider.getInstance().getInventoryType(itemid)).countById(itemid);
+        return getInventory(ItemConstants.getInventoryType(itemid)).countById(itemid);
     }
 
     public void decreaseBattleshipHp(int decrease) {
@@ -2500,7 +2500,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Di
     }
 
     public int getItemQuantity(int itemid, boolean checkEquipped) {
-        int possesed = getInventory(MapleItemInformationProvider.getInstance().getInventoryType(itemid)).countById(itemid);
+        int possesed = getInventory(ItemConstants.getInventoryType(itemid)).countById(itemid);
         if (checkEquipped) {
             possesed += getInventory(MapleInventoryType.EQUIPPED).countById(itemid);
         }
@@ -3441,7 +3441,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Di
         }
         if (possessed > 0) {
             message("You have used a safety charm, so your EXP points have not been decreased.");
-            MapleInventoryManipulator.removeById(client, MapleItemInformationProvider.getInstance().getInventoryType(charmID[i]), charmID[i], 1, true, false);
+            MapleInventoryManipulator.removeById(client, ItemConstants.getInventoryType(charmID[i]), charmID[i], 1, true, false);
         } else if (mapid > 925020000 && mapid < 925030000) {
             this.dojoStage = 0;
         } else if (mapid > 980000100 && mapid < 980000700) {
@@ -3486,18 +3486,16 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Di
     }
 
     private void prepareDragonBlood(final MapleStatEffect bloodEffect) {
-        if (dragonBloodTask != null) {
-            dragonBloodTask.cancel();
-            dragonBloodTask = TaskExecutor.createRepeatingTask(new Runnable() {
-                @Override
-                public void run() {
-                    addHP(-bloodEffect.getX());
-                    client.announce(MaplePacketCreator.showOwnBuffEffect(bloodEffect.getSourceId(), 5));
-                    getMap().broadcastMessage(MapleCharacter.this, MaplePacketCreator.showBuffeffect(getId(), bloodEffect.getSourceId(), 5), false);
-                    checkBerserk();
-                }
-            }, 4000, 4000);
-        }
+        dragonBloodTask = TaskExecutor.cancelTask(dragonBloodTask);
+        dragonBloodTask = TaskExecutor.createRepeatingTask(new Runnable() {
+            @Override
+            public void run() {
+                addHP(-bloodEffect.getX());
+                client.announce(MaplePacketCreator.showOwnBuffEffect(bloodEffect.getSourceId(), 5));
+                getMap().broadcastMessage(MapleCharacter.this, MaplePacketCreator.showBuffeffect(getId(), bloodEffect.getSourceId(), 5), false);
+                checkBerserk();
+            }
+        }, 4000, 4000);
     }
 
     public void updateLocalizedStats() {
@@ -3633,14 +3631,9 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Di
             checkBerserk();
         } else if (effect.isBeholder()) {
             final int beholder = DarkKnight.BEHOLDER;
-            if (beholderHealingTask != null) {
-                beholderHealingTask.cancel();
-                beholderHealingTask = null;
-            }
-            if (beholderBuffTask != null) {
-                beholderBuffTask.cancel();
-                beholderBuffTask = null;
-            }
+            dragonBloodTask = TaskExecutor.cancelTask(dragonBloodTask);
+            beholderHealingTask = TaskExecutor.cancelTask(beholderHealingTask);
+
             Skill bHealing = SkillFactory.getSkill(DarkKnight.AURA_OF_THE_BEHOLDER);
             int bHealingLvl = getSkillLevel(bHealing);
             if (bHealingLvl > 0) {
@@ -3801,26 +3794,6 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Di
 
     public void resetMGC() {
         this.mgc = null;
-    }
-
-    public synchronized void saveCooldowns() {
-        if (getAllCooldowns().size() > 0) {
-            try (Connection con = client.getWorldServer().getConnection()) {
-                deleteWhereCharacterId(con, "DELETE FROM cooldowns WHERE charid = ?");
-                try (PreparedStatement ps = con.prepareStatement("INSERT INTO cooldowns (charid, SkillID, StartTime, length) VALUES (?, ?, ?, ?)")) {
-                    ps.setInt(1, getId());
-                    for (PlayerCoolDownValueHolder cooling : getAllCooldowns()) {
-                        ps.setInt(2, cooling.skillId);
-                        ps.setLong(3, cooling.startTime);
-                        ps.setLong(4, cooling.length);
-                        ps.addBatch();
-                    }
-                    ps.executeBatch();
-                }
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
-        }
     }
 
     public void saveGuildStatus() {
@@ -4101,6 +4074,20 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Di
                 }
             }
 
+            if (!getAllCooldowns().isEmpty()) {
+                deleteWhereCharacterId(con, "DELETE FROM cooldowns WHERE charid = ?");
+                try (PreparedStatement ps = con.prepareStatement("INSERT INTO cooldowns (charid, SkillID, StartTime, length) VALUES (?, ?, ?, ?)")) {
+                    ps.setInt(1, getId());
+                    for (PlayerCoolDownValueHolder cooling : getAllCooldowns()) {
+                        ps.setInt(2, cooling.skillId);
+                        ps.setLong(3, cooling.startTime);
+                        ps.setLong(4, cooling.length);
+                        ps.addBatch();
+                    }
+                    ps.executeBatch();
+                }
+            }
+
             deleteWhereCharacterId(con, "delete from achievements where player_id = ?");
             try (PreparedStatement ps = con.prepareStatement("INSERT INTO achievements (`completed`, `player_id`, `achievement_name`, `killed_monster`, `casino_one`, `casino_two`) VALUES (?, ?, ?, ?, ?, ?)")) {
                 for (Entry<String, Achievement> entry : achievements.entrySet()) {
@@ -4151,8 +4138,14 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Di
                     itemsWithType.add(new Pair<>(item, iv.getType()));
                 }
             }
-            ItemFactory.INVENTORY.saveItems(itemsWithType, id, con);
-            con.commit();
+            Savepoint savepoint = con.setSavepoint(getName());
+            try {
+                ItemFactory.INVENTORY.saveItems(itemsWithType, id, con);
+                con.releaseSavepoint(savepoint);
+            } catch (SQLException e) {
+                LOGGER.error("Failed to save inventory for player {}", toString(), e);
+                con.rollback(savepoint);
+            }
 
             relationship.save(con);
             deleteWhereCharacterId(con, "DELETE FROM skills WHERE characterid = ?");
@@ -4997,7 +4990,6 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Di
         Functions.requireNotNull(getFakePlayer(), map::removeFakePlayer);
         map.removePlayer(this);
 
-        saveCooldowns();
         saveToDB();
 
         dragonBloodTask = TaskExecutor.cancelTask(dragonBloodTask);

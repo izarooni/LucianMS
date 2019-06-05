@@ -30,7 +30,6 @@ import com.lucianms.constants.ItemConstants;
 import com.lucianms.scheduler.Task;
 import com.lucianms.scheduler.TaskExecutor;
 import com.lucianms.server.MapleInventoryManipulator;
-import com.lucianms.server.MapleItemInformationProvider;
 import com.lucianms.server.MaplePlayerShopItem;
 import com.lucianms.server.Server;
 import tools.MaplePacketCreator;
@@ -348,7 +347,7 @@ public class HiredMerchant extends AbstractMapleMapObject {
         byte eq = 0, use = 0, setup = 0, etc = 0, cash = 0;
         List<MapleInventoryType> li = new LinkedList<>();
         for (MaplePlayerShopItem item : items) {
-            final MapleInventoryType invtype = MapleItemInformationProvider.getInstance().getInventoryType(item.getItem().getItemId());
+            final MapleInventoryType invtype = ItemConstants.getInventoryType(item.getItem().getItemId());
             if (!li.contains(invtype)) {
                 li.add(invtype);
             }

@@ -755,7 +755,6 @@ public class MapleClient implements Disposable {
         Server.getPlayerBuffStorage().put(player.getId(), player.getAllBuffs());
         player.cancelBuffEffects();
         player.cancelMagicDoor();
-        player.saveCooldowns();
         //Canceling mounts? Noty
         if (player.getBuffedValue(MapleBuffStat.PUPPET) != null) {
             player.cancelEffectFromBuffStat(MapleBuffStat.PUPPET);
