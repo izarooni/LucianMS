@@ -21,7 +21,7 @@ public class PlayerMTSEnterEvent extends PacketEvent {
         if (!JailManager.isJailed(player.getId())) {
             NPCScriptManager.start(getClient(), 2007, "f_multipurpose");
         } else {
-            player.sendMessage(5, "You cannot do that here.");
+            player.sendMessage(5, "You cannot do that while jailed.");
         }
         player.announce(MaplePacketCreator.enableActions());
         return null;

@@ -41,6 +41,7 @@ import com.lucianms.events.gm.MapleOla;
 import com.lucianms.features.GenericEvent;
 import com.lucianms.features.ManualPlayerEvent;
 import com.lucianms.features.PlayerTitles;
+import com.lucianms.helpers.JailManager;
 import com.lucianms.io.scripting.Achievements;
 import com.lucianms.io.scripting.event.EventInstanceManager;
 import com.lucianms.lang.GProperties;
@@ -572,6 +573,9 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Di
             }
         }
         if (channelserver) {
+            if (JailManager.isJailed(ret.id)) {
+                ret.mapid = JailManager.getRandomField();
+            }
             ret.map = client.getChannelServer().getMap(ret.mapid);
             if (ret.map == null) {
                 LOGGER.info("'{}' logged-in to an invalid map {}", ret.name, ret.mapid);

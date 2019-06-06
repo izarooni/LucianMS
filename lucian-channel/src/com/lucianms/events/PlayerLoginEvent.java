@@ -1,7 +1,6 @@
 package com.lucianms.events;
 
 import com.lucianms.client.*;
-import com.lucianms.helpers.JailManager;
 import com.lucianms.nio.receive.MaplePacketReader;
 import com.lucianms.scheduler.TaskExecutor;
 import com.lucianms.server.PlayerBuffValueHolder;
@@ -75,9 +74,6 @@ public class PlayerLoginEvent extends PacketEvent {
         }
         client.updateLoginState(LoginState.Login);
 
-        if (JailManager.isJailed(player.getId())) {
-            player.setMapId(JailManager.getRandomField());
-        }
         try (Connection con = world.getConnection()) {
             try (PreparedStatement ps = con.prepareStatement("SELECT Mesos FROM dueypackages WHERE RecieverId = ? AND Checked = 1")) {
                 ps.setInt(1, player.getId());
