@@ -101,7 +101,6 @@ function action(mode, type, selection) {
                 }
                 break;
             case 8: {
-
                 let levels = 200 - player.getLevel();
                 if (levels > 0) {
                     let apGain = levels * 5;
@@ -112,7 +111,9 @@ function action(mode, type, selection) {
                 break;
             }
         }
-        if ((!player.isGM() || player.isDebug()) && shenron != null) shenron.wish(player);
+        if (shenron != null && !player.isDebug()) {
+            shenron.wish(player);
+        }
         cm.dispose();
     } else if (status == 3) {
         let username = cm.getText();
