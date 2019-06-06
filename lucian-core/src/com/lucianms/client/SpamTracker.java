@@ -13,7 +13,7 @@ public class SpamTracker {
 
         /**
          * @param cooldown the operation cooldown time
-         * @return true if the elapsed time since last execution has exceed the cooldown argument
+         * @return true if the elapsed time since the last record has not exceeded the specified time
          */
         public boolean testFor(long cooldown) {
             if (System.currentTimeMillis() - timestamp > cooldown) {
@@ -39,7 +39,7 @@ public class SpamTracker {
 
     public enum SpamOperation {
         PlayerCommands, NpcTalk, PortalScripts, SkillUsage, MoneyDrop, CashItemUse, PetFeeding, InventorySort, ChangeChannel,
-        ItemUse, InventoryMove, IdleHeal, CatchItem,
+        ItemUse, InventoryMove, IdleHeal, CatchItem, PlayerSave,
 
         // occupations
         OccTrollDebuff
