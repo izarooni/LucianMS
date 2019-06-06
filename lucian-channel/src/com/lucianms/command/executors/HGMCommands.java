@@ -36,6 +36,7 @@ public class HGMCommands extends CommandExecutor {
     public static void execute(MapleClient client, Command command, CommandArgs args) {
 
         MapleCharacter player = client.getPlayer();
+        MapleMap map = player.getMap();
         MapleChannel ch = client.getChannelServer();
         MapleWorld world = client.getWorldServer();
 
@@ -187,7 +188,7 @@ public class HGMCommands extends CommandExecutor {
                         }
                     }
                     if (toDrop != null) {
-                        player.getMap().spawnItemDrop(player, player, toDrop, player.getPosition(), true, true);
+                        map.spawnItemDrop(player, player, toDrop, player.getPosition(), true, true);
                     } else {
                         player.dropMessage(5, "That item does not exist");
                     }
@@ -196,13 +197,13 @@ public class HGMCommands extends CommandExecutor {
                 player.dropMessage(5, "You need to specify the ID of the item you want.");
             }
         } else if (command.equals("respawn")) {
-            for (SpawnPoint sp : player.getMap().getMonsterSpawnPoints()) {
+            for (SpawnPoint sp : map.getMonsterSpawnPoints()) {
                 if (sp.canSpawn(true)) {
                     sp.getMonster();
                     sp.summonMonster();
                 }
             }
-            player.getMap().resetReactors();
+            map.resetReactors();
             player.sendMessage("Monsters and reactors have respawned and reset");
         } else if (command.equals("spawn")) {
             if (args.length() > 0) {
@@ -231,7 +232,7 @@ public class HGMCommands extends CommandExecutor {
                         monster.setOverrideStats(stats);
                     }
                     monster.setFh(player.getFoothold());
-                    player.getMap().spawnMonsterOnGroudBelow(monster, player.getPosition());
+                    map.spawnMonsterOnGroudBelow(monster, player.getPosition());
                 }
             } else {
                 player.dropMessage(5, "You must specify a monster ID");
@@ -256,10 +257,10 @@ public class HGMCommands extends CommandExecutor {
                     npc.setScript(script);
                     npc.setFh(0);
                     for (MapleChannel channel : world.getChannels()) {
-                        MapleMap map = channel.getMap(player.getMapId());
-                        if (map != null) {
-                            map.addMapObject(npc);
-                            map.broadcastMessage(MaplePacketCreator.spawnNPC(npc));
+                        MapleMap iMap = channel.getMap(player.getMapId());
+                        if (iMap != null) {
+                            iMap.addMapObject(npc);
+                            iMap.broadcastMessage(MaplePacketCreator.spawnNPC(npc));
                         }
                     }
                     if (permanent) {
@@ -296,7 +297,7 @@ public class HGMCommands extends CommandExecutor {
                     }
                     int xpos = player.getPosition().x;
                     int ypos = player.getPosition().y;
-                    int fh = player.getMap().getFootholds().findBelow(player.getPosition()).getId();
+                    int fh = map.getFootholds().findBelow(player.getPosition()).getId();
                     for (int i = 0; i < amount; i++) {
                         MapleMonster mob = MapleLifeFactory.getMonster(mobId);
                         if (mob != null) {
@@ -321,7 +322,7 @@ public class HGMCommands extends CommandExecutor {
                             } catch (SQLException e) {
                                 player.dropMessage(5, "An error occurred while trying to insert the mob into the database: " + e.getMessage());
                             }
-                            player.getMap().addMonsterSpawn(mob, 0, -1);
+                            map.addMonsterSpawn(mob, 0, -1);
                         } else {
                             player.dropMessage(5, String.format("'%s' is an invalid monster", args.get(0)));
                             return;
@@ -366,11 +367,11 @@ public class HGMCommands extends CommandExecutor {
                     player.dropMessage("You must enter a message");
                 }
             } else if (command.equals("whereami")) {
-                player.dropMessage(6, "Map id - " + player.getMapId());
-                player.dropMessage(6, "Map name - " + player.getMap().getMapName());
-                player.dropMessage(6, "Map street name - " + player.getMap().getStreetName());
-                player.dropMessage(6, "Map onUserEnter - " + player.getMap().getOnUserEnter());
-                player.dropMessage(6, "Map onFirstUserEnter - " + player.getMap().getOnFirstUserEnter());
+                player.sendMessage(6, "ID: {}", player.getMapId());
+                player.sendMessage(6, "Name: {} - {}", map.getStreetName(), map.getMapName());
+                player.sendMessage(6, "onUserEnter: {} ", map.getOnUserEnter());
+                player.sendMessage(6, "onFirstUserEnter: {} ", map.getOnFirstUserEnter());
+                player.sendMessage(6, "Everlasting drops: {}", map.getEverlast());
             } else if (command.equals("oshop")) {
                 if (args.length() == 1) {
                     Integer shopId = args.parseNumber(0, int.class);
@@ -424,7 +425,7 @@ public class HGMCommands extends CommandExecutor {
                 }
                 player.dropMessage(6, "All characters saved!");
             } else if (command.equals("resetreactors")) {
-                player.getMap().resetReactors();
+                map.resetReactors();
                 player.dropMessage("Reactors reset");
             } else if (command.equals("sudo")) {
                 if (args.length() > 1) {
@@ -478,13 +479,13 @@ public class HGMCommands extends CommandExecutor {
                 }
             } else if (command.equals("footholds")) {
                 final int itemId = 3990022;
-                List<MapleFoothold> footholds = player.getMap().getFootholds().getFootholds();
+                List<MapleFoothold> footholds = map.getFootholds().getFootholds();
                 for (MapleFoothold foothold : footholds) {
                     Item item = new Item(itemId, (short) 0, (short) 1);
                     item.setObtainable(false);
                     item.setOwner("fh_id:" + foothold.getId());
                     Point position = new Point(foothold.getX1(), foothold.getY1());
-                    player.getMap().spawnItemDrop(player, player, item, position, true, true);
+                    map.spawnItemDrop(player, player, item, position, true, true);
                 }
                 player.dropMessage("Don't forget to !cleardrops when you're done");
             } else if (command.equals("ring")) {

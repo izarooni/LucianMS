@@ -35,14 +35,17 @@ public class FieldUpdateTask implements Runnable {
                 for (MapleMap map : maps) {
                     map.respawn();
                     if (!map.getEverlast()) {
-                        Iterator<MapleMapItem> drops = map.getMapObjects(MapleMapItem.class).iterator();
+                        ArrayList<MapleMapItem> list = map.getMapObjects(MapleMapItem.class);
+                        Iterator<MapleMapItem> drops = list.iterator();
                         while (drops.hasNext()) {
                             MapleMapItem drop = drops.next();
                             if (System.currentTimeMillis() - drop.getDropTime() >= 180000) {
+                                map.removeMapObject(drop);
                                 drop.setPickedUp(true);
                                 map.sendPacket(MaplePacketCreator.removeItemFromMap(drop.getObjectId(), 0, 0));
                             }
                         }
+                        list.clear();
                     }
 
                     Iterator<MapleCharacter> iterator = map.getCharacters().iterator();
