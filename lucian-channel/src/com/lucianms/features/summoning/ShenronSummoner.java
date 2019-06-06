@@ -6,6 +6,7 @@ import com.lucianms.events.ItemPickupEvent;
 import com.lucianms.events.PlayerInventoryMoveEvent;
 import com.lucianms.features.GenericEvent;
 import com.lucianms.lang.annotation.PacketWorker;
+import com.lucianms.scheduler.Task;
 import com.lucianms.scheduler.TaskExecutor;
 import com.lucianms.server.life.MapleLifeFactory;
 import com.lucianms.server.life.MapleMonster;
@@ -44,10 +45,11 @@ public class ShenronSummoner extends GenericEvent {
 
     // Items that have dropped so far
     private Map<Integer, Point> balls = new HashMap<>();
+    private Task destroyTask;
     // Object to summon
-    private MapleNPC npc = null;
-    private boolean summoning = false;
-    private boolean wishing = false;
+    private MapleNPC npc;
+    private boolean summoning;
+    private boolean wishing;
 
     public ShenronSummoner() {
         registerAnnotationPacketEvents(this);
@@ -56,7 +58,6 @@ public class ShenronSummoner extends GenericEvent {
     @Override
     public void registerPlayer(MapleCharacter player) {
         player.getGenericEvents().stream().filter(g -> g instanceof ShenronSummoner).findFirst().ifPresent(player::removeGenericEvent);
-
         player.addGenericEvent(this);
     }
 
@@ -113,7 +114,8 @@ public class ShenronSummoner extends GenericEvent {
                         }, 3100); // animation length
 
                         // de-spawn timer
-                        TaskExecutor.createTask(new Runnable() {
+                        destroyTask = TaskExecutor.cancelTask(destroyTask);
+                        destroyTask = TaskExecutor.createTask(new Runnable() {
                             @Override
                             public void run() {
                                 wishing = false;
@@ -125,7 +127,7 @@ public class ShenronSummoner extends GenericEvent {
                         }, 1000 * 60 * 3);
                     } else if (item.getItemId() > ReactionItemBase) { // not the first ball
                         Point previous = balls.get(item.getItemId() - 1); // get the position of the previous ball
-                        if (position.x - previous.x > 50) { // drop from left to right
+                        if (Math.abs(position.x - previous.x) > 75) { // drop from left to right
                             return; // dropped ball is too far from the previous ball location
                         }
                     }
@@ -186,8 +188,14 @@ public class ShenronSummoner extends GenericEvent {
     }
 
     public void wish(MapleCharacter player) {
+        wishing = false;
+        summoning = false;
+        balls.clear();
+
         npc.sendDestroyData(player.getClient());
         player.getMap().removeMapObject(npc.getObjectId());
         player.announce(MaplePacketCreator.playSound("Shenron/wishgranted"));
+
+        destroyTask = TaskExecutor.cancelTask(destroyTask);
     }
 }
