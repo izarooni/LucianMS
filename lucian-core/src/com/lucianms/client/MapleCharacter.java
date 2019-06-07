@@ -3691,9 +3691,11 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Di
     }
 
     public void removeAllCooldownsExcept(int id, boolean packet) {
-        for (MapleCoolDownValueHolder mcvh : coolDowns.values()) {
+        Iterator<MapleCoolDownValueHolder> iterator = coolDowns.values().iterator();
+        while (iterator.hasNext()) {
+            MapleCoolDownValueHolder mcvh = iterator.next();
             if (mcvh.skillId != id) {
-                coolDowns.remove(mcvh.skillId);
+                iterator.remove();
                 if (packet) {
                     client.announce(MaplePacketCreator.skillCooldown(mcvh.skillId, 0));
                 }
