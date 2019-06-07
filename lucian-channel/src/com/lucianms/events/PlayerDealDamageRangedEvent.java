@@ -41,6 +41,8 @@ import com.lucianms.server.life.FakePlayer;
 import tools.MaplePacketCreator;
 import tools.Randomizer;
 
+import java.util.Map;
+
 public final class PlayerDealDamageRangedEvent extends AbstractDealDamageEvent {
 
     private AttackInfo attackInfo;
@@ -110,7 +112,8 @@ public final class PlayerDealDamageRangedEvent extends AbstractDealDamageEvent {
             }
         } else {
             Item weapon = player.getInventory(MapleInventoryType.EQUIPPED).getItem((short) -11);
-            MapleWeaponType type = MapleItemInformationProvider.getInstance().getWeaponType(weapon.getItemId());
+            MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
+            MapleWeaponType type = ii.getWeaponType(weapon.getItemId());
             if (type == MapleWeaponType.NOT_A_WEAPON) {
                 return null;
             }
@@ -138,23 +141,24 @@ public final class PlayerDealDamageRangedEvent extends AbstractDealDamageEvent {
                     boolean bow = ItemConstants.isArrowForBow(id);
                     boolean cbow = ItemConstants.isArrowForCrossBow(id);
                     if (item.getQuantity() >= bulletCount) { //Fixes the bug where you can't use your last arrow.
-                        if (type == MapleWeaponType.CLAW && ItemConstants.isThrowingStar(id) && weapon.getItemId() != 1472063) {
-                            if (((id != 2070007 && id != 2070018) || player.getLevel() >= 70)
-                                    && (id != 2070016 || player.getLevel() >= 50)) {
+                        Map<String, Integer> stats = ii.getEquipStats(id);
+                        int reqLevel = 0;
+                        if (stats != null) {
+                            reqLevel = stats.getOrDefault("reqLevel", 0);
+                        }
+                        if (type == MapleWeaponType.CLAW && ItemConstants.isThrowingStar(id) ) {
+                            if (player.getLevel() >= reqLevel) {
                                 projectile = id;
                                 break;
                             }
                         } else if ((type == MapleWeaponType.GUN && ItemConstants.isBullet(id))) {
-                            if (id == 2331000 && id == 2332000) {
-                                if (player.getLevel() > 69) {
-                                    projectile = id;
-                                    break;
-                                }
-                            } else if (player.getLevel() > (id % 10) * 20 + 9) {
+                            if (player.getLevel() >= reqLevel) {
                                 projectile = id;
                                 break;
                             }
-                        } else if ((type == MapleWeaponType.BOW && bow) || (type == MapleWeaponType.CROSSBOW && cbow) || (weapon.getItemId() == 1472063 && (bow || cbow))) {
+                        } else if ((type == MapleWeaponType.BOW && bow)
+                                || (type == MapleWeaponType.CROSSBOW && cbow)
+                                || (weapon.getItemId() == ItemConstants.MAGICAL_MITTEN && (bow || cbow))) {
                             projectile = id;
                             break;
                         }

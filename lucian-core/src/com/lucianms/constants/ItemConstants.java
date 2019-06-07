@@ -35,6 +35,7 @@ public final class ItemConstants {
     public static final int KARMA = 0x10;
     public static final int PET_COME = 0x80;
     public static final int ACCOUNT_SHARING = 0x100;
+    public static final int MAGICAL_MITTEN = 1472063;
     public static final float ITEM_ARMOR_EXP = 1 / 350000f;
     public static final float ITEM_WEAPON_EXP = 1 / 700000f;
 
