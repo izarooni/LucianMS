@@ -10,7 +10,7 @@ import com.lucianms.nio.receive.MaplePacketReader;
  */
 public class KeepAliveEvent extends PacketEvent {
 
-    private static final long SaveInterval = 1000 * 60 * 5;
+    private static final long SaveInterval = 1200000;
 
     @Override
     public boolean inValidState() {
@@ -29,8 +29,8 @@ public class KeepAliveEvent extends PacketEvent {
             SpamTracker.SpamData tracker = player.getSpamTracker(SpamTracker.SpamOperation.PlayerSave);
             if (tracker.testFor(SaveInterval)) {
                 player.saveToDB();
+                tracker.record();
             }
-            tracker.record();
 
             float latency = System.currentTimeMillis() - client.getKeepAliveRequest();
             if (client.getNetworkLatency() < 0) {
