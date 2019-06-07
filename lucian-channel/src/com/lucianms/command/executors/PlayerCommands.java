@@ -541,6 +541,7 @@ public class PlayerCommands extends CommandExecutor {
         maps.put("amoria", 680000000);
         maps.put("home", 910000000);
         maps.put("fm", 910000000);
+        maps.put("pq", 910002000);
 
         Integer mapID = cmd.getName().equalsIgnoreCase("go") ? maps.get(args.get(0)) : maps.get(cmd.getName());
         if (mapID != null) {
