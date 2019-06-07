@@ -15,7 +15,7 @@ function action(mode, type, selection) {
         cm.sendSimple("You want to fight the Black Mage?\r\nYou will need a party of at least #b" + membersMimum + " members#k to enter.\r\n#b#L0#I want to enter#l\r\n#L1#Tell more more about the Black Mage#l");
     } else if (status == 2) {
         if (selection == 0) {
-            if (partyExists() && partySize() >= membersMimum) {
+            if (partyExists(cm) && partySize(cm) >= membersMimum) {
                 if (cm.isLeader()) {
                     let members = membersPresent(player.getMapId());
                     if (members.present.length == partySize()) {

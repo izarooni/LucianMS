@@ -1,10 +1,10 @@
 /* izarooni */
 
-function partyExists() {
+function partyExists(cm) {
     return cm.getParty() != null;
 }
 
-function partySize() {
+function partySizecm() {
     return cm.getParty().getMembers().size();
 }
 
