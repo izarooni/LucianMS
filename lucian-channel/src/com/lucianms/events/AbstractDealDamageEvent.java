@@ -492,21 +492,21 @@ public abstract class AbstractDealDamageEvent extends PacketEvent {
 
         Integer comboBuff = player.getBuffedValue(MapleBuffStat.COMBO);
         if (comboBuff != null && comboBuff > 0) {
-            int oid = player.isCygnus() ? DawnWarrior.COMBO_ATTACK : Crusader.COMBO_ATTACK;
-            int advcomboid = player.isCygnus() ? DawnWarrior.ADVANCED_COMBO : Hero.ADVANCED_COMBO_ATTACK;
+            int cSkillID = player.isCygnus() ? DawnWarrior.COMBO_ATTACK : Crusader.COMBO_ATTACK;
+            int acSkillID = player.isCygnus() ? DawnWarrior.ADVANCED_COMBO : Hero.ADVANCED_COMBO_ATTACK;
 
             if (comboBuff > 6) {
                 // Advanced Combo
-                MapleStatEffect ceffect = SkillFactory.getSkill(advcomboid).getEffect(player.getSkillLevel(advcomboid));
-                calcDmgMax = (int) Math.floor(calcDmgMax * (ceffect.getDamage() + 50) / 100f + 0.20 + (comboBuff - 5) * 0.04);
+                MapleStatEffect ceffect = SkillFactory.getSkill(acSkillID).getEffect(player);
+                if (ceffect != null) {
+                    calcDmgMax = (int) Math.floor(calcDmgMax * (ceffect.getDamage() + 50) / 100f + 0.20 + (comboBuff - 5) * 0.04);
+                }
             } else {
                 // Normal Combo
-                int skillLevel = player.getSkillLevel(oid);
-                if (skillLevel > 0) {
-                    MapleStatEffect ceffect = SkillFactory.getSkill(oid).getEffect(skillLevel);
-                    calcDmgMax = (int) Math.floor(calcDmgMax * (ceffect.getDamage() + 50) / 100f + Math.floor((comboBuff - 1) * (skillLevel / 6)) / 100);
-                } else {
-                    getLogger().info("Invalid skill level {} for skill {}", skillLevel, oid);
+                byte skillLevel = player.getSkillLevel(cSkillID);
+                MapleStatEffect effect = SkillFactory.getSkill(cSkillID).getEffect(player);
+                if (skillLevel > 0 && effect != null) {
+                    calcDmgMax = (int) Math.floor(calcDmgMax * (effect.getDamage() + 50) / 100f + Math.floor((comboBuff - 1) * (skillLevel / 6)) / 100);
                 }
             }
 

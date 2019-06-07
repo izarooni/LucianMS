@@ -732,18 +732,18 @@ public class MapleItemInformationProvider {
         if (nameCache.containsKey(itemId)) {
             return nameCache.get(itemId);
         }
-        MapleData strings = null;
         try {
-            strings = getStringData(itemId);
+            MapleData strings = getStringData(itemId);
             if (strings == null) {
                 return null;
             }
+            String ret = MapleDataTool.getString("name", strings, null);
+            nameCache.put(itemId, ret);
+            return ret;
         } catch (NullPointerException e) {
-            LOGGER.error("Unable to retrieve string value of item {}", itemId, e);
+            LOGGER.error("Unable to getName of item {}", itemId);
+            return null;
         }
-        String ret = MapleDataTool.getString("name", strings, null);
-        nameCache.put(itemId, ret);
-        return ret;
     }
 
     public String getMsg(int itemId) {

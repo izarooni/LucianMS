@@ -150,7 +150,7 @@ function action(mode, type, selection) {
             client.announce(MaplePacketCreator.modifyInventory(true, mods));
             mods.clear();
             if (selectedItem.getPosition() < 0) {
-                player.equipChanged();
+                player.equipChanged(true);
             }
             cm.sendOk("Magnificent! I've finished upgrading your equip.\r\nThe next time you make an MSI you will need #btwice the amount of resources#k.\r\nPlease remember that and do come back soon~");
         } else {

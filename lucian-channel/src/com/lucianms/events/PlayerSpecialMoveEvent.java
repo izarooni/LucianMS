@@ -21,7 +21,7 @@ public class PlayerSpecialMoveEvent extends PacketEvent {
     private Point point;
 
     private int skillID;
-    private int skillLevel;
+    private byte skillLevel;
 
     private int count;
     private int[][] caught;
@@ -65,9 +65,14 @@ public class PlayerSpecialMoveEvent extends PacketEvent {
             getClient().announce(MaplePacketCreator.setSessionValue("energy", 0));
         }
         if (playerSkillLevel == 0 || playerSkillLevel != skillLevel) {
-            getClient().announce(MaplePacketCreator.enableActions());
-            getLogger().warn("player skill {} level {} does not match packet level {}", skillID, playerSkillLevel, skillLevel);
-            return null;
+            if (playerSkillLevel < skill.getMaxLevel()) {
+                getClient().announce(MaplePacketCreator.enableActions());
+                getLogger().warn("player skill {} level {} does not match packet level {}", skillID, playerSkillLevel, skillLevel);
+                return null;
+            } else {
+                playerSkillLevel = (skillLevel = skill.getMaxLevel());
+                player.getSkills().get(skillID).level = skillLevel;
+            }
         }
 
         MapleStatEffect effect = skill.getEffect(playerSkillLevel);

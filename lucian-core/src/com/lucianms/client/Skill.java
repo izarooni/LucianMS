@@ -26,6 +26,7 @@ import com.lucianms.server.life.Element;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 public class Skill {
 
@@ -49,6 +50,11 @@ public class Skill {
 
     public MapleStatEffect getEffect(int level) {
         return effects.get(level - 1);
+    }
+
+    public MapleStatEffect getEffect(MapleCharacter player) {
+        Optional<SkillEntry> skill = player.getSkill(id);
+        return skill.map(skillEntry -> effects.get(skillEntry.getLevel() - 1)).orElse(null);
     }
 
     public byte getMaxLevel() {

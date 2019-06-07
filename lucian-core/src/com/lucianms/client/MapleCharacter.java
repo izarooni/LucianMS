@@ -4150,7 +4150,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Di
                     itemsWithType.add(new Pair<>(item, iv.getType()));
                 }
             }
-            Savepoint savepoint = con.setSavepoint(getName());
+            Savepoint savepoint = con.setSavepoint();
             try {
                 ItemFactory.INVENTORY.saveItems(itemsWithType, id, con);
                 con.releaseSavepoint(savepoint);
