@@ -699,7 +699,6 @@ public class PlayerCommands extends CommandExecutor {
         commands.add("@<str/dex/int/luk> - Distribute AP into stats");
         commands.add("@<check/checkme> - View some of your player data");
         commands.add("@spy - View another player's data");
-        commands.add("@maxskills - Set all skills to maximum level");
         commands.add("@fixexp - Reset your experience to 0");
         commands.add("@quests - View known and started custom quests");
         commands.add("@afk - Set your player state to AFK");

@@ -460,7 +460,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Di
                 ret.luk = rs.getInt("luk");
                 ret.exp.set(rs.getInt("exp"));
                 ret.gachaexp.set(rs.getInt("gachaexp"));
-                ret.hp = rs.getInt("hp");
+                ret.hp = Math.max(50, rs.getInt("hp"));
                 ret.maxhp = rs.getInt("maxhp");
                 ret.mp = rs.getInt("mp");
                 ret.maxmp = rs.getInt("maxmp");
@@ -577,7 +577,6 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Di
             if (ret.map == null) {
                 LOGGER.info("'{}' logged-in to an invalid map {}", ret.name, ret.mapid);
                 ret.map = client.getChannelServer().getMap(ServerConstants.HOME_MAP);
-                ret.dropMessage(5, "You were returned to the home map due to the map being obstructed");
             }
             MaplePortal portal = ret.map.getPortal(ret.initialSpawnPoint);
             if (portal == null && (portal = ret.map.getPortal(0)) != null) {
