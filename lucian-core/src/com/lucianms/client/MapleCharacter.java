@@ -5146,7 +5146,6 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Di
         exp.set(0);
         updateSingleStat(MapleStat.EXP, 0);
 
-        gainSp(20);
         updateSingleStat(MapleStat.AVAILABLESP, getRemainingSp());
         setRebirthPoints(getRebirthPoints() + 50);
         dropMessage("You have received 50 rebirth points");
@@ -5157,7 +5156,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Di
         // damage all monsters in the screen
         for (MapleMapObject object : getMap().getMapObjectsInRange(getPosition(), 100000, Collections.singletonList(MapleMapObjectType.MONSTER))) {
             MapleMonster monster = (MapleMonster) object;
-            int damage = calculateMaxBaseDamage(getTotalWatk());
+            int damage = 99999;
             getMap().broadcastMessage(MaplePacketCreator.damageMonster(monster.getObjectId(), damage));
             getMap().damageMonster(this, monster, damage);
         }
