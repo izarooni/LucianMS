@@ -46,29 +46,14 @@ public class PlayerPartyOperationEvent extends PacketEvent {
 
         switch (action) {
             case 1: { // create
-                if (player.getLevel() < 10) {
-                    getClient().announce(MaplePacketCreator.getPartyResult(10));
-                    return null;
+                if (party != null) {
+                    onLeaveOrDisband(player, party);
                 }
-                if (party == null) {
-                    createParty();
-                } else {
-                    getClient().announce(MaplePacketCreator.getPartyResult(16));
-                }
+                createParty();
                 break;
             }
             case 2: { // leave or disband
-                if (party != null) {
-                    MaplePartyCharacter member = party.get(player.getId());
-                    if (party.getLeaderPlayerID() == player.getId()) {
-                        Functions.requireNotNull(player.getEventInstance(), EventInstanceManager::disbandParty);
-                        party.sendPacket(MaplePacketCreator.updateParty(player.getClient().getChannel(), party, PartyOperation.DISBAND, member));
-                        party.dispose();
-                    } else {
-                        party.sendPacket(MaplePacketCreator.updateParty(player.getClient().getChannel(), party, PartyOperation.LEAVE, member));
-                        Functions.requireNotNull(player.getEventInstance(), eim -> eim.leftParty(player));
-                    }
-                }
+                onLeaveOrDisband(player, party);
                 break;
             }
             case 3: { // join
@@ -133,6 +118,21 @@ public class PlayerPartyOperationEvent extends PacketEvent {
             }
         }
         return null;
+    }
+
+    private void onLeaveOrDisband(MapleCharacter player, MapleParty party) {
+        if (party != null) {
+            MaplePartyCharacter member = party.get(player.getId());
+            if (party.getLeaderPlayerID() == player.getId()) {
+                Functions.requireNotNull(player.getEventInstance(), EventInstanceManager::disbandParty);
+                party.sendPacket(MaplePacketCreator.updateParty(player.getClient().getChannel(), party, PartyOperation.DISBAND, member));
+                party.dispose();
+            } else {
+                party.sendPacket(MaplePacketCreator.updateParty(player.getClient().getChannel(), party, PartyOperation.LEAVE, member));
+                party.removeMember(player, false);
+                Functions.requireNotNull(player.getEventInstance(), eim -> eim.leftParty(player));
+            }
+        }
     }
 
     private MapleParty createParty() {

@@ -2553,7 +2553,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Di
     }
 
     public void setLevel(int level) {
-        this.level = Math.min(getMaxLevel(), level);
+        this.level = level;
     }
 
     public int getLuk() {

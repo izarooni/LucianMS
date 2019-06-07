@@ -1,6 +1,9 @@
 package com.lucianms.nio;
 
-import com.lucianms.events.*;
+import com.lucianms.events.ClientCrashReportEvent;
+import com.lucianms.events.IgnoredPacketEvent;
+import com.lucianms.events.KeepAliveEvent;
+import com.lucianms.events.PacketEvent;
 
 public enum RecvOpcode {
 
@@ -157,7 +160,7 @@ public enum RecvOpcode {
     MONSTER_CARNIVAL        (218, ReceivePacketState.ChannelServer),
     PARTY_SEARCH_REGISTER   (220, ReceivePacketState.ChannelServer),
     PARTY_SEARCH_START      (222, ReceivePacketState.ChannelServer),
-    FIELD_SET               (223, ReceivePacketState.Both, FieldSetEvent.class),
+    PARTY_SEARCH_CANCEL     (223, ReceivePacketState.ChannelServer, IgnoredPacketEvent.class),
     CHECK_CASH              (228, ReceivePacketState.ChannelServer),
     CASHSHOP_OPERATION      (229, ReceivePacketState.ChannelServer),
     COUPON_CODE             (230, ReceivePacketState.ChannelServer),

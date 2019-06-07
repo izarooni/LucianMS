@@ -6,6 +6,7 @@ import com.lucianms.nio.receive.MaplePacketReader;
  * @author izarooni
  */
 public class IgnoredPacketEvent extends PacketEvent {
+
     @Override
     public void processInput(MaplePacketReader reader) {
     }

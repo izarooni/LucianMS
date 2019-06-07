@@ -44,6 +44,7 @@ public class FieldInitEvent extends PacketEvent {
 
         Achievements.testFor(player, -1);
         player.setRates();
+        player.checkBerserk();
 
         if (player.getForcedStat() != null) {
             player.setForcedStat(null);
