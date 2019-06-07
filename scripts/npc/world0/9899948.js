@@ -13,7 +13,7 @@ function action(mode, type, selection) {
     }
 
     let pquest;
-    let testFor = function(q, nStatus) {
+    let testFor = function (q, nStatus) {
         if (q != null) {
             if (!q.isCompleted() && q.checkRequirements()) {
                 status = nStatus;

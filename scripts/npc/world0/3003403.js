@@ -5,13 +5,13 @@
 
 var status = 0;
 var maps = [
-    [807300100, "Mori Ranmau - Tier 1"],
-    [262030300, "Hilla - Tier 2"],
-    [105200710, "Crimson Queens - Tier 2"],
-    [105200110, "Von Bon - Tier 3"],
-    [105200610, "Pierre - Tier 3 "],
-	[940100007, "Magnus - Tier 4"],
-    [86, "#rRealm of Gods#k - Tier 4+ #rWarning:#k Boss Tier"]
+    [807300100, "Mori Ranmau"],
+    [262030300, "Hilla"],
+    [105200710, "Crimson Queens"],
+    [105200110, "Von Bon"],
+    [105200610, "Pierre"],
+	[940100007, "Magnus"],
+    [86, "#rRealm of Gods#k"]
 ];
 
 function action(mode, type, selection) {
@@ -22,7 +22,7 @@ function action(mode, type, selection) {
         status++;
     }
     if (status == 1) {
-        var content = "Hello, #b#h ##k! would you like to fight some #rBosses#k?, pick one.\r\n\r\nWhat do I receive from defeating bosses?\r\n#eEach boss drops a different #bBoss Tier Coin#k. These coins can be used in exchange of powerful equipment!#k";
+        var content = "Hello, #b#h ##k! would you like to fight some #rBosses#k?, pick one.\r\n\r\nWhat do I receive from defeating bosses?\r\n#ePowerfull gear will drop from the bosses upon their defeat so stay on your toes!";
         for (var i = 0; i < maps.length; i++) {
             content += "\r\n#L" + i + "#" + maps[i][1] + "#l";
         }

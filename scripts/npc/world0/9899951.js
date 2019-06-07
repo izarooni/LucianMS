@@ -11,9 +11,9 @@ function action(mode, type, selection) {
     } else {
         status++;
     }
-    
+
     let pquest;
-    let testFor = function(q, nStatus) {
+    let testFor = function (q, nStatus) {
         if (q != null) {
             if (!q.isCompleted() && q.checkRequirements()) {
                 status = nStatus;
@@ -51,7 +51,7 @@ function action(mode, type, selection) {
     } else if ((pquest = player.getCustomQuest(QuestID[1])) == null || !pquest.isCompleted()) {
         let metadata = CQuests.getMetaData(QuestID[1]);
         testFor(pquest, 6); // jump
-        if  (status == 1) { // quest beginning
+        if (status == 1) { // quest beginning
             cm.sendNext("Oh, I remember!! His name was #eXehanort#k#n, and I am very afraid that he has corrupted Kofuku to have opened a vent, there are so many phantom wolves that have appeared throughout this land.");
         } else if (status == 2) {
             cm.sendNext("Keep on eliminiating them while I find out more information!");
@@ -76,7 +76,7 @@ function action(mode, type, selection) {
         if (status == 1) { // quest begeining
             cm.sendNext("Are you even doing anything? I can't do anything when there are so many phantoms freely roaming.");
         } else if (status == 2) {
-           action(1, 0, -1);
+            action(1, 0, -1);
         } else if (status == 3) { // quest progress
             DisplaySummary(metadata);
         } else if (status == 4) {

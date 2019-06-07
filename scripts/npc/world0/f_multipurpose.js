@@ -8,10 +8,10 @@ let options = {
     "Event point trader":  {npc:9901752,    script:null},
     "Donor point trader":  {npc:9901755,    script:null},
     "Eye Scanner trader":  {npc:9901753,    script:null},
-    "Monster Coin trader": {npc:2007,       script:"shop_monster_coin"},
+    "Chirithy Coin trader":{npc:2007,       script:"shop_monster_coin"},
     "Overwatch lootbox":   {npc:9270043,    script:null},
     "Styler":              {npc:9900001,    script:null},
-    "Skill Fixer":         {npc:2007,       script:"f_skill_fixer"},
+    // "Skill Fixer":         {npc:2007,       script:"f_skill_fixer"},
     "All In One":          {npc:2007,       script:"_all_in_one"},
     get: function(idx) {
         let cidx = 0;

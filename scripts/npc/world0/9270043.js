@@ -41,7 +41,7 @@ function action(mode, type, selection) {
 				cm.sendOk("What is an #r#z4011021##k?\r\nThe Overwatch loot box can bought from the #bDonationPoints#k NPC! The loot box contains #rOverwatch#k related items.");
 				cm.dispose();
               } else if (selection == 1) {
-                    cm.sendOk("   ------#rItems that can be unlocked through this loot box!#k------\r\n\r\n#z1008545#\r\n#z1008546#\r\n#z1008551#\r\n#z1011007#\r\n#z1902015#\r\n#z1103019#\r\n#z1012393#\r\n#z1008569#\r\n#z1332110#\r\n\r\n#bNew items coming soon!#k");
+                    cm.sendOk("   ------#rItems that can be unlocked through this loot box!#k------\r\n\r\n#z1008545#\r\n#z1008546#\r\n#z1008551#\r\n#z1011007#\r\n#z1902015#\r\n#z1103019#\r\n#z1012393#\r\n#z1008569#\r\n#z1332110#\r\n#z1114530#\r\n#z1114531#\r\n\r\n#bNew items coming soon!#k");
                     cm.dispose();
 			} else if (selection == 2) {
 			if (!cm.haveItem(4011021, 1)) {

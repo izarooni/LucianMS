@@ -3,7 +3,7 @@ load("scripts/util_transaction.js");
 /* izarooni */
 let status = 0;
 let selections = [
-	[1000000000, [4260002, 1]],
+	[2100000000, [4260002, 1]],
 	[500000000, [4011022, 1]]
 ];
 let playerChoice;

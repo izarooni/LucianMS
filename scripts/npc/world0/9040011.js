@@ -29,24 +29,24 @@ function action(m, t, s) {
 
     if (s == 0) {
         cm.sendOk("Frequently Asked Questions :\r\n"
-        + "\r\n#eWhat are the rates for Chirithy?#n\r\nEXP: 250x // Mesos: 100x // Drop: 3x\r\n\r\n#eWhat is the server's currency?#n\r\n#i4260002#\r\n\r\n#eHow do I make an MSI?#n\r\nIn order to make a MSI, you will need to speak to Chirithy which is located in the Free Market. As well, you will need to acquire 32k stats and obtain specific ETC items in order to make a MSI.");
+        + "\r\n#eWhat are the rates for Chirithy?#n\r\nEXP: 250x // Mesos: 250x // Drop: 3x\r\n\r\n#eWhat is the server's currency?#n\r\n#i4260002#\r\n\r\n#eHow do I make an MSI?#n\r\nIn order to make a MSI, you will need to speak to Chirithy which is located in the Free Market. As well, you will need to acquire 32k stats and obtain specific ETC items in order to make a MSI.");
         cm.dispose();
     } else if (s == 1) {
         cm.openNpc(9000037, "daily_login");
         cm.dispose();
     } else if (s == 2) {
-        cm.sendOk("#eThese are the features of Chirithy v83:#n\r\n\r\n#d#eCustom bosses: #k#nSpace Slime, Black Mage commander, Black Mage, Mysterious Adversary, Kaneki, Ultimate Mushroom, The Wall.\r\n\r\n#d#eCustom maps: #k#nMario, Wario, JQ, The Wall, Flappy Bird, Smash Bros, Home & FM.\r\n\r\n#d#eCustom items: #k#nWeapons, Mounts, Pets, Chairs, Accesories, Gloves, Hats.\r\n\r\n#d#eCustom Skills and jobs: #k#nUchiha, Valkyrie, Dragoon, Dancer, Ark, Pathfinder, Cadena, Rashoumon, Luminous, Mechanic.\r\n\r\n#d#eCustom events: #k#nDragon Ball Z and Planet Aura.\r\n\r\n#d#eArcade: #k#nExperience the arcade with tons of fun arcade games!\r\n\r\n#d#eStoryline: #k#nStart your journey with Chirithy and fight the darkness against Master Xehanort!\r\n\r\n#d#eAuto-events: #k#nParticipate in the events that starts automatically!\r\n\r\n#d#eCustom PVP: #k#nPush your friends off the map with our Smash Bros PVP system!\r\n\r\n#d#eWeddings: #k#nMarry your significant other with our marriage system!");
+        cm.sendOk("#eThese are the features of Chirithy v83:#n\r\n\r\n#d#eCustom bosses: #k#nSpace Slime, Black Mage commander, Black Mage, Mysterious Adversary, Kaneki, Ultimate Mushroom, The Wall.\r\n\r\n#d#eCustom maps: #k#nMario, Wario, JQ, The Wall, Smash Bros, Wario, Outer Space, Realm of Gods, Concert, Home & FM.\r\n\r\n#d#eCustom items: #k#nWeapons, Mounts, Pets, Chairs, Accesories, Gloves, Hats.\r\n\r\n#d#eCustom Skills and jobs: #k#nUchiha, Valkyrie, Dragoon, Dancer, Ark, Pathfinder, Cadena, Rashoumon, Luminous, Mechanic.\r\n\r\n#d#eCustom events: #k#nDragon Ball Z and Planet Aura.\r\n\r\n#d#eArcade: #k#nExperience the arcade with tons of fun arcade games!\r\n\r\n#d#eStoryline: #k#nStart your journey with Chirithy and fight the darkness against Master Xehanort!\r\n\r\n#d#eAuto-events: #k#nParticipate in the events that starts automatically!\r\n\r\n#d#eCustom PVP: #k#nPush your friends off the map with our Smash Bros PVP system!\r\n\r\n#d#eWeddings: #k#nMarry your significant other with our marriage system!");
         cm.dispose();
     } else if (s == 3) {
         cm.sendOk("You may use commands by entering them in the game chat box.\r\nPlayer commands can be listed via < #d@help#k > command and is always ordered alphabetically.\r\nYou may also view the list of commands through an NPC via < #d@help npc#k > command");
         cm.dispose();
     } else if (s == 4) {
         cm.sendOk("#r[Notice]: This staff list may not always be up to date.\r\n"
-        + "\r\n\t\t\t\t\t\t\t\t#r#eOwners :#n#k\r\n\t\t\t\t\t\t\tXehanort UTC+2\r\n\t\t\t\t\t\t\tBeaneff GMT+4\r\n\t\t\t\t\t\t\tizarooni GMT-7\r\n"
+        + "\r\n\t\t\t\t\t\t\t\t#r#eOwners :#n#k\r\n\t\t\t\t\t\t\tFeinT UTC+2\r\n\t\t\t\t\t\t\tBeaneff GMT+4"
         + "\r\n\t\t\t\t\t\t\t\t#b#eDevelopers :#n#k\r\n\t\t\t\t\t\t\tizarooni GMT-7\r\n\t\t\t\t\t\t\tLcas2k19 GMT+2\r\n"
-        + "\r\n\t\t\t\t\t\t\t\t#k#eAdministrators :#n#k\r\n\t\t\t\t\t\t\tKill EST\r\n\t\t\t\t\t\t\tInstincts UTC-7\r\n\t\t\t\t\t\t\tSauce GMT+4\r\n"
-        + "\r\n\t\t\t\t\t\t\t\t#d#eGame Masters#e :#n#k\r\n\t\t\t\t\t\t\tBrazzers GMT-3\r\n\t\t\t\t\t\t\tConfirmed GMT+1\r\n\t\t\t\t\t\t\tDicezu GMT+3\r\n\t\t\t\t\t\t\tPotato GMT+8\r\n\t\t\t\t\t\t\tTiff EST\r\n"
-        + "\r\n\t\t\t\t\t\t\t\t#g#eGFX :#n#k\r\n\t\t\t\t\t\t\tnoona\r\n\t\t\t\t\t\t\tMuneo UTC-8\r\n\t\t\t\t\t\t\tBirb GMT-6\r\n");
+        + "\r\n\t\t\t\t\t\t\t\t#k#eAdministrators :#n#k\r\n\t\t\t\t\t\t\tKill EST\r\n\t\t\t\t\t\t\tSauce GMT+4\r\n"
+        + "\r\n\t\t\t\t\t\t\t\t#d#eGame Masters#e :#n#k\r\n\t\t\t\t\t\t\tWadi GMT-3\r\n\t\t\t\t\t\t\tDicezu GMT+3\r\n\t\t\t\t\t\t\tPotato GMT+8\r\n\t\t\t\t\t\t\tJackie\r\n\t\t\t\t\t\t\tRai\r\n"
+        + "\r\n\t\t\t\t\t\t\t\t#g#eGFX :#n#k\r\n\t\t\t\t\t\t\tnoona");
         cm.dispose();
     } else if (s == 5) {
         cm.sendOk("#eTo donate, go to our Website #b(www.maplechirithy.com)#k, Click on the donate tab, Enter your username and the amount of money you would like to donate, then you will be redirected to PayPal to complete your donation,  ");
