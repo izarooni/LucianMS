@@ -1,80 +1,43 @@
-importPackage(Packages.com.lucianms.client);
-importPackage(Packages.com.lucianms.server.maps);
-
-var status;
-var sel;
-
-function start() {
-    status = -1;
-    action(1, 0, 0);
-}
+/* izarooni */
+let status = 0;
+let MirrorSelections = [
+    new Mirror(0, "Ariant Coliseum", 980010000, 3),
+    new Mirror(0, "Mu Lung Dojo", 925020000),
+    new Mirror(0, "Monster Carnival 1", 980000000),
+    new Mirror(0, "Monster Carnival 2", 980030000),
+    undefined,
+    new Mirror(0, "Construction Site", 910320000),
+];
 
 function action(mode, type, selection) {
-    if (mode == -1) {
+    if (mode < 1) {
         cm.dispose();
+        return;
     } else {
-        if (mode == 0) {
-            cm.dispose();
-            return;
+        status++;
+    }
+    if (status == 1) {
+        let content = "";
+        for (let i = 0; i < MirrorSelections.length; i++) {
+            let mirror = MirrorSelections[i];
+            if (mirror == undefined) continue;
+            content += `#${i}# ${mirror.name}`;
         }
-        if (mode == 1)
-            status++;
-        else
-            status--;
-            if (status == 0) {
-            if (cm.getLevel() < 20) {
-                cm.sendDimensionalMirror("#-1# There is no place for you to transport to from here.");
-                cm.dispose();
-            } else {
-                var selStr = "";
-                if (cm.getLevel() >= 20 && cm.getLevel() <= 30) {
-                    selStr += "#0# Ariant Coliseum";
-                }
-
-                if (cm.getLevel() >= 25) {
-                    selStr += "#1# Mu Lung Dojo";
-                }
-
-                if (cm.getLevel() >= 30 && cm.getLevel() <= 50) {
-                    selStr += "#2# Monster Carnival 1";
-                }
-
-                if (cm.getLevel() >= 51 && cm.getLevel() <= 70) {
-                    selStr += "#3# Monster Carnival 2";
-                }
-
-                // if (cm.getLevel() >= 40) {
-                //     selStr += "#5# Nett's Pyramid";
-                // }
-
-                if (cm.getLevel() >= 25 && cm.getLevel() <= 30) {
-                    selStr += "#6# Construction Site";
-                }
-                cm.sendDimensionalMirror(selStr);
-            }
-        } else if (status == 1) {
+        cm.sendDimensionalMirror(content);
+    } else if (status == 2) {
+        let mirror = MirrorSelections[selection];
+        if (mirror == undefined) {
+            cm.sendDimensionalMirror("#-1# Unable to go to that location.");
+        } else {
             cm.getPlayer().saveLocation("MIRROR");
-            switch (selection) {
-                case 0:
-                    cm.warp(980010000, 3);
-                    break;
-                case 1:
-                    cm.warp(925020000);
-                    break;
-                case 2:
-                    cm.warp(980000000, 3);
-                    break;
-                case 3:
-                    cm.warp(980030000, 3);
-                    break;
-                case 5:
-                    cm.warp(926010000);
-                    break;
-                case 6:
-                    cm.warp(910320000);
-                    break;
-            }
-            cm.dispose();
+            cm.warp(mirror.fieldID, mirror.portalID);
         }
     }
+}
+
+function Mirror(levelReq, name, fieldID, portalID) {
+    this.levelReq = levelReq;
+    this.name = name;
+    this.fieldID = fieldID;
+    this.portalID = portalID || 0;
 }
