@@ -40,11 +40,11 @@ public class PlayerCommands extends CommandExecutor {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(PlayerCommands.class);
 
-    private static void CollectLeaderboard(Connection con, List<String> usernames, String query) throws SQLException {
+    private static void CollectLeaderboard(Connection con, List<Pair<String, Integer>> usernames, String query) throws SQLException {
         try (PreparedStatement ps = con.prepareStatement(query)) {
             try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
-                    usernames.add(rs.getString("name"));
+                    usernames.add(new Pair<>(rs.getString("name"), rs.getInt("value")));
                 }
             }
         }
@@ -181,7 +181,7 @@ public class PlayerCommands extends CommandExecutor {
             player.sendMessage("rebirths, coins, event, jq");
             return;
         }
-        ArrayList<String> usernames = new ArrayList<>(10);
+        ArrayList<Pair<String, Integer>> usernames = new ArrayList<>(10);
         String rankingType = args.get(0);
         try (Connection con = player.getClient().getWorldServer().getConnection()) {
             switch (rankingType) {
@@ -189,16 +189,16 @@ public class PlayerCommands extends CommandExecutor {
                     player.sendMessage("'{}' is not a valid leaderboard", rankingType);
                     break;
                 case "rebirths":
-                    CollectLeaderboard(con, usernames, "select name from characters where gm = 0 order by reborns desc");
+                    CollectLeaderboard(con, usernames, "select name, reborns as value from characters where gm = 0 order by reborns desc");
                     break;
                 case "coins":
-                    CollectLeaderboard(con, usernames, "select c.name, i.characterid, sum(i.quantity) as total from inventoryitems i inner join characters c where c.id = i.characterid and itemid = " + ServerConstants.CURRENCY + " and gm = 0 group by characterid order by total desc");
+                    CollectLeaderboard(con, usernames, "select c.name, sum(i.quantity) as value from inventoryitems i inner join characters c on c.id = i.characterid and itemid = " + ServerConstants.CURRENCY + " and gm = 0 group by characterid order by total desc");
                     break;
                 case "event":
-                    CollectLeaderboard(con, usernames, "select name from characters where gm = 0 order by eventpoints desc");
+                    CollectLeaderboard(con, usernames, "select name, eventpoints as value from characters where gm = 0 order by eventpoints desc");
                     break;
                 case "jq":
-                    CollectLeaderboard(con, usernames, "select name from characters where gm = 0 order by jumpquestpoints desc");
+                    CollectLeaderboard(con, usernames, "select name, jumpquestpoints as value from characters where gm = 0 order by jumpquestpoints desc");
                     break;
             }
         } catch (SQLException e) {
@@ -214,14 +214,15 @@ public class PlayerCommands extends CommandExecutor {
             w.write(73);
             w.writeInt(9040008);
             w.writeInt(usernames.size());
-            for (String s : usernames) {
-                w.writeMapleString(s);
-                w.writeInt(0);
+            for (Pair<String, Integer> p : usernames) {
+                w.writeMapleString(p.getLeft());
+                w.writeInt(p.getRight());
                 w.writeInt(0);
                 w.writeInt(0);
                 w.writeInt(0);
                 w.writeInt(0);
             }
+            usernames.clear();
             player.announce(w.getPacket());
         }
     }
