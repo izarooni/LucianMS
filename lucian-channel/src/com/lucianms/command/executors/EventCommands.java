@@ -44,7 +44,7 @@ public class EventCommands extends CommandExecutor {
     private static final Logger LOGGER = LoggerFactory.getLogger(EventCommands.class);
 
     public EventCommands() {
-        addCommand("cmds", this::CommandList, "View a list of event commands");
+        addCommand("eventcmds", this::CommandList, "View a list of event commands");
         addCommand("help", this::CommandHelp, "View a list of help commands for each GM level");
         addCommand("event", this::CommandEvent, "View commands to create a GM event");
         addCommand("lock", this::CommandLock, "Gives the SEAL debuff to all players in the map");
@@ -78,7 +78,7 @@ public class EventCommands extends CommandExecutor {
     }
 
     private void CommandHelp(MapleCharacter player, Command command, CommandArgs args) {
-        player.dropMessage(6, "!cmds - Event commands");
+        player.dropMessage(6, "!eventcmds - Event commands");
         if (player.getGMLevel() >= 2) player.dropMessage(6, "!gmcmds - Level 2 GM commands");
         if (player.getGMLevel() >= 3) player.dropMessage(6, "hgmcmds - Level 3 Head-GM commands");
         if (player.getGMLevel() >= 6) player.dropMessage(6, "admincmds - Level 6 Administrator commands");

@@ -47,7 +47,7 @@ import java.util.function.BiPredicate;
 public class GameMasterCommands extends CommandExecutor {
 
     public GameMasterCommands() {
-        addCommand("cmds", this::CommandList , "");
+        addCommand("gmcmds", this::CommandList , "");
         addCommand("fwarp", this::ForceWarp, "");
         addCommand("killed", this::Killed, "");
         addCommand("itemq", this::ItemQ, "");
