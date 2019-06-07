@@ -1487,7 +1487,13 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Di
     }
 
     public void changeMap(final MapleMap to, final MaplePortal pto) {
-        changeMapInternal(to, pto.getPosition(), MaplePacketCreator.getWarpToMap(to.getId(), pto.getId(), this, null));
+        if (pto == null) {
+            Point center = to.getFootholds().getCenter();
+            center.translate(0, -10);
+            changeMap(to, center);
+        } else {
+            changeMapInternal(to, pto.getPosition(), MaplePacketCreator.getWarpToMap(to.getId(), pto.getId(), this, null));
+        }
     }
 
     public void changeMap(final MapleMap to, final Point pos) {

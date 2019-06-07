@@ -64,6 +64,12 @@ public class ChangeMapEvent extends PacketEvent {
     }
 
     @Override
+    public void exceptionCaught(MaplePacketReader reader, Throwable t) {
+        getClient().announce(MaplePacketCreator.enableActions());
+        super.exceptionCaught(reader, t);
+    }
+
+    @Override
     public void processInput(MaplePacketReader reader) {
         eCashShop = reader.available() == 0; // exit Cash shop
         if (!eCashShop) {

@@ -21,6 +21,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package com.lucianms.server.maps;
 
+import com.lucianms.client.MapleCharacter;
 import com.lucianms.client.MapleClient;
 import com.lucianms.io.scripting.portal.PortalScriptManager;
 import com.lucianms.server.MaplePortal;
@@ -116,15 +117,25 @@ public class MapleGenericPortal implements MaplePortal {
 
     @Override
     public boolean enterPortal(MapleClient c) {
+        MapleCharacter player = c.getPlayer();
+
         if (getScriptName() != null) {
             return PortalScriptManager.executePortalScript(c, this);
         } else if (getTargetMapId() != 999999999 && !disabled) {
-            MapleMap to = c.getPlayer().getEventInstance() == null ? c.getChannelServer().getMap(getTargetMapId()) : c.getPlayer().getEventInstance().getMapInstance(getTargetMapId());
-            MaplePortal pto = to.getPortal(getTarget());
-            if (pto == null) {// fallback for missing portals - no real life case anymore - interesting for not implemented areas
-                pto = to.getPortal(0);
+            MapleMap dest;
+            if (player.getEventInstance() != null) {
+                dest = player.getEventInstance().getMapInstance(getTargetMapId());
+            } else {
+                dest = c.getChannelServer().getMap(getTargetMapId());
             }
-            c.getPlayer().changeMap(to, pto); //late resolving makes this harder but prevents us from loading the whole world at once
+            Point destLocation;
+            MaplePortal portal = dest.getPortal(getTarget());
+            if (portal == null) {
+                destLocation = dest.getFootholds().getCenter();
+            } else {
+                destLocation = portal.getPosition();
+            }
+            player.changeMap(dest, destLocation);
             return true;
         }
         return false;

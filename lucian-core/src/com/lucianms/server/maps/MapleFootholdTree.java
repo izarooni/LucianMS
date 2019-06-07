@@ -57,6 +57,10 @@ public class MapleFootholdTree {
         center = new Point((p2.x - p1.x) / 2, (p2.y - p1.y) / 2);
     }
 
+    public Point getCenter() {
+        return center.getLocation();
+    }
+
     public void insert(MapleFoothold f) {
         if (depth == 0) {
             if (f.getX1() > maxDropX) {
@@ -219,8 +223,7 @@ public class MapleFootholdTree {
     }
 
     public List<MapleFoothold> getFootholds() {
-        ArrayList<MapleFoothold> ret = new ArrayList<>();
-        ret.addAll(footholds);
+        ArrayList<MapleFoothold> ret = new ArrayList<>(footholds);
         if (nw != null) {
             ret.addAll(nw.footholds);
         }
