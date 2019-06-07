@@ -190,7 +190,7 @@ public class PlayerBattle extends GenericEvent {
             for (Map.Entry<Integer, Point> entry : neighbors.entrySet()) { // iterate nearby targets and display damage dealt
                 MapleCharacter mPlayer = attacker.getMap().getCharacterById(entry.getKey());
                 if (mPlayer != null) {
-                    byte force = (byte) ((70 / mPlayer.getMaxHp()) * mPlayer.getHp());
+                    byte force = (byte) ((70f / mPlayer.getMaxHp()) * mPlayer.getHp());
                     if (attacker.isDebug()) {
                         attacker.sendMessage("applying {} force to {}", (150 + (15 * force)), mPlayer.getName());
                     }
