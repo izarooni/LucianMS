@@ -17,7 +17,7 @@ function action(mode, type, selection) {
         if (selection == 0) {
             if (partyExists(cm) && partySize(cm) >= membersMimum) {
                 if (cm.isLeader()) {
-                    let members = membersPresent(player.getMapId());
+                    let members = membersPresent(cm, player.getMapId());
                     if (members.present.length == partySize()) {
                         for (let i = 0; i < members.present.length; i++) {
                             let mid = members.present[i];

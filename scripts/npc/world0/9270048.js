@@ -15,9 +15,9 @@ function action(mode, type, selection) {
         cm.sendSimple("Do you think you're strong enough to battle against Kaneki? You will need a party of at least #b" + MinimumMembers + " members#k to attempt this battle.\r\n#b#L0#I want to enter#l\r\n#L1#Tell more more about Kaneki#l");
     } else if (status == 2) {
         if (selection == 0) {
-            if (partyExists() && (partySize() >= MinimumMembers || player.isDebug())) {
+            if (partyExists(cm) && (partySize(cm) >= MinimumMembers || player.isDebug())) {
                 if (cm.isLeader()) {
-                    var members = membersPresent(player.getMapId());
+                    var members = membersPresent(cm, player.getMapId());
                     if (members.present.length == partySize()) {
                         for (var i = 0; i < members.present.length; i++) {
                             var mid = members.present[i];

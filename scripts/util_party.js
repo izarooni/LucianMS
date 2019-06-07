@@ -4,11 +4,11 @@ function partyExists(cm) {
     return cm.getParty() != null;
 }
 
-function partySizecm() {
+function partySizecm(cm) {
     return cm.getParty().getMembers().size();
 }
 
-function membersPresent(m) {
+function membersPresent(cm, m) {
     var ret = { present: [], away: [] };
     var iter = cm.getParty().getMembers().iterator();
     while (iter.hasNext()) {
