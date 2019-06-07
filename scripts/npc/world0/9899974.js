@@ -21,7 +21,7 @@ let maps = [
     [219000000, "#dCokeTown#k"],
     [551030800, "#bNoragami Aragato#k"],
     [951000000, "#rMonster Park#k"],
-    [099999999, "#gSuper Mario Bros 1-1#k"],
+    [99999999, "#gSuper Mario Bros 1-1#k"],
     [925100500, "#bBoss Spawner#k"],
     [910000025, "#eSmash the Wall#k#n"],
     [599000006, "#rUltimate Mushroom#k"]
