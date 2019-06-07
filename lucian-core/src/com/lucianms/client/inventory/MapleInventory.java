@@ -36,6 +36,8 @@ import java.util.*;
  */
 public class MapleInventory implements Iterable<Item> {
 
+    public static final int MaxSlotCount = 96;
+
     private HashMap<Short, Item> inventory = new HashMap<>(100);
     private byte slotLimit;
     private MapleInventoryType type;
@@ -96,7 +98,7 @@ public class MapleInventory implements Iterable<Item> {
     }
 
     public void setSlotLimit(int newLimit) {
-        slotLimit = (byte) newLimit;
+        slotLimit = (byte) Math.min(newLimit, MaxSlotCount);
     }
 
     public Item findById(int itemId) {

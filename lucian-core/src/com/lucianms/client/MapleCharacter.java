@@ -285,9 +285,6 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Di
         job = MapleJob.BEGINNER;
         level = 1;
         buddylist = new BuddyList(20);
-        for (int i = 0; i < DEFAULT_KEY.length; i++) {
-            keymap.put(DEFAULT_KEY[i], new MapleKeyBinding(DEFAULT_TYPE[i], DEFAULT_ACTION[i]));
-        }
         trockmaps.addAll(Collections.nCopies(5, MapleMap.INVALID_ID));
         viptrockmaps.addAll(Collections.nCopies(10, MapleMap.INVALID_ID));
     }
@@ -4478,7 +4475,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Di
     }
 
     public byte getSlots(int type) {
-        return type == MapleInventoryType.CASH.getType() ? 96 : inventory[type].getSlotLimit();
+        return type == MapleInventoryType.CASH.getType() ? MapleInventory.MaxSlotCount : inventory[type].getSlotLimit();
     }
 
     public boolean gainSlots(int type, int slots) {
@@ -4487,17 +4484,13 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Di
 
     public boolean gainSlots(int type, int slots, boolean update) {
         slots += inventory[type].getSlotLimit();
-        if (slots <= 96) {
+        if (slots <= MapleInventory.MaxSlotCount) {
             inventory[type].setSlotLimit(slots);
-
-            saveToDB();
             if (update) {
                 client.announce(MaplePacketCreator.updateInventorySlotLimit(type, slots));
             }
-
             return true;
         }
-
         return false;
     }
 
