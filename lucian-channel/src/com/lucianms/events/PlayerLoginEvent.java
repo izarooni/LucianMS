@@ -187,8 +187,8 @@ public class PlayerLoginEvent extends PacketEvent {
                 member.announce(MaplePacketCreator.updateParty(member.getClient().getChannel(), party, PartyOperation.SILENT_UPDATE, null));
             }
             members.clear();
-            player.receivePartyMemberHP();
-            player.updatePartyMemberHP();
+            player.refreshPartyMemberGauges();
+            player.sendPartyGaugeRefresh();
         }
         //endregion
 

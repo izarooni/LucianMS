@@ -47,8 +47,8 @@ public class PlayerPartySearchBeginEvent extends PacketEvent {
                     party.addMember(others);
                     MaplePartyCharacter member = party.get(others.getId());
                     party.sendPacket(MaplePacketCreator.updateParty(member.getChannelID(), party, PartyOperation.JOIN, member));
-                    others.receivePartyMemberHP();
-                    others.updatePartyMemberHP();
+                    others.refreshPartyMemberGauges();
+                    others.sendPartyGaugeRefresh();
                     break;
                 } else {
                     getClient().announce(MaplePacketCreator.getPartyResult(17));

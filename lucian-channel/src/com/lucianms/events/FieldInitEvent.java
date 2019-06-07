@@ -12,6 +12,8 @@ import com.lucianms.nio.send.MaplePacketWriter;
 import com.lucianms.scheduler.TaskExecutor;
 import com.lucianms.server.maps.MapleMap;
 import com.lucianms.server.maps.MapleMiniDungeon;
+import com.lucianms.server.world.MapleParty;
+import com.lucianms.server.world.MaplePartyCharacter;
 import com.lucianms.server.world.MapleWorld;
 import tools.MaplePacketCreator;
 
@@ -45,6 +47,16 @@ public class FieldInitEvent extends PacketEvent {
         Achievements.testFor(player, -1);
         player.setRates();
         player.checkBerserk();
+
+        MapleParty party = player.getParty();
+        if (party != null) {
+            MaplePartyCharacter member = party.get(player.getId());
+            if (member != null) {
+                member.setFieldID(mapID);
+                player.sendPartyGaugeRefresh();
+                player.refreshPartyMemberGauges();
+            }
+        }
 
         if (player.getForcedStat() != null) {
             player.setForcedStat(null);

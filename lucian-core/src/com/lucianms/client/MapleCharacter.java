@@ -1237,7 +1237,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Di
             getMap().sendPacketIf(MaplePacketCreator.cancelForeignBuff(getId(), darkSightBuff), p -> p.getGMLevel() >= getGMLevel());
             getMap().sendPacket(MaplePacketCreator.spawnPlayerMapobject(this));
 
-            updatePartyMemberHP();
+            sendPartyGaugeRefresh();
             getMap().getMonsters().forEach(getMap()::updateMonsterController);
             if (this.hidden && getFakePlayer() != null) {
                 getMap().addFakePlayer(getFakePlayer());
@@ -3618,11 +3618,14 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Di
         }
 
         if (oldmaxhp != 0 && oldmaxhp != localmaxhp) {
-            updatePartyMemberHP();
+            sendPartyGaugeRefresh();
         }
     }
 
-    public void receivePartyMemberHP() {
+    /**
+     * Causes HP gauge update for the calling player
+     */
+    public void refreshPartyMemberGauges() {
         MapleParty party = getParty();
         if (party != null) {
             Collection<MapleCharacter> players = party.getPlayers();
@@ -4418,7 +4421,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Di
     public void setHp(int hp, boolean silent) {
         this.hp = Math.max(0, Math.min(localmaxhp, hp));
         if (!silent) {
-            updatePartyMemberHP();
+            sendPartyGaugeRefresh();
         }
         if (!isAlive()) {
             playerDead();
@@ -4621,7 +4624,10 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Di
         skillMacros[position] = updateMacro;
     }
 
-    public void updatePartyMemberHP() {
+    /**
+     * Sends an HP gauge update packet to members of the player's party
+     */
+    public void sendPartyGaugeRefresh() {
         MapleParty party = getParty();
         if (party != null) {
             Collection<MapleCharacter> players = party.getPlayers();

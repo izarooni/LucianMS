@@ -62,8 +62,8 @@ public class PlayerPartyOperationEvent extends PacketEvent {
                     if (party != null) {
                         if (party.size() < MapleParty.MaximumUsers) {
                             party.addMember(player);
-                            player.receivePartyMemberHP();
-                            player.updatePartyMemberHP();
+                            player.refreshPartyMemberGauges();
+                            player.sendPartyGaugeRefresh();
                         } else {
                             getClient().announce(MaplePacketCreator.getPartyResult(17));
                         }
