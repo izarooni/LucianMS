@@ -313,7 +313,7 @@ public class MapleMonster extends AbstractLoadedMapleLife {
                 boolean isKiller = player.getId() == killerId;
                 AtomicLong atomicDamage = entry.getValue();
                 float portionedExp = Math.min(maxHP, atomicDamage.get()) / maxHP;
-                if (isKiller) {
+                if (isKiller && takenDamage.size() > 1) {
                     portionedExp += 0.05;
                 }
                 int gainExp = (int) (exp * (portionedExp * 100f));

@@ -1995,13 +1995,15 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Di
 
     public void gainExp(long gain, int party, boolean show, boolean inChat, boolean white) {
         if (getLevel() >= getMaxLevel()) {
-            if (isAutoRebirth()) {
-                doRebirth();
-            } else if (exp.get() != 0) {
+            if (exp.get() != 0) {
                 setExp(0);
                 updateSingleStat(MapleStat.EXP, 0);
-                return;
             }
+            if (isAutoRebirth()) {
+                // for those enabling at lv. 200
+                doRebirth();
+            }
+            return;
         }
         int equip = 0;
 
@@ -2046,6 +2048,9 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Di
                 levelsGained = getMaxLevel() - level;
             }
             gainLevels(levelsGained);
+        }
+        if (level >= getMaxLevel() && autoRebirth) {
+            doRebirth();
         }
     }
 
@@ -5153,8 +5158,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Di
         exp.set(0);
         updateSingleStat(MapleStat.EXP, 0);
 
-        setRebirthPoints(getRebirthPoints() + 50);
-        dropMessage("You have received 50 rebirth points");
+        sendMessage(5, "You now have {} rebirths", rebirths);
 
         announce(MaplePacketCreator.showEffect("breakthrough/Ten")); // effect
         announce(MaplePacketCreator.trembleEffect(0, 0)); // shake screen

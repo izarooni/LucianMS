@@ -938,13 +938,6 @@ public class MapleMap implements PacketAnnouncer {
         return mapobjects.get(oid);
     }
 
-    /**
-     * returns a monster with the given oid, if no such monster exists returns null
-     *
-     * @param oid
-     *
-     * @return
-     */
     public MapleMonster getMonsterByOid(int oid) {
         MapleMapObject mmo = getMapObject(oid);
         if (mmo == null) {
@@ -1064,9 +1057,8 @@ public class MapleMap implements PacketAnnouncer {
     }
 
     public void spawnMonster(final MapleMonster monster) {
-        if (mobCapacity != -1 && mobCapacity <= spawnedMonstersOnMap.get()) {
-            LOGGER.info("Unable to spawn monster due to mob capacity {} in map {}", mobCapacity, getId());
-            return;
+        if (mobCapacity != -1 && spawnedMonstersOnMap.get() >= mobCapacity) {
+            throw new RuntimeException("Too many monsters in the map: " + getId());
         }
         monster.setMap(this);
         if (!monster.getMap().getAllPlayer().isEmpty()) {
