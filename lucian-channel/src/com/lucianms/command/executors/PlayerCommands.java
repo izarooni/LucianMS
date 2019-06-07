@@ -105,8 +105,14 @@ public class PlayerCommands extends CommandExecutor {
         addCommand("tradeep", this::TradePoints, "Trade your Event Points with another player");
         addCommand("tradevp", this::TradePoints, "Trade your Vote Points with another player");
         addCommand("tradejq", this::TradePoints, "Trade your Jump Quest Points with another player");
+        addCommand("autorb", this::ToggleAutoRebirth, "Toggle the auto-rebirth ability");
 
         addCommand("ping", this::Ping, "View your Round-Trip delay with the server");
+    }
+
+    private void ToggleAutoRebirth(MapleCharacter player, Command cmd, CommandArgs args) {
+        player.setAutoRebirth(!player.isAutoRebirth());
+        player.sendMessage("Auto-rebirthing is now {}", (player.isAutoRebirth() ? "enabled" : "disabled"));
     }
 
     private void Ping(MapleCharacter player, Command cmd, CommandArgs args) {
@@ -187,14 +193,18 @@ public class PlayerCommands extends CommandExecutor {
             switch (rankingType) {
                 default:
                     player.sendMessage("'{}' is not a valid leaderboard", rankingType);
-                    break;
+                    return;
                 case "rebirths":
+                case "rebirth":
+                case "rb":
                     CollectLeaderboard(con, usernames, "select name, reborns as value from characters where gm = 0 order by reborns desc limit 25");
                     break;
                 case "coins":
+                case "chirithy":
                     CollectLeaderboard(con, usernames, "select c.name, sum(i.quantity) as value from inventoryitems i inner join characters c on c.id = i.characterid and itemid = " + ServerConstants.CURRENCY + " and gm = 0 group by characterid order by total desc limit 25");
                     break;
                 case "event":
+                case "ep":
                     CollectLeaderboard(con, usernames, "select name, eventpoints as value from characters where gm = 0 order by eventpoints desc limit 25");
                     break;
                 case "jq":
