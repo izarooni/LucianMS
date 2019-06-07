@@ -81,6 +81,10 @@ public class AbstractPlayerInteraction {
         return c.getPlayer();
     }
 
+    public MapleCharacter findPlayer(String username) {
+        return c.getWorldServer().findPlayer(p -> p.getName().equalsIgnoreCase(username));
+    }
+
     public void warp(int map) {
         getPlayer().changeMap(getWarpMap(map), getWarpMap(map).getPortal(0));
     }
