@@ -291,7 +291,7 @@ public class MapleMonster extends AbstractLoadedMapleLife {
                 double gainExp = (exp * 0.8f) * (level / (double) partyLevelSum);
                 gainExp += gainExp * Math.log(leechCount);
                 if (mostDamage) {
-                    gainExp += (exp * 0.2);
+                    gainExp += (exp * 0.2f);
                 }
                 giveExpToCharacter(member, (int) (gainExp / leechCount), isKiller, leechCount);
             }

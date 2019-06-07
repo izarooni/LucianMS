@@ -127,12 +127,14 @@ public class PlayerPartyOperationEvent extends PacketEvent {
                 Functions.requireNotNull(player.getEventInstance(), EventInstanceManager::disbandParty);
                 party.sendPacket(MaplePacketCreator.updateParty(player.getClient().getChannel(), party, PartyOperation.DISBAND, member));
                 party.dispose();
+                player.getClient().getWorldServer().getParties().remove(party.getID());
             } else {
+                Functions.requireNotNull(player.getEventInstance(), eim -> eim.leftParty(player));
                 party.sendPacket(MaplePacketCreator.updateParty(player.getClient().getChannel(), party, PartyOperation.LEAVE, member));
                 party.removeMember(player, false);
-                Functions.requireNotNull(player.getEventInstance(), eim -> eim.leftParty(player));
             }
         }
+        player.setPartyID(0);
     }
 
     private MapleParty createParty() {

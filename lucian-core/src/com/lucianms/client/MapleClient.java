@@ -510,15 +510,17 @@ public class MapleClient implements Disposable {
                 MapleParty party = player.getParty();
                 if (party != null) {
                     MaplePartyCharacter member = party.get(player.getId());
-                    member.updateWithPlayer(player);
-                    if (getLoginState() != LoginState.Transfer) {
-                        member.setChannelID(-2);
-                        member.setPlayer(null);
-                        if (party.getLeaderPlayerID() == player.getId()) {
-                            var newLeader = party.values().stream().filter(p -> p.getPlayer() != null).findAny();
-                            newLeader.ifPresent(m -> party.sendPacket(MaplePacketCreator.updateParty(m.getChannelID(), party, PartyOperation.CHANGE_LEADER, m)));
+                    if (member != null) {
+                        member.updateWithPlayer(player);
+                        if (getLoginState() != LoginState.Transfer) {
+                            member.setChannelID(-2);
+                            member.setPlayer(null);
+                            if (party.getLeaderPlayerID() == player.getId()) {
+                                var newLeader = party.values().stream().filter(p -> p.getPlayer() != null).findAny();
+                                newLeader.ifPresent(m -> party.sendPacket(MaplePacketCreator.updateParty(m.getChannelID(), party, PartyOperation.CHANGE_LEADER, m)));
+                            }
+                            party.sendPacket(MaplePacketCreator.updateParty(getChannel(), party, PartyOperation.LOG_ONOFF, member));
                         }
-                        party.sendPacket(MaplePacketCreator.updateParty(getChannel(), party, PartyOperation.LOG_ONOFF, member));
                     }
                 }
                 BuddyList friends = player.getBuddylist();

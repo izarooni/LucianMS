@@ -55,6 +55,8 @@ public class FieldInitEvent extends PacketEvent {
                 member.setFieldID(mapID);
                 player.sendPartyGaugeRefresh();
                 player.refreshPartyMemberGauges();
+            } else {
+                player.setPartyID(0);
             }
         }
 
@@ -113,7 +115,7 @@ public class FieldInitEvent extends PacketEvent {
         if (rltn.getStatus() != Relationship.Status.Single) {
             int partnerID = rltn.getPartnerID(player);
             MapleCharacter target = world.getPlayerStorage().get(partnerID);
-            if (target != null && target.getMap() == map) {
+            if (target != null) {
                 player.announce(getMarriedPartnerFieldTransfer(mapID, partnerID));
                 target.announce(getMarriedPartnerFieldTransfer(mapID, player.getId()));
             }

@@ -472,6 +472,9 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Di
                 }
                 ret.messengerID = rs.getInt("messengerid");
                 ret.partyID = rs.getInt("party");
+                if (ret.getParty() == null || !ret.getParty().containsKey(ret.id)) {
+                    ret.partyID = 0;
+                }
 
                 ret.remainingAp = rs.getInt("ap");
                 ret.meso.set(rs.getInt("meso"));

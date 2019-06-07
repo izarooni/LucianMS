@@ -163,7 +163,11 @@ public class LChannelMain {
 
         try (Connection con = Server.getConnection()) {
             Database.execute(con, "update accounts set loggedin = 0 where loggedin != 0");
+            LOGGER.info("Accounts logged-out");
             Database.execute(con, "update characters set hasmerchant = 0");
+            LOGGER.info("Merchants reset");
+            Database.execute(con, "update characters set party = -1");
+            LOGGER.info("Parties reset");
         } catch (SQLException e) {
             e.printStackTrace();
         }

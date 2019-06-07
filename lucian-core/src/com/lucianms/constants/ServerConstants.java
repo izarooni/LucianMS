@@ -28,7 +28,7 @@ public class ServerConstants {
     public static final int HOME_MAP = 910000000;
     public static final int CURRENCY = 4260002;
 
-    public static final boolean NX_FROM_MONSTERS = true;
+    public static final boolean NX_FROM_MONSTERS = false;
     public static final double LEVEL_TO_NX_MULTIPLIER = 1.2;
     public static final int BELOW_LEVERANGEL_NX_CHANCE = 20;
     public static final int ABOVE_LEVELRANGE_NX_CHANCE = 10;
