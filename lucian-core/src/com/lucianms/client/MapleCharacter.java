@@ -2041,7 +2041,11 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Di
         exp.set((int) newExp);
         updateSingleStat(MapleStat.EXP, (int) newExp);
         if (localLevel > level) {
-            gainLevels((localLevel - level));
+            int levelsGained = (localLevel - level);
+            if (levelsGained + level > getMaxLevel()) {
+                levelsGained = getMaxLevel() - level;
+            }
+            gainLevels(levelsGained);
         }
     }
 
