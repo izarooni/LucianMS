@@ -119,9 +119,11 @@ public final class PlayerDealDamageRangedEvent extends AbstractDealDamageEvent {
             MapleStatEffect effect = null;
             if (attackInfo.skill != 0) {
                 effect = attackInfo.getAttackEffect(player, null);
-                bulletCount = effect.getBulletCount();
-                if (effect.getCooldown() > 0) {
-                    getClient().announce(MaplePacketCreator.skillCooldown(attackInfo.skill, effect.getCooldown()));
+                if (effect != null) {
+                    bulletCount = effect.getBulletCount();
+                    if (effect.getCooldown() > 0) {
+                        getClient().announce(MaplePacketCreator.skillCooldown(attackInfo.skill, effect.getCooldown()));
+                    }
                 }
             }
             boolean hasShadowPartner = player.getBuffedValue(MapleBuffStat.SHADOWPARTNER) != null;
@@ -137,7 +139,8 @@ public final class PlayerDealDamageRangedEvent extends AbstractDealDamageEvent {
                     boolean cbow = ItemConstants.isArrowForCrossBow(id);
                     if (item.getQuantity() >= bulletCount) { //Fixes the bug where you can't use your last arrow.
                         if (type == MapleWeaponType.CLAW && ItemConstants.isThrowingStar(id) && weapon.getItemId() != 1472063) {
-                            if (((id != 2070007 && id != 2070018) || player.getLevel() >= 70) && (id != 2070016 || player.getLevel() >= 50)) {
+                            if (((id != 2070007 && id != 2070018) || player.getLevel() >= 70)
+                                    && (id != 2070016 || player.getLevel() >= 50)) {
                                 projectile = id;
                                 break;
                             }

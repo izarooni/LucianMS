@@ -25,8 +25,6 @@ import com.lucianms.client.MapleBuffStat;
 import com.lucianms.client.MapleCharacter;
 import com.lucianms.client.Skill;
 import com.lucianms.client.SkillFactory;
-import com.lucianms.client.autoban.Cheater;
-import com.lucianms.client.autoban.Cheats;
 import com.lucianms.client.inventory.Item;
 import com.lucianms.client.inventory.MapleInventoryType;
 import com.lucianms.client.status.MonsterStatus;
@@ -178,17 +176,6 @@ public final class PlayerTakeDamageEvent extends PacketEvent {
             fake = 4020002 + (player.getJob().getId() / 10 - 40) * 100000;
         }
 
-        Cheater.CheatEntry cheatEntry = player.getCheater().getCheatEntry(Cheats.GodMode);
-        if (!player.isGM()) {
-            if (damage == 0) {
-                if (cheatEntry.getCheatCount() > 0 && cheatEntry.getCheatCount() % 15 == 0) {
-                    cheatEntry.announce(player.getClient(), 25000, "{} has {} consecutive misses (possible god mode)", player.getName(), cheatEntry.getCheatCount());
-                }
-            } else {
-                cheatEntry.resetCheatCount();
-            }
-        }
-        cheatEntry.record();
         if (damage > 0 && !player.isHidden()) {
             Integer buffPowerGuard = player.getBuffedValue(MapleBuffStat.POWERGUARD);
             if (attacker != null && damageFrom == -1 && buffPowerGuard != null) { // PG works on bosses, but only at half of the rate.
