@@ -740,7 +740,12 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Di
                             LOGGER.warn("Invalid skill {} for player {}", sid, ret.name);
                             continue;
                         }
-                        SkillEntry sentry = new SkillEntry(rs.getByte("skilllevel"), rs.getInt("masterlevel"), rs.getLong("expiration"));
+                        // auto-fix for maxing skills
+                        byte skillLevel = (byte) Math.max(rs.getByte("skilllevel"), s.getMaxLevel());
+                        byte maxLevel = (byte) Math.max(rs.getInt("masterlevel"), s.getMaxLevel());
+
+                        skillLevel = (byte) Math.max(skillLevel, s.getMaxLevel());
+                        SkillEntry sentry = new SkillEntry(skillLevel, maxLevel, rs.getLong("expiration"));
                         ret.skills.put(s.getId(), sentry);
                     }
                 }
@@ -1512,6 +1517,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Di
 
         if (getArcade() != null && to.getId() != getArcade().getMapId()) {
             getArcade().fail();
+            setArcade(null);
         }
         ManualPlayerEvent playerEvent = client.getWorldServer().getPlayerEvent();
         if (playerEvent != null) {
@@ -3876,13 +3882,13 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Di
 
             try (PreparedStatement ps = con.prepareStatement("INSERT INTO skills VALUES (?, ?, ?, ?, ?)")) {
                 ps.setInt(2, id);
-                ps.setInt(3, 1);
                 ps.setLong(5, -1);
                 for (Skill skill : SkillFactory.getSkills().values()) {
                     if (isGM() || (skill.getJob() / 100 != 9
                             && !GameConstants.isHiddenSkills(skill.getId())
                             && !GameConstants.isPqSkill(skill.getId()))) {
                         ps.setInt(1, skill.getId());
+                        ps.setInt(3, skill.getMaxLevel());
                         ps.setInt(4, skill.getMaxLevel());
                         ps.addBatch();
                     }

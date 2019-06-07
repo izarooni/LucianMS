@@ -81,7 +81,7 @@ public class LLoginMain {
         RecvOpcode.VIEW_ALL_CHAR.clazz = ViewCharHandler.class;
         RecvOpcode.PICK_ALL_CHAR.clazz = PickCharHandler.class;
         RecvOpcode.CHAR_SELECT.clazz = AccountPlayerSelectEvent.class;
-        RecvOpcode.CHECK_CHAR_NAME.clazz = AccountPlayerCreateUsernameCheckEvent.class;
+        RecvOpcode.CHECK_CHAR_NAME.clazz = CreatePlayerCheckUsernameEvent.class;
         RecvOpcode.CREATE_CHAR.clazz = CreatePlayerEvent.class;
         RecvOpcode.DELETE_CHAR.clazz = AccountPlayerDeleteEvent.class;
         RecvOpcode.RELOG.clazz = AccountRelogEvent.class;

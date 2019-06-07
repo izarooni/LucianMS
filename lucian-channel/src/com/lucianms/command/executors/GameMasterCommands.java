@@ -817,7 +817,7 @@ public class GameMasterCommands extends CommandExecutor {
         } else if (command.equals("!")) {
             if (args.length() > 0) {
                 String message = args.concatFrom(0);
-                world.sendMessageIf(p -> p.getGMLevel() > 0, 2, "[GM] %s : %s", player.getName(), message);
+                world.sendMessageIf(p -> p.getGMLevel() > 0, 2, "[GM] {} : {}", player.getName(), message);
             } else {
                 player.dropMessage(5, "You must specify a message");
             }
