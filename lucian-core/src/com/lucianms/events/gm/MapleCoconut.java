@@ -50,7 +50,7 @@ public class MapleCoconut extends MapleEvent {
     }
 
     public void startEvent() {
-        map.startEvent();
+        map.setEventStarted(true);
         for (int i = 0; i < 506; i++) {
             coconuts.add(new MapleCoconuts(i));
         }

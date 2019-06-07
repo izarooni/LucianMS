@@ -11,6 +11,14 @@ public class GameConstants {
     private GameConstants() {
     }
 
+    public static Integer getMapIDBySlang(String s) {
+        switch (s.toLowerCase()) {
+            case "ox": return 109020001;
+            case "home": return ServerConstants.HOME_MAP;
+            default: return null;
+        }
+    }
+
     public static boolean isSkillNeedMasterLevel(int skillID) {
         int jobID = skillID / 10000;
         if (jobID / 100 != 22 && jobID != 2001) {

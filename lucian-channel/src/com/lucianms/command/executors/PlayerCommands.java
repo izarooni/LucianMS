@@ -6,6 +6,7 @@ import com.lucianms.client.MapleStat;
 import com.lucianms.client.meta.Occupation;
 import com.lucianms.command.Command;
 import com.lucianms.command.CommandArgs;
+import com.lucianms.command.CommandEvent;
 import com.lucianms.constants.ServerConstants;
 import com.lucianms.events.RockPaperScissorsEvent;
 import com.lucianms.features.GenericEvent;
@@ -51,62 +52,61 @@ public class PlayerCommands extends CommandExecutor {
     }
 
     public PlayerCommands() {
-        addCommand("help", this::Help);
-        addCommand("commands", this::Help);
+        addCommand("help", this::Help, "Show a list of player commands");
+        addCommand("commands", this::Help, "Show a list of player commands");
 
-        addCommand("joinevent", this::ParticipateEvent);
-        addCommand("leaveevent", this::ParticipateEvent);
+        addCommand("joinevent", this::ParticipateEvent, "Join a GM hosted event");
+        addCommand("leaveevent", this::ParticipateEvent, "Leave a GM hosted event");
 
-        addCommand("jautoevent", this::ParticipateAutoEvent);
-        addCommand("lautoevent", this::ParticipateAutoEvent);
+        addCommand("jautoevent", this::ParticipateAutoEvent, "Join an auto-event");
+        addCommand("lautoevent", this::ParticipateAutoEvent, "Leave an auto-event");
 
-        addCommand("dispose", this::Dispose);
-        addCommand("achievements", this::Achievements);
-        addCommand("home", this::Home);
-        addCommand("online", this::Online);
+        addCommand("dispose", this::Dispose, "If you are unable to talk to NPCs or use portals");
+        addCommand("achievements", this::Achievements, "View available achievements and check unclaimed rewards");
+        addCommand("home", this::Home, "Fast warp to the server home map");
+        addCommand("online", this::Online, "View a list of online players");
 
-        addCommand("go", this::Go);
-        addCommand("shenron", this::Go);
-        addCommand("arcade", this::Go);
+        addCommand("go", this::Go, "Fast warp to towns and features");
+        addCommand("shenron", this::Go, "Fast warp to Shenron's summoning map");
+        addCommand("arcade", this::Go, "Fast warp to the arcade system map");
 
-        addCommand("style", this::Style);
-        addCommand("callgm", this::CallGM);
-        addCommand("report", this::Report);
-        addCommand("rps", this::RPS);
+        addCommand("style", this::Style, "Opens the stylist NPC");
+        addCommand("callgm", this::CallGM, "Send a help message to all GMs online");
+        addCommand("report", this::Report, "Send a player report to all GMs online");
+//        addCommand("rps", this::RPS, "Play a quick game of Rock, Paper, Scissors");
 
-        addCommand("resetstats", this::ResetStats);
-        addCommand("resetstr", this::ResetStats);
-        addCommand("resetdex", this::ResetStats);
-        addCommand("resetint", this::ResetStats);
-        addCommand("resetluk", this::ResetStats);
+        addCommand("resetstats", this::ResetStats, "Resets all stats to 4 points and returns AP");
+        addCommand("resetstr", this::ResetStats, "Resets STR to 4 points and returns AP");
+        addCommand("resetdex", this::ResetStats, "Resets DEX to 4 points and returns AP");
+        addCommand("resetint", this::ResetStats, "Resets INT to 4 points and returns AP");
+        addCommand("resetluk", this::ResetStats, "Resets LUK to 4 points and returns AP");
 
-        addCommand("str", this::SetStat);
-        addCommand("dex", this::SetStat);
-        addCommand("int", this::SetStat);
-        addCommand("luk", this::SetStat);
+        addCommand("str", this::SetStat, "Distribute Ability Points into STR");
+        addCommand("dex", this::SetStat, "Distribute Ability Points into DEX");
+        addCommand("int", this::SetStat, "Distribute Ability Points into INT");
+        addCommand("luk", this::SetStat, "Distribute Ability Points into LUK");
 
-        addCommand("checkme", this::CheckPlayer);
-        addCommand("check", this::CheckPlayer);
-        addCommand("spy", this::CheckPlayer);
+        addCommand("checkme", this::CheckPlayer, "Check stats of your character");
+        addCommand("spy", this::CheckPlayer, "Check stats of another character");
 
-        addCommand("fixexp", this::FixExp);
-        addCommand("quests", this::Quests);
-        addCommand("afk", this::SetAFK);
-        addCommand("uptime", this::ServerUptime);
-        addCommand("time", this::ServerTime);
-        addCommand("house", this::House);
-        addCommand("jobs", this::Jobs);
-        addCommand("chalktalk", this::ChalkTalk);
-        addCommand("rebirth", this::Rebirth);
-        addCommand("pvp", this::InitPlayerBattle);
-        addCommand("bosshp", this::BossHP);
-        addCommand("ranks", this::Ranks);
+        addCommand("fixexp", this::FixExp, "Resets your EXP to 0");
+        addCommand("quests", this::Quests, "View available and completed custom quests");
+//        addCommand("afk", this::SetAFK);
+        addCommand("uptime", this::ServerUptime, "View how long the server has been online");
+        addCommand("time", this::ServerTime, "View the server's current time");
+        addCommand("house", this::House, "Opens the housing management NPC");
+        addCommand("jobs", this::Jobs, "View a list of current custom and cover-up jobs");
+        addCommand("chalktalk", this::ChalkTalk, "Display a chalkboard with a message above your character");
+        addCommand("rebirth", this::Rebirth, "Rebirth your character");
+        addCommand("pvp", this::InitPlayerBattle, "Enable to disable PvP mode (Try out our PvP maps for a neat feature!)");
+        addCommand("bosshp", this::BossHP, "View the HP of all mob bosses in the map");
+        addCommand("ranks", this::Ranks, "View the top 25 rankings for certain categories");
 
-        addCommand("tradeep", this::TradePoints);
-        addCommand("tradevp", this::TradePoints);
-        addCommand("tradejq", this::TradePoints);
+        addCommand("tradeep", this::TradePoints, "Trade your Event Points with another player");
+        addCommand("tradevp", this::TradePoints, "Trade your Vote Points with another player");
+        addCommand("tradejq", this::TradePoints, "Trade your Jump Quest Points with another player");
 
-        addCommand("ping", this::Ping);
+        addCommand("ping", this::Ping, "View your Round-Trip delay with the server");
     }
 
     private void Ping(MapleCharacter player, Command cmd, CommandArgs args) {
@@ -189,16 +189,16 @@ public class PlayerCommands extends CommandExecutor {
                     player.sendMessage("'{}' is not a valid leaderboard", rankingType);
                     break;
                 case "rebirths":
-                    CollectLeaderboard(con, usernames, "select name, reborns as value from characters where gm = 0 order by reborns desc");
+                    CollectLeaderboard(con, usernames, "select name, reborns as value from characters where gm = 0 order by reborns desc limit 25");
                     break;
                 case "coins":
-                    CollectLeaderboard(con, usernames, "select c.name, sum(i.quantity) as value from inventoryitems i inner join characters c on c.id = i.characterid and itemid = " + ServerConstants.CURRENCY + " and gm = 0 group by characterid order by total desc");
+                    CollectLeaderboard(con, usernames, "select c.name, sum(i.quantity) as value from inventoryitems i inner join characters c on c.id = i.characterid and itemid = " + ServerConstants.CURRENCY + " and gm = 0 group by characterid order by total desc limit 25");
                     break;
                 case "event":
-                    CollectLeaderboard(con, usernames, "select name, eventpoints as value from characters where gm = 0 order by eventpoints desc");
+                    CollectLeaderboard(con, usernames, "select name, eventpoints as value from characters where gm = 0 order by eventpoints desc limit 25");
                     break;
                 case "jq":
-                    CollectLeaderboard(con, usernames, "select name, jumpquestpoints as value from characters where gm = 0 order by jumpquestpoints desc");
+                    CollectLeaderboard(con, usernames, "select name, jumpquestpoints as value from characters where gm = 0 order by jumpquestpoints desc limit 25");
                     break;
             }
         } catch (SQLException e) {
@@ -677,56 +677,27 @@ public class PlayerCommands extends CommandExecutor {
         }
     }
 
-    private void Help(MapleCharacter player, Command cnd, CommandArgs args) {
+    private void Help(MapleCharacter player, Command cmd, CommandArgs args) {
         boolean npc = args.length() == 1 && args.get(0).equals("npc");
-        ArrayList<String> commands = new ArrayList<>(getCommandCount());
-        commands.add("@help - View all commands");
-        commands.add("@joinevent - Join the GM hosted event");
-        commands.add("@leave - Leave the GM hosted event");
-        commands.add("@jautoevent - Join the automated event");
-        commands.add("@lautoevent - Leave the automated event");
-        commands.add("@dispose - For troubles with game interactions");
-        commands.add("@achievements - View known achievements");
-        commands.add("@home - Teleport to the server home map");
-        commands.add("@online - View all online players");
-        commands.add("@go - Teleport to several town maps");
-        commands.add("@shenron - Teleport to the Shenron summoning map");
-        commands.add("@arcade - Teleport to the arcade map");
-        commands.add("@style - View the player stylist NPC");
-        commands.add("@callgm - Request help from any online GM");
-        commands.add("@report - Report a player");
-        commands.add("@rps - Begin a game of Rock, Paper, Scissors");
-        commands.add("@reset<str/dex/int/luk> - Reset a stat and return AP");
-        commands.add("@<str/dex/int/luk> - Distribute AP into stats");
-        commands.add("@<check/checkme> - View some of your player data");
-        commands.add("@spy - View another player's data");
-        commands.add("@fixexp - Reset your experience to 0");
-        commands.add("@quests - View known and started custom quests");
-        commands.add("@afk - Set your player state to AFK");
-        commands.add("@uptime - View how long the server is been online");
-        commands.add("@time - View the server's time in it's timezone");
-        commands.add("@house - View the housing system NPC");
-        commands.add("@jobs - View a list of the customized jobs");
-        commands.add("@chalktalk - Created a chalkboard with a message above your player");
-        commands.add("@ping - Check the round-trip time between the server and your client");
-        commands.add("@rebirth - Do a rebirth for your player");
-        commands.add("@pvp - Enable or disable PVP for your player");
-        commands.add("@bosshp - View HP for all boss monsters in the map");
-        commands.add("@ranks - View rankings for a specific data type");
-        commands.add("@trade<jq/ep/vp> - Give your points to another player");
-        commands.sort(String::compareTo);
+
+        Map<String, Pair<CommandEvent, String>> commands = getCommands();
+        ArrayList<String> messages = new ArrayList<>(commands.size());
+        for (Map.Entry<String, Pair<CommandEvent, String>> e : commands.entrySet()) {
+            messages.add(String.format("@%s - %s", e.getKey(), e.getValue().getRight()));
+        }
+        messages.sort(String::compareTo);
         if (npc) {
             StringBuilder sb = new StringBuilder();
-            for (String s : commands) {
+            for (String s : messages) {
                 String[] split = s.split(" - ");
                 sb.append("\r\n#b").append(split[0]).append("#k - #r").append(split[1]);
             }
             player.announce(MaplePacketCreator.getNPCTalk(2007, (byte) 0, sb.toString(), "00 00", (byte) 0));
             sb.setLength(0);
         } else {
-            commands.forEach(player::dropMessage);
+            messages.forEach(player::dropMessage);
             player.dropMessage("If you'd like to view this list in an NPC window, use the command < @help npc >");
         }
-        commands.clear();
+        messages.clear();
     }
 }

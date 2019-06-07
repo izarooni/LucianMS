@@ -45,6 +45,7 @@ public interface PacketAnnouncer {
      * Sends a packet to all players in the collection provided {@link PacketAnnouncer#getPlayers()}
      *
      * @see MapleCharacter#sendMessage(int, String, Object...)
+     * @see MaplePacketCreator#serverNotice(int, String)
      */
     default void sendMessage(int type, String content, Object... args) {
         Collection<MapleCharacter> players = getPlayers();

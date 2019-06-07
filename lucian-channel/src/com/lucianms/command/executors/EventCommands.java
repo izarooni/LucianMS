@@ -5,7 +5,7 @@ import com.lucianms.client.MapleDisease;
 import com.lucianms.client.meta.ForcedStat;
 import com.lucianms.command.Command;
 import com.lucianms.command.CommandArgs;
-import com.lucianms.command.CommandWorker;
+import com.lucianms.command.CommandEvent;
 import com.lucianms.constants.ServerConstants;
 import com.lucianms.features.FollowTheLeader;
 import com.lucianms.features.GenericEvent;
@@ -21,6 +21,7 @@ import com.lucianms.server.world.MapleWorld;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import tools.MaplePacketCreator;
+import tools.Pair;
 import tools.Randomizer;
 
 import java.awt.*;
@@ -43,27 +44,44 @@ public class EventCommands extends CommandExecutor {
     private static final Logger LOGGER = LoggerFactory.getLogger(EventCommands.class);
 
     public EventCommands() {
-        addCommand("help", this::CommandHelp);
-        addCommand("event", this::CommandEvent);
-        addCommand("lock", this::CommandLock);
-        addCommand("reverse", this::CommandReverse);
-        addCommand("seduce", this::CommandSeduce);
-        addCommand("stun", this::CommandStun);
-        addCommand("pcheck", this::CommandPartyCheck);
-        addCommand("ak", this::CommandAutoKill);
-        addCommand("bomb", this::CommandBomb);
-        addCommand("bod", this::CommandBoxOfDoom);
-        addCommand("warpoxleft", this::CommandOXWarp);
-        addCommand("warpoxright", this::CommandOXWarp);
-        addCommand("warpoxmiddle", this::CommandOXWarp);
-        addCommand("warpout", this::CommandOXWarp);
-        addCommand("potato", this::CommandPotato);
-        addCommand("weenie", this::CommandWeenie);
-        addCommand("fstat", this::CommandForceStat);
-        addCommand("rules", this::CommandEventRules);
-        addCommand("fstatm", this::CommandForceStatMap);
+        addCommand("cmds", this::CommandList, "View a list of event commands");
+        addCommand("help", this::CommandHelp, "View a list of help commands for each GM level");
+        addCommand("event", this::CommandEvent, "View commands to create a GM event");
+        addCommand("lock", this::CommandLock, "Gives the SEAL debuff to all players in the map");
+        addCommand("reverse", this::CommandReverse, "Gives the CONFUSE debuff to all players in the map");
+        addCommand("seduce", this::CommandSeduce, "Gives the SEDUCE debuff to all players in the map");
+        addCommand("stun", this::CommandStun, "Gives the STUN debuff to all players in the map");
+        addCommand("pcheck", this::CommandPartyCheck, "Check for all parties in the map (shows leaders and memebers)");
+        addCommand("ak", this::CommandAutoKill, "Configure auto-kill position or mob for the map");
+        addCommand("bomb", this::CommandBomb, "Spawn a bomb at your position (Default 1.5s delay for explosion)");
+        addCommand("bod", this::CommandBoxOfDoom, "Spawn a box with randomized HP");
+        addCommand("warpoxleft", this::CommandOXWarp, "Warp all players on the left side of the OX Quiz map");
+        addCommand("warpoxright", this::CommandOXWarp, "Warp all players on the right side of the OX Quiz map");
+        addCommand("warpoxmiddle", this::CommandOXWarp, "Warp all players in the middle of the OX Quiz map");
+        addCommand("warpout", this::CommandWarpout, "Warp specified players to the specified map");
+        addCommand("potato", this::CommandPotato, "Begin a Hot Potato minigame for all players in the map");
+        addCommand("weenie", this::CommandWeenie, "Begin a Follow the Weenie minigame for all players in the map");
+        addCommand("fstat", this::CommandForceStat, "Enable temporary stats for yourself");
+        addCommand("rules", this::CommandEventRules, "Automate event rule messages for a specified event");
+        addCommand("fstatm", this::CommandForceStatMap, "Enable temporary stats for all players in the map");
+    }
 
-        reloadEventRules();
+    private void CommandList(MapleCharacter player, Command cmd, CommandArgs args) {
+        Map<String, Pair<CommandEvent, String>> commands = getCommands();
+        ArrayList<String> messages = new ArrayList<>(commands.size());
+        for (Map.Entry<String, Pair<CommandEvent, String>> e : commands.entrySet()) {
+            messages.add(String.format("!%s - %s", e.getKey(), e.getValue().getRight()));
+        }
+        messages.sort(String::compareTo);
+        messages.forEach(player::dropMessage);
+        messages.clear();
+    }
+
+    private void CommandHelp(MapleCharacter player, Command command, CommandArgs args) {
+        player.dropMessage(6, "!cmds - Event commands");
+        if (player.getGMLevel() >= 2) player.dropMessage(6, "!gmcmds - Level 2 GM commands");
+        if (player.getGMLevel() >= 3) player.dropMessage(6, "hgmcmds - Level 3 Head-GM commands");
+        if (player.getGMLevel() >= 6) player.dropMessage(6, "admincmds - Level 6 Administrator commands");
     }
 
     private void CommandForceStatMap(MapleCharacter player, Command cmd, CommandArgs args) {
@@ -244,27 +262,14 @@ public class EventCommands extends CommandExecutor {
         potato.start();
     }
 
-    private void CommandHelp(MapleCharacter player, Command command, CommandArgs args) {
-        player.sendMessage("==================== Event Commands ====================");
-        CommandWorker.EVENT_COMMANDS.getCommandNames().stream().map(name -> "!" + name).forEach(player::dropMessage);
-        if (player.getGMLevel() >= 2) {
-            player.sendMessage("==================== GameMaster Commands ====================");
-            CommandWorker.GM_COMMANDS.getCommandNames().stream().map(name -> "!" + name).forEach(player::dropMessage);
-        }
-        if (player.getGMLevel() >= 3) {
-            player.sendMessage("==================== Head-GameMaster Commands ====================");
-            CommandWorker.HGM_COMMANDS.getCommandNames().stream().map(name -> "!" + name).forEach(player::dropMessage);
-        }
-        if (player.getGMLevel() >= 6) {
-            player.sendMessage("==================== Administrator Commands ====================");
-            CommandWorker.ADMIN_COMMANDS.getCommandNames().stream().map(name -> "!" + name).forEach(player::dropMessage);
-        }
-    }
-
     private void CommandEvent(MapleCharacter player, Command command, CommandArgs args) {
         if (args.length() == 0) {
             player.dropMessage("Use: '!event new' to begin configuring your event.");
             player.dropMessage("Use: '!event help' for a list of relevant commands.");
+            player.dropMessage("To quick-start a basic event use the following commands in this order:");
+            player.dropMessage("!event new - Create a new event");
+            player.dropMessage("!event \"your event name\" - Assign a name to your event to display to the world");
+            player.dropMessage("!event start - Creates an announcement for your event and allows players to join");
             return;
         }
         MapleWorld world = player.getClient().getWorldServer();

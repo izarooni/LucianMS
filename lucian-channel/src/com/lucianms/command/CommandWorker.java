@@ -99,16 +99,18 @@ public class CommandWorker {
             @Override
             public void run() {
                 MapleCharacter player = client.getPlayer();
-                if (!EVENT_COMMANDS.executeCommand(client, cmd, args)) {
-                    if (player.getGMLevel() >= 6) {
-                        TaskExecutor.execute(() -> ADMIN_COMMANDS.executeCommand(client, cmd, args));
-                    }
-                    if (player.getGMLevel() >= 3) {
-                        TaskExecutor.execute(() -> HGMCommands.execute(client, cmd, args));
-                    }
-                    if (player.getGMLevel() >= 2) {
-                        TaskExecutor.execute(() -> GameMasterCommands.execute(client, cmd, args));
-                    }
+                int gmLevel = player.getGMLevel();
+                String name = cmd.getName().toLowerCase();
+                if (EVENT_COMMANDS.getCommands().containsKey(name)) {
+                    EVENT_COMMANDS.executeCommand(client, cmd, args);
+                } else if (gmLevel >= 2 && GM_COMMANDS.getCommands().containsKey(name)) {
+                    GM_COMMANDS.executeCommand(client, cmd, args);
+                } else if (gmLevel >= 3 && HGM_COMMANDS.getCommands().containsKey(name)) {
+                    HGM_COMMANDS.executeCommand(client, cmd, args);
+                } else if (gmLevel >= 4 & ADMIN_COMMANDS.getCommands().containsKey(name)) {
+                    ADMIN_COMMANDS.executeCommand(client, cmd, args);
+                } else {
+                    player.dropMessage(5, "Command does not exist or you do not have permission to use it");
                 }
             }
         };

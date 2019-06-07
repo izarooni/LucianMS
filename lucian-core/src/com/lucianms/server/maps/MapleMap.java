@@ -127,6 +127,7 @@ public class MapleMap implements PacketAnnouncer {
     //endregion
 
     //region events
+    private int tagRange;
     private boolean eventStarted;
     private boolean muted;
     private MapleSnowball snowball0, snowball1;
@@ -144,6 +145,8 @@ public class MapleMap implements PacketAnnouncer {
         if (this.monsterRate == 0) {
             this.monsterRate = 1;
         }
+
+        tagRange = 20000;
     }
 
     @Override
@@ -1484,7 +1487,7 @@ public class MapleMap implements PacketAnnouncer {
         sendObjectPlacement(chr.getClient());
         addMapObject(chr);
 
-        if (isStartingEventMap() && !eventStarted()) {
+        if (isStartingEventMap() && !isEventStarted()) {
             chr.getMap().getPortal("join00").setPortalStatus(false);
         }
         if (hasForcedEquip()) {
@@ -2221,16 +2224,20 @@ public class MapleMap implements PacketAnnouncer {
         }
     }
 
-    public boolean eventStarted() {
+    public boolean isEventStarted() {
         return eventStarted;
-    }
-
-    public void startEvent() {
-        this.eventStarted = true;
     }
 
     public void setEventStarted(boolean event) {
         this.eventStarted = event;
+    }
+
+    public int getTagRange() {
+        return tagRange;
+    }
+
+    public void setTagRange(int tagRange) {
+        this.tagRange = tagRange;
     }
 
     public String getEventNPC() {

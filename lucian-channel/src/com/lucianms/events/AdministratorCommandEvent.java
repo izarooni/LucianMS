@@ -50,7 +50,7 @@ public class AdministratorCommandEvent extends PacketEvent {
                 break;
             }
             case 0x10:
-                player.setHidden(bool, false);
+                player.toggleHidden(bool);
                 break;
         }
         return null;

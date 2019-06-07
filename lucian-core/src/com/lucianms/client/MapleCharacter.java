@@ -1217,12 +1217,9 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Di
         this.hidden = hidden;
     }
 
-    public void setHidden(boolean hidden, boolean login) {
+    public void toggleHidden(boolean hidden) {
         if (hidden) {
-            if (!login) {
-                // toggle from being visible
-                getMap().sendPacketIf(MaplePacketCreator.removePlayerFromMap(getId()), p -> p.getGMLevel() < getGMLevel());
-            }
+            getMap().sendPacketIf(MaplePacketCreator.removePlayerFromMap(getId()), p -> p.getGMLevel() < getGMLevel());
             List<Pair<MapleBuffStat, Integer>> darkSightBuff = Collections.singletonList(new Pair<>(MapleBuffStat.DARKSIGHT, 0));
             getMap().sendPacketIf(MaplePacketCreator.giveForeignBuff(getId(), darkSightBuff), p -> p.getGMLevel() >= getGMLevel());
 
@@ -5142,11 +5139,11 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Di
         updateSingleStat(MapleStat.JOB, job.getId());
 
         level = 1;
+        updateSingleStat(MapleStat.EXP, 1);
 
         exp.set(0);
         updateSingleStat(MapleStat.EXP, 0);
 
-        updateSingleStat(MapleStat.AVAILABLESP, getRemainingSp());
         setRebirthPoints(getRebirthPoints() + 50);
         dropMessage("You have received 50 rebirth points");
 

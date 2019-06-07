@@ -7,6 +7,7 @@ import com.lucianms.client.SkillFactory;
 import com.lucianms.client.inventory.Equip;
 import com.lucianms.command.Command;
 import com.lucianms.command.CommandArgs;
+import com.lucianms.command.CommandEvent;
 import com.lucianms.cquest.CQuestBuilder;
 import com.lucianms.discord.DiscordConnection;
 import com.lucianms.discord.Headers;
@@ -36,11 +37,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import tools.HexTool;
 import tools.MaplePacketCreator;
+import tools.Pair;
 import tools.StringUtil;
 
 import javax.script.ScriptException;
 import java.awt.*;
 import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
+import java.util.Map;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.function.Function;
 
@@ -54,21 +58,33 @@ public class AdministratorCommands extends CommandExecutor {
     private static final Logger LOGGER = LoggerFactory.getLogger(AdministratorCommands.class);
 
     public AdministratorCommands() {
-        addCommand("clearcache", this::CommandClearCache);
-        addCommand("forceevent", this::CommandForceEvent);
-        addCommand("forceautoevent", this::CommandAutoForceEvent);
-        addCommand("list", this::CommandDebugList);
-        addCommand("reloadevent", this::CommandReloadEvent);
-        addCommand("reloadevents", this::CommandReloadEvents);
-        addCommand("wpos", this::CommandWarpPosition);
-        addCommand("setgmlevel", this::CommandSetGMLevel);
-        addCommand("setcouple", this::CommandSetCouple);
-        addCommand("tasks", this::CommandShowTasks);
-        addCommand("fakeplayer", this::CommandCreateClone);
-        addCommand("pb", this::CommandBakePacket);
-        addCommand("wipe", this::CommandWipePlayer);
-        addCommand("test", this::CommandTest);
-        addCommand("stop", this::CommandExit);
+        addCommand("admincmds", this::CommandList, "List of administrator commands");
+        addCommand("clearcache", this::CommandClearCache, "Clear cache of a specified data-set");
+//        addCommand("forceevent", this::CommandForceEvent, "Force proc of an auto-event");
+        addCommand("forceautoevent", this::CommandAutoForceEvent, "Force proc of a scheduled auto-event");
+        addCommand("list", this::CommandDebugList, "List of all entities of a specific type");
+        addCommand("reloadevent", this::CommandReloadEvent, "Reload an event script");
+        addCommand("reloadevents", this::CommandReloadEvents, "Reload all event scripts");
+        addCommand("wpos", this::CommandWarpPosition, "Warp to a position in the current map");
+        addCommand("setgmlevel", this::CommandSetGMLevel, "Change the GM level of a specified player");
+        addCommand("setcouple", this::CommandSetCouple, "Create a couple ring with 2 specified players");
+        addCommand("tasks", this::CommandShowTasks, "View information on the thread pool executor");
+        addCommand("fakeplayer", this::CommandCreateClone, "Create a clone of your player");
+        addCommand("pb", this::CommandBakePacket, "Create a packet via hexadecimal characters");
+        addCommand("wipe", this::CommandWipePlayer, "Clear all items for a specified player");
+        addCommand("test", this::CommandTest, "Test command");
+        addCommand("stop", this::CommandExit, "Stop the server after a specified amount of time (in seconds)");
+    }
+
+    private void CommandList(MapleCharacter player, Command cmd, CommandArgs args) {
+        Map<String, Pair<CommandEvent, String>> commands = getCommands();
+        ArrayList<String> messages = new ArrayList<>(commands.size());
+        for (Map.Entry<String, Pair<CommandEvent, String>> e : commands.entrySet()) {
+            messages.add(String.format("!%s - %s", e.getKey(), e.getValue().getRight()));
+        }
+        messages.sort(String::compareTo);
+        messages.forEach(player::dropMessage);
+        messages.clear();
     }
 
     private void DoShutDownServer() {

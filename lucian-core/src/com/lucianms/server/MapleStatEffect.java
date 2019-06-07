@@ -578,7 +578,7 @@ public class MapleStatEffect {
 
     private boolean applyTo(MapleCharacter applyfrom, MapleCharacter applyto, boolean primary, Point pos) {
         if (skill && sourceid == SuperGM.HIDE) {
-            applyto.setHidden(!applyto.isHidden(), false);
+            applyto.toggleHidden(!applyto.isHidden());
             return true;
         }
         int hpchange = calcHPChange(applyfrom, primary);

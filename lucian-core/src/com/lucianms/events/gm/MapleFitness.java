@@ -51,7 +51,7 @@ public class MapleFitness {
     }
 
     public void startFitness() {
-        chr.getMap().startEvent();
+        chr.getMap().setEventStarted(true);
         chr.getClient().announce(MaplePacketCreator.getClock(900));
         this.timeStarted = System.currentTimeMillis();
         this.time = 900000;
