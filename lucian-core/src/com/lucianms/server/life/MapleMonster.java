@@ -314,7 +314,7 @@ public class MapleMonster extends AbstractLoadedMapleLife {
                 AtomicLong atomicDamage = entry.getValue();
                 float portionedExp = Math.min(maxHP, atomicDamage.get()) / maxHP;
                 if (isKiller) {
-                    portionedExp += exp / 5;
+                    portionedExp += 0.05;
                 }
                 int gainExp = (int) (exp * (portionedExp * 100f));
 

@@ -1995,11 +1995,13 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Di
 
     public void gainExp(long gain, int party, boolean show, boolean inChat, boolean white) {
         if (getLevel() >= getMaxLevel()) {
-            if (exp.get() != 0) {
+            if (isAutoRebirth()) {
+                doRebirth();
+            } else if (exp.get() != 0) {
                 setExp(0);
                 updateSingleStat(MapleStat.EXP, 0);
+                return;
             }
-            return;
         }
         int equip = 0;
 
@@ -2017,10 +2019,6 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Di
                 equip = (int) Math.max(Integer.MAX_VALUE, gain * (spiritPendantModifier / 10));
             }
         }
-        if (autoRebirth && level >= getMaxLevel()) {
-            doRebirth();
-        }
-
         long totalExpGain = gain + equip + party;
         int localLevel = level;
         long newExp = exp.get() + totalExpGain;
@@ -5135,11 +5133,12 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Di
     public void doRebirth() {
         rebirths += 1;
 
-        job = MapleJob.BEGINNER;
-        updateSingleStat(MapleStat.JOB, job.getId());
+        if (!isAutoRebirth()) {
+            job = MapleJob.BEGINNER;
+            updateSingleStat(MapleStat.JOB, job.getId());
+        }
 
         level = 1;
-        updateSingleStat(MapleStat.EXP, 1);
 
         exp.set(0);
         updateSingleStat(MapleStat.EXP, 0);
