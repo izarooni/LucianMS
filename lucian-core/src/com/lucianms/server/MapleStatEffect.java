@@ -604,9 +604,6 @@ public class MapleStatEffect {
         if (isComboReset()) {
             applyto.setCombo((short) 0);
         }
-        /*if (applyfrom.getMp() < getMpCon()) {
-         AutobanFactory.MPCON.addPoint(applyfrom.getAutobanManager(), "mpCon hack for skill:" + sourceid + "; Player MP: " + applyto.getMp() + " MP Needed: " + getMpCon());
-         } */
         if (hpchange != 0) {
             if (hpchange < 0 && (-hpchange) > applyto.getHp()) {
                 return false;
@@ -678,8 +675,8 @@ public class MapleStatEffect {
             applyMonsterBuff(applyfrom);
         }
 
-        if (this.getFatigue() != 0) {
-            applyto.getMount().setTiredness(applyto.getMount().getTiredness() + this.getFatigue());
+        if (getFatigue() != 0) {
+            applyto.getVehicle().setTiredness(applyto.getVehicle().getTiredness() + getFatigue());
         }
 
         if (summonMovementType != null && pos != null) {
@@ -824,51 +821,51 @@ public class MapleStatEffect {
 
         List<Pair<MapleBuffStat, Integer>> localstatups = statups;
         int localDuration = duration;
-        int localsourceid = sourceid;
-        int seconds = localDuration / 1000;
-        MapleMount givemount = null;
+        MapleMount vehicle = applyto.getVehicle();
         if (isMonsterRiding()) {
-            int ridingLevel = 0;
-            Item mount = applyfrom.getInventory(MapleInventoryType.EQUIPPED).getItem((short) -18);
-            if (mount != null) {
-                ridingLevel = mount.getItemId();
+            switch (sourceid) {
+                case Corsair.BATTLESHIP:
+                    vehicle = new MapleMount(applyto, 1932000, sourceid);
+                    if (applyto.getBattleshipHp() == 0) {
+                        applyto.resetBattleshipHp();
+                    }
+                    break;
+                case Beginner.SPACESHIP:
+                case Noblesse.SPACESHIP:
+                    vehicle = new MapleMount(applyto, 1932000 + applyto.getSkillLevel(sourceid), sourceid);
+                    return;
+                case Beginner.YETI_RIDER:
+                case Noblesse.YETI_RIDER:
+                case Legend.YETI_RIDER:
+                    vehicle = new MapleMount(applyto, 1932003, sourceid);
+                    return;
+                case Beginner.YETI_MOUNT:
+                case Noblesse.YETI_MOUNT:
+                case Legend.YETI_MOUNT:
+                    vehicle = new MapleMount(applyto, 1932004, sourceid);
+                    return;
+                case Beginner.WITCH_BROOMSTICK:
+                case Noblesse.WITCH_BROOMSTICK:
+                case Legend.WITCH_BROOMSTICK:
+                    vehicle = new MapleMount(applyto, 1932005, sourceid);
+                    return;
+                case Beginner.BARLOG_MOUNT:
+                case Noblesse.BARLOG_MOUNT:
+                case Legend.BARLOG_MOUNT:
+                    vehicle = new MapleMount(applyto, 1932010, sourceid);
+                    return;
+                default:
+                    if (vehicle == null) {
+                        applyto.setVehicle(vehicle = new MapleMount(applyto, 0, sourceid));
+                        Item item = applyfrom.getInventory(MapleInventoryType.EQUIPPED).getItem((byte) -18);
+                        if (item != null) {
+                            vehicle.setItemId(item.getItemId());
+                        }
+                    }
+                    applyto.getVehicle().startSchedule();
+                    break;
             }
-            if (sourceid == Corsair.BATTLESHIP) {
-                ridingLevel = 1932000;
-            } else if (sourceid == Beginner.SPACESHIP || sourceid == Noblesse.SPACESHIP) {
-                ridingLevel = 1932000 + applyto.getSkillLevel(sourceid);
-            } else if (sourceid == Beginner.YETI_RIDER || sourceid == Noblesse.YETI_RIDER || sourceid == Legend.YETI_RIDER) {
-                ridingLevel = 1932003;
-            } else if (sourceid == Beginner.YETI_MOUNT || sourceid == Noblesse.YETI_MOUNT || sourceid == Legend.YETI_MOUNT) {
-                ridingLevel = 1932004;
-            } else if (sourceid == Beginner.WITCH_BROOMSTICK || sourceid == Noblesse.WITCH_BROOMSTICK || sourceid == Legend.WITCH_BROOMSTICK) {
-                ridingLevel = 1932005;
-            } else if (sourceid == Beginner.BARLOG_MOUNT || sourceid == Noblesse.BARLOG_MOUNT || sourceid == Legend.BARLOG_MOUNT) {
-                ridingLevel = 1932010;
-            } else {
-                if (applyto.getMount() == null) {
-                    applyto.mount(ridingLevel, sourceid);
-                }
-                applyto.getMount().startSchedule();
-            }
-            if (sourceid == Corsair.BATTLESHIP) {
-                givemount = new MapleMount(applyto, 1932000, sourceid);
-            } else if (sourceid == Beginner.SPACESHIP || sourceid == Noblesse.SPACESHIP) {
-                givemount = new MapleMount(applyto, 1932000 + applyto.getSkillLevel(sourceid), sourceid);
-            } else if (sourceid == Beginner.YETI_RIDER || sourceid == Noblesse.YETI_RIDER || sourceid == Legend.YETI_RIDER) {
-                givemount = new MapleMount(applyto, 1932003, sourceid);
-            } else if (sourceid == Beginner.YETI_MOUNT || sourceid == Noblesse.YETI_MOUNT || sourceid == Legend.YETI_MOUNT) {
-                givemount = new MapleMount(applyto, 1932004, sourceid);
-            } else if (sourceid == Beginner.WITCH_BROOMSTICK || sourceid == Noblesse.WITCH_BROOMSTICK || sourceid == Legend.WITCH_BROOMSTICK) {
-                givemount = new MapleMount(applyto, 1932005, sourceid);
-            } else if (sourceid == Beginner.BARLOG_MOUNT || sourceid == Noblesse.BARLOG_MOUNT || sourceid == Legend.BARLOG_MOUNT) {
-                givemount = new MapleMount(applyto, 1932010, sourceid);
-            } else {
-                givemount = applyto.getMount();
-            }
-            localDuration = sourceid;
-            localsourceid = ridingLevel;
-            localstatups = Collections.singletonList(new Pair<>(MapleBuffStat.MONSTER_RIDING, 0));
+            localstatups = Collections.singletonList(new Pair<>(MapleBuffStat.MONSTER_RIDING, sourceid));
         } else if (isSkillMorph()) {
             localstatups = Collections.singletonList(new Pair<>(MapleBuffStat.MORPH, getMorph(applyto)));
         }
@@ -877,55 +874,49 @@ public class MapleStatEffect {
             applyto.getMap().broadcastMessage(applyto, MaplePacketCreator.showBuffeffect(applyto.getId(), sourceid, 1, (byte) 3), false);
         }
         if (localstatups.size() > 0) {
-            byte[] buff = null;
-            byte[] mbuff = null;
-            if (getSummonMovementType() == null) {
-                buff = MaplePacketCreator.giveBuff((skill ? sourceid : -sourceid), localDuration, localstatups);
-            }
+            int seconds = localDuration / 1000;
+            byte[] local = null;
+            byte[] remote = null;
             if (isDash()) {
-                buff = MaplePacketCreator.givePirateBuff(statups, sourceid, seconds);
-                mbuff = MaplePacketCreator.giveForgeinPirateBuff(applyto.getId(), sourceid, seconds, localstatups);
+                local = MaplePacketCreator.givePirateBuff(statups, sourceid, seconds);
+                remote = MaplePacketCreator.giveForgeinPirateBuff(applyto.getId(), sourceid, seconds, localstatups);
             } else if (isInfusion()) {
-                buff = MaplePacketCreator.givePirateBuff(localstatups, sourceid, seconds);
-                mbuff = MaplePacketCreator.giveForgeinPirateBuff(applyto.getId(), sourceid, seconds, localstatups);
-            } else if (isDs()) {
+                local = MaplePacketCreator.givePirateBuff(localstatups, sourceid, seconds);
+                remote = MaplePacketCreator.giveForgeinPirateBuff(applyto.getId(), sourceid, seconds, localstatups);
+            } else if (isDarkSight()) {
                 List<Pair<MapleBuffStat, Integer>> dsstat = Collections.singletonList(new Pair<>(MapleBuffStat.DARKSIGHT, 0));
-                mbuff = MaplePacketCreator.giveForeignBuff(applyto.getId(), dsstat);
+                remote = MaplePacketCreator.giveForeignBuff(applyto.getId(), dsstat);
             } else if (isCombo()) {
-                mbuff = MaplePacketCreator.giveForeignBuff(applyto.getId(), statups);
+                remote = MaplePacketCreator.giveForeignBuff(applyto.getId(), statups);
             } else if (isMonsterRiding()) {
-                buff = MaplePacketCreator.giveBuff(localsourceid, localDuration, localstatups);
-                mbuff = MaplePacketCreator.showMonsterRiding(applyto.getId(), givemount);
-                localDuration = duration;
-                if (sourceid == Corsair.BATTLESHIP) {//hp
-                    if (applyto.getBattleshipHp() == 0) {
-                        applyto.resetBattleshipHp();
-                    }
-                }
+                local = MaplePacketCreator.giveBuff(vehicle.getItemId(), duration, localstatups);
+                remote = MaplePacketCreator.showMonsterRiding(applyto.getId(), vehicle);
             } else if (isShadowPartner()) {
                 List<Pair<MapleBuffStat, Integer>> stat = Collections.singletonList(new Pair<>(MapleBuffStat.SHADOWPARTNER, 0));
-                mbuff = MaplePacketCreator.giveForeignBuff(applyto.getId(), stat);
+                remote = MaplePacketCreator.giveForeignBuff(applyto.getId(), stat);
             } else if (isSoulArrow()) {
                 List<Pair<MapleBuffStat, Integer>> stat = Collections.singletonList(new Pair<>(MapleBuffStat.SOULARROW, 0));
-                mbuff = MaplePacketCreator.giveForeignBuff(applyto.getId(), stat);
+                remote = MaplePacketCreator.giveForeignBuff(applyto.getId(), stat);
             } else if (isEnrage()) {
                 applyto.handleOrbconsume();
             } else if (isMorph()) {
                 List<Pair<MapleBuffStat, Integer>> stat = Collections.singletonList(new Pair<>(MapleBuffStat.MORPH, getMorph(applyto)));
-                mbuff = MaplePacketCreator.giveForeignBuff(applyto.getId(), stat);
+                remote = MaplePacketCreator.giveForeignBuff(applyto.getId(), stat);
+            } else if (getSummonMovementType() == null) {
+                local = MaplePacketCreator.giveBuff((skill ? sourceid : -sourceid), duration, localstatups);
             }
             long starttime = System.currentTimeMillis();
             CancelEffectAction cancelAction = new CancelEffectAction(applyto, this, starttime);
-            Task task = TaskExecutor.createTask(cancelAction, localDuration);
+            Task task = TaskExecutor.createTask(cancelAction, duration);
             applyto.registerEffect(this, starttime, task);
 
-            if (buff != null) {
+            if (local != null) {
                 if (!hasNoIcon()) { //Thanks flav for such a simple release! :)
-                    applyto.getClient().announce(buff);
+                    applyto.getClient().announce(local);
                 }
             }
-            if (mbuff != null) {
-                applyto.getMap().broadcastMessage(applyto, mbuff, false);
+            if (remote != null) {
+                applyto.getMap().broadcastMessage(applyto, remote, false);
             }
             if (sourceid == Corsair.BATTLESHIP) {
                 applyto.announce(MaplePacketCreator.skillCooldown(5221999, applyto.getBattleshipHp() / 10));
@@ -1103,7 +1094,7 @@ public class MapleStatEffect {
         return sourceid == Beginner.RECOVERY || sourceid == Noblesse.RECOVERY || sourceid == Legend.RECOVERY;
     }
 
-    private boolean isDs() {
+    private boolean isDarkSight() {
         return skill && (sourceid == Rogue.DARK_SIGHT || sourceid == WindArcher.WIND_WALK || sourceid == NightWalker.DARK_SIGHT);
     }
 

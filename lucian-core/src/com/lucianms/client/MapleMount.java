@@ -37,16 +37,14 @@ public class MapleMount {
     private int level;
     private Task tirednessTask;
     private MapleCharacter owner;
-    private boolean active;
 
-    public MapleMount(MapleCharacter owner, int id, int skillid) {
-        this.itemid = id;
-        this.skillid = skillid;
+    public MapleMount(MapleCharacter owner, int itemID, int skillID) {
+        this.itemid = itemID;
+        this.skillid = skillID;
         this.tiredness = 0;
         this.level = 1;
         this.exp = 0;
         this.owner = owner;
-        active = true;
     }
 
     public int getItemId() {
@@ -128,18 +126,7 @@ public class MapleMount {
     }
 
     public void cancelSchedule() {
-        if (tirednessTask != null) {
-            tirednessTask.cancel();
-            tirednessTask = null;
-        }
-    }
-
-    public void setActive(boolean set) {
-        this.active = set;
-    }
-
-    public boolean isActive() {
-        return active;
+        tirednessTask = TaskExecutor.cancelTask(tirednessTask);
     }
 
     public void empty() {

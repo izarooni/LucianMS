@@ -466,8 +466,8 @@ public class MapleInventoryManipulator {
                 break;
             }
             case -18: {
-                if (player.getMount() != null) {
-                    player.getMount().setItemId(srcItem.getItemId());
+                if (player.getVehicle() != null) {
+                    player.getVehicle().setItemId(srcItem.getItemId());
                 }
                 break;
             }

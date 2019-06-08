@@ -1108,8 +1108,8 @@ public class MaplePacketCreator {
         }
         //endregion
         //region CUIUserInfo::SetTamingMobInfo
-        MapleMount mount = player.getMount();
-        w.write(mount == null || !mount.isActive() ? 0 : mount.getId()); //mount
+        MapleMount mount = player.getVehicle();
+        w.write(mount == null ? 0 : mount.getId()); //mount
         if (mount != null && eqqInventory.getItem((short) -18) != null) {
             w.writeInt(mount.getLevel()); //level
             w.writeInt(mount.getExp()); //exp
@@ -3059,36 +3059,22 @@ public class MaplePacketCreator {
         return mplew.getPacket();
     }
 
-    /**
-     * It is important that statups is in the correct order (see decleration order in MapleBuffStat) since this method
-     * doesn't do automagical reordering.
-     *
-     * @param buffid
-     * @param bufflength
-     * @param statups
-     * @return
-     */
-    //1F 00 00 00 00 00 03 00 00 40 00 00 00 E0 00 00 00 00 00 00 00 00 E0 01 8E AA 4F 00 00 C2 EB 0B E0 01 8E AA 4F 00 00 C2 EB 0B 0C 00 8E AA 4F 00 00 C2 EB 0B 44 02 8E AA 4F 00 00 C2 EB 0B 44 02 8E AA 4F 00 00 C2 EB 0B 00 00 E0 7A 1D 00 8E AA 4F 00 00 00 00 00 00 00 00 03
     public static byte[] giveBuff(int buffid, int bufflength, List<Pair<MapleBuffStat, Integer>> statups) {
         final MaplePacketWriter mplew = new MaplePacketWriter();
         mplew.writeShort(SendOpcode.GIVE_BUFF.getValue());
-        boolean special = false;
         writeLongMask(mplew, statups);
         for (Pair<MapleBuffStat, Integer> statup : statups) {
-            if (statup.getLeft().equals(MapleBuffStat.MONSTER_RIDING) || statup.getLeft().equals(MapleBuffStat.HOMING_BEACON)) {
-                special = true;
-            }
             mplew.writeShort(statup.getRight().shortValue());
             mplew.writeInt(buffid);
             mplew.writeInt(bufflength);
         }
         mplew.writeInt(0);
         mplew.write(0);
-        mplew.writeInt(statups.get(0).getRight()); //Homing beacon ...
 
-        if (special) {
-            mplew.skip(3);
-        }
+        mplew.writeInt(0);
+        mplew.write(0);
+        mplew.write(0);
+        mplew.write(0);
         return mplew.getPacket();
     }
 
@@ -5993,13 +5979,13 @@ public class MaplePacketCreator {
             }
         }
         mplew.write(0); //end of pets
-        if (chr.getMount() == null) {
+        if (chr.getVehicle() == null) {
             mplew.writeInt(1); // mob level
             mplew.writeLong(0); // mob exp + tiredness
         } else {
-            mplew.writeInt(chr.getMount().getLevel());
-            mplew.writeInt(chr.getMount().getExp());
-            mplew.writeInt(chr.getMount().getTiredness());
+            mplew.writeInt(chr.getVehicle().getLevel());
+            mplew.writeInt(chr.getVehicle().getExp());
+            mplew.writeInt(chr.getVehicle().getTiredness());
         }
         if (chr.getPlayerShop() != null && chr.getPlayerShop().isOwner(chr)) {
             if (chr.getPlayerShop().hasFreeSlot()) {

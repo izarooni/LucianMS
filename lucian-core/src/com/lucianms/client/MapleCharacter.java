@@ -216,7 +216,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Di
     private MapleShop shop;
     private MapleTrade trade;
     private MapleStorage storage;
-    private MapleMount maplemount;
+    private MapleMount vehicle;
     private MapleMiniGame miniGame;
     private MaplePlayerShop playerShop;
     private MapleSkinColor skinColor = MapleSkinColor.NORMAL;
@@ -817,14 +817,13 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Di
             ret.silentEnforceMaxHpMp();
             int mountid = ret.getJobType() * 10000000 + 1004;
             if (ret.getInventory(MapleInventoryType.EQUIPPED).getItem((short) -18) != null) {
-                ret.maplemount = new MapleMount(ret, ret.getInventory(MapleInventoryType.EQUIPPED).getItem((short) -18).getItemId(), mountid);
+                ret.vehicle = new MapleMount(ret, ret.getInventory(MapleInventoryType.EQUIPPED).getItem((short) -18).getItemId(), mountid);
             } else {
-                ret.maplemount = new MapleMount(ret, 0, mountid);
+                ret.vehicle = new MapleMount(ret, 0, mountid);
             }
-            ret.maplemount.setExp(mountexp);
-            ret.maplemount.setLevel(mountlevel);
-            ret.maplemount.setTiredness(mounttiredness);
-            ret.maplemount.setActive(false);
+            ret.vehicle.setExp(mountexp);
+            ret.vehicle.setLevel(mountlevel);
+            ret.vehicle.setTiredness(mounttiredness);
         }
         return ret;
     }
@@ -1200,8 +1199,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Di
         }
         if (effect.isMonsterRiding()) {
             if (effect.getSourceId() != Corsair.BATTLESHIP) {
-                getMount().cancelSchedule();
-                getMount().setActive(false);
+                getVehicle().cancelSchedule();
             }
         }
         if (!overwrite) {
@@ -2709,8 +2707,12 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Di
         this.bookCover = bookCover;
     }
 
-    public MapleMount getMount() {
-        return maplemount;
+    public MapleMount getVehicle() {
+        return vehicle;
+    }
+
+    public void setVehicle(MapleMount vehicle) {
+        this.vehicle = vehicle;
     }
 
     public int getMp() {
@@ -3368,10 +3370,6 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Di
                 LOGGER.info("Error while processing quest {}", q.getQuestID(), e);
             }
         }
-    }
-
-    public void mount(int id, int skillid) {
-        maplemount = new MapleMount(this, id, skillid);
     }
 
     public void createPlayerNPC(MapleCharacter v, int scriptId, String script) {
@@ -4046,10 +4044,10 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Di
                     ps.setInt(27, 0);
                     ps.setInt(28, 4);
                 }
-                if (maplemount != null) {
-                    ps.setInt(29, maplemount.getLevel());
-                    ps.setInt(30, maplemount.getExp());
-                    ps.setInt(31, maplemount.getTiredness());
+                if (vehicle != null) {
+                    ps.setInt(29, vehicle.getLevel());
+                    ps.setInt(30, vehicle.getExp());
+                    ps.setInt(31, vehicle.getTiredness());
                 } else {
                     ps.setInt(29, 1);
                     ps.setInt(30, 0);
@@ -5023,8 +5021,8 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Di
         tasks.forEach(Task::cancel);
         tasks.clear();
         effects.clear();
-        Functions.requireNotNull(maplemount, MapleMount::empty);
-        maplemount = null;
+        Functions.requireNotNull(vehicle, MapleMount::empty);
+        vehicle = null;
         partyQuest = null;
         events = null;
         mgc = null;
