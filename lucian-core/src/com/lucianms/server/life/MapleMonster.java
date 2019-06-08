@@ -291,7 +291,7 @@ public class MapleMonster extends AbstractLoadedMapleLife {
                 double gainExp = (exp * 0.8f) * (level / (double) partyLevelSum);
                 gainExp += gainExp * Math.log(leechCount);
                 if (mostDamage) {
-                    gainExp += (exp * 0.2f);
+                    gainExp += (exp * 0.6f);
                 }
                 giveExpToCharacter(member, (int) (gainExp / leechCount), isKiller, leechCount);
             }
@@ -348,7 +348,7 @@ public class MapleMonster extends AbstractLoadedMapleLife {
 
         if (attacker.isAlive()) {
             long personalExp = exp * attacker.getExpRate();
-            if (shareCount > 0) {
+            if (shareCount > 1) {
                 float bonusModifier = (110 + (5 * (shareCount - 2)));
                 partyBonus = (int) (personalExp * (bonusModifier / 1000));
             }

@@ -1230,7 +1230,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Di
                 mon.setController(null);
                 mon.setControllerHasAggro(false);
                 mon.setControllerKnowsAboutAggro(false);
-                mon.getMap().updateMonsterController(mon);
+                announce(MaplePacketCreator.stopControllingMonster(mon.getObjectId()));
             }
             if (getFakePlayer() != null) {
                 getMap().removeFakePlayer(getFakePlayer());
