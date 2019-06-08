@@ -501,7 +501,7 @@ public class MapleInventoryManipulator {
         }
         mods.add(new ModifyInventory(2, srcItem, srcPosition));
         c.announce(MaplePacketCreator.modifyInventory(true, mods));
-        player.equipChanged(ring != null);
+        player.equipChanged(true);
         if (ring != null) {
             byte[] packet = MaplePacketCreator.getPlayerModified(player,
                     (ItemConstants.isCoupleEquip(ring.getItemId()) ? ring : null),
