@@ -55,7 +55,7 @@ function action(mode, type, selection) {
             cm.sendOk("If you want to try the quest, please tell the #bleader of your party#k to talk to me.");
             cm.dispose();
         } else {
-            var party = cm.getParty().getMembers();
+            var party = cm.getParty().getPlayers();
             var inMap = cm.partyMembersInMap();
             var levelValid = 0;
             for (var i = 0; i < party.size(); i++) {

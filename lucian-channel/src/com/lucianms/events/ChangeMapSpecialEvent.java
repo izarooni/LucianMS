@@ -2,7 +2,6 @@ package com.lucianms.events;
 
 import com.lucianms.client.MapleCharacter;
 import com.lucianms.nio.receive.MaplePacketReader;
-import com.lucianms.events.PacketEvent;
 import com.lucianms.server.MaplePortal;
 import com.lucianms.server.MapleTrade;
 import tools.MaplePacketCreator;
@@ -40,7 +39,11 @@ public final class ChangeMapSpecialEvent extends PacketEvent {
             if (player.getTrade() != null) {
                 MapleTrade.cancelTrade(player);
             }
-            portal.enterPortal(getClient());
+            if (!portal.enterPortal(getClient())) {
+                player.announce(MaplePacketCreator.enableActions());
+                getLogger().info("portal {} in {} that leads to invalid area {}",
+                        startwp, player.getMapId(), portal.getTargetMapId());
+            }
         }
         return null;
     }

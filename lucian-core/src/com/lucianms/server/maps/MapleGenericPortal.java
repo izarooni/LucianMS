@@ -128,6 +128,9 @@ public class MapleGenericPortal implements MaplePortal {
             } else {
                 dest = c.getChannelServer().getMap(getTargetMapId());
             }
+            if (dest == null) {
+                return false;
+            }
             Point destLocation;
             MaplePortal portal = dest.getPortal(getTarget());
             if (portal == null) {

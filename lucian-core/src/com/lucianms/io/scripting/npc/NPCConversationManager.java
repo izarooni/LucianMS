@@ -269,6 +269,7 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
 
     public void gainCloseness(int closeness) {
         for (MaplePet pet : getPlayer().getPets()) {
+            if (pet == null) continue;
             if (pet.getCloseness() > 30000) {
                 pet.setCloseness(30000);
                 return;
