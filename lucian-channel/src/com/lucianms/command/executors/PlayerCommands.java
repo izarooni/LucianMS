@@ -201,14 +201,14 @@ public class PlayerCommands extends CommandExecutor {
                     break;
                 case "coins":
                 case "chirithy":
-                    CollectLeaderboard(con, usernames, "select c.name, sum(i.quantity) as value from inventoryitems i inner join characters c on c.id = i.characterid and itemid = " + ServerConstants.CURRENCY + " and gm = 0 group by characterid order by total desc limit 25");
+                    CollectLeaderboard(con, usernames, "select c.name, sum(i.quantity) as value from inventoryitems i inner join characters c on c.id = i.characterid and itemid = " + ServerConstants.CURRENCY + " and gm = 0 group by characterid order by value desc limit 25");
                     break;
                 case "event":
                 case "ep":
-                    CollectLeaderboard(con, usernames, "select name, eventpoints as value from characters where gm = 0 order by eventpoints desc limit 25");
+                    CollectLeaderboard(con, usernames, "select name, eventpoints as value from characters where gm = 0 order by value desc limit 25");
                     break;
                 case "jq":
-                    CollectLeaderboard(con, usernames, "select name, jumpquestpoints as value from characters where gm = 0 order by jumpquestpoints desc limit 25");
+                    CollectLeaderboard(con, usernames, "select name, jumpquestpoints as value from characters where gm = 0 order by value desc limit 25");
                     break;
             }
         } catch (SQLException e) {
