@@ -33,6 +33,7 @@ import com.lucianms.constants.ServerConstants;
 import com.lucianms.constants.skills.*;
 import com.lucianms.nio.receive.MaplePacketReader;
 import com.lucianms.scheduler.TaskExecutor;
+import com.lucianms.server.BuffContainer;
 import com.lucianms.server.MapleItemInformationProvider;
 import com.lucianms.server.MapleStatEffect;
 import com.lucianms.server.life.*;
@@ -42,7 +43,6 @@ import com.lucianms.server.maps.MapleMapObject;
 import com.lucianms.server.maps.MapleMapObjectType;
 import com.lucianms.server.partyquest.Pyramid;
 import tools.MaplePacketCreator;
-import tools.Pair;
 import tools.Randomizer;
 
 import java.awt.*;
@@ -139,10 +139,10 @@ public abstract class AbstractDealDamageEvent extends PacketEvent {
                     }
                     totDamage += totDamageToOneMonster;
                     player.checkMonsterAggro(monster);
-                    if (player.getBuffedValue(MapleBuffStat.PICKPOCKET) != null && (attack.skill == 0 || attack.skill == Rogue.DOUBLE_STAB || attack.skill == Bandit.SAVAGE_BLOW || attack.skill == ChiefBandit.ASSAULTER || attack.skill == ChiefBandit.BAND_OF_THIEVES || attack.skill == Shadower.ASSASSINATE || attack.skill == Shadower.TAUNT || attack.skill == Shadower.BOOMERANG_STEP)) {
-                        Skill pickpocket = SkillFactory.getSkill(ChiefBandit.PICKPOCKET);
+                    if (player.getBuffedValue(MapleBuffStat.PICK_POCKET) != null && (attack.skill == 0 || attack.skill == Rogue.DOUBLE_STAB || attack.skill == Bandit.SAVAGE_BLOW || attack.skill == ChiefBandit.ASSAULTER || attack.skill == ChiefBandit.BAND_OF_THIEVES || attack.skill == Shadower.ASSASSINATE || attack.skill == Shadower.TAUNT || attack.skill == Shadower.BOOMERANG_STEP)) {
+                        Skill pickpocket = SkillFactory.getSkill(ChiefBandit.PICK_POCKET);
                         int delay = 0;
-                        final int maxmeso = player.getBuffedValue(MapleBuffStat.PICKPOCKET);
+                        final int maxmeso = player.getBuffedValue(MapleBuffStat.PICK_POCKET);
                         for (Integer eachd : onedList) {
 
                             eachd += Integer.MAX_VALUE;
@@ -189,11 +189,11 @@ public abstract class AbstractDealDamageEvent extends PacketEvent {
                         monster.setTempEffectiveness(Element.FIRE, ElementalEffectiveness.WEAK, SkillFactory.getSkill(ILArchMage.ICE_DEMON).getEffect(player.getSkillLevel(SkillFactory.getSkill(ILArchMage.ICE_DEMON))).getDuration() * 1000);
                     } else if (attack.skill == Outlaw.HOMING_BEACON || attack.skill == Corsair.BULLSEYE) {
                         player.setMarkedMonster(monster.getObjectId());
-                        player.announce(MaplePacketCreator.giveBuff(1, attack.skill, Collections.singletonList(new Pair<>(MapleBuffStat.HOMING_BEACON, monster.getObjectId()))));
+                        player.announce(MaplePacketCreator.giveBuff(1, attack.skill, Map.of(MapleBuffStat.GUIDED_BULLET, monster.getObjectId())));
                     }
 
                     if (job == 2111 || job == 2112) {
-                        if (player.getBuffedValue(MapleBuffStat.WK_CHARGE) != null) {
+                        if (player.getBuffedValue(MapleBuffStat.WEAPON_CHARGE) != null) {
                             Skill snowCharge = SkillFactory.getSkill(Aran.SNOW_CHARGE);
                             if (totDamageToOneMonster > 0) {
                                 MonsterStatusEffect monsterStatusEffect = new MonsterStatusEffect(Collections.singletonMap(MonsterStatus.SPEED, snowCharge.getEffect(player.getSkillLevel(snowCharge)).getX()), snowCharge, null, false);
@@ -225,7 +225,7 @@ public abstract class AbstractDealDamageEvent extends PacketEvent {
                     if (job == 121 || job == 122) {
                         for (int charge = 1211005; charge < 1211007; charge++) {
                             Skill chargeSkill = SkillFactory.getSkill(charge);
-                            if (player.isBuffFrom(MapleBuffStat.WK_CHARGE, chargeSkill)) {
+                            if (player.isBuffFrom(MapleBuffStat.WEAPON_CHARGE, chargeSkill)) {
                                 if (totDamageToOneMonster > 0) {
                                     monster.setTempEffectiveness(Element.ICE, ElementalEffectiveness.WEAK, chargeSkill.getEffect(player.getSkillLevel(chargeSkill)).getY() * 1000);
                                     break;
@@ -235,7 +235,7 @@ public abstract class AbstractDealDamageEvent extends PacketEvent {
                         if (job == 122) {
                             for (int charge = 1221003; charge < 1221004; charge++) {
                                 Skill chargeSkill = SkillFactory.getSkill(charge);
-                                if (player.isBuffFrom(MapleBuffStat.WK_CHARGE, chargeSkill)) {
+                                if (player.isBuffFrom(MapleBuffStat.WEAPON_CHARGE, chargeSkill)) {
                                     if (totDamageToOneMonster > 0) {
                                         monster.setTempEffectiveness(Element.HOLY, ElementalEffectiveness.WEAK, chargeSkill.getEffect(player.getSkillLevel(chargeSkill)).getY() * 1000);
                                         break;
@@ -490,7 +490,7 @@ public abstract class AbstractDealDamageEvent extends PacketEvent {
             }
         }
 
-        Integer comboBuff = player.getBuffedValue(MapleBuffStat.COMBO);
+        Integer comboBuff = player.getBuffedValue(MapleBuffStat.COMBO_COUNTER);
         if (comboBuff != null && comboBuff > 0) {
             int cSkillID = player.isCygnus() ? DawnWarrior.COMBO_ATTACK : Crusader.COMBO_ATTACK;
             int acSkillID = player.isCygnus() ? DawnWarrior.ADVANCED_COMBO : Hero.ADVANCED_COMBO_ATTACK;
@@ -539,7 +539,7 @@ public abstract class AbstractDealDamageEvent extends PacketEvent {
         if (player.getJob().isA((MapleJob.BOWMAN)) || player.getJob().isA(MapleJob.THIEF) || player.getJob().isA(MapleJob.NIGHTWALKER1) || player.getJob().isA(MapleJob.WINDARCHER1) || player.getJob() == MapleJob.ARAN3 || player.getJob() == MapleJob.ARAN4 || player.getJob() == MapleJob.MARAUDER || player.getJob() == MapleJob.BUCCANEER) {
             canCrit = true;
         }
-        if (player.getBuffEffect(MapleBuffStat.SHARP_EYES) != null) {
+        if (player.getEffects().containsKey(MapleBuffStat.SHARP_EYES)) {
             // Any class that has sharp eyes can crit. Also, since it stacks with normal crit go ahead
             // and calc it in.
             canCrit = true;
@@ -547,7 +547,7 @@ public abstract class AbstractDealDamageEvent extends PacketEvent {
         }
 
         boolean shadowPartner = false;
-        if (player.getBuffEffect(MapleBuffStat.SHADOWPARTNER) != null) {
+        if (player.getEffects().containsKey(MapleBuffStat.SHADOW_PARTNER)) {
             shadowPartner = true;
         }
 
@@ -557,10 +557,11 @@ public abstract class AbstractDealDamageEvent extends PacketEvent {
             List<Integer> allDamageNumbers = new ArrayList<>();
             MapleMonster monster = player.getMap().getMonsterByOid(oid);
 
-            if (player.getBuffEffect(MapleBuffStat.WK_CHARGE) != null) {
+            BuffContainer container = player.getEffects().get(MapleBuffStat.WEAPON_CHARGE);
+            if (container != null ) {
                 // Charge, so now we need to check elemental effectiveness
-                int sourceID = player.getBuffSource(MapleBuffStat.WK_CHARGE);
-                int level = player.getBuffedValue(MapleBuffStat.WK_CHARGE);
+                int sourceID = container.getSourceID();
+                int level = container.getValue();
                 if (monster != null) {
                     if (sourceID == WhiteKnight.FLAME_CHARGE_BW || sourceID == WhiteKnight.FIRE_CHARGE_SWORD) {
                         if (monster.getStats().getEffectiveness(Element.FIRE) == ElementalEffectiveness.WEAK) {

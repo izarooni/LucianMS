@@ -24,7 +24,6 @@ package com.lucianms.events;
 import com.lucianms.client.MapleBuffStat;
 import com.lucianms.client.MapleCharacter;
 import com.lucianms.client.MapleStat;
-import com.lucianms.client.SkillFactory;
 import com.lucianms.client.inventory.Item;
 import com.lucianms.client.inventory.MapleInventory;
 import com.lucianms.client.inventory.MapleInventoryType;
@@ -34,6 +33,7 @@ import com.lucianms.constants.ItemConstants;
 import com.lucianms.constants.skills.*;
 import com.lucianms.nio.receive.MaplePacketReader;
 import com.lucianms.scheduler.TaskExecutor;
+import com.lucianms.server.BuffContainer;
 import com.lucianms.server.MapleInventoryManipulator;
 import com.lucianms.server.MapleItemInformationProvider;
 import com.lucianms.server.MapleStatEffect;
@@ -42,6 +42,7 @@ import tools.MaplePacketCreator;
 import tools.Randomizer;
 
 import java.util.Map;
+import java.util.Set;
 
 public final class PlayerDealDamageRangedEvent extends AbstractDealDamageEvent {
 
@@ -78,12 +79,9 @@ public final class PlayerDealDamageRangedEvent extends AbstractDealDamageEvent {
         MapleCharacter player = getClient().getPlayer();
         FakePlayer fakePlayer = player.getFakePlayer();
 
-        if (player.getBuffEffect(MapleBuffStat.MORPH) != null) {
-            if (player.getBuffEffect(MapleBuffStat.MORPH).isMorphWithoutAttack()) {
-                // How are they attacking when the client won't let them?
-                player.getClient().disconnect();
-                return null;
-            }
+        BuffContainer morph = player.getEffects().get(MapleBuffStat.MORPH);
+        if (morph != null && morph.getEffect().isMorphWithoutAttack()) {
+            return null;
         }
 
         if (attackInfo.skill == Buccaneer.ENERGY_ORB || attackInfo.skill == ThunderBreaker.SPARK || attackInfo.skill == Shadower.TAUNT || attackInfo.skill == NightLord.TAUNT) {
@@ -129,7 +127,7 @@ public final class PlayerDealDamageRangedEvent extends AbstractDealDamageEvent {
                     }
                 }
             }
-            boolean hasShadowPartner = player.getBuffedValue(MapleBuffStat.SHADOWPARTNER) != null;
+            boolean hasShadowPartner = player.getBuffedValue(MapleBuffStat.SHADOW_PARTNER) != null;
             if (hasShadowPartner) {
                 bulletCount *= 2;
             }
@@ -165,8 +163,8 @@ public final class PlayerDealDamageRangedEvent extends AbstractDealDamageEvent {
                     }
                 }
             }
-            boolean soulArrow = player.getBuffedValue(MapleBuffStat.SOULARROW) != null;
-            boolean shadowClaw = player.getBuffedValue(MapleBuffStat.SHADOW_CLAW) != null;
+            boolean soulArrow = player.getBuffedValue(MapleBuffStat.SOUL_ARROW) != null;
+            boolean shadowClaw = player.getBuffedValue(MapleBuffStat.SPIRIT_JAVELIN) != null;
             if (projectile != 0) {
                 if (!soulArrow && !shadowClaw && attackInfo.skill != 11101004 && attackInfo.skill != 15111007 && attackInfo.skill != 14101006) {
                     byte bulletConsume = bulletCount;
@@ -225,9 +223,11 @@ public final class PlayerDealDamageRangedEvent extends AbstractDealDamageEvent {
                     }
                 }
                 addCooldown(attackInfo);
-                if ((player.getSkillLevel(SkillFactory.getSkill(NightWalker.VANISH)) > 0 || player.getSkillLevel(SkillFactory.getSkill(WindArcher.WIND_WALK)) > 0) && player.getBuffedValue(MapleBuffStat.DARKSIGHT) != null && attackInfo.numAttacked > 0 && player.getBuffSource(MapleBuffStat.DARKSIGHT) != 9101004) {
-                    player.cancelEffectFromBuffStat(MapleBuffStat.DARKSIGHT);
-                    player.cancelBuffStats(MapleBuffStat.DARKSIGHT);
+                if ((player.getSkillLevel(NightWalker.VANISH) > 0 || player.getSkillLevel(WindArcher.WIND_WALK) > 0)
+                        && player.getEffects().containsKey(MapleBuffStat.DARK_SIGHT)
+                        && attackInfo.numAttacked > 0) {
+                    player.cancelBuffs(Set.of(MapleBuffStat.DARK_SIGHT));
+                    player.cancelBuffStats(MapleBuffStat.DARK_SIGHT);
                 }
                 applyAttack(player, attackInfo, bulletCount);
                 if (fakePlayer != null) {

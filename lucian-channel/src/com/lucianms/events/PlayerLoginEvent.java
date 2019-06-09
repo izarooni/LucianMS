@@ -3,7 +3,7 @@ package com.lucianms.events;
 import com.lucianms.client.*;
 import com.lucianms.nio.receive.MaplePacketReader;
 import com.lucianms.scheduler.TaskExecutor;
-import com.lucianms.server.PlayerBuffValueHolder;
+import com.lucianms.server.BuffContainer;
 import com.lucianms.server.Server;
 import com.lucianms.server.channel.CharacterIdChannelPair;
 import com.lucianms.server.guild.MapleAlliance;
@@ -18,8 +18,8 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 
 /**
  * @author izarooni
@@ -104,7 +104,7 @@ public class PlayerLoginEvent extends PacketEvent {
         world.getPlayerStorage().put(player.getId(), player);
         player.getMap().addPlayer(player);
 
-        List<PlayerBuffValueHolder> buffs = Server.getPlayerBuffStorage().remove(playerID);
+        ArrayList<BuffContainer> buffs = Server.getPlayerBuffStorage().remove(playerID);
         if (buffs != null) {
             player.silentGiveBuffs(buffs);
             buffs.clear();

@@ -30,16 +30,17 @@ import com.lucianms.constants.GameConstants;
 import com.lucianms.constants.skills.*;
 import com.lucianms.nio.receive.MaplePacketReader;
 import com.lucianms.scheduler.TaskExecutor;
+import com.lucianms.server.BuffContainer;
 import com.lucianms.server.MapleStatEffect;
 import com.lucianms.server.life.FakePlayer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import tools.MaplePacketCreator;
-import tools.Pair;
 
-import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 public final class PlayerDealDamageNearbyEvent extends AbstractDealDamageEvent {
 
@@ -76,12 +77,9 @@ public final class PlayerDealDamageNearbyEvent extends AbstractDealDamageEvent {
     public Object onPacket() {
         MapleCharacter player = getClient().getPlayer();
 
-        if (player.getBuffEffect(MapleBuffStat.MORPH) != null) {
-            if (player.getBuffEffect(MapleBuffStat.MORPH).isMorphWithoutAttack()) {
-                // How are they attacking when the client won't let them?
-                player.getClient().disconnect();
-                return null;
-            }
+        BuffContainer morph = player.getEffects().get(MapleBuffStat.MORPH);
+        if (morph != null && morph.getEffect().isMorphWithoutAttack()) {
+            return null;
         }
 
         if (attackInfo.skill > 0) {
@@ -113,7 +111,7 @@ public final class PlayerDealDamageNearbyEvent extends AbstractDealDamageEvent {
         }
         player.getMap().broadcastMessage(player, MaplePacketCreator.closeRangeAttack(player, attackInfo.skill, attackInfo.skillLevel, attackInfo.stance, attackInfo.numAttackedAndDamage, attackInfo.allDamage, attackInfo.speed, attackInfo.direction, attackInfo.display), false, true);
         int numFinisherOrbs = 0;
-        Integer comboBuff = player.getBuffedValue(MapleBuffStat.COMBO);
+        Integer comboBuff = player.getBuffedValue(MapleBuffStat.COMBO_COUNTER);
         if (GameConstants.isFinisherSkill(attackInfo.skill)) {
             if (comboBuff != null) {
                 numFinisherOrbs = comboBuff - 1;
@@ -121,7 +119,7 @@ public final class PlayerDealDamageNearbyEvent extends AbstractDealDamageEvent {
             player.handleOrbconsume();
         } else if (attackInfo.numAttacked > 0) {
             if (attackInfo.skill != 1111008 && comboBuff != null) {
-                int orbcount = player.getBuffedValue(MapleBuffStat.COMBO);
+                int orbcount = player.getBuffedValue(MapleBuffStat.COMBO_COUNTER);
                 int oid = player.isCygnus() ? DawnWarrior.COMBO_ATTACK : Crusader.COMBO_ATTACK;
                 int advcomboid = player.isCygnus() ? DawnWarrior.ADVANCED_COMBO : Hero.ADVANCED_COMBO_ATTACK;
                 Skill combo = SkillFactory.getSkill(oid);
@@ -140,12 +138,12 @@ public final class PlayerDealDamageNearbyEvent extends AbstractDealDamageEvent {
                             neworbcount++;
                         }
                     }
-                    int duration = combo.getEffect(player.getSkillLevel(oid)).getDuration();
-                    List<Pair<MapleBuffStat, Integer>> stat = Collections.singletonList(new Pair<>(MapleBuffStat.COMBO, neworbcount));
-                    player.setBuffedValue(MapleBuffStat.COMBO, neworbcount);
-                    duration -= (int) (System.currentTimeMillis() - player.getBuffedStarttime(MapleBuffStat.COMBO));
-                    getClient().announce(MaplePacketCreator.giveBuff(oid, duration, stat));
-                    player.getMap().broadcastMessage(player, MaplePacketCreator.giveForeignBuff(player.getId(), stat), false);
+                    MapleStatEffect effect = combo.getEffect(player.getSkillLevel(oid));
+                    BuffContainer container = new BuffContainer(effect, null, System.currentTimeMillis(), neworbcount);
+                    player.getEffects().put(MapleBuffStat.COMBO_COUNTER, container);
+                    Map<MapleBuffStat, BuffContainer> map = Map.of(MapleBuffStat.COMBO_COUNTER, container);
+                    player.announce(MaplePacketCreator.setTempStats(map));
+                    player.getMap().sendPacketExclude(MaplePacketCreator.setRemoteTempStats(player, map), player);
                 }
             } else if (player.getSkillLevel(player.isCygnus() ? SkillFactory.getSkill(15100004) : SkillFactory.getSkill(5110001)) > 0 && (player.getJob().isA(MapleJob.MARAUDER) || player.getJob().isA(MapleJob.THUNDERBREAKER2))) {
                 for (int i = 0; i < attackInfo.numAttacked; i++) {
@@ -175,7 +173,7 @@ public final class PlayerDealDamageNearbyEvent extends AbstractDealDamageEvent {
                 advcharge_prob = SkillFactory.getSkill(1220010).getEffect(advcharge_level).makeChanceResult();
             }
             if (!advcharge_prob) {
-                player.cancelEffectFromBuffStat(MapleBuffStat.WK_CHARGE);
+                player.cancelBuffs(Set.of(MapleBuffStat.WEAPON_CHARGE));
             }
         }
         int attackCount = 1;
@@ -188,9 +186,9 @@ public final class PlayerDealDamageNearbyEvent extends AbstractDealDamageEvent {
 
         addCooldown(attackInfo);
 
-        if ((player.getSkillLevel(SkillFactory.getSkill(NightWalker.VANISH)) > 0 || player.getSkillLevel(SkillFactory.getSkill(WindArcher.WIND_WALK)) > 0 || player.getSkillLevel(SkillFactory.getSkill(Rogue.DARK_SIGHT)) > 0) && player.getBuffedValue(MapleBuffStat.DARKSIGHT) != null) {// && player.getBuffSource(MapleBuffStat.DARKSIGHT) != 9101004
-            player.cancelEffectFromBuffStat(MapleBuffStat.DARKSIGHT);
-            player.cancelBuffStats(MapleBuffStat.DARKSIGHT);
+        if ((player.getSkillLevel(SkillFactory.getSkill(NightWalker.VANISH)) > 0 || player.getSkillLevel(SkillFactory.getSkill(WindArcher.WIND_WALK)) > 0 || player.getSkillLevel(SkillFactory.getSkill(Rogue.DARK_SIGHT)) > 0) && player.getBuffedValue(MapleBuffStat.DARK_SIGHT) != null) {// && player.getBuffSource(MapleBuffStat.DARKSIGHT) != 9101004
+            player.cancelBuffs(Set.of(MapleBuffStat.DARK_SIGHT));
+            player.cancelBuffStats(MapleBuffStat.DARK_SIGHT);
         }
         applyAttack(player, attackInfo, attackCount);
         if (fakePlayer != null) {

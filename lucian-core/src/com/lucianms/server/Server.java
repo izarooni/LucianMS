@@ -37,7 +37,7 @@ public class Server {
     private static final Logger LOGGER = LoggerFactory.getLogger(Server.class);
     public static final long Uptime = System.currentTimeMillis();
 
-    private static final PlayerBuffStorage buffStorage = new PlayerBuffStorage();
+    private static final ConcurrentHashMap<Integer, ArrayList<BuffContainer>> buffStorage = new ConcurrentHashMap<>();
     private static final ArrayList<MapleWorld> worlds = new ArrayList<>();
     private static final ArrayList<Pair<Integer, String>> worldRecommendedList = new ArrayList<>();
     private static final ConcurrentHashMap<Integer, MapleGuild> guilds = new ConcurrentHashMap<>();
@@ -365,7 +365,7 @@ public class Server {
         }
     }
 
-    public static PlayerBuffStorage getPlayerBuffStorage() {
+    public static ConcurrentHashMap<Integer, ArrayList<BuffContainer>> getPlayerBuffStorage() {
         return buffStorage;
     }
 

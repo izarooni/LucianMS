@@ -21,11 +21,16 @@
 */
 package com.lucianms.server.maps;
 
-import java.awt.Point;
 import com.lucianms.client.MapleCharacter;
 import com.lucianms.client.MapleClient;
 import com.lucianms.client.SkillFactory;
+import com.lucianms.constants.skills.Outlaw;
+import com.lucianms.constants.skills.Ranger;
+import com.lucianms.constants.skills.Sniper;
+import com.lucianms.constants.skills.WindArcher;
 import tools.MaplePacketCreator;
+
+import java.awt.*;
 
 /**
  *
@@ -77,7 +82,7 @@ public class MapleSummon extends AbstractAnimatedMapleMapObject {
     }
 
     public boolean isStationary() {
-        return (skill == 3111002 || skill == 3211002 || skill == 5211001 || skill == 13111004);
+        return (skill == Ranger.PUPPET || skill == Sniper.PUPPET || skill == Outlaw.OCTOPUS || skill == WindArcher.PUPPET);
     }
 
     public byte getSkillLevel() {

@@ -482,7 +482,7 @@ public class AbstractPlayerInteraction {
     }
 
     public void cancelItem(final int id) {
-        getPlayer().cancelEffect(MapleItemInformationProvider.getInstance().getItemEffect(id), false, -1);
+        getPlayer().cancelEffect(MapleItemInformationProvider.getInstance().getItemEffect(id), -1, false);
     }
 
     public void teachSkill(int skillid, byte level, byte masterLevel, long expiration) {

@@ -29,6 +29,7 @@ import com.lucianms.io.scripting.Achievements;
 import com.lucianms.io.scripting.event.EventInstanceManager;
 import com.lucianms.scheduler.Task;
 import com.lucianms.scheduler.TaskExecutor;
+import com.lucianms.server.BuffContainer;
 import com.lucianms.server.life.MapleLifeFactory.BanishInfo;
 import com.lucianms.server.maps.MapleMap;
 import com.lucianms.server.maps.MapleMapObject;
@@ -355,8 +356,8 @@ public class MapleMonster extends AbstractLoadedMapleLife {
 
             Integer holySymbol = attacker.getBuffedValue(MapleBuffStat.HOLY_SYMBOL);
             if (holySymbol != null) {
-                boolean isGmHolySymbol = attacker.getBuffSource(MapleBuffStat.HOLY_SYMBOL) == SuperGM.HOLY_SYMBOL;
-                if (shareCount == 0 && !isGmHolySymbol) {
+                BuffContainer container = attacker.getEffects().get(MapleBuffStat.HOLY_SYMBOL);
+                if (shareCount == 0 && container.getSourceID() != SuperGM.HOLY_SYMBOL) {
                     personalExp *= 1.0 + (holySymbol.doubleValue() / 500.0);
                 } else {
                     personalExp *= 1.0 + (holySymbol.doubleValue() / 100.0);

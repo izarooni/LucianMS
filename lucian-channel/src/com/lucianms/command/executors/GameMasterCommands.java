@@ -474,8 +474,8 @@ public class GameMasterCommands extends CommandExecutor {
                     if (target != null) {
                         target.setLevel(level);
                         target.setExp(0);
-                        target.updateSingleStat(MapleStat.LEVEL, level);
-                        target.updateSingleStat(MapleStat.EXP, 0);
+                        target.updateSingleStat(MapleStat.LEVEL, target.getLevel());
+                        target.updateSingleStat(MapleStat.EXP, target.getExp());
                         target.dropMessage("Your level has been updated to " + target.getLevel());
                     } else {
                         player.dropMessage(String.format("Unable to find any player named '%s'", username));
@@ -484,8 +484,8 @@ public class GameMasterCommands extends CommandExecutor {
             } else {
                 player.setLevel(level);
                 player.setExp(0);
-                player.updateSingleStat(MapleStat.LEVEL, level);
-                player.updateSingleStat(MapleStat.EXP, 0);
+                player.updateSingleStat(MapleStat.LEVEL, player.getLevel());
+                player.updateSingleStat(MapleStat.EXP, player.getExp());
             }
         } else {
             player.dropMessage(5, "Usage: !level <number> [usernames...]");

@@ -755,14 +755,11 @@ public class MapleClient implements Disposable {
             }
         }
         Server.getPlayerBuffStorage().put(player.getId(), player.getAllBuffs());
-        player.cancelBuffEffects();
-        player.cancelMagicDoor();
+        player.clearBuffs();
+//todo        player.cancelMagicDoor();
         //Canceling mounts? Noty
-        if (player.getBuffedValue(MapleBuffStat.PUPPET) != null) {
-            player.cancelEffectFromBuffStat(MapleBuffStat.PUPPET);
-        }
-        if (player.getBuffedValue(MapleBuffStat.COMBO) != null) {
-            player.cancelEffectFromBuffStat(MapleBuffStat.COMBO);
+        if (player.getBuffedValue(MapleBuffStat.COMBO_COUNTER) != null) {
+            player.cancelBuffs(Set.of(MapleBuffStat.COMBO_COUNTER));
         }
         player.getInventory(MapleInventoryType.EQUIPPED).checked(false); //test
         player.getMap().removePlayer(player);

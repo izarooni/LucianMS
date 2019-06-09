@@ -20,6 +20,7 @@ public class ServerConstants {
     //endregion
 
     //region Game Settings
+    public static final boolean SAVE_CHARACTER_SKILLS = false;
     public static final boolean USE_FAMILY_SYSTEM = false;
     public static final boolean USE_PARTY_SEARCH = false;
 
@@ -35,5 +36,4 @@ public class ServerConstants {
     public static final int MAX_LEVELS_BELOW = 20;
     public static final int MAX_LEVELS_ABOVE = 10;
     //endregion
-
 }

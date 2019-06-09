@@ -404,8 +404,8 @@ public class MapleMap implements PacketAnnouncer {
                     int mesos = Randomizer.nextInt(de.Maximum - de.Minimum) + de.Minimum;
 
                     if (mesos > 0) {
-                        if (chr.getBuffedValue(MapleBuffStat.MESOUP) != null) {
-                            mesos = (int) (mesos * chr.getBuffedValue(MapleBuffStat.MESOUP).doubleValue() / 100.0);
+                        if (chr.getBuffedValue(MapleBuffStat.MESO_UP) != null) {
+                            mesos = (int) (mesos * chr.getBuffedValue(MapleBuffStat.MESO_UP).doubleValue() / 100.0);
                         }
                         spawnMesoDrop(mesos * chr.getMesoRate(), calcDropPos(pos, mob.getPosition()), mob, chr, false, droptype);
                     }
@@ -1357,9 +1357,9 @@ public class MapleMap implements PacketAnnouncer {
         }
         //endregion
 
-        if (FieldLimit.CANNOTUSEMOUNTS.check(fieldLimit) && chr.getBuffedValue(MapleBuffStat.MONSTER_RIDING) != null) {
-            chr.cancelEffectFromBuffStat(MapleBuffStat.MONSTER_RIDING);
-            chr.cancelBuffStats(MapleBuffStat.MONSTER_RIDING);
+        if (FieldLimit.CANNOTUSEMOUNTS.check(fieldLimit) && chr.getBuffedValue(MapleBuffStat.RIDE_VEHICLE) != null) {
+            chr.cancelBuffs(Set.of(MapleBuffStat.RIDE_VEHICLE));
+            chr.cancelBuffStats(MapleBuffStat.RIDE_VEHICLE);
         }
         if (mapid == 923010000 && getMonsterById(9300102) == null) { // Kenta's Mount quest
             spawnMonsterOnGroundBelow(MapleLifeFactory.getMonster(9300102), new Point(77, 426));
@@ -1470,8 +1470,7 @@ public class MapleMap implements PacketAnnouncer {
             sendPacketIf(MaplePacketCreator.spawnPlayerMapobject(chr), p -> p.getGMLevel() >= chr.getGMLevel());
             chr.announce(MaplePacketCreator.getAdminResult(0x10, (byte) 1));
 
-            List<Pair<MapleBuffStat, Integer>> darkSightBuff = Collections.singletonList(new Pair<>(MapleBuffStat.DARKSIGHT, 0));
-            sendPacketIf(MaplePacketCreator.giveForeignBuff(getId(), darkSightBuff), p -> p.getGMLevel() >= chr.getGMLevel());
+            sendPacketIf(MaplePacketCreator.giveForeignBuff(getId(), Map.of(MapleBuffStat.DARK_SIGHT, 0)), p -> p.getGMLevel() >= chr.getGMLevel());
         } else {
             broadcastMessage(chr, MaplePacketCreator.spawnPlayerMapobject(chr), false);
         }
@@ -1507,9 +1506,7 @@ public class MapleMap implements PacketAnnouncer {
             broadcastMessage(MaplePacketCreator.spawnDragon(chr.getDragon()));
         }
 
-        MapleStatEffect summonStat = chr.getStatForBuff(MapleBuffStat.SUMMON);
-        if (summonStat != null) {
-            MapleSummon summon = chr.getSummons().get(summonStat.getSourceId());
+        for (MapleSummon summon : chr.getSummons().values()) {
             summon.setPosition(chr.getPosition());
             chr.getMap().spawnSummon(summon);
             updateMapObjectVisibility(chr, summon);
@@ -1563,11 +1560,7 @@ public class MapleMap implements PacketAnnouncer {
         }
         chr.leaveMap();
         for (MapleSummon summon : chr.getSummons().values()) {
-            if (summon.isStationary()) {
-                chr.cancelBuffStats(MapleBuffStat.PUPPET);
-            } else {
-                removeMapObject(summon);
-            }
+            removeMapObject(summon);
         }
         if (chr.getDragon() != null) {
             removeMapObject(chr.getDragon());

@@ -177,7 +177,7 @@ public final class PlayerTakeDamageEvent extends PacketEvent {
         }
 
         if (damage > 0 && !player.isHidden()) {
-            Integer buffPowerGuard = player.getBuffedValue(MapleBuffStat.POWERGUARD);
+            Integer buffPowerGuard = player.getBuffedValue(MapleBuffStat.POWER_GUARD);
             if (attacker != null && damageFrom == -1 && buffPowerGuard != null) { // PG works on bosses, but only at half of the rate.
                 long bouncedamage = (int) (damage * (buffPowerGuard.doubleValue() / (attacker.isBoss() ? 200 : 100)));
                 bouncedamage = Math.min(bouncedamage, attacker.getMaxHp() / 10);
@@ -209,7 +209,7 @@ public final class PlayerTakeDamageEvent extends PacketEvent {
                     damage *= (achilles1.getEffect(achilles).getX() / 1000.0);
                 }
             }
-            Integer mesoguard = player.getBuffedValue(MapleBuffStat.MESOGUARD);
+            Integer mesoguard = player.getBuffedValue(MapleBuffStat.MESO_GUARD);
             if (player.getBuffedValue(MapleBuffStat.MAGIC_GUARD) != null && mpattack == 0) {
                 int mploss = (int) (damage * (player.getBuffedValue(MapleBuffStat.MAGIC_GUARD).doubleValue() / 100.0));
                 int hploss = damage - mploss;
@@ -223,14 +223,14 @@ public final class PlayerTakeDamageEvent extends PacketEvent {
                 int mesoloss = (int) (damage * (mesoguard.doubleValue() / 100.0));
                 if (player.getMeso() < mesoloss) {
                     player.gainMeso(-player.getMeso(), false);
-                    player.cancelBuffStats(MapleBuffStat.MESOGUARD);
+                    player.cancelBuffStats(MapleBuffStat.MESO_GUARD);
                 } else {
                     player.gainMeso(-mesoloss, false);
                 }
                 player.addMPHP(-damage, -mpattack);
             } else {
-                if (player.getBuffedValue(MapleBuffStat.MONSTER_RIDING) != null) {
-                    if (player.getBuffedValue(MapleBuffStat.MONSTER_RIDING) == Corsair.BATTLESHIP) {
+                if (player.getBuffedValue(MapleBuffStat.RIDE_VEHICLE) != null) {
+                    if (player.getBuffedValue(MapleBuffStat.RIDE_VEHICLE) == Corsair.BATTLESHIP) {
                         player.decreaseBattleshipHp(damage);
                     }
                 }

@@ -29,6 +29,7 @@ import com.lucianms.constants.skills.FPArchMage;
 import com.lucianms.constants.skills.ILArchMage;
 import com.lucianms.nio.receive.MaplePacketReader;
 import com.lucianms.scheduler.TaskExecutor;
+import com.lucianms.server.BuffContainer;
 import com.lucianms.server.MapleStatEffect;
 import com.lucianms.server.life.FakePlayer;
 import tools.MaplePacketCreator;
@@ -64,12 +65,9 @@ public class PlayerDealDamageMagicEvent extends AbstractDealDamageEvent {
     @Override
     public Object onPacket() {
         MapleCharacter player = getClient().getPlayer();
-        if (player.getBuffEffect(MapleBuffStat.MORPH) != null) {
-            if (player.getBuffEffect(MapleBuffStat.MORPH).isMorphWithoutAttack()) {
-                // How are they attacking when the client won't let them?
-                player.getClient().disconnect();
-                return null;
-            }
+        BuffContainer morph = player.getEffects().get(MapleBuffStat.MORPH);
+        if (morph != null && morph.getEffect().isMorphWithoutAttack()) {
+            return null;
         }
 
         byte[] packet = MaplePacketCreator.magicAttack(player, attackInfo.skill, attackInfo.skillLevel, attackInfo.stance, attackInfo.numAttackedAndDamage, attackInfo.allDamage, -1, attackInfo.speed, attackInfo.direction, attackInfo.display);

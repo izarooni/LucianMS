@@ -234,7 +234,7 @@ public class SkillFactory {
                 case Bandit.DAGGER_BOOSTER:
                 case Bandit.HASTE:
                 case ChiefBandit.MESO_GUARD:
-                case ChiefBandit.PICKPOCKET:
+                case ChiefBandit.PICK_POCKET:
                 case Shadower.HEROS_WILL:
                 case Shadower.MAPLE_WARRIOR:
                 case Shadower.NINJA_AMBUSH:

@@ -931,10 +931,10 @@ public class MaplePacketCreator {
         return mplew.getPacket();
     }
 
-    public static byte[] cancelBuff(List<MapleBuffStat> statups) {
+    public static byte[] cancelBuff(Set<MapleBuffStat> stats) {
         final MaplePacketWriter mplew = new MaplePacketWriter();
         mplew.writeShort(SendOpcode.CANCEL_BUFF.getValue());
-        writeLongMaskFromList(mplew, statups);
+        encodeBuffMask(mplew, stats);
         mplew.write(1);//?
         return mplew.getPacket();
     }
@@ -962,11 +962,11 @@ public class MaplePacketCreator {
         return mplew.getPacket();
     }
 
-    public static byte[] cancelForeignBuff(int cid, List<MapleBuffStat> statups) {
+    public static byte[] cancelForeignBuff(int cid, Set<MapleBuffStat> stats) {
         final MaplePacketWriter mplew = new MaplePacketWriter();
         mplew.writeShort(SendOpcode.CANCEL_FOREIGN_BUFF.getValue());
         mplew.writeInt(cid);
-        writeLongMaskFromList(mplew, statups);
+        encodeBuffMask(mplew, stats);
         return mplew.getPacket();
     }
 
@@ -3059,18 +3059,88 @@ public class MaplePacketCreator {
         return mplew.getPacket();
     }
 
-    public static byte[] giveBuff(int buffid, int bufflength, List<Pair<MapleBuffStat, Integer>> statups) {
+    public static byte[] getResetRemoteTempStats(int playerID, Set<MapleBuffStat> stats) {
+        MaplePacketWriter w = new MaplePacketWriter();
+        w.writeShort(SendOpcode.CANCEL_FOREIGN_BUFF.getValue());
+        w.writeInt(playerID);
+        encodeBuffMask(w, stats);
+        return w.getPacket();
+    }
+
+    public static byte[] getResetTempStats(Set<MapleBuffStat> stats) {
+        MaplePacketWriter w = new MaplePacketWriter();
+        w.writeShort(SendOpcode.CANCEL_BUFF.getValue());
+        encodeBuffMask(w, stats);
+        w.write(0);
+        return w.getPacket();
+    }
+
+    public static byte[] setRemoteTempStats(MapleCharacter player, Map<MapleBuffStat, BuffContainer> stats) {
+        MaplePacketWriter w = new MaplePacketWriter(32 + (2 * stats.size()));
+        w.writeShort(SendOpcode.GIVE_FOREIGN_BUFF.getValue());
+        w.writeInt(player.getId());
+        encodeBuffMask(w, stats.keySet());
+        for (Entry<MapleBuffStat, BuffContainer> entry : stats.entrySet()) {
+            MapleBuffStat buff = entry.getKey();
+            BuffContainer bh = entry.getValue();
+
+            w.writeShort(bh.getValue());
+            if (buff == MapleBuffStat.RIDE_VEHICLE) {
+                w.writeInt(bh.getValue());
+            }
+            w.writeInt(bh.getDuration());
+        }
+        w.writeInt(0);
+        w.write(0);
+
+        w.writeInt(0);
+        w.write(0);
+        w.write(0);
+        w.write(0);
+        return w.getPacket();
+    }
+
+    public static byte[] setTempStats(Map<MapleBuffStat, BuffContainer> stats) {
+        final MaplePacketWriter w = new MaplePacketWriter();
+        w.writeShort(SendOpcode.GIVE_BUFF.getValue());
+        encodeBuffMask(w, stats.keySet());
+        for (Entry<MapleBuffStat, BuffContainer> e : stats.entrySet()) {
+            MapleBuffStat buff = e.getKey();
+            BuffContainer container = e.getValue();
+
+            w.writeShort(container.getValue());
+            if (container.getMobSkill() != null) {
+                w.writeShort(container.getSourceID());
+                w.writeShort(container.getValue());
+            } else {
+                if (buff == MapleBuffStat.RIDE_VEHICLE) {
+                    w.writeInt(container.getValue());
+                } else {
+                    w.writeInt(container.getSourceID());
+                }
+            }
+            w.writeInt(container.getDuration());
+        }
+        w.writeInt(0);
+        w.write(0);
+        w.writeInt(0);
+        w.write(0);
+        w.write(0);
+        w.write(0);
+        return w.getPacket();
+    }
+
+    public static byte[] giveBuff(int buffid, int bufflength, Map<MapleBuffStat, Integer> statups) {
         final MaplePacketWriter mplew = new MaplePacketWriter();
         mplew.writeShort(SendOpcode.GIVE_BUFF.getValue());
-        writeLongMask(mplew, statups);
-        for (Pair<MapleBuffStat, Integer> statup : statups) {
-            mplew.writeShort(statup.getRight().shortValue());
+        encodeBuffMask(mplew, statups.keySet());
+        for (Entry<MapleBuffStat, Integer> statup : statups.entrySet()) {
+            mplew.writeShort(statup.getValue().shortValue());
             mplew.writeInt(buffid);
             mplew.writeInt(bufflength);
         }
         mplew.writeInt(0);
         mplew.write(0);
-
         mplew.writeInt(0);
         mplew.write(0);
         mplew.write(0);
@@ -3136,14 +3206,14 @@ public class MaplePacketCreator {
         return mplew.getPacket();
     }
 
-    public static byte[] giveForeignBuff(int cid, List<Pair<MapleBuffStat, Integer>> statups) {
+    public static byte[] giveForeignBuff(int cid, Map<MapleBuffStat, Integer> stats) {
         final MaplePacketWriter mplew = new MaplePacketWriter();
         mplew.writeShort(SendOpcode.GIVE_FOREIGN_BUFF.getValue());
         mplew.writeInt(cid);
-        writeLongMask(mplew, statups);
-        for (Pair<MapleBuffStat, Integer> statup : statups) {
-            mplew.writeShort(statup.getRight().shortValue());
-            if (statup.getLeft() == MapleBuffStat.POISON) {
+        encodeBuffMask(mplew, stats.keySet());
+        for (Entry<MapleBuffStat, Integer> e : stats.entrySet()) {
+            mplew.writeShort(e.getValue().shortValue());
+            if (e.getKey() == MapleBuffStat.POISON) {
                 mplew.writeInt(0); // meh
             }
         }
@@ -3172,15 +3242,15 @@ public class MaplePacketCreator {
         return mplew.getPacket();
     }
 
-    public static byte[] giveForgeinPirateBuff(int cid, int buffid, int time, List<Pair<MapleBuffStat, Integer>> statups) {
+    public static byte[] giveForgeinPirateBuff(int cid, int buffid, int time, Map<MapleBuffStat, Integer> stats) {
         final MaplePacketWriter mplew = new MaplePacketWriter();
         boolean infusion = buffid == Buccaneer.SPEED_INFUSION || buffid == ThunderBreaker.SPEED_INFUSION || buffid == Corsair.SPEED_INFUSION;
         mplew.writeShort(SendOpcode.GIVE_FOREIGN_BUFF.getValue());
         mplew.writeInt(cid);
-        writeLongMask(mplew, statups);
+        encodeBuffMask(mplew, stats.keySet());
         mplew.writeShort(0);
-        for (Pair<MapleBuffStat, Integer> statup : statups) {
-            mplew.writeInt(statup.getRight().shortValue());
+        for (Entry<MapleBuffStat, Integer> statup : stats.entrySet()) {
+            mplew.writeInt(statup.getValue().shortValue());
             mplew.writeInt(buffid);
             mplew.skip(infusion ? 10 : 5);
             mplew.writeShort(time);
@@ -3190,14 +3260,17 @@ public class MaplePacketCreator {
         return mplew.getPacket();
     }
 
-    public static byte[] givePirateBuff(List<Pair<MapleBuffStat, Integer>> statups, int buffid, int duration) {
+    public static byte[] givePirateBuff(Map<MapleBuffStat, Integer> stats, int buffid, int duration) {
+        boolean infusion = buffid == Buccaneer.SPEED_INFUSION
+                || buffid == ThunderBreaker.SPEED_INFUSION
+                || buffid == Corsair.SPEED_INFUSION;
+
         final MaplePacketWriter mplew = new MaplePacketWriter();
-        boolean infusion = buffid == Buccaneer.SPEED_INFUSION || buffid == ThunderBreaker.SPEED_INFUSION || buffid == Corsair.SPEED_INFUSION;
         mplew.writeShort(SendOpcode.GIVE_BUFF.getValue());
-        writeLongMask(mplew, statups);
+        encodeBuffMask(mplew, stats.keySet());
         mplew.writeShort(0);
-        for (Pair<MapleBuffStat, Integer> stat : statups) {
-            mplew.writeInt(stat.getRight().shortValue());
+        for (Entry<MapleBuffStat, Integer> stat : stats.entrySet()) {
+            mplew.writeInt(stat.getValue().shortValue());
             mplew.writeInt(buffid);
             mplew.skip(infusion ? 10 : 5);
             mplew.writeShort(duration);
@@ -5384,7 +5457,7 @@ public class MaplePacketCreator {
         final MaplePacketWriter mplew = new MaplePacketWriter();
         mplew.writeShort(SendOpcode.GIVE_FOREIGN_BUFF.getValue());
         mplew.writeInt(cid);
-        mplew.writeLong(MapleBuffStat.MONSTER_RIDING.getValue()); //Thanks?
+        mplew.writeLong(MapleBuffStat.RIDE_VEHICLE.getValue()); //Thanks?
         mplew.writeLong(0);
         mplew.writeShort(0);
         mplew.writeInt(mount.getItemId());
@@ -5907,18 +5980,18 @@ public class MaplePacketCreator {
         }
         long buffmask = 0;
         Integer buffvalue = null;
-        if (chr.getBuffedValue(MapleBuffStat.DARKSIGHT) != null && !chr.isHidden()) {
-            buffmask |= MapleBuffStat.DARKSIGHT.getValue();
+        if (chr.getBuffedValue(MapleBuffStat.DARK_SIGHT) != null && !chr.isHidden()) {
+            buffmask |= MapleBuffStat.DARK_SIGHT.getValue();
         }
-        if (chr.getBuffedValue(MapleBuffStat.COMBO) != null) {
-            buffmask |= MapleBuffStat.COMBO.getValue();
-            buffvalue = chr.getBuffedValue(MapleBuffStat.COMBO);
+        if (chr.getBuffedValue(MapleBuffStat.COMBO_COUNTER) != null) {
+            buffmask |= MapleBuffStat.COMBO_COUNTER.getValue();
+            buffvalue = chr.getBuffedValue(MapleBuffStat.COMBO_COUNTER);
         }
-        if (chr.getBuffedValue(MapleBuffStat.SHADOWPARTNER) != null) {
-            buffmask |= MapleBuffStat.SHADOWPARTNER.getValue();
+        if (chr.getBuffedValue(MapleBuffStat.SHADOW_PARTNER) != null) {
+            buffmask |= MapleBuffStat.SHADOW_PARTNER.getValue();
         }
-        if (chr.getBuffedValue(MapleBuffStat.SOULARROW) != null) {
-            buffmask |= MapleBuffStat.SOULARROW.getValue();
+        if (chr.getBuffedValue(MapleBuffStat.SOUL_ARROW) != null) {
+            buffmask |= MapleBuffStat.SOUL_ARROW.getValue();
         }
         if (chr.getBuffedValue(MapleBuffStat.MORPH) != null) {
             buffvalue = chr.getBuffedValue(MapleBuffStat.MORPH);
@@ -5946,7 +6019,7 @@ public class MaplePacketCreator {
         mplew.writeShort(0);
         mplew.write(0);
         final Item mount = chr.getInventory(MapleInventoryType.EQUIPPED).getItem((short) -18);
-        if (chr.getBuffedValue(MapleBuffStat.MONSTER_RIDING) != null && mount != null) {
+        if (chr.getBuffedValue(MapleBuffStat.RIDE_VEHICLE) != null && mount != null) {
             mplew.writeInt(mount.getItemId());
             mplew.writeInt(1004);
         } else {
@@ -6595,18 +6668,14 @@ public class MaplePacketCreator {
         mplew.writeInt(secondmask);
     }
 
-    private static void writeLongMask(final MaplePacketWriter mplew, List<Pair<MapleBuffStat, Integer>> statups) {
-        long firstmask = 0;
-        long secondmask = 0;
-        for (Pair<MapleBuffStat, Integer> statup : statups) {
-            if (statup.getLeft().isFirst()) {
-                firstmask |= statup.getLeft().getValue();
-            } else {
-                secondmask |= statup.getLeft().getValue();
-            }
+    private static void encodeBuffMask(final MaplePacketWriter mplew, Set<MapleBuffStat> stats) {
+        int[] mask = new int[4];
+        for (MapleBuffStat statup : stats) {
+            mask[statup.getIndex()] |= statup.getValue();
         }
-        mplew.writeLong(firstmask);
-        mplew.writeLong(secondmask);
+        for (int i = 3; i >= 0; i--) {
+            mplew.writeInt(mask[i]);
+        }
     }
 
     private static void encode16ByteMask(final MaplePacketWriter mplew, List<Pair<MapleDisease, Integer>> statups) {
@@ -6617,20 +6686,6 @@ public class MaplePacketCreator {
                 firstmask |= statup.getLeft().getValue();
             } else {
                 secondmask |= statup.getLeft().getValue();
-            }
-        }
-        mplew.writeLong(firstmask);
-        mplew.writeLong(secondmask);
-    }
-
-    private static void writeLongMaskFromList(final MaplePacketWriter mplew, List<MapleBuffStat> statups) {
-        long firstmask = 0;
-        long secondmask = 0;
-        for (MapleBuffStat statup : statups) {
-            if (statup.isFirst()) {
-                firstmask |= statup.getValue();
-            } else {
-                secondmask |= statup.getValue();
             }
         }
         mplew.writeLong(firstmask);
