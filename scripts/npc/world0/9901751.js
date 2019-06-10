@@ -18,7 +18,7 @@ function action(mode, type, selection) {
             if (partyExists(cm) && partySize(cm) >= membersMimum) {
                 if (cm.isLeader()) {
                     let members = membersPresent(cm, player.getMapId());
-                    if (members.present.length == partySize()) {
+                    if (members.present.length == partySize(cm)) {
                         for (let i = 0; i < members.present.length; i++) {
                             let mid = members.present[i];
                             player.getMap().getCharacterById(mid).changeMap(destination);
