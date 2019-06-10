@@ -18,7 +18,6 @@ import java.net.URISyntaxException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.Executors;
@@ -33,8 +32,6 @@ public class Tester {
 
     public static void main(String[] args) {
         initConfig();
-
-        System.out.println(Arrays.toString("\r\n".getBytes()));
     }
 
     private static void initConfig() {

@@ -848,14 +848,15 @@ public class MapleMap implements PacketAnnouncer {
      * @param monster
      */
     public void updateMonsterController(MapleMonster monster) {
+        if (!monster.isAlive()) {
+            return;
+        }
         monster.monsterLock.lock();
         try {
-            if (!monster.isAlive()) {
-                return;
-            }
-            if (monster.getController() != null) {
-                if (monster.getController().getMap() != this) {
-                    monster.getController().stopControllingMonster(monster);
+            MapleCharacter controller = monster.getController();
+            if (controller != null) {
+                if (controller.getMap() != this) {
+                    controller.stopControllingMonster(monster);
                 } else {
                     return;
                 }

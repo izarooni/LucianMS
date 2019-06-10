@@ -1222,6 +1222,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Di
     }
 
     public void toggleHidden(boolean hidden) {
+        setHidden(hidden);
         if (hidden) {
             getMap().sendPacketIf(MaplePacketCreator.removePlayerFromMap(getId()), p -> p.getGMLevel() < getGMLevel());
             Map<MapleBuffStat, Integer> stat = Map.of(MapleBuffStat.DARK_SIGHT, 0);
@@ -1246,7 +1247,6 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Di
                 getMap().addFakePlayer(getFakePlayer());
             }
         }
-        setHidden(hidden);
         announce(MaplePacketCreator.getAdminResult(0x10, (byte) (hidden ? 1 : 0)));
     }
 
