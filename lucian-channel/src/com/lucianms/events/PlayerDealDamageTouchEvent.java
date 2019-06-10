@@ -57,7 +57,8 @@ public final class PlayerDealDamageTouchEvent extends AbstractDealDamageEvent {
     @Override
     public Object onPacket() {
         MapleCharacter player = getClient().getPlayer();
-        if (player.getEnergyBar() == 15000 || player.getBuffedValue(MapleBuffStat.BODY_PRESSURE) != null) {
+        // idk what happened but any non-zero value for Marauder's energy enables energy skills
+        if (player.getEnergyBar() >= 102 || player.getBuffedValue(MapleBuffStat.BODY_PRESSURE) != null) {
             applyAttack(player, attackInfo, 1);
         }
         return null;
