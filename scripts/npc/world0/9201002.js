@@ -70,7 +70,7 @@ function BeginWedding() {
         let party = cm.getParty();
         if (party == null) 
             cm.sendOk("Please form a party with your significant other");
-        else if (party.getMembers().size() != 2)
+        else if (party.size() != 2)
             cm.sendOk("The only person in your party should be your significant other. Please expel any other persons from the party as they will need to join their other wedding invitees.");
         else if (player.getRelationship().getStatus().ordinal() != 1) {
             cm.sendOk("How are you planning to have a wedding if you are not engaged?");
