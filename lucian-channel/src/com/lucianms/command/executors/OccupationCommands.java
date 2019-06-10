@@ -80,7 +80,7 @@ public class OccupationCommands {
         if (command.equals("warp")) {
             if (args.length() == 1) {
                 MapleCharacter target = getTarget(client, args.get(0));
-                if (target != null) {
+                if (target != null && target.getGMLevel() == 0) {
                     if (!target.getMap().isInstanced() && target.getMap() != client.getWorldServer().getPlayerEvent().getMap()) {
                         player.changeMap(target.getMap());
                         spammer.record();
