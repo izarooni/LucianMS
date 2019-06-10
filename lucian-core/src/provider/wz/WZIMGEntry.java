@@ -21,12 +21,13 @@
 */
 package provider.wz;
 
+import provider.MapleData;
+import provider.MapleDataEntity;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
-import provider.MapleData;
-import provider.MapleDataEntity;
 
 public class WZIMGEntry implements MapleData {
     private String name;
@@ -80,6 +81,11 @@ public class WZIMGEntry implements MapleData {
     @Override
     public Object getData() {
         return data;
+    }
+
+    @Override
+    public String getValue() {
+        throw new UnsupportedOperationException("not implemented");
     }
 
     public void setName(String name) {

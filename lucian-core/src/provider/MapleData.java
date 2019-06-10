@@ -37,4 +37,6 @@ public interface MapleData extends MapleDataEntity, Iterable<MapleData> {
     MapleData getChildByPath(String path);
 
     Object getData();
+
+    String getValue();
 }

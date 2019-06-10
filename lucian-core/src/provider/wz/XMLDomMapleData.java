@@ -167,6 +167,11 @@ public class XMLDomMapleData implements MapleData {
     }
 
     @Override
+    public String getValue() {
+        return node.getAttributes().getNamedItem("value").getNodeValue();
+    }
+
+    @Override
     public MapleDataType getType() {
         String nodeName = node.getNodeName();
         switch (nodeName) {

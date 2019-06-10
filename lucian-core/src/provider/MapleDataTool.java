@@ -86,6 +86,14 @@ public class MapleDataTool {
         }
     }
 
+    public static long getLongConvert(String path, MapleData data) {
+        MapleData d = data.getChildByPath(path);
+        if (d.getType() == MapleDataType.STRING || d.getType() == MapleDataType.INT) {
+            return Long.parseLong(d.getValue());
+        }
+        throw new UnsupportedOperationException(String.format("cannot convert non-string type %s for data '%s/%s'", d.getType().name(), data.getName(), path));
+    }
+
     public static int getIntConvert(String path, MapleData data) {
         MapleData d = data.getChildByPath(path);
         if (d.getType() == MapleDataType.STRING) {

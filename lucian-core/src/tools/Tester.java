@@ -1,6 +1,5 @@
 package tools;
 
-import com.lucianms.constants.ExpTable;
 import com.lucianms.io.Config;
 import com.lucianms.io.defaults.Defaults;
 import com.lucianms.nio.receive.MaplePacketReader;
@@ -33,18 +32,6 @@ public class Tester {
 
     public static void main(String[] args) {
         initConfig();
-        long exp = 17622500000L;
-
-        int level = 1;
-        int neededExp;
-        do {
-            neededExp = ExpTable.getExpNeededForLevel(level);
-            if (neededExp <= exp) {
-                exp -= neededExp;
-                level++;
-            }
-            LOGGER.info("Lv.{} Exp: {} / {}", level, StringUtil.formatNumber(neededExp), StringUtil.formatNumber(exp));
-        } while (neededExp <= exp);
     }
 
     private static void initConfig() {

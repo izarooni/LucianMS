@@ -61,13 +61,13 @@ public class MapleLifeFactory {
     public static MapleMonster getMonster(int mid) {
         MapleMonsterStats stats = monsterStats.get(mid);
         if (stats == null) {
-            MapleData monsterData = data.getData(StringUtil.getLeftPaddedStr(Integer.toString(mid) + ".img", '0', 11));
+            MapleData monsterData = data.getData(StringUtil.getLeftPaddedStr(mid + ".img", '0', 11));
             if (monsterData == null) {
                 return null;
             }
             MapleData monsterInfoData = monsterData.getChildByPath("info");
             stats = new MapleMonsterStats();
-            stats.setHp(MapleDataTool.getIntConvert("maxHP", monsterInfoData));
+            stats.setHp(MapleDataTool.getLongConvert("maxHP", monsterInfoData));
             stats.setFriendly(MapleDataTool.getIntConvert("damagedByMob", monsterInfoData, 0) == 1);
             stats.setPADamage(MapleDataTool.getIntConvert("PADamage", monsterInfoData));
             stats.setPDDamage(MapleDataTool.getIntConvert("PDDamage", monsterInfoData));
