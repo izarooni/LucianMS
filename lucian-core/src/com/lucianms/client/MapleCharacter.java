@@ -1029,10 +1029,6 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Di
         return MaxMP;
     }
 
-    public void addSummon(int id, MapleSummon summon) {
-        summons.put(id, summon);
-    }
-
     public void addVisibleMapObject(MapleMapObject mo) {
         visibleMapObjects.putIfAbsent(mo.getObjectId(), mo);
     }
@@ -1707,19 +1703,6 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Di
                 }
                 if (stat == MapleBuffStat.REGEN) {
                     recoveryTask = TaskExecutor.cancelTask(recoveryTask);
-//                } else if (stat == MapleBuffStat.SUMMON || stat == MapleBuffStat.PUPPET) {
-//                    int summonId = mbsvh.effect.getSourceId();
-//                    MapleSummon summon = summons.get(summonId);
-//                    if (summon != null) {
-//                        getMap().broadcastMessage(MaplePacketCreator.removeSummon(summon, true), summon.getPosition());
-//                        getMap().removeMapObject(summon);
-//                        removeVisibleMapObject(summon);
-//                        summons.remove(summonId);
-//                        if (summon.getSkill() == DarkKnight.BEHOLDER) {
-//                            beholderBuffTask = TaskExecutor.cancelTask(beholderBuffTask);
-//                            beholderHealingTask = TaskExecutor.cancelTask(beholderHealingTask);
-//                        }
-//                    }
                 } else if (stat == MapleBuffStat.DRAGON_BLOOD) {
                     dragonBloodTask = TaskExecutor.cancelTask(dragonBloodTask);
                 }
@@ -3388,7 +3371,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Di
         }
     }
 
-    private void playerDead() {
+    private void onPlayerDeath() {
         getMap().setLastPlayerDiedInMap(getName());
         cancelAllBuffs();
         dispelDebuffs();
@@ -3448,6 +3431,13 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Di
 
         if (getBuffedValue(MapleBuffStat.RIDE_VEHICLE) != null) {
             cancelBuffs(Set.of(MapleBuffStat.RIDE_VEHICLE));
+        }
+        if (!getSummons().isEmpty()){
+            for (MapleSummon summon : getSummons().values()) {
+                getMap().sendPacket(MaplePacketCreator.removeSummon(summon, true));
+                summon.dispose();
+            }
+            getSummons().clear();
         }
 
         if (getChair() == -1) {
@@ -4382,7 +4372,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Di
             sendPartyGaugeRefresh();
         }
         if (!isAlive()) {
-            playerDead();
+            onPlayerDeath();
         }
     }
 

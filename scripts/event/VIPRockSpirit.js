@@ -43,8 +43,6 @@ function respawn(eim) {
 	var map2 = eim.getMapInstance(otherMap.getId());
 	map.allowSummonState(true);
 	map2.allowSummonState(true);
-	// map.instanceMapRespawn();
-	// map2.instanceMapRespawn();
 	eim.schedule("respawn", 10000);
 }
 

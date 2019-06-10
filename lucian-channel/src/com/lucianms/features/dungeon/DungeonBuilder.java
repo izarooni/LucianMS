@@ -115,7 +115,6 @@ public class DungeonBuilder {
                 monster.setLevel(expCalc.getLevel());
                 overrides.setLevel(expCalc.getLevel());
 
-                spawnPoint.getMonster();
                 spawnPoint.summonMonster();
                 map.addMonsterSpawnPoint(spawnPoint);
             }

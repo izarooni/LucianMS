@@ -173,29 +173,37 @@ public enum SendOpcode {
     ARIANT_ARENA_SHOW_RESULT                   (155),
     MASSACRE_GAUGE_INC                         (157),
     MASSACRE_RESULT                            (158),
-    SPAWN_PLAYER                               (160),
-    REMOVE_PLAYER_FROM_MAP                     (161),
+    //region CUserPool::OnUserCommonPacket
+    SPAWN_PLAYER                               (160), // CUserPool::OnUserEnterField
+    REMOVE_PLAYER_FROM_MAP                     (161), // CUserPool::OnUserLeaveField
     CHATTEXT                                   (162),
     CHATTEXT1                                  (163),
-    CHALKBOARD                                 (164),
-    UPDATE_CHAR_BOX                            (165),
-    SHOW_CONSUME_EFFECT                        (166),
-    SHOW_SCROLL_EFFECT                         (167),
+    CHALKBOARD                                 (164), // CUser::OnADBoard
+    UPDATE_CHAR_BOX                            (165), // CUser::OnMiniRoomBalloon
+    SHOW_CONSUME_EFFECT                        (166), // CUser::SetConsumeItemEffect_0
+    SHOW_SCROLL_EFFECT                         (167), // CUser::ShowItemUpgradeEffect
+    //region CUser::OnPetPacket
     SPAWN_PET                                  (168),
     MOVE_PET                                   (170),
     PET_CHAT                                   (171),
     PET_NAMECHANGE                             (172),
     PET_SHOW                                   (173),
     PET_COMMAND                                (174),
-    SPAWN_SPECIAL_MAPOBJECT                    (175),
-    REMOVE_SPECIAL_MAPOBJECT                   (176),
-    MOVE_SUMMON                                (177),
-    SUMMON_ATTACK                              (178),
-    DAMAGE_SUMMON                              (179),
-    SUMMON_SKILL                               (180),
+    //endregion
+    //region CSummonedPool::OnPacket
+    SUMMONED_ENTER_FIELD                       (175),
+    SUMMONED_LEAVE_FIELD                       (176),
+    SUMMONED_MOVE                              (177),
+    SUMMONED_ATTACK                            (178),
+    SUMMONED_HIT                               (179),
+    SUMMONED_SKILL                             (180),
+    //endregion
+    //region CUser::OnDragonPacket
     SPAWN_DRAGON                               (181),
     MOVE_DRAGON                                (182),
     REMOVE_DRAGON                              (183),
+    //endregion
+    //region CUserPool::OnUserRemotePacket
     MOVE_PLAYER                                (185),
     CLOSE_RANGE_ATTACK                         (186),
     RANGED_ATTACK                              (187),
@@ -212,6 +220,8 @@ public enum SendOpcode {
     GIVE_FOREIGN_BUFF                          (199),
     CANCEL_FOREIGN_BUFF                        (200),
     UPDATE_PARTYMEMBER_HP                      (201),
+    //endregion
+    //region CUserPool::OnUserLocalPacket
     CANCEL_CHAIR                               (205),
     SHOW_ITEM_GAIN_INCHAT                      (206),
     DOJO_WARP_UP                               (207),
@@ -228,20 +238,26 @@ public enum SendOpcode {
     TALK_GUIDE                                 (224),
     SHOW_COMBO                                 (225),
     COOLDOWN                                   (234),
-    SPAWN_MONSTER                              (236),
-    KILL_MONSTER                               (237),
-    SPAWN_MONSTER_CONTROL                      (238),
-    MOVE_MONSTER                               (239),
-    MOVE_MONSTER_RESPONSE                      (240),
-    APPLY_MONSTER_STATUS                       (242),
-    CANCEL_MONSTER_STATUS                      (243),
-    RESET_MONSTER_ANIMATION                    (244),
-    DAMAGE_MONSTER                             (246),
-    ARIANT_THING                               (249),
-    SHOW_MONSTER_HP                            (250),
-    SHOW_DRAGGED                               (251),
-    CATCH_MONSTER                              (252),
-    SHOW_MAGNET                                (253),
+    //endregion
+    //endregion
+    //region CMobPool::OnPacket
+    SPAWN_MONSTER                              (236), // CMobPool::OnMobEnterField
+    KILL_MONSTER                               (237), // CMobPool::OnMobLeaveField
+    SPAWN_MONSTER_CONTROL                      (238), // CMobPool::OnMobChangeController
+    //region CMobPool::OnMobPacket
+    MOVE_MONSTER                               (239), // CMob::OnMove
+    MOVE_MONSTER_RESPONSE                      (240), // CMob::OnCtrlAck
+    APPLY_MONSTER_STATUS                       (242), // CMob::OnStatSet
+    CANCEL_MONSTER_STATUS                      (243), // CMob::OnStatReset
+    RESET_MONSTER_ANIMATION                    (244), // CMob::OnSuspendReset
+    DAMAGE_MONSTER                             (246), // CMob::OnDamaged
+    ARIANT_THING                               (249), // CMobPool::OnMobCrcKeyChanged
+    SHOW_MONSTER_HP                            (250), // CMob::OnHPIndicator
+    SHOW_DRAGGED                               (251), // CMob::OnCatchEffect
+    CATCH_MONSTER                              (252), // CMob::OnEffectByItem
+    SHOW_MAGNET                                (253), // CMob::OnMobSpeaking
+    //endregion
+    //endregion
     SPAWN_NPC                                  (257),
     REMOVE_NPC                                 (258),
     SPAWN_NPC_REQUEST_CONTROLLER               (259),

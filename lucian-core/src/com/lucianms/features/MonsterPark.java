@@ -55,13 +55,11 @@ public class MonsterPark extends GenericEvent {
                     }
                 }
                 for (SpawnPoint spawnPoint : instanceMap.getMonsterSpawnPoints()) {
-                    MapleMonster monster = spawnPoint.getMonster();
+                    MapleMonsterStats overrides = spawnPoint.createOverrides();
+                    overrides.setExp((int) (ExpTable.getExpNeededForLevel(baseLevel) * (Math.random() * 0.01) + 0.01));
+                    MapleMonster monster = spawnPoint.summonMonster();
                     if (monster != null) {
-                        MapleMonsterStats overrides = spawnPoint.createOverrides();
-                        overrides.setExp((int) (ExpTable.getExpNeededForLevel(baseLevel) * (Math.random() * 0.01) + 0.01));
                         monster.getListeners().add(new MPMonsterHandler(portal));
-                        spawnPoint.summonMonster();
-                        instanceMap.spawnMonsterOnGroudBelow(monster, spawnPoint.getPosition());
                     } else {
                         LOGGER.warn("Invalid monster {} for map {}", spawnPoint.getMonsterID(), mapID);
                     }

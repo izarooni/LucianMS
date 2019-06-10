@@ -682,12 +682,17 @@ public class MapleStatEffect {
         }
 
         if (summonMovementType != null && pos != null) {
-            final MapleSummon tosummon = new MapleSummon(applyfrom, sourceid, pos, summonMovementType);
-            applyfrom.getMap().spawnSummon(tosummon);
-            applyfrom.addSummon(sourceid, tosummon);
-            tosummon.addHP(x);
+            MapleSummon summon = new MapleSummon(applyfrom, sourceid, pos, summonMovementType);
+            MapleSummon remove = applyfrom.getSummons().put(sourceid, summon);
+            if (remove != null) {
+                applyfrom.getMap().sendPacket(MaplePacketCreator.removeSummon(remove, true));
+                applyfrom.getMap().removeMapObject(remove);
+                remove.dispose();
+            }
+            applyfrom.getMap().spawnSummon(summon);
+            summon.addHP(x);
             if (isBeholder()) {
-                tosummon.addHP(1);
+                summon.addHP(1);
             }
         }
         if (isMagicDoor() && !FieldLimit.DOOR.check(applyto.getMap().getFieldLimit())) { // Magic Door
@@ -795,10 +800,10 @@ public class MapleStatEffect {
         chr.registerEffect(this, starttime, task);
         SummonMovementType summonMovementType = getSummonMovementType();
         if (summonMovementType != null) {
-            final MapleSummon tosummon = new MapleSummon(chr, sourceid, chr.getPosition(), summonMovementType);
-            if (!tosummon.isStationary()) {
-                chr.addSummon(sourceid, tosummon);
-                tosummon.addHP(x);
+            final MapleSummon summon = new MapleSummon(chr, sourceid, chr.getPosition(), summonMovementType);
+            if (!summon.isStationary()) {
+                chr.getSummons().put(sourceid, summon);
+                summon.addHP(x);
             }
         }
         if (sourceid == Corsair.BATTLESHIP) {

@@ -28,15 +28,16 @@ import com.lucianms.constants.skills.Outlaw;
 import com.lucianms.constants.skills.Ranger;
 import com.lucianms.constants.skills.Sniper;
 import com.lucianms.constants.skills.WindArcher;
+import tools.Disposable;
 import tools.MaplePacketCreator;
 
 import java.awt.*;
 
 /**
- *
  * @author Jan
  */
-public class MapleSummon extends AbstractAnimatedMapleMapObject {
+public class MapleSummon extends AbstractAnimatedMapleMapObject implements Disposable {
+
     private MapleCharacter owner;
     private byte skillLevel;
     private int skill, hp;
@@ -47,16 +48,22 @@ public class MapleSummon extends AbstractAnimatedMapleMapObject {
         this.skill = skill;
         this.skillLevel = owner.getSkillLevel(SkillFactory.getSkill(skill));
         if (skillLevel == 0) throw new RuntimeException();
-        
+
         this.movementType = movementType;
         setPosition(pos);
     }
 
-    public void sendSpawnData(MapleClient client) {
-        if (this != null) client.announce(MaplePacketCreator.spawnSummon(this, false));
-
+    @Override
+    public void dispose() {
+        owner = null;
     }
 
+    @Override
+    public void sendSpawnData(MapleClient client) {
+        client.announce(MaplePacketCreator.spawnSummon(this, false));
+    }
+
+    @Override
     public void sendDestroyData(MapleClient client) {
         client.announce(MaplePacketCreator.removeSummon(this, true));
     }
@@ -95,12 +102,12 @@ public class MapleSummon extends AbstractAnimatedMapleMapObject {
     }
 
     public final boolean isPuppet() {
-	switch (skill) {
-	    case 3111002:
-	    case 3211002:
-	    case 13111004:
-		return true;
-	}
-	return false;
+        switch (skill) {
+            case 3111002:
+            case 3211002:
+            case 13111004:
+                return true;
+        }
+        return false;
     }
 }

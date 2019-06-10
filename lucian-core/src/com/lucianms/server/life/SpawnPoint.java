@@ -15,14 +15,12 @@ public final class SpawnPoint {
         public void monsterKilled(MapleMonster monster, MapleCharacter player) {
             if (spawnedMonsters.get() > 0) {
                 spawnedMonsters.decrementAndGet();
+            } else {
+                // not sure how this would happen. perhaps low respawn interval?
+                spawnedMonsters.set(0);
             }
-            nextPossibleSpawn = System.currentTimeMillis();
-            nextPossibleSpawn += (mobTime > 0) ? (mobTime * 1000) : monster.getAnimationTime("die1");
+            nextPossibleSpawn = System.currentTimeMillis() + ((mobTime > 0) ? (mobTime * 1000) : monster.getAnimationTime("die1"));
         }
-    }
-
-    public interface Summon {
-        void summon();
     }
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SpawnPoint.class);
@@ -36,9 +34,8 @@ public final class SpawnPoint {
     private final boolean immobile;
 
     private int maximumSpawns = 1;
-    private MapleMonster monster = null;
-    private MapleMonsterStats overrides = null;
     private long nextPossibleSpawn;
+    private MapleMonsterStats overrides;
 
     /**
      * @param monster  the monster associated with a SpawnPoint
@@ -52,7 +49,7 @@ public final class SpawnPoint {
         this.monsterID = monster.getId();
         Point nPos = map.calcPointBelow(monster.getPosition());
         this.pos = (nPos == null) ? monster.getPosition() : nPos.getLocation();
-        this.mobTime = (mobTime <= 0) ? 5 : mobTime;
+        this.mobTime = (mobTime <= 0) ? 2 : mobTime;
         this.team = team;
         this.f = monster.getF();
         this.fh = monster.getFh();
@@ -61,12 +58,12 @@ public final class SpawnPoint {
     }
 
     public MapleMonsterStats createOverrides() {
-        return overrides = new MapleMonsterStats(stats);
+        return this.overrides = new MapleMonsterStats(stats);
     }
 
     public boolean canSpawn(boolean force) {
         return map.isRespawnEnabled()
-                && (!immobile || spawnedMonsters.get() == 0)
+                && (!immobile || spawnedMonsters.get() < 1)
                 && (spawnedMonsters.get() < maximumSpawns && (nextPossibleSpawn <= System.currentTimeMillis() || force));
     }
 
@@ -77,9 +74,9 @@ public final class SpawnPoint {
      * @return the instantiated monster
      */
     public MapleMonster getMonster() {
-        monster = MapleLifeFactory.getMonster(monsterID);
+        MapleMonster monster = MapleLifeFactory.getMonster(monsterID);
         if (monster == null) {
-            LOGGER.error("Unable to spawn monster (non-existing) {}", monsterID, new NullPointerException());
+            LOGGER.warn("Unable to spawn monster (non-existing) {}", monsterID);
         }
         monster.setPosition(pos.getLocation());
         monster.setTeam(team);
@@ -94,19 +91,15 @@ public final class SpawnPoint {
 
     public void attemptMonsterSummon() {
         if (canSpawn(false)) {
-            getMonster();
             summonMonster();
         }
     }
 
-    public synchronized void summonMonster() {
-        if (monster == null) {
-            LOGGER.error("Can't spawn monster (was never created)", getMonsterID());
-            return;
-        }
-        spawnedMonsters.incrementAndGet();
+    public MapleMonster summonMonster() {
+        MapleMonster monster = getMonster();
         map.spawnMonsterOnGroudBelow(monster, monster.getPosition());
-        monster = null;
+        spawnedMonsters.incrementAndGet();
+        return monster;
     }
 
     public int getMaximumSpawns() {

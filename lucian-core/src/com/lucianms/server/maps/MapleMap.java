@@ -652,8 +652,8 @@ public class MapleMap implements PacketAnnouncer {
             }, 3000);
             return;
         }
+        spawnedMonstersOnMap.decrementAndGet();
         if (chr == null) {
-            spawnedMonstersOnMap.decrementAndGet();
             monster.killBy(null);
             monster.setHp(0);
             broadcastMessage(MaplePacketCreator.killMonster(monster.getObjectId(), animation), monster.getPosition());
@@ -681,12 +681,9 @@ public class MapleMap implements PacketAnnouncer {
             TaskExecutor.createTask(() -> warp.forEach(c -> c.changeMap(333)), 2500);
             warp.clear();
         }
-        spawnedMonstersOnMap.decrementAndGet();
         monster.setHp(0);
         broadcastMessage(MaplePacketCreator.killMonster(monster.getObjectId(), animation));
-        // if (monster.getStats().selfDestruction() == null) {//FUU BOMBS D:
         removeMapObject(monster);
-        // }
         if (monster.getId() >= 8800003 && monster.getId() <= 8800010) {
             boolean makeZakReal = true;
             Collection<MapleMapObject> objects = getMapObjects();
@@ -953,7 +950,6 @@ public class MapleMap implements PacketAnnouncer {
         SpawnPoint spawnPoint = new SpawnPoint(this, monster, false, 1, team);
         addMonsterSpawnPoint(spawnPoint);
 
-        spawnPoint.getMonster();
         spawnPoint.summonMonster();
     }
 
@@ -1735,14 +1731,7 @@ public class MapleMap implements PacketAnnouncer {
         }
         newpos.y -= 1;
         monster.setPosition(newpos);
-        SpawnPoint spawnPoint = new SpawnPoint(this, monster, !monster.isMobile(), mobTime, team);
-        MapleMonster summon = spawnPoint.getMonster();
-        if (summon != null) {
-            spawnPoint.summonMonster();
-            spawnPoints.add(spawnPoint);
-        } else {
-            LOGGER.info("Invalid monster summon {} in {} via SpawnPoint", monster.getId(), getId());
-        }
+        spawnPoints.add(new SpawnPoint(this, monster, !monster.isMobile(), mobTime, team));
     }
 
     public void addMonsterSpawnPoint(SpawnPoint spawnPoint) {
@@ -1900,29 +1889,13 @@ public class MapleMap implements PacketAnnouncer {
         return null;
     }
 
-    public void instanceMapRespawn() {
-        final int numShouldSpawn = (short) ((spawnPoints.size() - spawnedMonstersOnMap.get()));
-        if (numShouldSpawn > 0) {
-            List<SpawnPoint> randomSpawn = new ArrayList<>(spawnPoints);
-            Collections.shuffle(randomSpawn);
-            int spawned = 0;
-            for (SpawnPoint spawnPoint : randomSpawn) {
-                spawnMonster(spawnPoint.getMonster());
-                spawned++;
-                if (spawned >= numShouldSpawn) {
-                    break;
-                }
-            }
-        }
-    }
-
     public void respawn() {
         if (!isRespawnEnabled()) {
             return;
         } else if (characters.isEmpty()) {
             return;
         }
-        spawnPoints.stream().filter(sp -> sp.canSpawn(false)).forEach(SpawnPoint::attemptMonsterSummon);
+        spawnPoints.forEach(SpawnPoint::attemptMonsterSummon);
     }
 
     public int getHPDec() {

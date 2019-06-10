@@ -247,7 +247,6 @@ public class HGMCommands extends CommandExecutor {
     private void RespawnMap(MapleCharacter player, Command cmd, CommandArgs args) {
         for (SpawnPoint sp : player.getMap().getMonsterSpawnPoints()) {
             if (sp.canSpawn(true)) {
-                sp.getMonster();
                 sp.summonMonster();
             }
         }

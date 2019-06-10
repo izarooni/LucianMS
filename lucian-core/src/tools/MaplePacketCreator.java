@@ -1259,7 +1259,7 @@ public class MaplePacketCreator {
 
     public static byte[] damageSummon(int cid, int summonSkillId, int damage, int unkByte, int monsterIdFrom) {
         final MaplePacketWriter mplew = new MaplePacketWriter();
-        mplew.writeShort(SendOpcode.DAMAGE_SUMMON.getValue());
+        mplew.writeShort(SendOpcode.SUMMONED_HIT.getValue());
         mplew.writeInt(cid);
         mplew.writeInt(summonSkillId);
         mplew.write(unkByte);
@@ -3893,7 +3893,7 @@ public class MaplePacketCreator {
 
     public static byte[] moveSummon(int cid, int oid, Point startPos, List<LifeMovementFragment> moves) {
         final MaplePacketWriter mplew = new MaplePacketWriter();
-        mplew.writeShort(SendOpcode.MOVE_SUMMON.getValue());
+        mplew.writeShort(SendOpcode.SUMMONED_MOVE.getValue());
         mplew.writeInt(cid);
         mplew.writeInt(oid);
         mplew.writeLocation(startPos);
@@ -4515,10 +4515,10 @@ public class MaplePacketCreator {
      */
     public static byte[] removeSummon(MapleSummon summon, boolean animated) {
         final MaplePacketWriter mplew = new MaplePacketWriter(11);
-        mplew.writeShort(SendOpcode.REMOVE_SPECIAL_MAPOBJECT.getValue());
+        mplew.writeShort(SendOpcode.SUMMONED_LEAVE_FIELD.getValue());
         mplew.writeInt(summon.getOwner().getId());
         mplew.writeInt(summon.getObjectId());
-        mplew.write(animated ? 4 : 1); // ?
+        mplew.write(animated ? 4 : 1);
         return mplew.getPacket();
     }
 
@@ -6102,7 +6102,7 @@ public class MaplePacketCreator {
      */
     public static byte[] spawnSummon(MapleSummon summon, boolean animated) {
         final MaplePacketWriter mplew = new MaplePacketWriter(25);
-        mplew.writeShort(SendOpcode.SPAWN_SPECIAL_MAPOBJECT.getValue());
+        mplew.writeShort(SendOpcode.SUMMONED_ENTER_FIELD.getValue());
         mplew.writeInt(summon.getOwner().getId());
         mplew.writeInt(summon.getObjectId());
         mplew.writeInt(summon.getSkill());
@@ -6143,7 +6143,7 @@ public class MaplePacketCreator {
 
     public static byte[] summonAttack(int cid, int summonSkillId, byte direction, Pair<Integer, Integer>[] allDamage) {
         final MaplePacketWriter mplew = new MaplePacketWriter();
-        mplew.writeShort(SendOpcode.SUMMON_ATTACK.getValue());
+        mplew.writeShort(SendOpcode.SUMMONED_ATTACK.getValue());
         mplew.writeInt(cid);
         mplew.writeInt(summonSkillId);
         mplew.write(direction);
@@ -6159,7 +6159,7 @@ public class MaplePacketCreator {
 
     public static byte[] summonSkill(int cid, int summonSkillId, int newStance) {
         final MaplePacketWriter mplew = new MaplePacketWriter();
-        mplew.writeShort(SendOpcode.SUMMON_SKILL.getValue());
+        mplew.writeShort(SendOpcode.SUMMONED_SKILL.getValue());
         mplew.writeInt(cid);
         mplew.writeInt(summonSkillId);
         mplew.write(newStance);
