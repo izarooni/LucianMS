@@ -2647,15 +2647,10 @@ public class MaplePacketCreator {
         return mplew.getPacket();
     }
 
-    /**
-     * Gets the response to a relog request.
-     *
-     * @return The relog response packet.
-     */
     public static byte[] getRelogResponse() {
         final MaplePacketWriter mplew = new MaplePacketWriter(3);
         mplew.writeShort(SendOpcode.RELOG_RESPONSE.getValue());
-        mplew.write(1);//1 O.O Must be more types ):
+        mplew.write(0);
         return mplew.getPacket();
     }
 
