@@ -31,10 +31,12 @@ public class FieldUpdateTask implements Runnable {
     @SuppressWarnings("WhileLoopReplaceableByForEach")
     public void run() {
         try {
+            boolean mapRecord = RespawnInterval.record();
+            boolean userRecord = CharacterInterval.record();
             for (MapleChannel channel : world.getChannels()) {
                 ArrayList<MapleMap> maps = new ArrayList<>(channel.getMaps());
                 for (MapleMap map : maps) {
-                    if (RespawnInterval.record()) {
+                    if (mapRecord) {
                         map.respawn();
                     }
                     if (!map.getEverlast()) {
@@ -50,8 +52,7 @@ public class FieldUpdateTask implements Runnable {
                         }
                         list.clear();
                     }
-
-                    if (CharacterInterval.record()) {
+                    if (userRecord) {
                         Iterator<MapleCharacter> iterator = map.getCharacters().iterator();
                         while (iterator.hasNext()) {
                             MapleCharacter player = iterator.next();
