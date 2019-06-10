@@ -4,6 +4,7 @@ import com.lucianms.client.MapleCharacter;
 import com.lucianms.nio.receive.MaplePacketReader;
 import com.lucianms.server.MaplePortal;
 import com.lucianms.server.MapleTrade;
+import com.lucianms.server.maps.MapleMap;
 import tools.MaplePacketCreator;
 
 /**
@@ -39,9 +40,9 @@ public final class ChangeMapSpecialEvent extends PacketEvent {
             if (player.getTrade() != null) {
                 MapleTrade.cancelTrade(player);
             }
-            if (!portal.enterPortal(getClient())) {
+            if (!portal.enterPortal(getClient()) && portal.getTargetMapId() != MapleMap.INVALID_ID) {
                 player.announce(MaplePacketCreator.enableActions());
-                getLogger().info("portal {} in {} that leads to invalid area {}",
+                getLogger().warn("portal {} in {} that leads to invalid area {}",
                         startwp, player.getMapId(), portal.getTargetMapId());
             }
         }

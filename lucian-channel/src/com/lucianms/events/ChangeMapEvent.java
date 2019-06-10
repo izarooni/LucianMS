@@ -22,8 +22,6 @@ import com.lucianms.server.channel.MapleChannel;
 import com.lucianms.server.life.SpawnPoint;
 import com.lucianms.server.maps.MapleMap;
 import com.lucianms.server.world.MapleWorld;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import tools.MaplePacketCreator;
 import tools.Randomizer;
 
@@ -33,8 +31,6 @@ import java.util.Collection;
 import java.util.concurrent.TimeUnit;
 
 public class ChangeMapEvent extends PacketEvent {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(ChangeMapEvent.class);
 
     private boolean fake = false;
     private boolean eCashShop = false;
@@ -138,7 +134,7 @@ public class ChangeMapEvent extends PacketEvent {
                             }
                             to = player.getMap().getReturnMap();
                             if (to == null) {
-                                LOGGER.warn("Player '{}' unable to return to map {}", player.getName(), player.getMap().getReturnMapId());
+                                getLogger().warn("Player '{}' unable to return to map {}", player.getName(), player.getMap().getReturnMapId());
                                 player.sendMessage("The return map is obstructed");
                                 to = ch.getMap(ServerConstants.HOME_MAP);
                             }

@@ -404,10 +404,9 @@ public class MapleInventoryManipulator {
         } else if ((((srcItem.getItemId() >= 1902000 && srcItem.getItemId() <= 1902002) || srcItem.getItemId() == 1912000) && player.isCygnus()) || ((srcItem.getItemId() >= 1902005 && srcItem.getItemId() <= 1902007) || srcItem.getItemId() == 1912005) && !player.isCygnus()) {// Adventurer taming equipment
             return;
         }
-        boolean itemChanged = false;
         if (MapleItemInformationProvider.getInstance().isUntradeableOnEquip(srcItem.getItemId())) {
             srcItem.setFlag((byte) ItemConstants.UNTRADEABLE);
-            itemChanged = true;
+            srcInventory.updateItem(c, srcItem);
         }
 
         MapleRing ring = null;
@@ -495,10 +494,6 @@ public class MapleInventoryManipulator {
         }
 
         final List<ModifyInventory> mods = new ArrayList<>();
-        if (itemChanged) {
-            mods.add(new ModifyInventory(3, srcItem));
-            mods.add(new ModifyInventory(0, srcItem.duplicate()));
-        }
         mods.add(new ModifyInventory(2, srcItem, srcPosition));
         c.announce(MaplePacketCreator.modifyInventory(true, mods));
         player.equipChanged(true);
