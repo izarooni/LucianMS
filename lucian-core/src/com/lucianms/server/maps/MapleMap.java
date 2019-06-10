@@ -1049,7 +1049,7 @@ public class MapleMap implements PacketAnnouncer {
             } else if (monster.getId() == 9300061) {
                 monsterItemDrop(monster, new Item(4001101, (short) 0, (short) 1), monster.getDropPeriodTime() / 3);
             } else {
-                LOGGER.warn("Unhandled timed monster", monster.getId());
+                LOGGER.warn("Unhandled timed monster {}", monster.getId());
             }
         }
         spawnedMonstersOnMap.incrementAndGet();

@@ -19,7 +19,8 @@ import java.util.Iterator;
  */
 public class FieldUpdateTask implements Runnable {
 
-    private static final long RespawnInterval = 10000;
+    private final UpdateRecord RespawnInterval = new UpdateRecord(5000);
+    private final UpdateRecord CharacterInterval = new UpdateRecord(10000);
     private MapleWorld world;
 
     public FieldUpdateTask(MapleWorld world) {
@@ -33,7 +34,9 @@ public class FieldUpdateTask implements Runnable {
             for (MapleChannel channel : world.getChannels()) {
                 ArrayList<MapleMap> maps = new ArrayList<>(channel.getMaps());
                 for (MapleMap map : maps) {
-                    map.respawn();
+                    if (RespawnInterval.record()) {
+                        map.respawn();
+                    }
                     if (!map.getEverlast()) {
                         ArrayList<MapleMapItem> list = map.getMapObjects(MapleMapItem.class);
                         Iterator<MapleMapItem> drops = list.iterator();
@@ -48,22 +51,24 @@ public class FieldUpdateTask implements Runnable {
                         list.clear();
                     }
 
-                    Iterator<MapleCharacter> iterator = map.getCharacters().iterator();
-                    while (iterator.hasNext()) {
-                        MapleCharacter player = iterator.next();
+                    if (CharacterInterval.record()) {
+                        Iterator<MapleCharacter> iterator = map.getCharacters().iterator();
+                        while (iterator.hasNext()) {
+                            MapleCharacter player = iterator.next();
 
-                        player.checkExpirations();
-                        if (map.getHPDec() > 0) {
-                            if (player.getInventory(MapleInventoryType.EQUIPPED).findById(map.getHPDecProtect()) != null) {
-                                player.addHP(-map.getHPDec());
+                            player.checkExpirations();
+                            if (map.getHPDec() > 0) {
+                                if (player.getInventory(MapleInventoryType.EQUIPPED).findById(map.getHPDecProtect()) != null) {
+                                    player.addHP(-map.getHPDec());
+                                }
                             }
-                        }
 
-                        Occupation occupation = player.getOccupation();
-                        if (occupation != null) {
-                            if (occupation.getType() == Occupation.Type.Troll &&
-                                    player.getMapId() == ServerConstants.HOME_MAP) {
-                                occupation.gainExperience(10);
+                            Occupation occupation = player.getOccupation();
+                            if (occupation != null) {
+                                if (occupation.getType() == Occupation.Type.Troll &&
+                                        player.getMapId() == ServerConstants.HOME_MAP) {
+                                    occupation.gainExperience(10);
+                                }
                             }
                         }
                     }
@@ -71,7 +76,25 @@ public class FieldUpdateTask implements Runnable {
                 maps.clear();
             }
         } finally {
-            TaskExecutor.createTask(new FieldUpdateTask(world), RespawnInterval);
+            TaskExecutor.createTask(new FieldUpdateTask(world), 5000);
+        }
+    }
+
+    private class UpdateRecord {
+        private final long updateInterval;
+        private long lastUpdate;
+
+        public UpdateRecord(long updateInterval) {
+            this.updateInterval = updateInterval;
+        }
+
+        public boolean record() {
+            long now = System.currentTimeMillis();
+            if (now - lastUpdate >= updateInterval) {
+                lastUpdate = now;
+                return true;
+            }
+            return false;
         }
     }
 }

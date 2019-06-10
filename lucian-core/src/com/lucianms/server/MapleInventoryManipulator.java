@@ -506,7 +506,7 @@ public class MapleInventoryManipulator {
             byte[] packet = MaplePacketCreator.getPlayerModified(player,
                     (ItemConstants.isCoupleEquip(ring.getItemId()) ? ring : null),
                     (ItemConstants.isFriendshipEquip(ring.getItemId()) ? ring : null));
-            player.getMap().sendPacketCheckHiddenExclude(player, packet);
+            player.getMap().sendPacketExclude(packet, player);
         }
     }
 

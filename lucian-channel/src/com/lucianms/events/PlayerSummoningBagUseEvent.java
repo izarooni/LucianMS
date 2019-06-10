@@ -26,6 +26,7 @@ public class PlayerSummoningBagUseEvent extends PacketEvent {
     public void exceptionCaught(MaplePacketReader reader, Throwable t) {
         if (t instanceof NullPointerException) {
             getClient().getPlayer().sendMessage(5, "This item is currently broken.");
+            return;
         }
         super.exceptionCaught(reader, t);
     }

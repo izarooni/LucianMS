@@ -526,6 +526,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Di
                     int oOrdinal = rs.getInt("occupation");
                     if (oOrdinal > -1) {
                         ret.occupation = new Occupation(Occupation.Type.fromValue(oOrdinal));
+                        ret.occupation.setLevel(rs.getByte("occupation_level"));
                     }
                 }
                 if (ret.guildid > 0) {
@@ -1919,7 +1920,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Di
 
     public void equipChanged(boolean sendAvatarModified) {
         if (sendAvatarModified) {
-            getMap().sendPacketCheckHiddenExclude(this, MaplePacketCreator.getPlayerModified(this));
+            getMap().sendPacketExclude(MaplePacketCreator.getPlayerModified(this), this);
         }
         updateLocalizedStats();
         enforceMaxHpMp();
@@ -2092,6 +2093,13 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Di
             if (MapleInventoryManipulator.checkSpace(getClient(), ServerConstants.CURRENCY, 1, "")) {
                 gainMeso(-2000000000, true);
                 MapleInventoryManipulator.addById(getClient(), ServerConstants.CURRENCY, (short) 1);
+
+                Occupation occupation = getOccupation();
+                if (occupation != null && occupation.getType() == Occupation.Type.Farmer) {
+                    if (occupation.gainExperience(50)) {
+                        sendMessage("Your occupation is now level {}", occupation.getLevel());
+                    }
+                }
             }
         }
     }
@@ -4679,7 +4687,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Di
         }
 
         if (isHidden()) {
-            getMap().broadcastGMMessage(this, MaplePacketCreator.giveForeignBuff(getId(), Map.of(MapleBuffStat.DARK_SIGHT, 0)), false);
+            getMap().sendPacketExclude(MaplePacketCreator.giveForeignBuff(getId(), Map.of(MapleBuffStat.DARK_SIGHT, 0)), this);
         }
     }
 

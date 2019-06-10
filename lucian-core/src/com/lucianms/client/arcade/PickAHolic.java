@@ -2,6 +2,7 @@ package com.lucianms.client.arcade;
 
 import com.lucianms.client.MapleCharacter;
 import com.lucianms.client.inventory.MapleInventoryType;
+import com.lucianms.scheduler.TaskExecutor;
 import com.lucianms.server.MapleInventoryManipulator;
 import tools.MaplePacketCreator;
 
@@ -45,8 +46,7 @@ public class PickAHolic extends Arcade {
                 MapleInventoryManipulator.addById(player.getClient(), itemReward, (short) 1);
             }
 
-            respawnTask.cancel();
-            respawnTask = null;
+            respawnTask = TaskExecutor.cancelTask(respawnTask);
             player.setArcade(null);
             return true;
         }
