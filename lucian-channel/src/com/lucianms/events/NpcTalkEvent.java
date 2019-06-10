@@ -1,6 +1,7 @@
 package com.lucianms.events;
 
 import com.lucianms.client.MapleCharacter;
+import com.lucianms.io.scripting.npc.NPCConversationManager;
 import com.lucianms.io.scripting.npc.NPCScriptManager;
 import com.lucianms.nio.receive.MaplePacketReader;
 import com.lucianms.server.life.MapleNPC;
@@ -29,6 +30,11 @@ public class NpcTalkEvent extends PacketEvent {
             setCanceled(true);
             return null;
         }
+        NPCConversationManager cm = getClient().getCM();
+        if (cm != null && cm.isProc()) {
+            return null;
+        }
+
         MapleMapObject mapObjects = player.getMap().getMapObject(objectId);
         if (mapObjects != null) {
             if (mapObjects instanceof MapleNPC) {

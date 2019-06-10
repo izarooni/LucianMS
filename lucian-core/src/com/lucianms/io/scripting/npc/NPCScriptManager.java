@@ -2,7 +2,6 @@ package com.lucianms.io.scripting.npc;
 
 import com.lucianms.client.MapleCharacter;
 import com.lucianms.client.MapleClient;
-import com.lucianms.client.SpamTracker;
 import com.lucianms.constants.PlayerToggles;
 import com.lucianms.io.scripting.ScriptUtil;
 import org.slf4j.Logger;
@@ -36,10 +35,6 @@ public class NPCScriptManager {
 
     public static void start(MapleClient client, int objectID, int npc, String fileName) {
         MapleCharacter player = client.getPlayer();
-        SpamTracker.SpamData spamTracker = player.getSpamTracker(SpamTracker.SpamOperation.NpcTalk);
-        if (spamTracker.testFor(1000)) {
-            return;
-        }
         final String path = "npc/world" + client.getWorld() + "/" + (fileName == null ? npc : fileName) + ".js";
         try {
             if (storage.containsKey(client.getAccID())) {
@@ -70,7 +65,6 @@ public class NPCScriptManager {
                 dispose(client);
                 return;
             }
-            spamTracker.record();
             storage.put(client.getAccID(), new Pair<>(iv, cm));
             try {
                 iv.invokeFunction("start");

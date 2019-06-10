@@ -21,10 +21,11 @@
 */
 package com.lucianms.events;
 
+import com.lucianms.io.scripting.npc.NPCConversationManager;
 import com.lucianms.io.scripting.npc.NPCScriptManager;
+import com.lucianms.io.scripting.quest.QuestActionManager;
 import com.lucianms.io.scripting.quest.QuestScriptManager;
 import com.lucianms.nio.receive.MaplePacketReader;
-import com.lucianms.events.PacketEvent;
 
 /**
  * @author Matze
@@ -53,32 +54,41 @@ public class NpcMoreTalkEvent extends PacketEvent {
 
     @Override
     public Object onPacket() {
+        QuestActionManager qm = getClient().getQM();
+        NPCConversationManager cm = getClient().getCM();
+
+        if (cm == null) {
+            return null;
+        } else {
+            cm.setProc(false);
+        }
+
         if (dialogType == 2) {
             if (action != 0) {
-                if (getClient().getQM() != null) {
-                    getClient().getQM().setGetText(text);
-                    if (getClient().getQM().isStart()) {
+                if (qm != null) {
+                    qm.setGetText(text);
+                    if (qm.isStart()) {
                         QuestScriptManager.start(getClient(), action, dialogType, -1);
                     } else {
                         QuestScriptManager.end(getClient(), action, dialogType, -1);
                     }
                 } else {
-                    getClient().getCM().setGetText(text);
+                    cm.setGetText(text);
                     NPCScriptManager.action(getClient(), action, dialogType, -1);
                 }
-            } else if (getClient().getQM() != null) {
-                getClient().getQM().dispose();
+            } else if (qm != null) {
+                qm.dispose();
             } else {
-                getClient().getCM().dispose();
+                cm.dispose();
             }
         } else {
-            if (getClient().getQM() != null) {
-                if (getClient().getQM().isStart()) {
+            if (qm != null) {
+                if (qm.isStart()) {
                     QuestScriptManager.start(getClient(), action, dialogType, selection);
                 } else {
                     QuestScriptManager.end(getClient(), action, dialogType, selection);
                 }
-            } else if (getClient().getCM() != null) {
+            } else {
                 NPCScriptManager.action(getClient(), action, dialogType, selection);
             }
         }
