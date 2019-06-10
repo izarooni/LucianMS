@@ -601,7 +601,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Di
             try (PreparedStatement ps = con.prepareStatement("SELECT mapid,vip FROM trocklocations WHERE characterid = ? LIMIT 15")) {
                 ps.setInt(1, charid);
                 try (ResultSet rs = ps.executeQuery()) {
-                    for (int vipIndex = 0, index = 0; rs.next();) {
+                    for (int vipIndex = 0, index = 0; rs.next(); ) {
                         int mapid = rs.getInt("mapid");
                         if (rs.getInt("vip") == 1) {
                             ret.viptrockmaps.set(vipIndex++, mapid);
@@ -3432,7 +3432,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Di
         if (getBuffedValue(MapleBuffStat.RIDE_VEHICLE) != null) {
             cancelBuffs(Set.of(MapleBuffStat.RIDE_VEHICLE));
         }
-        if (!getSummons().isEmpty()){
+        if (!getSummons().isEmpty()) {
             for (MapleSummon summon : getSummons().values()) {
                 getMap().sendPacket(MaplePacketCreator.removeSummon(summon, true));
                 summon.dispose();
@@ -4662,7 +4662,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Di
     public void sendSpawnData(MapleClient client) {
         if (!isHidden() || client.getPlayer().getGMLevel() >= getHidingLevel()) {
             client.announce(MaplePacketCreator.getUserEnterField(this));
-            client.announce(MaplePacketCreator.getResetRemoteTempStats(getId(), effects.keySet()));
+            client.announce(MaplePacketCreator.setRemoteTempStats(this, effects));
         }
 
         if (isHidden()) {
