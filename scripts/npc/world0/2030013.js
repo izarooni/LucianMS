@@ -1,10 +1,9 @@
+const MapleExpeditionType = Java.type('com.lucianms.server.expeditions.MapleExpeditionType');
+const MaplePacketCreator = Java.type('tools.MaplePacketCreator');
 /*Adobis
  *
  *@author SharpAceX (Alan)
  */
-importPackage(Packages.com.lucianms.server.expeditions);
-importPackage(Packages.tools);
-importPackage(Packages.com.lucianms.scripting.event);
 
 var status = 0;
 var expedition;

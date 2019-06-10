@@ -67,9 +67,11 @@ function leftParty(eim, player) {
 }
 
 function disbandParty(eim) {
-    eim.getPlayers().forEach(function(chr) {
+    let concurrent = new java.util.ArrayList(eim.getPlayers());
+    concurrent.forEach(function(chr) {
         playerExit(eim, chr);
     });
+    concurrent.clear();
     eim.dispose();
 }
 
@@ -94,6 +96,10 @@ function clearPQ(eim) {
         playerExitClear(eim, party.get(i));
     });
     eim.dispose();
+}
+
+function moveMap(eim, player, map) { 
+    return true;
 }
 
 function allMonstersDead(eim) {}

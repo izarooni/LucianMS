@@ -28,7 +28,7 @@
  * Zakum Quest NPC 
  * Helps players leave the map
  */
-importPackage(Packages.com.lucianms.server.expeditions);
+const MapleExpeditionType = Java.type('com.lucianms.server.expeditions.MapleExpeditionType');
  
 function start() {
     cm.sendYesNo("If you leave now, you'll have to start over. Are you sure you want to leave?");

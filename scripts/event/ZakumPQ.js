@@ -116,6 +116,10 @@ function clearPQ(eim) {
     eim.dispose();
 }
 
+function moveMap(eim, player, map) {
+    return true;
+}
+
 function allMonstersDead(eim) {
 //do nothing; ZPQ has nothing to do with monster killing
 }

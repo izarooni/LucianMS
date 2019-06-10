@@ -20,6 +20,7 @@ function action(mode, type, selection) {
     }
     if (player.getMapId() == M_Park) Entrance(selection);
     else if (player.getMapId() == M_ExitSuccess || player.getMapId() == M_Fail) EndStage(selection);
+    else cm.dispose();
 }
 
 function Entrance(selection) {
@@ -46,7 +47,7 @@ function Entrance(selection) {
                     return;
                 }
             });
-            if (available < cm.getParty().getMembers().size()) {
+            if (available < members.size()) {
                 cm.sendOk("A member of your party is not present in the map.");
             } else if (!player.isGM() && available < Min_Members) {
                 cm.sendOk("You will need at least #b" + Min_Members + " party members#k to enter.");

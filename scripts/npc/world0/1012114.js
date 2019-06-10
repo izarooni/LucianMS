@@ -14,9 +14,10 @@ function action(mode, type, selection) {
         return;
     }
     if (this.event == null) {
-        this.event = cm.getEventManager("HenesysPQ").getInstance("HenesysPQ_" + cm.getParty().getLeader().getName());
+        let leaderUsernarme = cm.getParty().getLeader().getUsername();
+        this.event = cm.getEventManager("HenesysPQ").getInstance(`HenesysPQ_${leaderUsernarme}`);
         if (this.event == null) {
-            cm.sendNext("Who are you? How did you get here?");
+            cm.sendNext("Who are you? You don't belong here.");
             cm.dispose();
             return;
         }
