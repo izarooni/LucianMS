@@ -596,7 +596,7 @@ public class MapleStatEffect {
             hpchange = applyto.getMaxHp();
             applyto.setStance(0);
             applyto.getMap().broadcastMessage(applyto, MaplePacketCreator.removePlayerFromMap(applyto.getId()), false);
-            applyto.getMap().broadcastMessage(applyto, MaplePacketCreator.spawnPlayerMapobject(applyto), false);
+            applyto.getMap().broadcastMessage(applyto, MaplePacketCreator.getUserEnterField(applyto), false);
         }
         if (isDispel() && makeChanceResult()) {
             applyto.dispelDebuffs();

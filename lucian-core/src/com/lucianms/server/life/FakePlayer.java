@@ -30,7 +30,7 @@ public class FakePlayer extends MapleCharacter {
 
     @Override
     public void sendSpawnData(MapleClient client) {
-        client.announce(MaplePacketCreator.spawnPlayerMapobject(this));
+        client.announce(MaplePacketCreator.getUserEnterField(this));
     }
 
     @Override

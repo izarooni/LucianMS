@@ -1325,7 +1325,7 @@ public class MapleMap implements PacketAnnouncer {
         addMapObject(fakePlayer);
         fakePlayer.setId(fakePlayer.getObjectId());
         characters.put(fakePlayer.getId(), fakePlayer);
-        broadcastMessage(fakePlayer, MaplePacketCreator.spawnPlayerMapobject(fakePlayer), false);
+        broadcastMessage(fakePlayer, MaplePacketCreator.getUserEnterField(fakePlayer), false);
     }
 
     public void removeFakePlayer(FakePlayer fakePlayer) {
@@ -1467,12 +1467,12 @@ public class MapleMap implements PacketAnnouncer {
             }
         }
         if (chr.isHidden()) {
-            sendPacketIf(MaplePacketCreator.spawnPlayerMapobject(chr), p -> p.getGMLevel() >= chr.getGMLevel());
+            sendPacketIf(MaplePacketCreator.getUserEnterField(chr), p -> p.getGMLevel() >= chr.getGMLevel());
             chr.announce(MaplePacketCreator.getAdminResult(0x10, (byte) 1));
 
             sendPacketIf(MaplePacketCreator.giveForeignBuff(getId(), Map.of(MapleBuffStat.DARK_SIGHT, 0)), p -> p.getGMLevel() >= chr.getGMLevel());
         } else {
-            broadcastMessage(chr, MaplePacketCreator.spawnPlayerMapobject(chr), false);
+            broadcastMessage(chr, MaplePacketCreator.getUserEnterField(chr), false);
         }
 
         sendObjectPlacement(chr.getClient());

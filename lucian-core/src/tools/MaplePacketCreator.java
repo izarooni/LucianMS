@@ -1104,13 +1104,16 @@ public class MaplePacketCreator {
                 w.writeShort(0);
                 w.writeInt(inv != null ? inv.getItemId() : 0);
                 w.writeBoolean(--petCount > 0);
+            } else {
+                break;
             }
         }
         //endregion
         //region CUIUserInfo::SetTamingMobInfo
         MapleMount mount = player.getVehicle();
-        w.write(mount == null ? 0 : mount.getId()); //mount
-        if (mount != null && eqqInventory.getItem((short) -18) != null) {
+        boolean hasMount = mount != null && eqqInventory.getItem((short) -18) != null;
+        w.write(hasMount ? mount.getId() : 0); //mount
+        if (hasMount) {
             w.writeInt(mount.getLevel()); //level
             w.writeInt(mount.getExp()); //exp
             w.writeInt(mount.getTiredness()); //tiredness
@@ -3079,31 +3082,20 @@ public class MaplePacketCreator {
         MaplePacketWriter w = new MaplePacketWriter(32 + (2 * stats.size()));
         w.writeShort(SendOpcode.GIVE_FOREIGN_BUFF.getValue());
         w.writeInt(player.getId());
-        encodeBuffMask(w, stats.keySet());
-        for (Entry<MapleBuffStat, BuffContainer> entry : stats.entrySet()) {
-            MapleBuffStat buff = entry.getKey();
-            BuffContainer bh = entry.getValue();
-
-            w.writeShort(bh.getValue());
-            if (buff == MapleBuffStat.RIDE_VEHICLE) {
-                w.writeInt(bh.getValue());
-            }
-            w.writeInt(bh.getDuration());
-        }
-        w.writeInt(0);
-        w.write(0);
-
-        w.writeInt(0);
-        w.write(0);
-        w.write(0);
-        w.write(0);
+        encodeTempStatForRemote(w, stats);
         return w.getPacket();
     }
 
     public static byte[] setTempStats(Map<MapleBuffStat, BuffContainer> stats) {
         final MaplePacketWriter w = new MaplePacketWriter();
         w.writeShort(SendOpcode.GIVE_BUFF.getValue());
-        encodeBuffMask(w, stats.keySet());
+        encodeTempStatForLocal(w, stats);
+        return w.getPacket();
+    }
+
+    public static void encodeTempStatForLocal(MaplePacketWriter w, Map<MapleBuffStat, BuffContainer> stats) {
+        Set<MapleBuffStat> keyset = stats.keySet();
+        encodeBuffMask(w, keyset);
         for (Entry<MapleBuffStat, BuffContainer> e : stats.entrySet()) {
             MapleBuffStat buff = e.getKey();
             BuffContainer container = e.getValue();
@@ -3121,13 +3113,45 @@ public class MaplePacketCreator {
             }
             w.writeInt(container.getDuration());
         }
-        w.writeInt(0);
-        w.write(0);
-        w.writeInt(0);
-        w.write(0);
-        w.write(0);
-        w.write(0);
-        return w.getPacket();
+        w.write(0); // nDefenseAtt
+        w.write(0); // nDefenseState
+        w.skip(16);
+//        MapleBuffStat[] buffs = MapleBuffStat.values();
+//        for (int i = 0; i < 8; i++) {
+//            for (MapleBuffStat stat : keyset) {
+//                if (stat.getIndex() == i) {
+//                    w.writeInt(0);
+//                    w.writeInt(0);
+//                }
+//            }
+//        }
+    }
+
+    public static void encodeTempStatForRemote(MaplePacketWriter w, Map<MapleBuffStat, BuffContainer> stats) {
+        Set<MapleBuffStat> keyset = stats.keySet();
+        encodeBuffMask(w, keyset);
+        for (Entry<MapleBuffStat, BuffContainer> entry : stats.entrySet()) {
+            MapleBuffStat buff = entry.getKey();
+            BuffContainer bh = entry.getValue();
+
+            w.writeShort(bh.getValue());
+            if (buff == MapleBuffStat.RIDE_VEHICLE) {
+                w.writeInt(bh.getValue());
+            }
+            w.writeInt(bh.getDuration());
+        }
+        w.write(0); // nDefenseAtt
+        w.write(0); // nDefenseState
+        w.skip(16);
+//        MapleBuffStat[] buffs = MapleBuffStat.values();
+//        for (int i = 0; i < 8; i++) {
+//            for (MapleBuffStat stat : keyset) {
+//                if (stat.getIndex() == i) {
+//                    w.writeInt(0);
+//                    w.writeInt(0);
+//                }
+//            }
+//        }
     }
 
     public static byte[] giveBuff(int buffid, int bufflength, Map<MapleBuffStat, Integer> statups) {
@@ -5944,20 +5968,20 @@ public class MaplePacketCreator {
     /**
      * Gets a packet spawning a player as a mapobject to other clients.
      *
-     * @param chr The character to spawn to other clients.
+     * @param player The character to spawn to other clients.
      * @return The spawn player packet.
      */
-    public static byte[] spawnPlayerMapobject(MapleCharacter chr) {
+    public static byte[] getUserEnterField(MapleCharacter player) {
         final MaplePacketWriter mplew = new MaplePacketWriter();
         mplew.writeShort(SendOpcode.SPAWN_PLAYER.getValue());
-        mplew.writeInt(chr.getId());
-        mplew.write(chr.getLevel()); //v83
-        mplew.writeMapleString(chr.getName());
-        if (chr.getGuildId() < 1) {
+        mplew.writeInt(player.getId());
+        mplew.write(player.getLevel()); //v83
+        mplew.writeMapleString(player.getName());
+        if (player.getGuildId() < 1) {
             mplew.writeMapleString("");
             mplew.write(new byte[6]);
         } else {
-            MapleGuildSummary gs = chr.getClient().getWorldServer().getGuildSummary(chr.getGuildId(), chr.getWorld());
+            MapleGuildSummary gs = player.getClient().getWorldServer().getGuildSummary(player.getGuildId(), player.getWorld());
             if (gs != null) {
                 mplew.writeMapleString(gs.getName());
                 mplew.writeShort(gs.getLogoBG());
@@ -5969,123 +5993,59 @@ public class MaplePacketCreator {
                 mplew.write(new byte[6]);
             }
         }
-        mplew.writeInt(0);
-        mplew.writeShort(0); //v83
-        mplew.write(0xFC);
-        mplew.write(1);
-        if (chr.getBuffedValue(MapleBuffStat.MORPH) != null) {
-            mplew.writeInt(2);
-        } else {
-            mplew.writeInt(0);
-        }
-        long buffmask = 0;
-        Integer buffvalue = null;
-        if (chr.getBuffedValue(MapleBuffStat.DARK_SIGHT) != null && !chr.isHidden()) {
-            buffmask |= MapleBuffStat.DARK_SIGHT.getValue();
-        }
-        if (chr.getBuffedValue(MapleBuffStat.COMBO_COUNTER) != null) {
-            buffmask |= MapleBuffStat.COMBO_COUNTER.getValue();
-            buffvalue = chr.getBuffedValue(MapleBuffStat.COMBO_COUNTER);
-        }
-        if (chr.getBuffedValue(MapleBuffStat.SHADOW_PARTNER) != null) {
-            buffmask |= MapleBuffStat.SHADOW_PARTNER.getValue();
-        }
-        if (chr.getBuffedValue(MapleBuffStat.SOUL_ARROW) != null) {
-            buffmask |= MapleBuffStat.SOUL_ARROW.getValue();
-        }
-        if (chr.getBuffedValue(MapleBuffStat.MORPH) != null) {
-            buffvalue = chr.getBuffedValue(MapleBuffStat.MORPH);
-        }
-        if (chr.getBuffedValue(MapleBuffStat.ENERGY_CHARGE) != null) {
-            buffmask |= MapleBuffStat.ENERGY_CHARGE.getValue();
-            buffvalue = chr.getBuffedValue(MapleBuffStat.ENERGY_CHARGE);
-        }//AREN'T THESE
-        mplew.writeInt((int) ((buffmask >> 32) & 0xffffffffL));
-        if (buffvalue != null) {
-            if (chr.getBuffedValue(MapleBuffStat.MORPH) != null) { //TEST
-                mplew.writeShort(buffvalue);
-            } else {
-                mplew.write(buffvalue.byteValue());
-            }
-        }
-        mplew.writeInt((int) (buffmask & 0xffffffffL));
-        int CHAR_MAGIC_SPAWN = Randomizer.nextInt();
-        mplew.skip(6);
-        mplew.writeInt(CHAR_MAGIC_SPAWN);
-        mplew.skip(11);
-        mplew.writeInt(CHAR_MAGIC_SPAWN);//v74
-        mplew.skip(11);
-        mplew.writeInt(CHAR_MAGIC_SPAWN);
-        mplew.writeShort(0);
+        mplew.write(new byte[16]); // fuck that
         mplew.write(0);
-        final Item mount = chr.getInventory(MapleInventoryType.EQUIPPED).getItem((short) -18);
-        if (chr.getBuffedValue(MapleBuffStat.RIDE_VEHICLE) != null && mount != null) {
-            mplew.writeInt(mount.getItemId());
-            mplew.writeInt(1004);
-        } else {
-            mplew.writeLong(0);
-        }
-        mplew.writeInt(CHAR_MAGIC_SPAWN);
-        mplew.skip(9);
-        mplew.writeInt(CHAR_MAGIC_SPAWN);
-        mplew.writeShort(0);
-        mplew.writeInt(0); // actually not 0, why is it 0 then?
-        mplew.skip(10);
-        mplew.writeInt(CHAR_MAGIC_SPAWN);
-        mplew.skip(13);
-        mplew.writeInt(CHAR_MAGIC_SPAWN);
-        mplew.writeShort(0);
         mplew.write(0);
-        mplew.writeShort(chr.getJob().getId());
-        addCharLook(mplew, chr, false);
-        mplew.writeInt(chr.getInventory(MapleInventoryType.CASH).countById(5110000));
-        mplew.writeInt(chr.getItemEffect());
-        mplew.writeInt(ItemConstants.getInventoryType(chr.getChair()) == MapleInventoryType.SETUP ? chr.getChair() : 0);
-        mplew.writeLocation(chr.getPosition());
-        mplew.write(chr.getStance());
-        mplew.writeShort(chr.getFoothold());
+        mplew.writeShort(player.getJob().getId());
+        addCharLook(mplew, player, false);
+        mplew.writeInt(player.getInventory(MapleInventoryType.CASH).countById(5110000));
+        mplew.writeInt(player.getItemEffect());
+        mplew.writeInt(ItemConstants.getInventoryType(player.getChair()) == MapleInventoryType.SETUP ? player.getChair() : 0);
+        mplew.writeLocation(player.getPosition());
+        mplew.write(player.getStance());
+        mplew.writeShort(player.getFoothold());
         mplew.write(0);
-        MaplePet[] pet = chr.getPets();
+        MaplePet[] pet = player.getPets();
         for (int i = 0; i < 3; i++) {
             if (pet[i] != null) {
                 addPetInfo(mplew, pet[i], false);
             }
         }
         mplew.write(0); //end of pets
-        if (chr.getVehicle() == null) {
+        if (player.getVehicle() == null) {
             mplew.writeInt(1); // mob level
             mplew.writeLong(0); // mob exp + tiredness
         } else {
-            mplew.writeInt(chr.getVehicle().getLevel());
-            mplew.writeInt(chr.getVehicle().getExp());
-            mplew.writeInt(chr.getVehicle().getTiredness());
+            mplew.writeInt(player.getVehicle().getLevel());
+            mplew.writeInt(player.getVehicle().getExp());
+            mplew.writeInt(player.getVehicle().getTiredness());
         }
-        if (chr.getPlayerShop() != null && chr.getPlayerShop().isOwner(chr)) {
-            if (chr.getPlayerShop().hasFreeSlot()) {
-                addAnnounceBox(mplew, chr.getPlayerShop(), chr.getPlayerShop().getVisitors().length);
+        if (player.getPlayerShop() != null && player.getPlayerShop().isOwner(player)) {
+            if (player.getPlayerShop().hasFreeSlot()) {
+                addAnnounceBox(mplew, player.getPlayerShop(), player.getPlayerShop().getVisitors().length);
             } else {
-                addAnnounceBox(mplew, chr.getPlayerShop(), 1);
+                addAnnounceBox(mplew, player.getPlayerShop(), 1);
             }
-        } else if (chr.getMiniGame() != null && chr.getMiniGame().isOwner(chr)) {
-            if (chr.getMiniGame().hasFreeSlot()) {
-                addAnnounceBox(mplew, chr.getMiniGame(), 1, 0, 1, 0);
+        } else if (player.getMiniGame() != null && player.getMiniGame().isOwner(player)) {
+            if (player.getMiniGame().hasFreeSlot()) {
+                addAnnounceBox(mplew, player.getMiniGame(), 1, 0, 1, 0);
             } else {
-                addAnnounceBox(mplew, chr.getMiniGame(), 1, 0, 2, 1);
+                addAnnounceBox(mplew, player.getMiniGame(), 1, 0, 2, 1);
             }
         } else {
             mplew.write(0);
         }
-        if (chr.getChalkboard() != null) {
+        if (player.getChalkboard() != null) {
             mplew.write(1);
-            mplew.writeMapleString(chr.getChalkboard());
+            mplew.writeMapleString(player.getChalkboard());
         } else {
             mplew.write(0);
         }
         encodeRingData(mplew, null);
         encodeRingData(mplew, null);
-        encodeMarriageData(mplew, chr);
+        encodeMarriageData(mplew, player);
         mplew.skip(3);
-        mplew.write(chr.getTeam());//only needed in specific fields
+        mplew.write(player.getTeam());//only needed in specific fields
         return mplew.getPacket();
     }
 

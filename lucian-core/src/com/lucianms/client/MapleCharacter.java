@@ -1250,7 +1250,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Di
             }
         } else {
             getMap().sendPacketIf(MaplePacketCreator.cancelForeignBuff(getId(), Set.of(MapleBuffStat.DARK_SIGHT)), p -> p.getGMLevel() >= getGMLevel());
-            getMap().sendPacket(MaplePacketCreator.spawnPlayerMapobject(this));
+            getMap().sendPacket(MaplePacketCreator.getUserEnterField(this));
 
             sendPartyGaugeRefresh();
             getMap().getMonsters().forEach(getMap()::updateMonsterController);
@@ -3042,36 +3042,34 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Di
         }
     }
 
-    public void handleEnergyChargeGain() { // to get here energychargelevel has
-        // to be > 0
-        Skill energycharge = isCygnus() ? SkillFactory.getSkill(ThunderBreaker.ENERGY_CHARGE) : SkillFactory.getSkill(Marauder.ENERGY_CHARGE);
-        MapleStatEffect ceffect;
-        ceffect = energycharge.getEffect(getSkillLevel(energycharge));
-        if (energybar < 10000) {
-            energybar += 102;
-            if (energybar > 10000) {
-                energybar = 10000;
-            }
-            Map<MapleBuffStat, Integer> stat = Map.of(MapleBuffStat.ENERGY_CHARGE, energybar);
-            effects.get(MapleBuffStat.ENERGY_CHARGE).setValue(energybar);
-            client.announce(MaplePacketCreator.giveBuff(energybar, 0, stat));
-            client.announce(MaplePacketCreator.showOwnBuffEffect(energycharge.getId(), 2));
-            getMap().broadcastMessage(this, MaplePacketCreator.showBuffeffect(id, energycharge.getId(), 2));
-            getMap().broadcastMessage(this, MaplePacketCreator.giveForeignBuff(energybar, stat));
+    public void handleEnergyChargeGain() {
+        final long currentTime = System.currentTimeMillis();
+        Skill eSkill = SkillFactory.getSkill(isCygnus() ? ThunderBreaker.ENERGY_CHARGE : Marauder.ENERGY_CHARGE);
+        MapleStatEffect eEffect = eSkill.getEffect(this);
+        if (eEffect == null) {
+            return;
         }
-        if (energybar >= 10000 && energybar < 11000) {
-            energybar = 15000;
-            final MapleCharacter chr = this;
+        boolean isFinite = eEffect.getDuration() < Integer.MAX_VALUE;
+        if (energybar < 10000) {
+            energybar = Math.min(10000, energybar + 102);
+            BuffContainer container = effects.computeIfAbsent(MapleBuffStat.ENERGY_CHARGE, b -> new BuffContainer(eEffect, null, currentTime, energybar));
+            container.setValue(energybar);
+
+            if (isFinite) {
+                announce(MaplePacketCreator.showOwnBuffEffect(eSkill.getId(), 2));
+            }
+            announce(MaplePacketCreator.setTempStats(Map.of(MapleBuffStat.ENERGY_CHARGE, container)));
+            getMap().sendPacketExclude(MaplePacketCreator.setRemoteTempStats(this, Map.of(MapleBuffStat.ENERGY_CHARGE, container)), this);
+        }
+        if (energybar >= 10000 && isFinite) {
+            long delay = Math.min(eEffect.getDuration(), 50) * 1000L;
             TaskExecutor.createTask(new Runnable() {
                 @Override
                 public void run() {
                     energybar = 0;
-                    Map<MapleBuffStat, Integer> stat = Map.of(MapleBuffStat.ENERGY_CHARGE, energybar);
-                    effects.get(MapleBuffStat.ENERGY_CHARGE).setValue(energybar);
-                    client.announce(MaplePacketCreator.giveBuff(energybar, 0, stat));
-                    getMap().broadcastMessage(chr, MaplePacketCreator.giveForeignBuff(energybar, stat));
+                    cancelBuffs(Set.of(MapleBuffStat.ENERGY_CHARGE));
                 }
-            }, ceffect.getDuration());
+            }, delay);
         }
     }
 
@@ -4677,11 +4675,12 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Di
 
     @Override
     public void sendSpawnData(MapleClient client) {
-        if (!this.isHidden() || client.getPlayer().getGMLevel() >= this.getHidingLevel()) {
-            client.announce(MaplePacketCreator.spawnPlayerMapobject(this));
+        if (!isHidden() || client.getPlayer().getGMLevel() >= getHidingLevel()) {
+            client.announce(MaplePacketCreator.getUserEnterField(this));
+            client.announce(MaplePacketCreator.getResetRemoteTempStats(getId(), effects.keySet()));
         }
 
-        if (this.isHidden()) {
+        if (isHidden()) {
             getMap().broadcastGMMessage(this, MaplePacketCreator.giveForeignBuff(getId(), Map.of(MapleBuffStat.DARK_SIGHT, 0)), false);
         }
     }
