@@ -513,16 +513,17 @@ public class PlayerCashItemUseEvent extends PacketEvent implements Cleaner.Clean
                 break;
             }
             case 504: { // vip teleport rock
-                String error1 = "Either the player could not be found or you were trying to teleport to an illegal location.";
                 if (!isVIPRock) {
-                    if (ch.getMap(fieldID).getForcedReturnId() == 999999999) {
-                        player.changeMap(ch.getMap(fieldID));
-                    } else {
-                        MapleInventoryManipulator.addById(client, itemID, (short) 1);
-                        player.dropMessage(1, error1);
-                        client.announce(MaplePacketCreator.enableActions());
+                    if (player.getTrockMaps().contains(fieldID)) {
+                        if (ch.getMap(fieldID) != null) {
+                            player.changeMap(ch.getMap(fieldID));
+                            remove(client, itemID);
+                        } else {
+                            player.dropMessage(1, "Either the player could not be found or you were trying to teleport to an illegal location.");
+                            client.announce(MaplePacketCreator.enableActions());
+                        }
                     }
-                } else {
+                } else if (player.getVipTrockMaps().contains(fieldID)) {
                     MapleCharacter victim = world.getPlayerStorage().find(p -> p.getName().equalsIgnoreCase(username));
                     if (victim != null && victim.getClient().getChannel() == ch.getId()) {
                         MapleMap target = victim.getMap();
@@ -536,7 +537,7 @@ public class PlayerCashItemUseEvent extends PacketEvent implements Cleaner.Clean
                                     player.dropMessage(1, "You cannot teleport between continents with this teleport rock.");
                                 }
                             } else {
-                                player.dropMessage(1, error1);
+                                player.dropMessage(1, "Either the player could not be found or you were trying to teleport to an illegal location.");
                             }
                         } else {
                             player.dropMessage(1, "You cannot teleport to this map.");
