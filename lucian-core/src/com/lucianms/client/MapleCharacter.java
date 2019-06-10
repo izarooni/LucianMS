@@ -601,24 +601,13 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Di
             try (PreparedStatement ps = con.prepareStatement("SELECT mapid,vip FROM trocklocations WHERE characterid = ? LIMIT 15")) {
                 ps.setInt(1, charid);
                 try (ResultSet rs = ps.executeQuery()) {
-                    byte v = 0;
-                    byte r = 0;
-                    while (rs.next()) {
+                    for (int vipIndex = 0, index = 0; rs.next();) {
+                        int mapid = rs.getInt("mapid");
                         if (rs.getInt("vip") == 1) {
-                            ret.viptrockmaps.add(rs.getInt("mapid"));
-                            v++;
+                            ret.viptrockmaps.set(vipIndex++, mapid);
                         } else {
-                            ret.trockmaps.add(rs.getInt("mapid"));
-                            r++;
+                            ret.trockmaps.set(index++, mapid);
                         }
-                    }
-                    while (v < 10) {
-                        ret.viptrockmaps.add(999999999);
-                        v++;
-                    }
-                    while (r < 5) {
-                        ret.trockmaps.add(999999999);
-                        r++;
                     }
                 }
             }
