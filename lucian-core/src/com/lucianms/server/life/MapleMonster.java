@@ -228,7 +228,7 @@ public class MapleMonster extends AbstractLoadedMapleLife {
         takenDamage.computeIfAbsent(from.getId(), id -> new AtomicLong()).addAndGet(damage);
 
         if (hasBossHPBar()) {
-            from.getMap().broadcastMessage(makeBossHPBarPacket(), getPosition());
+            from.getMap().sendPacket(makeBossHPBarPacket());
         } else if (!isBoss()) {
             int remainingHP = (int) Math.max(0, hp * 100f / getMaxHp());
             byte[] packet = MaplePacketCreator.showMonsterHP(getObjectId(), remainingHP);
@@ -530,7 +530,7 @@ public class MapleMonster extends AbstractLoadedMapleLife {
     }
 
     public boolean isControllerKnowsAboutAggro() {
-        return fake ? false : controllerKnowsAboutAggro;
+        return !fake && controllerKnowsAboutAggro;
     }
 
     public void setControllerKnowsAboutAggro(boolean controllerKnowsAboutAggro) {
@@ -541,8 +541,8 @@ public class MapleMonster extends AbstractLoadedMapleLife {
     }
 
     public byte[] makeBossHPBarPacket() {
-        int hp = (int) Math.max(getHp(), Integer.MAX_VALUE);
-        int maxHp = (int) Math.max(getMaxHp(), Integer.MAX_VALUE);
+        int hp = (int) Math.min(getHp(), Integer.MAX_VALUE);
+        int maxHp = (int) Math.min(getMaxHp(), Integer.MAX_VALUE);
         return MaplePacketCreator.showBossHP(getId(), hp, maxHp, getTagColor(), getTagBgColor());
     }
 
