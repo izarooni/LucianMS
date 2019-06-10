@@ -22,9 +22,13 @@
 package com.lucianms.server.life;
 
 import com.lucianms.client.*;
+import com.lucianms.client.inventory.Equip;
+import com.lucianms.client.inventory.MapleInventoryType;
 import com.lucianms.client.status.MonsterStatus;
 import com.lucianms.client.status.MonsterStatusEffect;
 import com.lucianms.constants.skills.*;
+import com.lucianms.cquest.CQuestData;
+import com.lucianms.cquest.requirement.CQuestKillRequirement;
 import com.lucianms.io.scripting.Achievements;
 import com.lucianms.io.scripting.event.EventInstanceManager;
 import com.lucianms.scheduler.Task;
@@ -442,6 +446,27 @@ public class MapleMonster extends AbstractLoadedMapleLife {
         MapleCharacter looter = map.getCharacterById(getHighestAttackerID());
         if (killer != null) {
             Achievements.testFor(killer, getId());
+
+            for (CQuestData data : killer.getCustomQuests().values()) {
+                if (!data.isCompleted()) {
+                    CQuestKillRequirement toKill = data.getToKill();
+                    Pair<Integer, Integer> p = toKill.get(getId());
+                    if (p != null && p.right < p.left) { // don't exceed requirement variable
+                        toKill.incrementRequirement(getId(), 1); // increment progress
+                        if (!data.isSilentComplete()) {
+                            killer.announce(MaplePacketCreator.earnTitleMessage(String.format("[%s] Monster killed '%s' [%d / %d]", data.getName(), getName(), p.right, p.left)));
+                        }
+                        boolean checked = toKill.isFinished(); // store to local variable before updating
+                        if (data.checkRequirements() && !checked) { // update checked; if requirement is finished and previously was not...
+                            data.announceCompletion(killer.getClient());
+                        }
+                    }
+                }
+            }
+            Equip weapon = killer.getInventory(MapleInventoryType.EQUIPPED).getItem((short) -11);
+            if (weapon != null) {
+                weapon.setEliminations(weapon.getEliminations() + 1);
+            }
         }
 
         return looter != null ? looter : killer;

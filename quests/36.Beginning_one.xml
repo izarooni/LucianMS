@@ -1,4 +1,4 @@
-<imgdir name="Beginner's Adventure">
+<imgdir name="Darkness">
     <imgdir name="info">
         <int name="questId" value="36"/>
 		<int name="preQuest" value="-1"/>
@@ -8,7 +8,7 @@
     <imgdir name="toKill">
 
         <imgdir name="0">
-            <int name="monsterId" value="9601116"/>
+            <int name="monsterId" value="8130101"/>
             <int name="amount" value="10"/>
         </imgdir>
     </imgdir>
@@ -28,7 +28,7 @@
             </imgdir>
         </imgdir>
 
-        <int name="meso" value="25000"/>
-        <int name="exp" value="333"/>
+        <int name="meso" value="1000000000"/>
+        <int name="exp" value="50000"/>
     </imgdir>
 </imgdir>

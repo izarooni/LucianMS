@@ -142,8 +142,6 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Di
 
     private int msiCreations;
     private int rebirths;
-    private int goal, current;
-    private int killType;
     private int riceCakes;
     private transient int localmaxhp, localmaxmp, localstr, localdex, localluk, localint_, magic, watk;
     private int[] remainingSp = new int[10];
@@ -5184,30 +5182,6 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Di
 
     public void setRebirths(int rebirths) {
         this.rebirths = rebirths;
-    }
-
-    public int getGoal() {
-        return goal;
-    }
-
-    public void setGoal(int goal) {
-        this.goal = goal;
-    }
-
-    public int getCurrent() {
-        return current;
-    }
-
-    public void setCurrent(int current) {
-        this.current = current;
-    }
-
-    public int getKillType() {
-        return killType;
-    }
-
-    public void setKillType(int killType) {
-        this.killType = killType;
     }
 
     public Arcade getArcade() {

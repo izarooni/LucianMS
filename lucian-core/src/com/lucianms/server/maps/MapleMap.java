@@ -24,7 +24,6 @@ package com.lucianms.server.maps;
 import com.lucianms.client.MapleBuffStat;
 import com.lucianms.client.MapleCharacter;
 import com.lucianms.client.MapleClient;
-import com.lucianms.client.inventory.Equip;
 import com.lucianms.client.inventory.Item;
 import com.lucianms.client.inventory.MapleInventoryType;
 import com.lucianms.client.inventory.MaplePet;
@@ -35,7 +34,6 @@ import com.lucianms.constants.ItemConstants;
 import com.lucianms.constants.ServerConstants;
 import com.lucianms.cquest.CQuestData;
 import com.lucianms.cquest.requirement.CQuestItemRequirement;
-import com.lucianms.cquest.requirement.CQuestKillRequirement;
 import com.lucianms.events.gm.*;
 import com.lucianms.io.scripting.event.EventInstanceManager;
 import com.lucianms.io.scripting.map.FieldScriptExecutor;
@@ -604,12 +602,6 @@ public class MapleMap implements PacketAnnouncer {
                                 spawnMonsterOnGroudBelow(mob, monster.getPosition());
                             }
                         }
-                        if (monster.getId() == chr.getKillType() && chr.getCurrent() < chr.getGoal()) {
-                            chr.setCurrent(chr.getCurrent() + 1);
-                            if (!(chr.getCurrent() > chr.getGoal())) {
-                                chr.dropMessage(6, "You have killed " + chr.getCurrent() + " out of " + chr.getGoal() + " " + monster.getName() + "'s");
-                            }
-                        }
                         killed = true;
                     }
                 } else if (monster.getId() >= 8810002 && monster.getId() <= 8810009) { // horntail
@@ -662,32 +654,11 @@ public class MapleMap implements PacketAnnouncer {
         }
         if (chr == null) {
             spawnedMonstersOnMap.decrementAndGet();
-            monster.killBy(chr);
+            monster.killBy(null);
             monster.setHp(0);
             broadcastMessage(MaplePacketCreator.killMonster(monster.getObjectId(), animation), monster.getPosition());
             removeMapObject(monster);
             return;
-        } else {
-            for (CQuestData data : chr.getCustomQuests().values()) {
-                if (!data.isCompleted()) {
-                    CQuestKillRequirement toKill = data.getToKill();
-                    Pair<Integer, Integer> p = toKill.get(monster.getId());
-                    if (p != null && p.right < p.left) { // don't exceed requirement variable
-                        toKill.incrementRequirement(monster.getId(), 1); // increment progress
-                        if (!data.isSilentComplete()) {
-                            chr.announce(MaplePacketCreator.earnTitleMessage(String.format("[%s] Monster killed '%s' [%d / %d]", data.getName(), monster.getName(), p.right, p.left)));
-                        }
-                        boolean checked = toKill.isFinished(); // store to local variable before updating
-                        if (data.checkRequirements() && !checked) { // update checked; if requirement is finished and previously was not...
-                            data.announceCompletion(chr.getClient());
-                        }
-                    }
-                }
-            }
-            Equip weapon = chr.getInventory(MapleInventoryType.EQUIPPED).getItem((short) -11);
-            if (weapon != null) {
-                weapon.setEliminations(weapon.getEliminations() + 1);
-            }
         }
         int buff = monster.getBuffToGive();
         if (buff > -1) {

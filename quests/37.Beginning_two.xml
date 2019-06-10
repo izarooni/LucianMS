@@ -1,4 +1,4 @@
-<imgdir name="Beginner's Adventure 2">
+<imgdir name="Memories">
     <imgdir name="info">
         <int name="questId" value="37"/>
 		<int name="preQuest" value="36"/>
@@ -8,22 +8,14 @@
     <imgdir name="toKill">
 
         <imgdir name="0">
-            <int name="monsterId" value="9895246"/>
-            <int name="amount" value="1"/>
+            <int name="monsterId" value="9895226"/>
+            <int name="amount" value="10"/>
         </imgdir>
     </imgdir>
 
     <imgdir name="toCollect"></imgdir>
     <imgdir name="rewards">
-
-        <imgdir name="items">
-            <imgdir name="0">
-                <int name="itemId" value="2002031"/>
-                <int name="quantity" value="3"/>
-            </imgdir>
-        </imgdir>
-
-        <int name="meso" value="25000"/>
-        <int name="exp" value="3500"/>
+        <int name="meso" value="1000000000"/>
+        <int name="exp" value="100000"/>
     </imgdir>
 </imgdir>

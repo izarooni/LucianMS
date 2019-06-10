@@ -31,16 +31,11 @@ public class CQuestData {
     private final CQuestKillRequirement toKill = new CQuestKillRequirement(); // monster kill requirements
     final CQuestItemRequirement toCollect = new CQuestItemRequirement(); // item collect requirements
     ArrayList<CQuestReward> rewards = new ArrayList<>();
-    CQuestMetaData metadata;
 
     public CQuestData(int id, String name, boolean daily) {
         this.id = id;
         this.name = name;
         this.daily = daily;
-    }
-
-    CQuestMetaData getMetaData() {
-        return metadata;
     }
 
     /**

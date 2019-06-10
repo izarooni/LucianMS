@@ -30,6 +30,7 @@ public class CQuestBuilder {
     private static final Logger LOGGER = LoggerFactory.getLogger(CQuestBuilder.class);
 
     private static HashMap<Integer, CQuestData> quests = new HashMap<>();
+    private static HashMap<Integer, CQuestMetaData> metadata = new HashMap<>();
 
     private CQuestBuilder() {
     }
@@ -37,7 +38,9 @@ public class CQuestBuilder {
     public static void loadAllQuests() {
         if (!quests.isEmpty()) {
             quests.clear();
-            quests = new HashMap<>();
+            quests = new HashMap<>(quests.size());
+            metadata.clear();
+            metadata = new HashMap<>(metadata.size());
         }
         final long timeToTake = System.currentTimeMillis();
         File file = new File("quests");
@@ -61,6 +64,7 @@ public class CQuestBuilder {
             }
         }
         LOGGER.info("{} custom quests loaded in {}s", quests.size(), ((System.currentTimeMillis() - timeToTake) / 1000d));
+        System.gc();
     }
 
     /**
@@ -97,8 +101,7 @@ public class CQuestBuilder {
      * @return an object containing the necessary data in a custom quest
      */
     public static CQuestMetaData getMetaData(int questId) {
-        CQuestData quest = quests.get(questId);
-        return quest == null ? null : quest.getMetaData();
+        return metadata.get(questId);
     }
 
     private static CQuestData parseFile(File file) throws IOException, SAXException {
@@ -196,7 +199,7 @@ public class CQuestBuilder {
                     qData.rewards.add(new CQuestItemReward(itemId, quantity));
                 }
             }
-            qData.metadata = new CQuestMetaData(qData);
+            metadata.put(qData.getId(), new CQuestMetaData(qData));
             return qData;
         }
     }

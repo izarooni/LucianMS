@@ -46,6 +46,11 @@ public class MapleGenericPortal implements MaplePortal {
     }
 
     @Override
+    public String toString() {
+        return String.format("MapleGenericPortal{name='%s', target='%s', targetmap=%d, scriptName='%s'}", name, target, targetmap, scriptName);
+    }
+
+    @Override
     public int getId() {
         return id;
     }
@@ -59,9 +64,17 @@ public class MapleGenericPortal implements MaplePortal {
         return name;
     }
 
+    public void setName(String name) {
+        this.name = name;
+    }
+
     @Override
     public Point getPosition() {
         return position;
+    }
+
+    public void setPosition(Point position) {
+        this.position = position;
     }
 
     @Override
@@ -69,9 +82,8 @@ public class MapleGenericPortal implements MaplePortal {
         return target;
     }
 
-    @Override
-    public void setPortalStatus(boolean newStatus) {
-        this.status = newStatus;
+    public void setTarget(String target) {
+        this.target = target;
     }
 
     @Override
@@ -80,8 +92,17 @@ public class MapleGenericPortal implements MaplePortal {
     }
 
     @Override
+    public void setPortalStatus(boolean newStatus) {
+        this.status = newStatus;
+    }
+
+    @Override
     public int getTargetMapId() {
         return targetmap;
+    }
+
+    public void setTargetMapId(int targetmapid) {
+        this.targetmap = targetmapid;
     }
 
     @Override
@@ -92,22 +113,6 @@ public class MapleGenericPortal implements MaplePortal {
     @Override
     public String getScriptName() {
         return scriptName;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public void setPosition(Point position) {
-        this.position = position;
-    }
-
-    public void setTarget(String target) {
-        this.target = target;
-    }
-
-    public void setTargetMapId(int targetmapid) {
-        this.targetmap = targetmapid;
     }
 
     @Override
