@@ -2,9 +2,7 @@ package com.lucianms.events;
 
 import com.lucianms.client.MapleCharacter;
 import com.lucianms.client.MapleStat;
-import com.lucianms.events.PacketEvent;
 import com.lucianms.nio.receive.MaplePacketReader;
-import tools.MaplePacketCreator;
 
 /**
  * @author Generic
@@ -51,11 +49,15 @@ public class PlayerAutoAssignAPEvent extends PacketEvent {
         total += secondaryTemp;
         extras += gainStatByType(chr, MapleStat.getBy5ByteEncoding(secondary), secondaryTemp);
 
+        if (extras > 0) {
+            chr.sendMessage(1, "Unable to distribute AP.");
+            return null;
+        }
+
         int remainingAp = (chr.getRemainingAp() - total) + extras;
         chr.setRemainingAp(remainingAp);
 
         chr.updateSingleStat(MapleStat.AVAILABLEAP, remainingAp);
-        getClient().announce(MaplePacketCreator.enableActions());
         return null;
     }
 
@@ -63,15 +65,27 @@ public class PlayerAutoAssignAPEvent extends PacketEvent {
         int newVal = 0;
         if (type.equals(MapleStat.STR)) {
             newVal = chr.getStr() + gain;
+            if (newVal > 32767) {
+                return gain;
+            }
             chr.setStr(newVal);
         } else if (type.equals(MapleStat.INT)) {
             newVal = chr.getInt() + gain;
+            if (newVal > 32767) {
+                return gain;
+            }
             chr.setInt(newVal);
         } else if (type.equals(MapleStat.LUK)) {
             newVal = chr.getLuk() + gain;
+            if (newVal > 32767) {
+                return gain;
+            }
             chr.setLuk(newVal);
         } else if (type.equals(MapleStat.DEX)) {
             newVal = chr.getDex() + gain;
+            if (newVal > 32767) {
+                return gain;
+            }
             chr.setDex(newVal);
         }
         chr.updateSingleStat(type, newVal);
