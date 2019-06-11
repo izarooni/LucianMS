@@ -37,10 +37,15 @@ public class NPCScriptManager {
         MapleCharacter player = client.getPlayer();
         final String path = "npc/world" + client.getWorld() + "/" + (fileName == null ? npc : fileName) + ".js";
         try {
-            if (storage.containsKey(client.getAccID())) {
-                dispose(client);
+            NPCConversationManager cm = getConversationManager(client);
+            if (cm != null) {
+                if (cm.isProc()) {
+                    return;
+                } else {
+                    dispose(client);
+                }
             }
-            NPCConversationManager cm = new NPCConversationManager(client, objectID, npc, fileName);
+            cm = new NPCConversationManager(client, objectID, npc, fileName);
             ArrayList<Pair<String, Object>> binds = new ArrayList<>();
             binds.add(new Pair<>("client", client));
             binds.add(new Pair<>("player", player));
@@ -58,10 +63,8 @@ public class NPCScriptManager {
 
             boolean revoked = player.getToggles().checkProperty(PlayerToggles.CommandNPCAccess, false);
 
-            if (iv == null || revoked) {
-                if (revoked) {
-                    player.sendMessage(5, PlayerToggles.ErrorMessage);
-                }
+            if (revoked) {
+                player.sendMessage(5, PlayerToggles.ErrorMessage);
                 dispose(client);
                 return;
             }
@@ -109,10 +112,7 @@ public class NPCScriptManager {
         }
     }
 
-    public static void dispose(NPCConversationManager cm) {
-        MapleClient client = cm.getClient();
-        String path = "npc/world" + client.getWorld() + "/" + (cm.getScriptName() == null ? cm.getNpc() : cm.getScriptName()) + ".js";
-        Pair<Invocable, NPCConversationManager> pair = storage.remove(client.getAccID());
+    public static void dispose(Pair<Invocable, NPCConversationManager> pair) {
         if (pair != null) {
             pair.left = null;
             pair.right = null;
@@ -121,8 +121,9 @@ public class NPCScriptManager {
     }
 
     public static void dispose(MapleClient client) {
-        if (storage.containsKey(client.getAccID())) {
-            dispose(storage.get(client.getAccID()).right);
+        Pair<Invocable, NPCConversationManager> pair = storage.remove(client.getAccID());
+        if (pair != null) {
+            dispose(pair);
         }
     }
 

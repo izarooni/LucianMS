@@ -57,7 +57,7 @@ public class NpcMoreTalkEvent extends PacketEvent {
         QuestActionManager qm = getClient().getQM();
         NPCConversationManager cm = getClient().getCM();
 
-        if (cm == null) {
+        if (cm == null || !cm.isProc()) {
             return null;
         } else {
             cm.setProc(false);

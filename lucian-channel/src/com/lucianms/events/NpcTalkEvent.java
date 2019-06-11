@@ -1,6 +1,7 @@
 package com.lucianms.events;
 
 import com.lucianms.client.MapleCharacter;
+import com.lucianms.client.SpamTracker;
 import com.lucianms.io.scripting.npc.NPCConversationManager;
 import com.lucianms.io.scripting.npc.NPCScriptManager;
 import com.lucianms.nio.receive.MaplePacketReader;
@@ -26,8 +27,8 @@ public class NpcTalkEvent extends PacketEvent {
     @Override
     public Object onPacket() {
         MapleCharacter player = getClient().getPlayer();
-        if (!player.isAlive()) {
-            setCanceled(true);
+        SpamTracker.SpamData spam = player.getSpamTracker(SpamTracker.SpamOperation.NpcTalk);
+        if (!player.isAlive() || spam.testFor(100)) {
             return null;
         }
         NPCConversationManager cm = getClient().getCM();
