@@ -665,7 +665,7 @@ public class MapleStatEffect {
 
         }
         SummonMovementType summonMovementType = getSummonMovementType();
-        if (overTime || isCygnusFA() || summonMovementType != null) {
+        if (!statups.isEmpty()) {
             applyBuffEffect(applyfrom, applyto, primary);
         }
 
@@ -797,7 +797,7 @@ public class MapleStatEffect {
         localDuration = alchemistModifyVal(chr, localDuration, false);
         CancelEffectAction cancelAction = new CancelEffectAction(chr, this, starttime);
         Task task = TaskExecutor.createTask(cancelAction, ((starttime + localDuration) - System.currentTimeMillis()));
-        chr.registerEffect(this, starttime, task);
+//        chr.registerEffect(this, starttime, task);
         SummonMovementType summonMovementType = getSummonMovementType();
         if (summonMovementType != null) {
             final MapleSummon summon = new MapleSummon(chr, sourceid, chr.getPosition(), summonMovementType);
@@ -809,15 +809,6 @@ public class MapleStatEffect {
         if (sourceid == Corsair.BATTLESHIP) {
             chr.announce(MaplePacketCreator.skillCooldown(5221999, chr.getBattleshipHp()));
         }
-    }
-
-    public final void applyComboBuff(final MapleCharacter applyto, int combo) {
-        applyto.getClient().announce(MaplePacketCreator.giveBuff(sourceid, 99999, Map.of(MapleBuffStat.COMBO_COUNTER, combo)));
-
-        final long starttime = System.currentTimeMillis();
-        //	final CancelEffectAction cancelAction = new CancelEffectAction(applyto, this, starttime);
-        //	final ScheduledFuture<?> schedule = TimerManager.getInstance().schedule(cancelAction, ((starttime + 99999) - System.currentTimeMillis()));
-        applyto.registerEffect(this, starttime, null);
     }
 
     private void applyBuffEffect(MapleCharacter applyfrom, MapleCharacter applyto, boolean primary) {
@@ -890,7 +881,7 @@ public class MapleStatEffect {
 //            }
             CancelEffectAction cancelAction = new CancelEffectAction(applyto, this, currentTime);
             Task task = TaskExecutor.createTask(cancelAction, duration * 1000L);
-            applyto.registerEffect(this, currentTime, task);
+            applyto.registerEffect(this, localStats, currentTime, task);
 
             if (sourceid == Corsair.BATTLESHIP) {
                 applyto.announce(MaplePacketCreator.skillCooldown(5221999, applyto.getBattleshipHp() / 10));

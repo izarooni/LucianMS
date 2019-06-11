@@ -644,10 +644,10 @@ public abstract class AbstractDealDamageEvent extends PacketEvent {
                 allDamageNumbers.add(damage);
             }
             if (ret.skill != Corsair.RAPID_FIRE
-                    || ret.skill != Aran.HIDDEN_FULL_SWING_DOUBLE
-                    || ret.skill != Aran.HIDDEN_FULL_SWING_TRIPLE
-                    || ret.skill != Aran.HIDDEN_OVER_SWING_DOUBLE
-                    || ret.skill != Aran.HIDDEN_OVER_SWING_TRIPLE) {
+                    || ret.skill != Aran.HIDDEN_FULL_SWING_DOUBLE_SWING
+                    || ret.skill != Aran.HIDDEN_FULL_SWING_TRIPLE_SWING
+                    || ret.skill != Aran.HIDDEN_OVER_SWING_DOUBLE_SWING
+                    || ret.skill != Aran.HIDDEN_OVER_SWING_TRIPLE_SWING) {
                 reader.skip(4);
             }
             ret.allDamage.put(oid, allDamageNumbers);

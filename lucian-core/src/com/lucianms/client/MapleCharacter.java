@@ -1559,23 +1559,23 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Di
         Optional<SkillEntry> opt;
         switch (skill.getId()) {
             case Aran.FULL_SWING:
-            case Aran.HIDDEN_FULL_SWING_DOUBLE:
-            case Aran.HIDDEN_FULL_SWING_TRIPLE:
+            case Aran.HIDDEN_FULL_SWING_DOUBLE_SWING:
+            case Aran.HIDDEN_FULL_SWING_TRIPLE_SWING:
                 opt = getSkill(Aran.FULL_SWING);
                 if (opt.isPresent()) {
                     SkillEntry entry = opt.get();
-                    changeSkillLevel(Aran.HIDDEN_FULL_SWING_DOUBLE, entry.level, entry.masterLevel, entry.expiration);
-                    changeSkillLevel(Aran.HIDDEN_FULL_SWING_TRIPLE, entry.level, entry.masterLevel, entry.expiration);
+                    changeSkillLevel(Aran.HIDDEN_FULL_SWING_DOUBLE_SWING, entry.level, entry.masterLevel, entry.expiration);
+                    changeSkillLevel(Aran.HIDDEN_FULL_SWING_TRIPLE_SWING, entry.level, entry.masterLevel, entry.expiration);
                 }
                 break;
             case Aran.OVER_SWING:
-            case Aran.HIDDEN_OVER_SWING_DOUBLE:
-            case Aran.HIDDEN_OVER_SWING_TRIPLE:
+            case Aran.HIDDEN_OVER_SWING_DOUBLE_SWING:
+            case Aran.HIDDEN_OVER_SWING_TRIPLE_SWING:
                 opt = getSkill(Aran.OVER_SWING);
                 if (opt.isPresent()) {
                     SkillEntry entry = opt.get();
-                    changeSkillLevel(SkillFactory.getSkill(Aran.HIDDEN_OVER_SWING_DOUBLE), entry.level, entry.masterLevel, entry.expiration);
-                    changeSkillLevel(SkillFactory.getSkill(Aran.HIDDEN_OVER_SWING_TRIPLE), entry.level, entry.masterLevel, entry.expiration);
+                    changeSkillLevel(SkillFactory.getSkill(Aran.HIDDEN_OVER_SWING_DOUBLE_SWING), entry.level, entry.masterLevel, entry.expiration);
+                    changeSkillLevel(SkillFactory.getSkill(Aran.HIDDEN_OVER_SWING_TRIPLE_SWING), entry.level, entry.masterLevel, entry.expiration);
                 }
                 break;
         }
@@ -3590,7 +3590,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Di
         }
     }
 
-    public void registerEffect(MapleStatEffect effect, long starttime, Task task) {
+    public void registerEffect(MapleStatEffect effect, Map<MapleBuffStat, BuffContainer> stats, long starttime, Task task) {
         if (effect.isDragonBlood()) {
             prepareDragonBlood(effect);
         } else if (effect.isBerserk()) {
@@ -3640,9 +3640,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Di
                 }
             }, 5000, 5000);
         }
-        for (Entry<MapleBuffStat, Integer> statup : effect.getStatups().entrySet()) {
-            effects.put(statup.getKey(), new BuffContainer(effect, task, starttime, statup.getValue()));
-        }
+        effects.putAll(stats);
         updateLocalizedStats();
     }
 

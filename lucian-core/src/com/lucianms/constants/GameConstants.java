@@ -39,11 +39,11 @@ public class GameConstants {
 
     public static int getHiddenSkill(final int skill) {
         switch (skill) {
-            case Aran.HIDDEN_FULL_SWING_DOUBLE:
-            case Aran.HIDDEN_FULL_SWING_TRIPLE:
+            case Aran.HIDDEN_FULL_SWING_DOUBLE_SWING:
+            case Aran.HIDDEN_FULL_SWING_TRIPLE_SWING:
                 return Aran.FULL_SWING;
-            case Aran.HIDDEN_OVER_SWING_DOUBLE:
-            case Aran.HIDDEN_OVER_SWING_TRIPLE:
+            case Aran.HIDDEN_OVER_SWING_DOUBLE_SWING:
+            case Aran.HIDDEN_OVER_SWING_TRIPLE_SWING:
                 return Aran.OVER_SWING;
         }
         return skill;
@@ -58,11 +58,11 @@ public class GameConstants {
 
 
     public static boolean isAranSkills(final int skill) {
-        return Aran.FULL_SWING == skill || Aran.OVER_SWING == skill || Aran.COMBO_TEMPEST == skill || Aran.COMBO_PENRIL == skill || Aran.COMBO_DRAIN == skill || Aran.HIDDEN_FULL_SWING_DOUBLE == skill || Aran.HIDDEN_FULL_SWING_TRIPLE == skill || Aran.HIDDEN_OVER_SWING_DOUBLE == skill || Aran.HIDDEN_OVER_SWING_TRIPLE == skill || Aran.COMBO_SMASH == skill || Aran.DOUBLE_SWING == skill || Aran.TRIPLE_SWING == skill;
+        return Aran.FULL_SWING == skill || Aran.OVER_SWING == skill || Aran.COMBO_TEMPEST == skill || Aran.COMBO_PENRIL == skill || Aran.COMBO_DRAIN == skill || Aran.HIDDEN_FULL_SWING_DOUBLE_SWING == skill || Aran.HIDDEN_FULL_SWING_TRIPLE_SWING == skill || Aran.HIDDEN_OVER_SWING_DOUBLE_SWING == skill || Aran.HIDDEN_OVER_SWING_TRIPLE_SWING == skill || Aran.COMBO_SMASH == skill || Aran.DOUBLE_SWING == skill || Aran.TRIPLE_SWING == skill;
     }
 
     public static boolean isHiddenSkills(final int skill) {
-        return Aran.HIDDEN_FULL_SWING_DOUBLE == skill || Aran.HIDDEN_FULL_SWING_TRIPLE == skill || Aran.HIDDEN_OVER_SWING_DOUBLE == skill || Aran.HIDDEN_OVER_SWING_TRIPLE == skill;
+        return Aran.HIDDEN_FULL_SWING_DOUBLE_SWING == skill || Aran.HIDDEN_FULL_SWING_TRIPLE_SWING == skill || Aran.HIDDEN_OVER_SWING_DOUBLE_SWING == skill || Aran.HIDDEN_OVER_SWING_TRIPLE_SWING == skill;
     }
 
     public static boolean isAran(final int job) {

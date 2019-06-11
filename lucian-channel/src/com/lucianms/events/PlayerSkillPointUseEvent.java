@@ -4,10 +4,9 @@ import com.lucianms.client.MapleCharacter;
 import com.lucianms.client.MapleStat;
 import com.lucianms.client.Skill;
 import com.lucianms.client.SkillFactory;
-import com.lucianms.nio.receive.MaplePacketReader;
 import com.lucianms.constants.GameConstants;
 import com.lucianms.constants.skills.Aran;
-import com.lucianms.events.PacketEvent;
+import com.lucianms.nio.receive.MaplePacketReader;
 import tools.MaplePacketCreator;
 
 /**
@@ -21,10 +20,10 @@ public class PlayerSkillPointUseEvent extends PacketEvent {
     public void processInput(MaplePacketReader reader) {
         reader.readInt();
         skillID = reader.readInt();
-        if (skillID == Aran.HIDDEN_FULL_SWING_DOUBLE
-                || skillID == Aran.HIDDEN_FULL_SWING_TRIPLE
-                || skillID == Aran.HIDDEN_OVER_SWING_DOUBLE
-                || skillID == Aran.HIDDEN_OVER_SWING_TRIPLE) {
+        if (skillID == Aran.HIDDEN_FULL_SWING_DOUBLE_SWING
+                || skillID == Aran.HIDDEN_FULL_SWING_TRIPLE_SWING
+                || skillID == Aran.HIDDEN_OVER_SWING_DOUBLE_SWING
+                || skillID == Aran.HIDDEN_OVER_SWING_TRIPLE_SWING) {
             getClient().announce(MaplePacketCreator.enableActions());
             setCanceled(true);
         }
