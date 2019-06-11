@@ -111,10 +111,7 @@ public enum ItemFactory {
     }
 
     public void saveItems(List<Pair<Item, MapleInventoryType>> items, int id, Connection con) throws SQLException {
-        StringBuilder query = new StringBuilder();
-        query.append("DELETE `inventoryitems`, `inventoryequipment` FROM `inventoryitems` LEFT JOIN `inventoryequipment` USING(`inventoryitemid`) WHERE `type` = ? AND `");
-        query.append(account ? "accountid" : "characterid").append("` = ?");
-        try (PreparedStatement ps = con.prepareStatement(query.toString())) {
+        try (PreparedStatement ps = con.prepareStatement("delete from inventoryitems where type = ? and " + (account ? "accountid" : "characterid") + " = ?")) {
             ps.setInt(1, value);
             ps.setInt(2, id);
             ps.executeUpdate();
