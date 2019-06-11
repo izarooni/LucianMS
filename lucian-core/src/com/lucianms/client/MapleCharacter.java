@@ -569,6 +569,9 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Di
                     }
                     ret.getInventory(pair.getRight()).addFromDB(pair.getLeft());
                 }
+                if (ret.getWeddingRings().isEmpty() && ret.getRelationship().getStatus() == Relationship.Status.Married) {
+                    ret.getRelationship().reset();
+                }
                 load.clear();
             }
         }
