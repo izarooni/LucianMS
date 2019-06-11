@@ -1121,8 +1121,12 @@ public class MaplePacketCreator {
         //endregion
         //region CUIUserInfo::SetWishItemInfo
         CashShop cashShop = player.getCashShop();
-        w.write(cashShop.getWishList().size());
-        cashShop.getWishList().forEach(w::writeInt);
+        if (cashShop != null) {
+            w.write(cashShop.getWishList().size());
+            cashShop.getWishList().forEach(w::writeInt);
+        } else {
+            w.write(0);
+        }
         //endregion
         Optional<MonsterBook> book = Optional.ofNullable(player.getMonsterBook());
         w.writeInt(book.map(MonsterBook::getBookLevel).orElse(0));
