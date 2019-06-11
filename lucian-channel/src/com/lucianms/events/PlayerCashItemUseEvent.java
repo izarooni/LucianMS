@@ -501,6 +501,10 @@ public class PlayerCashItemUseEvent extends PacketEvent implements Cleaner.Clean
                     client.announce(MaplePacketCreator.enableActions());
                     return null;
                 }
+                if (username.length() > 13) {
+                    player.sendMessage(1, "Please enter a shorter name.");
+                    return null;
+                }
                 pet.setName(username);
                 try (Connection con = world.getConnection()) {
                     pet.saveToDb(con);

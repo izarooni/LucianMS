@@ -142,6 +142,9 @@ public class MaplePet extends Item {
 
     public void setName(String name) {
         this.name = name;
+        if (this.name.length() > 13) {
+            this.name = this.name.substring(0, 13);
+        }
     }
 
     public int getUniqueId() {

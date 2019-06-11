@@ -1643,7 +1643,7 @@ public class MaplePacketCreator {
      * @return The character info packet.
      */
     public static byte[] getCharInfo(MapleCharacter chr) {
-        MaplePacketWriter w = new MaplePacketWriter(2000);
+        MaplePacketWriter w = new MaplePacketWriter();
         w.writeShort(SendOpcode.SET_FIELD.getValue());
         w.writeInt(chr.getClient().getChannel() - 1);
         w.write(1);
