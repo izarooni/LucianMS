@@ -290,7 +290,17 @@ public class GameMasterCommands extends CommandExecutor {
                 player.sendMessage(6, "Warped {} to {}", target.getName(), number.intValue());
             }
         } else if (target == null) {
-            player.sendMessage(5, "Could not find any player named {}", username);
+            Number number = args.parseNumber(0, int.class);
+            if (number == null) {
+                player.sendMessage(5, "Could not find any player named '{}' or it is not a number", username);
+                return;
+            }
+            MapleMap map = player.getClient().getChannelServer().getMap(number.intValue());
+            if (map != null) {
+                player.changeMap(map);
+            } else {
+                player.sendMessage(5, "Could not find the map '{}' perhaps the server doesn't have it?", number.intValue());
+            }
         }
     }
 

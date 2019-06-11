@@ -6,12 +6,15 @@ import com.lucianms.client.SpamTracker;
 import com.lucianms.command.executors.*;
 import com.lucianms.helpers.JailManager;
 import com.lucianms.scheduler.TaskExecutor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author izarooni
  */
 public class CommandWorker {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(CommandWorker.class);
     public static final EventCommands EVENT_COMMANDS = new EventCommands();
     public static final GameMasterCommands GM_COMMANDS = new GameMasterCommands();
     public static final HGMCommands HGM_COMMANDS = new HGMCommands();
@@ -56,12 +59,7 @@ public class CommandWorker {
         CommandArgs args = new CommandArgs(sp);
 
         if (h == '!' && (player.isGM() || noCheck)) {
-            try {
-                TaskExecutor.execute(tryExecuteCommand(client, command, args));
-            } catch (Exception e) {
-                player.sendMessage(5, "An error occurred in this command.");
-                e.printStackTrace();
-            }
+            TaskExecutor.execute(tryExecuteCommand(client, command, args));
             return true;
         } else if (h == '@') {
             if (!player.isGM() && !noCheck) {
@@ -99,18 +97,23 @@ public class CommandWorker {
             @Override
             public void run() {
                 MapleCharacter player = client.getPlayer();
-                int gmLevel = player.getGMLevel();
-                String name = cmd.getName().toLowerCase();
-                if (EVENT_COMMANDS.getCommands().containsKey(name)) {
-                    EVENT_COMMANDS.executeCommand(client, cmd, args);
-                } else if (gmLevel >= 2 && GM_COMMANDS.getCommands().containsKey(name)) {
-                    GM_COMMANDS.executeCommand(client, cmd, args);
-                } else if (gmLevel >= 3 && HGM_COMMANDS.getCommands().containsKey(name)) {
-                    HGM_COMMANDS.executeCommand(client, cmd, args);
-                } else if (gmLevel >= 4 & ADMIN_COMMANDS.getCommands().containsKey(name)) {
-                    ADMIN_COMMANDS.executeCommand(client, cmd, args);
-                } else {
-                    player.dropMessage(5, "Command does not exist or you do not have permission to use it");
+                try {
+                    int gmLevel = player.getGMLevel();
+                    String name = cmd.getName().toLowerCase();
+                    if (EVENT_COMMANDS.getCommands().containsKey(name)) {
+                        EVENT_COMMANDS.executeCommand(client, cmd, args);
+                    } else if (gmLevel >= 2 && GM_COMMANDS.getCommands().containsKey(name)) {
+                        GM_COMMANDS.executeCommand(client, cmd, args);
+                    } else if (gmLevel >= 3 && HGM_COMMANDS.getCommands().containsKey(name)) {
+                        HGM_COMMANDS.executeCommand(client, cmd, args);
+                    } else if (gmLevel >= 4 & ADMIN_COMMANDS.getCommands().containsKey(name)) {
+                        ADMIN_COMMANDS.executeCommand(client, cmd, args);
+                    } else {
+                        player.dropMessage(5, "Command does not exist or you do not have permission to use it");
+                    }
+                } catch (Exception e) {
+                    player.sendMessage(6, "An error curred within this command");
+                    LOGGER.error("{} failed to execute command {}", player.toString(), cmd.getName());
                 }
             }
         };
