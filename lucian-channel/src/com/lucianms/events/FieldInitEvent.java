@@ -116,8 +116,8 @@ public class FieldInitEvent extends PacketEvent {
             int partnerID = rltn.getPartnerID(player);
             MapleCharacter target = world.getPlayerStorage().get(partnerID);
             if (target != null) {
-                player.announce(getMarriedPartnerFieldTransfer(mapID, partnerID));
-                target.announce(getMarriedPartnerFieldTransfer(mapID, player.getId()));
+                player.announce(getMarriedPartnerFieldTransfer(target.getMapId(), partnerID));
+                target.announce(getMarriedPartnerFieldTransfer(player.getMapId(), player.getId()));
             }
         }
         return null;
