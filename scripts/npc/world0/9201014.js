@@ -54,7 +54,7 @@ function action(mode, type, selection) {
             cm.dispose();
         }
     } else if (status == 3) {
-        cm.gainItem(ServerConstants.CURRENCY -DIVORCE_COST, true);
+        cm.gainItem(ServerConstants.CURRENCY, -DIVORCE_COST, true);
         if (ring.isPresent()) {
             let r = ring.get();
             InventoryModifier.removeFromSlot(client, inventory, r.getPosition(), 1, false);
