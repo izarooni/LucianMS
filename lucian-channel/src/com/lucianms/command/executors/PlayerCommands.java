@@ -266,7 +266,6 @@ public class PlayerCommands extends CommandExecutor {
     private void Rebirth(MapleCharacter player, Command cmd, CommandArgs args) {
         if (player.getLevel() >= player.getMaxLevel()) {
             player.doRebirth();
-            player.sendMessage("You now have {} rebirths", player.getRebirths());
         } else {
             player.sendMessage("You must be at least level {} before you can rebirth", player.getMaxLevel());
         }

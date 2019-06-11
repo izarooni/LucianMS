@@ -5097,7 +5097,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Di
         exp.set(0);
         updateSingleStat(MapleStat.EXP, 0);
 
-        sendMessage(5, "You now have {} rebirths", rebirths);
+        sendMessage(6, "You now have {} rebirths", rebirths);
 
         announce(MaplePacketCreator.showEffect("breakthrough/Ten")); // effect
         announce(MaplePacketCreator.trembleEffect(0, 0)); // shake screen
