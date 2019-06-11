@@ -41,7 +41,6 @@ public class PlayerCashItemUseEvent extends PacketEvent implements Cleaner.Clean
     public static final int ItemGuard90 = 5061002; // item guard (90 days)
     public static final int ItemGuard365 = 5061003; // itme guard (365 days)
     public static final int Incubator = 5060002;
-    public static final int VIPTeleportRock = 5041000;
 
     private String content;
     private String username;
@@ -53,7 +52,7 @@ public class PlayerCashItemUseEvent extends PacketEvent implements Cleaner.Clean
     private short slot, itemSlot;
     private boolean whisperEnabled;
     private boolean isItem; // ? what
-    private boolean isVIPRock;
+    private boolean isUserWarp;
 
     @Override
     public void clean() {
@@ -66,8 +65,8 @@ public class PlayerCashItemUseEvent extends PacketEvent implements Cleaner.Clean
         itemID = reader.readInt();
         int itemType = itemID / 10000;
         if (itemType == 504) {
-            isVIPRock = reader.readByte() == 1;
-            if (!isVIPRock) {
+            isUserWarp = reader.readByte() == 1;
+            if (!isUserWarp) {
                 fieldID = reader.readInt();
             } else {
                 username = reader.readMapleAsciiString();
@@ -517,32 +516,21 @@ public class PlayerCashItemUseEvent extends PacketEvent implements Cleaner.Clean
                 break;
             }
             case 504: { // vip teleport rock
-                if (!isVIPRock) {
-                    if (player.getTrockMaps().contains(fieldID)) {
-                        if (ch.getMap(fieldID) != null) {
-                            player.changeMap(ch.getMap(fieldID));
-                            remove(client, itemID);
-                        } else {
-                            player.dropMessage(1, "Either the player could not be found or you were trying to teleport to an illegal location.");
-                            client.announce(MaplePacketCreator.enableActions());
-                        }
+                getLogger().info("{} used teleport rock {} {}", player.getName(), fieldID, username);
+                if (!isUserWarp) {
+                    if (player.getTrockMaps().contains(fieldID) && fieldID != MapleMap.INVALID_ID) {
+                        player.changeMap(ch.getMap(fieldID));
+                        remove(client, itemID);
+                    } else {
+                        player.dropMessage(1, "You cannot teleport to this map.");
                     }
-                } else if (player.getVipTrockMaps().contains(fieldID)) {
+                } else {
                     MapleCharacter victim = world.getPlayerStorage().find(p -> p.getName().equalsIgnoreCase(username));
-                    if (victim != null && victim.getClient().getChannel() == ch.getId()) {
+                    if (victim != null && victim.getClient().getChannel() == ch.getId() && victim.getGMLevel() <= player.getGMLevel()) {
                         MapleMap target = victim.getMap();
                         if (ch.getMap(victim.getMapId()).getForcedReturnId() == 999999999 || victim.getMapId() < 100000000) {
-                            if (victim.getGMLevel() <= player.getGMLevel()) {
-                                if (itemID == VIPTeleportRock || victim.getMapId() / player.getMapId() == 1) { // viprock & same continent
-                                    player.changeMap(target, target.findClosestSpawnpoint(victim.getPosition()));
-                                    remove(client, itemID);
-                                    return null;
-                                } else {
-                                    player.dropMessage(1, "You cannot teleport between continents with this teleport rock.");
-                                }
-                            } else {
-                                player.dropMessage(1, "Either the player could not be found or you were trying to teleport to an illegal location.");
-                            }
+                            player.changeMap(target, target.findClosestSpawnpoint(victim.getPosition()));
+                            remove(client, itemID);
                         } else {
                             player.dropMessage(1, "You cannot teleport to this map.");
                         }
