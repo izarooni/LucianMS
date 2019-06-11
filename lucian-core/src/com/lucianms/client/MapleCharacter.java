@@ -3435,6 +3435,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Di
         if (!getSummons().isEmpty()) {
             for (MapleSummon summon : getSummons().values()) {
                 getMap().sendPacket(MaplePacketCreator.removeSummon(summon, true));
+                getMap().removeMapObject(summon);
                 summon.dispose();
             }
             getSummons().clear();
@@ -4256,7 +4257,6 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Di
                 ps.setInt(2, client.getAccID());
                 ps.executeUpdate();
             }
-
             if (cashshop != null) {
                 cashshop.save(con);
             }
