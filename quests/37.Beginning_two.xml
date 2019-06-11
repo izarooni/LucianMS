@@ -8,7 +8,7 @@
     <imgdir name="toKill">
 
         <imgdir name="0">
-            <int name="monsterId" value="9895226"/>
+            <int name="monsterId" value="100126"/>
             <int name="amount" value="10"/>
         </imgdir>
     </imgdir>
