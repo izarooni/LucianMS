@@ -4,7 +4,7 @@ function partyExists(cm) {
     return cm.getParty() != null;
 }
 
-function partySizecm(cm) {
+function partySize(cm) {
     return cm.getParty().getMembers().size();
 }
 
