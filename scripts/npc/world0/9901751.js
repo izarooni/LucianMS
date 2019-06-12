@@ -1,7 +1,7 @@
 load("scripts/util_party.js");
 /* izarooni */
-const destination = 10000;
-const membersMimum = 2;
+const destination = 97;
+const membersMimum = 1;
 let status = 0;
 
 function action(mode, type, selection) {
