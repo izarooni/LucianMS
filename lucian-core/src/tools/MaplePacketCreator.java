@@ -3099,13 +3099,16 @@ public class MaplePacketCreator {
             MapleBuffStat buff = e.getKey();
             BuffContainer container = e.getValue();
 
-            w.writeShort(container.getValue());
             if (container.getMobSkill() != null) {
+                w.writeShort(container.getMobSkill().getSkillLevel());
                 w.writeShort(container.getSourceID());
                 w.writeShort(container.getValue());
             } else {
+                w.writeShort(container.getValue());
                 if (buff == MapleBuffStat.RIDE_VEHICLE) {
                     w.writeInt(container.getValue());
+                } else if (!container.getEffect().isSkill()) {
+                    w.writeInt(-container.getSourceID());
                 } else {
                     w.writeInt(container.getSourceID());
                 }
