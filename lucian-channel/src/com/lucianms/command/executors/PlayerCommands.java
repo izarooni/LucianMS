@@ -538,7 +538,6 @@ public class PlayerCommands extends CommandExecutor {
         maps.put("kerning", 103000000);
         maps.put("leafre", 240000000);
         maps.put("lith", 104000000);
-        maps.put("lithharbor", 104000000);
         maps.put("ludi", 220000000);
         maps.put("magatia", 261000000);
         maps.put("maya", 100000001);
