@@ -30,11 +30,6 @@ public class PlayerInventoryMoveEvent extends PacketEvent {
         source = reader.readShort();
         action = reader.readShort();
         quantity = reader.readShort();
-
-//        if (source < 0 && action > 0 && source == -149) {
-//            NPCScriptManager.start(getClient(), 9010000, "f_equip_info");
-//            setCanceled(true);
-//        }
     }
 
     @Override

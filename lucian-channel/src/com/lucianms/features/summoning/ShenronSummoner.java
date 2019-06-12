@@ -71,15 +71,21 @@ public class ShenronSummoner extends GenericEvent {
         player.announce(MaplePacketCreator.removeClock());
     }
 
+    @Override
+    public boolean onPlayerChangeMapInternal(MapleCharacter player, MapleMap destination) {
+        unregisterPlayer(player);
+        return true;
+    }
+
     @PacketWorker
     public void onItemMove(PlayerInventoryMoveEvent event) {
         if (summoning) {
             return;
         }
         MapleCharacter player = event.getClient().getPlayer();
-
         final MapleMap map = player.getMap();
         final Point position = player.getPosition().getLocation();
+
         if (event.getAction() == 0) { // item drop
             Item item = player.getInventory(event.getInventoryType()).getItem(event.getSource());
             if (item.getItemId() == (ReactionItemBase + balls.size())) { // dropped item is a ball

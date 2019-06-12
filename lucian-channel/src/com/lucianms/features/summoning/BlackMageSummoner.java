@@ -47,6 +47,12 @@ public class BlackMageSummoner extends GenericEvent {
         player.removeGenericEvent(this);
     }
 
+    @Override
+    public boolean onPlayerChangeMapInternal(MapleCharacter player, MapleMap destination) {
+        unregisterPlayer(player);
+        return true;
+    }
+
     @PacketWorker
     public void onItemMove(PlayerInventoryMoveEvent event) {
         event.setCanceled(true);
