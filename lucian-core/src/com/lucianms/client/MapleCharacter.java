@@ -1149,6 +1149,24 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Di
         return effects;
     }
 
+    public void cancelDebuffs(Set<MapleDisease> diseases) {
+        if (diseases.isEmpty()) {
+            return;
+        }
+        for (MapleDisease disease : diseases) {
+            this.diseases.remove(disease);
+        }
+        updateLocalizedStats();
+        enforceMaxHpMp();
+        Set<MapleBuffStat> collect = diseases.stream().map(MapleDisease::getBuff).collect(Collectors.toSet());
+        announce(MaplePacketCreator.getResetTempStats(collect));
+        if (!diseases.isEmpty()) {
+            getMap().sendPacketExclude(MaplePacketCreator.getResetRemoteTempStats(getId(), collect), this);
+        }
+        collect.clear();
+    }
+
+
     public void cancelBuffs(Set<MapleBuffStat> buffs) {
         for (MapleBuffStat remove : buffs) {
             this.effects.remove(remove);
@@ -1730,6 +1748,10 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Di
         }
     }
 
+    public EnumMap<MapleDisease, DiseaseValueHolder> getDiseases() {
+        return diseases;
+    }
+
     public final List<PlayerDiseaseValueHolder> getAllDiseases() {
         final List<PlayerDiseaseValueHolder> ret = new ArrayList<>(5);
 
@@ -1776,10 +1798,6 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Di
         for (MapleDisease disease : MapleDisease.values()) {
             dispelDebuff(disease);
         }
-    }
-
-    public void cancelAllDebuffs() {
-        diseases.clear();
     }
 
     public void dispelSkill(int skillID) {

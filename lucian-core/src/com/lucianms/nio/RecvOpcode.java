@@ -88,7 +88,7 @@ public enum RecvOpcode {
     GIVE_FAME               (95, ReceivePacketState.ChannelServer),
     CHAR_INFO_REQUEST       (97, ReceivePacketState.ChannelServer),
     SPAWN_PET               (98, ReceivePacketState.ChannelServer),
-    CANCEL_DEBUFF           (99, ReceivePacketState.ChannelServer, IgnoredPacketEvent.class),
+    RESET_TEMP_STAT         (99, ReceivePacketState.ChannelServer),
     CHANGE_MAP_SPECIAL      (100, ReceivePacketState.ChannelServer),
     USE_INNER_PORTAL        (101, ReceivePacketState.ChannelServer),
     TROCK_ADD_MAP           (102, ReceivePacketState.ChannelServer),

@@ -21,18 +21,23 @@
 */
 package com.lucianms.server.life;
 
+import com.lucianms.client.DiseaseValueHolder;
+import com.lucianms.client.MapleBuffStat;
 import com.lucianms.client.MapleCharacter;
 import com.lucianms.client.MapleDisease;
 import com.lucianms.client.status.MonsterStatus;
+import com.lucianms.server.BuffContainer;
 import com.lucianms.server.maps.MapleMapObject;
 import com.lucianms.server.maps.MapleMapObjectType;
 import com.lucianms.server.maps.MapleMist;
+import org.slf4j.LoggerFactory;
 import tools.ArrayMap;
+import tools.MaplePacketCreator;
 import tools.Randomizer;
 
 import java.awt.*;
-import java.util.*;
 import java.util.List;
+import java.util.*;
 
 /**
  * @author Danny (Leifde)
@@ -67,6 +72,23 @@ public class MobSkill {
     public void setLtRb(Point lt, Point rb) {
         this.lt = lt;
         this.rb = rb;
+    }
+
+    public void apply(MapleCharacter player) {
+        MapleDisease disease;
+        try {
+            disease = MapleDisease.valueOf(getSkillId());
+        } catch (IllegalArgumentException e) {
+            LoggerFactory.getLogger(MobSkill.class).warn("No disease for mob skill {}", getSkillId());
+            return;
+        }
+        long currentTime = System.currentTimeMillis();
+        int duration = (int) (getDuration() / 1000);
+        player.getDiseases().put(disease, new DiseaseValueHolder(currentTime, getDuration()));
+
+        Map<MapleBuffStat, BuffContainer> buff = Map.of(disease.getBuff(), new BuffContainer(this, null, currentTime, duration));
+        player.announce(MaplePacketCreator.setTempStats(buff));
+        player.getMap().sendPacketExclude(MaplePacketCreator.setRemoteTempStats(player, buff), player);
     }
 
     public void applyEffect(MapleCharacter player, MapleMonster monster, boolean skill) {

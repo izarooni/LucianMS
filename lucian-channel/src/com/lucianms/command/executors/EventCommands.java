@@ -787,8 +787,7 @@ public class EventCommands extends CommandExecutor {
                             target.announce(MaplePacketCreator.cancelChair(-1));
                             target.getMap().broadcastMessage(target, MaplePacketCreator.showChair(target.getId(), 0), false);
                         }
-
-                        target.giveDebuff(disease, skill);
+                        skill.apply(target);
                     } else {
                         player.sendMessage(5, "You cannot debuff the player '{}'", s);
                     }

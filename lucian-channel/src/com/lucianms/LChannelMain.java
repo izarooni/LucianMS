@@ -293,5 +293,6 @@ public class LChannelMain {
         RecvOpcode.ITEM_PICKUP.clazz = ItemPickupEvent.class;
         RecvOpcode.DAMAGE_STAT_CHANGED.clazz = PlayerDamageStatChangedEvent.class;
         RecvOpcode.FIELD_INITIALIZE.clazz = FieldInitEvent.class;
+        RecvOpcode.RESET_TEMP_STAT.clazz = ResetTempStatEvent.class;
     }
 }
