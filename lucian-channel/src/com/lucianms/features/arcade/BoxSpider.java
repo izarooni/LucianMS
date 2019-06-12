@@ -26,7 +26,7 @@ public class BoxSpider extends Arcade {
     private static final int RewardItemID = 4011024;
 
     private static final int[] Platforms = new int[]{-1880, -2208, -2177, -1849};
-    private static final int XPositionLeft = -2845, XPositionRight = -1603;
+    private static final int XPositionLeft = -2735, XPositionRight = -1736;
 
     private MapleMap map;
     private int score;
