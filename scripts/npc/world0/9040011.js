@@ -32,7 +32,7 @@ function action(m, t, s) {
         + "\r\n#eWhat are the rates for Chirithy?#n\r\nEXP: 250x // Mesos: 250x // Drop: 3x\r\n\r\n#eWhat is the server's currency?#n\r\n#i4260002#\r\n\r\n#eHow do I make an MSI?#n\r\nIn order to make a MSI, you will need to speak to Chirithy which is located in the Free Market. As well, you will need to acquire 32k stats and obtain specific ETC items in order to make a MSI.");
         cm.dispose();
     } else if (s == 1) {
-        cm.openNpc(9000037, "daily_login");
+        cm.openNpc(9000037, "f_daily_login");
         cm.dispose();
     } else if (s == 2) {
         cm.sendOk("#eThese are the features of Chirithy v83:#n\r\n\r\n#d#eCustom bosses: #k#nSpace Slime, Black Mage commander, Black Mage, Mysterious Adversary, Kaneki, Ultimate Mushroom, The Wall.\r\n\r\n#d#eCustom maps: #k#nMario, Wario, JQ, The Wall, Smash Bros, Wario, Outer Space, Realm of Gods, Concert, Home & FM.\r\n\r\n#d#eCustom items: #k#nWeapons, Mounts, Pets, Chairs, Accesories, Gloves, Hats.\r\n\r\n#d#eCustom Skills and jobs: #k#nUchiha, Valkyrie, Dragoon, Dancer, Ark, Pathfinder, Cadena, Rashoumon, Luminous, Mechanic.\r\n\r\n#d#eCustom events: #k#nDragon Ball Z and Planet Aura.\r\n\r\n#d#eArcade: #k#nExperience the arcade with tons of fun arcade games!\r\n\r\n#d#eStoryline: #k#nStart your journey with Chirithy and fight the darkness against Master Xehanort!\r\n\r\n#d#eAuto-events: #k#nParticipate in the events that starts automatically!\r\n\r\n#d#eCustom PVP: #k#nPush your friends off the map with our Smash Bros PVP system!\r\n\r\n#d#eWeddings: #k#nMarry your significant other with our marriage system!");

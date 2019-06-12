@@ -45,6 +45,10 @@ public class PlayerItemUseEvent extends PacketEvent {
         Item toUse = player.getInventory(MapleInventoryType.USE).getItem(slot);
         if (toUse != null && toUse.getQuantity() > 0 && toUse.getItemId() == itemId) {
             if (itemId == ItemConstants.ExpTicket) { // [custom] exp ticket
+                if (player.getLevel() >= player.getMaxLevel()) {
+                    player.sendMessage(5, "You are already at the maximum level.");
+                    return null;
+                }
                 SpamTracker.SpamData spamTracker = player.getSpamTracker(SpamTracker.SpamOperation.ItemUse);
                 if (spamTracker.testFor(1000)) {
                     return null;

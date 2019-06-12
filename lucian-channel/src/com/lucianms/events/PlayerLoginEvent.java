@@ -1,6 +1,7 @@
 package com.lucianms.events;
 
 import com.lucianms.client.*;
+import com.lucianms.io.scripting.npc.NPCScriptManager;
 import com.lucianms.nio.receive.MaplePacketReader;
 import com.lucianms.scheduler.TaskExecutor;
 import com.lucianms.server.BuffContainer;
@@ -218,6 +219,8 @@ public class PlayerLoginEvent extends PacketEvent {
         player.showNote();
         player.checkBerserk();
         player.setRates();
+
+        NPCScriptManager.start(client, 9000037,"f_daily_login");
         return null;
     }
 }
