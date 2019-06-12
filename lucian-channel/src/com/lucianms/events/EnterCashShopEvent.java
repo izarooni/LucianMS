@@ -2,6 +2,8 @@ package com.lucianms.events;
 
 import com.lucianms.client.MapleCharacter;
 import com.lucianms.client.MapleClient;
+import com.lucianms.io.scripting.npc.NPCConversationManager;
+import com.lucianms.io.scripting.npc.NPCScriptManager;
 import com.lucianms.nio.receive.MaplePacketReader;
 import com.lucianms.server.Server;
 import tools.MaplePacketCreator;
@@ -20,6 +22,12 @@ public class EnterCashShopEvent extends PacketEvent {
     public Object onPacket() {
         MapleClient client = getClient();
         MapleCharacter player = client.getPlayer();
+
+        NPCConversationManager cm = NPCScriptManager.getConversationManager(client);
+        if (cm != null) {
+            // fuck OFF [003470FD]
+            return null;
+        }
 
         if (player.getCashShop().isOpened()) {
             return null;
