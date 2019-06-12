@@ -81,6 +81,9 @@ function action(mode, type, selection) {
                 let count = player.getItemQuantity(req.itemID, false);
                 let ts = (count < req.quantity) ? "#r" : "#b";
                 content += `\r\n${ts}#v${req.itemID}# #z${req.itemID}# [ ${count} / ${req.quantity} ]`;
+                if (player.isDebug()) {
+                    cm.gainItem(req.itemID, req.quantity, true);
+                }
             }
             cm.sendNext(content);
         } else if (selection == 1) {
@@ -143,6 +146,11 @@ function action(mode, type, selection) {
             selectedItem.setDex(STAT_MAX);
             selectedItem.setInt(STAT_MAX);
             selectedItem.setLuk(STAT_MAX);
+
+            let nAtk = selectedItem.getWatk() + Math.floor(Math.random() * 10);
+            selectedItem.setWatk(Math.min(32767, nAtk));
+            nAtk = selectedItem.getWatk() + Math.floor(Math.random() * 20);
+            selectedItem.setMatk(Math.min(32767, nAtk));
 
             let mods = new java.util.ArrayList();
             mods.add(new ModifyInventory(3, selectedItem));
