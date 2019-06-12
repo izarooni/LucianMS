@@ -104,9 +104,6 @@ public final class PlayerTakeDamageEvent extends PacketEvent {
             attacker = (MapleMonster) mapObject;
             List<LoseItem> loseItems;
             if (attacker.isBuffed(MonsterStatus.NEUTRALISE)) {
-                if (player.getArcade() != null) {
-                    player.getArcade().onHit(attacker.getId());
-                }
                 return null;
             }
             if (damage > 0) {
@@ -244,10 +241,6 @@ public final class PlayerTakeDamageEvent extends PacketEvent {
                 map.broadcastMessage(fakePlayer, MaplePacketCreator.damagePlayer(damageFrom, monsterIdFrom, fakePlayer.getId(), damage, fake, direction, is_pgmr, pgmr, is_pg, objectId, pos_x, pos_y), false);
             }
             player.checkBerserk();
-        }
-
-        if (player.getArcade() != null && attacker != null) {
-            player.getArcade().onHit(attacker.getId());
         }
 
         if (map.getId() >= 925020000 && map.getId() < 925030000) {

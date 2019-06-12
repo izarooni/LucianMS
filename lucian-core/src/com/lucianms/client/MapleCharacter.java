@@ -21,8 +21,6 @@
  */
 package com.lucianms.client;
 
-import com.lucianms.client.arcade.Arcade;
-import com.lucianms.client.arcade.RPSGame;
 import com.lucianms.client.autoban.Cheater;
 import com.lucianms.client.inventory.*;
 import com.lucianms.client.meta.Achievement;
@@ -41,6 +39,7 @@ import com.lucianms.events.gm.MapleOla;
 import com.lucianms.features.GenericEvent;
 import com.lucianms.features.ManualPlayerEvent;
 import com.lucianms.features.PlayerTitles;
+import com.lucianms.features.RPSGame;
 import com.lucianms.helpers.JailManager;
 import com.lucianms.io.scripting.Achievements;
 import com.lucianms.io.scripting.event.EventInstanceManager;
@@ -239,7 +238,6 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Di
     private PartyQuest partyQuest;
     private MonsterBook monsterbook;
 
-    private Arcade arcade;
     private ChatType chatType = ChatType.NORMAL;
     private Timestamp daily;
     private FakePlayer fakePlayer;
@@ -1506,11 +1504,6 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Di
     public void changeMapInternal(final MapleMap to, final Point pos, final byte[] warpPacket) {
         if (getTrade() != null) {
             MapleTrade.cancelTrade(this);
-        }
-
-        if (getArcade() != null && to.getId() != getArcade().getMapId()) {
-            getArcade().fail();
-            setArcade(null);
         }
         ManualPlayerEvent playerEvent = client.getWorldServer().getPlayerEvent();
         if (playerEvent != null) {
@@ -4367,9 +4360,9 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Di
         merchantmeso += add;
     }
 
-    public void setHp(int hp, boolean silent) {
+    public void setHp(int hp, boolean updateParty) {
         this.hp = Math.max(0, Math.min(localmaxhp, hp));
-        if (!silent) {
+        if (!updateParty) {
             sendPartyGaugeRefresh();
         }
         if (!isAlive()) {
@@ -4377,11 +4370,15 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Di
         }
     }
 
-    public void setHpMp(int x) {
-        setHp(x);
-        setMp(x);
+    public void setHpMp(int hp, int mp) {
+        setHp(hp);
+        setMp(mp);
         updateSingleStat(MapleStat.HP, this.hp);
         updateSingleStat(MapleStat.MP, this.mp);
+    }
+
+    public void setHpMp(int x) {
+        setHpMp(x, x);
     }
 
     public void setMap(int PmapId) {
@@ -5170,14 +5167,6 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Di
 
     public void setRebirths(int rebirths) {
         this.rebirths = rebirths;
-    }
-
-    public Arcade getArcade() {
-        return arcade;
-    }
-
-    public void setArcade(Arcade arcade) {
-        this.arcade = arcade;
     }
 
     public Map<Integer, CQuestData> getCustomQuests() {

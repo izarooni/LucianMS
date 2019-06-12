@@ -1,4 +1,4 @@
-package com.lucianms.client.arcade;
+package com.lucianms.features;
 
 /**
  * @author izarooni

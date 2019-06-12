@@ -62,6 +62,7 @@ import java.util.stream.Collectors;
 
 public class MapleMap implements PacketAnnouncer {
 
+    public static final int RESPAWN_INTERVAL = 5000;
     public static final int MAX_DROP_CHANCE = 1000000;
     public static final int INVALID_ID = 999999999;
     private static final Logger LOGGER = LoggerFactory.getLogger(MapleMap.class);
@@ -592,16 +593,6 @@ public class MapleMap implements PacketAnnouncer {
                         }
                         //endregion
 
-                        if (chr.getArcade() != null) {
-                            chr.getArcade().onKill(monster.getId());
-                            if (monster.getId() == 9500365) {
-                                MapleMonster mob = MapleLifeFactory.getMonster(2230103);
-                                mob.setHp(2147000000);
-                                mob.setMp(2147000000);
-                                mob.setLevel(Integer.MAX_VALUE);
-                                spawnMonsterOnGroudBelow(mob, monster.getPosition());
-                            }
-                        }
                         killed = true;
                     }
                 } else if (monster.getId() >= 8810002 && monster.getId() <= 8810009) { // horntail

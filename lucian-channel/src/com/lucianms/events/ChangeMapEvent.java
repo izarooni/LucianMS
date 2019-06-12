@@ -256,8 +256,7 @@ public class ChangeMapEvent extends PacketEvent {
                         || ((System.currentTimeMillis() > map.getNextEmergency())
                         && player.getEventInstance() == null
                         && Randomizer.nextInt(25) == 0
-                        && player.getGenericEvents().isEmpty()
-                        && player.getArcade() == null)) {
+                        && player.getGenericEvents().isEmpty())) {
                     Emergency event = Randomizer.nextBoolean() && player.getLevel() >= 30 ? new EmergencyDuel(player) : new EmergencyAttack(player);
                     TaskExecutor.createTask(new Runnable() {
                         @Override

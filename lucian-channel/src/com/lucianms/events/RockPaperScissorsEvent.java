@@ -1,7 +1,7 @@
 package com.lucianms.events;
 
 import com.lucianms.client.MapleCharacter;
-import com.lucianms.client.arcade.RPSGame;
+import com.lucianms.features.RPSGame;
 import com.lucianms.nio.SendOpcode;
 import com.lucianms.nio.receive.MaplePacketReader;
 import com.lucianms.nio.send.MaplePacketWriter;

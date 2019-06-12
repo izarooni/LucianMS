@@ -26,8 +26,6 @@ import com.lucianms.client.MapleClient;
 import com.lucianms.client.status.MonsterStatus;
 import com.lucianms.io.scripting.reactor.ReactorScriptManager;
 import com.lucianms.scheduler.TaskExecutor;
-import com.lucianms.server.life.MapleLifeFactory;
-import com.lucianms.server.life.MapleMonster;
 import com.lucianms.server.life.MobSkill;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -190,15 +188,6 @@ public class MapleReactor extends AbstractMapleMapObject {
                             map.broadcastMessage(MaplePacketCreator.triggerReactor(this, stance));
                         }
                         ReactorScriptManager.act(client, this);
-                        if (player.getArcade() != null) {
-                            if (player.getArcade().onBreak(getId())) {
-                                MapleMonster monster = MapleLifeFactory.getMonster(2230103);
-                                if (monster != null) {
-                                    monster.setHp(Integer.MAX_VALUE);
-                                    map.spawnMonsterOnGroudBelow(monster, this.getPosition());
-                                }
-                            }
-                        }
                     } else { // reactor not broken yet
                         map.broadcastMessage(MaplePacketCreator.triggerReactor(this, stance));
                         if (state == nextState) {

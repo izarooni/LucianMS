@@ -63,9 +63,6 @@ public class CommandWorker {
             return true;
         } else if (h == '@') {
             if (!player.isGM() && !noCheck) {
-                if (player.getArcade() != null) {
-                    player.getArcade().fail();
-                }
                 if (JailManager.isJailed(player.getId())) {
                     player.sendMessage(5, "You cannot use commands here.");
                     return true;

@@ -68,7 +68,7 @@ public class MapleMonster extends AbstractLoadedMapleLife {
     private ArrayList<Integer> stolenItems = new ArrayList<>();
     private ArrayList<Pair<Integer, Integer>> usedSkills = new ArrayList<>();
     private ArrayList<MonsterStatus> alreadyBuffed = new ArrayList<>();
-    private ArrayList<MonsterListener> listeners = new ArrayList<>();
+    private HashSet<MonsterListener> listeners = new HashSet<>();
     private Map<Pair<Integer, Integer>, Integer> skillsUsed = new HashMap<>();
     private EnumMap<MonsterStatus, MonsterStatusEffect> stati = new EnumMap<>(MonsterStatus.class);
     private final HashMap<Integer, AtomicLong> takenDamage = new HashMap<>();
@@ -514,7 +514,7 @@ public class MapleMonster extends AbstractLoadedMapleLife {
         setControllerKnowsAboutAggro(false);
     }
 
-    public Collection<MonsterListener> getListeners() {
+    public HashSet<MonsterListener> getListeners() {
         return listeners;
     }
 

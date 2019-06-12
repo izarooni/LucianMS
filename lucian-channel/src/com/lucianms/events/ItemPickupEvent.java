@@ -94,13 +94,6 @@ ItemPickupEvent extends PacketEvent {
                             map.broadcastMessage(MaplePacketCreator.removeItemFromMap(mapitem.getObjectId(), 2, player.getId()), mapitem.getPosition());
                             map.removeMapObject(ob);
                             mapitem.setPickedUp(true);
-                            if (player.getArcade() != null) {
-                                if (player.getArcade().getId() == 4) {
-                                    if (!player.getArcade().fail()) {
-                                        player.getArcade().add();
-                                    }
-                                }
-                            }
                         } else {
                             getClient().announce(MaplePacketCreator.enableActions());
                             return null;
@@ -154,12 +147,6 @@ ItemPickupEvent extends PacketEvent {
                         if (!MapleInventoryManipulator.addFromDrop(getClient(), mapitem.getItem(), true)) {
                             getClient().announce(MaplePacketCreator.enableActions());
                             return null;
-                        } else {
-                            if (player.getArcade() != null) {
-                                if (!player.getArcade().fail()) {
-                                    player.getArcade().add();
-                                }
-                            }
                         }
                     }
                 } else if (mapitem.getItemId() == 4031865 || mapitem.getItemId() == 4031866) {
@@ -170,11 +157,6 @@ ItemPickupEvent extends PacketEvent {
                         player.getMonsterBook().addCard(getClient(), mapitem.getItemId());
                     }
                 } else if (MapleInventoryManipulator.addFromDrop(getClient(), mapitem.getItem(), true)) {
-                    if (player.getArcade() != null) {
-                        if (!player.getArcade().fail()) {
-                            player.getArcade().add();
-                        }
-                    }
                     for (CQuestData data : player.getCustomQuests().values()) {
                         if (!data.isCompleted()) {
                             CQuestItemRequirement toLoot = data.getToCollect();

@@ -19,7 +19,7 @@ import java.util.Iterator;
  */
 public class FieldUpdateTask implements Runnable {
 
-    private final UpdateRecord RespawnInterval = new UpdateRecord(5000);
+    private final UpdateRecord RespawnInterval = new UpdateRecord(MapleMap.RESPAWN_INTERVAL);
     private final UpdateRecord CharacterInterval = new UpdateRecord(10000);
     private MapleWorld world;
 
