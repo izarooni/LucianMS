@@ -57,6 +57,7 @@ public class NPCScriptManager {
             try {
                 iv = ScriptUtil.eval(path, binds);
             } catch (FileNotFoundException e) {
+                sendUnused(cm, npc, fileName, player.getMapId());
                 dispose(client);
                 return;
             }
@@ -76,6 +77,7 @@ public class NPCScriptManager {
                     iv.invokeFunction("action", 1, 0, -1);
                 } catch (NoSuchMethodException e3) {
                     LOGGER.warn("No initializer function for script '{}' npc '{}' using player '{}'", fileName, npc, player.getName());
+                    sendUnused(cm, npc, fileName, player.getMapId());
                     dispose(client);
                 }
             }
@@ -130,5 +132,13 @@ public class NPCScriptManager {
     public static NPCConversationManager getConversationManager(MapleClient client) {
         Pair<Invocable, NPCConversationManager> pair = storage.get(client.getAccID());
         return pair == null ? null : pair.getRight();
+    }
+
+    private static void sendUnused(NPCConversationManager cm, int npcID, String script, int mapID) {
+        String unused = "I don't have any purpose right now.\r\n";
+        unused += "\r\n#kID\t\t\t : #b" + npcID;
+        unused += "\r\n#kscript\t\t : #b" + script;
+        unused += "\r\n#kmap\t\t : #b" + mapID;
+        cm.sendOk(unused);
     }
 }
