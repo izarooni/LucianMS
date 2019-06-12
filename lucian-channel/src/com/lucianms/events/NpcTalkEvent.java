@@ -28,7 +28,7 @@ public class NpcTalkEvent extends PacketEvent {
     public Object onPacket() {
         MapleCharacter player = getClient().getPlayer();
         SpamTracker.SpamData spam = player.getSpamTracker(SpamTracker.SpamOperation.NpcTalk);
-        if (!player.isAlive() || spam.testFor(100)) {
+        if (!player.isAlive() || spam.testFor(1000)) {
             return null;
         }
         NPCConversationManager cm = getClient().getCM();
