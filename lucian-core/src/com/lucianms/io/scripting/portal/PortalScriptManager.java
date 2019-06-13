@@ -61,7 +61,7 @@ public class PortalScriptManager {
                 return (boolean) iv.invokeFunction("enter", new PortalPlayerInteraction(client, portal));
             }
         } catch (Exception e) {
-            LOGGER.info("Unable to invoke function 'enter' in script Name: {}, ID: {}, Map: {}", portal.getScriptName(), portal.getId(), player.getMapId(), e);
+            LOGGER.error("Unable to invoke function 'enter' in script Name: {}, ID: {}, Map: {}", portal.getScriptName(), portal.getId(), player.getMapId(), e);
         }
         return false;
     }

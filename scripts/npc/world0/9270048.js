@@ -2,7 +2,7 @@ load("scripts/util_party.js");
 /* izarooni */
 var status = 0;
 var destination = 85;
-var MinimumMembers = 2;
+var MinimumMembers = 1;
 
 function action(mode, type, selection) {
     if (mode < 1) {

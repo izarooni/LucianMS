@@ -88,10 +88,13 @@ function leftParty(eim, player) {
 
 function disbandParty(eim) {
     //boot whole party and end
-    var party = eim.getPlayers();
-    for (var i = 0; i < party.size(); i++) {
-        playerExit(eim, party.get(i));
+    let concurrent = new java.util.ArrayList(eim.getPlayers());
+    let iter = concurrent.iterator();
+    while (iter.hasNext()) {
+        let player = iter.next();
+        playerExit(eim, player);
     }
+    concurrent.clear();
     eim.dispose();
 }
 
@@ -114,10 +117,6 @@ function clearPQ(eim) {
         playerExit(eim, party.get(i));
     }
     eim.dispose();
-}
-
-function moveMap(eim, player, map) {
-    return true;
 }
 
 function allMonstersDead(eim) {

@@ -52,7 +52,7 @@ public class EventInstanceManager {
         } catch (NoSuchMethodException e) {
             LOGGER.warn("Missing function '{}' in event '{}'", function, eventManager.getScriptName());
         } catch (ScriptException e) {
-            e.printStackTrace();
+            LOGGER.error("Event script {}", eventManager.getScriptName(), e);
         }
         return null;
     }
@@ -126,7 +126,9 @@ public class EventInstanceManager {
     }
 
     public boolean movePlayer(MapleCharacter player, MapleMap map) {
-        return (boolean) invokeFunction("moveMap", this, player, map);
+        Object result = invokeFunction("moveMap", this, player, map);
+        if (result == null) return true;
+        return (boolean) result;
     }
 
     public void monsterKilled(MapleMonster monster) {
