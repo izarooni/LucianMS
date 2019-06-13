@@ -9,7 +9,6 @@ import com.lucianms.server.maps.MapleMap;
 import tools.MaplePacketCreator;
 
 /**
- * @author kevintjuh93
  * @author izarooni
  */
 public class PlayerCoconutEvent extends PacketEvent {
@@ -36,19 +35,20 @@ public class PlayerCoconutEvent extends PacketEvent {
             return null;
         } else if (!nut.isCanHit()) {
             if (nut.getResult() == 1) {
+                // 'stop' type coconuts (to distract players)
                 map.sendPacket(MaplePacketCreator.getCoconutHit(coconutID, unk, (byte) 1));
             }
             return null;
         }
         byte nState = nut.getState();
+        nut.setState(++nState);
         if (player.isDebug()) {
             player.sendMessage("Updating coconut '{}' state to {}", nut.getName(), nState);
         }
-        nut.setState(++nState);
         if (nState == event.getHit()) {
             nut.setCanHit(false);
             map.sendPacket(MaplePacketCreator.getCoconutHit(coconutID, unk, nut.getResult()));
-            if (nut.getResult() == 3) {
+            if (nut.getResult() == 3) { // 'falling' type coconut
                 if (player.getTeam() == 0) {
                     event.setRedPoints(event.getRedPoints() + 1);
                 } else {
