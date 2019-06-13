@@ -146,10 +146,10 @@ function action(mode, type, selection) {
             selectedItem.setDex(STAT_MAX);
             selectedItem.setInt(STAT_MAX);
             selectedItem.setLuk(STAT_MAX);
-
-            let nAtk = selectedItem.getWatk() + Math.floor(Math.random() * 10);
+            
+            let nAtk = selectedItem.getWatk() + inRange(8, 13);
             selectedItem.setWatk(Math.min(32767, nAtk));
-            nAtk = selectedItem.getWatk() + Math.floor(Math.random() * 20);
+            nAtk = selectedItem.getWatk() + inRange(10, 18);
             selectedItem.setMatk(Math.min(32767, nAtk));
 
             let mods = new java.util.ArrayList();
@@ -176,4 +176,8 @@ function Requirement(itemID, quantity, modifier) {
 
 function checkStat(stat) {
     return (stat == STAT_MAX) ? `#b${stat}` : `#r${stat}`;
+}
+
+function inRange(l, u) {
+    return Math.floor(Math.random() * (l - u) + 1) + u;
 }
