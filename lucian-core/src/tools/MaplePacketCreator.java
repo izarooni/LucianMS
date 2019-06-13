@@ -1165,7 +1165,7 @@ public class MaplePacketCreator {
         return mplew.getPacket();
     }
 
-    public static byte[] coconutScore(int team1, int team2) {
+    public static byte[] getCoconutScore(int team1, int team2) {
         final MaplePacketWriter mplew = new MaplePacketWriter(6);
         mplew.writeShort(SendOpcode.COCONUT_SCORE.getValue());
         mplew.writeShort(team1);
@@ -1777,6 +1777,25 @@ public class MaplePacketCreator {
         w.writeShort(SendOpcode.PARTY_OPERATION.getValue());
         w.write(36);
         w.writeMapleString(content);
+        return w.getPacket();
+    }
+
+    public static byte[] setObjectState(Collection<Pair<String, Integer>> objects) {
+        MaplePacketWriter w = new MaplePacketWriter();
+        w.writeShort(SendOpcode.FIELD_OBSTACLE_ONOFF_STATUS.getValue());
+        w.writeInt(objects.size());
+        for (Pair<String, Integer> pair : objects) {
+            w.writeMapleString(pair.getLeft());
+            w.writeInt(pair.getRight());
+        }
+        return w.getPacket();
+    }
+
+    public static byte[] setObjectState(String name, int state) {
+        MaplePacketWriter w = new MaplePacketWriter();
+        w.writeShort(SendOpcode.SET_OBJECT_STATE.getValue());
+        w.writeMapleString(name);
+        w.writeInt(state);
         return w.getPacket();
     }
 
@@ -3441,19 +3460,13 @@ public class MaplePacketCreator {
         return mplew.getPacket();
     }
 
-    public static byte[] hitCoconut(boolean spawn, int id, int type) {
-        final MaplePacketWriter mplew = new MaplePacketWriter(7);
-        mplew.writeShort(SendOpcode.COCONUT_HIT.getValue());
-        if (spawn) {
-            mplew.writeShort(-1);
-            mplew.writeShort(5000);
-            mplew.write(0);
-        } else {
-            mplew.writeShort(id);
-            mplew.writeShort(1000);//delay till you can attack again!
-            mplew.write(type); // What action to do for the coconut.
-        }
-        return mplew.getPacket();
+    public static byte[] getCoconutHit(short a, short b, byte c) {
+        MaplePacketWriter w = new MaplePacketWriter(7);
+        w.writeShort(SendOpcode.COCONUT_HIT.getValue());
+        w.writeShort(a);
+        w.writeShort(b);
+        w.write(c);
+        return w.getPacket();
     }
 
     public static byte[] hitSnowBall(int what, int damage) {

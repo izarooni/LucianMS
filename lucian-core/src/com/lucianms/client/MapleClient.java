@@ -273,6 +273,8 @@ public class MapleClient implements Disposable {
                 ps.setString(1, username);
                 try (ResultSet rs = ps.executeQuery()) {
                     if (rs.next()) {
+                        banReason = null;
+                        temporaryBanLength = null;
                         if (rs.getByte("banned") == 1) {
                             banReason = rs.getString("ban_reason");
                             temporaryBanLength = rs.getTimestamp("temporary_ban");

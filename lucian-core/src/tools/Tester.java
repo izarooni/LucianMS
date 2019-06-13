@@ -4,7 +4,9 @@ import com.lucianms.io.Config;
 import com.lucianms.io.defaults.Defaults;
 import com.lucianms.nio.receive.MaplePacketReader;
 import com.lucianms.scheduler.TaskExecutor;
+import com.lucianms.server.FieldBuilder;
 import com.lucianms.server.Server;
+import com.lucianms.server.maps.MapleMap;
 import com.zaxxer.hikari.HikariDataSource;
 import org.json.JSONObject;
 import org.json.JSONTokener;
@@ -32,6 +34,9 @@ public class Tester {
 
     public static void main(String[] args) {
         initConfig();
+        TaskExecutor.initPoolSize(1);
+        Server.createServer();
+        MapleMap build = new FieldBuilder(0, 0, 109080000).loadAll().build();
     }
 
     private static void initConfig() {

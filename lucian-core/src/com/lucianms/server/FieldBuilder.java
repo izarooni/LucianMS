@@ -1,6 +1,8 @@
 package com.lucianms.server;
 
 import com.lucianms.constants.GameConstants;
+import com.lucianms.features.coconut.CoconutEvent;
+import com.lucianms.features.coconut.CoconutObject;
 import com.lucianms.server.life.*;
 import com.lucianms.server.maps.*;
 import org.slf4j.Logger;
@@ -17,6 +19,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -138,6 +141,39 @@ public class FieldBuilder {
                 back.put(layerNum, type);
             }
         } catch (Exception ignore) {
+        }
+
+        MapleData coconutData = mapData.getChildByPath("coconut");
+        if (coconutData != null) {
+            CoconutEvent coconut = new CoconutEvent();
+            coconut.setFalling(MapleDataTool.getIntConvert("countFalling", coconutData));
+            coconut.setBombing(MapleDataTool.getIntConvert("countBombing", coconutData));
+            coconut.setStopped(MapleDataTool.getIntConvert("countStopped", coconutData));
+            coconut.setHit(MapleDataTool.getIntConvert("countHit", coconutData));
+            coconut.setTimeDefault(MapleDataTool.getIntConvert("timeDefault", coconutData));
+            coconut.setTimeExpand(MapleDataTool.getIntConvert("timeExpand", coconutData));
+            coconut.setTimeFinish(MapleDataTool.getInt("timeFinish", coconutData));
+            coconut.setEffectWin(MapleDataTool.getString("effectWin", coconutData));
+            coconut.setEffectLose(MapleDataTool.getString("effectLose", coconutData));
+            coconut.setSoundWin(MapleDataTool.getString("soundWin", coconutData));
+            coconut.setSoundLose(MapleDataTool.getString("soundLose", coconutData));
+            ArrayList<CoconutObject> coconuts = new ArrayList<>(505);
+            coconut.setCoconuts(coconuts);
+            for (int layer = 0; ; layer++) {
+                MapleData objs = mapData.getChildByPath(Integer.toString(layer));
+                if (objs == null || (objs = objs.getChildByPath("obj")) == null) break;
+                for (MapleData obj : objs.getChildren()) {
+                    String objPath = String.format("%s/%s/%s", MapleDataTool.getString("oS", obj),
+                            MapleDataTool.getString("l0", obj),
+                            MapleDataTool.getString("l1", obj));
+                    if (objPath.equalsIgnoreCase("event/sandBeach/coconut")) {
+                        String name = MapleDataTool.getString("name", obj);
+                        Point pos = new Point(MapleDataTool.getIntConvert("x", obj), MapleDataTool.getIntConvert("y", obj));
+                        coconuts.add(new CoconutObject(name, pos));
+                    }
+                }
+            }
+            map.setCoconut(coconut);
         }
         map.setBackgroundTypes(back);
     }

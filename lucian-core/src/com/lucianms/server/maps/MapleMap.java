@@ -34,7 +34,11 @@ import com.lucianms.constants.ItemConstants;
 import com.lucianms.constants.ServerConstants;
 import com.lucianms.cquest.CQuestData;
 import com.lucianms.cquest.requirement.CQuestItemRequirement;
-import com.lucianms.events.gm.*;
+import com.lucianms.events.gm.MapleFitness;
+import com.lucianms.events.gm.MapleOla;
+import com.lucianms.events.gm.MapleOxQuiz;
+import com.lucianms.events.gm.MapleSnowball;
+import com.lucianms.features.coconut.CoconutEvent;
 import com.lucianms.io.scripting.event.EventInstanceManager;
 import com.lucianms.io.scripting.map.FieldScriptExecutor;
 import com.lucianms.lang.GProperties;
@@ -130,7 +134,7 @@ public class MapleMap implements PacketAnnouncer {
     private boolean eventStarted;
     private boolean muted;
     private MapleSnowball snowball0, snowball1;
-    private MapleCoconut coconut;
+    private CoconutEvent coconut;
     private GProperties<Point> autoKillPositions = new GProperties<>();
     private GProperties<Boolean> autoKillMobs = new GProperties<>();
     //endregion
@@ -1444,7 +1448,7 @@ public class MapleMap implements PacketAnnouncer {
             chr.getClient().announce(MaplePacketCreator.showForcedEquip(-1));
         }
         if (specialEquip()) {
-            chr.getClient().announce(MaplePacketCreator.coconutScore(0, 0));
+            chr.getClient().announce(MaplePacketCreator.getCoconutScore(0, 0));
             chr.getClient().announce(MaplePacketCreator.showForcedEquip(chr.getTeam()));
         }
         if (chr.getPlayerShop() != null) {
@@ -2093,8 +2097,12 @@ public class MapleMap implements PacketAnnouncer {
         return fieldType == 4 || fieldType == 19;
     }
 
-    public MapleCoconut getCoconut() {
+    public CoconutEvent getCoconut() {
         return coconut;
+    }
+
+    public void setCoconut(CoconutEvent nut) {
+        this.coconut = nut;
     }
 
     public String getLastPlayerDiedInMap() {
@@ -2103,10 +2111,6 @@ public class MapleMap implements PacketAnnouncer {
 
     public void setLastPlayerDiedInMap(String lastPlayerDiedInMap) {
         this.lastPlayerDiedInMap = lastPlayerDiedInMap;
-    }
-
-    public void setCoconut(MapleCoconut nut) {
-        this.coconut = nut;
     }
 
     public void warpOutByTeam(int team, int mapid) {
@@ -2125,10 +2129,7 @@ public class MapleMap implements PacketAnnouncer {
     }
 
     public void startEvent(final MapleCharacter chr) {
-        if (this.mapid == 109080000 && getCoconut() == null) {
-            setCoconut(new MapleCoconut(this));
-            coconut.startEvent();
-        } else if (this.mapid == 109040000) {
+        if (this.mapid == 109040000) {
             chr.setFitness(new MapleFitness(chr));
             chr.getFitness().startFitness();
         } else if (this.mapid == 109030101 || this.mapid == 109030201 || this.mapid == 109030301 || this.mapid == 109030401) {
