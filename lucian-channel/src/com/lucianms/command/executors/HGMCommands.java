@@ -35,6 +35,7 @@ import java.util.*;
 public class HGMCommands extends CommandExecutor {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(HGMCommands.class);
+    private static ArrayList<String> HELP_LIST;
 
     public HGMCommands() {
         addCommand("hgmcmds", this::CommandList, "");
@@ -65,17 +66,29 @@ public class HGMCommands extends CommandExecutor {
         addCommand("godmeup", this::BoostMyEquips, "");
         addCommand("footholds", this::ListFootholds, "");
         addCommand("ring", this::CreateRing, "");
+
+        Map<String, Pair<CommandEvent, String>> commands = getCommands();
+        HELP_LIST = new ArrayList<>(commands.size());
+        for (Map.Entry<String, Pair<CommandEvent, String>> e : commands.entrySet()) {
+            HELP_LIST.add(String.format("!%s - %s", e.getKey(), e.getValue().getRight()));
+        }
+        HELP_LIST.sort(String::compareTo);
     }
 
     private void CommandList(MapleCharacter player, Command cmd, CommandArgs args) {
-        Map<String, Pair<CommandEvent, String>> commands = getCommands();
-        ArrayList<String> messages = new ArrayList<>(commands.size());
-        for (Map.Entry<String, Pair<CommandEvent, String>> e : commands.entrySet()) {
-            messages.add(String.format("!%s - %s", e.getKey(), e.getValue().getRight()));
+        boolean npc = args.length() == 1 && args.get(0).equalsIgnoreCase("npc");
+        if (npc) {
+            StringBuilder sb = new StringBuilder();
+            for (String s : HELP_LIST) {
+                String[] split = s.split(" - ");
+                sb.append("\r\n#b").append(split[0]).append("#k - #r");
+                if (split.length == 2) sb.append(split[1]);
+            }
+            player.announce(MaplePacketCreator.getNPCTalk(2007, (byte) 0, sb.toString(), "00 00", (byte) 0));
+            sb.setLength(0);
+        } else {
+            HELP_LIST.forEach(player::dropMessage);
         }
-        messages.sort(String::compareTo);
-        messages.forEach(player::dropMessage);
-        messages.clear();
     }
 
     private void SetGuildRank(MapleCharacter player, Command cmd, CommandArgs args) {

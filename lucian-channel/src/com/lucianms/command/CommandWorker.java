@@ -110,7 +110,7 @@ public class CommandWorker {
                     }
                 } catch (Exception e) {
                     player.sendMessage(6, "An error curred within this command");
-                    LOGGER.error("{} failed to execute command {}", player.toString(), cmd.getName());
+                    LOGGER.error("{} failed to execute command {}", player.toString(), cmd.getName(), e);
                 }
             }
         };

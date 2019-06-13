@@ -20,7 +20,6 @@ import com.lucianms.io.scripting.event.EventManager;
 import com.lucianms.io.scripting.map.FieldScriptExecutor;
 import com.lucianms.io.scripting.portal.PortalScriptManager;
 import com.lucianms.io.scripting.reactor.ReactorScriptManager;
-import com.lucianms.nio.SendOpcode;
 import com.lucianms.nio.send.MaplePacketWriter;
 import com.lucianms.scheduler.TaskExecutor;
 import com.lucianms.server.MapleInventoryManipulator;
@@ -56,6 +55,7 @@ import java.util.function.Function;
 public class AdministratorCommands extends CommandExecutor {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(AdministratorCommands.class);
+    private static ArrayList<String> HELP_LIST;
 
     public AdministratorCommands() {
         addCommand("admincmds", this::CommandList, "List of administrator commands");
@@ -74,17 +74,29 @@ public class AdministratorCommands extends CommandExecutor {
         addCommand("wipe", this::CommandWipePlayer, "Clear all items for a specified player");
         addCommand("test", this::CommandTest, "Test command");
         addCommand("stop", this::CommandExit, "Stop the server after a specified amount of time (in seconds)");
+
+        Map<String, Pair<CommandEvent, String>> commands = getCommands();
+        HELP_LIST = new ArrayList<>(commands.size());
+        for (Map.Entry<String, Pair<CommandEvent, String>> e : commands.entrySet()) {
+            HELP_LIST.add(String.format("!%s - %s", e.getKey(), e.getValue().getRight()));
+        }
+        HELP_LIST.sort(String::compareTo);
     }
 
     private void CommandList(MapleCharacter player, Command cmd, CommandArgs args) {
-        Map<String, Pair<CommandEvent, String>> commands = getCommands();
-        ArrayList<String> messages = new ArrayList<>(commands.size());
-        for (Map.Entry<String, Pair<CommandEvent, String>> e : commands.entrySet()) {
-            messages.add(String.format("!%s - %s", e.getKey(), e.getValue().getRight()));
+        boolean npc = args.length() == 1 && args.get(0).equalsIgnoreCase("npc");
+        if (npc) {
+            StringBuilder sb = new StringBuilder();
+            for (String s : HELP_LIST) {
+                String[] split = s.split(" - ");
+                sb.append("\r\n#b").append(split[0]).append("#k - #r");
+                if (split.length == 2) sb.append(split[1]);
+            }
+            player.announce(MaplePacketCreator.getNPCTalk(2007, (byte) 0, sb.toString(), "00 00", (byte) 0));
+            sb.setLength(0);
+        } else {
+            HELP_LIST.forEach(player::dropMessage);
         }
-        messages.sort(String::compareTo);
-        messages.forEach(player::dropMessage);
-        messages.clear();
     }
 
     private void DoShutDownServer() {
@@ -118,11 +130,6 @@ public class AdministratorCommands extends CommandExecutor {
     }
 
     private void CommandTest(MapleCharacter player, Command cmd, CommandArgs args) {
-        MaplePacketWriter w = new MaplePacketWriter();
-        w.writeShort(SendOpcode.SET_OBJECT_STATE.getValue());
-        w.writeMapleString(args.concatFrom(1));
-        w.writeInt(args.parseNumber(0, int.class));
-        player.announce(w.getPacket());
     }
 
     private void CommandWipePlayer(MapleCharacter player, Command cmd, CommandArgs args) {

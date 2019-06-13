@@ -10,6 +10,7 @@ import com.lucianms.constants.ServerConstants;
 import com.lucianms.features.FollowTheLeader;
 import com.lucianms.features.GenericEvent;
 import com.lucianms.features.ManualPlayerEvent;
+import com.lucianms.features.coconut.CoconutEvent;
 import com.lucianms.features.controllers.HotPotatoController;
 import com.lucianms.lang.GProperties;
 import com.lucianms.server.channel.MapleChannel;
@@ -42,6 +43,7 @@ import java.util.stream.Collectors;
 public class EventCommands extends CommandExecutor {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(EventCommands.class);
+    private static ArrayList<String> HELP_LIST;
 
     public EventCommands() {
         addCommand("eventcmds", this::CommandList, "View a list of event commands");
@@ -64,24 +66,45 @@ public class EventCommands extends CommandExecutor {
         addCommand("fstat", this::CommandForceStat, "Enable temporary stats for yourself");
         addCommand("rules", this::CommandEventRules, "Automate event rule messages for a specified event");
         addCommand("fstatm", this::CommandForceStatMap, "Enable temporary stats for all players in the map");
+        addCommand("event", this::CommandCoconutEvent, "Begin the coconut event (if in the proper map)");
+
+        Map<String, Pair<CommandEvent, String>> commands = getCommands();
+        HELP_LIST = new ArrayList<>(commands.size());
+        for (Map.Entry<String, Pair<CommandEvent, String>> e : commands.entrySet()) {
+            HELP_LIST.add(String.format("!%s - %s", e.getKey(), e.getValue().getRight()));
+        }
+        HELP_LIST.sort(String::compareTo);
+    }
+
+    private void CommandCoconutEvent(MapleCharacter player, Command cmd, CommandArgs args) {
+        CoconutEvent event = player.getMap().getCoconut();
+        if (event == null) {
+            player.sendMessage(5, "You are not in a coconut event map");
+            return;
+        }
+        event.begin(player.getMap());
     }
 
     private void CommandList(MapleCharacter player, Command cmd, CommandArgs args) {
-        Map<String, Pair<CommandEvent, String>> commands = getCommands();
-        ArrayList<String> messages = new ArrayList<>(commands.size());
-        for (Map.Entry<String, Pair<CommandEvent, String>> e : commands.entrySet()) {
-            messages.add(String.format("!%s - %s", e.getKey(), e.getValue().getRight()));
+        boolean npc = args.length() == 1 && args.get(0).equalsIgnoreCase("npc");
+        if (npc) {
+            StringBuilder sb = new StringBuilder();
+            for (String s : HELP_LIST) {
+                String[] split = s.split(" - ");
+                sb.append("\r\n#b").append(split[0]).append("#k - #r").append(split[1]);
+            }
+            player.announce(MaplePacketCreator.getNPCTalk(2007, (byte) 0, sb.toString(), "00 00", (byte) 0));
+            sb.setLength(0);
+        } else {
+            HELP_LIST.forEach(player::dropMessage);
         }
-        messages.sort(String::compareTo);
-        messages.forEach(player::dropMessage);
-        messages.clear();
     }
 
     private void CommandHelp(MapleCharacter player, Command command, CommandArgs args) {
         player.dropMessage(6, "!eventcmds - Event commands");
         if (player.getGMLevel() >= 2) player.dropMessage(6, "!gmcmds - Level 2 GM commands");
-        if (player.getGMLevel() >= 3) player.dropMessage(6, "hgmcmds - Level 3 Head-GM commands");
-        if (player.getGMLevel() >= 6) player.dropMessage(6, "admincmds - Level 6 Administrator commands");
+        if (player.getGMLevel() >= 3) player.dropMessage(6, "!hgmcmds - Level 3 Head-GM commands");
+        if (player.getGMLevel() >= 6) player.dropMessage(6, "!admincmds - Level 6 Administrator commands");
     }
 
     private void CommandForceStatMap(MapleCharacter player, Command cmd, CommandArgs args) {

@@ -40,6 +40,7 @@ import java.util.*;
 public class PlayerCommands extends CommandExecutor {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(PlayerCommands.class);
+    private static ArrayList<String> HELP_LIST;
 
     private static void CollectLeaderboard(Connection con, List<Pair<String, Integer>> usernames, String query) throws SQLException {
         try (PreparedStatement ps = con.prepareStatement(query)) {
@@ -108,6 +109,13 @@ public class PlayerCommands extends CommandExecutor {
         addCommand("autorb", this::ToggleAutoRebirth, "Toggle the auto-rebirth ability");
 
         addCommand("ping", this::Ping, "View your Round-Trip delay with the server");
+
+        Map<String, Pair<CommandEvent, String>> commands = getCommands();
+        HELP_LIST = new ArrayList<>(commands.size());
+        for (Map.Entry<String, Pair<CommandEvent, String>> e : commands.entrySet()) {
+            HELP_LIST.add(String.format("@%s - %s", e.getKey(), e.getValue().getRight()));
+        }
+        HELP_LIST.sort(String::compareTo);
     }
 
     private void ToggleAutoRebirth(MapleCharacter player, Command cmd, CommandArgs args) {
@@ -687,26 +695,17 @@ public class PlayerCommands extends CommandExecutor {
     }
 
     private void Help(MapleCharacter player, Command cmd, CommandArgs args) {
-        boolean npc = args.length() == 1 && args.get(0).equals("npc");
-
-        Map<String, Pair<CommandEvent, String>> commands = getCommands();
-        ArrayList<String> messages = new ArrayList<>(commands.size());
-        for (Map.Entry<String, Pair<CommandEvent, String>> e : commands.entrySet()) {
-            messages.add(String.format("@%s - %s", e.getKey(), e.getValue().getRight()));
-        }
-        messages.sort(String::compareTo);
+        boolean npc = args.length() == 1 && args.get(0).equalsIgnoreCase("npc");
         if (npc) {
             StringBuilder sb = new StringBuilder();
-            for (String s : messages) {
+            for (String s : HELP_LIST) {
                 String[] split = s.split(" - ");
                 sb.append("\r\n#b").append(split[0]).append("#k - #r").append(split[1]);
             }
             player.announce(MaplePacketCreator.getNPCTalk(2007, (byte) 0, sb.toString(), "00 00", (byte) 0));
             sb.setLength(0);
         } else {
-            messages.forEach(player::dropMessage);
-            player.dropMessage("If you'd like to view this list in an NPC window, use the command < @help npc >");
+            HELP_LIST.forEach(player::dropMessage);
         }
-        messages.clear();
     }
 }

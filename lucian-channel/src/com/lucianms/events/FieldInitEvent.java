@@ -4,6 +4,7 @@ import com.lucianms.client.MapleCharacter;
 import com.lucianms.client.MapleClient;
 import com.lucianms.client.Relationship;
 import com.lucianms.constants.GameConstants;
+import com.lucianms.features.coconut.CoconutEvent;
 import com.lucianms.io.scripting.Achievements;
 import com.lucianms.io.scripting.event.EventInstanceManager;
 import com.lucianms.nio.SendOpcode;
@@ -16,8 +17,11 @@ import com.lucianms.server.world.MapleParty;
 import com.lucianms.server.world.MaplePartyCharacter;
 import com.lucianms.server.world.MapleWorld;
 import tools.MaplePacketCreator;
+import tools.Pair;
 
 import java.util.Calendar;
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * @author izarooni
@@ -47,6 +51,21 @@ public class FieldInitEvent extends PacketEvent {
         Achievements.testFor(player, -1);
         player.setRates();
         player.checkBerserk();
+
+        CoconutEvent coconutEvent = map.getCoconut();
+        if (coconutEvent != null) {
+            if (coconutEvent.getBeginTimestamp() > 0) {
+                player.announce(MaplePacketCreator.getCoconutScore(coconutEvent.getRedPoints(), coconutEvent.getBluePoints()));
+                List<Pair<String, Integer>> collect = coconutEvent.getCoconuts().stream()
+                        .map(c -> new Pair<>(c.getName(), (int) c.getState())).collect(Collectors.toList());
+                player.announce(MaplePacketCreator.setObjectState(collect));
+                collect.clear();
+                int timeLeft = (int) (((coconutEvent.getBeginTimestamp() + (coconutEvent.getTimeDefault() * 1000)) - System.currentTimeMillis()) / 1000);
+                if (timeLeft > 0) {
+                    player.announce(MaplePacketCreator.getClock(timeLeft));
+                }
+            }
+        }
 
         MapleParty party = player.getParty();
         if (party != null) {
