@@ -80,7 +80,9 @@ function action(mode, type, selection) {
             setLevelReward(getLevelReward() + 1);
             cm.sendOk("Enjoy your new equips!~");
         } else {
-            player.sendMessage("Error: Unable to find reward box");
+            cm.sendOk("What's this? Where did you get this box?\r\nThere are no rewards to claim from this box.");
+            cm.dispose();
+            return;
         }
         cm.dispose();
     }
