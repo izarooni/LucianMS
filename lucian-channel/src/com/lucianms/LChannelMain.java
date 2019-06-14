@@ -285,7 +285,7 @@ public class LChannelMain {
         RecvOpcode.FREDRICK_ACTION.clazz = PlayerFredrickInteractionEvent.class;
         RecvOpcode.MONSTER_BOOK_COVER.clazz = PlayerMonsterBookCoverEvent.class;
         RecvOpcode.SNOWBALL.clazz = PlayerSnowballEvent.class;
-        RecvOpcode.COCONUT.clazz = PlayerCoconutEvent.class;
+        RecvOpcode.COCONUT.clazz = CoconutHitEvent.class;
         RecvOpcode.MESSENGER.clazz = PlayerMessengerEvent.class;
         RecvOpcode.PARTY_SEARCH_START.clazz = PlayerPartySearchBeginEvent.class;
         RecvOpcode.NPC_SHOP.clazz = PlayerNpcShopInteractionEvent.class;

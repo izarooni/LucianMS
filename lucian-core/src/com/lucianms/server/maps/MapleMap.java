@@ -1297,32 +1297,32 @@ public class MapleMap implements PacketAnnouncer {
         broadcastMessage(fakePlayer, MaplePacketCreator.removePlayerFromMap(fakePlayer.getId()), false);
     }
 
-    public void addPlayer(final MapleCharacter chr) {
-        characters.put(chr.getId(), chr);
+    public void addPlayer(final MapleCharacter player) {
+        characters.put(player.getId(), player);
 
-        chr.setMapId(mapid);
+        player.setMapId(mapid);
 
         //region script processing
-        if (onFirstUserEnter.length() != 0 && !chr.hasEntered(onFirstUserEnter, mapid)) {
+        if (onFirstUserEnter.length() != 0 && !player.hasEntered(onFirstUserEnter, mapid)) {
             if (getAllPlayer().size() <= 1) {
-                chr.enteredScript(onFirstUserEnter, mapid);
-                FieldScriptExecutor.executeFirstEnter(chr.getClient(), onFirstUserEnter);
+                player.enteredScript(onFirstUserEnter, mapid);
+                FieldScriptExecutor.executeFirstEnter(player.getClient(), onFirstUserEnter);
             }
         }
         if (onUserEnter != null && !onUserEnter.isEmpty()) {
             if (onUserEnter.equals("cygnusTest") && (mapid < 913040000 || mapid > 913040006)) {
-                chr.saveLocation("INTRO");
+                player.saveLocation("INTRO");
             }
-            FieldScriptExecutor.executeEnter(chr.getClient(), onUserEnter);
+            FieldScriptExecutor.executeEnter(player.getClient(), onUserEnter);
         } else {
             String strMapID = Integer.toString(mapid);
-            FieldScriptExecutor.executeEnter(chr.getClient(), strMapID);
+            FieldScriptExecutor.executeEnter(player.getClient(), strMapID);
         }
         //endregion
 
-        if (FieldLimit.CANNOTUSEMOUNTS.check(fieldLimit) && chr.getBuffedValue(MapleBuffStat.RIDE_VEHICLE) != null) {
-            chr.cancelBuffs(Set.of(MapleBuffStat.RIDE_VEHICLE));
-            chr.cancelBuffStats(MapleBuffStat.RIDE_VEHICLE);
+        if (FieldLimit.CANNOTUSEMOUNTS.check(fieldLimit) && player.getBuffedValue(MapleBuffStat.RIDE_VEHICLE) != null) {
+            player.cancelBuffs(Set.of(MapleBuffStat.RIDE_VEHICLE));
+            player.cancelBuffStats(MapleBuffStat.RIDE_VEHICLE);
         }
         if (mapid == 923010000 && getMonsterById(9300102) == null) { // Kenta's Mount quest
             spawnMonsterOnGroundBelow(MapleLifeFactory.getMonster(9300102), new Point(77, 426));
@@ -1330,158 +1330,159 @@ public class MapleMap implements PacketAnnouncer {
 
         //region map timeouts
         if (mapid == 910010200) { // Henesys Party Quest Bonus
-            chr.announce(MaplePacketCreator.getClock(60 * 5));
+            player.announce(MaplePacketCreator.getClock(60 * 5));
             TaskExecutor.createTask(new Runnable() {
 
                 @Override
                 public void run() {
-                    if (chr.getMapId() == 910010200) {
-                        chr.changeMap(910010400);
+                    if (player.getMapId() == 910010200) {
+                        player.changeMap(910010400);
                     }
                 }
             }, 5 * 60 * 1000);
         } else if (mapid == 200090060) { // To Rien
-            chr.announce(MaplePacketCreator.getClock(60));
+            player.announce(MaplePacketCreator.getClock(60));
             TaskExecutor.createTask(new Runnable() {
 
                 @Override
                 public void run() {
-                    if (chr.getMapId() == 200090060) {
-                        chr.changeMap(140020300);
+                    if (player.getMapId() == 200090060) {
+                        player.changeMap(140020300);
                     }
                 }
             }, 60 * 1000);
         } else if (mapid == 200090070) { // To Lith Harbor
-            chr.announce(MaplePacketCreator.getClock(60));
+            player.announce(MaplePacketCreator.getClock(60));
             TaskExecutor.createTask(new Runnable() {
 
                 @Override
                 public void run() {
-                    if (chr.getMapId() == 200090070) {
-                        chr.changeMap(104000000, 3);
+                    if (player.getMapId() == 200090070) {
+                        player.changeMap(104000000, 3);
                     }
                 }
             }, 60 * 1000);
         } else if (mapid == 200090030) { // To Ereve (SkyFerry)
-            chr.getClient().announce(MaplePacketCreator.getClock(60));
+            player.getClient().announce(MaplePacketCreator.getClock(60));
             TaskExecutor.createTask(new Runnable() {
 
                 @Override
                 public void run() {
-                    if (chr.getMapId() == 200090030) {
-                        chr.changeMap(130000210);
+                    if (player.getMapId() == 200090030) {
+                        player.changeMap(130000210);
                     }
                 }
             }, 60 * 1000);
         } else if (mapid == 200090031) { // To Victoria Island (SkyFerry)
-            chr.getClient().announce(MaplePacketCreator.getClock(60));
+            player.getClient().announce(MaplePacketCreator.getClock(60));
             TaskExecutor.createTask(new Runnable() {
 
                 @Override
                 public void run() {
-                    if (chr.getMapId() == 200090031) {
-                        chr.changeMap(101000400);
+                    if (player.getMapId() == 200090031) {
+                        player.changeMap(101000400);
                     }
                 }
             }, 60 * 1000);
         } else if (mapid == 200090021) { // To Orbis (SkyFerry)
-            chr.getClient().announce(MaplePacketCreator.getClock(60));
+            player.getClient().announce(MaplePacketCreator.getClock(60));
             TaskExecutor.createTask(new Runnable() {
 
                 @Override
                 public void run() {
-                    if (chr.getMapId() == 200090021) {
-                        chr.changeMap(200000161);
+                    if (player.getMapId() == 200090021) {
+                        player.changeMap(200000161);
                     }
                 }
             }, 60 * 1000);
         } else if (mapid == 200090020) { // To Ereve From Orbis (SkyFerry)
-            chr.getClient().announce(MaplePacketCreator.getClock(60));
+            player.getClient().announce(MaplePacketCreator.getClock(60));
             TaskExecutor.createTask(new Runnable() {
 
                 @Override
                 public void run() {
-                    if (chr.getMapId() == 200090020) {
-                        chr.changeMap(130000210);
+                    if (player.getMapId() == 200090020) {
+                        player.changeMap(130000210);
                     }
                 }
             }, 60 * 1000);
         }
         //endregion
 
-        EventInstanceManager eim = chr.getEventInstance();
+        EventInstanceManager eim = player.getEventInstance();
 
         if (mapid == 103040400) {
             if (eim != null) {
-                eim.movePlayer(chr, this);
+                eim.movePlayer(player, this);
             }
         }
         if (coconut != null) {
-
+            player.setTeam(characters.size() % 2 == 0 ? 1 : 0);
+            player.announce(MaplePacketCreator.getUpdateFieldSpecificData(player.getTeam()));
         }
-        MaplePet[] pets = chr.getPets();
-        for (int i = 0; i < chr.getPets().length; i++) {
+        MaplePet[] pets = player.getPets();
+        for (int i = 0; i < player.getPets().length; i++) {
             if (pets[i] != null) {
-                Point nPosition = getGroundBelow(chr.getPosition());
+                Point nPosition = getGroundBelow(player.getPosition());
                 if (nPosition == null) {
-                    nPosition = chr.getPosition().getLocation();
+                    nPosition = player.getPosition().getLocation();
                 }
                 pets[i].setPos(nPosition);
-                chr.announce(MaplePacketCreator.showPet(chr, pets[i], false, false));
+                player.announce(MaplePacketCreator.showPet(player, pets[i], false, false));
             } else {
                 break;
             }
         }
-        if (chr.isHidden()) {
-            sendPacketIf(MaplePacketCreator.getUserEnterField(chr), p -> p.getGMLevel() >= chr.getGMLevel());
-            chr.announce(MaplePacketCreator.getAdminResult(0x10, (byte) 1));
+        if (player.isHidden()) {
+            sendPacketIf(MaplePacketCreator.getUserEnterField(player), p -> p.getGMLevel() >= player.getGMLevel());
+            player.announce(MaplePacketCreator.getAdminResult(0x10, (byte) 1));
 
-            sendPacketIf(MaplePacketCreator.giveForeignBuff(getId(), Map.of(MapleBuffStat.DARK_SIGHT, 0)), p -> p.getGMLevel() >= chr.getGMLevel());
+            sendPacketIf(MaplePacketCreator.giveForeignBuff(getId(), Map.of(MapleBuffStat.DARK_SIGHT, 0)), p -> p.getGMLevel() >= player.getGMLevel());
         } else {
-            broadcastMessage(chr, MaplePacketCreator.getUserEnterField(chr), false);
+            broadcastMessage(player, MaplePacketCreator.getUserEnterField(player), false);
         }
 
-        sendObjectPlacement(chr.getClient());
-        addMapObject(chr);
+        sendObjectPlacement(player.getClient());
+        addMapObject(player);
 
         if (isStartingEventMap() && !isEventStarted()) {
-            chr.getMap().getPortal("join00").setPortalStatus(false);
+            player.getMap().getPortal("join00").setPortalStatus(false);
         }
         if (hasForcedEquip()) {
-            chr.getClient().announce(MaplePacketCreator.getUpdateFieldSpecificData(-1));
+            player.getClient().announce(MaplePacketCreator.getUpdateFieldSpecificData(-1));
         }
         if (specialEquip()) {
-            chr.getClient().announce(MaplePacketCreator.getCoconutScore(0, 0));
-            chr.getClient().announce(MaplePacketCreator.getUpdateFieldSpecificData(chr.getTeam()));
+            player.getClient().announce(MaplePacketCreator.getCoconutScore(0, 0));
+            player.getClient().announce(MaplePacketCreator.getUpdateFieldSpecificData(player.getTeam()));
         }
-        if (chr.getPlayerShop() != null) {
-            addMapObject(chr.getPlayerShop());
+        if (player.getPlayerShop() != null) {
+            addMapObject(player.getPlayerShop());
         }
 
-        final MapleDragon dragon = chr.getDragon();
+        final MapleDragon dragon = player.getDragon();
         if (dragon != null) {
-            dragon.setPosition(chr.getPosition());
+            dragon.setPosition(player.getPosition());
             addMapObject(dragon);
-            if (chr.isHidden()) {
-                broadcastGMMessage(chr, MaplePacketCreator.spawnDragon(dragon));
+            if (player.isHidden()) {
+                broadcastGMMessage(player, MaplePacketCreator.spawnDragon(dragon));
             } else {
-                broadcastMessage(chr, MaplePacketCreator.spawnDragon(dragon));
+                broadcastMessage(player, MaplePacketCreator.spawnDragon(dragon));
             }
-        } else if (GameConstants.hasSPTable(chr.getJob())) {
-            chr.createDragon();
-            broadcastMessage(MaplePacketCreator.spawnDragon(chr.getDragon()));
+        } else if (GameConstants.hasSPTable(player.getJob())) {
+            player.createDragon();
+            broadcastMessage(MaplePacketCreator.spawnDragon(player.getDragon()));
         }
 
-        for (MapleSummon summon : chr.getSummons().values()) {
-            summon.setPosition(chr.getPosition());
-            chr.getMap().spawnSummon(summon);
-            updateMapObjectVisibility(chr, summon);
+        for (MapleSummon summon : player.getSummons().values()) {
+            summon.setPosition(player.getPosition());
+            player.getMap().spawnSummon(summon);
+            updateMapObjectVisibility(player, summon);
         }
 
         if (hasBoat() == 2) {
-            chr.getClient().announce((MaplePacketCreator.boatPacket(true)));
-        } else if (hasBoat() == 1 && (chr.getMapId() != 200090000 || chr.getMapId() != 200090010)) {
-            chr.getClient().announce(MaplePacketCreator.boatPacket(false));
+            player.getClient().announce((MaplePacketCreator.boatPacket(true)));
+        } else if (hasBoat() == 1 && (player.getMapId() != 200090000 || player.getMapId() != 200090010)) {
+            player.getClient().announce(MaplePacketCreator.boatPacket(false));
         }
     }
 

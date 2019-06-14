@@ -11,7 +11,7 @@ import tools.MaplePacketCreator;
 /**
  * @author izarooni
  */
-public class PlayerCoconutEvent extends PacketEvent {
+public class CoconutHitEvent extends PacketEvent {
 
     private short coconutID;
     private short unk;
