@@ -5,6 +5,8 @@ import com.lucianms.scheduler.TaskExecutor;
 import com.lucianms.server.channel.MapleChannel;
 import com.lucianms.server.maps.MapleMap;
 import com.lucianms.server.world.MapleParty;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import tools.MaplePacketCreator;
 import tools.Randomizer;
 
@@ -22,6 +24,7 @@ public class MCarnivalLobby {
         InProgress // Game started
     }
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(MCarnivalLobby.class);
     private static final int M_Office = 980000000;
 
     private final MapleChannel channel;
@@ -101,14 +104,36 @@ public class MCarnivalLobby {
                 MCarnivalGame carnivalGame = createGame();
                 party1.forEachPlayer(carnivalGame::registerPlayer);
                 party2.forEachPlayer(carnivalGame::registerPlayer);
+
+                MapleMap map = channel.getMap(getBattlefieldMapId());
+                MonsterCarnival carnival = map.getMonsterCarnival();
+                final long timeFinish = carnival.getTimeFinish() * 1000;
+
                 waitingTask = TaskExecutor.createTask(new Runnable() {
                     @Override
                     public void run() {
-                        party1.forEachPlayer(carnivalGame::unregisterPlayer);
-                        party2.forEachPlayer(carnivalGame::unregisterPlayer);
-                        setState(State.Available);
+                        try {
+                            MCarnivalTeam teamBlue = carnivalGame.getTeamBlue();
+                            MCarnivalTeam teamRed = carnivalGame.getTeamRed();
+                            boolean blueWinner = teamBlue.getTotalCarnivalPoints() > teamRed.getTotalCarnivalPoints();
+                            carnivalGame.broadcastPacket(blueWinner ? teamBlue : teamRed, MaplePacketCreator.mapSound(carnival.getSoundWin()));
+                            carnivalGame.broadcastPacket(blueWinner ? teamBlue : teamRed, MaplePacketCreator.mapEffect(carnival.getEffectWin()));
+                            carnivalGame.broadcastPacket(blueWinner ? teamRed : teamBlue, MaplePacketCreator.mapSound(carnival.getSoundLose()));
+                            carnivalGame.broadcastPacket(blueWinner ? teamRed : teamBlue, MaplePacketCreator.mapEffect(carnival.getEffectLose()));
+                        } catch (Exception e) {
+                            LOGGER.info("Failed to show game results", e);
+                        }
+                        carnivalGame.broadcastPacket(null, MaplePacketCreator.getClock(carnival.getTimeFinish()));
+                        TaskExecutor.createTask(new Runnable() {
+                            @Override
+                            public void run() {
+                                setState(State.Available);
+                                party1.forEachPlayer(carnivalGame::unregisterPlayer);
+                                party2.forEachPlayer(carnivalGame::unregisterPlayer);
+                            }
+                        }, timeFinish);
                     }
-                }, 1000 * 60 * 10); // 10 min game
+                }, carnival.getTimeDefault() * 1000);
                 break;
             }
             case Starting: {
@@ -131,6 +156,7 @@ public class MCarnivalLobby {
                 }
                 waitingTask = TaskExecutor.cancelTask(waitingTask);
                 Optional.ofNullable(carnivalGame).ifPresent(MCarnivalGame::dispose);
+                party1 = party2 = null;
                 break;
             }
         }

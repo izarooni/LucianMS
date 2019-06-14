@@ -36,7 +36,8 @@ public class Tester {
         initConfig();
         TaskExecutor.initPoolSize(1);
         Server.createServer();
-        MapleMap build = new FieldBuilder(0, 0, 109080000).loadAll().build();
+        MapleMap build = new FieldBuilder(0, 0, 980000101).loadAll().build();
+        System.out.println(build.getMonsterCarnival());
     }
 
     private static void initConfig() {

@@ -11,9 +11,10 @@ public class MCarnivalTeam {
     private final int id;
     private final MapleParty party;
 
-    private int availableCarnivalPoints = 0;
-    private int totalCarnivalPoints = 0;
-    private int summonedMonsters = 0;
+    private int availableCarnivalPoints;
+    private int totalCarnivalPoints;
+    private int summonedMonsters;
+    private int summonedGuardians;
 
     public MCarnivalTeam(int id, MapleParty party) {
         this.id = id;
@@ -56,5 +57,13 @@ public class MCarnivalTeam {
 
     public void setSummonedMonsters(int summonedMonsters) {
         this.summonedMonsters = summonedMonsters;
+    }
+
+    public int getSummonedGuardians() {
+        return summonedGuardians;
+    }
+
+    public void setSummonedGuardians(int summonedGuardians) {
+        this.summonedGuardians = summonedGuardians;
     }
 }

@@ -13,9 +13,16 @@ public class MCarnivalMobHandler extends MonsterListener {
 
     @Override
     public void monsterKilled(MapleMonster monster, MapleCharacter player) {
+        if (player == null) {
+            return;
+        }
         MCarnivalGame carnivalGame = (MCarnivalGame) player.getGenericEvents().stream().filter(o -> o instanceof MCarnivalGame).findFirst().orElse(null);
         if (monster.getCP() > 0 && carnivalGame != null) {
-            carnivalGame.getTeam(player.getTeam()).addCarnivalPoints(player, monster.getCP());
+            int gainCP = monster.getCP();
+            if (player.isDebug()) {
+                gainCP = 100;
+            }
+            carnivalGame.getTeam(player.getTeam()).addCarnivalPoints(player, gainCP);
             player.announce(MCarnivalPacket.getMonsterCarnivalPointsUpdate(player.getCP(), player.getObtainedCP()));
             player.getMap().broadcastMessage(MCarnivalPacket.getMonsterCarnivalPointsUpdateParty(carnivalGame.getTeam(player.getTeam())));
         }

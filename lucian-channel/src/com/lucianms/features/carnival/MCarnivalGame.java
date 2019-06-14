@@ -5,6 +5,7 @@ import com.lucianms.client.MapleStat;
 import com.lucianms.events.*;
 import com.lucianms.features.GenericEvent;
 import com.lucianms.lang.annotation.PacketWorker;
+import com.lucianms.server.MaplePortal;
 import com.lucianms.server.life.MapleMonster;
 import com.lucianms.server.maps.MapleMap;
 import com.lucianms.server.world.MaplePartyCharacter;
@@ -34,7 +35,10 @@ public class MCarnivalGame extends GenericEvent {
             if (startTimestamp == -1) {
                 startTimestamp = System.currentTimeMillis();
             }
-            player.changeMap(lobby.getBattlefieldMapId());
+            MapleMap map = player.getClient().getChannelServer().getMap(lobby.getBattlefieldMapId());
+            MaplePortal redSP = map.getPortal("red00");
+            MaplePortal blueSP = map.getPortal("blue00");
+            player.changeMap(lobby.getBattlefieldMapId(), player.getTeam() == 0 ? redSP : blueSP);
         }
     }
 
@@ -76,6 +80,9 @@ public class MCarnivalGame extends GenericEvent {
         if (sender == null) {
             MapleMap map = player.getClient().getChannelServer().getMap(lobby.getBattlefieldMapId());
             map.broadcastMessage(MCarnivalPacket.getMonsterCarnivalPlayerDeath(player));
+            MonsterCarnival carnival = map.getMonsterCarnival();
+            int deathCP = (carnival == null) ? 10 : carnival.getDeathCP();
+            getTeam(player.getTeam()).addCarnivalPoints(player, -deathCP);
         }
         return false;
     }
@@ -132,6 +139,15 @@ public class MCarnivalGame extends GenericEvent {
         }
     }
 
+    public void broadcastPacket(MCarnivalTeam team, byte[] packet) {
+        if (team == null || team.getId() == 0) {
+            teamRed.getParty().sendPacket(packet);
+        }
+        if (team == null || team.getId() == 1) {
+            teamBlue.getParty().sendPacket(packet);
+        }
+    }
+
     public void dispose() {
         Collection<MapleCharacter> players;
         if (teamRed != null && teamRed.getParty() != null) {
@@ -154,7 +170,8 @@ public class MCarnivalGame extends GenericEvent {
     }
 
     public long getTimeLeft() {
-        return (((1000 * 60 * 10) + startTimestamp) - System.currentTimeMillis());
+        MapleMap map = lobby.getChannel().getMap(lobby.getBattlefieldMapId());
+        return ((map.getMonsterCarnival().getTimeDefault() * 1000) + startTimestamp) - System.currentTimeMillis();
     }
 
     public MCarnivalLobby getLobby() {

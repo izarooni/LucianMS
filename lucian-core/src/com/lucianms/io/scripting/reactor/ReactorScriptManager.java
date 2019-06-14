@@ -52,7 +52,7 @@ public class ReactorScriptManager {
         ReactorActionManager rm = new ReactorActionManager(c, reactor);
         try {
             Invocable iv = ScriptUtil.eval("reactor/" + reactor.getId() + ".js", Collections.singleton(new Pair<>("rm", rm)));
-            iv.invokeFunction("act");
+            iv.invokeFunction("act", rm);
         } catch (FileNotFoundException e) {
             rm.dropItems();
             return;

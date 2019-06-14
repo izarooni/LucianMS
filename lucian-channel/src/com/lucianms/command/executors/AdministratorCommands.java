@@ -43,6 +43,7 @@ import javax.script.ScriptException;
 import java.awt.*;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.function.Function;
@@ -130,6 +131,12 @@ public class AdministratorCommands extends CommandExecutor {
     }
 
     private void CommandTest(MapleCharacter player, Command cmd, CommandArgs args) {
+        List<MapleReactor> reactors = player.getMap().getReactors();
+        for (MapleReactor reactor : reactors) {
+            player.getMap().removeMapObject(reactor);
+            player.getMap().sendPacket(reactor.makeDestroyData());
+        }
+        reactors.clear();
     }
 
     private void CommandWipePlayer(MapleCharacter player, Command cmd, CommandArgs args) {

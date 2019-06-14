@@ -3,9 +3,7 @@ package com.lucianms.events;
 import com.lucianms.client.MapleCharacter;
 import com.lucianms.client.status.MonsterStatus;
 import com.lucianms.features.GenericEvent;
-import com.lucianms.features.carnival.MCarnivalGame;
-import com.lucianms.features.carnival.MCarnivalPacket;
-import com.lucianms.features.carnival.MCarnivalTeam;
+import com.lucianms.features.carnival.*;
 import com.lucianms.nio.receive.MaplePacketReader;
 import com.lucianms.server.life.MapleLifeFactory;
 import com.lucianms.server.life.MapleMonster;
@@ -55,16 +53,16 @@ public final class MonsterCarnivalEvent extends PacketEvent {
 
             MCarnivalGame game = (MCarnivalGame) optional.get();
             final MapleMap map = getClient().getChannelServer().getMap(game.getLobby().getBattlefieldMapId());
-            final MCarnivalTeam friendly = game.getTeam(player.getTeam());
-            final MCarnivalTeam enemy = game.getTeamOpposite(player.getTeam());
+            MonsterCarnival carnival = map.getMonsterCarnival();
+            MCarnivalTeam friendly = game.getTeam(player.getTeam());
+            MCarnivalTeam enemy = game.getTeamOpposite(player.getTeam());
 
             if (friendly != null && enemy != null) {
-                LOGGER.info("player '{}', Action {}, Value {}", player.getName(), action, value);
-                final int nPrice = getPrice(action, value);
+                final int nPrice = getPrice(carnival, action, value);
                 final int nMonster = getMonster(value);
                 if (player.getCarnivalPoints() >= nPrice) {
                     if (action == 0) { // Spawning
-                        if (friendly.getSummonedMonsters() <= MaximumSpawns) {
+                        if (friendly.getSummonedMonsters() <= carnival.getMonsterGenMax()) {
                             if (nPrice == -1) {
                                 LOGGER.error("Invalid action/value Action {}, Value {}", action, value);
                                 player.announce(MCarnivalPacket.getMonsterCarnivalResponse((byte) 5));
@@ -95,9 +93,21 @@ public final class MonsterCarnivalEvent extends PacketEvent {
                     } else if (action == 1) { // Buffs
 
                     } else if (action == 2) { // Debuffs
+                        if (friendly.getSummonedGuardians() >= carnival.getGuardianGenMax()) {
+                            player.announce(MCarnivalPacket.getMonsterCarnivalResponse((byte) 2));
+                            return null;
+                        }
                         int reactorId = ID_Reactor + friendly.getId();
                         MapleReactor reactor = new MapleReactor(MapleReactorFactory.getReactor(reactorId), reactorId);
                         reactor.setTeam(friendly.getId());
+                        Optional<MCarnivalGuardian> any = carnival.getGuardians().stream()
+                                .filter(g -> !carnival.isMapDivded() || g.getTeam() == player.getTeam()).findAny();
+                        if (!any.isPresent()) {
+                            LOGGER.warn("Failed to summon Monster Carnival guardian {}", reactorId);
+                            return null;
+                        }
+                        MCarnivalGuardian guardian = any.get();
+                        reactor.setPosition(guardian.getLocation());
                         switch (value) {
                             case 0:
                                 reactor.setMonsterStatus(MonsterStatus.WEAPON_ATTACK_UP, MobSkillFactory.getMobSkill(150, 1));
@@ -127,8 +137,9 @@ public final class MonsterCarnivalEvent extends PacketEvent {
                                 reactor.setMonsterStatus(MonsterStatus.MAGIC_IMMUNITY, MobSkillFactory.getMobSkill(141, 1));
                                 break;
                         }
-                        player.getMap().getMonsters().stream().filter(m -> m.getTeam() != player.getTeam()).forEach(m -> reactor.getMonsterStatus().getRight().applyEffect(null, m, true));
-                        player.getMap().spawnReactor(reactor);
+                        map.getMonsters().stream().filter(m -> m.getTeam() == player.getTeam()).forEach(m -> reactor.getMonsterStatus().getRight().applyEffect(null, m, true));
+                        map.spawnReactor(reactor);
+                        friendly.setSummonedGuardians(friendly.getSummonedGuardians() + 1);
                     }
                     map.broadcastMessage(MCarnivalPacket.getMonsterCarnivalSummon(action, value, player.getName()));
                 } else {
@@ -145,22 +156,10 @@ public final class MonsterCarnivalEvent extends PacketEvent {
         return (n >= 0 && n <= 9) ? (9300127 + n) : -1;
     }
 
-    public int getPrice(int action, int n) {
+    public int getPrice(MonsterCarnival carnival, int action, int n) {
         if (action == 0) {
-            switch (n) {
-                // @formatter:off
-                case 0: return 7; // Brown Teddy
-                case 1: return 7; // Blocotpus
-                case 2: return 8; // Ratz
-                case 3: return 8; // Chronos
-                case 4: return 9; // Toy Trojan
-                case 5: return 9; // Tick-Tock
-                case 6: return 10; // Robo
-                case 7: return 11; // King Block Golem
-                case 8: return 12; // Master Chronos
-                case 9: return 30; // Rombots
-                // @formatter:on
-            }
+            MCarnivalMonster monster = carnival.getMonsters().get(n);
+            return monster.getSpendCP();
         } else if (action == 1) {
             switch (n) {
                 // @formatter:off

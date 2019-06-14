@@ -1165,11 +1165,11 @@ public class MaplePacketCreator {
         return mplew.getPacket();
     }
 
-    public static byte[] getCoconutScore(int team1, int team2) {
+    public static byte[] getCoconutScore(int teamRed, int teamBlue) {
         final MaplePacketWriter mplew = new MaplePacketWriter(6);
         mplew.writeShort(SendOpcode.COCONUT_SCORE.getValue());
-        mplew.writeShort(team1);
-        mplew.writeShort(team2);
+        mplew.writeShort(teamRed);
+        mplew.writeShort(teamBlue);
         return mplew.getPacket();
     }
 
@@ -6106,10 +6106,10 @@ public class MaplePacketCreator {
         mplew.writeShort(SendOpcode.REACTOR_SPAWN.getValue());
         mplew.writeInt(reactor.getObjectId());
         mplew.writeInt(reactor.getId());
-        mplew.write(reactor.getState());
+        mplew.write(1);
         mplew.writeLocation(pos);
-        mplew.writeShort(0);
         mplew.write(0);
+        mplew.writeMapleString("");
         return mplew.getPacket();
     }
 

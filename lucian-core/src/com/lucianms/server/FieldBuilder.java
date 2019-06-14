@@ -1,6 +1,10 @@
 package com.lucianms.server;
 
 import com.lucianms.constants.GameConstants;
+import com.lucianms.features.carnival.MCarnivalGuardian;
+import com.lucianms.features.carnival.MCarnivalMonster;
+import com.lucianms.features.carnival.MCarnivalMonsterLocation;
+import com.lucianms.features.carnival.MonsterCarnival;
 import com.lucianms.features.coconut.CoconutEvent;
 import com.lucianms.features.coconut.CoconutObject;
 import com.lucianms.server.life.*;
@@ -175,6 +179,53 @@ public class FieldBuilder {
             }
             map.setCoconut(coconut);
         }
+        MapleData cpqData = mapData.getChildByPath("monsterCarnival");
+        if (cpqData != null) {
+            MonsterCarnival carnival = new MonsterCarnival();
+            carnival.setDeathCP(MapleDataTool.getIntConvert("deathCP", cpqData));
+            carnival.setEffectLose(MapleDataTool.getString("effectLose", cpqData, "quest/carnival/lose"));
+            carnival.setEffectWin(MapleDataTool.getString("effectWin", cpqData, "quest/carnival/win"));
+            carnival.setSoundLose(MapleDataTool.getString("soundLose", cpqData, "MobCarnival/Lose"));
+            carnival.setSoundWin(MapleDataTool.getString("soundWin", cpqData, "MobCarnival/Win"));
+            carnival.setGuardianGenMax(MapleDataTool.getIntConvert("guardianGenMax", cpqData, 8));
+            List<MapleData> children = cpqData.getChildByPath("guardianGenPos").getChildren();
+            ArrayList<MCarnivalGuardian> guardians = new ArrayList<>(children.size());
+            for (MapleData child : children) {
+                Point location = new Point(MapleDataTool.getIntConvert("x", child), MapleDataTool.getInt("y", child));
+                boolean flipped = MapleDataTool.getIntConvert("f", child) != 0;
+                MCarnivalGuardian guardian = new MCarnivalGuardian(location, flipped);
+                guardian.setTeam(MapleDataTool.getIntConvert("team", child, 0));
+                guardians.add(guardian);
+            }
+            carnival.setGuardians(guardians);
+            children = cpqData.getChildByPath("mob").getChildren();
+            ArrayList<MCarnivalMonster> monsters = new ArrayList<>(children.size());
+            for (MapleData child : children) {
+                monsters.add(new MCarnivalMonster(MapleDataTool.getIntConvert("id", child),
+                        MapleDataTool.getIntConvert("mobTime", child),
+                        MapleDataTool.getIntConvert("spendCP", child)));
+            }
+            carnival.setMonsters(monsters);
+            carnival.setMonsterGenMax(MapleDataTool.getIntConvert("mobGenMax", cpqData, 10));
+            children = cpqData.getChildByPath("mobGenPos").getChildren();
+            ArrayList<MCarnivalMonsterLocation> locations = new ArrayList<>(children.size());
+            for (MapleData child : children) {
+                MCarnivalMonsterLocation location = new MCarnivalMonsterLocation(MapleDataTool.getIntConvert("x", child), MapleDataTool.getInt("y", child));
+                location.setCy(MapleDataTool.getIntConvert("cy", child));
+                location.setFoothold(MapleDataTool.getIntConvert("fh", child));
+                location.setTeam(MapleDataTool.getIntConvert("team", child, 0));
+                locations.add(location);
+            }
+            carnival.setMonsterGenLocations(locations);
+            carnival.setMapDivded(MapleDataTool.getIntConvert("mapDivided", cpqData, 0) != 0);
+            carnival.setReactorBlue(MapleDataTool.getIntConvert("reactorBlue", cpqData));
+            carnival.setReactorRed(MapleDataTool.getIntConvert("reactorRed", cpqData));
+            carnival.setLoserFieldID(MapleDataTool.getIntConvert("rewardMapLose", cpqData));
+            carnival.setWinnerFieldID(MapleDataTool.getIntConvert("rewardMapWin", cpqData));
+            carnival.setTimeDefault(MapleDataTool.getIntConvert("timeDefault", cpqData));
+            carnival.setTimeFinish(MapleDataTool.getIntConvert("timeFinish", cpqData, 12));
+            map.setMonsterCarnival(carnival);
+        }
         map.setBackgroundTypes(back);
     }
 
@@ -271,7 +322,7 @@ public class FieldBuilder {
                         MapleMonster monster = ((MapleMonster) life);
                         if (!monsters) {
                             // always add spawn points
-                            map.addMonsterSpawnPoint(new SpawnPoint(map, monster, !monster.isMobile(), 0, -1));
+                            map.addMonsterSpawnPoint(new SpawnPoint(map, monster, !monster.isMobile(), map.getMonsterRate(), -1));
                         } else {
                             map.addMonsterSpawn((MapleMonster) life, mobTime, -1);
                         }

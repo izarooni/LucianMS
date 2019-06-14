@@ -20,8 +20,9 @@ function action(mode, type, selection) {
         cm.sendNext("If you have changed your mind about the battle, you may leave now");
     } else if (status == 2) {
         // waiting lobby
+        let party = cm.getParty();
         let lobby = Lobby.getLobby(player.getMapId());
-        lobby.setState(lobby.removeParty(cm.getParty()) ? LobbyState.Available : LobbyState.Waiting);
+        lobby.setState(lobby.removeParty(party) ? LobbyState.Available : LobbyState.Waiting);
         cm.dispose();
     }
 }

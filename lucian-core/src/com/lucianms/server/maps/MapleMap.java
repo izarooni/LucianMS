@@ -38,6 +38,8 @@ import com.lucianms.events.gm.MapleFitness;
 import com.lucianms.events.gm.MapleOla;
 import com.lucianms.events.gm.MapleOxQuiz;
 import com.lucianms.events.gm.MapleSnowball;
+import com.lucianms.features.carnival.MCarnivalMonsterLocation;
+import com.lucianms.features.carnival.MonsterCarnival;
 import com.lucianms.features.coconut.CoconutEvent;
 import com.lucianms.io.scripting.event.EventInstanceManager;
 import com.lucianms.io.scripting.map.FieldScriptExecutor;
@@ -63,6 +65,7 @@ import java.util.*;
 import java.util.Map.Entry;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class MapleMap implements PacketAnnouncer {
 
@@ -135,6 +138,7 @@ public class MapleMap implements PacketAnnouncer {
     private boolean muted;
     private MapleSnowball snowball0, snowball1;
     private CoconutEvent coconut;
+    private MonsterCarnival monsterCarnival;
     private GProperties<Point> autoKillPositions = new GProperties<>();
     private GProperties<Boolean> autoKillMobs = new GProperties<>();
     //endregion
@@ -931,17 +935,25 @@ public class MapleMap implements PacketAnnouncer {
     }
 
     public void addCarnivalMonster(MapleMonster monster, int team) {
-        if (spawnPoints.isEmpty()) {
-            LOGGER.warn("Cannot summon Monster Carnival mob due to empty spawn points");
+        if (monsterCarnival == null) {
+            LOGGER.warn("Cannot summon Monster Carnival due to invalid carnival map");
             return;
         }
-        SpawnPoint selected = spawnPoints.stream().filter(sp -> sp.getTeam() == team).findAny().orElse(null);
-        if (selected == null) {
-            LOGGER.warn("Cannot summon Monster Carnival mob because there are no matching spawn points");
+        Optional<MCarnivalMonsterLocation> found;
+        Stream<MCarnivalMonsterLocation> stream = monsterCarnival.getMonsterGenLocations().stream();
+        if (monsterCarnival.isMapDivded()) {
+            found = stream.filter(l -> l.getTeam() == team).findAny();
+        } else {
+            found = stream.findAny();
+        }
+        if (!found.isPresent()) {
+            LOGGER.warn("Cannot summon Monster Carnival mob because there are no gen locations");
             return;
         }
-        Point nPosition = selected.getPosition();
-        monster.setPosition(nPosition);
+        MCarnivalMonsterLocation location = found.get();
+        monster.setPosition(new Point(location.getX(), location.getY()));
+        monster.setCy(location.getCy());
+        monster.setFoothold(location.getFoothold());
         SpawnPoint spawnPoint = new SpawnPoint(this, monster, false, 1, team);
         addMonsterSpawnPoint(spawnPoint);
 
@@ -1418,6 +1430,9 @@ public class MapleMap implements PacketAnnouncer {
         }
         if (coconut != null) {
             player.setTeam(characters.size() % 2 == 0 ? 1 : 0);
+            player.announce(MaplePacketCreator.getCoconutScore(0, 0));
+        }
+        if (specialEquip()) {
             player.announce(MaplePacketCreator.getUpdateFieldSpecificData(player.getTeam()));
         }
         MaplePet[] pets = player.getPets();
@@ -1450,10 +1465,6 @@ public class MapleMap implements PacketAnnouncer {
         }
         if (hasForcedEquip()) {
             player.getClient().announce(MaplePacketCreator.getUpdateFieldSpecificData(-1));
-        }
-        if (specialEquip()) {
-            player.getClient().announce(MaplePacketCreator.getCoconutScore(0, 0));
-            player.getClient().announce(MaplePacketCreator.getUpdateFieldSpecificData(player.getTeam()));
         }
         if (player.getPlayerShop() != null) {
             addMapObject(player.getPlayerShop());
@@ -2097,7 +2108,7 @@ public class MapleMap implements PacketAnnouncer {
         }
     }
 
-    private boolean specialEquip() {// Maybe I shouldn't use fieldType :\
+    private boolean specialEquip() {
         return fieldType == 4 || fieldType == 19;
     }
 
@@ -2107,6 +2118,14 @@ public class MapleMap implements PacketAnnouncer {
 
     public void setCoconut(CoconutEvent nut) {
         this.coconut = nut;
+    }
+
+    public MonsterCarnival getMonsterCarnival() {
+        return monsterCarnival;
+    }
+
+    public void setMonsterCarnival(MonsterCarnival monsterCarnival) {
+        this.monsterCarnival = monsterCarnival;
     }
 
     public String getLastPlayerDiedInMap() {
