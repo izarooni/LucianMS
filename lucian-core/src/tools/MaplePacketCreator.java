@@ -5298,9 +5298,9 @@ public class MaplePacketCreator {
         return mplew.getPacket();
     }
 
-    public static byte[] showForcedEquip(int team) {
+    public static byte[] getUpdateFieldSpecificData(int team) {
         final MaplePacketWriter mplew = new MaplePacketWriter();
-        mplew.writeShort(SendOpcode.FORCED_MAP_EQUIP.getValue());
+        mplew.writeShort(SendOpcode.FIELD_SPECIFIC_DATA.getValue());
         if (team > -1) {
             mplew.write(team);   // 00 = red, 01 = blue
         }

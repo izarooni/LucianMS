@@ -21,7 +21,11 @@ function action(mode, type, selection) {
     } else if (status == 2) {
         // waiting lobby
         let lobby = Lobby.getLobby(player.getMapId());
-        lobby.setState(lobby.removeParty(cm.getParty()) ? LobbyState.Available : LobbyState.Waiting);
+        if (player.isDebug()) {
+            lobby.setState(LobbyState.Starting);
+        } else {
+            lobby.setState(lobby.removeParty(cm.getParty()) ? LobbyState.Available : LobbyState.Waiting);
+        }
         cm.dispose();
     }
 }

@@ -148,7 +148,7 @@ public enum SendOpcode {
     CLEAR_BACK_EFFECT                          (130),
     BLOCKED_MAP                                (131),
     BLOCKED_SERVER                             (132),
-    FORCED_MAP_EQUIP                           (133),
+    FIELD_SPECIFIC_DATA                        (133),
     MULTICHAT                                  (134),
     WHISPER                                    (135),
     SPOUSE_CHAT                                (136),

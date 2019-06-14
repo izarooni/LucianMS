@@ -1416,6 +1416,9 @@ public class MapleMap implements PacketAnnouncer {
                 eim.movePlayer(chr, this);
             }
         }
+        if (coconut != null) {
+
+        }
         MaplePet[] pets = chr.getPets();
         for (int i = 0; i < chr.getPets().length; i++) {
             if (pets[i] != null) {
@@ -1445,11 +1448,11 @@ public class MapleMap implements PacketAnnouncer {
             chr.getMap().getPortal("join00").setPortalStatus(false);
         }
         if (hasForcedEquip()) {
-            chr.getClient().announce(MaplePacketCreator.showForcedEquip(-1));
+            chr.getClient().announce(MaplePacketCreator.getUpdateFieldSpecificData(-1));
         }
         if (specialEquip()) {
             chr.getClient().announce(MaplePacketCreator.getCoconutScore(0, 0));
-            chr.getClient().announce(MaplePacketCreator.showForcedEquip(chr.getTeam()));
+            chr.getClient().announce(MaplePacketCreator.getUpdateFieldSpecificData(chr.getTeam()));
         }
         if (chr.getPlayerShop() != null) {
             addMapObject(chr.getPlayerShop());

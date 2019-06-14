@@ -4,13 +4,20 @@ import com.lucianms.client.MapleCharacter;
 import com.lucianms.client.MapleClient;
 import com.lucianms.client.Relationship;
 import com.lucianms.constants.GameConstants;
+import com.lucianms.features.carnival.MCarnivalGame;
+import com.lucianms.features.carnival.MCarnivalPacket;
 import com.lucianms.features.coconut.CoconutEvent;
+import com.lucianms.features.emergency.Emergency;
+import com.lucianms.features.emergency.EmergencyAttack;
+import com.lucianms.features.emergency.EmergencyDuel;
 import com.lucianms.io.scripting.Achievements;
 import com.lucianms.io.scripting.event.EventInstanceManager;
 import com.lucianms.nio.SendOpcode;
 import com.lucianms.nio.receive.MaplePacketReader;
 import com.lucianms.nio.send.MaplePacketWriter;
 import com.lucianms.scheduler.TaskExecutor;
+import com.lucianms.server.Server;
+import com.lucianms.server.life.SpawnPoint;
 import com.lucianms.server.maps.MapleMap;
 import com.lucianms.server.maps.MapleMiniDungeon;
 import com.lucianms.server.world.MapleParty;
@@ -18,9 +25,10 @@ import com.lucianms.server.world.MaplePartyCharacter;
 import com.lucianms.server.world.MapleWorld;
 import tools.MaplePacketCreator;
 import tools.Pair;
+import tools.Randomizer;
 
-import java.util.Calendar;
-import java.util.List;
+import java.util.*;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 /**
@@ -49,6 +57,8 @@ public class FieldInitEvent extends PacketEvent {
         final int mapID = map.getId();
 
         Achievements.testFor(player, -1);
+        DoEmergencyEvent();
+        ShowMCarnivalBoard();
         player.setRates();
         player.checkBerserk();
 
@@ -140,5 +150,63 @@ public class FieldInitEvent extends PacketEvent {
             }
         }
         return null;
+    }
+
+    private void DoEmergencyEvent() {
+        //region emergency attack
+        // empty map or contains only party members
+        MapleCharacter player = getClient().getPlayer();
+        MapleMap map = player.getMap();
+        Collection<MapleCharacter> characters = new ArrayList<>(map.getCharacters());
+        if (characters.size() == 1
+                || (player.getPartyID() > 0 && characters.stream().allMatch(p -> p.getPartyID() == player.getPartyID()))) {
+            /*
+            May only activate under the following conditions:
+            Contains monster spawn points,
+            Contains no boss-type monsters,
+            Map is a non-town type,
+            Is not explicity excluded via server configuration
+            must be a map that contains monster spawnpoints, contains no boss entity and is a hutning field
+             */
+            ArrayList<SpawnPoint> spawnPoints = map.getMonsterSpawnPoints();
+            if (!map.isTown()
+                    && spawnPoints.stream().noneMatch(sp -> sp.getMonster().isBoss() || player.getLevel() - sp.getMonster().getLevel() > 30)
+                    && !spawnPoints.isEmpty()
+                    && Arrays.binarySearch(Server.getConfig().getIntArray("EmergencyExcludes"), map.getId()) < 0) {
+                // 1/25 chance to trigger emergency
+                if ((player.isGM() && player.isDebug())
+                        || ((System.currentTimeMillis() > map.getNextEmergency())
+                        && player.getEventInstance() == null
+                        && Randomizer.nextInt(25) == 0
+                        && player.getGenericEvents().isEmpty())) {
+                    Emergency event = Randomizer.nextBoolean() && player.getLevel() >= 30 ? new EmergencyDuel(player) : new EmergencyAttack(player);
+                    TaskExecutor.createTask(new Runnable() {
+                        @Override
+                        public void run() {
+                            event.registerPlayer(player);
+                            if (!event.isCanceled()) {
+                                map.setNextEmergency(System.currentTimeMillis() + TimeUnit.MINUTES.toMillis(8));
+                            }
+                        }
+                    }, 1500);
+                } else {
+                    map.setNextEmergency(System.currentTimeMillis() + TimeUnit.SECONDS.toMillis(15));
+                }
+            }
+        }
+        characters.clear();
+        //endregion
+    }
+
+    private void ShowMCarnivalBoard() {
+        MapleCharacter player = getClient().getPlayer();
+        int mapId = player.getMapId();
+
+        MCarnivalGame carnivalGame = (MCarnivalGame) player.getGenericEvents().stream().filter(o -> o instanceof MCarnivalGame).findFirst().orElse(null);
+        if (carnivalGame != null && GameConstants.isCarnivalField(mapId)) {
+            player.announce(MaplePacketCreator.getClock((int) (carnivalGame.getTimeLeft() / 1000)));
+            player.announce(MCarnivalPacket.getMonsterCarnivalStart(player, carnivalGame));
+            player.announce(MaplePacketCreator.getUpdateFieldSpecificData(player.getTeam()));
+        }
     }
 }
