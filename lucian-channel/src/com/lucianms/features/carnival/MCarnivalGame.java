@@ -71,8 +71,10 @@ public class MCarnivalGame extends GenericEvent {
 
     @Override
     public boolean onPlayerDeath(Object sender, MapleCharacter player) {
-        MapleMap map = player.getClient().getChannelServer().getMap(lobby.getBattlefieldMapId());
-        map.broadcastMessage(MCarnivalPacket.getMonsterCarnivalPlayerDeath(player));
+        if (sender == null) {
+            MapleMap map = player.getClient().getChannelServer().getMap(lobby.getBattlefieldMapId());
+            map.broadcastMessage(MCarnivalPacket.getMonsterCarnivalPlayerDeath(player));
+        }
         return false;
     }
 
@@ -98,18 +100,18 @@ public class MCarnivalGame extends GenericEvent {
 
     public void dispose() {
         Collection<MapleCharacter> players;
-        if (teamRed != null) {
+        if (teamRed != null && teamRed.getParty() != null) {
             players = teamRed.getParty().getPlayers();
             players.forEach(this::removePlayer);
             players.clear();
-            teamRed = null;
         }
-        if (teamBlue != null) {
+        teamRed = null;
+        if (teamBlue != null && teamBlue.getParty() != null) {
             players = teamBlue.getParty().getPlayers();
             players.forEach(this::removePlayer);
             players.clear();
-            teamBlue = null;
         }
+        teamBlue = null;
         MapleMap map = lobby.getChannel().removeMap(lobby.getBattlefieldMapId());
         if (map != null) {
             map.killAllMonsters();
