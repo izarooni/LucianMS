@@ -23,6 +23,6 @@ public class MCarnivalMobHandler extends MonsterListener {
 
     @Override
     public MonsterDropEntry onDeathDrop(MapleMonster monster, MapleCharacter player) {
-        return new MonsterDropEntry(4310020, MapleMap.MAX_DROP_CHANCE / 100 * 35, 1, 1, (short) -1);
+        return new MonsterDropEntry(4310020, (int) ((MapleMap.MAX_DROP_CHANCE / 100) * 0.9f), 1, 1, (short) -1);
     }
 }
