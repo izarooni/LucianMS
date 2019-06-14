@@ -35,7 +35,10 @@ function action(mode, type, selection) {
             cm.dispose();
         } else {
             status = 0;
-            cm.sendNext("-------------------------#rThe Black Mage#k--------------------------------\r\n                                       Expedition\r\nRequirement:\r\n2 party members or more\r\nLevel 180+\r\n#r#z4011022##k#k");
+            cm.sendNext("-------------------------#rThe Black Mage#k--------------------------------\r\n"
+             + "\t\t\t\t\t\t\t\t\t  Expedition\r\n"
+             + `Requirement:\r\nMinimum of ${membersMimum} party member`
+             + "\r\nLevel 180+\r\n#r#z4011022##k#k");
         }
     } else if (status == 3) {
 

@@ -20,6 +20,10 @@ function action(mode, type, selection) {
         if (quest == null || !quest.isCompleted()) return NoQuest(quest);
         else if (quest.isCompleted() && cm.haveItem(PARENTS_BLESSING)) return QuestCompleted();
         else if (cm.haveItem(PRIESTS_PERMISSION)) return BeginWedding();
+        else {
+            cm.sendOk("Do you want to get married?\r\nPlease ask for Mom & Dad's permission");
+            return cm.dispose();
+        }
     } else {
         let em = ch.getEventScriptManager().getManager(ESM);
         if (em != null) {
