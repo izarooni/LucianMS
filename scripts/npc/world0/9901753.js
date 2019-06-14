@@ -1,59 +1,38 @@
-//Eye Scanner NPC Trader
-
-function start() {
-    status = -1;
-    action(1, 0, 0);
-}
+const ServerConstants = Java.type('com.lucianms.constants.ServerConstants');
+const Items = [1022999, 1022995, 1022996];
+/* izarooni */
+let status = 0;
 
 function action(mode, type, selection) {
-    if (mode == -1) {
+    if (mode < 1) {
         cm.dispose();
+        return;
     } else {
-        if (mode == 0 && status == 0) {
-            cm.dispose();
-            return;
+        status++;
+    }
+    if (status == 1) {
+        let content = "Here #h #. I am the dealer for #bEye Scanners#k!\r\n"
+            + "Are you interested in any of these? Eye Scanners increase the drop rate of Dragon Balls by 10%\r\n#b";
+        for (let i = 0; i < Items.length; i++) {
+            content += `\r\n#L${i}# Trade 6\t #i${ServerConstants.CURRENCY}# \tfor\t #i${Items[i]}##l`;
         }
-        if (mode == 1)
-            status++;
-        else
-            status--;
-        if (status == 0) {
-            cm.sendSimple ("Hello, there. I am the dealer of the Eye Scanners! \r\n\Are you interested in any of the eye Scanners? \r\nEye scanners increase the drop rate of Dragon Balls by 10%!#k \r\n\ #L0# Trade 6 #i4260002# for 1 #i1022999# \r\n #L1# Trade 6 #i4260002# for 1 #i1022995# \r\n\ #L2# Trade 6 #i4260002# for 1 #i1022996#"); 
-                  } else if (selection == 0) {
-                                  if(cm.haveItem(4260002, 6)) {
-                                  cm.gainItem(1022999, 1);
-                  cm.gainItem(4260002, -6);
-                                  cm.sendOk("Here's your Red Eye Scanner!");
-                  cm.dispose();
+        cm.sendSimple(content);
+    } else if (status == 2) {
+        cm.vars = { item: Items[selection] };
+        cm.sendNext(`Are you sure you want to buy the #b#z${cm.vars.item}##k for 6 #z${ServerConstants.CURRENCY}#?`);
+    } else if (status == 3) {
+        if (cm.haveItem(ServerConstants.CURRENCY, 6)) {
+            if (cm.canHold(cm.vars.item)) {
+                cm.gainItem(ServerConstants.CURRENCY, -6);
+                cm.gainItem(cm.vars.item, 1, true);
+                cm.sendOk("Pleasure doing business with you");
+                cm.dispose();
+            } else {
+                cm.sendOk("Please make sure you have enough room in your equip inventory");
+            }
+        } else {
+            cm.sendOk(`You do not have 6 #b#z${ServerConstants.CURRENCY}#`)
         }
-        else {
-        cm.sendOk("You don't have enough crystals! Come back when you have enough.");
         cm.dispose();
-        }
-                  } else if (selection == 1) {
-                                  if(cm.haveItem(4260002, 6)) {
-                                  cm.gainItem(1022995, 1);
-                  cm.gainItem(4260002, -6);
-                                  cm.sendOk("Here's your Green Eye Scanner!");
-                  cm.dispose();
-        }
-        else {
-        cm.sendOk("You don't have enough crystals! Come back when you have enough.");
-        cm.dispose();
-        }
-
-                  } else if (selection == 2) {
-                                  if(cm.haveItem(4260002, 6)) {
-                                  cm.gainItem(1022996, 1);
-                  cm.gainItem(4260002, -6);
-                                  cm.sendOk("Here's your Pink Eye Scanner!");
-                  cm.dispose();
-        }
-        else {
-        cm.sendOk("You don't have enough crystals! Come back when you have enough.");
-        cm.dispose();
-
+    }
 }
- }
- }
- }

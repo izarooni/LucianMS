@@ -195,7 +195,7 @@ public class ChangeMapEvent extends PacketEvent {
                     player.getOla().resetTimes();
                 }
                 if (portal == null || portal.getPosition().distanceSq(player.getPosition()) > 400000 || !portal.enterPortal(client)) {
-                    getLogger().info("portal {} in {} that leads to invalid area {}",
+                    getLogger().info("portal '{}' in '{}' that leads to invalid area: '{}'",
                             startwp, player.getMapId(), portal);
                     client.announce(MaplePacketCreator.enableActions());
                     return null;
