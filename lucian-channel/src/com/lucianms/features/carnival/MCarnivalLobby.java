@@ -119,7 +119,6 @@ public class MCarnivalLobby {
                 break;
             }
             case Waiting: {
-                party1.getPlayers().forEach(p -> p.changeMap(getMapId()));
                 waitingTask = TaskExecutor.cancelTask(waitingTask);
                 broadcastPacket(MaplePacketCreator.getClock(300));
                 waitingTask = TaskExecutor.createTask(() -> setState(State.Available), 60000 * 5); // 5 minutes
@@ -139,7 +138,6 @@ public class MCarnivalLobby {
 
     /**
      * @param party the party to add to the lobby
-     *
      * @return trye if both party slots in the lobby are filled, false otherwise
      */
     public boolean joiningParty(MapleParty party) {
@@ -148,14 +146,28 @@ public class MCarnivalLobby {
         } else {
             party2 = party;
         }
+        party.getPlayers().forEach(p -> p.changeMap(getMapId()));
         return party1 != null && party2 != null;
     }
 
+    /**
+     * Used in scripts to remove a party from the waiting room
+     *
+     * @param party the party to remove
+     * @return if both parties are non-existing
+     */
     public boolean removeParty(MapleParty party) {
         if (party1 != null && party1.getID() == party.getID()) {
+            // if the lobby creator leaves, both parties must leave
             party1 = null;
+            if (party2 != null) {
+                party.getPlayers().forEach(p -> p.changeMap(M_Office));
+            }
+            party2 = null;
         } else if (party2 != null && party2.getID() == party.getID()) {
             party2 = null;
+            // warp the party that leaves
+            party.getPlayers().forEach(p -> p.changeMap(M_Office));
         }
         return party1 == null && party2 == null;
     }
@@ -167,7 +179,6 @@ public class MCarnivalLobby {
      * </p>
      *
      * @param party the party attempt to enter the lobby
-     *
      * @return true if the party may enter, false otherwise
      */
     public boolean canEnter(MapleParty party) {
