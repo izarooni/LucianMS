@@ -4,7 +4,6 @@ import com.lucianms.client.MapleCharacter;
 import com.lucianms.client.status.MonsterStatus;
 import com.lucianms.features.GenericEvent;
 import com.lucianms.features.carnival.MCarnivalGame;
-import com.lucianms.features.carnival.MCarnivalMobHandler;
 import com.lucianms.features.carnival.MCarnivalPacket;
 import com.lucianms.features.carnival.MCarnivalTeam;
 import com.lucianms.nio.receive.MaplePacketReader;
@@ -79,7 +78,6 @@ public final class MonsterCarnivalEvent extends PacketEvent {
                             if (monster != null) {
                                 monster.setPosition(new Point(1, 1));
                                 monster.setTeam(friendly.getId());
-                                monster.getListeners().add(new MCarnivalMobHandler());
                                 map.addCarnivalMonster(monster, friendly.getId());
                                 friendly.setSummonedMonsters(friendly.getSummonedMonsters() + 1);
 
@@ -92,6 +90,7 @@ public final class MonsterCarnivalEvent extends PacketEvent {
                             }
                         } else {
                             player.announce(MCarnivalPacket.getMonsterCarnivalResponse((byte) 2));
+                            return null;
                         }
                     } else if (action == 1) { // Buffs
 

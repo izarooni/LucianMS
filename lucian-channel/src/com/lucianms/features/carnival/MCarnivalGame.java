@@ -2,9 +2,10 @@ package com.lucianms.features.carnival;
 
 import com.lucianms.client.MapleCharacter;
 import com.lucianms.client.MapleStat;
-import com.lucianms.events.ChangeMapEvent;
+import com.lucianms.events.*;
 import com.lucianms.features.GenericEvent;
 import com.lucianms.lang.annotation.PacketWorker;
+import com.lucianms.server.life.MapleMonster;
 import com.lucianms.server.maps.MapleMap;
 import com.lucianms.server.world.MaplePartyCharacter;
 
@@ -24,6 +25,7 @@ public class MCarnivalGame extends GenericEvent {
 
     public MCarnivalGame(MCarnivalLobby lobby) {
         this.lobby = lobby;
+        registerAnnotationPacketEvents(this);
     }
 
     @Override
@@ -87,6 +89,38 @@ public class MCarnivalGame extends GenericEvent {
             player.updateSingleStat(MapleStat.HP, 50);
         }
         event.setCanceled(true);
+    }
+
+    @PacketWorker
+    public void onCloseRangeAttack(PlayerDealDamageNearbyEvent event) {
+        onMonsterHit(event);
+    }
+
+    @PacketWorker
+    public void onFarRangeAttack(PlayerDealDamageRangedEvent event) {
+        onMonsterHit(event);
+    }
+
+    @PacketWorker
+    public void onMagicAttack(PlayerDealDamageMagicEvent event) {
+        onMonsterHit(event);
+    }
+
+    private void onMonsterHit(AbstractDealDamageEvent event) {
+        MapleCharacter player = event.getClient().getPlayer();
+        AbstractDealDamageEvent.AttackInfo attack = event.getAttackInfo();
+        if (attack == null) {
+            return;
+        }
+        MapleMap map = player.getMap();
+        for (Integer OID : attack.allDamage.keySet()) {
+            MapleMonster monster = map.getMonsterByOid(OID);
+            if (monster != null && monster.isAlive()) {
+                if (monster.getCP() > 0) {
+                    monster.getListeners().add(new MCarnivalMobHandler());
+                }
+            }
+        }
     }
 
     public void broadcastMessage(MCarnivalTeam team, String content, Object... args) {
