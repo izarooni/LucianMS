@@ -426,6 +426,7 @@ public class MapleStatEffect {
                     monsterStatus.put(MonsterStatus.SEAL_SKILL, 1);
                     break;
                 case Rogue.DISORDER:
+                case Page.THREATEN:
                     monsterStatus.put(MonsterStatus.WATK, ret.x);
                     monsterStatus.put(MonsterStatus.WDEF, ret.y);
                     break;
@@ -435,10 +436,6 @@ public class MapleStatEffect {
                 case NightLord.NINJA_AMBUSH:
                 case Shadower.NINJA_AMBUSH:
                     monsterStatus.put(MonsterStatus.NINJA_AMBUSH, ret.damage);
-                    break;
-                case Page.THREATEN:
-                    monsterStatus.put(MonsterStatus.WATK, ret.x);
-                    monsterStatus.put(MonsterStatus.WDEF, ret.y);
                     break;
                 case Crusader.COMA_AXE:
                 case Crusader.COMA_SWORD:
@@ -529,7 +526,8 @@ public class MapleStatEffect {
         }
         if (ret.isMorph()) {
             statups.put(MapleBuffStat.MORPH, ret.getMorph());
-        } else if (ret.ghost > 0 && !skill) {
+        }
+        if (ret.ghost > 0 && !skill) {
             statups.put(MapleBuffStat.GHOST, ret.ghost);
         }
         ret.monsterStatus = monsterStatus;
@@ -819,7 +817,7 @@ public class MapleStatEffect {
         }
 
         final long currentTime = System.currentTimeMillis();
-        Map<MapleBuffStat, BuffContainer> localStats = new HashMap<>();
+        Map<MapleBuffStat, BuffContainer> localStats = new TreeMap<>();
 
         for (Map.Entry<MapleBuffStat, Integer> e : statups.entrySet()) {
             localStats.put(e.getKey(), new BuffContainer(this, null, currentTime, e.getValue()));
@@ -1175,10 +1173,11 @@ public class MapleStatEffect {
     }
 
     private int getMorph(MapleCharacter chr) {
-        if (morphId % 10 == 0) {
-            return morphId + chr.getGender();
+        if (chr.getGender() == 0) {
+            return morphId;
+        } else {
+            return morphId + (100 * chr.getGender());
         }
-        return morphId + 100 * chr.getGender();
     }
 
     private SummonMovementType getSummonMovementType() {

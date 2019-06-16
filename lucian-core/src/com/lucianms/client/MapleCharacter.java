@@ -4057,11 +4057,11 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Di
                 }
             }
 
-            if (!getAllCooldowns().isEmpty()) {
+            if (!coolDowns.isEmpty()) {
                 deleteWhereCharacterId(con, "DELETE FROM cooldowns WHERE charid = ?");
                 try (PreparedStatement ps = con.prepareStatement("INSERT INTO cooldowns (charid, SkillID, StartTime, length) VALUES (?, ?, ?, ?)")) {
                     ps.setInt(1, getId());
-                    for (PlayerCoolDownValueHolder cooling : getAllCooldowns()) {
+                    for (MapleCoolDownValueHolder cooling : coolDowns.values()) {
                         ps.setInt(2, cooling.skillId);
                         ps.setLong(3, cooling.startTime);
                         ps.setLong(4, cooling.length);
@@ -4277,9 +4277,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Di
             if (storage != null) {
                 storage.saveToDB(con);
             }
-            con.commit();
             con.setAutoCommit(true);
-
             LOGGER.info("Saved Player({}) in {}s", getName(), ((System.currentTimeMillis() - beginTimestamp) / 1000d));
         } catch (SQLException | RuntimeException t) {
             LOGGER.error("Error while saving player '{}'", name, t);
