@@ -13,6 +13,6 @@ function enter(pi) {
 		pi.warp(106020000, 0);
 		return true;
 	}
-	pi.playerMessage(5, "A strange force is blocking you from enetering");
+	pi.playerMessage(5, "A strange force is blocking you from entering");
 	return false;
 }

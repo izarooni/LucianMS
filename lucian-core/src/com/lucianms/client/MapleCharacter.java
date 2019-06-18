@@ -1631,7 +1631,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Di
     }
 
     public void checkMonsterAggro(MapleMonster monster) {
-        if (!monster.isControllerHasAggro()) {
+        if (!monster.isControllerHasAggro() && !isHidden()) {
             if (monster.getController() == this) {
                 monster.setControllerHasAggro(true);
             } else {

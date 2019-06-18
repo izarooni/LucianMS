@@ -18,13 +18,13 @@ public class BHellMode extends BossPQ {
         super(channel, 270050100, bosses);
         setCashWinnings(20 * bosses.length);
         setDamageMultiplier(3.0f);
-        setHealthMultiplier(2.5f);
+        setHealthMultiplier(15f);
         setPoints(75);
     }
 
     @Override
     public int getMinimumLevel() {
-        return 150;
+        return 200;
     }
 
     @Override

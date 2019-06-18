@@ -213,10 +213,16 @@ public class MapleMonster extends AbstractLoadedMapleLife {
     }
 
     private byte getTagColor() {
+        if (overrideStats != null) {
+            return overrideStats.getTagColor();
+        }
         return stats.getTagColor();
     }
 
     private byte getTagBgColor() {
+        if (overrideStats != null) {
+            return overrideStats.getTagBgColor();
+        }
         return stats.getTagBgColor();
     }
 
@@ -541,9 +547,9 @@ public class MapleMonster extends AbstractLoadedMapleLife {
     }
 
     public byte[] makeBossHPBarPacket() {
-        int hp = (int) Math.min(getHp(), Integer.MAX_VALUE);
-        int maxHp = (int) Math.min(getMaxHp(), Integer.MAX_VALUE);
-        return MaplePacketCreator.showBossHP(getId(), hp, maxHp, getTagColor(), getTagBgColor());
+        long maxHp = getMaxHp() ;
+        int pp = (int) Math.ceil((100f / maxHp) * hp);
+        return MaplePacketCreator.showBossHP(getId(), Math.min(100, Math.max(0, pp)), 100, getTagColor(), getTagBgColor());
     }
 
     public boolean hasBossHPBar() {

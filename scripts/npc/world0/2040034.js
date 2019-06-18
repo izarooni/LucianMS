@@ -21,7 +21,7 @@ function action(mode, type, selection) {
 				cm.sendOk("You can participate in the party quest only if you are in a party.");
             } else if (!cm.isLeader()) {
                 cm.sendOk("Only the party leader may decide when to enter.");
-			} else if (!player.isGM() && cm.getParty().getMembers().size() < P_MinMemberCount ) {
+			} else if (!player.isGM() && cm.getParty().size() < P_MinMemberCount ) {
 				cm.sendOk("You cannot participate in the quest, because you do not have at least 3 party members.");
 			} else {
                 if (cm.getPartyMembers() < P_MinMemberCount) {

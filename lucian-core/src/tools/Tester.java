@@ -4,9 +4,7 @@ import com.lucianms.io.Config;
 import com.lucianms.io.defaults.Defaults;
 import com.lucianms.nio.receive.MaplePacketReader;
 import com.lucianms.scheduler.TaskExecutor;
-import com.lucianms.server.FieldBuilder;
 import com.lucianms.server.Server;
-import com.lucianms.server.maps.MapleMap;
 import com.zaxxer.hikari.HikariDataSource;
 import org.json.JSONObject;
 import org.json.JSONTokener;
@@ -32,12 +30,10 @@ public class Tester {
     private static final Logger LOGGER = LoggerFactory.getLogger(Tester.class);
     private static Config config = null;
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException {
         initConfig();
         TaskExecutor.initPoolSize(1);
         Server.createServer();
-        MapleMap build = new FieldBuilder(0, 0, 980000101).loadAll().build();
-        System.out.println(build.getMonsterCarnival());
     }
 
     private static void initConfig() {

@@ -19,7 +19,7 @@ public class BEasyMode extends BossPQ {
         setCashWinnings(5 * bosses.length);
         setPoints(15);
         setDamageMultiplier(0.7f);
-        setHealthMultiplier(0.7f);
+        setHealthMultiplier(0.8f);
     }
 
     @Override
