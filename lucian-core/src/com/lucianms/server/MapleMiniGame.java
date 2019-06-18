@@ -36,6 +36,7 @@ import java.util.List;
  */
 public class MapleMiniGame extends AbstractMapleMapObject {
 
+    private final byte mode;
     private MapleCharacter owner;
     private MapleCharacter visitor;
     private String GameType = null;
@@ -47,15 +48,29 @@ public class MapleMiniGame extends AbstractMapleMapObject {
     private String password;
     private int loser = 1;
     private int piecetype;
-    private int firstslot = 0;
-    private int visitorpoints = 0;
-    private int ownerpoints = 0;
-    private int matchestowin = 0;
+    private int firstslot;
+    private int visitorpoints;
+    private int ownerpoints;
+    private int matchestowin;
+    private boolean started;
 
-    public MapleMiniGame(MapleCharacter owner, String description, String password) {
+    public MapleMiniGame(byte mode, MapleCharacter owner, String description, String password) {
+        this.mode = mode;
         this.owner = owner;
         this.description = description;
         this.password = password;
+    }
+
+    public byte getMode() {
+        return mode;
+    }
+
+    public boolean isStarted() {
+        return started;
+    }
+
+    public void setStarted(boolean started) {
+        this.started = started;
     }
 
     public boolean hasFreeSlot() {
@@ -70,23 +85,24 @@ public class MapleMiniGame extends AbstractMapleMapObject {
         visitor = challenger;
         if (GameType.equals("omok")) {
             this.getOwner().getClient().announce(MaplePacketCreator.getMiniGameNewVisitor(challenger, 1));
-            this.getOwner().getMap().broadcastMessage(MaplePacketCreator.addOmokBox(owner, 2, 0));
+            this.getOwner().getMap().broadcastMessage(MaplePacketCreator.addOmokBox(owner, this));
         }
         if (GameType.equals("matchcard")) {
             this.getOwner().getClient().announce(MaplePacketCreator.getMatchCardNewVisitor(challenger, 1));
-            this.getOwner().getMap().broadcastMessage(MaplePacketCreator.addMatchCardBox(owner, 2, 0));
+            this.getOwner().getMap().broadcastMessage(MaplePacketCreator.addMatchCardBox(owner, this));
         }
     }
 
     public void removeVisitor(MapleCharacter challenger) {
         if (visitor == challenger) {
+            started = false;
             visitor = null;
             this.getOwner().getClient().announce(MaplePacketCreator.getMiniGameRemoveVisitor());
             if (GameType.equals("omok")) {
-                this.getOwner().getMap().broadcastMessage(MaplePacketCreator.addOmokBox(owner, 1, 0));
+                this.getOwner().getMap().broadcastMessage(MaplePacketCreator.addOmokBox(owner, this));
             }
             if (GameType.equals("matchcard")) {
-                this.getOwner().getMap().broadcastMessage(MaplePacketCreator.addMatchCardBox(owner, 1, 0));
+                this.getOwner().getMap().broadcastMessage(MaplePacketCreator.addMatchCardBox(owner, this));
             }
         }
     }
@@ -110,6 +126,7 @@ public class MapleMiniGame extends AbstractMapleMapObject {
     }
 
     public void setOwnerPoints() {
+        started = false;
         ownerpoints++;
         if (ownerpoints + visitorpoints == matchestowin) {
             if (ownerpoints == visitorpoints) {
@@ -127,6 +144,7 @@ public class MapleMiniGame extends AbstractMapleMapObject {
     public void setVisitorPoints() {
         visitorpoints++;
         if (ownerpoints + visitorpoints == matchestowin) {
+            started = false;
             if (ownerpoints > visitorpoints) {
                 this.broadcast(MaplePacketCreator.getMiniGameOwnerWin(this));
             } else if (visitorpoints > ownerpoints) {
@@ -134,6 +152,7 @@ public class MapleMiniGame extends AbstractMapleMapObject {
             } else {
                 this.broadcast(MaplePacketCreator.getMiniGameTie(this));
             }
+            getOwner().getMap().broadcastMessage(MaplePacketCreator.addMatchCardBox(getOwner(), this));
             ownerpoints = 0;
             visitorpoints = 0;
         }
@@ -222,12 +241,12 @@ public class MapleMiniGame extends AbstractMapleMapObject {
         broadcast(MaplePacketCreator.getPlayerShopChat(c.getPlayer(), chat, isOwner(c.getPlayer())));
     }
 
-    public void sendOmok(MapleClient c, int type) {
-        c.announce(MaplePacketCreator.getMiniGame(c, this, isOwner(c.getPlayer()), type));
+    public void sendOmok(MapleClient c) {
+        c.announce(MaplePacketCreator.getMiniGame(c, this, isOwner(c.getPlayer())));
     }
 
-    public void sendMatchCard(MapleClient c, int type) {
-        c.announce(MaplePacketCreator.getMatchCard(c, this, isOwner(c.getPlayer()), type));
+    public void sendMatchCard(MapleClient c) {
+        c.announce(MaplePacketCreator.getMatchCard(c, this, isOwner(c.getPlayer()), getPieceType()));
     }
 
     public MapleCharacter getOwner() {

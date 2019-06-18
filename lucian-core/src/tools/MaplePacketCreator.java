@@ -176,15 +176,23 @@ public class MaplePacketCreator {
         mplew.write(0);
     }
 
-    private static void addAnnounceBox(final MaplePacketWriter mplew, MapleMiniGame game, int gametype, int type, int ammount, int joinable) {
-        mplew.write(gametype);
+    /**
+     * @param mplew      packet buffer
+     * @param game       game instance
+     * @param gameMode   1: match cards, 2: omok
+     * @param gameType   game set type (e.g. matchcards size, omok piece type)
+     * @param userCount  player count in the minigame box
+     * @param inProgress if the game is in progress
+     */
+    private static void addAnnounceBox(final MaplePacketWriter mplew, MapleMiniGame game, int gameMode, int gameType, int userCount, boolean inProgress) {
+        mplew.write(gameMode);
         mplew.writeInt(game.getObjectId()); // gameid/shopid
         mplew.writeMapleString(game.getDescription()); // desc
-        mplew.write(0);
-        mplew.write(type);
-        mplew.write(ammount);
+        mplew.writeBoolean(game.getPassword() != null);
+        mplew.write(gameType);
+        mplew.write(userCount);
         mplew.write(2);
-        mplew.write(joinable);
+        mplew.writeBoolean(inProgress);
     }
 
     private static void addAreaInfo(final MaplePacketWriter mplew, MapleCharacter chr) {
@@ -586,11 +594,11 @@ public class MaplePacketCreator {
         w.writeInt(ring.getItemId());
     }
 
-    public static byte[] addMatchCardBox(MapleCharacter c, int ammount, int type) {
+    public static byte[] addMatchCardBox(MapleCharacter c, MapleMiniGame game) {
         final MaplePacketWriter mplew = new MaplePacketWriter();
         mplew.writeShort(SendOpcode.UPDATE_CHAR_BOX.getValue());
         mplew.writeInt(c.getId());
-        addAnnounceBox(mplew, c.getMiniGame(), 2, 0, ammount, type);
+        addAnnounceBox(mplew, c.getMiniGame(), game.getMode(), game.getPieceType(), game.hasFreeSlot() ? 1 : 2, game.isStarted());
         return mplew.getPacket();
     }
 
@@ -633,11 +641,11 @@ public class MaplePacketCreator {
         mplew.writeShort(0);
     }
 
-    public static byte[] addOmokBox(MapleCharacter c, int ammount, int type) {
+    public static byte[] addOmokBox(MapleCharacter c, MapleMiniGame game) {
         final MaplePacketWriter mplew = new MaplePacketWriter();
         mplew.writeShort(SendOpcode.UPDATE_CHAR_BOX.getValue());
         mplew.writeInt(c.getId());
-        addAnnounceBox(mplew, c.getMiniGame(), 1, 0, ammount, type);
+        addAnnounceBox(mplew, c.getMiniGame(), game.getMode(), game.getPieceType(), game.hasFreeSlot() ? 1 : 2, game.isStarted());
         return mplew.getPacket();
     }
 
@@ -2205,7 +2213,7 @@ public class MaplePacketCreator {
         return getMiniGameResult(game, 0, 1, 0, 2, 0, false);
     }
 
-    public static byte[] getMiniGame(MapleClient c, MapleMiniGame minigame, boolean owner, int piece) {
+    public static byte[] getMiniGame(MapleClient c, MapleMiniGame game, boolean owner) {
         final MaplePacketWriter mplew = new MaplePacketWriter();
         mplew.writeShort(SendOpcode.PLAYER_INTERACTION.getValue());
         mplew.write(CommunityActions.ROOM.value);
@@ -2213,10 +2221,10 @@ public class MaplePacketCreator {
         mplew.write(0);
         mplew.write(owner ? 0 : 1);
         mplew.write(0);
-        addCharLook(mplew, minigame.getOwner(), false);
-        mplew.writeMapleString(minigame.getOwner().getName());
-        if (minigame.getVisitor() != null) {
-            MapleCharacter visitor = minigame.getVisitor();
+        addCharLook(mplew, game.getOwner(), false);
+        mplew.writeMapleString(game.getOwner().getName());
+        if (game.getVisitor() != null) {
+            MapleCharacter visitor = game.getVisitor();
             mplew.write(1);
             addCharLook(mplew, visitor, false);
             mplew.writeMapleString(visitor.getName());
@@ -2224,12 +2232,12 @@ public class MaplePacketCreator {
         mplew.write(0xFF);
         mplew.write(0);
         mplew.writeInt(1);
-        mplew.writeInt(minigame.getOwner().getMiniGamePoints("wins", true));
-        mplew.writeInt(minigame.getOwner().getMiniGamePoints("ties", true));
-        mplew.writeInt(minigame.getOwner().getMiniGamePoints("losses", true));
+        mplew.writeInt(game.getOwner().getMiniGamePoints("wins", true));
+        mplew.writeInt(game.getOwner().getMiniGamePoints("ties", true));
+        mplew.writeInt(game.getOwner().getMiniGamePoints("losses", true));
         mplew.writeInt(2000);
-        if (minigame.getVisitor() != null) {
-            MapleCharacter visitor = minigame.getVisitor();
+        if (game.getVisitor() != null) {
+            MapleCharacter visitor = game.getVisitor();
             mplew.write(1);
             mplew.writeInt(1);
             mplew.writeInt(visitor.getMiniGamePoints("wins", true));
@@ -2238,8 +2246,8 @@ public class MaplePacketCreator {
             mplew.writeInt(2000);
         }
         mplew.write(0xFF);
-        mplew.writeMapleString(minigame.getDescription());
-        mplew.write(piece);
+        mplew.writeMapleString(game.getDescription());
+        mplew.write(game.getPieceType());
         mplew.write(0);
         return mplew.getPacket();
     }
@@ -6041,14 +6049,13 @@ public class MaplePacketCreator {
             } else {
                 addAnnounceBox(mplew, player.getPlayerShop(), 1);
             }
-        } else if (player.getMiniGame() != null && player.getMiniGame().isOwner(player)) {
-            if (player.getMiniGame().hasFreeSlot()) {
-                addAnnounceBox(mplew, player.getMiniGame(), 1, 0, 1, 0);
-            } else {
-                addAnnounceBox(mplew, player.getMiniGame(), 1, 0, 2, 1);
-            }
         } else {
-            mplew.write(0);
+            MapleMiniGame game = player.getMiniGame();
+            if (game != null && game.isOwner(player)) {
+                addAnnounceBox(mplew, game, game.getMode(), game.getPieceType(), game.hasFreeSlot() ? 1 : 2, game.isStarted());
+            } else {
+                mplew.write(0);
+            }
         }
         if (player.getChalkboard() != null) {
             mplew.write(1);
