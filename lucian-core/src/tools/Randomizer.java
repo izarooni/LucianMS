@@ -57,10 +57,24 @@ public class Randomizer {
     }
 
     /**
+     * Delegate method for {@link Random#nextDouble()}
+     */
+    public static double nextDouble(double d) { // haha double D
+        return rand.nextDouble() * d;
+    }
+
+    /**
      * Delegate method for {@link Random#nextFloat()}
      */
     public static float nextFloat() {
         return rand.nextFloat();
+    }
+
+    /**
+     * Delegate method for {@link Random#nextFloat()}
+     */
+    public static float nextFloat(float f) {
+        return rand.nextFloat() * f;
     }
 
     /**

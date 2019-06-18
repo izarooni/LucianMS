@@ -14,6 +14,7 @@ import com.lucianms.server.life.MapleMonsterStats;
 import com.lucianms.server.life.MonsterListener;
 import com.lucianms.server.maps.MapleMap;
 import tools.MaplePacketCreator;
+import tools.Randomizer;
 import tools.StringUtil;
 
 import java.awt.*;
@@ -71,7 +72,8 @@ public abstract class BossPQ extends GenericEvent {
         if (player.addGenericEvent(this)) {
             player.saveLocation("OTHER");
             player.changeMap(getMapInstance(mapId));
-            totalPossibleDamage += player.calculateMaxBaseDamage(player.getTotalWatk());
+            // 15 is the maximum possible number of attacks for a skill so i'm using 20 to generalize a maximum TOTAL damage
+            totalPossibleDamage += player.calculateMaxBaseDamage(player.getTotalWatk() + player.getTotalMagic()) * 20;
         }
     }
 
@@ -99,13 +101,9 @@ public abstract class BossPQ extends GenericEvent {
         MapleMap map = getMapInstance(mapId);
         if (map != null) {
             ArrayList<MapleCharacter> chars = new ArrayList<>(map.getCharacters());
-            try {
-                for (MapleCharacter players : chars) {
-                    giveRewards(players);
-                    unregisterPlayer(players);
-                }
-            } finally {
-                chars.clear();
+            for (MapleCharacter players : chars) {
+                giveRewards(players);
+                unregisterPlayer(players);
             }
         }
     }
@@ -129,9 +127,8 @@ public abstract class BossPQ extends GenericEvent {
 
                     if (monster != null) {
                         MapleMonsterStats overrides = new MapleMonsterStats();
-                        // 15 is the maximum possible number of attacks in a skill
-                        long newHp = (long) (totalPossibleDamage * (15 * getHealthMultiplier()));
-                        newHp += newHp * (Math.random() * (5f + round));
+                        // bracket galore
+                        long newHp = (long) ((totalPossibleDamage * getHealthMultiplier()) * (1 + Randomizer.nextDouble(5) * round));
                         if (mapId == 803 && monsterId == 9895253) { // hell mode and last boss (black mage)
                             newHp -= (newHp * 0.25);
                         }

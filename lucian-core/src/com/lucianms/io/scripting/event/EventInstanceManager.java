@@ -164,6 +164,7 @@ public class EventInstanceManager {
         invokeFunction("dispose", this);
 
         players.clear();
+        eventManager.removeInstance(getName());
 
         if (monsters != null) monsters.clear();
         monsters = null;
