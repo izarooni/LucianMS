@@ -137,6 +137,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Di
     private int rebirthPoints;
     private int fishingPoints;
     private int jumpQuestPoints;
+    private int partyQuestPoints;
     //endregion
 
     private int msiCreations;
@@ -526,6 +527,8 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Di
                         ret.occupation = new Occupation(Occupation.Type.fromValue(oOrdinal));
                         ret.occupation.setLevel(rs.getByte("occupation_level"));
                     }
+                    ret.msiCreations = rs.getInt("msi_creations");
+                    ret.partyQuestPoints = rs.getInt("party_quest_points");
                 }
                 if (ret.guildid > 0) {
                     ret.mgc = new MapleGuildCharacter(ret);
@@ -3939,7 +3942,8 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Di
                     "    jumpquestpoints      = ?,\n" +
                     "    chattype             = ?,\n" +
                     "    `name`               = ?,\n" +
-                    "    msi_creations        = ?\n" +
+                    "    msi_creations        = ?,\n" +
+                    "    party_quest_points    = ?\n" +
                     "WHERE id = ?")) {
                 ps.setInt(1, level);
                 ps.setInt(2, fame);
@@ -4045,7 +4049,8 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Di
                 ps.setInt(57, chatType.ordinal());
                 ps.setString(58, name);
                 ps.setInt(59, msiCreations);
-                ps.setInt(60, id);
+                ps.setInt(60, partyQuestPoints);
+                ps.setInt(61, id);
                 int updateRows = ps.executeUpdate();
                 if (updateRows < 1) {
                     throw new RuntimeException("Character not in database (" + id + ")");
@@ -5056,6 +5061,14 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Di
         this.jumpQuestPoints = jumpQuestPoints;
     }
 
+    public int getPartyQuestPoints() {
+        return partyQuestPoints;
+    }
+
+    public void setPartyQuestPoints(int partyQuestPoints) {
+        this.partyQuestPoints = partyQuestPoints;
+    }
+
     public Task getFishingTask() {
         return fishingTask;
     }
@@ -5129,6 +5142,9 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Di
 
     public boolean addPoints(String pointType, int amount) {
         switch (pointType) {
+            case "pq": // party quest points
+                setPartyQuestPoints(getPartyQuestPoints() + amount);
+                return true;
             case "jq": // jump quest points
                 setJumpQuestPoints(getJumpQuestPoints() + amount);
                 return true;

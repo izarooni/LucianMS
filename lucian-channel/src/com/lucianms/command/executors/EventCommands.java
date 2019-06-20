@@ -66,7 +66,7 @@ public class EventCommands extends CommandExecutor {
         addCommand("fstat", this::CommandForceStat, "Enable temporary stats for yourself");
         addCommand("rules", this::CommandEventRules, "Automate event rule messages for a specified event");
         addCommand("fstatm", this::CommandForceStatMap, "Enable temporary stats for all players in the map");
-        addCommand("event", this::CommandCoconutEvent, "Begin the coconut event (if in the proper map)");
+        addCommand("coconut", this::CommandCoconutEvent, "Begin the coconut event (if in the proper map)");
 
         Map<String, Pair<CommandEvent, String>> commands = getCommands();
         HELP_LIST = new ArrayList<>(commands.size());
