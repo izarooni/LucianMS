@@ -69,10 +69,10 @@ public class MapleLifeFactory {
             stats = new MapleMonsterStats();
             stats.setHp(MapleDataTool.getLongConvert("maxHP", monsterInfoData));
             stats.setFriendly(MapleDataTool.getIntConvert("damagedByMob", monsterInfoData, 0) == 1);
-            stats.setPADamage(MapleDataTool.getIntConvert("PADamage", monsterInfoData));
-            stats.setPDDamage(MapleDataTool.getIntConvert("PDDamage", monsterInfoData));
-            stats.setMADamage(MapleDataTool.getIntConvert("MADamage", monsterInfoData));
-            stats.setMDDamage(MapleDataTool.getIntConvert("MDDamage", monsterInfoData));
+            stats.setPADamage(MapleDataTool.getIntConvert("PADamage", monsterInfoData, 0));
+            stats.setPDDamage(MapleDataTool.getIntConvert("PDDamage", monsterInfoData, 0));
+            stats.setMADamage(MapleDataTool.getIntConvert("MADamage", monsterInfoData, 0));
+            stats.setMDDamage(MapleDataTool.getIntConvert("MDDamage", monsterInfoData, 0));
             stats.setMp(MapleDataTool.getIntConvert("maxMP", monsterInfoData, 0));
             stats.setExp(MapleDataTool.getIntConvert("exp", monsterInfoData, 0));
             stats.setLevel(MapleDataTool.getIntConvert("level", monsterInfoData));

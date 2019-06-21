@@ -27,7 +27,7 @@ import java.util.HashMap;
  */
 public abstract class BossPQ extends GenericEvent {
 
-    private static final int BossHPTempalteID = 4300013;
+    private static final int MobGaugeTemplateID = 9300184;
 
     private final int channelID;
     private final int mapId;
@@ -143,7 +143,7 @@ public abstract class BossPQ extends GenericEvent {
 
                         monster.setOverrideStats(overrides);
                         monster.setBoss(true);
-                        monster.setMimicTemplateID(BossHPTempalteID);
+                        monster.setMimicTemplateID(MobGaugeTemplateID);
                         final long spawnTimestamp = System.currentTimeMillis();
                         monster.getListeners().add(new MonsterListener() {
                             @Override

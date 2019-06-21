@@ -10,7 +10,7 @@ import java.awt.*;
  */
 public class BNormalMode extends BossPQ {
 
-    public static final int[] bosses = new int[]{8510000, 6090001, 6220000, 6300005, 8500001, 9300012, 9300028, 9300151, 9300206};
+    public static final int[] bosses = new int[]{6130101, 6220000, 6400005, 6300005, 7120100, 7220000, 7220001, 7220002, 8180000, 8180001};
 
     private static final Point mSpawnPoint = new Point(0, -42);
 

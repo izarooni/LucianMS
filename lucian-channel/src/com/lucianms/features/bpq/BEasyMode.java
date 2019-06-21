@@ -10,7 +10,7 @@ import java.awt.*;
  */
 public class BEasyMode extends BossPQ {
 
-    public static final int[] bosses = new int[]{4300013, 5220002, 5220000, 5220004, 9300039, 9300211, 9300212, 9300204};
+    public static final int[] bosses = new int[]{2220000, 2400324, 3220000, 3300008, 4220000, 4300013, 5220002, 5220003};
 
     private static final Point mSpawnPoint = new Point(0, -42);
 

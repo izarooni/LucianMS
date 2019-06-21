@@ -10,7 +10,12 @@ import java.awt.*;
  */
 public class BHellMode extends BossPQ {
 
-    public static final int[] bosses = new int[]{8170000, 8220012, 8820001, 8820002, 9400518, 8820004, 8820005, 8820006, 8830000, 8830001, 8830002, 9001014, 9895253};
+    public static final int[] bosses = new int[]{
+            8641010, 9303206, 8840000, 8850111,
+            8910000, 8910001, // Chaos Von Bon
+            8920000, 8920001, 8920002, 8920003, // Chaos Crimson Queen
+            9300823, 9300854, 9300855, 9303153, 9410560
+    };
 
     private static final Point mSpawnPoint = new Point(0, -42);
 

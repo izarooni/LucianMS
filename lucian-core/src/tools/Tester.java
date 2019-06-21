@@ -34,6 +34,7 @@ public class Tester {
         initConfig();
         TaskExecutor.initPoolSize(1);
         Server.createServer();
+        System.out.println(HexTool.toString(MaplePacketCreator.showBossHP(9300184, 100, 100, (byte) 1, (byte) 5)));
     }
 
     private static void initConfig() {
