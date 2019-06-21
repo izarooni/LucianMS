@@ -5107,12 +5107,12 @@ public class MaplePacketCreator {
         return mplew.getPacket();
     }
 
-    public static byte[] showBossHP(int oid, int currHP, int maxHP, byte tagColor, byte tagBgColor) {
+    public static byte[] showBossHP(int templateID, int HP, int maxHP, byte tagColor, byte tagBgColor) {
         final MaplePacketWriter mplew = new MaplePacketWriter();
         mplew.writeShort(SendOpcode.FIELD_EFFECT.getValue());
         mplew.write(5);
-        mplew.writeInt(oid);
-        mplew.writeInt(currHP);
+        mplew.writeInt(templateID);
+        mplew.writeInt(HP);
         mplew.writeInt(maxHP);
         mplew.write(tagColor);
         mplew.write(tagBgColor);

@@ -27,6 +27,8 @@ import java.util.HashMap;
  */
 public abstract class BossPQ extends GenericEvent {
 
+    private static final int BossHPTempalteID = 4300013;
+
     private final int channelID;
     private final int mapId;
     private final int[] bosses;
@@ -141,6 +143,7 @@ public abstract class BossPQ extends GenericEvent {
 
                         monster.setOverrideStats(overrides);
                         monster.setBoss(true);
+                        monster.setMimicTemplateID(BossHPTempalteID);
                         final long spawnTimestamp = System.currentTimeMillis();
                         monster.getListeners().add(new MonsterListener() {
                             @Override
@@ -154,12 +157,12 @@ public abstract class BossPQ extends GenericEvent {
                                     time = StringUtil.getTimeElapse(elapse);
                                 }
                                 broadcastMessage(String.format("Round %d completed! It took you %s to kill that boss", (round + 1), time));
-
                                 round++;
                                 nextRound();
                             }
                         });
                         mapInstance.spawnMonsterOnGroudBelow(monster, getMonsterSpawnPoint());
+                        mapInstance.sendPacket(monster.makeBossHPBarPacket());
                     }
                 }
             }, 8000);

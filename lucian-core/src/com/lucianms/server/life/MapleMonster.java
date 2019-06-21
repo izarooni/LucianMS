@@ -57,6 +57,7 @@ public class MapleMonster extends AbstractLoadedMapleLife {
     private long hp;
     private int mp;
     private int team;
+    private int mimicTemplateID;
     private int venomMultiplier;
     private boolean controllerHasAggro;
     private boolean controllerKnowsAboutAggro;
@@ -179,6 +180,14 @@ public class MapleMonster extends AbstractLoadedMapleLife {
 
     public void setTeam(int team) {
         this.team = team;
+    }
+
+    public int getMimicTemplateID() {
+        return mimicTemplateID;
+    }
+
+    public void setMimicTemplateID(int mimicTemplateID) {
+        this.mimicTemplateID = mimicTemplateID;
     }
 
     public int getVenomMulti() {
@@ -549,7 +558,8 @@ public class MapleMonster extends AbstractLoadedMapleLife {
     public byte[] makeBossHPBarPacket() {
         long maxHp = getMaxHp() ;
         int pp = (int) Math.ceil((100f / maxHp) * hp);
-        return MaplePacketCreator.showBossHP(getId(), Math.min(100, Math.max(0, pp)), 100, getTagColor(), getTagBgColor());
+        int templateID = getMimicTemplateID() > 0 ? getMimicTemplateID() : getId();
+        return MaplePacketCreator.showBossHP(templateID, Math.min(100, Math.max(0, pp)), 100, getTagColor(), getTagBgColor());
     }
 
     public boolean hasBossHPBar() {
