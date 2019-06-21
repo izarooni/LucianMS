@@ -43,14 +43,17 @@ function action(mode, type, selection) {
         cm.sendNext(dialog.intro);
         dialog.introSpoke = true;
     } else if (status == 1) {
-        if (broken != null) {
+        let isShopEmpty = Object.keys(items).length == 1;
+        if (isShopEmpty) {
+            cm.sendOk("Someone stole my shop items, I have nothing to sell!\r\nCome again another time when I have re-stocked my inventory.");
+            return cm.dispose();
+        } else if (broken != null) {
             if (player.isGM()) {
-                cm.sendOk("Hey #h #, I see you're a GM. An error occurred while parsing the " + display + " trader data. Please let a Developer know ASAP!\r\n#r" + broken);
+                cm.sendOk("Hey #h #, I see you're a GM. An error occurred while parsing the " + display + " trader data. Please let a developer know ASAP!\r\n#r" + broken);
             } else {
-                cm.sendOk("Someone stole my shop items, I have nothing to sell!\r\nPlease report me to an Administrator ASAP so I can get my shop open once again");
+                cm.sendOk("Oh no, my shop is a mess! Please report to an Administrator to help me get a shop setup again");
             }
-            cm.dispose();
-            return;
+            return cm.dispose();    
         }
         let text = dialog.first;
         text = text.replace(/{PointsQuantity}/g, getPoints(pointsType));
@@ -70,13 +73,14 @@ function action(mode, type, selection) {
             let subName = items.get(selection, false);
             let text = dialog.second;
             for (let i = 0; i < this.sub.length; i++) {
+                let itemID = this.sub[i][0];
                 if (subName == "Chairs") {
                     // a lot of custom chairs don't have names, thus viewing the item in shop via name is impossible.
                     // instead, showing the image of the item (although small) is much better than showing nothing
-                    text += "#L" + i + "##v" + this.sub[i][0] + "##l";
+                    text += `#L${i}# #v${itemID}#`;
                     if (i % 5 == 0 && i > 0) text += "\r\n";
                 } else {
-                    text += "\r\n#L" + i + "##z" + this.sub[i][0] + "##l";
+                    text += `\r\n#L${i}# #v${itemID}# #z${itemID}##l`;
                 }
             }
             cm.sendSimple(text);
@@ -124,6 +128,7 @@ function getPoints(s) {
     }
     switch(s) {
         default: return -1;
+        case "PQ points": return player.getPartyQuestPoints();
         case "donor points": return client.getDonationPoints();
         case "fishing points": return player.getFishingPoints();
         case "event points": return player.getEventPoints();
@@ -138,6 +143,9 @@ function gainPoints(s, amt) {
     }
     switch (s) {
         default: return false;
+        case "PQ points":
+            player.addPoints("pq", amt);
+            return true;
         case "event points":
             player.addPoints("ep", amt);
             return true;
