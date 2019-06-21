@@ -4,6 +4,11 @@ const ItemConstants = Java.type("com.lucianms.constants.ItemConstants");
 const InventoryManipulator = Java.type("com.lucianms.server.MapleInventoryManipulator");
 
 let status = 0;
+let useImages = { tag: "#v", value: true, toggle: function() {
+    if ((useImages.value = !useImages.value)) useImages.tag = "#v";
+    else useImages.tag = "#t";
+    return useImages.value;
+}};
 let target = {
     p: undefined, // the targeted Player object
     inv: undefined, // the targeted Player's Inventory object
@@ -31,7 +36,7 @@ function action(mode, type, selection) {
     if (status == 1) {
         target.reset();
         let content = "Who you lookin' for?\r\n#b";
-        content += "\r\n#L0#Search#l\r\n";
+        content += "\r\n#L0#Search#l"
         let online = GetPlayers();
         for (let i = 0; i < online.length; i++) {
             content += `\r\n#L${online[i].id}#${online[i].name}#l`;
@@ -51,7 +56,8 @@ function action(mode, type, selection) {
         content += "\r\n";
         content += "\r\n#L7#Give item#l";               
         content += "\r\n#L8#View information#l";               
-        content += "\r\b#L9#Manage Generic Events#l";           
+        content += "\r\n#L9#Manage Generic Events#l";
+        content += "\r\n#L10#Toggle Images#l";
         cm.sendSimple(content);
     } else if (status == 3) {
         if (cm.getText() != null) {
@@ -89,7 +95,7 @@ function action(mode, type, selection) {
                 break;
             }
             case 9: {
-                let content = "";
+                let content = "#b";
                 let events = target.p.getGenericEvents();
                 events.forEach(g => {
                     target.events.push(g);
@@ -97,6 +103,10 @@ function action(mode, type, selection) {
                 });
                 if (target.events.length == 0) cm.sendPrev(`${target.p.name} is not registered in any generic events`);
                 else cm.sendSimple(content);
+                break;
+            }
+            case 10: {
+                cm.sendPrev("Images " + (useImages.toggle() ? "enabled" : "disabled"));
                 break;
             }
             default: {
@@ -107,7 +117,7 @@ function action(mode, type, selection) {
                     let content = "";
                     let items = target.inv.list();
                     items.forEach(item => {
-                        content += `#L${item.getPosition()}# #v${item.getItemId()}# #l\t`;
+                        content += `#L${item.getPosition()}# ${useImages.tag}${item.getItemId()}# #l\t`;
                     });
                     if (content.length == 0) cm.sendPrev(`#b${target.inv.getType()}#k inventory is empty`);
                     else cm.sendSimple(content);
@@ -147,7 +157,7 @@ function action(mode, type, selection) {
         target.stat = undefined;
         let item = target.item;
         let isEquip = ItemConstants.getInventoryType(target.item.getItemId()) == InventoryType.EQUIP;
-        let content = `#b#v${item.getItemId()}# #z${item.getItemId}# (${item.getPosition()} // ${item.getItemId()})\r\n`;
+        let content = `#b${useImages.tag}${item.getItemId()}# #z${item.getItemId}# (${item.getPosition()} // ${item.getItemId()})\r\n`;
         content += "\r\n#L16#Remove#l";
         content += "\r\n#L17#Send to another player#l";
         content += "\r\n";
