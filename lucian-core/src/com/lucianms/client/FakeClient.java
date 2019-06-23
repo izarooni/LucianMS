@@ -18,7 +18,7 @@ public class FakeClient extends MapleClient {
     }
 
     @Override
-    public synchronized void announce(byte[] packet) {
+    public void announce(byte[] packet) {
         // do nothing
     }
 }

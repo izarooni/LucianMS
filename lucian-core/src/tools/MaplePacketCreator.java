@@ -5998,7 +5998,7 @@ public class MaplePacketCreator {
         final MaplePacketWriter mplew = new MaplePacketWriter();
         mplew.writeShort(SendOpcode.SPAWN_PLAYER.getValue());
         mplew.writeInt(player.getId());
-        mplew.write(player.getLevel()); //v83
+        mplew.write(player.getLevel());
         mplew.writeMapleString(player.getName());
         if (player.getGuildId() < 1) {
             mplew.writeMapleString("");
@@ -6016,7 +6016,7 @@ public class MaplePacketCreator {
                 mplew.write(new byte[6]);
             }
         }
-        mplew.write(new byte[16]); // fuck that
+        mplew.write(new byte[16]); // fuck that; CTS encoding
         mplew.write(0);
         mplew.write(0);
         mplew.writeShort(player.getJob().getId());

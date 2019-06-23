@@ -195,7 +195,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Di
     private Map<Integer, CQuestData> customQuests = new HashMap<>();
     private Map<Integer, MapleSummon> summons = new LinkedHashMap<>();
     private HashMap<Integer, MapleKeyBinding> keymap = new HashMap<>();
-    private HashMap<Integer, MapleCoolDownValueHolder> coolDowns = new HashMap<>(50);
+    private HashMap<Integer, CoolTimeContainer> coolDowns = new HashMap<>(50);
     //endregion
 
     private BuddyList buddylist;
@@ -320,7 +320,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Di
         MapleCharacter.deleteWhereCharacterId(con, "DELETE FROM buddies WHERE characterid = ?", playerID);
         MapleCharacter.deleteWhereCharacterId(con, "DELETE FROM buddies WHERE buddyid = ?", playerID);
         MapleCharacter.deleteWhereCharacterId(con, "DELETE FROM characters WHERE id = ?", playerID);
-        MapleCharacter.deleteWhereCharacterId(con, "DELETE FROM cooldowns WHERE charid = ?", playerID);
+        MapleCharacter.deleteWhereCharacterId(con, "DELETE FROM cooldowns WHERE player_id = ?", playerID);
         try (PreparedStatement ps = con.prepareStatement("select guildid from characters where id = ?")) {
             ps.setInt(1, playerID);
             try (ResultSet rs = ps.executeQuery()) {
@@ -756,22 +756,28 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Di
                     }
                 }
             }
-            try (PreparedStatement ps = con.prepareStatement("SELECT SkillID,StartTime,length FROM cooldowns WHERE charid = ?")) {
+            try (PreparedStatement ps = con.prepareStatement("select * from cooldowns where player_id = ?")) {
                 ps.setInt(1, ret.getId());
                 try (ResultSet rs = ps.executeQuery()) {
                     while (rs.next()) {
-                        final int skillid = rs.getInt("SkillID");
-                        final long length = rs.getLong("length"), startTime = rs.getLong("StartTime");
-                        if (skillid != 5221999 && (length + startTime < System.currentTimeMillis())) {
-                            continue;
+                        int ID = rs.getInt("skill_id");
+                        long length = rs.getLong("duration");
+                        long startTime = rs.getLong("created_at");
+                        byte type = rs.getByte("type");
+                        boolean expired = startTime + length < System.currentTimeMillis();
+                        if (!expired && ID != 5221999) {
+                            if (type == 0) {
+                                ret.giveCoolDowns(ID, startTime, length);
+                            } else if (type == 1) {
+                                FakePlayer fakePlayer = new FakePlayer(String.format("%s's Clone", ret.name));
+                                fakePlayer.clonePlayer(ret);
+                                fakePlayer.setExpiration(startTime + length);
+                                fakePlayer.setFollowing(true);
+                                ret.setFakePlayer(fakePlayer);
+                            }
                         }
-                        ret.giveCoolDowns(skillid, startTime, length);
                     }
                 }
-            }
-            try (PreparedStatement ps = con.prepareStatement("DELETE FROM cooldowns WHERE charid = ?")) {
-                ps.setInt(1, ret.getId());
-                ps.executeUpdate();
             }
             try (PreparedStatement ps = con.prepareStatement("SELECT * FROM skillmacros WHERE characterid = ?")) {
                 ps.setInt(1, charid);
@@ -890,7 +896,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Di
     }
 
     public void addCooldown(int skillId, long startTime, long length, Task task) {
-        coolDowns.put(skillId, new MapleCoolDownValueHolder(skillId, startTime, length, task));
+        coolDowns.put(skillId, new CoolTimeContainer(skillId, startTime, length, task, (byte) 0));
     }
 
     public MapleRing getRingById(int id) {
@@ -1243,10 +1249,10 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Di
 
     public void toggleHidden(boolean hidden) {
         setHidden(hidden);
+        FakePlayer fakePlayer = getFakePlayer();
         if (hidden) {
             getMap().sendPacketIf(MaplePacketCreator.removePlayerFromMap(getId()), p -> p.getGMLevel() < getGMLevel());
-            Map<MapleBuffStat, Integer> stat = Map.of(MapleBuffStat.DARK_SIGHT, 0);
-            getMap().sendPacketIf(MaplePacketCreator.giveForeignBuff(getId(), stat), p -> p.getGMLevel() >= getGMLevel());
+            getMap().sendPacketIf(MaplePacketCreator.giveForeignBuff(getId(), Map.of(MapleBuffStat.DARK_SIGHT, 0)), p -> p.getGMLevel() >= getGMLevel());
 
             for (MapleMonster mon : getControlledMonsters()) {
                 mon.setController(null);
@@ -1254,8 +1260,9 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Di
                 mon.setControllerKnowsAboutAggro(false);
                 announce(MaplePacketCreator.stopControllingMonster(mon.getObjectId()));
             }
-            if (getFakePlayer() != null) {
-                getMap().removeFakePlayer(getFakePlayer());
+            controlled.clear();
+            if (fakePlayer != null) {
+                getMap().removeFakePlayer(fakePlayer);
             }
         } else {
             getMap().sendPacketIf(MaplePacketCreator.cancelForeignBuff(getId(), Set.of(MapleBuffStat.DARK_SIGHT)), p -> p.getGMLevel() >= getGMLevel());
@@ -1263,11 +1270,17 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Di
 
             sendPartyGaugeRefresh();
             getMap().getMonsters().forEach(getMap()::updateMonsterController);
-            if (this.hidden && getFakePlayer() != null) {
-                getMap().addFakePlayer(getFakePlayer());
+            if (fakePlayer != null) {
+                fakePlayer.setPosition(getPosition());
+                getMap().addFakePlayer(fakePlayer);
             }
         }
+        if (fakePlayer != null) {
+            fakePlayer.setFollowing(!hidden);
+            fakePlayer.setHidden(hidden);
+        }
         announce(MaplePacketCreator.getAdminResult(0x10, (byte) (hidden ? 1 : 0)));
+        announce(MaplePacketCreator.enableActions()); // what why; can't seem to enter portals
     }
 
     private void cancelPlayerBuffs(Set<MapleBuffStat> buffs) {
@@ -1554,18 +1567,19 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Di
                 return;
             }
         }
-        if (getFakePlayer() != null) {
-            map.removeFakePlayer(getFakePlayer());
+        FakePlayer fakePlayer = getFakePlayer();
+        if (fakePlayer != null) {
+            map.removeFakePlayer(fakePlayer);
         }
 
         client.announce(warpPacket);
         map.removePlayer(this);
         map = to;
         setPosition(pos);
-        if (getFakePlayer() != null) {
-            getFakePlayer().setMap(map);
-            getFakePlayer().setPosition(pos.getLocation());
-            map.addFakePlayer(getFakePlayer());
+        if (fakePlayer != null) {
+            fakePlayer.setMap(map);
+            fakePlayer.setPosition(pos.getLocation());
+            map.addFakePlayer(fakePlayer);
         }
         map.addPlayer(this);
     }
@@ -1929,7 +1943,14 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Di
     }
 
     public void checkExpirations() {
-        long expiration, now = System.currentTimeMillis();
+        final long now = System.currentTimeMillis();
+
+        if (fakePlayer != null && fakePlayer.getExpiration() < now) {
+            fakePlayer.setFollowing(false);
+            fakePlayer = null;
+            getMap().removeFakePlayer(fakePlayer);
+        }
+
         var skills = new HashSet<>(getSkills().entrySet());
         for (Entry<Integer, SkillEntry> entry : skills) {
             if (entry.getValue().expiration != -1 && entry.getValue().expiration < now) {
@@ -1941,7 +1962,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Di
         List<Item> removeItems = new ArrayList<>();
         for (MapleInventory inv : inventory) {
             for (Item item : inv.list()) {
-                expiration = item.getExpiration();
+                long expiration = item.getExpiration();
                 if (expiration > 0 && expiration < now && (item.getFlag() & ItemConstants.LOCK) != 0) {
                     byte removeLock = (byte) (item.getFlag() & ~ItemConstants.LOCK);
                     item.setFlag(removeLock);
@@ -2109,7 +2130,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Di
 
     public List<PlayerCoolDownValueHolder> getAllCooldowns() {
         List<PlayerCoolDownValueHolder> ret = new ArrayList<>();
-        for (MapleCoolDownValueHolder mcdvh : coolDowns.values()) {
+        for (CoolTimeContainer mcdvh : coolDowns.values()) {
             ret.add(new PlayerCoolDownValueHolder(mcdvh.skillId, mcdvh.startTime, mcdvh.length));
         }
         return ret;
@@ -3665,9 +3686,9 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Di
     }
 
     public void removeAllCooldownsExcept(int id, boolean packet) {
-        Iterator<MapleCoolDownValueHolder> iterator = coolDowns.values().iterator();
+        Iterator<CoolTimeContainer> iterator = coolDowns.values().iterator();
         while (iterator.hasNext()) {
-            MapleCoolDownValueHolder mcvh = iterator.next();
+            CoolTimeContainer mcvh = iterator.next();
             if (mcvh.skillId != id) {
                 iterator.remove();
                 if (packet) {
@@ -4064,14 +4085,15 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Di
                 }
             }
 
+            deleteWhereCharacterId(con, "delete from cooldowns where  player_id = ?");
             if (!coolDowns.isEmpty()) {
-                deleteWhereCharacterId(con, "DELETE FROM cooldowns WHERE charid = ?");
-                try (PreparedStatement ps = con.prepareStatement("INSERT INTO cooldowns (charid, SkillID, StartTime, length) VALUES (?, ?, ?, ?)")) {
+                try (PreparedStatement ps = con.prepareStatement("INSERT INTO cooldowns (player_id, skill_id, created_at, duration, type) VALUES (?, ?, ?, ?, ?)")) {
                     ps.setInt(1, getId());
-                    for (MapleCoolDownValueHolder cooling : coolDowns.values()) {
-                        ps.setInt(2, cooling.skillId);
-                        ps.setLong(3, cooling.startTime);
-                        ps.setLong(4, cooling.length);
+                    for (CoolTimeContainer cooltime : coolDowns.values()) {
+                        ps.setInt(2, cooltime.skillId);
+                        ps.setLong(3, cooltime.startTime);
+                        ps.setLong(4, cooltime.length);
+                        ps.setByte(5, cooltime.type);
                         ps.addBatch();
                     }
                     ps.executeBatch();
@@ -5262,6 +5284,8 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Di
 
     public void setFakePlayer(FakePlayer fakePlayer) {
         this.fakePlayer = fakePlayer;
+        // expiration contains created_at and duration values so startTime parameter may be 0 here
+        coolDowns.put(0, new CoolTimeContainer(0, 0, fakePlayer.getExpiration(), null, (byte) 1));
     }
 
     public ChatType getChatType() {
@@ -5369,21 +5393,6 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Di
                 realTarget.removeCooldown(skillId);
                 realTarget.client.announce(MaplePacketCreator.skillCooldown(skillId, 0));
             }
-        }
-    }
-
-    public static class MapleCoolDownValueHolder {
-
-        public int skillId;
-        public long startTime, length;
-        public Task task;
-
-        public MapleCoolDownValueHolder(int skillId, long startTime, long length, Task task) {
-            super();
-            this.skillId = skillId;
-            this.startTime = startTime;
-            this.length = length;
-            this.task = task;
         }
     }
 

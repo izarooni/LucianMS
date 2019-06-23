@@ -16,6 +16,7 @@ import java.util.ArrayList;
 public class FakePlayer extends MapleCharacter {
 
     private final FakeClient client = new FakeClient();
+    private long expiration;
     private boolean following;
 
     public FakePlayer(String username) {
@@ -30,6 +31,9 @@ public class FakePlayer extends MapleCharacter {
 
     @Override
     public void sendSpawnData(MapleClient client) {
+        if (isHidden()) {
+            return;
+        }
         client.announce(MaplePacketCreator.getUserEnterField(this));
     }
 
@@ -38,24 +42,36 @@ public class FakePlayer extends MapleCharacter {
         return client;
     }
 
+    @Override
+    public void announce(byte[] packet) {
+        // do nothing
+    }
+
     public void clonePlayer(MapleCharacter player) {
+        setPosition(player.getPosition());
+        setHair(player.getHair());
+        setFace(player.getFace());
+        setSkinColor(player.getSkinColor());
+        setLevel(player.getLevel());
+        setJob(player.getJob());
+        setStance(player.getStance());
+
         ArrayList<Item> items = new ArrayList<>(player.getInventory(MapleInventoryType.EQUIPPED).list());
-        try {
-            setPosition(player.getPosition());
-            setHair(player.getHair());
-            setFace(player.getFace());
-            setSkinColor(player.getSkinColor());
-            setLevel(player.getLevel());
-            setJob(player.getJob());
-            for (Item item : items) {
-                Equip eq = (Equip) item;
-                if (eq.getRingId() < 1) {
-                    getInventory(MapleInventoryType.EQUIPPED).addFromDB(item.duplicate());
-                }
+        for (Item item : items) {
+            Equip eq = (Equip) item;
+            if (eq.getRingId() < 1) {
+                getInventory(MapleInventoryType.EQUIPPED).addFromDB(item.duplicate());
             }
-        } finally {
-            items.clear();
         }
+        items.clear();
+    }
+
+    public long getExpiration() {
+        return expiration;
+    }
+
+    public void setExpiration(long expiration) {
+        this.expiration = expiration;
     }
 
     public boolean isFollowing() {

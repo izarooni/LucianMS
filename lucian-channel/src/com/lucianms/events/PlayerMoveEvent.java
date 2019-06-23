@@ -4,13 +4,16 @@ import com.lucianms.client.MapleCharacter;
 import com.lucianms.lang.GProperties;
 import com.lucianms.nio.receive.MaplePacketReader;
 import com.lucianms.server.life.FakePlayer;
+import com.lucianms.server.movement.AbstractLifeMovement;
 import com.lucianms.server.movement.LifeMovementFragment;
 import com.lucianms.server.movement.MovementPacketHelper;
+import tools.Duplicable;
 import tools.Functions;
 import tools.MaplePacketCreator;
 
 import java.awt.*;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * @author izarooni
@@ -50,7 +53,12 @@ public final class PlayerMoveEvent extends PacketEvent {
         FakePlayer fPlayer = player.getFakePlayer();
         if (fPlayer != null && player.isAlive() && fPlayer.isFollowing()) {
             MovementPacketHelper.updatePosition(movements, fPlayer, 0);
-            player.getMap().broadcastMessage(fPlayer, MaplePacketCreator.movePlayer(fPlayer.getId(), clientPosition, movements), false);
+            List<LifeMovementFragment> modified = movements.stream().map(Duplicable::duplicate).collect(Collectors.toList());
+            modified.stream().filter(m -> m instanceof AbstractLifeMovement)
+                    .map(m -> ((AbstractLifeMovement) m))
+                    .forEach(m -> m.setDuration((int) (m.getDuration() * 1.3f)));
+            player.getMap().broadcastMessage(fPlayer, MaplePacketCreator.movePlayer(fPlayer.getId(), clientPosition, modified), false);
+            modified.clear();
         }
 
         if (!player.isGM() || player.isDebug()) {

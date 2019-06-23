@@ -18,12 +18,10 @@ function action(mode, type, selection) {
     if (!player.isDebug()) {
         if (shenron == null) {
             cm.sendOk("Where am I? Why did you bring me here?");
-            cm.dispose();
-            return;
+            return cm.dispose();
         } else if (!player.isGM() && !shenron.isWishing()) {
             cm.sendOk("Who are you? You didn't summon me");
-            cm.dispose();
-            return;
+            return cm.dispose();
         }
     }
     if (status == 1) {
@@ -35,8 +33,7 @@ function action(mode, type, selection) {
             + "\r\n#L4#Give me vote points#l"
             + "\r\n#L5#Make me immortal#l"
             + "\r\n#L6#Give me NX#l"
-            + "\r\n#L7#Clone me#l"
-            + "\r\n#L8#Give me a rebirth#l");
+            + "\r\n#L7#Clone me#l");
     } else if (status == 2) {
         switch (selection) {
             case 0:
@@ -45,18 +42,20 @@ function action(mode, type, selection) {
                     cm.sendOk("Wish granted. I shall give you #b5 million#k mesos");
                 } else {
                     cm.sendOk("You are currently holding too many mesos.");
+                    return cm.dispose();
                 }
                 break;
             case 1:
                 cm.sendGetText(usernameError + "\r\nWho is it that you wish to kill?");
                 return;
             case 2: {
-                let amount = Packages.tools.Randomizer.rand(2, 5);
+                let amount = Packages.tools.Randomizer.rand(5, 12);
                 if (InventoryModifier.checkSpace(client, ServerConstants.CURRENCY, amount, "")) {
                     cm.gainItem(ServerConstants.CURRENCY, amount, true);
                     cm.sendOk(`Wish granted. I shall give you #b${amount} #z${ServerConstants.CURRENCY}#`);
                 } else {
                     cm.sendOk("You currently do not have enough space in your #b" + ItemConstants.getInventoryType(crystal).name() + "#k inventory");
+                    return cm.dispose();
                 }
                 break;
             }
@@ -81,35 +80,19 @@ function action(mode, type, selection) {
                 break;
             case 7:
                 if (player.getFakePlayer() == null) {
-                    let fake = new FakePlayer(player.getName() +"'s Toy");
+                    let fake = new FakePlayer(player.getName() +"'s Clone");
                     fake.setMap(player.getMap());
                     fake.clonePlayer(player);
+                    fake.setFollowing(true);
+                    fake.setExpiration(Date.now() + (1000 * 60 * 60));
                     player.setFakePlayer(fake);
                     player.getMap().addFakePlayer(fake);
-                    fake.setFollowing(true);
-                    cm.delayCall(function() {
-                        let remove = player.getFakePlayer();
-                        if (remove != null) {
-                            remove.setFollowing(false);
-                            player.setFakePlayer(null);
-                            player.getMap().removeFakePlayer(remove);
-                        }
-                    }, 1000 * 60 * 60);
                     cm.sendOk("Wish granted. I shall give you a clone that will battle with you for 60 minutes");
                 } else {
                     cm.sendOk("You already have a clone!");
+                    return cm.dispose();
                 }
                 break;
-            case 8: {
-                let levels = 200 - player.getLevel();
-                if (levels > 0) {
-                    let apGain = levels * 5;
-                    player.addPoints("ap", apGain);
-                    player.sendMessage("You gained {} Ability Points for {} levels", apGain, levels);
-                }
-                player.doRebirth();
-                break;
-            }
         }
         if (shenron != null && !player.isDebug()) {
             shenron.wish(player);

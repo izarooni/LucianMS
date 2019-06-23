@@ -26,6 +26,10 @@ public abstract class AbstractLifeMovement implements LifeMovement {
         return duration;
     }
 
+    public void setDuration(int duration) {
+        this.duration = duration;
+    }
+
     @Override
     public int getStance() {
         return stance;
