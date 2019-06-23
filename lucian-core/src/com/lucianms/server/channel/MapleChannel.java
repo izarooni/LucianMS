@@ -8,6 +8,7 @@ import com.lucianms.server.ConcurrentMapStorage;
 import com.lucianms.server.FieldBuilder;
 import com.lucianms.server.Server;
 import com.lucianms.server.expeditions.MapleExpedition;
+import com.lucianms.server.life.FakePlayer;
 import com.lucianms.server.maps.HiredMerchant;
 import com.lucianms.server.maps.MapleMap;
 import com.lucianms.server.world.MapleWorld;
@@ -122,14 +123,11 @@ public final class MapleChannel implements PacketAnnouncer {
         MapleMap fOld, fNew;
         if ((fOld = maps.remove(mapID)) != null) {
             fNew = getMap(mapID);
-            Collection<MapleCharacter> chars = new ArrayList<>(fOld.getCharacters());
-            try {
-                for (MapleCharacter player : chars) {
-                    player.changeMap(fNew);
-                }
-            } finally {
-                chars.clear();
+            Collection<MapleCharacter> chars = fOld.getPlayers(p -> !(p instanceof FakePlayer));
+            for (MapleCharacter player : chars) {
+                player.changeMap(fNew);
             }
+            chars.clear();
             maps.put(mapID, fNew);
         }
     }
