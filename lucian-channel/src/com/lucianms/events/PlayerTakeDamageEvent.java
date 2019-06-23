@@ -85,9 +85,7 @@ public final class PlayerTakeDamageEvent extends PacketEvent {
         MapleCharacter player = getClient().getPlayer();
 
         if (player.isImmortal()) {
-            if (player.getHp() - damage < 1) {
-                damage = (player.getHp() - 1);
-            }
+            damage = 0;
         }
 
         int pgmr = 0;
