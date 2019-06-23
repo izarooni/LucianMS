@@ -48,13 +48,13 @@ public class HotPotatoController extends GenericEvent implements Disposable {
         timeoutTask = TaskExecutor.createTask(new Runnable() {
             @Override
             public void run() {
+                end();
                 MapleCharacter holder = map.getCharacterById(potatoHolder);
                 if (holder != null) {
                     holder.setHpMp(0);
                     unregisterPlayer(holder);
                     map.sendMessage(5, "{} has lost the game of Hot Potato!", holder.getName());
                 }
-                end();
             }
         }, TimeUnit.SECONDS.toMillis(10));
     }
@@ -83,10 +83,12 @@ public class HotPotatoController extends GenericEvent implements Disposable {
     @Override
     public void onPlayerDisconnect(MapleCharacter player) {
         unregisterPlayer(player);
-        Collection<MapleCharacter> players = map.getPlayers(p -> p.getId() != player.getId());
-        Optional<MapleCharacter> any = players.stream().findAny();
-        any.ifPresentOrElse(this::unregisterPlayer, this::dispose);
-        players.clear();
+        if (potatoMonster != null) { // game ended?
+            Collection<MapleCharacter> players = map.getPlayers(p -> p.getId() != player.getId());
+            Optional<MapleCharacter> any = players.stream().findAny();
+            any.ifPresentOrElse(this::unregisterPlayer, this::dispose);
+            players.clear();
+        }
     }
 
     /**

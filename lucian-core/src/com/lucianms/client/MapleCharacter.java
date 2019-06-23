@@ -1946,10 +1946,10 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Di
         final long now = System.currentTimeMillis();
 
         if (fakePlayer != null && fakePlayer.getExpiration() < now) {
-            fakePlayer.setFollowing(false);
-            fakePlayer = null;
-            getMap().removeFakePlayer(fakePlayer);
             sendMessage("Your clone has grown weak and has disappeared.");
+            fakePlayer.setFollowing(false);
+            getMap().removeFakePlayer(fakePlayer);
+            fakePlayer = null;
         }
 
         var skills = new HashSet<>(getSkills().entrySet());
