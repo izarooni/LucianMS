@@ -7,10 +7,7 @@ import com.lucianms.features.GenericEvent;
 import com.lucianms.lang.annotation.PacketWorker;
 import com.lucianms.scheduler.Task;
 import com.lucianms.scheduler.TaskExecutor;
-import com.lucianms.server.life.MapleLifeFactory;
-import com.lucianms.server.life.MapleMonster;
-import com.lucianms.server.life.MobSkill;
-import com.lucianms.server.life.MobSkillFactory;
+import com.lucianms.server.life.*;
 import com.lucianms.server.maps.MapleMap;
 import tools.Disposable;
 import tools.Duplicable;
@@ -46,7 +43,8 @@ public class HotPotatoController extends GenericEvent implements Disposable {
      * beings the timer for automatically ending the Hot Potato mini-game
      */
     public void start() {
-        map.sendPacket(MaplePacketCreator.getClock(180));
+        map.sendPacket(MaplePacketCreator.getClock(10));
+        timeoutTask = TaskExecutor.cancelTask(timeoutTask);
         timeoutTask = TaskExecutor.createTask(new Runnable() {
             @Override
             public void run() {
@@ -58,7 +56,7 @@ public class HotPotatoController extends GenericEvent implements Disposable {
                 }
                 end();
             }
-        }, TimeUnit.MINUTES.toMillis(3));
+        }, TimeUnit.SECONDS.toMillis(10));
     }
 
     /**
@@ -109,6 +107,7 @@ public class HotPotatoController extends GenericEvent implements Disposable {
         MobSkill mskill = MobSkillFactory.getMobSkill(123, 1);
         mskill.setDuration(4000);
         player.giveDebuff(MapleDisease.STUN, mskill);
+
     }
 
     /**
@@ -131,6 +130,7 @@ public class HotPotatoController extends GenericEvent implements Disposable {
         // re-send the movement packets from the player as the potato monster
         map.broadcastMessage(MaplePacketCreator.moveMonster(0, -1, 0, 0, 0, 0,
                 potatoMonster.getObjectId(), event.getClientPosition(), movs));
+        movs.clear();
         if (System.currentTimeMillis() - lastSwap < 4000) {
             // grace period from being tagged again
             return;
@@ -138,7 +138,7 @@ public class HotPotatoController extends GenericEvent implements Disposable {
         event.onPost(new Runnable() {
             @Override
             public void run() {
-                Collection<MapleCharacter> characters = map.getPlayers(p -> p.getId() != player.getId());
+                Collection<MapleCharacter> characters = map.getPlayers(p -> !(p instanceof FakePlayer) && p.getId() != player.getId());
                 if (!characters.isEmpty()) {
                     for (MapleCharacter players : characters) {
                         final double distance = players.getPosition().distance(player.getPosition());
@@ -149,6 +149,7 @@ public class HotPotatoController extends GenericEvent implements Disposable {
                                 registerPlayer(players);
                                 map.sendPacket(MaplePacketCreator.playSound("Romio/discovery"));
                                 map.sendMessage(5, "{} has tagged {}", player.getName(), players.getName());
+                                start();
                                 break;
                             }
                         }

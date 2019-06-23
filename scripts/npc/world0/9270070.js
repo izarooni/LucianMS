@@ -26,7 +26,6 @@ function action(mode, type, selection) {
     }
     if (status == 1) {
         cm.sendSimple("I am Shenron, I shall grant you any wish. Now speak!\r\n#b"
-            // + "\r\n#L0#Make me rich#l"
             + "\r\n#L1#Kill somebody#l"
             + `\r\n#L2#Give me #z${ServerConstants.CURRENCY}##l`
             + "\r\n#L3#Give me more health#l"
@@ -36,15 +35,6 @@ function action(mode, type, selection) {
             + "\r\n#L7#Clone me#l");
     } else if (status == 2) {
         switch (selection) {
-            case 0:
-                if (player.getMeso() <= 147483647) {
-                    cm.gainMeso(5000000);
-                    cm.sendOk("Wish granted. I shall give you #b5 million#k mesos");
-                } else {
-                    cm.sendOk("You are currently holding too many mesos.");
-                    return cm.dispose();
-                }
-                break;
             case 1:
                 cm.sendGetText(usernameError + "\r\nWho is it that you wish to kill?");
                 return;

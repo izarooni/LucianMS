@@ -277,7 +277,7 @@ public class EventCommands extends CommandExecutor {
                 return;
             }
         } else {
-            target = map.getCharacters().stream().findAny().get();
+            target = map.getCharacters().stream().filter(p -> !(p instanceof FakePlayer)).findAny().get();
         }
         HotPotatoController potato = new HotPotatoController();
         potato.setMap(map);

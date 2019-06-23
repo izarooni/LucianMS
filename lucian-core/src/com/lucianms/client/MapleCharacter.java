@@ -1949,6 +1949,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Di
             fakePlayer.setFollowing(false);
             fakePlayer = null;
             getMap().removeFakePlayer(fakePlayer);
+            sendMessage("Your clone has grown weak and has disappeared.");
         }
 
         var skills = new HashSet<>(getSkills().entrySet());
