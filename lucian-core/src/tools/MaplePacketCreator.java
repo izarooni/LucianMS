@@ -3120,13 +3120,15 @@ public class MaplePacketCreator {
     }
 
     public static void encodeTempStatForLocal(MaplePacketWriter w, Map<MapleBuffStat, BuffContainer> stats) {
-        Set<MapleBuffStat> keyset = stats.keySet();
-        encodeBuffMask(w, keyset);
+        encodeBuffMask(w, stats.keySet());
         for (Entry<MapleBuffStat, BuffContainer> e : stats.entrySet()) {
             MapleBuffStat buff = e.getKey();
             BuffContainer container = e.getValue();
 
-            if (container.getMobSkill() != null) {
+            if (buff == MapleBuffStat.PARTY_BOOSTER) {
+                // does not seem to be encoded here
+                continue;
+            } else if (container.getMobSkill() != null) {
                 w.writeShort(container.getMobSkill().getSkillLevel());
                 w.writeShort(container.getSourceID());
                 w.writeShort(container.getValue());
@@ -3144,16 +3146,23 @@ public class MaplePacketCreator {
         }
         w.write(0); // nDefenseAtt
         w.write(0); // nDefenseState
-        w.skip(16);
-//        MapleBuffStat[] buffs = MapleBuffStat.values();
-//        for (int i = 0; i < 8; i++) {
-//            for (MapleBuffStat stat : keyset) {
-//                if (stat.getIndex() == i) {
-//                    w.writeInt(0);
-//                    w.writeInt(0);
-//                }
-//            }
-//        }
+        for (int tsIndex = 0; tsIndex < 8; tsIndex++) { // must be in this order
+            for (Entry<MapleBuffStat, BuffContainer> e : stats.entrySet()) {
+                MapleBuffStat buff = e.getKey();
+                BuffContainer container = e.getValue();
+                if (buff.getIndex() == tsIndex) {
+                    if (buff == MapleBuffStat.PARTY_BOOSTER) {
+                        w.writeInt(container.getValue());
+                        w.writeInt(container.getSourceID());
+                        w.writeShort(container.getDuration());
+                        w.skip(9);
+                    }
+                }
+            }
+        }
+        w.writeShort(Short.MAX_VALUE); // nDelay
+        // if(SecondaryStat::IsMovementAffectingStat)
+        w.write(0); // CUserLocal::SetSecondaryStatChangedPoint
     }
 
     public static void encodeTempStatForRemote(MaplePacketWriter w, Map<MapleBuffStat, BuffContainer> stats) {
