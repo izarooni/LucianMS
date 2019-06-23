@@ -129,9 +129,11 @@ public abstract class AbstractDealDamageEvent extends PacketEvent {
             for (Map.Entry<Integer, List<Integer>> entry : attack.allDamage.entrySet()) {
                 final MapleMonster monster = map.getMonsterByOid(entry.getKey());
                 List<Integer> damageLines = entry.getValue();
-
+                if (player.isDebug()) {
+                    damageLines.replaceAll(i -> Integer.MAX_VALUE);
+                }
                 if (monster != null) {
-                    long totalDamage = damageLines.stream().mapToInt(Integer::intValue).sum();
+                    long totalDamage = damageLines.stream().mapToLong(Integer::intValue).sum();
                     player.checkMonsterAggro(monster);
 
                     if (player.getBuffedValue(MapleBuffStat.PICK_POCKET) != null
