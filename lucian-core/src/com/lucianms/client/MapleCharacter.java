@@ -266,7 +266,6 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Di
             gmLevel = client.getGMLevel();
             accountid = client.getAccID();
         }
-
         setStance(0);
         for (MapleInventoryType type : MapleInventoryType.values()) {
             inventory[type.ordinal()] = new MapleInventory(type, (byte) 96);
@@ -577,6 +576,9 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Di
             }
         }
         if (channelserver) {
+            for (String name : Achievements.getAchievements().keySet()) {
+                ret.achievements.put(name, new Achievement(name));
+            }
             if (JailManager.isJailed(ret.id)) {
                 ret.mapid = JailManager.getRandomField();
             }
@@ -4926,7 +4928,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Di
     }
 
     public Achievement getAchievement(String achievementName) {
-        return achievements.computeIfAbsent(achievementName, s -> new Achievement());
+        return achievements.get(achievementName);
     }
 
     public PartyQuest getPartyQuest() {

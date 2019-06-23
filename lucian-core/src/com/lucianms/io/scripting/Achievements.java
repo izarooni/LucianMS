@@ -5,16 +5,12 @@ import com.lucianms.client.meta.Achievement;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import tools.MaplePacketCreator;
-import tools.Pair;
 
 import javax.script.CompiledScript;
 import javax.script.Invocable;
 import javax.script.ScriptException;
 import java.io.File;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Optional;
+import java.util.*;
 
 /**
  * Could be a a bad implementation of this feature
@@ -26,27 +22,20 @@ public class Achievements {
 
     private static final String ROOT_DIRECTORY = "achievements/";
     private static final Logger LOGGER = LoggerFactory.getLogger(Achievements.class);
-    private static ArrayList<Pair<String, CompiledScript>> invocables = null;
-    private static HashMap<String, ArrayList<String>> rewards = new HashMap<>();
+    private static HashMap<String, CompiledScript> invocables;
+    private static HashMap<String, List<String>> rewards = new HashMap<>();
 
     private Achievements() {
     }
 
-    public static ArrayList<String> getNames() {
-        ArrayList<String> ret = new ArrayList<>(invocables.size());
-        invocables.forEach(p -> ret.add(p.getLeft()));
-        return ret;
+    public static HashMap<String, CompiledScript> getAchievements() {
+        return invocables;
     }
 
     /**
      * List all achievement scripts, execute them and store their invocable objects for later use
      */
     public static int loadAchievements() {
-        if (invocables != null) {
-            invocables = new ArrayList<>(invocables.size());
-            rewards = new HashMap<>(rewards.size());
-            System.gc();
-        }
         final long start = System.currentTimeMillis();
         File dir = new File("scripts/achievements");
         if (dir.mkdirs()) {
@@ -54,7 +43,10 @@ public class Achievements {
         }
         File[] files = dir.listFiles();
         if (files != null) {
-            invocables = new ArrayList<>(files.length);
+            int prevSize = invocables == null ? files.length : invocables.size();
+            int size = (int) ((prevSize * 0.75f) + 1);
+            invocables = new HashMap<>(size);
+            rewards = new HashMap<>(size);
             for (File file : files) {
                 try {
                     CompiledScript compile = ScriptUtil.compile(ROOT_DIRECTORY + file.getName(), Collections.emptyList());
@@ -62,7 +54,7 @@ public class Achievements {
                     String name = (String) engine.invokeFunction("getName");
                     ArrayList<String> rr = new ArrayList<>();
                     engine.invokeFunction("readableRewards", rr);
-                    invocables.add(new Pair<>(name, compile));
+                    invocables.put(name, compile);
                     rewards.put(name, rr);
                 } catch (Exception e) {
                     LOGGER.error("Unable to compile achievement '{}': {}", file.getName(), e.getMessage());
@@ -73,11 +65,14 @@ public class Achievements {
         return invocables.size();
     }
 
-    public static ArrayList<String> getRewards(String achievement) {
-        if (invocables != null) {
-            return rewards.get(achievement);
-        }
-        return null;
+    /**
+     * This method is typically used in scripts for displaying things such as items
+     *
+     * @param achievement The achievement to get rewards from
+     * @return A Collection of rewards in a readable format (for uses in NPCs)
+     */
+    public static Collection<String> getRewards(String achievement) {
+        return rewards.getOrDefault(achievement, Collections.emptyList());
     }
 
     /**
@@ -90,12 +85,13 @@ public class Achievements {
     public static void testFor(MapleCharacter player, int monsterId) {
         if (invocables != null) {
             boolean failed = false;
-            for (Pair<String, CompiledScript> pair : invocables) {
-                String name = pair.getLeft();
+            for (Map.Entry<String, CompiledScript> entry : invocables.entrySet()) {
+                String name = entry.getKey();
+                Invocable iv = ((Invocable) entry.getValue().getEngine());
+
                 Achievement achievement = player.getAchievement(name);
                 if (achievement.getStatus() == Achievement.Status.Incomplete) {
                     try {
-                        Invocable iv = (Invocable) pair.getRight().getEngine();
                         if (testForKill(iv, player, monsterId) && testForPlayer(iv, player)) {
                             achievement.setStatus(Achievement.Status.Complete);
                             player.announce(MaplePacketCreator.showEffect("quest/party/clear4"));
@@ -133,9 +129,9 @@ public class Achievements {
     }
 
     public static boolean reward(String achievement, MapleCharacter player) throws ScriptException, NoSuchMethodException {
-        Optional<Pair<String, CompiledScript>> first = invocables.stream().filter(p -> p.getLeft().equals(achievement)).findFirst();
-        if (first.isPresent()) {
-            return reward((Invocable) first.get().getRight().getEngine(), player);
+        CompiledScript found = invocables.get(achievement);
+        if (found != null) {
+            return reward((Invocable) found.getEngine(), player);
         }
         throw new NullPointerException(achievement);
     }

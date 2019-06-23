@@ -1,5 +1,13 @@
 package com.lucianms.client.meta;
 
+import com.lucianms.client.MapleCharacter;
+import com.lucianms.io.scripting.Achievements;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import javax.script.CompiledScript;
+import javax.script.Invocable;
+
 /**
  * metadata for achievements
  * <p>
@@ -14,13 +22,31 @@ public class Achievement {
         Incomplete, Complete, RewardGiven
     }
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(Achievement.class);
+
+    private final String name;
     private Status status;
     private boolean casino1Completed;
     private boolean casino2Completed;
     private int monstersKilled;
 
-    public Achievement() {
+    public Achievement(String name) {
+        if (name == null || name.isEmpty()) {
+            throw new IllegalArgumentException("Name cannot be empty");
+        }
+        this.name = name;
         status = Status.Incomplete;
+    }
+
+    public String getDescription(MapleCharacter player) {
+        CompiledScript script = Achievements.getAchievements().get(name);
+        try {
+            return (String) ((Invocable) script.getEngine()).invokeFunction("getDescription", player);
+        } catch (NoSuchMethodException ignore) {
+        } catch (Exception e) {
+            LOGGER.error("Failed to get description for '{}'", name, e);
+        }
+        return null;
     }
 
     public Status getStatus() {

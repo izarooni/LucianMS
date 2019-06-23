@@ -277,6 +277,7 @@ function getUpdateName(stat) {
         case 13: return "QUANTITY";
         case 14: return "EXPIRATION";
         case 15: return "OWNER";
+        case 18: return "ELIMINATION";
     }
 }
 
@@ -298,6 +299,7 @@ function updateItem(stat, newval) {
     else if (stat == 13) target.item.setQuantity(newval);
     else if (stat == 14) target.item.setExpiration(newval);
     else if (stat == 15) target.item.setOwner(newval);
+    else if (stat == 18) target.item.setEliminations(newval);
     target.inv.updateItem(target.p.getClient(), target.item);
 }
 

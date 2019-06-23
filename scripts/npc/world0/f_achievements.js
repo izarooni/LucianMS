@@ -74,10 +74,19 @@ function action(mode, type, selection) {
             return cm.dispose();
         }
         let achieve = section[selection];
+        if (player.isDebug()) {
+            if (player.getAchievements().remove(achieve.name)) {
+                cm.sendOk("Achievement removed");
+                return cm.dispose();
+            }
+        }
         let naStatus = achieve.obj.getStatus().ordinal();
-        let content = `Here are the rewards for completing the\r\n'#b${achieve.name}#k' achievement\r\n#b`;
+        let description = achieve.obj.getDescription(player);
+        let content = "";
+        if (description != null) content += "#e" + description + "#n\r\n";
+        content += `\r\nHere are the rewards for completing the\r\n'#b${achieve.name}#k' achievement\r\n#b`;
         let rewards = Achievements.getRewards(achieve.name);
-        if (rewards != null && !rewards.isEmpty()) {
+        if (!rewards.isEmpty()) {
             for (let reward in rewards) {
                 content += `\r\n${rewards[reward]}`;
             }
