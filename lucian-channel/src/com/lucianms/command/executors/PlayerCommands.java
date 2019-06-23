@@ -19,6 +19,7 @@ import com.lucianms.nio.SendOpcode;
 import com.lucianms.nio.send.MaplePacketWriter;
 import com.lucianms.server.Server;
 import com.lucianms.server.channel.MapleChannel;
+import com.lucianms.server.life.FakePlayer;
 import com.lucianms.server.life.MapleMonster;
 import com.lucianms.server.maps.SavedLocationType;
 import com.lucianms.server.world.MapleWorld;
@@ -33,6 +34,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @author izarooni, lucasdieswagger
@@ -357,6 +359,14 @@ public class PlayerCommands extends CommandExecutor {
         player.sendMessage("Rebirths: {}", target.getRebirths());
         player.sendMessage("Occupation: {} Lv.{}", occupation.map(o -> o.getType().name()).orElse("N/A"), occupation.map(Occupation::getLevel).orElse((byte) 0));
         player.sendMessage("Occupation Exp: {} / {}", occupation.map(Occupation::getExperience).orElse(0), occupation.map(o -> o.getType().getExperienceForLv(o.getLevel())).orElse(0));
+        if (target.isImmortal()) {
+            long endAt = (target.getImmortalTimestamp() + TimeUnit.HOURS.toMillis(1));
+            player.sendMessage("Immortal for {}", StringUtil.getTimeElapse(endAt - System.currentTimeMillis()));
+        }
+        FakePlayer fakePlayer = target.getFakePlayer();
+        if (fakePlayer != null && fakePlayer.getExpiration() > 0) {
+            player.sendMessage("Clone expires in {}", StringUtil.getTimeElapse(fakePlayer.getExpiration() - System.currentTimeMillis()));
+        }
         player.sendMessage("========== Points ==========");
         player.sendMessage("Fishing Points: {}", StringUtil.formatNumber(target.getFishingPoints()));
         player.sendMessage("Event Points: {}", StringUtil.formatNumber(target.getEventPoints()));
