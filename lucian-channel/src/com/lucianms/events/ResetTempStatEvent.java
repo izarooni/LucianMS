@@ -14,9 +14,9 @@ import java.util.Set;
  * @author izarooni
  */
 public class ResetTempStatEvent extends PacketEvent {
+
     @Override
     public void processInput(MaplePacketReader reader) {
-
     }
 
     @Override

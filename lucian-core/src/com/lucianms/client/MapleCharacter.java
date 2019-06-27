@@ -588,7 +588,8 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Di
                 ret.map = client.getChannelServer().getMap(ServerConstants.HOME_MAP);
             }
             MaplePortal portal = ret.map.getPortal(ret.initialSpawnPoint);
-            if (portal == null && (portal = ret.map.getPortal(0)) != null) {
+            if (portal == null && (portal = ret.map.getPortal("sp")) != null) {
+                ret.initialSpawnPoint = portal.getId();
                 ret.setPosition(portal.getPosition());
             }
             MapleParty party = ret.getParty();
@@ -1514,7 +1515,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Di
     public void changeMap(final MapleMap to, final MaplePortal pto) {
         if (pto == null) {
             Point center = to.getFootholds().getCenter();
-            center.translate(0, -10);
+            center.translate(0, -100);
             changeMap(to, center);
         } else {
             changeMapInternal(to, pto.getPosition(), MaplePacketCreator.getWarpToMap(to.getId(), pto.getId(), this, null));

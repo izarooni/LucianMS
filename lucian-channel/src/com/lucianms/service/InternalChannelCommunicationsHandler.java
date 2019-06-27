@@ -1,7 +1,9 @@
 package com.lucianms.service;
 
+import com.lucianms.client.MapleCharacter;
 import com.lucianms.nio.InterPacketOperation;
 import com.lucianms.nio.receive.DirectPacketDecoder;
+import com.lucianms.nio.receive.MaplePacketReader;
 import com.lucianms.nio.send.DirectPacketEncoder;
 import com.lucianms.nio.send.MaplePacketWriter;
 import com.lucianms.nio.server.NettyDiscardClient;
@@ -81,25 +83,42 @@ public class InternalChannelCommunicationsHandler extends ChannelInboundHandlerA
     @Override
     public void channelActive(ChannelHandlerContext ctx) throws Exception {
         channels.add(ctx.channel());
-        LOGGER.info("Connected to login server");
-        sendMessage("The server is now available.\r\nYou may login.");
-
-        for (MapleWorld world : Server.getWorlds()) {
-            world.sendPacket(MaplePacketCreator.serverMessage("Server is now operational. Thank you for your patience."));
-        }
-        TaskExecutor.createTask(new Runnable() {
-            @Override
-            public void run() {
-                for (MapleWorld world : Server.getWorlds()) {
-                    // empty message to remove scrolling notice
-                    world.sendPacket(MaplePacketCreator.serverMessage(""));
-                }
-            }
-        }, 10000);
+        MaplePacketWriter w = new MaplePacketWriter();
+        w.write(2);
+        w.writeBoolean(true);
+        ctx.channel().writeAndFlush(w.getPacket());
     }
 
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
+        MaplePacketReader r = new MaplePacketReader((byte[]) msg);
+        byte header = r.readByte();
+        if (header == 0) {
+            LOGGER.info("Connected to login server");
+            sendMessage("The server is now available.\r\nYou may login.");
+
+            for (MapleWorld world : Server.getWorlds()) {
+                world.sendPacket(MaplePacketCreator.serverMessage("Server is now operational. Thank you for your patience."));
+            }
+            TaskExecutor.createTask(new Runnable() {
+                @Override
+                public void run() {
+                    for (MapleWorld world : Server.getWorlds()) {
+                        // empty message to remove scrolling notice
+                        world.sendPacket(MaplePacketCreator.serverMessage(""));
+                    }
+                }
+            }, 10000);
+        } else if (header == 1) {
+            String username = r.readMapleAsciiString();
+            for (MapleWorld world : Server.getWorlds()) {
+                MapleCharacter found = world.findPlayer(p -> p.getName().equalsIgnoreCase(username));
+                if (found != null) {
+                    found.sendMessage(5, "Thank you for voting! You now have {} vote points", found.getClient().getVotePoints());
+                    return;
+                }
+            }
+        }
     }
 
     @Override
