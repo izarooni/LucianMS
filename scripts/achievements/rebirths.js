@@ -19,8 +19,15 @@ function getDescription(player) {
 
 function testForPlayer(player) {
     let rbs = player.getRebirths();
-    if (rbs % getRequirement(player) == 0) {
-        reward(player);
+    if (rbs < 1) return false;
+    let achieve = player.getAchievement(getName());
+    if (achieve.getState() < rbs && rbs % getRequirement(player) == 0) {
+        if (reward(player)) {
+            achieve.setState(rbs);
+            player.announce(MaplePacketCreator.showEffect("quest/party/clear4"));
+            player.announce(MaplePacketCreator.mapSound("customJQ/quest"));
+            player.sendMessage("You received 6 Chirithy Coin for reaching {} rebirhts", rbs);
+        }
     }
     // never mark as complete
     return false;

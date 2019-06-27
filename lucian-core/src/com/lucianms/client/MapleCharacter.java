@@ -4102,7 +4102,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Di
             }
 
             deleteWhereCharacterId(con, "delete from achievements where player_id = ?");
-            try (PreparedStatement ps = con.prepareStatement("INSERT INTO achievements (`completed`, `player_id`, `achievement_name`, `killed_monster`, `casino_one`, `casino_two`) VALUES (?, ?, ?, ?, ?, ?)")) {
+            try (PreparedStatement ps = con.prepareStatement("INSERT INTO achievements (`completed`, `player_id`, `achievement_name`, `killed_monster`, `casino_one`, `casino_two`, `state`) VALUES (?, ?, ?, ?, ?, ?, ?)")) {
                 for (Entry<String, Achievement> entry : achievements.entrySet()) {
                     String name = entry.getKey();
                     Achievement achievement = entry.getValue();
@@ -4112,6 +4112,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Di
                     ps.setInt(4, achievement.getMonstersKilled());
                     ps.setInt(5, achievement.isCasino1Completed() ? 1 : 0);
                     ps.setInt(6, achievement.isCasino2Completed() ? 1 : 0);
+                    ps.setInt(7, achievement.getState());
                     ps.addBatch();
                 }
                 ps.executeBatch();

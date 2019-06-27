@@ -21,6 +21,7 @@ function testForPlayer(player) {
             if (weapon.getItemLevel() == i && weapon.getEliminations() == Rewards[i]) {
                 weapon.setItemLevel(weapon.getItemLevel() + 1);
                 player.announce(MaplePacketCreator.showEquipmentLevelUp());
+                player.sendMessage("You received 1 Chirithy Coin for killing {} monsters with your weapon", weapon.getEliminations());
                 reward(player);
             }
         }

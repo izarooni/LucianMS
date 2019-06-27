@@ -26,6 +26,7 @@ public class Achievement {
 
     private final String name;
     private Status status;
+    private short state;
     private boolean casino1Completed;
     private boolean casino2Completed;
     private int monstersKilled;
@@ -59,6 +60,14 @@ public class Achievement {
 
     public void setStatus(Status status) {
         this.status = status;
+    }
+
+    public short getState() {
+        return state;
+    }
+
+    public void setState(short state) {
+        this.state = state;
     }
 
     public boolean isCasino1Completed() {
