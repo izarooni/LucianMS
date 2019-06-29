@@ -121,8 +121,13 @@ public class PlayerCommands extends CommandExecutor {
     }
 
     private void ToggleAutoRebirth(MapleCharacter player, Command cmd, CommandArgs args) {
-        player.setAutoRebirth(!player.isAutoRebirth());
-        player.sendMessage("Auto-rebirthing is now {}", (player.isAutoRebirth() ? "enabled" : "disabled"));
+        Occupation occupation = player.getOccupation();
+        if (occupation != null && occupation.getType() == Occupation.Type.Trainer) {
+            player.setAutoRebirth(!player.isAutoRebirth());
+            player.sendMessage("Auto-rebirth is now {}", (player.isAutoRebirth() ? "enabled" : "disabled"));
+        } else {
+            player.sendMessage("Only the Trainer occupation may use this command");
+        }
     }
 
     private void Ping(MapleCharacter player, Command cmd, CommandArgs args) {
