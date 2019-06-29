@@ -2024,6 +2024,7 @@ public class MapleMap implements PacketAnnouncer {
             player.getMap().removeMapObject(i);
             player.getMap().broadcastMessage(MaplePacketCreator.removeItemFromMap(i.getObjectId(), 0, player.getId()));
         }
+        items.clear();
     }
 
     public void clearDrops() {

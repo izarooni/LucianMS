@@ -746,7 +746,7 @@ public class GameMasterCommands extends CommandExecutor {
 
     private void ClearDrops(MapleCharacter player, Command cmd, CommandArgs args) {
         player.getMap().clearDrops(player);
-        player.dropMessage("Cleared all monsters");
+        player.dropMessage("Cleared all drops");
     }
 
     private void ClearInventory(MapleCharacter player, Command cmd, CommandArgs args) {

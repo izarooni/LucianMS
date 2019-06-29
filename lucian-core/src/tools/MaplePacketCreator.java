@@ -287,7 +287,7 @@ public class MaplePacketCreator {
         if (!viewall) {
             mplew.write(0);
         }
-        if (chr.isGM()) {
+        if (chr.isGM() || chr.getJob().getId() / 100 == 9) {
             mplew.write(0);
             return;
         }
