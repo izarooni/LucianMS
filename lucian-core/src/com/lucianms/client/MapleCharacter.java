@@ -5142,6 +5142,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Di
 
     public void doRebirth() {
         rebirths += 1;
+        rebirthPoints += 3;
 
         if (!isAutoRebirth()) {
             job = MapleJob.BEGINNER;
@@ -5153,15 +5154,17 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Di
         exp.set(0);
         updateSingleStat(MapleStat.EXP, 0);
 
-        sendMessage(6, "You now have {} rebirths", rebirths);
+        if (rebirths % 5 == 0) {
+            sendMessage(6, "You have reached {} rebirths, {} rebirth points", rebirths, rebirthPoints);
+        }
 
         announce(MaplePacketCreator.showEffect("breakthrough/Ten")); // effect
         announce(MaplePacketCreator.trembleEffect(0, 0)); // shake screen
 
         // damage all monsters in the screen
+        int damage = 99999;
         for (MapleMapObject object : getMap().getMapObjectsInRange(getPosition(), 100000, Collections.singletonList(MapleMapObjectType.MONSTER))) {
             MapleMonster monster = (MapleMonster) object;
-            int damage = 99999;
             getMap().broadcastMessage(MaplePacketCreator.damageMonster(monster.getObjectId(), damage));
             getMap().damageMonster(this, monster, damage);
         }
