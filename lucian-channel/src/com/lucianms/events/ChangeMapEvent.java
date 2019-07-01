@@ -85,6 +85,7 @@ public class ChangeMapEvent extends PacketEvent {
                 client.disconnect();
                 return null;
             }
+            player.saveToDB();
             player.getCashShop().open(false);
             world.getPlayerStorage().remove(player.getId());
             client.updateLoginState(LoginState.Transfer);
@@ -92,7 +93,6 @@ public class ChangeMapEvent extends PacketEvent {
                 player.getFakePlayer().setFollowing(true);
                 player.getMap().addFakePlayer(player.getFakePlayer());
             }
-            player.saveToDB();
             client.announce(MaplePacketCreator.getChannelChange(ch.getNetworkAddress(), ch.getPort()));
         } else {
             if (player.getCashShop().isOpened()) {

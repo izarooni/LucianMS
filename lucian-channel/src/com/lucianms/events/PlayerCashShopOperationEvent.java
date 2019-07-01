@@ -55,21 +55,21 @@ public class PlayerCashShopOperationEvent extends PacketEvent {
     public void processInput(MaplePacketReader reader) {
         action = reader.readByte();
         switch (action) {
-            case 0x03:
-            case 0x1e: {
+            case 3:
+            case 30: {
                 reader.readByte();
                 cost = reader.readInt();
                 SN = reader.readInt();
                 break;
             }
-            case 0x04: {
+            case 4: {
                 birthday = reader.readInt();
                 itemID = reader.readInt();
                 username = reader.readMapleAsciiString();
                 content = reader.readMapleAsciiString();
                 break;
             }
-            case 0x05: {
+            case 5: {
                 CashShop cashShop = getClient().getPlayer().getCashShop();
                 cashShop.clearWishList();
                 wishlist = new int[10];
@@ -82,7 +82,7 @@ public class PlayerCashShopOperationEvent extends PacketEvent {
                 }
                 break;
             }
-            case 0x06: {
+            case 6: {
                 reader.skip(1);
                 cashType = reader.readInt();
                 subAction = reader.readByte();
@@ -93,7 +93,7 @@ public class PlayerCashShopOperationEvent extends PacketEvent {
                 }
                 break;
             }
-            case 0x07: {
+            case 7: {
                 reader.skip(1);
                 cashType = reader.readInt();
                 subAction = reader.readByte();
@@ -102,24 +102,24 @@ public class PlayerCashShopOperationEvent extends PacketEvent {
                 }
                 break;
             }
-            case 0x08: {
+            case 8: {
                 reader.skip(1);
                 cashType = reader.readInt();
                 itemID = reader.readInt();
                 break;
             }
-            case 0x0d:
-            case 0x20: {
+            case 13:
+            case 32: {
                 itemID = reader.readInt();
                 break;
             }
-            case 0x0e: {
+            case 14: {
                 itemID = reader.readInt();
                 reader.skip(4);
                 inventoryType = reader.readByte();
                 break;
             }
-            case 0x1d: {
+            case 29: {
                 birthday = reader.readInt();
                 cashType = reader.readInt();
                 SN = reader.readInt();
@@ -153,8 +153,8 @@ public class PlayerCashShopOperationEvent extends PacketEvent {
             return null;
         }
         switch (action) {
-            case 0x03:
-            case 0x1E: {
+            case 3:
+            case 30: {
                 CashItem cItem = CashItemFactory.getItem(SN);
                 if (cItem == null || !cItem.isOnSale() || cs.getCash(cost) < cItem.getPrice()) {
                     return null;
@@ -169,7 +169,7 @@ public class PlayerCashShopOperationEvent extends PacketEvent {
                     client.announce(MaplePacketCreator.showCash(player));
                     return null;
                 }
-                if (action == 0x03) { // Item
+                if (action == 3) { // Item
                     Item item = cItem.toItem();
                     cs.addToInventory(item);
                     client.announce(MaplePacketCreator.showBoughtCashItem(item, client.getAccID()));
@@ -189,7 +189,7 @@ public class PlayerCashShopOperationEvent extends PacketEvent {
                 client.announce(MaplePacketCreator.showCash(player));
                 break;
             }
-            case 0x04: {
+            case 4: {
                 CashItem cItem = CashItemFactory.getItem(itemID);
                 Map<String, String> recipient = MapleCharacter.getCharacterFromDatabase(username);
                 if (prohibitPurchase(cItem, cs.getCash(4)) || content.length() < 1 || content.length() > 73) {
@@ -215,11 +215,11 @@ public class PlayerCashShopOperationEvent extends PacketEvent {
                 if (receiver != null) receiver.showNote();
                 break;
             }
-            case 0x05: {
+            case 5: {
                 client.announce(MaplePacketCreator.showWishList(player, true));
                 break;
             }
-            case 0x06: {
+            case 6: {
                 if (subAction == 0) {
                     if (cs.getCash(cashType) < 4000) {
                         return null;
@@ -244,7 +244,7 @@ public class PlayerCashShopOperationEvent extends PacketEvent {
                 }
                 break;
             }
-            case 0x07: {
+            case 7: {
                 if (subAction == 0) {
                     if (cs.getCash(cashType) < 4000) {
                         return null;
@@ -268,7 +268,7 @@ public class PlayerCashShopOperationEvent extends PacketEvent {
                 }
                 break;
             }
-            case 0x08: {
+            case 8: {
                 CashItem cItem = CashItemFactory.getItem(itemID);
                 if (prohibitPurchase(cItem, cs.getCash(cashType))) {
                     client.announce(getCashItemMoveFailed((byte) 165));
@@ -280,7 +280,7 @@ public class PlayerCashShopOperationEvent extends PacketEvent {
                 }
                 break;
             }
-            case 0x0D: {
+            case 13: {
                 Item item = cs.findByCashId(itemID);
                 if (item == null) {
                     return null;
@@ -311,7 +311,7 @@ public class PlayerCashShopOperationEvent extends PacketEvent {
                 }
                 break;
             }
-            case 0x0e: {
+            case 14: {
                 MapleInventory mi = player.getInventory(MapleInventoryType.getByType(inventoryType));
                 Item item = mi.findByCashId(itemID);
                 if (item == null) {
@@ -322,7 +322,7 @@ public class PlayerCashShopOperationEvent extends PacketEvent {
                 client.announce(MaplePacketCreator.putIntoCashInventory(item, client.getAccID()));
                 break;
             }
-            case 0x1d: {
+            case 29: {
                 CashItem csItem = CashItemFactory.getItem(SN);
                 if (player.isDebug()) {
                     String content = "[Debug]";
@@ -360,7 +360,7 @@ public class PlayerCashShopOperationEvent extends PacketEvent {
                 client.announce(MaplePacketCreator.showCash(player));
                 break;
             }
-            case 0x20: {
+            case 32: {
                 int itemId = CashItemFactory.getItem(itemID).getItemId();
                 if (player.getMeso() > 0) {
                     if (itemId == 4031180 || itemId == 4031192 || itemId == 4031191) {
@@ -372,7 +372,7 @@ public class PlayerCashShopOperationEvent extends PacketEvent {
                 client.announce(MaplePacketCreator.showCash(player));
                 break;
             }
-            case 0x23: {
+            case 35: {
                 CashItem csItem = CashItemFactory.getItem(SN);
                 if (player.isDebug()) {
                     String content = "[Debug]";

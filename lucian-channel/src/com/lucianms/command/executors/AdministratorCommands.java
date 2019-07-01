@@ -75,6 +75,7 @@ public class AdministratorCommands extends CommandExecutor {
         addCommand("wipe", this::CommandWipePlayer, "Clear all items for a specified player");
         addCommand("test", this::CommandTest, "Test command");
         addCommand("stop", this::CommandExit, "Stop the server after a specified amount of time (in seconds)");
+        addCommand("effect", this::CommandEffect, "Test a visual map effect");
 
         Map<String, Pair<CommandEvent, String>> commands = getCommands();
         HELP_LIST = new ArrayList<>(commands.size());
@@ -82,6 +83,15 @@ public class AdministratorCommands extends CommandExecutor {
             HELP_LIST.add(String.format("!%s - %s", e.getKey(), e.getValue().getRight()));
         }
         HELP_LIST.sort(String::compareTo);
+    }
+
+    private void CommandEffect(MapleCharacter player, Command cmd, CommandArgs args) {
+        if (args.length() == 0) {
+            player.sendMessage("usage: !{} <path>", cmd.getName());
+            return;
+        }
+        String path = args.concatFrom(0);
+        player.announce(MaplePacketCreator.mapEffect(path));
     }
 
     private void CommandList(MapleCharacter player, Command cmd, CommandArgs args) {
