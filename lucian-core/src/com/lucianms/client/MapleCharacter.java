@@ -5183,9 +5183,11 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Di
         // damage all monsters in the screen
         int damage = 99999;
         for (MapleMapObject object : getMap().getMapObjectsInRange(getPosition(), 100000, Collections.singletonList(MapleMapObjectType.MONSTER))) {
-            MapleMonster monster = (MapleMonster) object;
-            getMap().broadcastMessage(MaplePacketCreator.damageMonster(monster.getObjectId(), damage));
-            getMap().damageMonster(this, monster, damage);
+            if (Randomizer.nextInt(100) < 30) {
+                MapleMonster monster = (MapleMonster) object;
+                getMap().broadcastMessage(MaplePacketCreator.damageMonster(monster.getObjectId(), damage));
+                getMap().damageMonster(this, monster, damage);
+            }
         }
     }
 
