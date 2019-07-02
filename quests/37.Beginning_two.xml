@@ -15,7 +15,7 @@
 
     <imgdir name="toCollect"></imgdir>
     <imgdir name="rewards">
-        <int name="meso" value="1000000000"/>
+        <int name="meso" value="10000000"/>
         <int name="exp" value="100000"/>
     </imgdir>
 </imgdir>
