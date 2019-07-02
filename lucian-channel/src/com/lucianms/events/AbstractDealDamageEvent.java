@@ -373,6 +373,7 @@ public abstract class AbstractDealDamageEvent extends PacketEvent {
                 player.sendMessage(5, "Skills are disabled in this map and will not show for other players.");
                 spamTracker.record();
             }
+            setCanceled(true);
             return null;
         }
 
