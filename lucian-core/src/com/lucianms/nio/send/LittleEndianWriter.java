@@ -28,6 +28,12 @@ public class LittleEndianWriter {
         baos.write((byte) b);
     }
 
+    public void nCopies(byte value, int copies) {
+        for (int i = 0; i < copies; i++) {
+            baos.write(value);
+        }
+    }
+
     public void skip(int b) {
         write(new byte[b]);
     }

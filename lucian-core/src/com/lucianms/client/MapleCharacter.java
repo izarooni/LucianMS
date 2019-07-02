@@ -231,7 +231,6 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Di
     private Task dragonBloodTask;
     private Task beholderHealingTask;
     private Task beholderBuffTask;
-    private Task berserkTask;
     private Task fishingTask;
 
     private Cheater cheater = new Cheater();
@@ -3674,6 +3673,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Di
             }
         } else if (effect.isRecovery()) {
             final byte heal = (byte) effect.getX();
+            recoveryTask = TaskExecutor.cancelTask(recoveryTask);
             recoveryTask = TaskExecutor.createRepeatingTask(new Runnable() {
                 @Override
                 public void run() {
@@ -4339,6 +4339,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Di
     public void setRates() {
         MapleWorld w = Server.getWorld(world);
 
+        Calendar instance = Calendar.getInstance();
         expRate = w.getExpRate();
         mesoRate = w.getMesoRate();
         dropRate = w.getDropRate();
@@ -4347,6 +4348,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Di
             expRate += forcedStat.getBonusExpRate();
         }
 
+        //region occupation modifiers
         if (occupation != null) {
             byte occupationLevel = (byte) Math.max(1, occupation.getLevel());
             switch (occupation.getType()) {
@@ -4371,6 +4373,24 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Di
                     break;
             }
         }
+        //endregion
+
+        ArrayList<Item> coupons = getInventory(MapleInventoryType.CASH).find(i -> i.getItemId() / 10000 == 521);
+        if (!coupons.isEmpty()) {
+            Item first = coupons.iterator().next();
+            MapleItemInformationProvider.ModifierCoupon coupon = MapleItemInformationProvider.getInstance().getCoupon(first.getItemId());
+            if (coupon != null) {
+                int day = instance.get(Calendar.DAY_OF_WEEK);
+                int hour = instance.get(Calendar.HOUR_OF_DAY);
+                Pair<Integer, Integer> timeRange = coupon.getTimes().get(day);
+                if (timeRange != null) {
+                    if (hour >= timeRange.getLeft() && hour <= timeRange.getRight()) {
+                        expRate *= coupon.getRate();
+                    }
+                }
+            }
+        }
+        coupons.clear();
 
         // lul just in case
         expRate = Math.max(1, expRate);
@@ -5002,7 +5022,6 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Di
         dragonBloodTask = TaskExecutor.cancelTask(dragonBloodTask);
         beholderHealingTask = TaskExecutor.cancelTask(beholderHealingTask);
         beholderBuffTask = TaskExecutor.cancelTask(beholderBuffTask);
-        berserkTask = TaskExecutor.cancelTask(berserkTask);
         recoveryTask = TaskExecutor.cancelTask(recoveryTask);
         tasks.forEach(Task::cancel);
         tasks.clear();

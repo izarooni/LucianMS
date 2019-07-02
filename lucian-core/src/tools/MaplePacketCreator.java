@@ -3151,16 +3151,11 @@ public class MaplePacketCreator {
                 MapleBuffStat buff = e.getKey();
                 BuffContainer container = e.getValue();
                 if (buff.getIndex() == tsIndex) {
-                    if (buff == MapleBuffStat.PARTY_BOOSTER) {
-                        w.writeInt(container.getValue());
-                        w.writeInt(container.getSourceID());
-                        w.writeShort(container.getDuration());
-                        w.skip(9);
-                    }
+                    buff.encode(w, container);
                 }
             }
         }
-        w.writeShort(Short.MAX_VALUE); // nDelay
+        w.writeShort(0); // nDelay
         // if(SecondaryStat::IsMovementAffectingStat)
         w.write(0); // CUserLocal::SetSecondaryStatChangedPoint
     }

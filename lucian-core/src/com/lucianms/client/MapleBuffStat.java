@@ -1,5 +1,10 @@
 package com.lucianms.client;
 
+import com.lucianms.nio.send.MaplePacketWriter;
+import com.lucianms.server.BuffContainer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  * @author Kevin
  */
@@ -87,13 +92,32 @@ public enum MapleBuffStat {
     ASSIST_CHARGE(79),
     ENRAGE(80),
     BEHOLDER(81),
-    ENERGY_CHARGE(82),
+    ENERGY_CHARGE(82) {
+        @Override
+        public void encode(MaplePacketWriter w, BuffContainer container) {
+            w.skip(4);
+        }
+    },
     DASH_SPEED(83),
     DASH_JUMP(84),
-    RIDE_VEHICLE(85),
-    PARTY_BOOSTER(86),
+    RIDE_VEHICLE(85) {
+        @Override
+        public void encode(MaplePacketWriter w, BuffContainer container) {
+            w.skip(3);
+        }
+    },
+    PARTY_BOOSTER(86) {
+        @Override
+        public void encode(MaplePacketWriter w, BuffContainer container) {
+            w.writeInt(container.getValue());
+            w.writeInt(container.getSourceID());
+            w.skip(9);
+            w.writeShort(container.getDuration());
+        }
+    },
     GUIDED_BULLET(87),
     ZOMBIFY(88);
+    private static final Logger LOGGER = LoggerFactory.getLogger(MapleBuffStat.class);
     private final int i;
     private final int index;
 
@@ -108,5 +132,9 @@ public enum MapleBuffStat {
 
     public int getIndex() {
         return index;
+    }
+
+    public void encode(MaplePacketWriter w, BuffContainer container) {
+        LOGGER.warn("not handled '{}'", name());
     }
 }
