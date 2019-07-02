@@ -8,6 +8,7 @@ import com.lucianms.lang.annotation.PacketWorker;
 import com.lucianms.scheduler.TaskExecutor;
 import com.lucianms.server.life.MapleLifeFactory;
 import com.lucianms.server.life.MapleMonster;
+import com.lucianms.server.life.MonsterListener;
 import com.lucianms.server.maps.MapleMap;
 import com.lucianms.server.maps.MapleMapItem;
 import com.lucianms.server.maps.MapleMapObject;
@@ -60,7 +61,7 @@ public class BlackMageSummoner extends GenericEvent {
             return;
         }
         Object result = event.onPacket();
-        if (result != null && result instanceof MapleMapItem) {
+        if (result instanceof MapleMapItem) {
             MapleMapItem mapItem = (MapleMapItem) result;
             MapleCharacter player = event.getClient().getPlayer();
 
@@ -78,6 +79,12 @@ public class BlackMageSummoner extends GenericEvent {
 
                             MapleMonster monster = MapleLifeFactory.getMonster(SummoningMonster);
                             if (monster != null) {
+                                monster.getListeners().add(new MonsterListener() {
+                                    @Override
+                                    public void monsterKilled(MapleMonster monster, MapleCharacter player) {
+                                        TaskExecutor.createTask(() -> map.warpEveryone(333), 3000);
+                                    }
+                                });
                                 map.spawnMonsterOnGroudBelow(monster, mapItem.getPosition());
                             } else {
                                 LOGGER.warn("Attempt to summon black mage - monster({}) does not exist!", SummoningMonster);
