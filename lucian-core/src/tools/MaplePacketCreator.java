@@ -3128,18 +3128,22 @@ public class MaplePacketCreator {
             if (buff == MapleBuffStat.PARTY_BOOSTER) {
                 // does not seem to be encoded here
                 continue;
-            } else if (container.getMobSkill() != null) {
+            }
+            int sourceID = container.getSourceID();
+            int value = container.getValue();
+
+            if (container.getMobSkill() != null) {
                 w.writeShort(container.getMobSkill().getSkillLevel());
-                w.writeShort(container.getSourceID());
-                w.writeShort(container.getValue());
+                w.writeShort(sourceID);
+                w.writeShort(value);
             } else {
-                w.writeShort(container.getValue());
+                w.writeShort(value);
                 if (buff == MapleBuffStat.RIDE_VEHICLE) {
-                    w.writeInt(container.getValue());
+                    w.writeInt(value); // ID of mount
                 } else if (!container.getEffect().isSkill()) {
-                    w.writeInt(-container.getSourceID());
+                    w.writeInt(-sourceID);
                 } else {
-                    w.writeInt(container.getSourceID());
+                    w.writeInt(sourceID);
                 }
             }
             w.writeInt(container.getDuration());

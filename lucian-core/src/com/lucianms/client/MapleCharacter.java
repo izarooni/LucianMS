@@ -4150,6 +4150,9 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Di
             List<Pair<Item, MapleInventoryType>> itemsWithType = new ArrayList<>();
             for (MapleInventory iv : inventory) {
                 for (Item item : iv.list()) {
+                    if (item instanceof Equip && ((Equip) item).isSandbox()) {
+                        continue;
+                    }
                     itemsWithType.add(new Pair<>(item, iv.getType()));
                 }
             }

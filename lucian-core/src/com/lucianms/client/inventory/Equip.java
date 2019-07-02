@@ -43,6 +43,7 @@ public class Equip extends Item {
     private int eliminations;
     private boolean wear;
     private boolean regalia;
+    private boolean sandbox;
 
     public Equip(int id) {
         this(id, (short) 0);
@@ -421,6 +422,14 @@ public class Equip extends Item {
 
     public void setRegalia(boolean regalia) {
         this.regalia = regalia;
+    }
+
+    public boolean isSandbox() {
+        return sandbox;
+    }
+
+    public void setSandbox(boolean sandbox) {
+        this.sandbox = sandbox;
     }
 
     public byte getItemLevel() {

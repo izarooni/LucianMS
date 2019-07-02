@@ -2,8 +2,6 @@ package com.lucianms.client;
 
 import com.lucianms.nio.send.MaplePacketWriter;
 import com.lucianms.server.BuffContainer;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * @author Kevin
@@ -117,7 +115,6 @@ public enum MapleBuffStat {
     },
     GUIDED_BULLET(87),
     ZOMBIFY(88);
-    private static final Logger LOGGER = LoggerFactory.getLogger(MapleBuffStat.class);
     private final int i;
     private final int index;
 
@@ -135,6 +132,5 @@ public enum MapleBuffStat {
     }
 
     public void encode(MaplePacketWriter w, BuffContainer container) {
-        LOGGER.warn("not handled '{}'", name());
     }
 }

@@ -2,7 +2,6 @@ package com.lucianms.io.scripting.npc;
 
 import com.lucianms.client.MapleCharacter;
 import com.lucianms.client.MapleClient;
-import com.lucianms.constants.PlayerToggles;
 import com.lucianms.io.scripting.ScriptUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -52,20 +51,11 @@ public class NPCScriptManager {
             binds.add(new Pair<>("ch", client.getChannelServer()));
             binds.add(new Pair<>("world", client.getWorldServer()));
             binds.add(new Pair<>("cm", cm));
-
             Invocable iv;
             try {
                 iv = ScriptUtil.eval(path, binds);
             } catch (FileNotFoundException e) {
                 sendUnused(cm, npc, fileName, player.getMapId());
-                dispose(client);
-                return;
-            }
-
-            boolean revoked = player.getToggles().checkProperty(PlayerToggles.CommandNPCAccess, false);
-
-            if (revoked) {
-                player.sendMessage(5, PlayerToggles.ErrorMessage);
                 dispose(client);
                 return;
             }

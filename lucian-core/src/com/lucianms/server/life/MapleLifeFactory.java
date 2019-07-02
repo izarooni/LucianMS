@@ -81,7 +81,7 @@ public class MapleLifeFactory {
             stats.setExplosiveReward(MapleDataTool.getIntConvert("explosiveReward", monsterInfoData, 0) > 0);
             stats.setFfaLoot(MapleDataTool.getIntConvert("publicReward", monsterInfoData, 0) > 0);
             stats.setUndead(MapleDataTool.getIntConvert("undead", monsterInfoData, 0) > 0);
-            stats.setName(MapleDataTool.getString(mid + "/name", mobStringData, "MISSINGNO"));
+            stats.setName(MapleDataTool.getString(mid + "/name", mobStringData, "No-Name"));
             stats.setBuffToGive(MapleDataTool.getIntConvert("buff", monsterInfoData, -1));
             stats.setCP(MapleDataTool.getIntConvert("getCP", monsterInfoData, 0));
             stats.setRemoveOnMiss(MapleDataTool.getIntConvert("removeOnMiss", monsterInfoData, 0) > 0);

@@ -438,6 +438,7 @@ public class AdministratorCommands extends CommandExecutor {
                     break;
                 case "items":
                     MapleItemInformationProvider.getInstance().clearCache();
+                    MapleItemInformationProvider.getInstance().getAllItems();
                     player.sendMessage("Item cache cleared");
                     break;
                 case "monsters":

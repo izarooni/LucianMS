@@ -2,24 +2,27 @@ package com.lucianms.features;
 
 import com.lucianms.client.MapleCharacter;
 import com.lucianms.client.inventory.Equip;
-import com.lucianms.client.inventory.Item;
 import com.lucianms.client.inventory.MapleInventory;
 import com.lucianms.client.inventory.MapleInventoryType;
+import com.lucianms.command.Command;
+import com.lucianms.command.CommandArgs;
 import com.lucianms.constants.ItemConstants;
-import com.lucianms.constants.PlayerToggles;
 import com.lucianms.events.ChangeChannelEvent;
 import com.lucianms.events.EnterCashShopEvent;
 import com.lucianms.events.PlayerAllChatEvent;
 import com.lucianms.io.scripting.npc.NPCScriptManager;
 import com.lucianms.lang.annotation.PacketWorker;
 import com.lucianms.server.FieldBuilder;
+import com.lucianms.server.MapleItemInformationProvider;
 import com.lucianms.server.life.MapleLifeFactory;
 import com.lucianms.server.life.MapleNPC;
 import com.lucianms.server.maps.MapleMap;
 import com.lucianms.server.maps.SavedLocationType;
 import tools.MaplePacketCreator;
+import tools.Pair;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * @author izarooni
@@ -72,7 +75,6 @@ public class PlayerCreative extends GenericEvent {
 
     @Override
     public void unregisterPlayer(MapleCharacter player) {
-        player.getToggles().remove(PlayerToggles.CommandNPCAccess);
         player.removeGenericEvent(this);
         player.setCreativeInventory(null);
         player.announce(MaplePacketCreator.getCharInfo(player));
@@ -88,44 +90,66 @@ public class PlayerCreative extends GenericEvent {
     @PacketWorker
     public void onChatEvent(PlayerAllChatEvent event) {
         MapleCharacter player = event.getClient().getPlayer();
+        MapleMap map = player.getMap();
         String message = event.getContent();
 
-        String[] args = message.split(" ");
+        if (message.isEmpty()) {
+            return;
+        }
 
-        player.getToggles().put(PlayerToggles.CommandNPCAccess, false);
+        String[] sInput = message.split(" ");
+        if (sInput[0].charAt(0) != '@') {
+            return;
+        }
+        String[] sArgs = new String[sInput.length - 1];
+        System.arraycopy(sInput, 1, sArgs, 0, sArgs.length);
+        Command cmd = new Command(sInput[0].substring(1));
+        CommandArgs args = new CommandArgs(sArgs);
 
-        if (args[0].equals("@want")) {
-            int itemID;
-            try {
-                itemID = Integer.parseInt(args[1]);
-            } catch (NumberFormatException e) {
-                player.sendMessage(5, "'{}' is not a number.", args[1]);
+        if (cmd.equals("item")) {
+            if (args.length() < 1) {
+                player.sendMessage("usage: @item <item_id/name>");
                 return;
             }
-            Item item;
-            if (ItemConstants.getInventoryType(itemID) == MapleInventoryType.EQUIP) {
-                item = new Equip(itemID, (short) 0);
+            Number itemID = args.parseNumber(0, int.class);
+            if (itemID != null) {
+                if (ItemConstants.getInventoryType(itemID.intValue()) == MapleInventoryType.EQUIP) {
+                    map.spawnItemDrop(player, player, new Equip(itemID.intValue()), player.getPosition(), true, false);
+                } else {
+                    player.sendMessage(5, "Only equips are allowed");
+                }
             } else {
-                player.sendMessage(5, "Only equips are allowed!");
-                return;
+                String input = args.concatFrom(0);
+                List<Pair<Integer, String>> itemNames = MapleItemInformationProvider.getInstance().getAllItems();
+                List<Pair<Integer, String>> found = itemNames.stream()
+                        .filter(p -> ItemConstants.getInventoryType(p.getLeft()) == MapleInventoryType.EQUIP)
+                        .filter(p -> p.getRight().toLowerCase().contains(input.toLowerCase())).collect(Collectors.toList());
+                if (found.size() == 1) {
+                    Equip equip = new Equip(found.get(0).getLeft());
+                    equip.setSandbox(true);
+                    map.spawnItemDrop(player, player, equip, player.getPosition(), true, false);
+                } else {
+                    found.forEach(p -> player.sendMessage("{} - {}", p.getLeft(), p.getRight()));
+                }
+                found.clear();
             }
-
-            player.getMap().spawnItemDrop(player, player, item, player.getPosition(), true, false);
-
-        } else if (args[0].equals("cleardrops")) {
-            player.getMap().clearDrops();
+            event.setCanceled(true);
+        } else if (cmd.equals("cleardrops")) {
+            map.clearDrops();
+            map.sendMessage(5, "Drops cleared");
+            event.setCanceled(true);
         }
     }
 
     @PacketWorker
     public void onEnterCashShop(EnterCashShopEvent event) {
-        event.getClient().getPlayer().sendMessage(5, PlayerToggles.ErrorMessage);
+        event.getClient().getPlayer().sendMessage("You cannot do that here.");
         event.setCanceled(true);
     }
 
     @PacketWorker
     public void onChangeChannel(ChangeChannelEvent event) {
-        event.getClient().getPlayer().sendMessage(5, PlayerToggles.ErrorMessage);
+        event.getClient().getPlayer().sendMessage("You cannot do that here.");
         event.setCanceled(true);
     }
 }
