@@ -407,20 +407,19 @@ public class MapleMap implements PacketAnnouncer {
                 } else {
                     pos.x = mobpos + ((d % 2 == 0) ? (25 * (d + 1) / 2) : -(25 * (d / 2)));
                 }
+                int amount = Randomizer.rand(de.Minimum, de.Maximum);
                 if (de.itemId == 0) { // meso
-                    int mesos = Randomizer.nextInt(de.Maximum - de.Minimum) + de.Minimum;
-
-                    if (mesos > 0) {
+                    if (amount > 0) {
                         if (chr.getBuffedValue(MapleBuffStat.MESO_UP) != null) {
-                            mesos = (int) (mesos * chr.getBuffedValue(MapleBuffStat.MESO_UP).doubleValue() / 100.0);
+                            amount = (int) (amount * chr.getBuffedValue(MapleBuffStat.MESO_UP).doubleValue() / 100.0);
                         }
-                        spawnMesoDrop(mesos * chr.getMesoRate(), calcDropPos(pos, mob.getPosition()), mob, chr, false, droptype);
+                        spawnMesoDrop(amount * chr.getMesoRate(), calcDropPos(pos, mob.getPosition()), mob, chr, false, droptype);
                     }
                 } else {
                     if (ItemConstants.getInventoryType(de.itemId) == MapleInventoryType.EQUIP) {
                         idrop = ii.randomizeStats(ii.getEquipById(de.itemId));
                     } else {
-                        idrop = new Item(de.itemId, (short) 0, (short) (de.Maximum != 1 ? Randomizer.nextInt(de.Maximum - de.Minimum) + de.Minimum : 1));
+                        idrop = new Item(de.itemId, (short) 0, (short) amount);
                     }
                     spawnDrop(idrop, calcDropPos(pos, mob.getPosition()), mob, chr, droptype, de.questid);
                 }
