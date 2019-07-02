@@ -1,4 +1,13 @@
 load('scripts/util_imports.js');
+const Rewards = [
+    new Reward("NX", 5000),
+    new Reward("item", ServerConstants.CURRENCY, 1),
+    new Reward("NX", 12000),
+    new Reward("item", ServerConstants.CURRENCY, 2),
+    new Reward("NX", 20000),
+    new Reward("item", ServerConstants.CURRENCY, 3),
+    new Reward("NX", 25000),
+];
 const TimeUnit = Java.type("java.util.concurrent.TimeUnit");
 const Calendar = Java.type("java.util.Calendar");
 const now = Date.now();
@@ -43,7 +52,9 @@ function action(mode, type, selection) {
             if (now >= ttd) { // it's been at least 24 hours since last login
                 setShowable(true);
                 if (now - ttd >= TimeUnit.DAYS.toMillis(1)) { // been 2+ days since login
-                    cm.sendNext("Aw man, your " + streak + " daily login streak has been crushed!\r\nSadly, it has been over #b" + TimeUnit.MILLISECONDS.toDays(now - ttd) + " days#k since your last login.\r\nYou'll have to start over now...", 1);
+                    cm.sendNext("Aw man, your " + streak + " daily login streak has been crushed!"
+                     + "\r\nSadly, it has been over #b" + TimeUnit.MILLISECONDS.toDays(now - ttd) + " days#k since your last login."
+                     + "\r\nYou'll have to start over now...", 1);
                     recordStreak(1);
                     giveReward(1);
                     cm.dispose();
@@ -52,13 +63,19 @@ function action(mode, type, selection) {
                 }
             } else {
                 if (show) {
-                    cm.sendSimple("You're currently on a #b" + streak + "#k day login streak!\r\nYour next attendance is in #b" + StringUtil.getTimeElapse(ttd - now) + "\r\n\r\n#L0##bDon't show again for today#l");
+                    cm.sendSimple("You're currently on a #b" + streak + "#k day login streak!"
+                    + "\r\nYour next attendance is in #b" + StringUtil.getTimeElapse(ttd - now) + "\r\n"
+                    + "\r\n#kLogin then to receive your next reward: #b" + Rewards[streak & 7].toString() + "#k\r\n"
+                    + "\r\n#L0##bDon't show again for today#l");
                 } else {
                     cm.dispose();
                 }
             }
         } else {
-            cm.sendNext("This is your first daily login reward ever!\r\nBe sure to come back in 24 hours to claim tomorrow's prize~", 1);
+            cm.sendNext("This is your first daily login reward ever!"
+            + "\r\nBe sure to come back in 24 hours to claim tomorrow's prize:"
+            + "\r\n#kLogin then to receive your next reward: #b" + Rewards[streak & 7].toString() + "#k\r\n"
+            , 1);
         }
     } else if (status === 2) {
         if (now < ttd) {
@@ -116,10 +133,26 @@ function aaa(streak) {
 }
 
 function giveReward(streak) {
-    if (InventoryModifier.checkSpace(client, 2002031, 1, "")) {
-        cm.gainItem(2002031, 1, true); // EXP Ticket
-        player.gainMeso(25000, true);
-        return true;
+    let r = Rewards[streak & 7];
+    if (r.type == "item") {
+        let quantity = r.quantity * (1 + Math.floor(streak  / 7));
+        if (InventoryModifier.checkSpace(client, r.itemID, quantity, "")) {
+            cm.gainItem(r.itemID, quantity, true);
+            return true;
+        }
+    } else if (r.type == "NX") {
+         player.addPoints("nx", r.itemID);
+         player.sendMessage("You have gained {} NX", r.itemID);
     }
     return false;
+}
+
+function Reward(type, itemID, quantity) {
+    this.type = type;
+    this.itemID = itemID;
+    this.quantity = quantity;
+    this.toString = function() {
+        if (type == "NX") return `${itemID} NX`;
+        else if (type == "item") return `#z${itemID}# x${quantity}`;
+    }
 }
