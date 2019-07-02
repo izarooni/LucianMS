@@ -43,6 +43,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.text.DateFormatSymbols;
 import java.util.*;
 import java.util.Map.Entry;
 
@@ -64,7 +65,8 @@ public class MapleItemInformationProvider {
 
     private HashMap<Integer, Short> slotMaxCache = new HashMap<>();
     private HashMap<Integer, MapleStatEffect> itemEffects = new HashMap<>();
-    private HashMap<Integer, Map<String, Integer>> equipStatsCache = new HashMap<>();
+    private HashMap<Integer, Map<String, Integer>> itemDataCache = new HashMap<>();
+    private HashMap<Integer, ModifierCoupon> coupons = new HashMap<>(20);
     private HashMap<Integer, Equip> equipCache = new HashMap<>();
     private HashMap<Integer, Double> priceCache = new HashMap<>();
     private HashMap<Integer, Integer> wholePriceCache = new HashMap<>();
@@ -114,7 +116,7 @@ public class MapleItemInformationProvider {
     public void clearCache() {
         slotMaxCache.clear();
         itemEffects.clear();
-        equipStatsCache.clear();
+        itemDataCache.clear();
         equipCache.clear();
         priceCache.clear();
         wholePriceCache.clear();
@@ -263,7 +265,7 @@ public class MapleItemInformationProvider {
     }
 
     private MapleData getItemData(int itemId) {
-        String idStr = "0" + String.valueOf(itemId);
+        String idStr = "0" + itemId;
         MapleDataDirectoryEntry root = WzItem.getRoot();
         for (MapleDataDirectoryEntry topDir : root.getSubdirectories()) {
             for (MapleDataFileEntry iFile : topDir.getFiles()) {
@@ -406,8 +408,8 @@ public class MapleItemInformationProvider {
     }
 
     public Map<String, Integer> getEquipStats(int itemId) {
-        if (equipStatsCache.containsKey(itemId)) {
-            return equipStatsCache.get(itemId);
+        if (itemDataCache.containsKey(itemId)) {
+            return itemDataCache.get(itemId);
         }
         Map<String, Integer> ret = new LinkedHashMap<>();
         MapleData item = getItemData(itemId);
@@ -441,7 +443,7 @@ public class MapleItemInformationProvider {
         ret.put("cursed", MapleDataTool.getInt("cursed", info, 0));
         ret.put("success", MapleDataTool.getInt("success", info, 0));
         ret.put("fs", MapleDataTool.getInt("fs", info, 0));
-        equipStatsCache.put(itemId, ret);
+        itemDataCache.put(itemId, ret);
         return ret;
     }
 
@@ -841,7 +843,6 @@ public class MapleItemInformationProvider {
             return isQuestItemCache.get(itemId);
         }
         MapleData data = getItemData(itemId);
-        System.out.println(data);
         boolean questItem = MapleDataTool.getIntConvert("info/quest", data, 0) == 1;
         isQuestItemCache.put(itemId, questItem);
         return questItem;
@@ -986,12 +987,41 @@ public class MapleItemInformationProvider {
         }
     }
 
+
+    public ModifierCoupon getCoupon(int itemID) {
+        MapleData info = getItemData(itemID);
+        if (info == null) {
+            return null;
+        } else if ((info = info.getChildByPath("info")) == null) {
+            return null;
+        }
+        ModifierCoupon coupon = new ModifierCoupon();
+        Map<Integer, Pair<Integer, Integer>> mTimes = new HashMap<>();
+        Number nRate = (Number) info.getChildByPath("rate").getData();
+        coupon.rate = nRate.floatValue();
+        coupon.times = mTimes;
+        for (MapleData times : info.getChildByPath("time").getChildren()) {
+            String[] input = ((String) times.getData()).split(":");
+            String month = input[0];
+            String[] timeRange = input[1].split("-");
+            int lBound = Integer.parseInt(timeRange[0]), uBound = Integer.parseInt(timeRange[1]);
+
+            for (int i = 0; i < DateFormatSymbols.getInstance().getShortWeekdays().length; i++) {
+                if (DateFormatSymbols.getInstance().getShortWeekdays()[i].equalsIgnoreCase(month)) {
+                    mTimes.put(i, new Pair<>(lBound, uBound));
+                }
+            }
+        }
+        System.out.println(coupon);
+        return coupon;
+    }
+
     public boolean isCash(int itemId) {
         try {
             Map<String, Integer> stats = getEquipStats(itemId);
             return itemId / 1000000 == 5 || (stats != null && stats.get("cash") == 1);
         } catch (NullPointerException e) {
-            System.err.println("Could not find item property 'cash' for item " + itemId);
+            LOGGER.error("Failed to check if item {} is cash", itemId, e);
             throw e;
         }
     }
@@ -1175,6 +1205,28 @@ public class MapleItemInformationProvider {
 
         public boolean runOnPickup() {
             return runOnPickup;
+        }
+    }
+
+    public static class ModifierCoupon {
+
+        private float rate;
+        /**
+         * Stores the day of the week to range of hours of coupon availability
+         */
+        private Map<Integer, Pair<Integer, Integer>> times;
+
+        @Override
+        public String toString() {
+            return String.format("ModifierCoupon{rate=%s, times=%s}", rate, times);
+        }
+
+        public float getRate() {
+            return rate;
+        }
+
+        public Map<Integer, Pair<Integer, Integer>> getTimes() {
+            return times;
         }
     }
 }

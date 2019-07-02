@@ -48,8 +48,12 @@ public class MapleInventoryManipulator {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MapleInventoryManipulator.class);
 
-    private static void checkItemQuestProgress(MapleCharacter player, int itemID, short quantity) {
+    private static void checkPostInventoryModification(MapleCharacter player, int itemID, short quantity) {
         MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
+
+        if (itemID / 10000 == 521) {
+            player.setRates();
+        }
 
         for (CQuestData data : player.getCustomQuests().values()) {
             if (!data.isCompleted()) {
@@ -178,7 +182,7 @@ public class MapleInventoryManipulator {
                 return false;
             }
         }
-        checkItemQuestProgress(player, itemId, quantity);
+        checkPostInventoryModification(player, itemId, quantity);
         return true;
     }
 
@@ -277,7 +281,7 @@ public class MapleInventoryManipulator {
         if (show) {
             c.announce(MaplePacketCreator.getShowItemGain(item.getItemId(), item.getQuantity()));
         }
-        checkItemQuestProgress(player, item.getItemId(), item.getQuantity());
+        checkPostInventoryModification(player, item.getItemId(), item.getQuantity());
         return true;
     }
 
@@ -331,7 +335,7 @@ public class MapleInventoryManipulator {
         } else {
             c.announce(MaplePacketCreator.modifyInventory(fromDrop, Collections.singletonList(new ModifyInventory(1, item))));
         }
-        checkItemQuestProgress(player, item.getItemId(), quantity);
+        checkPostInventoryModification(player, item.getItemId(), quantity);
     }
 
     public static void removeById(MapleClient c, MapleInventoryType type, int itemId, int quantity, boolean fromDrop, boolean consume) {
@@ -573,32 +577,35 @@ public class MapleInventoryManipulator {
         if ((!ItemConstants.isRechargable(itemId) && player.getItemQuantity(itemId, true) < quantity) || quantity < 0) {
             return null;
         }
-        checkItemQuestProgress(player, itemId, (short) -quantity);
-        Point dropPos = new Point(player.getPosition());
-        if (quantity < source.getQuantity() && !ItemConstants.isRechargable(itemId)) {
-            Item target = source.duplicate();
-            target.setQuantity(quantity);
-            source.setQuantity((short) (source.getQuantity() - quantity));
-            c.announce(MaplePacketCreator.modifyInventory(true, Collections.singletonList(new ModifyInventory(1, source))));
-            boolean weddingRing = source.getItemId() == 1112803 || source.getItemId() == 1112806 || source.getItemId() == 1112807 || source.getItemId() == 1112809;
-            if (weddingRing) {
-                return player.getMap().disappearingItemDrop(player, player, target, dropPos);
-            } else if (player.getMap().getEverlast()) {
-                return player.getMap().spawnItemDrop(player, player, target, dropPos, true, false);
+        try {
+            Point dropPos = new Point(player.getPosition());
+            if (quantity < source.getQuantity() && !ItemConstants.isRechargable(itemId)) {
+                Item target = source.duplicate();
+                target.setQuantity(quantity);
+                source.setQuantity((short) (source.getQuantity() - quantity));
+                c.announce(MaplePacketCreator.modifyInventory(true, Collections.singletonList(new ModifyInventory(1, source))));
+                boolean weddingRing = source.getItemId() == 1112803 || source.getItemId() == 1112806 || source.getItemId() == 1112807 || source.getItemId() == 1112809;
+                if (weddingRing) {
+                    return player.getMap().disappearingItemDrop(player, player, target, dropPos);
+                } else if (player.getMap().getEverlast()) {
+                    return player.getMap().spawnItemDrop(player, player, target, dropPos, true, false);
+                } else {
+                    return player.getMap().spawnItemDrop(player, player, target, dropPos, true, true);
+                }
             } else {
-                return player.getMap().spawnItemDrop(player, player, target, dropPos, true, true);
+                player.getInventory(type).removeSlot(src);
+                c.announce(MaplePacketCreator.modifyInventory(true, Collections.singletonList(new ModifyInventory(3, source))));
+                if (src < 0) {
+                    player.equipChanged(true);
+                }
+                if (player.getMap().getEverlast()) {
+                    return player.getMap().spawnItemDrop(player, player, source, dropPos, true, false);
+                } else {
+                    return player.getMap().spawnItemDrop(player, player, source, dropPos, true, true);
+                }
             }
-        } else {
-            player.getInventory(type).removeSlot(src);
-            c.announce(MaplePacketCreator.modifyInventory(true, Collections.singletonList(new ModifyInventory(3, source))));
-            if (src < 0) {
-                player.equipChanged(true);
-            }
-            if (player.getMap().getEverlast()) {
-                return player.getMap().spawnItemDrop(player, player, source, dropPos, true, false);
-            } else {
-                return player.getMap().spawnItemDrop(player, player, source, dropPos, true, true);
-            }
+        } finally {
+            checkPostInventoryModification(player, itemId, (short) -quantity);
         }
     }
 

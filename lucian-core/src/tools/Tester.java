@@ -4,6 +4,7 @@ import com.lucianms.io.Config;
 import com.lucianms.io.defaults.Defaults;
 import com.lucianms.nio.receive.MaplePacketReader;
 import com.lucianms.scheduler.TaskExecutor;
+import com.lucianms.server.MapleItemInformationProvider;
 import com.lucianms.server.Server;
 import com.zaxxer.hikari.HikariDataSource;
 import org.json.JSONObject;
@@ -31,9 +32,12 @@ public class Tester {
     private static Config config = null;
 
     public static void main(String[] args) throws IOException {
-        initConfig();
-        TaskExecutor.initPoolSize(1);
-        Server.createServer();
+//        initConfig();
+//        TaskExecutor.initPoolSize(1);
+//        Server.createServer();
+
+        System.out.println(MapleItemInformationProvider.getInstance().getCoupon(5211043));
+        System.out.println(MapleItemInformationProvider.getInstance().getCoupon(5211042));
     }
 
     private static void initConfig() {

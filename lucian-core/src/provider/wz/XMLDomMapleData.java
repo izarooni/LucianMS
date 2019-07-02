@@ -70,6 +70,13 @@ public class XMLDomMapleData implements MapleData {
     }
 
     @Override
+    public String toString() {
+        Node name = node.getAttributes().getNamedItem("name");
+        Node value = node.getAttributes().getNamedItem("value");
+        return String.format("XMLDomMapleData(<%s %s %s/>)", node.getNodeName(), name, value);
+    }
+
+    @Override
     public MapleData getChildByPath(String path) {
         String segments[] = path.split("/");
         if (segments[0].equals("..")) {

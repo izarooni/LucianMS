@@ -30,6 +30,7 @@ import tools.MaplePacketCreator;
 import tools.Pair;
 
 import java.util.*;
+import java.util.function.Predicate;
 
 /**
  * @author Matze
@@ -306,5 +307,17 @@ public class MapleInventory implements Iterable<Item> {
         w.write(2);
 
         client.announce(w.getPacket());
+    }
+
+    public ArrayList<Item> find(Predicate<Item> predicate) {
+        ArrayList<Item> items = new ArrayList<>();
+        Iterator<Item> iterator = iterator();
+        while (iterator.hasNext()) {
+            Item item = iterator.next();
+            if (predicate.test(item)) {
+                items.add(item);
+            }
+        }
+        return items;
     }
 }
