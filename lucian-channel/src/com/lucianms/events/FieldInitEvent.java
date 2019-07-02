@@ -173,12 +173,11 @@ public class FieldInitEvent extends PacketEvent {
                     && spawnPoints.stream().noneMatch(sp -> sp.getMonster().isBoss() || player.getLevel() - sp.getMonster().getLevel() > 30)
                     && !spawnPoints.isEmpty()
                     && Arrays.binarySearch(Server.getConfig().getIntArray("EmergencyExcludes"), map.getId()) < 0) {
-                // 1/25 chance to trigger emergency
-                if ((player.isGM() && player.isDebug())
+                if (player.isDebug()
                         || ((System.currentTimeMillis() > map.getNextEmergency())
                         && player.getEventInstance() == null
-                        && Randomizer.nextInt(25) == 0
-                        && player.getGenericEvents().isEmpty())) {
+                        && player.getGenericEvents().isEmpty()
+                        && Randomizer.nextInt(18) == 0)) {
                     Emergency event = Randomizer.nextBoolean() && player.getLevel() >= 30 ? new EmergencyDuel(player) : new EmergencyAttack(player);
                     TaskExecutor.createTask(new Runnable() {
                         @Override
