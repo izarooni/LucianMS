@@ -547,7 +547,7 @@ public class MapleMap implements PacketAnnouncer {
 
                         // Kaneki boss map
                         MapleParty party = chr.getParty();
-                        if (monster.getMap().getId() == 85) {
+                        if (getId() == 85) {
                             if (party != null) {
                                 for (MapleCharacter players : getAllPlayer()) {
                                     players.changeMap(88);
@@ -557,6 +557,8 @@ public class MapleMap implements PacketAnnouncer {
                                 chr.changeMap(88);
                                 chr.dropMessage(5, "Thanks for finally letting me realize my actions were corrupt against the realm.");
                             }
+                        } else if (getId() == 551030901 && monster.getId() == 9989996) {
+                            TaskExecutor.createTask(() -> warpEveryone(551030902), 3000);
                         }
 
                         //region NX Cash gain
