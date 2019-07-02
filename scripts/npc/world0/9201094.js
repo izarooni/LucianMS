@@ -1,5 +1,8 @@
 load("scripts/npc/generic_shop.js");
 
+dialog.first = "You currently have #b{PointsQuantity} {PointsName}#k"
+    + "\r\nAre you interested in the Android gear that I sell?\r\n#b";
+
 var pointsType = Java.type("com.lucianms.constants.ServerConstants").CURRENCY;
 
 try {
