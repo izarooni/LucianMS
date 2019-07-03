@@ -143,6 +143,7 @@ function giveReward(streak) {
     } else if (r.type == "NX") {
          player.addPoints("nx", r.itemID);
          player.sendMessage("You have gained {} NX", r.itemID);
+         return true;
     }
     return false;
 }
