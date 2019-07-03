@@ -136,6 +136,9 @@ public class MapleReactor extends AbstractMapleMapObject {
 
     @Override
     public void sendSpawnData(MapleClient client) {
+        if (!isAlive()) {
+            return;
+        }
         client.announce(makeSpawnData());
     }
 

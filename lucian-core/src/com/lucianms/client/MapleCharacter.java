@@ -1891,7 +1891,11 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Di
     }
 
     public void dropMessage(int type, String message) {
-        client.announce(MaplePacketCreator.serverNotice(type, message));
+        if (type == -1) {
+            client.announce(MaplePacketCreator.earnTitleMessage(message));
+        } else {
+            client.announce(MaplePacketCreator.serverNotice(type, message));
+        }
     }
 
     public String emblemCost() {
