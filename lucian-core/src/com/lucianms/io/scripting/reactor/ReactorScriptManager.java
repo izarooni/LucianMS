@@ -87,6 +87,19 @@ public class ReactorScriptManager {
         drops = new HashMap<>();
     }
 
+    public static void hit(MapleClient c, MapleReactor reactor) {
+        try {
+            ReactorActionManager rm = new ReactorActionManager(c, reactor);
+            Invocable iv = ScriptUtil.eval("reactor/" + reactor.getId() + ".js", Collections.singleton(new Pair<>("rm", rm)));
+            if (iv == null) {
+                return;
+            }
+            iv.invokeFunction("hit");
+        } catch (IOException | ScriptException | NoSuchMethodException | NullPointerException e) {
+            e.printStackTrace();
+        }
+    }
+
     public static void touch(MapleClient c, MapleReactor reactor) {
         touching(c, reactor, true);
     }
@@ -109,7 +122,7 @@ public class ReactorScriptManager {
                 iv.invokeFunction("untouch");
             }
         } catch (IOException | ScriptException | NoSuchMethodException | NullPointerException e) {
-            e.printStackTrace();
+            LOGGER.error("touching reactor {} in map {}", reactor.getId(), reactor.getMap().getId(), e);
         }
     }
 }

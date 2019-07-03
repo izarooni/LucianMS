@@ -202,6 +202,7 @@ public class MapleReactor extends AbstractMapleMapObject {
             map.broadcastMessage(MaplePacketCreator.triggerReactor(this, stance));
             ReactorScriptManager.act(client, this);
         }
+        ReactorScriptManager.hit(client, this);
     }
 
     public Rectangle getArea() {
