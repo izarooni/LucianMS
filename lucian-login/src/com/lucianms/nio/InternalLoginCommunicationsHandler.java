@@ -43,13 +43,13 @@ public class InternalLoginCommunicationsHandler extends ChannelInboundHandlerAda
         byte[] packet = (byte[]) msg;
         MaplePacketReader r = new MaplePacketReader(packet);
         byte header = r.readByte();
-        switch (header) {
-            case 0: {
+        switch (InterPacketOperation.values()[header]) {
+            case Message: {
                 final String content = r.readMapleAsciiString();
                 LLoginMain.getServerHandler().getChannels().forEach(ch -> ch.writeAndFlush((MaplePacketCreator.serverNotice(0, content))));
                 break;
             }
-            case 1: {
+            case BanManager: {
                 String username = r.readMapleAsciiString();
                 if (BanManager.pardonUser(username)) {
                     LOGGER.info("Successfully unbanned user '{}'", username);
@@ -58,7 +58,7 @@ public class InternalLoginCommunicationsHandler extends ChannelInboundHandlerAda
                 }
                 break;
             }
-            case 2: {
+            case ServerStatus: {
                 channels.add(ctx.channel());
                 boolean onlineStatus = r.readByte() != 0;
                 Server.getToggles().put("server_online", onlineStatus);
@@ -69,7 +69,7 @@ public class InternalLoginCommunicationsHandler extends ChannelInboundHandlerAda
                 ctx.channel().writeAndFlush(w.getPacket());
                 break;
             }
-            case 3: {
+            case VoteResult: {
                 String username = r.readAsciiString(13);
                 MaplePacketWriter w = new MaplePacketWriter();
                 w.write(1);

@@ -21,14 +21,12 @@
  */
 package provider.wz;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
+import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
-import org.xml.sax.SAXParseException;
 import provider.MapleData;
 import provider.MapleDataEntity;
 
@@ -39,30 +37,33 @@ import java.awt.*;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.Reader;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
 public class XMLDomMapleData implements MapleData {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(XMLDomMapleData.class);
-
     private Node node;
-    private File imageDataDir;
+    private File file;
 
-    public XMLDomMapleData(FileInputStream fis, File imageDataDir) throws SAXException {
-        try {
-            DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
-            DocumentBuilder documentBuilder = documentBuilderFactory.newDocumentBuilder();
-            Document document = documentBuilder.parse(fis);
-            this.node = document.getFirstChild();
-            fis.close();
-        } catch (ParserConfigurationException | IOException e) {
-            e.printStackTrace();
-        } catch (SAXParseException e) {
-            LOGGER.error("unable to parse '{}': {}", imageDataDir.getName(), e.getMessage());
-        }
-        this.imageDataDir = imageDataDir;
+    /**
+     * Usage for parsing documents provided by HaRepacker's XML serializer in attempts to decode using a specific charset
+     */
+    public XMLDomMapleData(Reader reader, File file) throws ParserConfigurationException, IOException, SAXException {
+        this.file = file;
+        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+        DocumentBuilder builder = factory.newDocumentBuilder();
+        Document document = builder.parse(new InputSource(reader));
+        node = document.getFirstChild();
+    }
+
+    public XMLDomMapleData(FileInputStream fis, File file) throws SAXException, ParserConfigurationException, IOException {
+        DocumentBuilderFactory f = DocumentBuilderFactory.newInstance();
+        DocumentBuilder b = f.newDocumentBuilder();
+        Document document = b.parse(fis);
+        this.node = document.getFirstChild();
+        this.file = file;
     }
 
     private XMLDomMapleData(Node node) {
@@ -105,7 +106,7 @@ public class XMLDomMapleData implements MapleData {
             }
         }
         XMLDomMapleData ret = new XMLDomMapleData(myNode);
-        ret.imageDataDir = new File(imageDataDir, getName() + "/" + path).getParentFile();
+        ret.file = new File(file, getName() + "/" + path).getParentFile();
         return ret;
     }
 
@@ -117,7 +118,7 @@ public class XMLDomMapleData implements MapleData {
             Node childNode = childNodes.item(i);
             if (childNode.getNodeType() == Node.ELEMENT_NODE) {
                 XMLDomMapleData child = new XMLDomMapleData(childNode);
-                child.imageDataDir = new File(imageDataDir, getName());
+                child.file = new File(file, getName());
                 ret.add(child);
             }
         }
@@ -166,7 +167,7 @@ public class XMLDomMapleData implements MapleData {
             case CANVAS: {
                 String width = attributes.getNamedItem("width").getNodeValue();
                 String height = attributes.getNamedItem("height").getNodeValue();
-                return new FileStoredPngMapleCanvas(Integer.parseInt(width), Integer.parseInt(height), new File(imageDataDir, getName() + ".png"));
+                return new FileStoredPngMapleCanvas(Integer.parseInt(width), Integer.parseInt(height), new File(file, getName() + ".png"));
             }
             default:
                 return null;
@@ -217,7 +218,7 @@ public class XMLDomMapleData implements MapleData {
             return null;
         }
         XMLDomMapleData parentData = new XMLDomMapleData(parentNode);
-        parentData.imageDataDir = imageDataDir.getParentFile();
+        parentData.file = file.getParentFile();
         return parentData;
     }
 

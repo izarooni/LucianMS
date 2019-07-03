@@ -15,6 +15,7 @@ import provider.MapleDataTool;
 import provider.wz.MapleDataType;
 import provider.wz.XMLDomMapleData;
 
+import javax.xml.parsers.ParserConfigurationException;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -104,7 +105,7 @@ public class CQuestBuilder {
         return metadata.get(questId);
     }
 
-    private static CQuestData parseFile(File file) throws IOException, SAXException {
+    private static CQuestData parseFile(File file) throws IOException, SAXException, ParserConfigurationException {
         try (FileInputStream fis = new FileInputStream(file)) {
             XMLDomMapleData xml = new XMLDomMapleData(fis, file);
             int questId = MapleDataTool.getInt(xml.getChildByPath("info/questId"));

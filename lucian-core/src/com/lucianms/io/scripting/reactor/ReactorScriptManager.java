@@ -55,7 +55,6 @@ public class ReactorScriptManager {
             iv.invokeFunction("act", rm);
         } catch (FileNotFoundException e) {
             rm.dropItems();
-            return;
         } catch (Exception e) {
             LOGGER.error("unable to execute 'act' reactor: {} map {}", reactor.getId(), reactor.getMap().getId(), e);
         }

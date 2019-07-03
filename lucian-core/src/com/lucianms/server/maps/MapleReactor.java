@@ -21,7 +21,6 @@
 */
 package com.lucianms.server.maps;
 
-import com.lucianms.client.MapleCharacter;
 import com.lucianms.client.MapleClient;
 import com.lucianms.client.status.MonsterStatus;
 import com.lucianms.io.scripting.reactor.ReactorScriptManager;
@@ -164,7 +163,6 @@ public class MapleReactor extends AbstractMapleMapObject {
             LOGGER.warn("Hitting reactor too frequently or reactor is destroyed ID:{}, elapsed_time:{}", id, elapsed);
             return;
         }
-        MapleCharacter player = client.getPlayer();
         final byte state = (byte) this.state.get();
         final int type = stats.getType(state);
 

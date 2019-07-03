@@ -23,15 +23,12 @@ package provider.wz;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.xml.sax.SAXException;
 import provider.MapleData;
 import provider.MapleDataDirectoryEntry;
 import provider.MapleDataProvider;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
+import java.io.*;
+import java.nio.charset.Charset;
 
 public class XMLWZFile implements MapleDataProvider {
 
@@ -69,12 +66,12 @@ public class XMLWZFile implements MapleDataProvider {
             return null;
         }
         try (FileInputStream fis = new FileInputStream(dataFile)) {
-            return new XMLDomMapleData(fis, imageDataDir.getParentFile());
+            try (Reader reader = new InputStreamReader(fis, Charset.forName("EUC-KR"))) {
+                return new XMLDomMapleData(reader, imageDataDir.getParentFile());
+            }
         } catch (FileNotFoundException e) {
-            throw new RuntimeException("Datafile " + path + " does not exist in " + root.getAbsolutePath());
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (SAXException e) {
+            LOGGER.error("File not found '{}'", dataFile.getAbsolutePath());
+        } catch (Exception e) {
             LOGGER.error("Unable to parse file '{}'", imageDataDir.getAbsolutePath(), e);
         }
         return null;

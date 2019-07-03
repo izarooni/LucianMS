@@ -13,6 +13,7 @@ import com.lucianms.helpers.HouseManager;
 import com.lucianms.helpers.RankingWorker;
 import com.lucianms.io.Config;
 import com.lucianms.io.scripting.Achievements;
+import com.lucianms.nio.InterPacketOperation;
 import com.lucianms.nio.ReceivePacketState;
 import com.lucianms.nio.RecvOpcode;
 import com.lucianms.nio.server.MapleServerInboundHandler;
@@ -60,8 +61,11 @@ public class LChannelMain {
             public void run() {
                 System.out.println("Shutting 'er down!");
                 try {
-                    communicationsHandler.close();
-                    System.out.println("Internal server communicator closed");
+                    if (communicationsHandler != null) {
+                        communicationsHandler.sendPacket(new byte[]{(byte) InterPacketOperation.ServerStatus.ordinal(), 0});
+                        communicationsHandler.close();
+                        System.out.println("Internal server communicator closed");
+                    }
                 } catch (Exception e) {
                     LOGGER.error("Failed to close Netty socket", e);
                 }

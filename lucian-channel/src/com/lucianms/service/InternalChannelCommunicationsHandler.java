@@ -84,7 +84,7 @@ public class InternalChannelCommunicationsHandler extends ChannelInboundHandlerA
     public void channelActive(ChannelHandlerContext ctx) throws Exception {
         channels.add(ctx.channel());
         MaplePacketWriter w = new MaplePacketWriter();
-        w.write(2);
+        w.write(InterPacketOperation.ServerStatus.ordinal());
         w.writeBoolean(true);
         ctx.channel().writeAndFlush(w.getPacket());
     }
