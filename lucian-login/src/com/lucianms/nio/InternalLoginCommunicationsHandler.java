@@ -65,14 +65,14 @@ public class InternalLoginCommunicationsHandler extends ChannelInboundHandlerAda
                 LOGGER.info("Server is now {}", (onlineStatus ? "online" : "offline"));
 
                 MaplePacketWriter w = new MaplePacketWriter();
-                w.write(0);
-                ctx.channel().writeAndFlush(w.getPacket());
+                w.write(InterPacketOperation.ServerStatus.ordinal());
+                channels.writeAndFlush(w.getPacket());
                 break;
             }
             case VoteResult: {
                 String username = r.readAsciiString(13);
                 MaplePacketWriter w = new MaplePacketWriter();
-                w.write(1);
+                w.write(InterPacketOperation.VoteResult.ordinal());
                 w.writeMapleString(username.trim());
                 channels.writeAndFlush(w.getPacket());
                 break;

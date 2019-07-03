@@ -93,7 +93,8 @@ public class InternalChannelCommunicationsHandler extends ChannelInboundHandlerA
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
         MaplePacketReader r = new MaplePacketReader((byte[]) msg);
         byte header = r.readByte();
-        if (header == 0) {
+        InterPacketOperation op = InterPacketOperation.values()[header];
+        if (op == InterPacketOperation.ServerStatus) {
             LOGGER.info("Connected to login server");
             sendMessage("The server is now available.\r\nYou may login.");
 
@@ -109,7 +110,7 @@ public class InternalChannelCommunicationsHandler extends ChannelInboundHandlerA
                     }
                 }
             }, 10000);
-        } else if (header == 1) {
+        } else if (op == InterPacketOperation.VoteResult) {
             String username = r.readMapleAsciiString();
             for (MapleWorld world : Server.getWorlds()) {
                 MapleCharacter found = world.findPlayer(p -> p.getName().equalsIgnoreCase(username));
