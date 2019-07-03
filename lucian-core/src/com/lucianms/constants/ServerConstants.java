@@ -35,5 +35,10 @@ public class ServerConstants {
     public static final int ABOVE_LEVELRANGE_NX_CHANCE = 10;
     public static final int MAX_LEVELS_BELOW = 20;
     public static final int MAX_LEVELS_ABOVE = 10;
+
+    public static int getAutoRebirthItem() {
+        // using a method for when we decide to make an item cycle (different daily)
+        return 4011008;
+    }
     //endregion
 }

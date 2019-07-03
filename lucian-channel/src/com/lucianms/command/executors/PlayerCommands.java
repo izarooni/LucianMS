@@ -17,6 +17,7 @@ import com.lucianms.features.auto.GAutoEventManager;
 import com.lucianms.io.scripting.npc.NPCScriptManager;
 import com.lucianms.nio.SendOpcode;
 import com.lucianms.nio.send.MaplePacketWriter;
+import com.lucianms.server.MapleItemInformationProvider;
 import com.lucianms.server.Server;
 import com.lucianms.server.channel.MapleChannel;
 import com.lucianms.server.life.FakePlayer;
@@ -121,12 +122,12 @@ public class PlayerCommands extends CommandExecutor {
     }
 
     private void ToggleAutoRebirth(MapleCharacter player, Command cmd, CommandArgs args) {
-        Occupation occupation = player.getOccupation();
-        if (occupation != null && occupation.getType() == Occupation.Type.Trainer) {
+        if (player.haveItem(ServerConstants.getAutoRebirthItem())) {
             player.setAutoRebirth(!player.isAutoRebirth());
             player.sendMessage("Auto-rebirth is now {}", (player.isAutoRebirth() ? "enabled" : "disabled"));
         } else {
-            player.sendMessage("Only the Trainer occupation may use this command");
+            String name = MapleItemInformationProvider.getInstance().getName(ServerConstants.getAutoRebirthItem());
+            player.sendMessage("You need the auto-rebirth item '{}' to use this command", name);
         }
     }
 

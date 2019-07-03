@@ -97,8 +97,7 @@ public class MapleReactorStats {
                 return data.getReactItem();
             }
         }
-        return null;
-    }
+        return null; }
 
 
     public static class StateData {

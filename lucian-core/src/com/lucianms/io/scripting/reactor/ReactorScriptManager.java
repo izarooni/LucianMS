@@ -37,6 +37,7 @@ import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.*;
 
 /**
@@ -56,29 +57,29 @@ public class ReactorScriptManager {
         } catch (FileNotFoundException e) {
             rm.dropItems();
         } catch (Exception e) {
-            LOGGER.error("unable to execute 'act' reactor: {} map {}", reactor.getId(), reactor.getMap().getId(), e);
+            LOGGER.error("act reactor {} in map {}", reactor.getId(), reactor.getMap().getId(), e);
         }
     }
 
-    public static List<ReactorDropEntry> getDrops(int rid) {
-        List<ReactorDropEntry> ret = drops.get(rid);
-        if (ret == null) {
-            ret = new ArrayList<>();
-            try {
-                try (Connection con = Server.getConnection();
-                     PreparedStatement ps = con.prepareStatement("SELECT itemid, chance, questid FROM reactordrops WHERE reactorid = ? AND chance >= 0")) {
-                    ps.setInt(1, rid);
-                    try (ResultSet rs = ps.executeQuery()) {
-                        while (rs.next()) {
-                            ret.add(new ReactorDropEntry(rs.getInt("itemid"), rs.getInt("chance"), rs.getInt("questid")));
-                        }
+    public static List<ReactorDropEntry> getDrops(int reactorID) {
+        List<ReactorDropEntry> ret = drops.get(reactorID);
+        if (ret != null) {
+            return ret;
+        }
+        ret = new ArrayList<>();
+        try (Connection con = Server.getConnection()) {
+            try (PreparedStatement ps = con.prepareStatement("SELECT itemid, chance, questid FROM reactordrops WHERE reactorid = ? AND chance >= 0")) {
+                ps.setInt(1, reactorID);
+                try (ResultSet rs = ps.executeQuery()) {
+                    while (rs.next()) {
+                        ret.add(new ReactorDropEntry(rs.getInt("itemid"), rs.getInt("chance"), rs.getInt("questid")));
                     }
                 }
-            } catch (Throwable e) {
-                e.printStackTrace();
             }
-            drops.put(rid, ret);
+        } catch (SQLException e) {
+            LOGGER.error("getting drops for reactor {}", reactorID, e);
         }
+        drops.put(reactorID, ret);
         return ret;
     }
 
@@ -96,7 +97,7 @@ public class ReactorScriptManager {
             }
             iv.invokeFunction("hit");
         } catch (IOException | ScriptException | NoSuchMethodException | NullPointerException e) {
-            e.printStackTrace();
+            LOGGER.error("hit reactor {} in map {}", reactor.getId(), reactor.getMap().getId(), e);
         }
     }
 

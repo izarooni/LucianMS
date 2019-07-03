@@ -24,8 +24,8 @@ public class PlayerReactorHitEvent extends PacketEvent {
         MapleReactor reactor = getClient().getPlayer().getMap().getReactorById(objectId);
         if (reactor != null) {
             LOGGER.warn("An occurred occurred within the reactor '{}'", reactor.getId());
-            super.exceptionCaught(reader, t);
         }
+        super.exceptionCaught(reader, t);
     }
 
     @Override
