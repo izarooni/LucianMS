@@ -27,6 +27,7 @@ import com.lucianms.client.MapleClient;
 import com.lucianms.client.MapleRing;
 import com.lucianms.client.inventory.*;
 import com.lucianms.constants.ItemConstants;
+import com.lucianms.constants.ServerConstants;
 import com.lucianms.cquest.CQuestData;
 import com.lucianms.cquest.requirement.CQuestItemRequirement;
 import com.lucianms.server.maps.MapleMapItem;
@@ -53,6 +54,9 @@ public class MapleInventoryManipulator {
 
         if (itemID / 10000 == 521) {
             player.setRates();
+        } else if (player.isAutoRebirth() && itemID == ServerConstants.getAutoRebirthItem() && !player.haveItem(ServerConstants.getAutoRebirthItem())) {
+            player.setAutoRebirth(false);
+            player.sendMessage("Auto-rebirth is now disabled");
         }
 
         for (CQuestData data : player.getCustomQuests().values()) {
