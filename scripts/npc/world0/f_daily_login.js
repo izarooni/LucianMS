@@ -62,6 +62,7 @@ function action(mode, type, selection) {
                     cm.sendNext("#eLogin Streak: #b" + (streak + 1) + "#k#n\r\nThanks for playing, remember to vote for us~\r\nHave a nice day!", 1);
                 }
             } else {
+                print(show);
                 if (show) {
                     cm.sendSimple("You're currently on a #b" + streak + "#k day login streak!"
                     + "\r\nYour next attendance is in #b" + StringUtil.getTimeElapse(ttd - now) + "\r\n"
@@ -73,20 +74,20 @@ function action(mode, type, selection) {
             }
         } else {
             cm.sendNext("This is your first daily login reward ever!"
-            + "\r\nBe sure to come back in 24 hours to claim tomorrow's prize:"
-            + "\r\n#kLogin then to receive your next reward: #b" + Rewards[streak & 7].toString() + "#k\r\n"
+            + "\r\nBe sure to come back in 24 hours to claim tomorrow's prize: #b" + Rewards[(streak + 1) & 7].toString() + "#k\r\n"
             , 1);
         }
     } else if (status === 2) {
         if (now < ttd) {
             setShowable(false);
-            cm.sendOk("Don't forget to login tomorrow~");
+            cm.sendOk("Alright, I'll remind you tomorrow.\r\nDon't forget to login~");
             cm.dispose();
         } else {
             if (giveReward(streak)) {
-                cm.sendSimple("Here is your reward for your #b" + streak + aaa(streak) + "#k daily login reward!\r\n\r\n#L0##bDon't show again for today#l");
-                streak += 1;
-                recordStreak(streak);
+                cm.sendSimple("Here is your reward for your #b" + (streak + 1) + aaa((streak + 1)) + "#k daily login reward!"
+                + `\r\n#b${Rewards[streak & 7].toString()}\r\n`
+                + "\r\n#L0#Don't show again for today#l");
+                recordStreak(++streak);
             } else {
                 cm.sendOk("Please make sure you have room in your inventory before claiming your reward");
                 cm.dispose();

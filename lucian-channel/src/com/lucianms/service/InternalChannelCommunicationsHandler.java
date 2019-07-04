@@ -113,7 +113,7 @@ public class InternalChannelCommunicationsHandler extends ChannelInboundHandlerA
         } else if (op == InterPacketOperation.VoteResult) {
             String username = r.readMapleAsciiString();
             for (MapleWorld world : Server.getWorlds()) {
-                MapleCharacter found = world.findPlayer(p -> p.getName().equalsIgnoreCase(username));
+                MapleCharacter found = world.findPlayer(p -> p.getClient().getAccountName().equalsIgnoreCase(username));
                 if (found != null) {
                     found.sendMessage(5, "Thank you for voting! You now have {} vote points", found.getClient().getVotePoints());
                     return;

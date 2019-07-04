@@ -71,6 +71,7 @@ public class InternalLoginCommunicationsHandler extends ChannelInboundHandlerAda
             }
             case VoteResult: {
                 String username = r.readAsciiString(13);
+                LOGGER.info("Vote result for user account '{}'", username);
                 MaplePacketWriter w = new MaplePacketWriter();
                 w.write(InterPacketOperation.VoteResult.ordinal());
                 w.writeMapleString(username.trim());

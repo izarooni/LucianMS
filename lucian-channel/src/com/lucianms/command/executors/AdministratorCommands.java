@@ -111,13 +111,13 @@ public class AdministratorCommands extends CommandExecutor {
     }
 
     private void DoShutDownServer() {
+        ConsoleCommands.getInstance().stopReading();
+        System.exit(0);
         if (DiscordConnection.getSession() != null) {
             MaplePacketWriter w = new MaplePacketWriter();
             w.write(Headers.Shutdown.value);
             DiscordConnection.sendPacket(w.getPacket());
         }
-        ConsoleCommands.getInstance().stopReading();
-        System.exit(0);
     }
 
     private void CommandExit(MapleCharacter player, Command cmd, CommandArgs args) {
@@ -132,11 +132,11 @@ public class AdministratorCommands extends CommandExecutor {
                 player.sendMessage("Please do not specify such a long delay");
                 return;
             }
-            long time = (nTime.intValue() + 1) * 1000;
+            long time = nTime.intValue() * 1000;
             for (MapleWorld world : Server.getWorlds()) {
                 world.sendPacket(MaplePacketCreator.serverMessage(String.format("The server will shutdown in %s. Please complete your tasks and log-out safely.", StringUtil.getTimeElapse(time))));
             }
-            TaskExecutor.createTask(this::DoShutDownServer, time);
+            TaskExecutor.createTask(() -> DoShutDownServer(), time);
         }
     }
 
