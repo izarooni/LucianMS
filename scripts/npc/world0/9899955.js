@@ -1,4 +1,5 @@
 load('scripts/util_imports.js');
+const FieldBuilder = Java.type('com.lucianms.server.FieldBuilder');
 const EntryLimits = Java.type("tools.EntryLimits");
 const ENTRY_TYPE = "auto_rb";
 const ONE_DAY = (1000 * 60 * 60 * 24);
@@ -28,7 +29,8 @@ function action(mode, type, selection) {
             + "\r\n");
     } else if (status == 2) {
         EntryLimits.incrementEntry(player.getId(), ENTRY_TYPE);
-        player.changeMap(89);
+        let map = new FieldBuilder(client.getWorld(), client.getChannel(), 89).loadAll().build();
+        player.changeMap(map);
         cm.dispose();
     }
 }
