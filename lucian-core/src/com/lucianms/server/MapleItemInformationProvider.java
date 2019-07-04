@@ -93,8 +93,10 @@ public class MapleItemInformationProvider {
         loadCardIdData();
         WzItem = MapleDataProviderFactory.getWZ("Item.wz");
         WzString = MapleDataProviderFactory.getWZ("String.wz");
+
         StringCashImg = WzString.getData("Cash.img");
         StringConsumeImg = WzString.getData("Consume.img");
+
         CashEquipImg = WzString.getData("Eqp.img");
         CashEtcImg = WzString.getData("Etc.img");
         CashInstallImg = WzString.getData("Ins.img");
@@ -194,7 +196,10 @@ public class MapleItemInformationProvider {
     private MapleData getStringData(int itemId) {
         String cat = "null";
         MapleData theData;
-        if (itemId >= 5010000) {
+        if (itemId >= 4000000 && itemId <= 4400000) {
+            theData = CashEtcImg;
+            cat = "Etc";
+        } else if (itemId >= 5010000) {
             theData = StringCashImg;
         } else if (itemId >= 2000000 && itemId < 3000000) {
             theData = StringConsumeImg;
