@@ -221,14 +221,14 @@ public class AbstractPlayerInteraction {
     }
 
     public Item gainItem(int id, short quantity, boolean randomStats, boolean showMessage, long expires) {
+        MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
         Item item = null;
-        if (id >= 5000000 && id <= 5002000) {
-            long expiration = System.currentTimeMillis() + ((expires == -1) ? TimeUnit.DAYS.toMillis(365) : expires);
-            MapleInventoryManipulator.addById(c, id, (short) 1, null, MaplePet.createPet(id), expiration);
-        }
         if (quantity >= 0) {
-            MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
-            if (ItemConstants.getInventoryType(id).equals(MapleInventoryType.EQUIP)) {
+            if (!MapleInventoryManipulator.checkSpace(c, id, quantity, "")) {
+                c.getPlayer().dropMessage(1, "Your inventory is full. Please remove an item from your " + ItemConstants.getInventoryType(id).name() + " inventory.");
+                return null;
+            }
+            if (ItemConstants.getInventoryType(id) == MapleInventoryType.EQUIP) {
                 item = ii.getEquipById(id);
             } else {
                 item = new Item(id, (short) 0, quantity);
@@ -236,12 +236,10 @@ public class AbstractPlayerInteraction {
             if (expires != -1) {
                 item.setExpiration(System.currentTimeMillis() + expires);
             }
-
-            if (!MapleInventoryManipulator.checkSpace(c, id, quantity, "")) {
-                c.getPlayer().dropMessage(1, "Your inventory is full. Please remove an item from your " + ItemConstants.getInventoryType(id).name() + " inventory.");
-                return null;
-            }
-            if (ItemConstants.getInventoryType(id).equals(MapleInventoryType.EQUIP) && !ItemConstants.isRechargable(item.getItemId())) {
+            if (ItemConstants.isPet(id)) {
+                long expiration = System.currentTimeMillis() + ((expires == -1) ? TimeUnit.DAYS.toMillis(365) : expires);
+                MapleInventoryManipulator.addById(c, id, (short) 1, null, MaplePet.createPet(id), expiration);
+            } else if (ItemConstants.getInventoryType(id).equals(MapleInventoryType.EQUIP) && !ItemConstants.isRechargable(item.getItemId())) {
                 if (randomStats && item instanceof Equip) {
                     ii.randomizeStats((Equip) item);
                     MapleInventoryManipulator.addFromDrop(c, ii.randomizeStats((Equip) item), false);
@@ -257,7 +255,6 @@ public class AbstractPlayerInteraction {
         if (showMessage) {
             c.announce(MaplePacketCreator.getShowItemGain(id, quantity, true));
         }
-
         return item;
     }
 
