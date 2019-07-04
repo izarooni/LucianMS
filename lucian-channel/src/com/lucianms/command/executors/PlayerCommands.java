@@ -44,6 +44,7 @@ public class PlayerCommands extends CommandExecutor {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(PlayerCommands.class);
     private static ArrayList<String> HELP_LIST;
+    private TreeMap<String, Integer> maps;
 
     private static void CollectLeaderboard(Connection con, List<Pair<String, Integer>> usernames, String query) throws SQLException {
         try (PreparedStatement ps = con.prepareStatement(query)) {
@@ -112,6 +113,42 @@ public class PlayerCommands extends CommandExecutor {
         addCommand("autorb", this::ToggleAutoRebirth, "Toggle the auto-rebirth ability");
 
         addCommand("ping", this::Ping, "View your Round-Trip delay with the server");
+
+        maps = new TreeMap<>();
+        maps.put("amoria", 680000000);
+        maps.put("aqua", 230000000);
+        maps.put("arcade", 978);
+        maps.put("ariant", 260000000);
+        maps.put("boatquay", 541000000);
+        maps.put("ellin", 300000000);
+        maps.put("ellinia", 101000000);
+        maps.put("elnath", 211000000);
+        maps.put("ereve", 130000000);
+        maps.put("florina", 110000000);
+        maps.put("fm", 910000000);
+        maps.put("guild", 200000301);
+        maps.put("harbor", 104000000);
+        maps.put("henesys", 100000000);
+        maps.put("herb", 251000000);
+        maps.put("herbtown", 251000000);
+        maps.put("home", 910000000);
+        maps.put("kerning", 103000000);
+        maps.put("leafre", 240000000);
+        maps.put("lith", 104000000);
+        maps.put("ludi", 220000000);
+        maps.put("magatia", 261000000);
+        maps.put("maya", 100000001);
+        maps.put("mulung", 250000000);
+        maps.put("nautilus", 120000000);
+        maps.put("nlc", 600000000);
+        maps.put("omega", 221000000);
+        maps.put("orbis", 200000000);
+        maps.put("perion", 102000000);
+        maps.put("pq", 910002000);
+        maps.put("quay", 541000000);
+        maps.put("rien", 140000000);
+        maps.put("shenron", 908);
+        maps.put("timetemple", 270000000);
 
         Map<String, Pair<CommandEvent, String>> commands = getCommands();
         HELP_LIST = new ArrayList<>(commands.size());
@@ -542,41 +579,6 @@ public class PlayerCommands extends CommandExecutor {
     }
 
     private void Go(MapleCharacter player, Command cmd, CommandArgs args) {
-        WeakHashMap<String, Integer> maps = new WeakHashMap<>();
-        maps.put("amoria", 680000000);
-        maps.put("aqua", 230000000);
-        maps.put("arcade", 978);
-        maps.put("ariant", 260000000);
-        maps.put("boatquay", 541000000);
-        maps.put("ellin", 300000000);
-        maps.put("ellinia", 101000000);
-        maps.put("elnath", 211000000);
-        maps.put("ereve", 130000000);
-        maps.put("florina", 110000000);
-        maps.put("fm", 910000000);
-        maps.put("harbor", 104000000);
-        maps.put("henesys", 100000000);
-        maps.put("herb", 251000000);
-        maps.put("herbtown", 251000000);
-        maps.put("home", 910000000);
-        maps.put("kerning", 103000000);
-        maps.put("leafre", 240000000);
-        maps.put("lith", 104000000);
-        maps.put("ludi", 220000000);
-        maps.put("magatia", 261000000);
-        maps.put("maya", 100000001);
-        maps.put("mulung", 250000000);
-        maps.put("nautilus", 120000000);
-        maps.put("nlc", 600000000);
-        maps.put("omega", 221000000);
-        maps.put("orbis", 200000000);
-        maps.put("perion", 102000000);
-        maps.put("pq", 910002000);
-        maps.put("quay", 541000000);
-        maps.put("rien", 140000000);
-        maps.put("shenron", 908);
-        maps.put("timetemple", 270000000);
-
         Integer mapID = cmd.getName().equalsIgnoreCase("go") ? maps.get(args.get(0)) : maps.get(cmd.getName());
         if (mapID != null) {
             player.changeMap(player.getClient().getChannelServer().getMap(mapID));
@@ -588,7 +590,6 @@ public class PlayerCommands extends CommandExecutor {
             sb.setLength(sb.length() - 2);
             player.dropMessage(5, "These are the current maps available for you to warp to");
             player.dropMessage(5, sb.toString());
-            maps.clear();
         }
     }
 
