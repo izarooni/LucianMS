@@ -5,8 +5,13 @@ import com.lucianms.Whitelist;
 import com.lucianms.command.Command;
 import com.lucianms.command.CommandArgs;
 import com.lucianms.command.executors.ConsoleCommands;
+import com.lucianms.server.Server;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.net.URISyntaxException;
 
 /**
  * @author izarooni
@@ -18,9 +23,37 @@ public class LoginConsoleCommands extends ConsoleCommands {
     @Override
     public void execute(Command command, CommandArgs args) {
         if (command.equals("help")) {
+            System.out.println("reload <operation> - Reload/clear the cache of specified feature");
             System.out.println("unban - Attempts an un-ban for a specified account");
             System.out.println("whitelist - Modify the whitelist cache");
             System.out.println("stop - Terminates the JVM");
+        } else if (command.equals("reload")) {
+            if (args.length() == 1) {
+                switch (args.get(0)) {
+                    default:
+                        LOGGER.info("Available operations: whitelist,  config");
+                        break;
+                    case "whitelist":
+                        try {
+                            final int bCount = Whitelist.getAccounts().size();
+                            LOGGER.info("Whitelist reloaded. Previously had {} accounts, now {}", bCount, Whitelist.createCache());
+                        } catch (IOException | URISyntaxException e) {
+                            e.printStackTrace();
+                        }
+                        break;
+                    case "config": {
+                        try {
+                            Server.reloadConfig();
+                            LOGGER.info("Server configuration reloaded!");
+                        } catch (FileNotFoundException e) {
+                            LOGGER.error("Failed to reload config", e);
+                        }
+                        break;
+                    }
+                }
+            } else {
+                LOGGER.info("Available operations: cs, whitelist, cquests, achievements, houses, config");
+            }
         } else if (command.equals("whitelist")) {
             if (args.length() > 0) {
                 switch (args.get(0)) {

@@ -10,7 +10,8 @@ function hit() {
     if (state == 2) { // last visible state in WZ
         if (Math.random() < 0.13) {
             rm.getPlayer().sendMessage(-1, "A small shimmering object falls out of the box...");
-            if (rm.getPlayer().getOccupation().getType() == Occupation.Type.Trainer) {
+            if (rm.getPlayer().getOccupation() != null && 
+                rm.getPlayer().getOccupation().getType() == Occupation.Type.Trainer) {
                 ITEM_DURATION *= 1.5;
             }
             rm.gainItem(ServerConstants.getAutoRebirthItem(), 1, false, true, ITEM_DURATION);
