@@ -101,6 +101,9 @@ public class PlayerLoginEvent extends PacketEvent {
         if (player.isGM()) {
             player.setHidingLevel(player.getGMLevel());
             player.setHidden(true);
+        } else if (player.getFakePlayer() != null) {
+            player.getFakePlayer().setFollowing(true);
+            player.getMap().addFakePlayer(player.getFakePlayer());
         }
         world.getPlayerStorage().put(player.getId(), player);
         player.getMap().addPlayer(player);
@@ -220,7 +223,7 @@ public class PlayerLoginEvent extends PacketEvent {
         player.checkBerserk();
         player.setRates();
 
-        NPCScriptManager.start(client, 9000037,"f_daily_login");
+        NPCScriptManager.start(client, 9000037, "f_daily_login");
         return null;
     }
 }
