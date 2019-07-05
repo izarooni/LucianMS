@@ -3213,9 +3213,8 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Di
     }
 
     public void gainAp(int amount) {
-        int nAbilityPoints = Math.min(remainingAp + amount, Short.MAX_VALUE);
-        remainingAp = nAbilityPoints;
-        updateSingleStat(MapleStat.AVAILABLEAP, nAbilityPoints);
+        remainingAp += amount;
+        updateSingleStat(MapleStat.AVAILABLEAP, remainingAp);
     }
 
     public void gainSp(int amount) {
