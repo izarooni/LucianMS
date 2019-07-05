@@ -1313,107 +1313,6 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Di
         this.ci = type;
     }
 
-    public void setMasteries(int jobId) {
-        List<Pair<Integer, Integer>> skills;
-        switch (jobId) {
-            default:
-                return;
-            case 112:
-                skills = Arrays.asList(
-                        new Pair<>(Hero.ACHILLES, 10),
-                        new Pair<>(Hero.MONSTER_MAGNET, 10),
-                        new Pair<>(Hero.BRANDISH, 10));
-                break;
-            case 132:
-                skills = Arrays.asList(
-                        new Pair<>(DarkKnight.BEHOLDER, 10),
-                        new Pair<>(DarkKnight.ACHILLES, 10),
-                        new Pair<>(DarkKnight.MONSTER_MAGNET, 10));
-                break;
-            case 212:
-                skills = Arrays.asList(
-                        new Pair<>(FPArchMage.BIG_BANG, 10),
-                        new Pair<>(FPArchMage.MANA_REFLECTION, 10),
-                        new Pair<>(FPArchMage.PARALYZE, 10));
-                break;
-            case 222:
-                skills = Arrays.asList(
-                        new Pair<>(ILArchMage.BIG_BANG, 10),
-                        new Pair<>(ILArchMage.MANA_REFLECTION, 10),
-                        new Pair<>(ILArchMage.CHAIN_LIGHTNING, 10));
-                break;
-            case 232:
-                skills = Arrays.asList(
-                        new Pair<>(Bishop.BIG_BANG, 10),
-                        new Pair<>(Bishop.MANA_REFLECTION, 10),
-                        new Pair<>(Bishop.HOLY_SHIELD, 10));
-                break;
-            case 312:
-                skills = Arrays.asList(
-                        new Pair<>(Bowmaster.BOW_EXPERT, 10),
-                        new Pair<>(Bowmaster.HAMSTRING, 10),
-                        new Pair<>(Bowmaster.SHARP_EYES, 10));
-                break;
-            case 322:
-                skills = Arrays.asList(
-                        new Pair<>(Marksman.MARKSMAN_BOOST, 10),
-                        new Pair<>(Marksman.BLIND, 10),
-                        new Pair<>(Marksman.SHARP_EYES, 10));
-                break;
-            case 412:
-                skills = Arrays.asList(
-                        new Pair<>(NightLord.SHADOW_STARS, 10),
-                        new Pair<>(NightLord.SHADOW_SHIFTER, 10),
-                        new Pair<>(NightLord.VENOMOUS_STAR, 10));
-                break;
-            case 422:
-                skills = Arrays.asList(
-                        new Pair<>(Shadower.SHADOW_SHIFTER, 10),
-                        new Pair<>(Shadower.VENOMOUS_STAB, 10),
-                        new Pair<>(Shadower.BOOMERANG_STEP, 10));
-                break;
-            case 512:
-                skills = Arrays.asList(
-                        new Pair<>(Buccaneer.BARRAGE, 10),
-                        new Pair<>(Buccaneer.ENERGY_ORB, 10),
-                        new Pair<>(Buccaneer.SPEED_INFUSION, 10),
-                        new Pair<>(Buccaneer.DRAGON_STRIKE, 10));
-                break;
-            case 522:
-                skills = Arrays.asList(
-                        new Pair<>(Corsair.ELEMENTAL_BOOST, 10),
-                        new Pair<>(Corsair.BULLSEYE, 10),
-                        new Pair<>(Corsair.WRATH_OF_THE_OCTOPI, 10),
-                        new Pair<>(Corsair.RAPID_FIRE, 10));
-                break;
-            case 2112:
-                skills = Arrays.asList(
-                        new Pair<>(Aran.OVER_SWING, 10),
-                        new Pair<>(Aran.HIGH_MASTERY, 10),
-                        new Pair<>(Aran.FREEZE_STANDING, 10));
-                break;
-            case 2217:
-                skills = Arrays.asList(
-                        new Pair<>(Evan.MAPLE_WARRIOR, 10),
-                        new Pair<>(Evan.ILLUSION, 10));
-                break;
-            case 2218:
-                skills = Arrays.asList(
-                        new Pair<>(Evan.BLESSING_OF_THE_ONYX, 10),
-                        new Pair<>(Evan.BLAZE, 10));
-                break;
-        }
-        for (Pair<Integer, Integer> pair : skills) {
-            if (pair.getLeft() != 0) {
-                Skill skill = SkillFactory.getSkill(pair.getLeft());
-                if (skill != null) {
-                    changeSkillLevel(skill, (byte) 0, pair.getRight(), -1);
-                } else {
-                    LOGGER.info("Unable to set skill mastery {} for player {}. Does not exist", pair.getLeft(), getName());
-                }
-            }
-        }
-    }
 
     public void changeJob(MapleJob newJob) {
         if (newJob == null) {
@@ -1471,7 +1370,6 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Di
         if (this.guildid > 0) {
             getGuild().broadcast(MaplePacketCreator.jobMessage(0, job.getId(), name), this.getId());
         }
-        setMasteries(this.job.getId());
         guildUpdate();
         getMap().broadcastMessage(this, MaplePacketCreator.showForeignEffect(getId(), 8), false);
         if (GameConstants.hasSPTable(newJob) && newJob.getId() != 2001) {
@@ -3292,6 +3190,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Di
         guildUpdate();
 
         Achievements.testFor(this, -1);
+
 
         Occupation occupation = getOccupation();
         if (occupation != null) {

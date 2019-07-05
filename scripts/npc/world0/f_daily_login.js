@@ -62,7 +62,6 @@ function action(mode, type, selection) {
                     cm.sendNext("#eLogin Streak: #b" + (streak + 1) + "#k#n\r\nThanks for playing, remember to vote for us~\r\nHave a nice day!", 1);
                 }
             } else {
-                print(show);
                 if (show) {
                     cm.sendSimple("You're currently on a #b" + streak + "#k day login streak!"
                     + "\r\nYour next attendance is in #b" + StringUtil.getTimeElapse(ttd - now) + "\r\n"
