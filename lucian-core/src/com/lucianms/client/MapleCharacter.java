@@ -667,6 +667,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Di
                         achievement.setMonstersKilled(rs.getInt("killed_monster"));
                         achievement.setCasino1Completed(rs.getInt("casino_one") == 1);
                         achievement.setCasino1Completed(rs.getInt("casino_two") == 1);
+                        achievement.setState(rs.getShort("state"));
                     }
                 }
             }

@@ -6,19 +6,30 @@ const MapleInventoryType = Java.type('com.lucianms.client.inventory.MapleInvento
 function tryGiveItem(player, arr) {
     for (let i = 0; i < arr.length; i++) {
         let ri = arr[i];
-        if (!InventoryModifier.checkSpace(player.getClient(), ri.itemID, ri.quantity, "")) {
-            return false;
+        if (ri.type == undefined) {
+            if (!InventoryModifier.checkSpace(player.getClient(), ri.itemID, ri.quantity, "")) {
+                return false;
+            }
+        } else if (ri.type == "meso") {
+            if (player.getMeso() + ri.quantity > 2147483647) {
+                return false;
+            }
         }
     }
     for (let i = 0; i < arr.length; i++) {
         let ri = arr[i];
-        InventoryModifier.addById(player.getClient(), ri.itemID, ri.quantity);
-        player.announce(MaplePacketCreator.getShowItemGain(ri.itemID, ri.quantity, true));
+        if (ri.type == undefined) {
+            InventoryModifier.addById(player.getClient(), ri.itemID, ri.quantity);
+            player.announce(MaplePacketCreator.getShowItemGain(ri.itemID, ri.quantity, true));
+        } else {
+            player.gainMeso(ri.quantity, true);
+        }
     }
     return true;
 }
 
-function RewardItem(itemID, quantity) {
+function RewardItem(itemID, quantity, type) {
     this.itemID = itemID;
     this.quantity = quantity;
+    this.type = type;
 }

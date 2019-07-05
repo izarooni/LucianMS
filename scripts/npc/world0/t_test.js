@@ -88,6 +88,13 @@ function SendUpdates(selection) {
 }
 features.push(new Selector("Send Stat Updates", SendUpdates));
 
+function SetRebirths(selection) {
+    player.setRebirths(24);
+    cm.sendOk(`You now have ${player.getRebirths()} rebirths`);
+    cm.dispose();
+}
+features.push(new Selector("Set Rebirths", SetRebirths));
+
 function action(mode, type, selection) {
     if (mode < 1) {
         cm.dispose();

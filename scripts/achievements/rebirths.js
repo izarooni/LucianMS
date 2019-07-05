@@ -26,7 +26,7 @@ function testForPlayer(player) {
             achieve.setState(rbs);
             player.announce(MaplePacketCreator.showEffect("quest/party/clear4"));
             player.announce(MaplePacketCreator.mapSound("customJQ/quest"));
-            player.sendMessage("You received 6 Chirithy Coin for reaching {} rebirhts", rbs);
+            player.sendMessage("You received 25M Mesos for reaching {} rebirths", rbs);
         }
     }
     // never mark as complete
@@ -34,9 +34,9 @@ function testForPlayer(player) {
 }
 
 function reward(player) {
-    return tryGiveItem(player, [new RewardItem(ServerConstants.CURRENCY, 6)]);
+    return tryGiveItem(player, [new RewardItem(0, 25000000, "meso")]);
 }
 
 function readableRewards(rr) {
-    return rr.add(`6 #z${ServerConstants.CURRENCY}#`);
+    return rr.add(`25,000,000 Mesos`);
 }
