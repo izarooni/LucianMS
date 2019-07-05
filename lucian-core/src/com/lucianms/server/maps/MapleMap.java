@@ -178,6 +178,9 @@ public class MapleMap implements PacketAnnouncer {
             }
             if (drop.getMeso() > 0) {
                 player.gainMeso(drop.getMeso(), true);
+            } else if (drop.getItemId() == 4031865 || drop.getItemId() == 4031866) {
+                // Add NX to account, show effect and make item disapear
+                player.getCashShop().gainCash(1, drop.getItemId() == 4031865 ? 100 : 250);
             } else {
                 MapleInventoryManipulator.addFromDrop(player.getClient(), drop.getItem(), true);
             }
