@@ -33,6 +33,7 @@ import io.netty.util.concurrent.DefaultThreadFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import tools.Database;
+import tools.MaplePacketCreator;
 
 import java.io.File;
 import java.sql.Connection;
@@ -59,6 +60,9 @@ public class LChannelMain {
         Runtime.getRuntime().addShutdownHook(new Thread(new Runnable() {
             @Override
             public void run() {
+                for (MapleWorld world : Server.getWorlds()) {
+                    world.sendPacket(MaplePacketCreator.serverNotice(1, "The server is now restarting."));
+                }
                 System.out.println("Shutting 'er down!");
                 try {
                     if (communicationsHandler != null) {

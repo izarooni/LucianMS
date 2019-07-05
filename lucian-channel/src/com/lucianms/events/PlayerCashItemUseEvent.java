@@ -191,6 +191,9 @@ public class PlayerCashItemUseEvent extends PacketEvent implements Cleaner.Clean
         switch (itemType) {
             case 505: { // AP/SP reset
                 if (itemID > ApReset) {
+                    if (pointTo / 1000000 == 9) {
+                        return null;
+                    }
                     Skill skillSPTo = SkillFactory.getSkill(pointTo);
                     Skill skillSPFrom = SkillFactory.getSkill(pointFrom);
                     byte curLevel = player.getSkillLevel(skillSPTo);

@@ -113,6 +113,7 @@ public class PlayerCommands extends CommandExecutor {
         addCommand("autorb", this::ToggleAutoRebirth, "Toggle the auto-rebirth ability");
 
         addCommand("ping", this::Ping, "View your Round-Trip delay with the server");
+        addCommand("emo", this::Emo, "Kills your character");
 
         maps = new TreeMap<>();
         maps.put("amoria", 680000000);
@@ -158,8 +159,12 @@ public class PlayerCommands extends CommandExecutor {
         HELP_LIST.sort(String::compareTo);
     }
 
+    private void Emo(MapleCharacter player, Command cmd, CommandArgs args) {
+        player.setHpMp(0);
+    }
+
     private void ToggleAutoRebirth(MapleCharacter player, Command cmd, CommandArgs args) {
-        if (player.haveItem(ServerConstants.getAutoRebirthItem())) {
+        if (player.isDebug() || player.haveItem(ServerConstants.getAutoRebirthItem())) {
             player.setAutoRebirth(!player.isAutoRebirth());
             player.sendMessage("Auto-rebirth is now {}", (player.isAutoRebirth() ? "enabled" : "disabled"));
         } else {
