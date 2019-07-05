@@ -1034,7 +1034,8 @@ public class MapleMap implements PacketAnnouncer {
 
     public void spawnMonster(final MapleMonster monster) {
         if (mobCapacity != -1 && spawnedMonstersOnMap.get() >= mobCapacity) {
-            throw new RuntimeException("Too many monsters in the map: " + getId());
+            LOGGER.warn("Too many monsters in the map {}", getId());
+            return;
         }
         monster.setMap(this);
         if (!monster.getMap().getAllPlayer().isEmpty()) {
