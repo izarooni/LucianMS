@@ -76,8 +76,8 @@ public class PlayerSpecialMoveEvent extends PacketEvent {
         }
 
         MapleStatEffect effect = skill.getEffect(playerSkillLevel);
-        if ((effect.isMorph() && player.getEffects().containsKey(MapleBuffStat.COMBO_COUNTER)) || ((skill.getId() == Crusader.COMBO_ATTACK || skill.getId() == DawnWarrior.COMBO_ATTACK) && player.getBuffedValue(MapleBuffStat.MORPH) != null)) {
-            getLogger().warn("'{}' attempted + morph skill combo", player.getName());
+        if ((effect.isMorph() && player.getEffects().containsKey(MapleBuffStat.COMBO_COUNTER))
+                || ((skill.getId() == Crusader.COMBO_ATTACK || skill.getId() == DawnWarrior.COMBO_ATTACK) && player.getBuffedValue(MapleBuffStat.MORPH) != null)) {
             return null;
         }
         if (effect.getCooldown() > 0) {

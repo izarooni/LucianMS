@@ -1,6 +1,7 @@
 package com.lucianms.events;
 
 import com.lucianms.client.MapleCharacter;
+import com.lucianms.client.inventory.Equip;
 import com.lucianms.client.inventory.Item;
 import com.lucianms.client.inventory.MapleInventory;
 import com.lucianms.client.inventory.MapleInventoryType;
@@ -447,7 +448,9 @@ public class PlayerInteractionEvent extends PacketEvent {
                             tradeItem.setQuantity(item.getQuantity());
                             MapleInventoryManipulator.removeFromSlot(getClient(), ivType, item.getPosition(), item.getQuantity(), true);
                         } else {
-                            tradeItem.setQuantity(quantity);
+                            if (!(tradeItem instanceof Equip)) {
+                                tradeItem.setQuantity(quantity);
+                            }
                             MapleInventoryManipulator.removeFromSlot(getClient(), ivType, item.getPosition(), quantity, true);
                         }
                         tradeItem.setPosition(targetSlot);
