@@ -3101,11 +3101,11 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Di
         int skillID = isCygnus() ? DawnWarrior.COMBO_ATTACK : Crusader.COMBO_ATTACK;
         Skill combo = SkillFactory.getSkill(skillID);
         MapleStatEffect effect = combo.getEffect(this);
-        Map<MapleBuffStat, Integer> stat = Map.of(MapleBuffStat.COMBO_ABILITY_BUFF, 1);
-
         BuffContainer container = effects.get(MapleBuffStat.COMBO_ABILITY_BUFF);
+        if (container == null) {
+            return;
+        }
         container.setValue(1);
-        int duration = (int) (effect.getDuration() + ((container.getStartTime() - System.currentTimeMillis()) / 1000));
         Map<MapleBuffStat, BuffContainer> map = Map.of(MapleBuffStat.COMBO_ABILITY_BUFF, container);
         announce(MaplePacketCreator.setTempStats(map));
         getMap().sendPacketExclude(MaplePacketCreator.setRemoteTempStats(this, map), this);

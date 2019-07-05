@@ -222,12 +222,12 @@ public class AbstractPlayerInteraction {
 
     public Item gainItem(int id, short quantity, boolean randomStats, boolean showMessage, long expires) {
         MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
-        Item item = null;
         if (quantity >= 0) {
             if (!MapleInventoryManipulator.checkSpace(c, id, quantity, "")) {
                 c.getPlayer().dropMessage(1, "Your inventory is full. Please remove an item from your " + ItemConstants.getInventoryType(id).name() + " inventory.");
                 return null;
             }
+            Item item;
             if (ItemConstants.getInventoryType(id) == MapleInventoryType.EQUIP) {
                 item = ii.getEquipById(id);
             } else {
@@ -255,7 +255,7 @@ public class AbstractPlayerInteraction {
         if (showMessage) {
             c.announce(MaplePacketCreator.getShowItemGain(id, quantity, true));
         }
-        return item;
+        return null;
     }
 
     public void changeMusic(String songName) {

@@ -158,10 +158,16 @@ public class PlayerCashShopOperationEvent extends PacketEvent {
                 CashItem cItem = CashItemFactory.getItem(SN);
                 if (cItem == null || !cItem.isOnSale() || cs.getCash(cost) < cItem.getPrice()) {
                     return null;
-                } else if (cItem.getItemId() / 10000 == 521) { // 2x EXP
-                    client.announce(MaplePacketCreator.serverNotice(1, "The item is unavailable for purchase."));
-                    client.announce(MaplePacketCreator.showCash(player));
-                    return null;
+                } else {
+                    int section = cItem.getItemId() / 10000;
+                    if (section == 521// 2x EXP
+                            || section == 505 // SP Resets
+                            || section == 551
+                    ) {
+                        client.announce(MaplePacketCreator.serverNotice(1, "The item is unavailable for purchase."));
+                        client.announce(MaplePacketCreator.showCash(player));
+                        return null;
+                    }
                 }
                 int itemID = cItem.getItemId();
                 if (player.isDebug()) {
