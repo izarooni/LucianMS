@@ -15,11 +15,11 @@ public abstract class ConsoleCommands {
     private volatile boolean reading;
     private Scanner scanner;
 
-    public final static ConsoleCommands getInstance() {
+    public static ConsoleCommands getInstance() {
         return instance;
     }
 
-    public final static void setInstance(ConsoleCommands instance) {
+    public static void setInstance(ConsoleCommands instance) {
         ConsoleCommands.instance = instance;
     }
 

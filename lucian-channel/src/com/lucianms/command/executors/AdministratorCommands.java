@@ -9,8 +9,6 @@ import com.lucianms.command.Command;
 import com.lucianms.command.CommandArgs;
 import com.lucianms.command.CommandEvent;
 import com.lucianms.cquest.CQuestBuilder;
-import com.lucianms.discord.DiscordConnection;
-import com.lucianms.discord.Headers;
 import com.lucianms.events.PlayerRingActionEvent;
 import com.lucianms.features.auto.GAutoEvent;
 import com.lucianms.features.auto.GAutoEventManager;
@@ -20,7 +18,6 @@ import com.lucianms.io.scripting.event.EventManager;
 import com.lucianms.io.scripting.map.FieldScriptExecutor;
 import com.lucianms.io.scripting.portal.PortalScriptManager;
 import com.lucianms.io.scripting.reactor.ReactorScriptManager;
-import com.lucianms.nio.send.MaplePacketWriter;
 import com.lucianms.scheduler.TaskExecutor;
 import com.lucianms.server.MapleInventoryManipulator;
 import com.lucianms.server.MapleItemInformationProvider;
@@ -110,16 +107,6 @@ public class AdministratorCommands extends CommandExecutor {
         }
     }
 
-    private void DoShutDownServer() {
-        ConsoleCommands.getInstance().stopReading();
-        System.exit(0);
-        if (DiscordConnection.getSession() != null) {
-            MaplePacketWriter w = new MaplePacketWriter();
-            w.write(Headers.Shutdown.value);
-            DiscordConnection.sendPacket(w.getPacket());
-        }
-    }
-
     private void CommandExit(MapleCharacter player, Command cmd, CommandArgs args) {
         if (args.length() == 0) {
             player.sendMessage("Please specify the delay (in seconds) that the server should wait before shutting down");
@@ -136,7 +123,7 @@ public class AdministratorCommands extends CommandExecutor {
             for (MapleWorld world : Server.getWorlds()) {
                 world.sendPacket(MaplePacketCreator.serverMessage(String.format("The server will shutdown in %s. Please complete your tasks and log-out safely.", StringUtil.getTimeElapse(time))));
             }
-            TaskExecutor.createTask(() -> DoShutDownServer(), time);
+            TaskExecutor.createTask(() -> System.exit(0), time);
         }
     }
 

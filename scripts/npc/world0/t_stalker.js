@@ -115,6 +115,7 @@ function action(mode, type, selection) {
                 }
                 if (target.inv != undefined) {
                     let content = "";
+                    target.item = undefined;
                     let items = target.inv.list();
                     items.forEach(item => {
                         content += `#L${item.getPosition()}# ${useImages.tag}${item.getItemId()}# #l\t`;

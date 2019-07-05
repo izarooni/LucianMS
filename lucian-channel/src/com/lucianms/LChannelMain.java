@@ -63,6 +63,10 @@ public class LChannelMain {
                 for (MapleWorld world : Server.getWorlds()) {
                     world.sendPacket(MaplePacketCreator.serverNotice(1, "The server is now restarting."));
                 }
+                try {
+                    Thread.sleep(1000);
+                } catch (Exception ignore) {
+                }
                 System.out.println("Shutting 'er down!");
                 try {
                     if (communicationsHandler != null) {
