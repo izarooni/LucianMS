@@ -96,7 +96,8 @@ public class ReactorScriptManager {
                 return;
             }
             iv.invokeFunction("hit");
-        } catch (IOException | ScriptException | NoSuchMethodException | NullPointerException e) {
+        } catch (NoSuchMethodException ignore) {
+        } catch (IOException | ScriptException | NullPointerException e) {
             LOGGER.error("hit reactor {} in map {}", reactor.getId(), reactor.getMap().getId(), e);
         }
     }

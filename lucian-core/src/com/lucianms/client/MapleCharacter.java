@@ -3191,16 +3191,19 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Di
 
         Achievements.testFor(this, -1);
 
-
         Occupation occupation = getOccupation();
         if (occupation != null) {
             if (occupation.getType() == Occupation.Type.Looter) {
                 MaplePet pet = getPet(0);
                 if (pet != null) {
                     MapleMap.doItemVac(this, pet, 80 * (occupation.getLevel() + 1));
-                    if (occupation.gainExperience(10)) {
+                    if (occupation.gainExperience(5)) {
                         sendMessage("Your occupation is now level {}", occupation.getLevel());
                     }
+                }
+            } else if (occupation.getType() == Occupation.Type.Trainer) {
+                if (occupation.gainExperience(levels)) {
+                    sendMessage("Your occupation is now level {}", occupation.getLevel());
                 }
             }
         }

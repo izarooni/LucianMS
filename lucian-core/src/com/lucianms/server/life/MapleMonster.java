@@ -24,6 +24,7 @@ package com.lucianms.server.life;
 import com.lucianms.client.*;
 import com.lucianms.client.inventory.Equip;
 import com.lucianms.client.inventory.MapleInventoryType;
+import com.lucianms.client.meta.Occupation;
 import com.lucianms.client.status.MonsterStatus;
 import com.lucianms.client.status.MonsterStatusEffect;
 import com.lucianms.constants.skills.*;
@@ -462,6 +463,13 @@ public class MapleMonster extends AbstractLoadedMapleLife {
         if (killer != null) {
             Achievements.testFor(killer, getId());
 
+            Occupation occupation = killer.getOccupation();
+            if (occupation != null && occupation.getType() == Occupation.Type.Trainer && isBoss()) {
+                if (occupation.gainExperience(3)) {
+                    killer.sendMessage("Your occupation is now level {}", occupation.getLevel());
+                }
+            }
+
             for (CQuestData data : killer.getCustomQuests().values()) {
                 if (!data.isCompleted()) {
                     CQuestKillRequirement toKill = data.getToKill();
@@ -556,7 +564,7 @@ public class MapleMonster extends AbstractLoadedMapleLife {
     }
 
     public byte[] makeBossHPBarPacket() {
-        long maxHp = getMaxHp() ;
+        long maxHp = getMaxHp();
         int pp = (int) Math.ceil((100f / maxHp) * hp);
         int templateID = getMimicTemplateID() > 0 ? getMimicTemplateID() : getId();
         return MaplePacketCreator.showBossHP(templateID, Math.min(100, Math.max(0, pp)), 100, getTagColor(), getTagBgColor());
