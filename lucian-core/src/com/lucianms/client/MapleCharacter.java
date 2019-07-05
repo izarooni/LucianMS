@@ -3168,6 +3168,9 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Di
         }
         localMaxMp += localint_ / 10;
 
+        if (remainingAp <= Short.MAX_VALUE && remainingAp + (5 * levels) > Short.MAX_VALUE) {
+            sendMessage("Your AP has exceeded 32,767 and will not display properly in the stats window. Use @checkme to view your AP");
+        }
         remainingAp += (5 * levels);
         setLevel(level + levels);
         setMaxHp(maxhp + (localMaxHp * levels));

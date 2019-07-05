@@ -76,7 +76,7 @@ public final class DistributeAPEvent extends PacketEvent {
 //                break;
             case 8192: // MP
 //                addMP(player, addMP(player));
-                player.dropMessage(1, "Distributing AP into HP and MP is currently disabled");
+                player.dropMessage(1, "Distributing AP into HP and MP has been disabled");
                 return false;
             default:
                 player.announce(MaplePacketCreator.updatePlayerStats(MaplePacketCreator.EMPTY_STATUPDATE, true, player));
