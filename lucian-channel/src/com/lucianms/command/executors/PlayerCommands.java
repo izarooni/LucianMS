@@ -22,6 +22,7 @@ import com.lucianms.server.Server;
 import com.lucianms.server.channel.MapleChannel;
 import com.lucianms.server.life.FakePlayer;
 import com.lucianms.server.life.MapleMonster;
+import com.lucianms.server.maps.MapleSummon;
 import com.lucianms.server.maps.SavedLocationType;
 import com.lucianms.server.world.MapleWorld;
 import org.slf4j.Logger;
@@ -114,6 +115,7 @@ public class PlayerCommands extends CommandExecutor {
 
         addCommand("ping", this::Ping, "View your Round-Trip delay with the server");
         addCommand("emo", this::Emo, "Kills your character");
+        addCommand("debuff", this::Debuff, "Removes all buffs and summons");
 
         maps = new TreeMap<>();
         maps.put("amoria", 680000000);
@@ -157,6 +159,18 @@ public class PlayerCommands extends CommandExecutor {
             HELP_LIST.add(String.format("@%s - %s", e.getKey(), e.getValue().getRight()));
         }
         HELP_LIST.sort(String::compareTo);
+    }
+
+    private void Debuff(MapleCharacter player, Command cmd, CommandArgs args) {
+        player.cancelAllBuffs();
+        if (!player.getSummons().isEmpty()) {
+            for (MapleSummon summon : player.getSummons().values()) {
+                player.getMap().sendPacket(MaplePacketCreator.removeSummon(summon, true));
+                player.getMap().removeMapObject(summon);
+                summon.dispose();
+            }
+            player.getSummons().clear();
+        }
     }
 
     private void Emo(MapleCharacter player, Command cmd, CommandArgs args) {
