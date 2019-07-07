@@ -24,6 +24,7 @@ package com.lucianms.server.maps;
 import com.lucianms.client.MapleCharacter;
 import com.lucianms.client.MapleClient;
 import com.lucianms.client.SkillFactory;
+import com.lucianms.constants.ServerConstants;
 import com.lucianms.constants.skills.Outlaw;
 import com.lucianms.constants.skills.Ranger;
 import com.lucianms.constants.skills.Sniper;
@@ -60,6 +61,9 @@ public class MapleSummon extends AbstractAnimatedMapleMapObject implements Dispo
 
     @Override
     public void sendSpawnData(MapleClient client) {
+        if (client.getPlayer().getMapId() == ServerConstants.HOME_MAP) {
+            return;
+        }
         client.announce(MaplePacketCreator.spawnSummon(this, false));
     }
 
