@@ -107,7 +107,7 @@ public class Achievements {
                                 LOGGER.warn("Achievement script {} contains no reward function", name);
                             }
                         }
-                    } catch (ScriptException e) {
+                    } catch (Exception e) {
                         LOGGER.error("Achievement script error {}", name, e);
                     }
                 }

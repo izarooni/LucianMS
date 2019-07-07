@@ -448,7 +448,6 @@ public class PlayerCommands extends CommandExecutor {
                         player.setRemainingAp(player.getRemainingAp() - nStat);
                         player.updateSingleStat(MapleStat.STR, player.getStr());
                         player.updateSingleStat(MapleStat.AVAILABLEAP, player.getRemainingAp());
-
                     }
                     break;
                 case "dex":

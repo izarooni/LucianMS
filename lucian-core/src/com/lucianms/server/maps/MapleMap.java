@@ -773,8 +773,8 @@ public class MapleMap implements PacketAnnouncer {
     }
 
     public void killAllMonsters() {
+        spawnedMonstersOnMap.set(0);
         for (MapleMonster monster : getMapObjects(MapleMonster.class)) {
-            spawnedMonstersOnMap.decrementAndGet();
             monster.setHp(0);
             monster.killBy(null);
             broadcastMessage(MaplePacketCreator.killMonster(monster.getObjectId(), true));
@@ -1037,7 +1037,6 @@ public class MapleMap implements PacketAnnouncer {
 
     public void spawnMonster(final MapleMonster monster) {
         if (mobCapacity != -1 && spawnedMonstersOnMap.get() >= mobCapacity) {
-            LOGGER.warn("Too many monsters in the map {}", getId());
             return;
         }
         monster.setMap(this);
@@ -1872,6 +1871,10 @@ public class MapleMap implements PacketAnnouncer {
 
     public AtomicInteger getSpawnedMonstersOnMap() {
         return spawnedMonstersOnMap;
+    }
+
+    public int getMobCapacity() {
+        return mobCapacity;
     }
 
     public void setMobCapacity(int capacity) {

@@ -75,7 +75,7 @@ public abstract class BossPQ extends GenericEvent {
             player.saveLocation("OTHER");
             player.changeMap(getMapInstance(mapId));
             // 15 is the maximum possible number of attacks for a skill so i'm using 20 to generalize a maximum TOTAL damage
-            totalPossibleDamage += player.calculateMaxBaseDamage(player.getTotalWatk() + player.getTotalMagic()) * 20;
+            totalPossibleDamage += player.calculateMaxBaseDamage(player.getTotalWatk() + player.getTotalMagic()) * 20L;
         }
     }
 

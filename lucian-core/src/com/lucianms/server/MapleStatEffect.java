@@ -662,7 +662,6 @@ public class MapleStatEffect {
             }
 
         }
-        SummonMovementType summonMovementType = getSummonMovementType();
         if (!statups.isEmpty()) {
             applyBuffEffect(applyfrom, applyto, primary);
         }
@@ -679,6 +678,7 @@ public class MapleStatEffect {
             applyto.getVehicle().setTiredness(applyto.getVehicle().getTiredness() + getFatigue());
         }
 
+        SummonMovementType summonMovementType = getSummonMovementType();
         if (summonMovementType != null && pos != null) {
             MapleSummon summon = new MapleSummon(applyfrom, sourceid, pos, summonMovementType);
             MapleSummon remove = applyfrom.getSummons().put(sourceid, summon);

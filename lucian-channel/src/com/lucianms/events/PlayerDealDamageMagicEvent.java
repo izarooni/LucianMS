@@ -82,6 +82,10 @@ public class PlayerDealDamageMagicEvent extends AbstractDealDamageEvent {
 
         player.getMap().broadcastMessage(player, packet, false, true);
         MapleStatEffect effect = attackInfo.getAttackEffect(player, null);
+        if (effect == null) {
+            getLogger().warn("Skill {} has no data for level {}", attackInfo.skill, attackInfo.skillLevel);
+            return null;
+        }
         addCooldown(attackInfo);
 
         applyAttack(player, attackInfo, effect.getAttackCount());

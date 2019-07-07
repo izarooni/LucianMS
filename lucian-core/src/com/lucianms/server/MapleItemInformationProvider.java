@@ -274,7 +274,7 @@ public class MapleItemInformationProvider {
         MapleDataDirectoryEntry root = WzItem.getRoot();
         for (MapleDataDirectoryEntry topDir : root.getSubdirectories()) {
             for (MapleDataFileEntry iFile : topDir.getFiles()) {
-                if (iFile.getName().equals(idStr.substring(0, 4) + ".img")) {
+                if (iFile.getName().equals(idStr.substring(0, Math.min(idStr.length() , 4)) + ".img")) {
                     MapleData ret = WzItem.getData(topDir.getName() + "/" + iFile.getName());
                     if (ret == null) {
                         LOGGER.warn("Unable to find data node for item {}", itemId);

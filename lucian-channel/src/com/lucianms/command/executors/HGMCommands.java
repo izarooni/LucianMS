@@ -452,6 +452,7 @@ public class HGMCommands extends CommandExecutor {
         player.sendMessage(6, "onUserEnter: {} ", map.getOnUserEnter());
         player.sendMessage(6, "onFirstUserEnter: {} ", map.getOnFirstUserEnter());
         player.sendMessage(6, "Everlasting drops: {}", map.getEverlast());
+        player.sendMessage(6, "Capacity: {} / Spawned: {}", map.getMobCapacity(), map.getSpawnedMonstersOnMap().get());
     }
 
     private void OpenShop(MapleCharacter player, Command cmd, CommandArgs args) {
