@@ -1,30 +1,4 @@
-/*
-	This file is part of the OdinMS Maple Story Server
-    Copyright (C) 2008 Patrick Huy <patrick.huy@frz.cc> 
-                       Matthias Butz <matze@odinms.de>
-                       Jan Christian Meyer <vimes@odinms.de>
-
-    This program is free software: you can redistribute it and/or modify
-    it under the terms of the GNU Affero General Public License version 3
-    as published by the Free Software Foundation. You may not use, modify
-    or distribute this program under any other version of the
-    GNU Affero General Public License.
-
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU Affero General Public License for more details.
-
-    You should have received a copy of the GNU Affero General Public License
-    along with this program.  If not, see <http://www.gnu.org/licenses/>.
-*/
-/*Adobis
- *
- *@author SharpAceX (Alan)
- */
-importPackage(Packages.com.lucianms.server.expeditions);
-importPackage(Packages.tools);
-importPackage(Packages.com.lucianms.scripting.event);
+const MapleExpeditionType = Java.type('com.lucianms.server.expeditions.MapleExpeditionType');
 
 var status = 0;
 var expedition;
@@ -113,11 +87,11 @@ function action(mode, type, selection) {
             cm.sendOk("The expedition will begin and you will now be escorted to the #bSpooky World#k.");
             status = 4;
         } else if (selection == 3) {
-			player.getMap().broadcastMessage(MaplePacketCreator.removeClock());
-			player.getMap().broadcastMessage(MaplePacketCreator.serverNotice(6, expedition.getLeader().getName() + " has ended the expedition."));
-			cm.endExpedition(expedition);
+            player.getMap().broadcastMessage(MaplePacketCreator.removeClock());
+            player.getMap().broadcastMessage(MaplePacketCreator.serverNotice(6, expedition.getLeader().getName() + " has ended the expedition."));
+            cm.endExpedition(expedition);
             cm.sendOk("The expedition has now ended. Sometimes the best strategy is to run away.");
-			cm.dispose();
+            cm.dispose();
             return;
         }
     } else if (status == 4) {
@@ -133,15 +107,14 @@ function action(mode, type, selection) {
             cm.dispose();
             return;
         }
-        cm.sendOk("Good luck! Scarlion and Targa are worthy foes!");
-		em.setProperty("leader", player.getName());
+        em.setProperty("leader", player.getName());
         em.setProperty("channel", player.getClient().getChannel());
         em.startInstance(expedition);
         cm.dispose();
         return;
     } else if (status == 6) {
         if (selection > 0) {
-           var banned = expedition.getMembers().get(selection);
+            var banned = expedition.getMembers().get(selection);
             expedition.ban(banned);
             cm.sendOk("You have banned " + banned.getName() + " from the expedition.");
             cm.dispose();

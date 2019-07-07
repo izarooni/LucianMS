@@ -47,9 +47,17 @@ public class MapleRing {
                     ps.setInt(1, ring.getPartnerRingId());
                     try (ResultSet rs = ps.executeQuery()) {
                         if (!rs.next()) {
-                            // partner doens't exist, so remove the ring
-                            Database.executeSingle(con, "delete from rings where id = ?", ringId);
-                            return null;
+                            try (PreparedStatement gps = con.prepareStatement("select * from gifts where ringid = ?")) {
+                                gps.setInt(1, ring.getPartnerRingId());
+                                try (ResultSet grs = gps.executeQuery()) {
+                                    if (!grs.next()) {
+                                        // partner ring doesn't exist, so remove the ring
+                                        Database.executeSingle(con, "delete from rings where id = ?", ringId);
+                                        Database.executeSingle(con, "delete from rings where id = ?", ring.getPartnerRingId());
+                                        return null;
+                                    }
+                                }
+                            }
                         }
                     }
                 }

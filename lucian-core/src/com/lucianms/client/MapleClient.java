@@ -471,10 +471,10 @@ public class MapleClient implements Disposable {
     public String toString() {
         return "MapleClient{" +
                 "ID=" + ID +
+                ", accountName='" + accountName + '\'' +
                 ", gmlevel=" + gmlevel +
                 ", loginState=" + loginState +
                 ", lastKnownIP='" + lastKnownIP + '\'' +
-                ", accountName='" + accountName + '\'' +
                 ", discordId=" + discordId +
                 '}';
     }

@@ -637,6 +637,9 @@ public class MapleStatEffect {
                         return false;
                     }
                 }
+                if (target == null) {
+                    return false;
+                }
                 applyto.changeMap(target);
             } else {
                 return false;

@@ -751,7 +751,6 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Di
             } else {
                 for (Skill skill : SkillFactory.getSkills().values()) {
                     if (ret.isGM() || (skill.getJob() / 100 != 9
-                            && !GameConstants.isHiddenSkills(skill.getId())
                             && !GameConstants.isPqSkill(skill.getId()))) {
                         ret.skills.put(skill.getId(), new SkillEntry(skill.getMaxLevel(), skill.getMaxLevel(), -1));
                     }

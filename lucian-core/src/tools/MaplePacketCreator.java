@@ -6071,8 +6071,8 @@ public class MaplePacketCreator {
         } else {
             mplew.write(0);
         }
-        encodeRingData(mplew, null);
-        encodeRingData(mplew, null);
+        encodeRingData(mplew, player.getCrushRings().stream().findFirst().orElse(null));
+        encodeRingData(mplew, player.getFriendshipRings().stream().findFirst().orElse(null));
         encodeMarriageData(mplew, player);
         mplew.skip(3);
         mplew.write(player.getTeam());//only needed in specific fields

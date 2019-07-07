@@ -211,6 +211,10 @@ public class PlayerBattle extends GenericEvent {
      */
     private void calculateAttack(AbstractDealDamageEvent.AttackInfo attackInfo) {
 
+        if (attackInfo == null) {
+            return;
+        }
+
         // reset previous calculations
         global = false;
         damage = 0;
