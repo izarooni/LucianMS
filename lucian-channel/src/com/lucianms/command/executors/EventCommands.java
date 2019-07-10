@@ -74,6 +74,7 @@ public class EventCommands extends CommandExecutor {
             HELP_LIST.add(String.format("!%s - %s", e.getKey(), e.getValue().getRight()));
         }
         HELP_LIST.sort(String::compareTo);
+        reloadEventRules();
     }
 
     private void CommandCoconutEvent(MapleCharacter player, Command cmd, CommandArgs args) {
