@@ -659,7 +659,7 @@ public class MapleMap implements PacketAnnouncer {
         if (chr == null) {
             monster.killBy(null);
             monster.setHp(0);
-            broadcastMessage(MaplePacketCreator.killMonster(monster.getObjectId(), animation), monster.getPosition());
+            sendPacket(MaplePacketCreator.killMonster(monster.getObjectId(), animation));
             removeMapObject(monster);
             return;
         }
@@ -685,7 +685,7 @@ public class MapleMap implements PacketAnnouncer {
             warp.clear();
         }
         monster.setHp(0);
-        broadcastMessage(MaplePacketCreator.killMonster(monster.getObjectId(), animation));
+        sendPacket(MaplePacketCreator.killMonster(monster.getObjectId(), animation));
         removeMapObject(monster);
         if (monster.getId() >= 8800003 && monster.getId() <= 8800010) {
             boolean makeZakReal = true;
