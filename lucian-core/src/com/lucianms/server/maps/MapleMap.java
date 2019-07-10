@@ -72,6 +72,7 @@ public class MapleMap implements PacketAnnouncer {
     public static final int RESPAWN_INTERVAL = 5000;
     public static final int MAX_DROP_CHANCE = 1000000;
     public static final int INVALID_ID = 999999999;
+    public static final String AUTO_KILL_TOGGLE = "auto_kill_toggle";
     private static final Logger LOGGER = LoggerFactory.getLogger(MapleMap.class);
     private static final List<MapleMapObjectType> rangedMapobjectTypes = Arrays.asList(
             MapleMapObjectType.SHOP,

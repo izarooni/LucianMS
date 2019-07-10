@@ -4,6 +4,7 @@ import com.lucianms.client.MapleCharacter;
 import com.lucianms.lang.GProperties;
 import com.lucianms.nio.receive.MaplePacketReader;
 import com.lucianms.server.life.FakePlayer;
+import com.lucianms.server.maps.MapleMap;
 import com.lucianms.server.movement.AbstractLifeMovement;
 import com.lucianms.server.movement.LifeMovementFragment;
 import com.lucianms.server.movement.MovementPacketHelper;
@@ -61,7 +62,7 @@ public final class PlayerMoveEvent extends PacketEvent {
             modified.clear();
         }
 
-        if (!player.isGM() || player.isDebug()) {
+        if ((!player.isGM() || player.isDebug()) && ((boolean) player.getMap().getVariables().checkProperty(MapleMap.AUTO_KILL_TOGGLE, true))) {
             GProperties<Point> akp = player.getMap().getAutoKillPositions();
             Point position;
             if ((position = akp.get("left")) != null && clientPosition.x <= position.x) {
