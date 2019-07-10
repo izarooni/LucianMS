@@ -44,6 +44,19 @@ public class EventCommands extends CommandExecutor {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(EventCommands.class);
     private static ArrayList<String> HELP_LIST;
+    private static final Point[] OX_QUIZ_O = {
+            new Point(-719, -26), new Point(-637, -26), new Point(-547, -26), // top
+            new Point(-454, 34), new Point(-454, 94), new Point(-454, 154), // right
+            new Point(-816, 34), new Point(-816, 94), new Point(-816, 154), // left
+            new Point(-719, 214), new Point(-637, 214), new Point(-547, 214) // bottom
+    };
+    private static final Point[] OX_QUIZ_X = {
+            new Point(-8, -26), new Point(366, -26),
+            new Point(82, 34), new Point(262, 34),
+            new Point(175, 94),
+            new Point(82, 154), new Point(262, 154),
+            new Point(-8, 214), new Point(366, 214),
+    };
 
     public EventCommands() {
         addCommand("eventcmds", this::CommandList, "View a list of event commands");
@@ -67,6 +80,8 @@ public class EventCommands extends CommandExecutor {
         addCommand("rules", this::CommandEventRules, "Automate event rule messages for a specified event");
         addCommand("fstatm", this::CommandForceStatMap, "Enable temporary stats for all players in the map");
         addCommand("coconut", this::CommandCoconutEvent, "Begin the coconut event (if in the proper map)");
+        addCommand("bombo", this::BombOXQuiz, "Spawn bombs randomly on the O side of the OX Quiz map");
+        addCommand("bombx", this::BombOXQuiz, "Spawn bombs randomly on thet X side of the OX Quiz map");
 
         Map<String, Pair<CommandEvent, String>> commands = getCommands();
         HELP_LIST = new ArrayList<>(commands.size());
@@ -75,6 +90,43 @@ public class EventCommands extends CommandExecutor {
         }
         HELP_LIST.sort(String::compareTo);
         reloadEventRules();
+    }
+
+    private void BombOXQuiz(MapleCharacter player, Command cmd, CommandArgs args) {
+        if (player.getMapId() != 109020001) {
+            player.sendMessage("This command can only be used in the OX Quiz map");
+            return;
+        } else if (args.length() != 1) {
+            player.sendMessage("Syntax: {} <number>", cmd.getName());
+            return;
+        }
+        Number n = args.parseNumber(0, int.class);
+        if (n == null) {
+            player.sendMessage(args.getFirstError());
+            return;
+        }
+        Point[] src = cmd.equals("bombo") ? OX_QUIZ_O : OX_QUIZ_X;
+        Point[] dest = new Point[src.length];
+        int platforms = Math.min(n.intValue(), dest.length);
+        System.arraycopy(src, 0, dest, 0, src.length);
+        player.getMap().sendMessage(5, "Bombing {} platforms", platforms);
+        for (int i = 0; i < platforms; i++) {
+            MapleMonster bomb = MapleLifeFactory.getMonster(9300166);
+            if (bomb != null) {
+                int selected = Randomizer.nextInt(dest.length);
+                if (dest[selected] == null) {
+                    // always pick a unique platform
+                    i--;
+                    continue;
+                }
+                Point pos = dest[selected].getLocation();
+                dest[selected] = null;
+                bomb.setPosition(pos);
+                bomb.getStats().getSelfDestruction().setRemoveAfter(1000);
+                player.getMap().spawnMonsterOnGroudBelow(bomb, pos);
+            }
+        }
+        dest = null;
     }
 
     private void CommandCoconutEvent(MapleCharacter player, Command cmd, CommandArgs args) {

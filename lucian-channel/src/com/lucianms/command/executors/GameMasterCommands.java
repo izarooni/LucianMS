@@ -135,7 +135,7 @@ public class GameMasterCommands extends CommandExecutor {
         if (fieldId != null) {
             player.announce(MaplePacketCreator.getWarpToMap(fieldId, 0x80, player, null));
         } else {
-            player.sendMessage(5, "Usage: !fwarp <map_id>");
+            player.sendMessage(5, "Syntax: !fwarp <map_id>");
         }
     }
 
@@ -191,7 +191,7 @@ public class GameMasterCommands extends CommandExecutor {
                     }
                 }
             } else {
-                player.dropMessage(5, "Correct syntax: !itemq <itemid> <morethan>");
+                player.dropMessage(5, "Syntax: !itemq <itemid> <morethan>");
                 return;
             }
             if (!(sb.length() == 0)) {
@@ -201,7 +201,7 @@ public class GameMasterCommands extends CommandExecutor {
                 player.dropMessage(5, "Nobody found online with more than this amount.");
             }
         } else {
-            player.dropMessage(5, "Correct syntax: !itemq <itemid> <morethan>");
+            player.dropMessage(5, "Syntax: !itemq <itemid> <morethan>");
         }
     }
 
@@ -272,7 +272,7 @@ public class GameMasterCommands extends CommandExecutor {
     private void Warp(MapleCharacter player, Command cmd, CommandArgs args) {
         MapleWorld world = player.getClient().getWorldServer();
         if (args.length() == 0) {
-            player.sendMessage(5, "Usage: !{} <username> [username/map ID]", cmd.getName());
+            player.sendMessage(5, "Syntax: !{} <username> [username/map ID]", cmd.getName());
             return;
         }
         String username = args.get(0);
@@ -347,7 +347,7 @@ public class GameMasterCommands extends CommandExecutor {
 
     private void Clock(MapleCharacter player, Command cmd, CommandArgs args) {
         if (args.length() != 1) {
-            player.sendMessage(5, "Usage: !{} <time (in seconds)", cmd.getName());
+            player.sendMessage(5, "Syntax: !{} <time (in seconds)", cmd.getName());
             return;
         }
         Integer time = args.parseNumber(0, int.class);
@@ -388,7 +388,7 @@ public class GameMasterCommands extends CommandExecutor {
                 }
             }
         } else {
-            player.sendMessage(5, "Usage: !{} <usernames...>", cmd.getName());
+            player.sendMessage(5, "Syntax: !{} <usernames...>", cmd.getName());
         }
     }
 
@@ -423,13 +423,13 @@ public class GameMasterCommands extends CommandExecutor {
                 player.updateSingleStat(MapleStat.JOB, job.getId());
             }
         } else {
-            player.sendMessage(5, "Usage: !{} <job_id> [username]", cmd.getName());
+            player.sendMessage(5, "Syntax: !{} <job_id> [username]", cmd.getName());
         }
     }
 
     private void SetHealth(MapleCharacter player, Command cmd, CommandArgs args) {
         if (args.length() == 0) {
-            player.sendMessage(5, "Usage: !{} <value>", cmd.getName());
+            player.sendMessage(5, "Syntax: !{} <value>", cmd.getName());
             return;
         }
         Number n = args.parseNumber(0, int.class);
@@ -446,7 +446,7 @@ public class GameMasterCommands extends CommandExecutor {
 
     private void SetMana(MapleCharacter player, Command cmd, CommandArgs args) {
         if (args.length() == 0) {
-            player.sendMessage(5, "Usage: !{} <value>", cmd.getName());
+            player.sendMessage(5, "Syntax: !{} <value>", cmd.getName());
             return;
         }
         Number n = args.parseNumber(0, int.class);
@@ -483,7 +483,7 @@ public class GameMasterCommands extends CommandExecutor {
         } else if (args.length() < 2) {
             player.gainLevels(levels == null ? 1 : levels);
         } else {
-            player.sendMessage(5, "Usage: !{} <username> <levels>", cmd.getName());
+            player.sendMessage(5, "Syntax: !{} <username> <levels>", cmd.getName());
         }
     }
 
@@ -518,7 +518,7 @@ public class GameMasterCommands extends CommandExecutor {
                 player.updateSingleStat(MapleStat.EXP, player.getExp());
             }
         } else {
-            player.dropMessage(5, "Usage: !level <number> [usernames...]");
+            player.dropMessage(5, "Syntax: !level <number> [usernames...]");
         }
     }
 
@@ -688,8 +688,8 @@ public class GameMasterCommands extends CommandExecutor {
             }
 
         } else {
-            player.dropMessage(5, "Usage: !gift <point_type> <username> <amount> OR");
-            player.dropMessage(5, "Usage: !gift <point_type> <amount> <usernames..>");
+            player.dropMessage(5, "Syntax: !gift <point_type> <username> <amount> OR");
+            player.dropMessage(5, "Syntax: !gift <point_type> <amount> <usernames..>");
         }
     }
 
@@ -741,7 +741,7 @@ public class GameMasterCommands extends CommandExecutor {
             }
             player.sendMessage(6, "Reloaded map {}", mapId);
         } else {
-            player.sendMessage(5, "Usage: ![] <map ID>", cmd.getName());
+            player.sendMessage(5, "Syntax: ![] <map ID>", cmd.getName());
         }
     }
 
@@ -803,7 +803,7 @@ public class GameMasterCommands extends CommandExecutor {
                 }
             }
         } else {
-            player.sendMessage(5, "Usage: !{} <inventory>", cmd.getName());
+            player.sendMessage(5, "Syntax: !{} <inventory>", cmd.getName());
         }
     }
 
@@ -963,7 +963,7 @@ public class GameMasterCommands extends CommandExecutor {
                     player.sendMessage(5, "Unable to find any player named {}", args.get(0));
                 }
             } else {
-                player.sendMessage(5, "Usage: !{} <username>", cmd.getName());
+                player.sendMessage(5, "Syntax: !{} <username>", cmd.getName());
             }
         } else if (args.length() >= 2) {
             MapleCharacter target = world.findPlayer(p -> p.getName().equalsIgnoreCase(args.get(0)));
@@ -992,7 +992,7 @@ public class GameMasterCommands extends CommandExecutor {
                 }
             }
         } else {
-            player.dropMessage(5, "Correct usage: !jail <username> <reason>");
+            player.dropMessage(5, "Syntax: !jail <username> <reason>");
         }
     }
 
@@ -1338,7 +1338,7 @@ public class GameMasterCommands extends CommandExecutor {
     private void SetOccupation(MapleCharacter player, Command cmd, CommandArgs args) {
         MapleWorld world = player.getClient().getWorldServer();
         if (args.length() != 1) {
-            player.dropMessage("usage: !occupation <occupation_name>");
+            player.dropMessage("Syntax: !occupation <occupation_name>");
             Occupation.Type[] values = Occupation.Type.values();
             StringBuilder sb = new StringBuilder();
             for (Occupation.Type value : values) {
