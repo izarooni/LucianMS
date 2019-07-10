@@ -121,7 +121,7 @@ public class AdministratorCommands extends CommandExecutor {
             }
             long time = nTime.intValue() * 1000;
             for (MapleWorld world : Server.getWorlds()) {
-                world.sendPacket(MaplePacketCreator.serverMessage(String.format("The server will shutdown in %s. Please complete your tasks and log-out safely.", StringUtil.getTimeElapse(time))));
+                world.sendPacket(MaplePacketCreator.serverMessage(String.format("The server will shutdown in %s.", StringUtil.getTimeElapse(time))));
             }
             TaskExecutor.createTask(() -> System.exit(0), time);
         }

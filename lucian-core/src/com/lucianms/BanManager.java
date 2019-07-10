@@ -134,10 +134,9 @@ public class BanManager {
 
     public static boolean setBanned(int accountID, String banReason) {
         try (Connection con = Server.getConnection()) {
-            try (PreparedStatement ps = con.prepareStatement("update accounts set banned = ?, ban_reason = ? where id = ?")) {
-                ps.setInt(1, accountID);
-                ps.setString(2, banReason);
-                ps.setInt(3, accountID);
+            try (PreparedStatement ps = con.prepareStatement("update accounts set banned = 1, ban_reason = ? where id = ?")) {
+                ps.setString(1, banReason);
+                ps.setInt(2, accountID);
                 ps.executeUpdate();
             }
             try (PreparedStatement ps = con.prepareStatement("select * from accounts_mac where account_id = ?")) {

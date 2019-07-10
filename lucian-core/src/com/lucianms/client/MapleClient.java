@@ -275,7 +275,7 @@ public class MapleClient implements Disposable {
                     if (rs.next()) {
                         banReason = null;
                         temporaryBanLength = null;
-                        if (rs.getByte("banned") == 1) {
+                        if (rs.getByte("banned") != 0) {
                             banReason = rs.getString("ban_reason");
                             temporaryBanLength = rs.getTimestamp("temporary_ban");
                             return 3;
