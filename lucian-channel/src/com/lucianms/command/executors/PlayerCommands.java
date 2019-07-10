@@ -14,6 +14,7 @@ import com.lucianms.features.ManualPlayerEvent;
 import com.lucianms.features.PlayerBattle;
 import com.lucianms.features.auto.GAutoEvent;
 import com.lucianms.features.auto.GAutoEventManager;
+import com.lucianms.helpers.JailManager;
 import com.lucianms.io.scripting.npc.NPCScriptManager;
 import com.lucianms.nio.SendOpcode;
 import com.lucianms.nio.send.MaplePacketWriter;
@@ -60,6 +61,7 @@ public class PlayerCommands extends CommandExecutor {
     public PlayerCommands() {
         addCommand("help", this::Help, "Show a list of player commands");
         addCommand("commands", this::Help, "Show a list of player commands");
+        addCommand("chirithy", this::Chirithy, "Opens the Chirithy NPC");
 
         addCommand("joinevent", this::ParticipateEvent, "Join a GM hosted event");
         addCommand("leaveevent", this::ParticipateEvent, "Leave a GM hosted event");
@@ -159,6 +161,14 @@ public class PlayerCommands extends CommandExecutor {
             HELP_LIST.add(String.format("@%s - %s", e.getKey(), e.getValue().getRight()));
         }
         HELP_LIST.sort(String::compareTo);
+    }
+
+    private void Chirithy(MapleCharacter player, Command cmd, CommandArgs args) {
+        if (!JailManager.isJailed(player.getId())) {
+            NPCScriptManager.start(player.getClient(), 2007, "f_multipurpose");
+        } else {
+            player.sendMessage(5, "You cannot do that while jailed.");
+        }
     }
 
     private void Debuff(MapleCharacter player, Command cmd, CommandArgs args) {
