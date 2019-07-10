@@ -306,8 +306,14 @@ public class GameMasterCommands extends CommandExecutor {
         } else if (target == null) {
             Number number = args.parseNumber(0, int.class);
             if (number == null) {
-                player.sendMessage(5, "Could not find any player named '{}' or it is not a number", username);
-                return;
+                switch (args.get(0)) {
+                    case "ox":
+                        number = 109020001;
+                        break;
+                    default:
+                        player.sendMessage(5, "Could not find any player named '{}' or it is not a number", username);
+                        return;
+                }
             }
             MapleMap map = player.getClient().getChannelServer().getMap(number.intValue());
             if (map != null) {
