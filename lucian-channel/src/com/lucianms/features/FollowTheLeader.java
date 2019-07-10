@@ -73,7 +73,7 @@ public class FollowTheLeader extends GenericEvent {
         for (MapleCharacter target : targets) {
             if (target.getId() != leader.getId() && target.getGenericEvents().contains(this)) {
                 double distance = Math.abs(target.getPosition().distance(leader.getPosition()));
-                if (distance > 100) {
+                if (distance > 200) {
                     unregisterPlayer(target);
                     target.setHpMp(0);
                     map.sendMessage(5, "{} has strayed too far from {}", target.getName(), leader.getName());
