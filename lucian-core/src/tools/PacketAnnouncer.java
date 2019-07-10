@@ -21,7 +21,7 @@ public interface PacketAnnouncer {
      */
     Collection<MapleCharacter> getPlayers();
 
-    default Collection<MapleCharacter> getPlayers(Predicate<MapleCharacter> condition) {
+    default List<MapleCharacter> getPlayers(Predicate<MapleCharacter> condition) {
         // lul pls dont judge me
         Collection<MapleCharacter> players = getPlayers();
         List<MapleCharacter> filtered = players.stream().filter(condition).collect(Collectors.toList());

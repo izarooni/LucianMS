@@ -579,16 +579,13 @@ public class MaplePacketCreator {
     }
 
     private static void encodeMarriageData(final MaplePacketWriter w, MapleCharacter player) {
-        Optional<MapleRing> first = player.getWeddingRings().stream().findFirst();
+        Optional<MapleRing> first = player.getWeddingRings().stream().filter(MapleRing::isEquipped).findFirst();
         if (!first.isPresent()) {
             w.writeBoolean(false);
             return;
         }
         MapleRing ring = first.get();
-        w.writeBoolean(ring.isEquipped());
-        if (!ring.isEquipped()) {
-            return;
-        }
+        w.writeBoolean(true);
         w.writeInt(player.getId());
         w.writeInt(ring.getPartnerChrId());
         w.writeInt(ring.getItemId());
@@ -6071,8 +6068,8 @@ public class MaplePacketCreator {
         } else {
             mplew.write(0);
         }
-        encodeRingData(mplew, player.getCrushRings().stream().findFirst().orElse(null));
-        encodeRingData(mplew, player.getFriendshipRings().stream().findFirst().orElse(null));
+        encodeRingData(mplew, player.getCrushRings().stream().filter(MapleRing::isEquipped).findFirst().orElse(null));
+        encodeRingData(mplew, player.getFriendshipRings().stream().filter(MapleRing::isEquipped).findFirst().orElse(null));
         encodeMarriageData(mplew, player);
         mplew.skip(3);
         mplew.write(player.getTeam());//only needed in specific fields

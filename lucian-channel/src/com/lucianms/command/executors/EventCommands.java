@@ -30,6 +30,8 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.math.BigDecimal;
+import java.math.MathContext;
 import java.util.List;
 import java.util.*;
 import java.util.regex.Pattern;
@@ -82,6 +84,7 @@ public class EventCommands extends CommandExecutor {
         addCommand("coconut", this::CommandCoconutEvent, "Begin the coconut event (if in the proper map)");
         addCommand("bombo", this::BombOXQuiz, "Spawn bombs randomly on the O side of the OX Quiz map");
         addCommand("bombx", this::BombOXQuiz, "Spawn bombs randomly on thet X side of the OX Quiz map");
+        addCommand("nearest", this::NearestPlayers, "List players in order of proximity");
 
         Map<String, Pair<CommandEvent, String>> commands = getCommands();
         HELP_LIST = new ArrayList<>(commands.size());
@@ -90,6 +93,27 @@ public class EventCommands extends CommandExecutor {
         }
         HELP_LIST.sort(String::compareTo);
         reloadEventRules();
+    }
+
+    private void NearestPlayers(MapleCharacter player, Command cmd, CommandArgs args) {
+        List<MapleCharacter> players = player.getMap().getPlayers(p -> p.getGMLevel() == 0 || p.isDebug());
+        players.sort(new Comparator<MapleCharacter>() {
+            @Override
+            public int compare(MapleCharacter o1, MapleCharacter o2) {
+                double d1 = o1.getPosition().distance(player.getPosition());
+                double d2 = o2.getPosition().distance(player.getPosition());
+                return Double.compare(d1, d2);
+            }
+        });
+        MapleCharacter[] arr = players.toArray(new MapleCharacter[0]);
+        player.sendMessage("Here are the nearest {} players", arr.length);
+        for (int i = arr.length - 1; i >= 0; i--) {
+            MapleCharacter target = arr[i];
+            double distance = target.getPosition().distance(player.getPosition());
+            player.sendMessage("{} is {} units away", target.getName(), new BigDecimal(distance).round(new MathContext(7)));
+        }
+        arr = null;
+        players.clear();
     }
 
     private void BombOXQuiz(MapleCharacter player, Command cmd, CommandArgs args) {
