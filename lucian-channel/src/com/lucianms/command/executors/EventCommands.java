@@ -70,10 +70,17 @@ public class EventCommands extends CommandExecutor {
         addCommand("eventcmds", this::CommandList, "View a list of event commands");
         addCommand("help", this::CommandHelp, "View a list of help commands for each GM level");
         addCommand("event", this::CommandEvent, "View commands to create a GM event");
-        addCommand("lock", this::CommandLock, "Gives the SEAL debuff to all players in the map");
-        addCommand("reverse", this::CommandReverse, "Gives the CONFUSE debuff to all players in the map");
-        addCommand("seduce", this::CommandSeduce, "Gives the SEDUCE debuff to all players in the map");
-        addCommand("stun", this::CommandStun, "Gives the STUN debuff to all players in the map");
+
+        addCommand("lock", this::CommandLock, "Gives the SEAL debuff to specified players");
+        addCommand("reverse", this::CommandReverse, "Gives the CONFUSE debuff to specified players");
+        addCommand("seduce", this::CommandSeduce, "Gives the SEDUCE debuff to specified players");
+        addCommand("stun", this::CommandStun, "Gives the STUN debuff to specified players");
+
+        addCommand("lockm", this::CommandLock, "Gives the SEAL debuff to all players in the map");
+        addCommand("reversem", this::CommandReverse, "Gives the CONFUSE debuff to all players in the map");
+        addCommand("seducem", this::CommandSeduce, "Gives the SEDUCE debuff to all players in the map");
+        addCommand("stunm", this::CommandStun, "Gives the STUN debuff to all players in the map");
+
         addCommand("pcheck", this::CommandPartyCheck, "Check for all parties in the map (shows leaders and memebers)");
         addCommand("ak", this::CommandAutoKill, "Configure auto-kill position or mob for the map");
         addCommand("bomb", this::CommandBomb, "Spawn a bomb at your position (Default 1.5s delay for explosion)");
@@ -142,14 +149,15 @@ public class EventCommands extends CommandExecutor {
             MapleMapItem dropItem = player.getMap().spawnItemDrop(player, player, item, player.getPosition(), true, true);
             dropItem.setPickedUp(true); // prevent looting
             player.getMap().getVariables().put("nti", new Pair<>(name, dropItem));
+            player.sendMessage(6, "Name That Item detection started");
         } else {
-            player.sendMessage("The item {} has no name availble on the server", n.intValue());
+            player.sendMessage(5, "The item {} has no name availble on the server", n.intValue());
         }
     }
 
     private void RandomNumber(MapleCharacter player, Command cmd, CommandArgs args) {
         if (args.length() != 1) {
-            player.sendMessage("Syntax: !{} <max number>", cmd.getName());
+            player.sendMessage(5, "Syntax: !{} <max number>", cmd.getName());
             return;
         }
         Number n = args.parseNumber(0, int.class);
@@ -158,7 +166,7 @@ public class EventCommands extends CommandExecutor {
             return;
         }
         int selected = Randomizer.nextInt(n.intValue());
-        player.getMap().sendMessage(5, "Random number chosen: {}", selected);
+        player.getMap().sendMessage(6, "Random number chosen: {}", selected);
     }
 
     private void NearestPlayers(MapleCharacter player, Command cmd, CommandArgs args) {
@@ -172,11 +180,11 @@ public class EventCommands extends CommandExecutor {
             }
         });
         MapleCharacter[] arr = players.toArray(new MapleCharacter[0]);
-        player.sendMessage("Here are the nearest {} players", arr.length);
+        player.sendMessage(6, "Here are the nearest {} players", arr.length);
         for (int i = arr.length - 1; i >= 0; i--) {
             MapleCharacter target = arr[i];
             double distance = target.getPosition().distance(player.getPosition());
-            player.sendMessage("{} is {} units away", target.getName(), new BigDecimal(distance).round(new MathContext(7)));
+            player.sendMessage(6, "{} is {} units away", target.getName(), new BigDecimal(distance).round(new MathContext(7)));
         }
         arr = null;
         players.clear();
@@ -184,15 +192,15 @@ public class EventCommands extends CommandExecutor {
 
     private void BombOXQuiz(MapleCharacter player, Command cmd, CommandArgs args) {
         if (player.getMapId() != 109020001) {
-            player.sendMessage("This command can only be used in the OX Quiz map");
+            player.sendMessage(5, "This command can only be used in the OX Quiz map");
             return;
         } else if (args.length() != 1) {
-            player.sendMessage("Syntax: !{} <number>", cmd.getName());
+            player.sendMessage(5, "Syntax: !{} <number>", cmd.getName());
             return;
         }
         Number n = args.parseNumber(0, int.class);
         if (n == null) {
-            player.sendMessage(args.getFirstError());
+            player.sendMessage(5, args.getFirstError());
             return;
         }
         Point[] src = cmd.equals("bombo") ? OX_QUIZ_O : OX_QUIZ_X;
@@ -239,15 +247,15 @@ public class EventCommands extends CommandExecutor {
             player.announce(MaplePacketCreator.getNPCTalk(2007, (byte) 0, sb.toString(), "00 00", (byte) 0));
             sb.setLength(0);
         } else {
-            HELP_LIST.forEach(player::dropMessage);
+            HELP_LIST.forEach(player::sendMessage);
         }
     }
 
     private void CommandHelp(MapleCharacter player, Command command, CommandArgs args) {
-        player.dropMessage(6, "!eventcmds - Event commands");
-        if (player.getGMLevel() >= 2) player.dropMessage(6, "!gmcmds - Level 2 GM commands");
-        if (player.getGMLevel() >= 3) player.dropMessage(6, "!hgmcmds - Level 3 Head-GM commands");
-        if (player.getGMLevel() >= 6) player.dropMessage(6, "!admincmds - Level 6 Administrator commands");
+        player.sendMessage(6, "!eventcmds - Event commands");
+        if (player.getGMLevel() >= 2) player.sendMessage(6, "!gmcmds - Level 2 GM commands");
+        if (player.getGMLevel() >= 3) player.sendMessage(6, "!hgmcmds - Level 3 Head-GM commands");
+        if (player.getGMLevel() >= 6) player.sendMessage(6, "!admincmds - Level 6 Administrator commands");
     }
 
     private void CommandForceStatMap(MapleCharacter player, Command cmd, CommandArgs args) {
@@ -430,12 +438,12 @@ public class EventCommands extends CommandExecutor {
 
     private void CommandEvent(MapleCharacter player, Command command, CommandArgs args) {
         if (args.length() == 0) {
-            player.dropMessage("Use: '!event new' to begin configuring your event.");
-            player.dropMessage("Use: '!event help' for a list of relevant commands.");
-            player.dropMessage("To quick-start a basic event use the following commands in this order:");
-            player.dropMessage("!event new - Create a new event");
-            player.dropMessage("!event \"your event name\" - Assign a name to your event to display to the world");
-            player.dropMessage("!event start - Creates an announcement for your event and allows players to join");
+            player.sendMessage("Use: '!event new' to begin configuring your event.");
+            player.sendMessage("Use: '!event help' for a list of relevant commands.");
+            player.sendMessage("To quick-start a basic event use the following commands in this order:");
+            player.sendMessage("!event new - Create a new event");
+            player.sendMessage("!event \"your event name\" - Assign a name to your event to display to the world");
+            player.sendMessage("!event start - Creates an announcement for your event and allows players to join");
             return;
         }
         MapleWorld world = player.getClient().getWorldServer();
@@ -462,21 +470,21 @@ public class EventCommands extends CommandExecutor {
                     world.setPlayerEvent((playerEvent = new ManualPlayerEvent(player)));
                     playerEvent.setMap(player.getMap());
                     playerEvent.setChannel(ch);
-                    player.dropMessage("Event creation started. To set the name of your event, use: '!event name <event_name>'");
-                    player.dropMessage("If you would rather immediately start the event with default values, use: '!event start'");
-                    player.dropMessage("You may also abort this event creation via '!event cancel'");
+                    player.sendMessage("Event creation started. To set the name of your event, use: '!event name <event_name>'");
+                    player.sendMessage("If you would rather immediately start the event with default values, use: '!event start'");
+                    player.sendMessage("You may also abort this event creation via '!event cancel'");
                 } else {
-                    player.dropMessage("An event is already being hosted in this channel!");
-                    player.dropMessage("Use < !event info > for more information");
+                    player.sendMessage("An event is already being hosted in this channel!");
+                    player.sendMessage("Use < !event info > for more information");
                 }
                 break;
             case "cancel":
                 if (playerEvent != null) {
                     world.setPlayerEvent(null);
                     playerEvent.garbage();
-                    player.dropMessage("You have cancelled the event");
+                    player.sendMessage("You have cancelled the event");
                 } else {
-                    player.dropMessage("There is no event on this channel right now");
+                    player.sendMessage("There is no event on this channel right now");
                 }
                 break;
         }
@@ -485,13 +493,13 @@ public class EventCommands extends CommandExecutor {
             String action = args.get(0).toLowerCase();
             switch (action) {
                 case "info":
-                    player.dropMessage("------------------------------");
-                    player.dropMessage("Host: " + playerEvent.getHost().getName());
-                    player.dropMessage("Name: " + playerEvent.getName());
+                    player.sendMessage("------------------------------");
+                    player.sendMessage("Host: " + playerEvent.getHost().getName());
+                    player.sendMessage("Name: " + playerEvent.getName());
                     player.sendMessage(6, "Map: <{}> {}", player.getMapId(), player.getMap().getMapName());
-                    player.dropMessage("Gates: " + (playerEvent.isOpen() ? "open" : "closed"));
-                    player.dropMessage("Gate delay: " + playerEvent.getGateTime());
-                    player.dropMessage("Winners: " + playerEvent.getWinners().keySet());
+                    player.sendMessage("Gates: " + (playerEvent.isOpen() ? "open" : "closed"));
+                    player.sendMessage("Gate delay: " + playerEvent.getGateTime());
+                    player.sendMessage("Winners: " + playerEvent.getWinners().keySet());
                     break;
                 case "start": {
                     playerEvent.openGates(playerEvent.getGateTime(), 90, 75, 60, 30, 15, 5, 3, 2, 1);
@@ -503,7 +511,7 @@ public class EventCommands extends CommandExecutor {
                     if (args.length() > 1) {
                         String name = args.concatFrom(1);
                         playerEvent.setName(name);
-                        player.dropMessage("Event name changed to " + name);
+                        player.sendMessage("Event name changed to " + name);
                     } else {
                         player.sendMessage(6, "Current event name: '{}'", playerEvent.getName());
                     }
@@ -511,20 +519,20 @@ public class EventCommands extends CommandExecutor {
                 case "sp":
                 case "spawnpoint":
                     playerEvent.setSpawnPoint(player.getPosition());
-                    player.dropMessage("Spawn point has been set to your position");
+                    player.sendMessage("Spawn point has been set to your position");
                     break;
                 case "gate": {
                     if (args.length() > 1) {
                         Integer time = args.parseNumber(1, int.class);
                         String error = args.getFirstError();
                         if (error != null) {
-                            player.dropMessage(5, error);
+                            player.sendMessage(5, error);
                             break;
                         }
                         playerEvent.setGateTime(time);
-                        player.dropMessage(String.format("Event time is now set to %d seconds", time));
+                        player.sendMessage(String.format("Event time is now set to %d seconds", time));
                     } else {
-                        player.dropMessage(5, "You must specify a time (in seconds) to set your gate timer");
+                        player.sendMessage(5, "You must specify a time (in seconds) to set your gate timer");
                     }
                     break;
                 }
@@ -536,10 +544,10 @@ public class EventCommands extends CommandExecutor {
                             // manual gate closing
                             playerEvent.broadcastMessage("The gate is now closed");
                         } else {
-                            player.dropMessage("You have closed the gate");
+                            player.sendMessage("You have closed the gate");
                         }
                     } else {
-                        player.dropMessage("The gate is already closed");
+                        player.sendMessage("The gate is already closed");
                     }
                     break;
                 }
@@ -557,13 +565,13 @@ public class EventCommands extends CommandExecutor {
                     }
                     world.setPlayerEvent(null);
                     playerEvent.garbage();
-                    player.dropMessage("Event ended");
+                    player.sendMessage("Event ended");
                     break;
                 }
                 case "winners": {
                     if (args.length() == 0) {
-                        player.dropMessage(5, "Remove players from the winner list regardless of how many points they have via: '!event winners remove <usernames>");
-                        player.dropMessage(5, "Append players to the winner list via: '!event winners add <usernames...>'");
+                        player.sendMessage(5, "Remove players from the winner list regardless of how many points they have via: '!event winners remove <usernames>");
+                        player.sendMessage(5, "Append players to the winner list via: '!event winners add <usernames...>'");
                         player.sendMessage(5, "Player names are split with a space e.g.: '!event winners add {}'", player.getName());
                         break;
                     }
@@ -574,12 +582,12 @@ public class EventCommands extends CommandExecutor {
                                 String[] usernames = args.concatFrom(2).split(" ");
                                 playerEvent.addWinners(usernames);
                                 if (usernames.length == 1) {
-                                    player.dropMessage(usernames[0] + " added to list of winners");
+                                    player.sendMessage(usernames[0] + " added to list of winners");
                                 } else {
-                                    player.dropMessage("Specified players are now winners");
+                                    player.sendMessage("Specified players are now winners");
                                 }
                             } else {
-                                player.dropMessage(5, "You must specify at least 1 username");
+                                player.sendMessage(5, "You must specify at least 1 username");
                             }
                             break;
                         }
@@ -588,12 +596,12 @@ public class EventCommands extends CommandExecutor {
                                 String[] usernames = args.concatFrom(2).split(" ");
                                 playerEvent.removeWinners(usernames);
                                 if (usernames.length == 1) {
-                                    player.dropMessage(usernames[0] + " removed from list of winners");
+                                    player.sendMessage(usernames[0] + " removed from list of winners");
                                 } else {
-                                    player.dropMessage("Specified players are now longer winners");
+                                    player.sendMessage("Specified players are now longer winners");
                                 }
                             } else {
-                                player.dropMessage(5, "You must specify at least 1 username");
+                                player.sendMessage(5, "You must specify at least 1 username");
                             }
                             break;
                         }
@@ -601,20 +609,20 @@ public class EventCommands extends CommandExecutor {
                         case "view": {
                             Map<String, Integer> w = playerEvent.getWinners();
                             if (w.isEmpty()) {
-                                player.dropMessage("There are no winners right now");
+                                player.sendMessage("There are no winners right now");
                             } else {
-                                player.dropMessage("Here are the current winners");
+                                player.sendMessage("Here are the current winners");
                                 StringBuilder sb = new StringBuilder();
                                 for (Map.Entry<String, Integer> entry : w.entrySet()) {
                                     sb.append(entry.getKey()).append("(").append(entry.getValue()).append(")").append(", ");
                                 }
                                 sb.setLength(sb.length() - 2);
-                                player.dropMessage(sb.toString());
+                                player.sendMessage(sb.toString());
                             }
                             break;
                         }
                     }
-                    player.dropMessage("There are now " + playerEvent.getWinners().size() + " in the winner list");
+                    player.sendMessage("There are now " + playerEvent.getWinners().size() + " in the winner list");
                     break;
                 }
             }
@@ -720,11 +728,11 @@ public class EventCommands extends CommandExecutor {
             if (party.size() > 1) {
                 sb.setLength(sb.length() - 2);
             }
-            player.dropMessage(sb.toString());
+            player.sendMessage(6, sb.toString());
         }
         if (!solo.isEmpty()) {
-            player.dropMessage("Characters NOT in party:");
-            player.dropMessage(solo.toString());
+            player.sendMessage(6, "Characters NOT in party:");
+            player.sendMessage(6, solo.toString());
         }
     }
 
@@ -739,25 +747,31 @@ public class EventCommands extends CommandExecutor {
         try {
             int mobID = Integer.parseInt(action);
             player.getMap().getAutoKillMobs().put(action, true);
-            player.sendMessage("Enabled auto-kill for the monster {} for this map", mobID);
+            player.sendMessage(6, "Enabled auto-kill for the monster {} for this map", mobID);
             return;
         } catch (NumberFormatException ignore) {
         }
         GProperties<Point> akp = player.getMap().getAutoKillPositions();
         switch (action) {
+            case "enable":
+            case "disable":
+                boolean enabled = action.equalsIgnoreCase("enable");
+                player.getMap().getVariables().put(MapleMap.AUTO_KILL_TOGGLE, enabled);
+                player.sendMessage(6, "Auto kill is now {}", (enabled ? "enabled" : "disabled"));
+                break;
             case "left":
             case "right":
             case "up":
             case "down":
                 Point location = player.getPosition().getLocation();
                 akp.put(action, location);
-                player.sendMessage(5, "Auto-kill {} position set to [{}, {}]", action, location.x, location.y);
+                player.sendMessage(6, "Auto-kill {} position set to [{}, {}]", action, location.x, location.y);
                 break;
             case "reset":
             case "clear":
                 akp.clear();
                 player.getMap().getAutoKillMobs().clear();
-                player.sendMessage(5, "Auto-kill positions and mobs cleared");
+                player.sendMessage(6, "Auto-kill positions and mobs cleared");
                 break;
         }
 
@@ -769,7 +783,7 @@ public class EventCommands extends CommandExecutor {
                 for (int i = -5; i < 5; i++) {
                     MapleMonster bomb = MapleLifeFactory.getMonster(ServerConstants.BOMB_MOB);
                     if (bomb == null) {
-                        player.dropMessage(5, "An error occurred");
+                        player.sendMessage(5, "An error occurred");
                         return;
                     }
                     Point pos = players.getPosition().getLocation();
@@ -782,7 +796,7 @@ public class EventCommands extends CommandExecutor {
             Float time = args.parseNumber(timeIndex, 1.5f, float.class);
             String error = args.getFirstError();
             if (error != null) {
-                player.dropMessage(5, error);
+                player.sendMessage(5, error);
                 return;
             } else if (timeIndex > 0) {
                 time = Math.max(0, time);
@@ -791,7 +805,7 @@ public class EventCommands extends CommandExecutor {
             if (args.length() == 0 || (args.length() == 2 && timeIndex > 0)) {
                 MapleMonster bomb = MapleLifeFactory.getMonster(ServerConstants.BOMB_MOB);
                 if (bomb == null) {
-                    player.dropMessage(5, "An error occurred");
+                    player.sendMessage(5, "An error occurred");
                     return;
                 }
                 bomb.getStats().getSelfDestruction().setRemoveAfter((int) (time * 1000f));
@@ -800,7 +814,7 @@ public class EventCommands extends CommandExecutor {
                 for (int i = 0; i < args.length(); i++) {
                     MapleMonster bomb = MapleLifeFactory.getMonster(ServerConstants.BOMB_MOB);
                     if (bomb == null) {
-                        player.dropMessage(5, "An error occurred");
+                        player.sendMessage(5, "An error occurred");
                         return;
                     }
                     String username = args.get(i);
