@@ -1,5 +1,6 @@
 package com.lucianms.features.coconut;
 
+import com.lucianms.client.MapleCharacter;
 import com.lucianms.constants.ServerConstants;
 import com.lucianms.scheduler.Task;
 import com.lucianms.scheduler.TaskExecutor;
@@ -9,6 +10,7 @@ import tools.Pair;
 import tools.Randomizer;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -44,14 +46,29 @@ public class CoconutEvent {
             @Override
             public void run() {
                 if (redPoints != bluePoints) {
-                    map.sendPacketIf(MaplePacketCreator.showEffect(effectWin), p -> p.getTeam() == 0 && redPoints > bluePoints);
-                    map.sendPacketIf(MaplePacketCreator.playSound(soundWin), p -> p.getTeam() == 0 && redPoints > bluePoints);
+                    boolean redWinner = redPoints > bluePoints;
+                    boolean blueLoser = bluePoints < redPoints;
 
-                    map.sendPacketIf(MaplePacketCreator.showEffect(effectLose), p -> p.getTeam() == 1 && bluePoints < redPoints);
-                    map.sendPacketIf(MaplePacketCreator.playSound(soundLose), p -> p.getTeam() == 1 && bluePoints < redPoints);
+                    List<MapleCharacter> winners = map.getPlayers(p -> redWinner ? p.getTeam() == 0 : p.getTeam() == 1);
+                    for (MapleCharacter winner : winners) {
+                        winner.addPoints("ep", 1);
+                        winner.sendMessage(6, "You have gained 1 Event Point for winning the Coconut event");
+                    }
+                    winners.clear();
+
+                    map.sendPacketIf(MaplePacketCreator.showEffect(effectWin), p -> p.getTeam() == 0 && redWinner);
+                    map.sendPacketIf(MaplePacketCreator.playSound(soundWin), p -> p.getTeam() == 0 && redWinner);
+                    map.sendPacketIf(MaplePacketCreator.showEffect(effectLose), p -> p.getTeam() == 1 && blueLoser);
+                    map.sendPacketIf(MaplePacketCreator.playSound(soundLose), p -> p.getTeam() == 1 && blueLoser);
                 } else { // everybody is a winner?
                     map.sendPacket(MaplePacketCreator.showEffect(effectWin));
                     map.sendPacket(MaplePacketCreator.playSound(soundWin));
+                    Collection<MapleCharacter> players = map.getPlayers();
+                    for (MapleCharacter player : players) {
+                        player.addPoints("ep", 1);
+                        player.sendMessage(6, "You have gained 1 Event Point for winning the Coconut event");
+                    }
+                    players.clear();
                 }
                 map.sendPacket(MaplePacketCreator.getClock(getTimeFinish()));
                 TaskExecutor.createTask(() -> map.warpEveryone(ServerConstants.HOME_MAP), getTimeFinish() * 1000);
