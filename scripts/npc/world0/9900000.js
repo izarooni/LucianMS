@@ -1,4 +1,6 @@
+const MapleStat = Java.type('com.lucianms.client.MapleStat');
 const Jobs = [
+    new Job("\r\n\t\t\t\t\t\t\t", "#eBeginner#k - Beginner", 0),
     new Job("\r\n\t\t\t\t\t\t\t\t", "#eHero#k - Uchiha", 112),
     new Job("\r\n\t\t\t\t\t\t", "#ePaladin#k - Rashoumon", 122),
     new Job("\r\n\t\t\t\t\t\t", "#eDark Knight#k - Dragoon", 132),
@@ -25,8 +27,7 @@ function action(mode, type, selection) {
     let cost = player.getRebirths() == 0 ? 0 : 3;
 
     if (status == 1) {
-        let content = "\t#dYou view me anytime using the < @jobs > command!\r\n\r\n";
-        content += "\t\t\t\t\t\t\t\t\t\t\t #bJob List#k\r\n";
+        let content = "\tYou view me anytime using the < #d@jobs#k > command!\r\n\r\n";
         if (cost == 0) {
             content += "\t  You may freely change your job until your first rebirth!\r\n";
         } else {
@@ -38,10 +39,11 @@ function action(mode, type, selection) {
         }
         cm.sendSimple(content);
     } else if (status == 2) {
-        if (player.getRebirthPoints() >= cost) {
+        if (player.getRebirthPoints() >= cost || player.isDebug()) {
             let job = Jobs[selection];
-            player.changeJob(Packages.com.lucianms.client.MapleJob.getById(job.jobID));
-            if (cost > 0) {
+            player.setJob(Packages.com.lucianms.client.MapleJob.getById(job.jobID));
+            player.updateSingleStat(MapleStat.JOB, player.getJob().getId());
+            if (cost > 0 && !player.isDebug()) {
                 player.setRebirthPoints(player.getRebirthPoints() - cost);
                 player.sendMessage("You now have {} rebirth points", player.getRebirthPoints());
             }
