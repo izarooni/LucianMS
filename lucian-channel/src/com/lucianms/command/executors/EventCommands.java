@@ -93,6 +93,8 @@ public class EventCommands extends CommandExecutor {
         addCommand("nearest", this::NearestPlayers, "List players in order of proximity");
         addCommand("rnum", this::RandomNumber, "Announces a random number");
         addCommand("nti", this::NameTheItem, "Drops an item and detects for name call-out");
+        addCommand("ttm", this::ToggleTagMap, "Toggles the tag command for all players in the map");
+        addCommand("tbm", this::ToggleBombMap, "Toggles the bomb command for all players in the map");
 
         Map<String, Pair<CommandEvent, String>> commands = getCommands();
         HELP_LIST = new ArrayList<>(commands.size());
@@ -101,6 +103,22 @@ public class EventCommands extends CommandExecutor {
         }
         HELP_LIST.sort(String::compareTo);
         reloadEventRules();
+    }
+
+    private void ToggleBombMap(MapleCharacter player, Command cmd, CommandArgs args) {
+        MapleMap map = player.getMap();
+        boolean enabled = args.length() == 0 ? !((boolean) map.getVariables().checkProperty(PlayerCommands.BOMB_TOGGLE, false))
+                : args.get(0).equalsIgnoreCase("on");
+        map.getVariables().put(PlayerCommands.BOMB_TOGGLE, enabled);
+        map.sendMessage(6, " The @bomb command has been {}", (enabled ? "enabled" : "disabled"));
+    }
+
+    private void ToggleTagMap(MapleCharacter player, Command cmd, CommandArgs args) {
+        MapleMap map = player.getMap();
+        boolean enabled = args.length() == 0 ? !((boolean) map.getVariables().checkProperty(PlayerCommands.TAG_TOGGLE, false))
+                : args.get(0).equalsIgnoreCase("on");
+        map.getVariables().put(PlayerCommands.TAG_TOGGLE, enabled);
+        map.sendMessage(6, " The @tag command has been {}", (enabled ? "enabled" : "disabled"));
     }
 
     private void NameTheItem(MapleCharacter player, Command cmd, CommandArgs args) {
@@ -183,7 +201,7 @@ public class EventCommands extends CommandExecutor {
         System.arraycopy(src, 0, dest, 0, src.length);
         player.getMap().sendMessage(5, "Bombing {} platforms", platforms);
         for (int i = 0; i < platforms; i++) {
-            MapleMonster bomb = MapleLifeFactory.getMonster(9300166);
+            MapleMonster bomb = MapleLifeFactory.getMonster(ServerConstants.BOMB_MOB);
             if (bomb != null) {
                 int selected = Randomizer.nextInt(dest.length);
                 if (dest[selected] == null) {
@@ -749,7 +767,7 @@ public class EventCommands extends CommandExecutor {
         if (command.equals("bombm")) {
             for (MapleCharacter players : player.getMap().getCharacters()) {
                 for (int i = -5; i < 5; i++) {
-                    MapleMonster bomb = MapleLifeFactory.getMonster(9300166);
+                    MapleMonster bomb = MapleLifeFactory.getMonster(ServerConstants.BOMB_MOB);
                     if (bomb == null) {
                         player.dropMessage(5, "An error occurred");
                         return;
@@ -771,7 +789,7 @@ public class EventCommands extends CommandExecutor {
                 player.sendMessage("Bomb timer set to {}s", time);
             }
             if (args.length() == 0 || (args.length() == 2 && timeIndex > 0)) {
-                MapleMonster bomb = MapleLifeFactory.getMonster(9300166);
+                MapleMonster bomb = MapleLifeFactory.getMonster(ServerConstants.BOMB_MOB);
                 if (bomb == null) {
                     player.dropMessage(5, "An error occurred");
                     return;
@@ -780,7 +798,7 @@ public class EventCommands extends CommandExecutor {
                 player.getMap().spawnMonsterOnGroudBelow(bomb, player.getPosition());
             } else {
                 for (int i = 0; i < args.length(); i++) {
-                    MapleMonster bomb = MapleLifeFactory.getMonster(9300166);
+                    MapleMonster bomb = MapleLifeFactory.getMonster(ServerConstants.BOMB_MOB);
                     if (bomb == null) {
                         player.dropMessage(5, "An error occurred");
                         return;

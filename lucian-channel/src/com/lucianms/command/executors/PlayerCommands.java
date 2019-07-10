@@ -22,7 +22,9 @@ import com.lucianms.server.MapleItemInformationProvider;
 import com.lucianms.server.Server;
 import com.lucianms.server.channel.MapleChannel;
 import com.lucianms.server.life.FakePlayer;
+import com.lucianms.server.life.MapleLifeFactory;
 import com.lucianms.server.life.MapleMonster;
+import com.lucianms.server.maps.MapleMap;
 import com.lucianms.server.maps.MapleSummon;
 import com.lucianms.server.maps.SavedLocationType;
 import com.lucianms.server.world.MapleWorld;
@@ -46,7 +48,10 @@ public class PlayerCommands extends CommandExecutor {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(PlayerCommands.class);
     private static ArrayList<String> HELP_LIST;
-    private TreeMap<String, Integer> maps;
+    private TreeMap<String, Integer> MAPS;
+
+    public static final String TAG_TOGGLE = "cmd_tag";
+    public static final String BOMB_TOGGLE = "cmd_bomb";
 
     private static void CollectLeaderboard(Connection con, List<Pair<String, Integer>> usernames, String query) throws SQLException {
         try (PreparedStatement ps = con.prepareStatement(query)) {
@@ -119,41 +124,44 @@ public class PlayerCommands extends CommandExecutor {
         addCommand("emo", this::Emo, "Kills your character");
         addCommand("debuff", this::Debuff, "Removes all buffs and summons");
 
-        maps = new TreeMap<>();
-        maps.put("amoria", 680000000);
-        maps.put("aqua", 230000000);
-        maps.put("arcade", 978);
-        maps.put("ariant", 260000000);
-        maps.put("boatquay", 541000000);
-        maps.put("ellin", 300000000);
-        maps.put("ellinia", 101000000);
-        maps.put("elnath", 211000000);
-        maps.put("ereve", 130000000);
-        maps.put("florina", 110000000);
-        maps.put("fm", 910000000);
-        maps.put("guild", 200000301);
-        maps.put("harbor", 104000000);
-        maps.put("henesys", 100000000);
-        maps.put("herb", 251000000);
-        maps.put("herbtown", 251000000);
-        maps.put("home", 910000000);
-        maps.put("kerning", 103000000);
-        maps.put("leafre", 240000000);
-        maps.put("lith", 104000000);
-        maps.put("ludi", 220000000);
-        maps.put("magatia", 261000000);
-        maps.put("maya", 100000001);
-        maps.put("mulung", 250000000);
-        maps.put("nautilus", 120000000);
-        maps.put("nlc", 600000000);
-        maps.put("omega", 221000000);
-        maps.put("orbis", 200000000);
-        maps.put("perion", 102000000);
-        maps.put("pq", 910002000);
-        maps.put("quay", 541000000);
-        maps.put("rien", 140000000);
-        maps.put("shenron", 908);
-        maps.put("timetemple", 270000000);
+        addCommand("tag", this::Tag, "Tag nearby players");
+        addCommand("bomb", this::Bomb, "Spawns a bomb on your character");
+
+        MAPS = new TreeMap<>();
+        MAPS.put("amoria", 680000000);
+        MAPS.put("aqua", 230000000);
+        MAPS.put("arcade", 978);
+        MAPS.put("ariant", 260000000);
+        MAPS.put("boatquay", 541000000);
+        MAPS.put("ellin", 300000000);
+        MAPS.put("ellinia", 101000000);
+        MAPS.put("elnath", 211000000);
+        MAPS.put("ereve", 130000000);
+        MAPS.put("florina", 110000000);
+        MAPS.put("fm", 910000000);
+        MAPS.put("guild", 200000301);
+        MAPS.put("harbor", 104000000);
+        MAPS.put("henesys", 100000000);
+        MAPS.put("herb", 251000000);
+        MAPS.put("herbtown", 251000000);
+        MAPS.put("home", 910000000);
+        MAPS.put("kerning", 103000000);
+        MAPS.put("leafre", 240000000);
+        MAPS.put("lith", 104000000);
+        MAPS.put("ludi", 220000000);
+        MAPS.put("magatia", 261000000);
+        MAPS.put("maya", 100000001);
+        MAPS.put("mulung", 250000000);
+        MAPS.put("nautilus", 120000000);
+        MAPS.put("nlc", 600000000);
+        MAPS.put("omega", 221000000);
+        MAPS.put("orbis", 200000000);
+        MAPS.put("perion", 102000000);
+        MAPS.put("pq", 910002000);
+        MAPS.put("quay", 541000000);
+        MAPS.put("rien", 140000000);
+        MAPS.put("shenron", 908);
+        MAPS.put("timetemple", 270000000);
 
         Map<String, Pair<CommandEvent, String>> commands = getCommands();
         HELP_LIST = new ArrayList<>(commands.size());
@@ -161,6 +169,40 @@ public class PlayerCommands extends CommandExecutor {
             HELP_LIST.add(String.format("@%s - %s", e.getKey(), e.getValue().getRight()));
         }
         HELP_LIST.sort(String::compareTo);
+    }
+
+    private void Bomb(MapleCharacter player, Command cmd, CommandArgs args) {
+        if (!((boolean) player.getMap().getVariables().checkProperty(BOMB_TOGGLE, false))) {
+            if (!player.getToggles().checkProperty(BOMB_TOGGLE, false)) {
+                player.sendMessage("This command is not enabled for you");
+                return;
+            }
+        }
+        MapleMonster bomb = MapleLifeFactory.getMonster(ServerConstants.BOMB_MOB);
+        if (bomb == null) {
+            player.dropMessage(5, "An error occurred");
+            return;
+        }
+        bomb.getStats().getSelfDestruction().setRemoveAfter(1000);
+        player.getMap().spawnMonsterOnGroudBelow(bomb, player.getPosition());
+    }
+
+    private void Tag(MapleCharacter player, Command cmd, CommandArgs args) {
+        MapleMap map = player.getMap();
+        if (!((boolean) map.getVariables().checkProperty(TAG_TOGGLE, false))) {
+            if (!player.getToggles().checkProperty(TAG_TOGGLE, false)) {
+                player.sendMessage("This command is not enabled for you");
+                return;
+            }
+        }
+        List<MapleCharacter> players = map.getPlayers(p -> (p.getGMLevel() == 0 || p.isDebug()) && p.getId() != player.getId());
+        for (MapleCharacter target : players) {
+            if (target.getPosition().distance(player.getPosition()) <= map.getTagRange()) {
+                target.setHpMp(0);
+                map.sendMessage(6, "{} is been tagged", target.getName());
+            }
+        }
+        players.clear();
     }
 
     private void Chirithy(MapleCharacter player, Command cmd, CommandArgs args) {
@@ -607,12 +649,12 @@ public class PlayerCommands extends CommandExecutor {
     }
 
     private void Go(MapleCharacter player, Command cmd, CommandArgs args) {
-        Integer mapID = cmd.getName().equalsIgnoreCase("go") ? maps.get(args.get(0)) : maps.get(cmd.getName());
+        Integer mapID = cmd.getName().equalsIgnoreCase("go") ? MAPS.get(args.get(0)) : MAPS.get(cmd.getName());
         if (mapID != null) {
             player.changeMap(player.getClient().getChannelServer().getMap(mapID));
         } else {
             StringBuilder sb = new StringBuilder();
-            for (String s : maps.keySet()) {
+            for (String s : MAPS.keySet()) {
                 sb.append(s).append(", ");
             }
             sb.setLength(sb.length() - 2);
