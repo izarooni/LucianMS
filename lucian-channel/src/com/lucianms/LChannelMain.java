@@ -202,7 +202,7 @@ public class LChannelMain {
         RecvOpcode.MAGIC_ATTACK.clazz = PlayerDealDamageMagicEvent.class;
         RecvOpcode.TOUCH_MONSTER_ATTACK.clazz = PlayerDealDamageTouchEvent.class;
         RecvOpcode.TAKE_DAMAGE.clazz = PlayerTakeDamageEvent.class;
-        RecvOpcode.GENERAL_CHAT.clazz = PlayerAllChatEvent.class;
+        RecvOpcode.GENERAL_CHAT.clazz = ChatMessageEvent.class;
         RecvOpcode.CLOSE_CHALKBOARD.clazz = PlayerChalkboardCloseEvent.class;
         RecvOpcode.FACE_EXPRESSION.clazz = PlayerFaceExpressionEvent.class;
         RecvOpcode.NPC_TALK.clazz = NpcTalkEvent.class;

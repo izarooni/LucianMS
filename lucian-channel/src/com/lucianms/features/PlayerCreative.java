@@ -8,8 +8,8 @@ import com.lucianms.command.Command;
 import com.lucianms.command.CommandArgs;
 import com.lucianms.constants.ItemConstants;
 import com.lucianms.events.ChangeChannelEvent;
+import com.lucianms.events.ChatMessageEvent;
 import com.lucianms.events.EnterCashShopEvent;
-import com.lucianms.events.PlayerAllChatEvent;
 import com.lucianms.io.scripting.npc.NPCScriptManager;
 import com.lucianms.lang.annotation.PacketWorker;
 import com.lucianms.server.FieldBuilder;
@@ -88,7 +88,7 @@ public class PlayerCreative extends GenericEvent {
     }
 
     @PacketWorker
-    public void onChatEvent(PlayerAllChatEvent event) {
+    public void onChatEvent(ChatMessageEvent event) {
         MapleCharacter player = event.getClient().getPlayer();
         MapleMap map = player.getMap();
         String message = event.getContent();

@@ -141,6 +141,7 @@ public class MapleMap implements PacketAnnouncer {
     private MonsterCarnival monsterCarnival;
     private GProperties<Point> autoKillPositions = new GProperties<>();
     private GProperties<Boolean> autoKillMobs = new GProperties<>();
+    private GProperties<Object> variables = new GProperties<>();
     //endregion
 
     public MapleMap(int mapid, int world, int channel, int returnMapId, float monsterRate) {
@@ -1219,26 +1220,6 @@ public class MapleMap implements PacketAnnouncer {
         }, duration);
     }
 
-    public MapleMapItem spawnItemDrop(MapleCharacter owner, MapleMapObject dropper, int itemId, short quantity, Point position, boolean disappear) {
-        final Point dropPosition = calcDropPos(position, position);
-
-        Item item = new Item(itemId, quantity, (short) -1);
-        MapleMapItem mapItem = new MapleMapItem(item, dropPosition, dropper, owner, (byte) 2, false);
-        mapItem.setDropTime(System.currentTimeMillis());
-
-        spawnAndAddRangedMapObject(mapItem, new DelayedPacketCreation() {
-            @Override
-            public void sendPackets(MapleClient c) {
-                c.announce(MaplePacketCreator.dropItemFromMapObject(mapItem, dropper.getPosition(), dropPosition, (byte) 1));
-            }
-        });
-        broadcastMessage(MaplePacketCreator.dropItemFromMapObject(mapItem, dropper.getPosition(), dropPosition, (byte) 0));
-        if (disappear) {
-            activateItemReactors(owner.getClient(), mapItem);
-        }
-        return mapItem;
-    }
-
     public final MapleMapItem spawnItemDrop(final MapleMapObject dropper, final MapleCharacter owner, final Item item, Point pos, final boolean ffaDrop, final boolean playerDrop) {
         final Point droppos = calcDropPos(pos, pos);
         final MapleMapItem drop = new MapleMapItem(item, droppos, dropper, owner, (byte) (ffaDrop ? 2 : 0), playerDrop);
@@ -2269,40 +2250,20 @@ public class MapleMap implements PacketAnnouncer {
         return autoKillMobs;
     }
 
+    public GProperties<Object> getVariables() {
+        return variables;
+    }
+
+    @Deprecated
     private interface DelayedPacketCreation {
 
         void sendPackets(MapleClient c);
     }
 
+    @Deprecated
     private interface SpawnCondition {
 
         boolean canSpawn(MapleCharacter chr);
-    }
-
-    private class ExpireMapItemJob implements Runnable {
-
-        private MapleMapItem mapitem;
-
-        public ExpireMapItemJob(MapleMapItem mapitem) {
-            this.mapitem = mapitem;
-        }
-
-        @Override
-        public void run() {
-            if (mapitem != null && mapitem == getMapObject(mapitem.getObjectId())) {
-                mapitem.itemLock.lock();
-                try {
-                    if (mapitem.isPickedUp()) {
-                        return;
-                    }
-                    MapleMap.this.broadcastMessage(MaplePacketCreator.removeItemFromMap(mapitem.getObjectId(), 0, 0), mapitem.getPosition());
-                    mapitem.setPickedUp(true);
-                } finally {
-                    mapitem.itemLock.unlock();
-                    MapleMap.this.removeMapObject(mapitem);
-                }
-            }
-        }
     }
 
     private class ActivateItemReactor implements Runnable {

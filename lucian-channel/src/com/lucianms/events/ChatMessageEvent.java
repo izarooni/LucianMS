@@ -7,7 +7,9 @@ import com.lucianms.discord.Headers;
 import com.lucianms.discord.handlers.BindRequest;
 import com.lucianms.nio.receive.MaplePacketReader;
 import com.lucianms.nio.send.MaplePacketWriter;
+import com.lucianms.server.maps.MapleMapItem;
 import tools.MaplePacketCreator;
+import tools.Pair;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -16,7 +18,7 @@ import java.sql.SQLException;
 /**
  * @author izarooni
  */
-public class PlayerAllChatEvent extends PacketEvent {
+public class ChatMessageEvent extends PacketEvent {
 
     private String content;
     private byte shout;
@@ -59,6 +61,15 @@ public class PlayerAllChatEvent extends PacketEvent {
             if (player.getMap().isMuted() && !player.isGM()) {
                 player.dropMessage(5, "The map you are in is currently muted. Please try again later.");
                 return null;
+            }
+            Object nti = player.getMap().getVariables().get("nti");
+            if (nti != null) {
+                @SuppressWarnings("unchecked") Pair<String, MapleMapItem> pair = (Pair<String, MapleMapItem>) nti;
+                if (content.equalsIgnoreCase(pair.getLeft())) {
+                    pair.getRight().setDropTime(0); // removed on next field  tick
+                    player.getMap().getVariables().remove("nti");
+                    onPost(() -> player.getMap().sendMessage(2, "NTI : {} has guessed the name of the item correctly!", player.getName()));
+                }
             }
             if (!player.isHidden()) {
                 player.getChatType().sendChat(player, content, shout != 0);

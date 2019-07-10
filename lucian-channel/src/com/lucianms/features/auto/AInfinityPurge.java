@@ -1,7 +1,7 @@
 package com.lucianms.features.auto;
 
 import com.lucianms.client.MapleCharacter;
-import com.lucianms.events.PlayerAllChatEvent;
+import com.lucianms.events.ChatMessageEvent;
 import com.lucianms.lang.annotation.PacketWorker;
 import com.lucianms.scheduler.Task;
 import com.lucianms.scheduler.TaskExecutor;
@@ -67,7 +67,7 @@ public class AInfinityPurge extends GAutoEvent {
     }
 
     @PacketWorker
-    public void onALlChat(PlayerAllChatEvent event) {
+    public void onALlChat(ChatMessageEvent event) {
         if (!commandsEnabled) {
             return;
         }

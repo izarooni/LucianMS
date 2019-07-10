@@ -2,10 +2,14 @@ package com.lucianms.command.executors;
 
 import com.lucianms.client.MapleCharacter;
 import com.lucianms.client.MapleDisease;
+import com.lucianms.client.inventory.Equip;
+import com.lucianms.client.inventory.Item;
+import com.lucianms.client.inventory.MapleInventoryType;
 import com.lucianms.client.meta.ForcedStat;
 import com.lucianms.command.Command;
 import com.lucianms.command.CommandArgs;
 import com.lucianms.command.CommandEvent;
+import com.lucianms.constants.ItemConstants;
 import com.lucianms.constants.ServerConstants;
 import com.lucianms.features.FollowTheLeader;
 import com.lucianms.features.GenericEvent;
@@ -13,9 +17,11 @@ import com.lucianms.features.ManualPlayerEvent;
 import com.lucianms.features.coconut.CoconutEvent;
 import com.lucianms.features.controllers.HotPotatoController;
 import com.lucianms.lang.GProperties;
+import com.lucianms.server.MapleItemInformationProvider;
 import com.lucianms.server.channel.MapleChannel;
 import com.lucianms.server.life.*;
 import com.lucianms.server.maps.MapleMap;
+import com.lucianms.server.maps.MapleMapItem;
 import com.lucianms.server.world.MapleParty;
 import com.lucianms.server.world.MaplePartyCharacter;
 import com.lucianms.server.world.MapleWorld;
@@ -85,6 +91,8 @@ public class EventCommands extends CommandExecutor {
         addCommand("bombo", this::BombOXQuiz, "Spawn bombs randomly on the O side of the OX Quiz map");
         addCommand("bombx", this::BombOXQuiz, "Spawn bombs randomly on thet X side of the OX Quiz map");
         addCommand("nearest", this::NearestPlayers, "List players in order of proximity");
+        addCommand("rnum", this::RandomNumber, "Announces a random number");
+        addCommand("nti", this::NameTheItem, "Drops an item and detects for name call-out");
 
         Map<String, Pair<CommandEvent, String>> commands = getCommands();
         HELP_LIST = new ArrayList<>(commands.size());
@@ -93,6 +101,46 @@ public class EventCommands extends CommandExecutor {
         }
         HELP_LIST.sort(String::compareTo);
         reloadEventRules();
+    }
+
+    private void NameTheItem(MapleCharacter player, Command cmd, CommandArgs args) {
+        if (args.length() != 1) {
+            player.sendMessage("Syntax: !{} <item ID>", cmd.getName());
+            return;
+        }
+        Number n = args.parseNumber(0, int.class);
+        if (n == null) {
+            player.sendMessage(args.getFirstError());
+            return;
+        }
+        String name = MapleItemInformationProvider.getInstance().getName(n.intValue());
+        if (name != null) {
+            Item item;
+            if (ItemConstants.getInventoryType(n.intValue()) != MapleInventoryType.EQUIP) {
+                item = new Item(n.intValue());
+            } else {
+                item = new Equip(n.intValue());
+            }
+            MapleMapItem dropItem = player.getMap().spawnItemDrop(player, player, item, player.getPosition(), true, true);
+            dropItem.setPickedUp(true); // prevent looting
+            player.getMap().getVariables().put("nti", new Pair<>(name, dropItem));
+        } else {
+            player.sendMessage("The item {} has no name availble on the server", n.intValue());
+        }
+    }
+
+    private void RandomNumber(MapleCharacter player, Command cmd, CommandArgs args) {
+        if (args.length() != 1) {
+            player.sendMessage("Syntax: !{} <max number>", cmd.getName());
+            return;
+        }
+        Number n = args.parseNumber(0, int.class);
+        if (n == null) {
+            player.sendMessage(args.getFirstError());
+            return;
+        }
+        int selected = Randomizer.nextInt(n.intValue());
+        player.getMap().sendMessage(5, "Random number chosen: {}", selected);
     }
 
     private void NearestPlayers(MapleCharacter player, Command cmd, CommandArgs args) {
@@ -121,7 +169,7 @@ public class EventCommands extends CommandExecutor {
             player.sendMessage("This command can only be used in the OX Quiz map");
             return;
         } else if (args.length() != 1) {
-            player.sendMessage("Syntax: {} <number>", cmd.getName());
+            player.sendMessage("Syntax: !{} <number>", cmd.getName());
             return;
         }
         Number n = args.parseNumber(0, int.class);
