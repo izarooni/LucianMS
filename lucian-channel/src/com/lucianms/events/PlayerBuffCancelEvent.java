@@ -40,6 +40,10 @@ public class PlayerBuffCancelEvent extends PacketEvent {
             case Evan.ICE_BREATH:
                 player.getMap().broadcastMessage(player, MaplePacketCreator.skillCancel(player, skillID), false);
                 break;
+            case Aran.COMBO_ABILITY:
+                player.setCombo((short) 0);
+                player.cancelBuffs(Set.of(MapleBuffStat.COMBO_ABILITY_BUFF));
+                break;
             default: {
                 Skill skill = SkillFactory.getSkill(skillID);
                 int skillLevel = player.getSkillLevel(skillID);
