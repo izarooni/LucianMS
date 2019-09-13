@@ -161,7 +161,7 @@ public class PlayerCashItemUseEvent extends PacketEvent implements Cleaner.Clean
             itemID = reader.readInt(); // item slot
         } else if (itemType == 557) {
             reader.readInt();
-            itemID = reader.readInt();
+            itemSlot = (short) reader.readInt();
             reader.readInt();
         } else {
             getLogger().info("unhandled cash item {}:\r\n{}", itemID, reader.toString());
@@ -640,7 +640,7 @@ public class PlayerCashItemUseEvent extends PacketEvent implements Cleaner.Clean
                 break;
             }
             case 557: {
-                final Equip equip = (Equip) player.getInventory(MapleInventoryType.EQUIP).getItem((short) itemID);
+                final Equip equip = player.getInventory(MapleInventoryType.EQUIP).getItem(itemSlot);
                 if (equip.getVicious() == 2
                         || player.getInventory(MapleInventoryType.CASH).findById(5570000) == null) {
                     return null;
