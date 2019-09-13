@@ -38,7 +38,7 @@ function moveMap(eim, player, map) {
 }
 
 function playerDisconnected(eim, player) {
-    removePlayer(eim, player);
+    eim.removePlayer(eim, player);
     player.setMap(nFieldExit);
 }
 
@@ -65,7 +65,7 @@ function exchangeRings(eim) {
             }
         }
         let nWRingID = GetRingFromEtc(nEngItemID);
-        let nRingID = MapleRing.createRing(nWRingID, s, o);
+        let nRingID = MapleRing.create(nWRingID, s, o);
 
         if (nRingID > 0) {
             
@@ -78,8 +78,11 @@ function exchangeRings(eim) {
             exchangeEngagementItems(s, nWRingID, nEngItemID, nRingID);
             exchangeEngagementItems(o, nWRingID, nEngItemID + (isBox ? 1 : -1), nRingID + 1);
             
-            s.setMarriageRing(MapleRing.loadFromDb(nRingID));
-            o.setMarriageRing(MapleRing.loadFromDb(nRingID + 1));
+            s.saveToDB();
+            o.saveToDB();
+
+            s.getWeddingRings().add(MapleRing.load(nRingID));
+            o.getWeddingRings().add(MapleRing.load(nRingID + 1));
             
             map.broadcastMessage(6, "The weddings rings will now be exchanged.");
             eim.schedule("transferVisagePhotos", (1000 * 20));

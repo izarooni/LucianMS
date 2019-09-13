@@ -17,6 +17,7 @@ function action(mode, type, selection) {
     }
     if (player.getMapId() != nFieldAltar) {
         let quest = player.getCustomQuest(POL_PARENTS);
+        if (player.isDebug()) return BeginWedding();
         if (quest == null || !quest.isCompleted()) return NoQuest(quest);
         else if (quest.isCompleted() && cm.haveItem(PARENTS_BLESSING)) return QuestCompleted();
         else if (cm.haveItem(PRIESTS_PERMISSION)) return BeginWedding();
@@ -94,7 +95,7 @@ function BeginWedding() {
                     eim.setProperty("o", o.getName());
                     eim.registerPlayer(s);
                     eim.registerPlayer(o);
-                    player.getClient().getWorldServer().broadcastMessage(6, "A wedding will be starting in the Cathedral at channel {}", ch.getId());
+                    player.getClient().getWorldServer().sendMessage(6, "A wedding will be starting in the Cathedral at channel {}", ch.getId());
                     cm.gainItem(PRIESTS_PERMISSION, -1);
                 } else {
                     cm.sendOk("Only the party leader may begin the wedding");
