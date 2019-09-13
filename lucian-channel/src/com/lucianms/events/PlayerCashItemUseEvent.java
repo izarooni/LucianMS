@@ -389,6 +389,10 @@ public class PlayerCashItemUseEvent extends PacketEvent implements Cleaner.Clean
                     player.sendMessage(1, "You may not use megaphones while in jail");
                     client.announce(MaplePacketCreator.enableActions());
                     return null;
+                } else if (player.isMuted()) {
+                    player.sendMessage(1, "You may not use megaphones while muted");
+                    client.announce(MaplePacketCreator.enableActions());
+                    return null;
                 }
 
                 String medal = "";
