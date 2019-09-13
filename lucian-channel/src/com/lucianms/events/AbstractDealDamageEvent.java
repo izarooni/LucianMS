@@ -640,7 +640,7 @@ public abstract class AbstractDealDamageEvent extends PacketEvent {
                 }
 
                 if (ret.skill == Marksman.SNIPE || (canCrit && damage > hitDmgMax)) {
-                    damage = -Integer.MAX_VALUE + damage - 1;
+                    damage = (-Integer.MAX_VALUE + damage - 1) & 0x7FFFFFFF;
                 }
 
                 allDamageNumbers.add(damage);
