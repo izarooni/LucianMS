@@ -43,10 +43,6 @@ public class Occupation {
             int needed = getType().getExperienceForLv(getLevel());
             this.experience += Math.min(experience, needed);
             if (this.experience >= needed) {
-                experience -= needed;
-                if (experience > 0) {
-                    gainExperience(experience);
-                }
                 setLevel((byte) (getLevel() + 1));
                 return true;
             }

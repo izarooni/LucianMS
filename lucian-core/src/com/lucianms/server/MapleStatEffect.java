@@ -858,6 +858,8 @@ public class MapleStatEffect {
         if (!localStats.isEmpty()) {
             if (isMonsterRiding) {
                 map.sendPacketExclude(MaplePacketCreator.setRemoteTempStats(applyto, localStats), applyto);
+            } else if (isMorph()) {
+                map.sendPacketExclude(MaplePacketCreator.giveForeignBuff(applyto.getId(), Map.of(MapleBuffStat.MORPH, getMorph(applyto))), applyto);
             }
 //            if (isDash() || isInfusion()) {
 //                local = MaplePacketCreator.givePirateBuff(localStats, sourceid, seconds);
