@@ -63,6 +63,10 @@ public class PlayerLoginEvent extends PacketEvent {
             client.setPlayer(null);
             client.announce(MaplePacketCreator.getAfterLoginError(7));
             return null;
+        } else if (!client.getLastKnownIP().equals(client.getRemoteAddress())) {
+            client.setPlayer(null);
+            client.announce(MaplePacketCreator.getAfterLoginError(7));
+            return null;
         }
         for (Pair<Integer, String> p : client.getCharacterIdentifiers()) {
             MapleCharacter found = world.getPlayerStorage().get(p.getLeft());
