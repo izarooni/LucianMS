@@ -40,7 +40,11 @@ public class CreatePlayerCheckUsernameEvent extends PacketEvent {
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        getClient().announce(MaplePacketCreator.charNameResponse(username, !MapleCharacter.canCreateChar(username)));
+        boolean canCreate = MapleCharacter.canCreateChar(username);
+        getClient().announce(MaplePacketCreator.charNameResponse(username, !canCreate));
+        if (canCreate) {
+            getClient().setCreateUsername(username);
+        }
         return null;
     }
 }

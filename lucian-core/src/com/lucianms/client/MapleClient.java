@@ -78,6 +78,7 @@ public class MapleClient implements Disposable {
     private String pic;
     private String lastKnownIP;
     private String accountName;
+    private String createUsername;
 
     private Timestamp temporaryBanLength;
     private String banReason;
@@ -573,6 +574,14 @@ public class MapleClient implements Disposable {
 
     public void setAccountName(String accountName) {
         this.accountName = accountName;
+    }
+
+    public String getCreateUsername() {
+        return createUsername;
+    }
+
+    public void setCreateUsername(String createUsername) {
+        this.createUsername = createUsername;
     }
 
     public int getWorld() {

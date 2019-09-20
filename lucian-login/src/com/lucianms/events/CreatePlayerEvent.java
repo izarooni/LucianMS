@@ -1,6 +1,7 @@
 package com.lucianms.events;
 
 import com.lucianms.client.MapleCharacter;
+import com.lucianms.client.MapleClient;
 import com.lucianms.client.MapleJob;
 import com.lucianms.client.MapleSkinColor;
 import com.lucianms.client.inventory.Equip;
@@ -52,6 +53,7 @@ public class CreatePlayerEvent extends PacketEvent {
             @Override
             public void run() {
                 if (username != null) {
+                    getClient().setCreateUsername(null);
                     try (Connection con = Server.getConnection();
                          PreparedStatement ps = con.prepareStatement("delete from ign_reserves where reserve = ? and username = ?")) {
                         ps.setString(1, username);
@@ -87,21 +89,26 @@ public class CreatePlayerEvent extends PacketEvent {
         int[] items = new int[]{weapon, top, bottom, shoes, hair, face};
         for (int item : items) {
             if (!isLegal(item)) {
-                return;
+                setCanceled(true);
             }
         }
 
-        if (!MapleCharacter.canCreateChar(username)) {
+        MapleClient client = getClient();
+        if (!client.getCreateUsername().equals(username)) { // username mismatch or in the case that MapleClient#getCreationName is unset, a NPE will occur
+            getLogger().warn("MapleClient({}} attempted creation with un-confirmed username: '{}' - supposed to be '{}'", client.getAccountName(), username, client.getCreateUsername());
+            setCanceled(true);
+        } else if (!MapleCharacter.canCreateChar(username)) {
+            getLogger().warn("MapleClient({}) failed to create character with username: '{}'", client.getAccountName(), username);
             setCanceled(true);
         }
         try (Connection con = Server.getConnection();
              PreparedStatement ps = con.prepareStatement("select * from ign_reserves where reserve = ? and username = ?")) {
             ps.setString(1, username);
-            ps.setString(2, getClient().getAccountName());
+            ps.setString(2, client.getAccountName());
             try (ResultSet rs = ps.executeQuery()) {
                 if (rs.next()) {
-                    if (!rs.getString("username").equalsIgnoreCase(getClient().getAccountName())) {
-                        getClient().announce(MaplePacketCreator.charNameResponse(username, true));
+                    if (!rs.getString("username").equalsIgnoreCase(client.getAccountName())) {
+                        client.announce(MaplePacketCreator.charNameResponse(username, true));
                         setCanceled(true);
                     }
                 }
