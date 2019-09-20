@@ -55,7 +55,6 @@ public class PlayerLoginEvent extends PacketEvent {
             return null;
         }
         client.setAccID(player.getAccountID());
-        client.setPlayer(player);
 
         final LoginState state = client.checkLoginState();
 
@@ -71,13 +70,15 @@ public class PlayerLoginEvent extends PacketEvent {
         for (Pair<Integer, String> p : client.getCharacterIdentifiers()) {
             MapleCharacter found = world.getPlayerStorage().get(p.getLeft());
             if (found != null) {
-                // to prevent any packet handlers i suppose
-                found.getClient().setLoginState(LoginState.LogOut);
+                found.saveToDB();
+                found.getClient().setLoginState(LoginState.LogOut); // to prevent any packet handlers i suppose
                 found.getClient().announce(MaplePacketCreator.getNPCTalk(10200, (byte) 0, "You are being disconnected due to your account being logged-in from another location.", "00 00", (byte) 1));
+                found.getClient().setPlayer(null);
                 TaskExecutor.createTask(() -> found.getClient().dispose(), 6500);
             }
         }
         client.updateLoginState(LoginState.Login);
+        client.setPlayer(player);
 
         try (Connection con = world.getConnection()) {
             try (PreparedStatement ps = con.prepareStatement("SELECT Mesos FROM dueypackages WHERE RecieverId = ? AND Checked = 1")) {
