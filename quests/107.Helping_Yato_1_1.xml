@@ -1,0 +1,29 @@
+<imgdir name="Helping Yato 2">
+    <imgdir name="info">
+        <int name="questId" value="107"/>
+		<int name="preQuest" value="106"/>
+		<int name="daily" value="0"/>
+    </imgdir>
+
+    <imgdir name="toKill">
+
+        <imgdir name="0">
+            <int name="monsterId" value="9895244"/>
+            <int name="amount" value="100"/>
+        </imgdir>
+    </imgdir>
+
+    <imgdir name="toCollect">
+    </imgdir>
+    
+    <imgdir name="rewards">
+        <float name="exp" value ="25"/>
+
+        <imgdir name="items">
+            <imgdir name="0">
+                <int name="itemId" value="2050004"/>
+                <int name="quantity" value="20"/>
+            </imgdir>
+        </imgdir>
+    </imgdir>
+</imgdir>

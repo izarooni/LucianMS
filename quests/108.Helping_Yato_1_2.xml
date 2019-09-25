@@ -1,0 +1,31 @@
+<imgdir name="Mysterious creature">
+    <imgdir name="info">
+        <int name="questId" value="108"/>
+        <int name="preQuest" value="107"/>
+        <int name="daily" value="0"/>
+    </imgdir>
+
+    <imgdir name="toKill">
+        <imgdir name="0">
+            <int name="monsterId" value="9989996"/>
+            <int name="amount" value="1"/>
+        </imgdir>
+    </imgdir>
+
+    <imgdir name="toCollect">
+    </imgdir>
+
+    <imgdir name="rewards">
+
+        <float name="exp" value="30"/>
+
+        <imgdir name="items">
+
+            <!-- Todo: Set to Yato's Scarf item -->
+            <imgdir name="0">
+                <int name="itemId" value="01702227"/>
+                <int name="quantity" value="1"/>
+            </imgdir>
+        </imgdir>
+    </imgdir>
+</imgdir>

@@ -1,0 +1,347 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="server" default="all">
+  
+  
+  <property file="server.properties"/>
+  <!-- Uncomment the following property if no tests compilation is needed -->
+  <!-- 
+  <property name="skip.tests" value="true"/>
+   -->
+  
+  <!-- Compiler options -->
+  
+  <property name="compiler.debug" value="on"/>
+  <property name="compiler.generate.no.warnings" value="off"/>
+  <property name="compiler.args" value=""/>
+  <property name="compiler.max.memory" value="700m"/>
+  <patternset id="ignored.files">
+    <exclude name="**/*.hprof/**"/>
+    <exclude name="**/*.pyc/**"/>
+    <exclude name="**/*.pyo/**"/>
+    <exclude name="**/*.rbc/**"/>
+    <exclude name="**/*.yarb/**"/>
+    <exclude name="**/*~/**"/>
+    <exclude name="**/.DS_Store/**"/>
+    <exclude name="**/.git/**"/>
+    <exclude name="**/.hg/**"/>
+    <exclude name="**/.svn/**"/>
+    <exclude name="**/CVS/**"/>
+    <exclude name="**/__pycache__/**"/>
+    <exclude name="**/_svn/**"/>
+    <exclude name="**/vssver.scc/**"/>
+    <exclude name="**/vssver2.scc/**"/>
+  </patternset>
+  <patternset id="library.patterns">
+    <include name="*.war"/>
+    <include name="*.swc"/>
+    <include name="*.zip"/>
+    <include name="*.egg"/>
+    <include name="*.ane"/>
+    <include name="*.jar"/>
+    <include name="*.ear"/>
+    <include name="*.klib"/>
+  </patternset>
+  <patternset id="compiler.resources">
+    <exclude name="**/?*.java"/>
+    <exclude name="**/?*.form"/>
+    <exclude name="**/?*.class"/>
+    <exclude name="**/?*.groovy"/>
+    <exclude name="**/?*.scala"/>
+    <exclude name="**/?*.flex"/>
+    <exclude name="**/?*.kt"/>
+    <exclude name="**/?*.clj"/>
+    <exclude name="**/?*.aj"/>
+  </patternset>
+  
+  <!-- JDK definitions -->
+  
+  <property name="jdk.bin.10" value="${jdk.home.10}/bin"/>
+  <path id="jdk.classpath.10">
+    <fileset dir="${jdk.home.10}">
+      <include name="../jdk-10.0.2!/java.activation"/>
+      <include name="../jdk-10.0.2!/java.base"/>
+      <include name="../jdk-10.0.2!/java.compiler"/>
+      <include name="../jdk-10.0.2!/java.corba"/>
+      <include name="../jdk-10.0.2!/java.datatransfer"/>
+      <include name="../jdk-10.0.2!/java.desktop"/>
+      <include name="../jdk-10.0.2!/java.instrument"/>
+      <include name="../jdk-10.0.2!/java.jnlp"/>
+      <include name="../jdk-10.0.2!/java.logging"/>
+      <include name="../jdk-10.0.2!/java.management"/>
+      <include name="../jdk-10.0.2!/java.management.rmi"/>
+      <include name="../jdk-10.0.2!/java.naming"/>
+      <include name="../jdk-10.0.2!/java.prefs"/>
+      <include name="../jdk-10.0.2!/java.rmi"/>
+      <include name="../jdk-10.0.2!/java.scripting"/>
+      <include name="../jdk-10.0.2!/java.se"/>
+      <include name="../jdk-10.0.2!/java.se.ee"/>
+      <include name="../jdk-10.0.2!/java.security.jgss"/>
+      <include name="../jdk-10.0.2!/java.security.sasl"/>
+      <include name="../jdk-10.0.2!/java.smartcardio"/>
+      <include name="../jdk-10.0.2!/java.sql"/>
+      <include name="../jdk-10.0.2!/java.sql.rowset"/>
+      <include name="../jdk-10.0.2!/java.transaction"/>
+      <include name="../jdk-10.0.2!/java.xml"/>
+      <include name="../jdk-10.0.2!/java.xml.bind"/>
+      <include name="../jdk-10.0.2!/java.xml.crypto"/>
+      <include name="../jdk-10.0.2!/java.xml.ws"/>
+      <include name="../jdk-10.0.2!/java.xml.ws.annotation"/>
+      <include name="../jdk-10.0.2!/javafx.base"/>
+      <include name="../jdk-10.0.2!/javafx.controls"/>
+      <include name="../jdk-10.0.2!/javafx.deploy"/>
+      <include name="../jdk-10.0.2!/javafx.fxml"/>
+      <include name="../jdk-10.0.2!/javafx.graphics"/>
+      <include name="../jdk-10.0.2!/javafx.media"/>
+      <include name="../jdk-10.0.2!/javafx.swing"/>
+      <include name="../jdk-10.0.2!/javafx.web"/>
+      <include name="../jdk-10.0.2!/jdk.accessibility"/>
+      <include name="../jdk-10.0.2!/jdk.aot"/>
+      <include name="../jdk-10.0.2!/jdk.attach"/>
+      <include name="../jdk-10.0.2!/jdk.charsets"/>
+      <include name="../jdk-10.0.2!/jdk.compiler"/>
+      <include name="../jdk-10.0.2!/jdk.crypto.cryptoki"/>
+      <include name="../jdk-10.0.2!/jdk.crypto.ec"/>
+      <include name="../jdk-10.0.2!/jdk.crypto.mscapi"/>
+      <include name="../jdk-10.0.2!/jdk.deploy"/>
+      <include name="../jdk-10.0.2!/jdk.deploy.controlpanel"/>
+      <include name="../jdk-10.0.2!/jdk.dynalink"/>
+      <include name="../jdk-10.0.2!/jdk.editpad"/>
+      <include name="../jdk-10.0.2!/jdk.hotspot.agent"/>
+      <include name="../jdk-10.0.2!/jdk.httpserver"/>
+      <include name="../jdk-10.0.2!/jdk.incubator.httpclient"/>
+      <include name="../jdk-10.0.2!/jdk.internal.ed"/>
+      <include name="../jdk-10.0.2!/jdk.internal.jvmstat"/>
+      <include name="../jdk-10.0.2!/jdk.internal.le"/>
+      <include name="../jdk-10.0.2!/jdk.internal.opt"/>
+      <include name="../jdk-10.0.2!/jdk.internal.vm.ci"/>
+      <include name="../jdk-10.0.2!/jdk.internal.vm.compiler"/>
+      <include name="../jdk-10.0.2!/jdk.internal.vm.compiler.management"/>
+      <include name="../jdk-10.0.2!/jdk.jartool"/>
+      <include name="../jdk-10.0.2!/jdk.javadoc"/>
+      <include name="../jdk-10.0.2!/jdk.javaws"/>
+      <include name="../jdk-10.0.2!/jdk.jcmd"/>
+      <include name="../jdk-10.0.2!/jdk.jconsole"/>
+      <include name="../jdk-10.0.2!/jdk.jdeps"/>
+      <include name="../jdk-10.0.2!/jdk.jdi"/>
+      <include name="../jdk-10.0.2!/jdk.jdwp.agent"/>
+      <include name="../jdk-10.0.2!/jdk.jfr"/>
+      <include name="../jdk-10.0.2!/jdk.jlink"/>
+      <include name="../jdk-10.0.2!/jdk.jshell"/>
+      <include name="../jdk-10.0.2!/jdk.jsobject"/>
+      <include name="../jdk-10.0.2!/jdk.jstatd"/>
+      <include name="../jdk-10.0.2!/jdk.localedata"/>
+      <include name="../jdk-10.0.2!/jdk.management"/>
+      <include name="../jdk-10.0.2!/jdk.management.agent"/>
+      <include name="../jdk-10.0.2!/jdk.management.cmm"/>
+      <include name="../jdk-10.0.2!/jdk.management.jfr"/>
+      <include name="../jdk-10.0.2!/jdk.management.resource"/>
+      <include name="../jdk-10.0.2!/jdk.naming.dns"/>
+      <include name="../jdk-10.0.2!/jdk.naming.rmi"/>
+      <include name="../jdk-10.0.2!/jdk.net"/>
+      <include name="../jdk-10.0.2!/jdk.pack"/>
+      <include name="../jdk-10.0.2!/jdk.packager"/>
+      <include name="../jdk-10.0.2!/jdk.packager.services"/>
+      <include name="../jdk-10.0.2!/jdk.plugin"/>
+      <include name="../jdk-10.0.2!/jdk.plugin.server"/>
+      <include name="../jdk-10.0.2!/jdk.rmic"/>
+      <include name="../jdk-10.0.2!/jdk.scripting.nashorn"/>
+      <include name="../jdk-10.0.2!/jdk.scripting.nashorn.shell"/>
+      <include name="../jdk-10.0.2!/jdk.sctp"/>
+      <include name="../jdk-10.0.2!/jdk.security.auth"/>
+      <include name="../jdk-10.0.2!/jdk.security.jgss"/>
+      <include name="../jdk-10.0.2!/jdk.snmp"/>
+      <include name="../jdk-10.0.2!/jdk.unsupported"/>
+      <include name="../jdk-10.0.2!/jdk.xml.bind"/>
+      <include name="../jdk-10.0.2!/jdk.xml.dom"/>
+      <include name="../jdk-10.0.2!/jdk.xml.ws"/>
+      <include name="../jdk-10.0.2!/jdk.zipfs"/>
+      <include name="../jdk-10.0.2!/oracle.desktop"/>
+      <include name="../jdk-10.0.2!/oracle.net"/>
+    </fileset>
+  </path>
+  
+  <property name="project.jdk.home" value="${jdk.home.10}"/>
+  <property name="project.jdk.bin" value="${jdk.bin.10}"/>
+  <property name="project.jdk.classpath" value="jdk.classpath.10"/>
+  
+  
+  <!-- Project Libraries -->
+  
+  <path id="library.maven:_at.favre.lib:bcrypt:0.8.0.classpath">
+    <pathelement location="${path.variable.maven_repository}/at/favre/lib/bcrypt/0.8.0/bcrypt-0.8.0.jar"/>
+  </path>
+  
+  <path id="library.maven:_at.favre.lib:bytes:1.1.0.classpath">
+    <pathelement location="${path.variable.maven_repository}/at/favre/lib/bytes/1.1.0/bytes-1.1.0.jar"/>
+  </path>
+  
+  <path id="library.maven:_com.google.protobuf:protobuf-java:3.6.1.classpath">
+    <pathelement location="${path.variable.maven_repository}/com/google/protobuf/protobuf-java/3.6.1/protobuf-java-3.6.1.jar"/>
+  </path>
+  
+  <path id="library.maven:_com.zaxxer:hikaricp:3.2.0.classpath">
+    <pathelement location="${path.variable.maven_repository}/com/zaxxer/HikariCP/3.2.0/HikariCP-3.2.0.jar"/>
+  </path>
+  
+  <path id="library.maven:_commons-io:commons-io:2.6.classpath">
+    <pathelement location="${path.variable.maven_repository}/commons-io/commons-io/2.6/commons-io-2.6.jar"/>
+  </path>
+  
+  <path id="library.maven:_io.netty:netty-all:4.1.30.final.classpath">
+    <pathelement location="${path.variable.maven_repository}/io/netty/netty-all/4.1.30.Final/netty-all-4.1.30.Final.jar"/>
+  </path>
+  
+  <path id="library.maven:_mysql:mysql-connector-java:8.0.14.classpath">
+    <pathelement location="${path.variable.maven_repository}/mysql/mysql-connector-java/8.0.14/mysql-connector-java-8.0.14.jar"/>
+  </path>
+  
+  <path id="library.maven:_org.apache.logging.log4j:log4j-api:2.11.2.classpath">
+    <pathelement location="${path.variable.maven_repository}/org/apache/logging/log4j/log4j-api/2.11.2/log4j-api-2.11.2.jar"/>
+  </path>
+  
+  <path id="library.maven:_org.apache.logging.log4j:log4j-core:2.11.2.classpath">
+    <pathelement location="${path.variable.maven_repository}/org/apache/logging/log4j/log4j-core/2.11.2/log4j-core-2.11.2.jar"/>
+  </path>
+  
+  <path id="library.maven:_org.apache.logging.log4j:log4j-slf4j-impl:2.11.2.classpath">
+    <pathelement location="${path.variable.maven_repository}/org/apache/logging/log4j/log4j-slf4j-impl/2.11.2/log4j-slf4j-impl-2.11.2.jar"/>
+  </path>
+  
+  <path id="library.maven:_org.slf4j:slf4j-api:1.7.25.classpath">
+    <pathelement location="${path.variable.maven_repository}/org/slf4j/slf4j-api/1.7.25/slf4j-api-1.7.25.jar"/>
+  </path>
+  <!-- Register Custom Compiler Taskdefs -->
+  <property name="javac2.home" value="${idea.home}/lib"/>
+  <path id="javac2.classpath">
+    <fileset dir="${javac2.home}">
+      <include name="javac2.jar"/>
+      <include name="jdom.jar"/>
+      <include name="asm-all*.jar"/>
+      <include name="forms-*.jar"/>
+    </fileset>
+  </path>
+  <target name="register.custom.compilers">
+    <taskdef name="javac2" classname="com.intellij.ant.Javac2" classpathref="javac2.classpath"/>
+    <taskdef name="instrumentIdeaExtensions" classname="com.intellij.ant.InstrumentIdeaExtensions" classpathref="javac2.classpath"/>
+  </target>
+  
+  <!-- Modules -->
+  
+  <import file="${basedir}/lucian-core/module_lucian-core.xml"/>
+  
+  <import file="${basedir}/module_lucianms.xml"/>
+  
+  <import file="${basedir}/lucian-channel/module_lucian-channel.xml"/>
+  
+  <import file="${basedir}/lucian-login/module_lucian-login.xml"/>
+  
+  <target name="init" description="Build initialization">
+    <!-- Perform any build initialization in this target -->
+  </target>
+  
+  <target name="clean" depends="clean.module.lucian-core, clean.module.lucianms, clean.module.lucian-channel, clean.module.lucian-login" description="cleanup all"/>
+  
+  <target name="build.modules" depends="init, clean, compile.module.lucian-core, compile.module.lucianms, compile.module.lucian-channel, compile.module.lucian-login" description="build all modules"/>
+  
+  <target name="init.artifacts">
+    <property name="artifacts.temp.dir" value="${basedir}/__artifacts_temp"/>
+    <property name="artifact.output.lucian-channel:jar" value="${basedir}/classes/artifacts/lucian_channel_jar"/>
+    <property name="artifact.output.lucian-channel:jar2" value="${basedir}/classes/artifacts/lucian_channel_jar2"/>
+    <property name="artifact.output.lucian-login:jar" value="${basedir}/classes/artifacts/lucian_login_jar"/>
+    <mkdir dir="${artifacts.temp.dir}"/>
+    <property name="temp.jar.path.Server.jar" value="${artifacts.temp.dir}/Server.jar"/>
+    <property name="temp.jar.path.lucian-channel.jar" value="${artifacts.temp.dir}/lucian-channel.jar"/>
+    <property name="temp.jar.path.Server.jar2" value="${artifacts.temp.dir}/1/Server.jar"/>
+    <mkdir dir="${artifacts.temp.dir}/1"/>
+  </target>
+  
+  <target name="artifact.lucian-channel:jar" depends="init.artifacts, compile.module.lucian-login, compile.module.lucian-core, compile.module.lucian-channel" description="Build &#39;lucian-channel:jar&#39; artifact">
+    <property name="artifact.temp.output.lucian-channel:jar" value="${artifacts.temp.dir}/lucian_channel_jar"/>
+    <mkdir dir="${artifact.temp.output.lucian-channel:jar}"/>
+    <jar destfile="${temp.jar.path.Server.jar}" duplicate="preserve" filesetmanifest="mergewithoutmain">
+      <zipfileset file="${basedir}/lucian-core/src/META-INF/MANIFEST.MF" prefix="META-INF"/>
+      <zipfileset dir="${lucian-login.output.dir}"/>
+      <zipfileset dir="${lucian-core.output.dir}"/>
+      <zipfileset dir="${lucian-channel.output.dir}"/>
+      <zipfileset src="${path.variable.maven_repository}/at/favre/lib/bcrypt/0.8.0/bcrypt-0.8.0.jar"/>
+    </jar>
+    <copy file="${temp.jar.path.Server.jar}" tofile="${artifact.temp.output.lucian-channel:jar}/Server.jar"/>
+  </target>
+  
+  <target name="artifact.lucian-channel:jar2" depends="init.artifacts, compile.module.lucian-channel, compile.module.lucian-core, compile.module.lucian-login" description="Build &#39;lucian-channel:jar2&#39; artifact">
+    <property name="artifact.temp.output.lucian-channel:jar2" value="${artifacts.temp.dir}/lucian_channel_jar2"/>
+    <mkdir dir="${artifact.temp.output.lucian-channel:jar2}"/>
+    <jar destfile="${temp.jar.path.lucian-channel.jar}" duplicate="preserve" filesetmanifest="mergewithoutmain">
+      <zipfileset file="${basedir}/lucian-channel/src/out/META-INF/MANIFEST.MF" prefix="META-INF"/>
+      <zipfileset dir="${lucian-channel.output.dir}"/>
+      <zipfileset dir="${lucian-core.output.dir}"/>
+      <zipfileset src="${path.variable.maven_repository}/at/favre/lib/bcrypt/0.8.0/bcrypt-0.8.0.jar"/>
+      <zipfileset src="${path.variable.maven_repository}/org/apache/logging/log4j/log4j-api/2.11.2/log4j-api-2.11.2.jar"/>
+      <zipfileset src="${path.variable.maven_repository}/com/google/protobuf/protobuf-java/3.6.1/protobuf-java-3.6.1.jar"/>
+      <zipfileset src="${path.variable.maven_repository}/org/slf4j/slf4j-api/1.7.25/slf4j-api-1.7.25.jar"/>
+      <zipfileset src="${path.variable.maven_repository}/org/apache/logging/log4j/log4j-core/2.11.2/log4j-core-2.11.2.jar"/>
+      <zipfileset src="${path.variable.maven_repository}/mysql/mysql-connector-java/8.0.14/mysql-connector-java-8.0.14.jar"/>
+      <zipfileset src="${path.variable.maven_repository}/at/favre/lib/bytes/1.1.0/bytes-1.1.0.jar"/>
+      <zipfileset src="${path.variable.maven_repository}/commons-io/commons-io/2.6/commons-io-2.6.jar"/>
+      <zipfileset src="${path.variable.maven_repository}/org/apache/logging/log4j/log4j-slf4j-impl/2.11.2/log4j-slf4j-impl-2.11.2.jar"/>
+      <zipfileset src="${path.variable.maven_repository}/io/netty/netty-all/4.1.30.Final/netty-all-4.1.30.Final.jar"/>
+      <zipfileset src="${path.variable.maven_repository}/com/zaxxer/HikariCP/3.2.0/HikariCP-3.2.0.jar"/>
+      <zipfileset file="${path.variable.maven_repository}/at/favre/lib/bcrypt/0.8.0/bcrypt-0.8.0.jar"/>
+      <zipfileset file="${path.variable.maven_repository}/at/favre/lib/bytes/1.1.0/bytes-1.1.0.jar"/>
+      <zipfileset file="${path.variable.maven_repository}/com/google/protobuf/protobuf-java/3.6.1/protobuf-java-3.6.1.jar"/>
+      <zipfileset file="${path.variable.maven_repository}/com/zaxxer/HikariCP/3.2.0/HikariCP-3.2.0.jar"/>
+      <zipfileset file="${path.variable.maven_repository}/commons-io/commons-io/2.6/commons-io-2.6.jar"/>
+      <zipfileset file="${path.variable.maven_repository}/io/netty/netty-all/4.1.30.Final/netty-all-4.1.30.Final.jar"/>
+      <zipfileset file="${path.variable.maven_repository}/mysql/mysql-connector-java/8.0.14/mysql-connector-java-8.0.14.jar"/>
+      <zipfileset file="${path.variable.maven_repository}/org/apache/logging/log4j/log4j-api/2.11.2/log4j-api-2.11.2.jar"/>
+      <zipfileset file="${path.variable.maven_repository}/org/apache/logging/log4j/log4j-core/2.11.2/log4j-core-2.11.2.jar"/>
+      <zipfileset file="${path.variable.maven_repository}/org/apache/logging/log4j/log4j-slf4j-impl/2.11.2/log4j-slf4j-impl-2.11.2.jar"/>
+      <zipfileset file="${path.variable.maven_repository}/org/slf4j/slf4j-api/1.7.25/slf4j-api-1.7.25.jar"/>
+      <zipfileset dir="${lucian-login.output.dir}"/>
+    </jar>
+    <copy file="${temp.jar.path.lucian-channel.jar}" tofile="${artifact.temp.output.lucian-channel:jar2}/lucian-channel.jar"/>
+  </target>
+  
+  <target name="artifact.lucian-login:jar" depends="init.artifacts, compile.module.lucian-login, compile.module.lucian-core, compile.module.lucian-channel" description="Build &#39;lucian-login:jar&#39; artifact">
+    <property name="artifact.temp.output.lucian-login:jar" value="${artifacts.temp.dir}/lucian_login_jar"/>
+    <mkdir dir="${artifact.temp.output.lucian-login:jar}"/>
+    <jar destfile="${temp.jar.path.Server.jar2}" duplicate="preserve" filesetmanifest="mergewithoutmain">
+      <zipfileset file="${basedir}/lucian-core/src/out/META-INF/MANIFEST.MF" prefix="META-INF"/>
+      <zipfileset dir="${lucian-login.output.dir}"/>
+      <zipfileset dir="${lucian-core.output.dir}"/>
+      <zipfileset dir="${lucian-channel.output.dir}"/>
+      <zipfileset src="${path.variable.maven_repository}/at/favre/lib/bcrypt/0.8.0/bcrypt-0.8.0.jar"/>
+      <zipfileset src="${path.variable.maven_repository}/org/apache/logging/log4j/log4j-api/2.11.2/log4j-api-2.11.2.jar"/>
+      <zipfileset src="${path.variable.maven_repository}/com/google/protobuf/protobuf-java/3.6.1/protobuf-java-3.6.1.jar"/>
+      <zipfileset src="${path.variable.maven_repository}/org/slf4j/slf4j-api/1.7.25/slf4j-api-1.7.25.jar"/>
+      <zipfileset src="${path.variable.maven_repository}/org/apache/logging/log4j/log4j-core/2.11.2/log4j-core-2.11.2.jar"/>
+      <zipfileset src="${path.variable.maven_repository}/mysql/mysql-connector-java/8.0.14/mysql-connector-java-8.0.14.jar"/>
+      <zipfileset src="${path.variable.maven_repository}/at/favre/lib/bytes/1.1.0/bytes-1.1.0.jar"/>
+      <zipfileset src="${path.variable.maven_repository}/commons-io/commons-io/2.6/commons-io-2.6.jar"/>
+      <zipfileset src="${path.variable.maven_repository}/org/apache/logging/log4j/log4j-slf4j-impl/2.11.2/log4j-slf4j-impl-2.11.2.jar"/>
+      <zipfileset src="${path.variable.maven_repository}/io/netty/netty-all/4.1.30.Final/netty-all-4.1.30.Final.jar"/>
+      <zipfileset src="${path.variable.maven_repository}/com/zaxxer/HikariCP/3.2.0/HikariCP-3.2.0.jar"/>
+    </jar>
+    <copy file="${temp.jar.path.Server.jar2}" tofile="${artifact.temp.output.lucian-login:jar}/Server.jar"/>
+  </target>
+  
+  <target name="build.all.artifacts" depends="artifact.lucian-channel:jar, artifact.lucian-channel:jar2, artifact.lucian-login:jar" description="Build all artifacts">
+    <mkdir dir="${artifact.output.lucian-channel:jar}"/>
+    <copy todir="${artifact.output.lucian-channel:jar}">
+      <fileset dir="${artifact.temp.output.lucian-channel:jar}"/>
+    </copy>
+    <mkdir dir="${artifact.output.lucian-channel:jar2}"/>
+    <copy todir="${artifact.output.lucian-channel:jar2}">
+      <fileset dir="${artifact.temp.output.lucian-channel:jar2}"/>
+    </copy>
+    <mkdir dir="${artifact.output.lucian-login:jar}"/>
+    <copy todir="${artifact.output.lucian-login:jar}">
+      <fileset dir="${artifact.temp.output.lucian-login:jar}"/>
+    </copy>
+    
+    <!-- Delete temporary files -->
+    <delete dir="${artifacts.temp.dir}"/>
+  </target>
+  
+  <target name="all" depends="build.modules, build.all.artifacts" description="build all"/>
+</project>

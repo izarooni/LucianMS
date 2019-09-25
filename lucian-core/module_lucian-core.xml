@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="module_lucian-core" default="compile.module.lucian-core">
+  <dirname property="module.lucian-core.basedir" file="${ant.file.module_lucian-core}"/>
+  
+  <property name="module.jdk.home.lucian-core" value="${project.jdk.home}"/>
+  <property name="module.jdk.bin.lucian-core" value="${project.jdk.bin}"/>
+  <property name="module.jdk.classpath.lucian-core" value="${project.jdk.classpath}"/>
+  
+  <property name="compiler.args.lucian-core" value="-encoding UTF-8 -source 10 -target 10 ${compiler.args}"/>
+  
+  <property name="lucian-core.output.dir" value="${module.lucian-core.basedir}/../classes/production/lucian-core"/>
+  <property name="lucian-core.testoutput.dir" value="${module.lucian-core.basedir}/../classes/test/lucian-core"/>
+  
+  <path id="lucian-core.module.bootclasspath">
+    <!-- Paths to be included in compilation bootclasspath -->
+  </path>
+  
+  <path id="lucian-core.module.production.classpath">
+    <path refid="${module.jdk.classpath.lucian-core}"/>
+    <path refid="library.maven:_at.favre.lib:bcrypt:0.8.0.classpath"/>
+    <path refid="library.maven:_at.favre.lib:bytes:1.1.0.classpath"/>
+    <path refid="library.maven:_com.google.protobuf:protobuf-java:3.6.1.classpath"/>
+    <path refid="library.maven:_com.zaxxer:hikaricp:3.2.0.classpath"/>
+    <path refid="library.maven:_commons-io:commons-io:2.6.classpath"/>
+    <path refid="library.maven:_io.netty:netty-all:4.1.30.final.classpath"/>
+    <path refid="library.maven:_mysql:mysql-connector-java:8.0.14.classpath"/>
+    <path refid="library.maven:_org.apache.logging.log4j:log4j-api:2.11.2.classpath"/>
+    <path refid="library.maven:_org.apache.logging.log4j:log4j-core:2.11.2.classpath"/>
+    <path refid="library.maven:_org.apache.logging.log4j:log4j-slf4j-impl:2.11.2.classpath"/>
+    <path refid="library.maven:_org.slf4j:slf4j-api:1.7.25.classpath"/>
+  </path>
+  
+  <path id="lucian-core.runtime.production.module.classpath">
+    <pathelement location="${lucian-core.output.dir}"/>
+    <path refid="library.maven:_at.favre.lib:bcrypt:0.8.0.classpath"/>
+    <path refid="library.maven:_at.favre.lib:bytes:1.1.0.classpath"/>
+    <path refid="library.maven:_com.google.protobuf:protobuf-java:3.6.1.classpath"/>
+    <path refid="library.maven:_com.zaxxer:hikaricp:3.2.0.classpath"/>
+    <path refid="library.maven:_commons-io:commons-io:2.6.classpath"/>
+    <path refid="library.maven:_io.netty:netty-all:4.1.30.final.classpath"/>
+    <path refid="library.maven:_mysql:mysql-connector-java:8.0.14.classpath"/>
+    <path refid="library.maven:_org.apache.logging.log4j:log4j-api:2.11.2.classpath"/>
+    <path refid="library.maven:_org.apache.logging.log4j:log4j-core:2.11.2.classpath"/>
+    <path refid="library.maven:_org.apache.logging.log4j:log4j-slf4j-impl:2.11.2.classpath"/>
+    <path refid="library.maven:_org.slf4j:slf4j-api:1.7.25.classpath"/>
+  </path>
+  
+  <path id="lucian-core.module.classpath">
+    <path refid="${module.jdk.classpath.lucian-core}"/>
+    <pathelement location="${lucian-core.output.dir}"/>
+    <path refid="library.maven:_at.favre.lib:bcrypt:0.8.0.classpath"/>
+    <path refid="library.maven:_at.favre.lib:bytes:1.1.0.classpath"/>
+    <path refid="library.maven:_com.google.protobuf:protobuf-java:3.6.1.classpath"/>
+    <path refid="library.maven:_com.zaxxer:hikaricp:3.2.0.classpath"/>
+    <path refid="library.maven:_commons-io:commons-io:2.6.classpath"/>
+    <path refid="library.maven:_io.netty:netty-all:4.1.30.final.classpath"/>
+    <path refid="library.maven:_mysql:mysql-connector-java:8.0.14.classpath"/>
+    <path refid="library.maven:_org.apache.logging.log4j:log4j-api:2.11.2.classpath"/>
+    <path refid="library.maven:_org.apache.logging.log4j:log4j-core:2.11.2.classpath"/>
+    <path refid="library.maven:_org.apache.logging.log4j:log4j-slf4j-impl:2.11.2.classpath"/>
+    <path refid="library.maven:_org.slf4j:slf4j-api:1.7.25.classpath"/>
+  </path>
+  
+  <path id="lucian-core.runtime.module.classpath">
+    <pathelement location="${lucian-core.testoutput.dir}"/>
+    <pathelement location="${lucian-core.output.dir}"/>
+    <path refid="library.maven:_at.favre.lib:bcrypt:0.8.0.classpath"/>
+    <path refid="library.maven:_at.favre.lib:bytes:1.1.0.classpath"/>
+    <path refid="library.maven:_com.google.protobuf:protobuf-java:3.6.1.classpath"/>
+    <path refid="library.maven:_com.zaxxer:hikaricp:3.2.0.classpath"/>
+    <path refid="library.maven:_commons-io:commons-io:2.6.classpath"/>
+    <path refid="library.maven:_io.netty:netty-all:4.1.30.final.classpath"/>
+    <path refid="library.maven:_mysql:mysql-connector-java:8.0.14.classpath"/>
+    <path refid="library.maven:_org.apache.logging.log4j:log4j-api:2.11.2.classpath"/>
+    <path refid="library.maven:_org.apache.logging.log4j:log4j-core:2.11.2.classpath"/>
+    <path refid="library.maven:_org.apache.logging.log4j:log4j-slf4j-impl:2.11.2.classpath"/>
+    <path refid="library.maven:_org.slf4j:slf4j-api:1.7.25.classpath"/>
+  </path>
+  
+  
+  <patternset id="excluded.from.module.lucian-core">
+    <patternset refid="ignored.files"/>
+  </patternset>
+  
+  <patternset id="excluded.from.compilation.lucian-core">
+    <patternset refid="excluded.from.module.lucian-core"/>
+  </patternset>
+  
+  <path id="lucian-core.module.sourcepath">
+    <dirset dir="${module.lucian-core.basedir}">
+      <include name="src"/>
+    </dirset>
+  </path>
+  
+  
+  <target name="compile.module.lucian-core" depends="compile.module.lucian-core.production,compile.module.lucian-core.tests" description="Compile module lucian-core"/>
+  
+  <target name="compile.module.lucian-core.production" depends="register.custom.compilers" description="Compile module lucian-core; production classes">
+    <mkdir dir="${lucian-core.output.dir}"/>
+    <javac2 destdir="${lucian-core.output.dir}" debug="${compiler.debug}" nowarn="${compiler.generate.no.warnings}" memorymaximumsize="${compiler.max.memory}" fork="true" executable="${module.jdk.bin.lucian-core}/javac">
+      <compilerarg line="${compiler.args.lucian-core}"/>
+      <bootclasspath refid="lucian-core.module.bootclasspath"/>
+      <classpath refid="lucian-core.module.production.classpath"/>
+      <src refid="lucian-core.module.sourcepath"/>
+      <patternset refid="excluded.from.compilation.lucian-core"/>
+    </javac2>
+    
+    <copy todir="${lucian-core.output.dir}">
+      <fileset dir="${module.lucian-core.basedir}/src">
+        <patternset refid="compiler.resources"/>
+        <type type="file"/>
+      </fileset>
+    </copy>
+  </target>
+  
+  <target name="compile.module.lucian-core.tests" depends="register.custom.compilers,compile.module.lucian-core.production" description="compile module lucian-core; test classes" unless="skip.tests"/>
+  
+  <target name="clean.module.lucian-core" description="cleanup module">
+    <delete dir="${lucian-core.output.dir}"/>
+    <delete dir="${lucian-core.testoutput.dir}"/>
+  </target>
+</project>

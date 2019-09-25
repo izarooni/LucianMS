@@ -1,0 +1,29 @@
+<imgdir name="Daily - Blue snails and red leaves">
+    <imgdir name="info">
+        <int name="questId" value="101"/>
+		<int name="preQuest" value="-1"/>
+		<int name="daily" value="1"/>
+    </imgdir>
+
+    <imgdir name="toKill">
+
+        <imgdir name="0">
+            <int name="monsterId" value="100101"/>
+            <int name="amount" value="100"/>
+        </imgdir>
+    </imgdir>
+
+    <imgdir name="toCollect">
+        <imgdir name="0">
+            <int name="itemId" value="4001126"/>
+            <int name="quantity" value="200"/>
+        </imgdir>
+    </imgdir>
+
+    <imgdir name="rewards">
+        <int name="meso" value="10000000"/>
+        <int name="itemId" value="4011034"/>
+        <int name="quantity" value="1"/>
+        <int name="exp" value="120000"/>
+    </imgdir>
+</imgdir>

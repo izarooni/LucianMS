@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="module_lucian-channel" default="compile.module.lucian-channel">
+  <dirname property="module.lucian-channel.basedir" file="${ant.file.module_lucian-channel}"/>
+  
+  <property name="module.jdk.home.lucian-channel" value="${project.jdk.home}"/>
+  <property name="module.jdk.bin.lucian-channel" value="${project.jdk.bin}"/>
+  <property name="module.jdk.classpath.lucian-channel" value="${project.jdk.classpath}"/>
+  
+  <property name="compiler.args.lucian-channel" value="-encoding UTF-8 -source 10 -target 10 ${compiler.args}"/>
+  
+  <property name="lucian-channel.output.dir" value="${module.lucian-channel.basedir}/../classes/production/lucian-channel"/>
+  <property name="lucian-channel.testoutput.dir" value="${module.lucian-channel.basedir}/../classes/test/lucian-channel"/>
+  
+  <path id="lucian-channel.module.bootclasspath">
+    <!-- Paths to be included in compilation bootclasspath -->
+  </path>
+  
+  <path id="lucian-channel.module.production.classpath">
+    <path refid="${module.jdk.classpath.lucian-channel}"/>
+    <pathelement location="${lucian-core.output.dir}"/>
+    <path refid="library.maven:_at.favre.lib:bcrypt:0.8.0.classpath"/>
+    <path refid="library.maven:_at.favre.lib:bytes:1.1.0.classpath"/>
+    <path refid="library.maven:_com.google.protobuf:protobuf-java:3.6.1.classpath"/>
+    <path refid="library.maven:_com.zaxxer:hikaricp:3.2.0.classpath"/>
+    <path refid="library.maven:_commons-io:commons-io:2.6.classpath"/>
+    <path refid="library.maven:_io.netty:netty-all:4.1.30.final.classpath"/>
+    <path refid="library.maven:_mysql:mysql-connector-java:8.0.14.classpath"/>
+    <path refid="library.maven:_org.apache.logging.log4j:log4j-api:2.11.2.classpath"/>
+    <path refid="library.maven:_org.apache.logging.log4j:log4j-core:2.11.2.classpath"/>
+    <path refid="library.maven:_org.apache.logging.log4j:log4j-slf4j-impl:2.11.2.classpath"/>
+    <path refid="library.maven:_org.slf4j:slf4j-api:1.7.25.classpath"/>
+  </path>
+  
+  <path id="lucian-channel.runtime.production.module.classpath">
+    <pathelement location="${lucian-channel.output.dir}"/>
+    <path refid="lucian-core.runtime.production.module.classpath"/>
+    <path refid="library.maven:_at.favre.lib:bcrypt:0.8.0.classpath"/>
+    <path refid="library.maven:_at.favre.lib:bytes:1.1.0.classpath"/>
+    <path refid="library.maven:_com.google.protobuf:protobuf-java:3.6.1.classpath"/>
+    <path refid="library.maven:_com.zaxxer:hikaricp:3.2.0.classpath"/>
+    <path refid="library.maven:_commons-io:commons-io:2.6.classpath"/>
+    <path refid="library.maven:_io.netty:netty-all:4.1.30.final.classpath"/>
+    <path refid="library.maven:_mysql:mysql-connector-java:8.0.14.classpath"/>
+    <path refid="library.maven:_org.apache.logging.log4j:log4j-api:2.11.2.classpath"/>
+    <path refid="library.maven:_org.apache.logging.log4j:log4j-core:2.11.2.classpath"/>
+    <path refid="library.maven:_org.apache.logging.log4j:log4j-slf4j-impl:2.11.2.classpath"/>
+    <path refid="library.maven:_org.slf4j:slf4j-api:1.7.25.classpath"/>
+  </path>
+  
+  <path id="lucian-channel.module.classpath">
+    <path refid="${module.jdk.classpath.lucian-channel}"/>
+    <pathelement location="${lucian-channel.output.dir}"/>
+    <pathelement location="${lucian-core.testoutput.dir}"/>
+    <pathelement location="${lucian-core.output.dir}"/>
+    <path refid="library.maven:_at.favre.lib:bcrypt:0.8.0.classpath"/>
+    <path refid="library.maven:_at.favre.lib:bytes:1.1.0.classpath"/>
+    <path refid="library.maven:_com.google.protobuf:protobuf-java:3.6.1.classpath"/>
+    <path refid="library.maven:_com.zaxxer:hikaricp:3.2.0.classpath"/>
+    <path refid="library.maven:_commons-io:commons-io:2.6.classpath"/>
+    <path refid="library.maven:_io.netty:netty-all:4.1.30.final.classpath"/>
+    <path refid="library.maven:_mysql:mysql-connector-java:8.0.14.classpath"/>
+    <path refid="library.maven:_org.apache.logging.log4j:log4j-api:2.11.2.classpath"/>
+    <path refid="library.maven:_org.apache.logging.log4j:log4j-core:2.11.2.classpath"/>
+    <path refid="library.maven:_org.apache.logging.log4j:log4j-slf4j-impl:2.11.2.classpath"/>
+    <path refid="library.maven:_org.slf4j:slf4j-api:1.7.25.classpath"/>
+  </path>
+  
+  <path id="lucian-channel.runtime.module.classpath">
+    <pathelement location="${lucian-channel.testoutput.dir}"/>
+    <pathelement location="${lucian-channel.output.dir}"/>
+    <path refid="lucian-core.runtime.module.classpath"/>
+    <path refid="library.maven:_at.favre.lib:bcrypt:0.8.0.classpath"/>
+    <path refid="library.maven:_at.favre.lib:bytes:1.1.0.classpath"/>
+    <path refid="library.maven:_com.google.protobuf:protobuf-java:3.6.1.classpath"/>
+    <path refid="library.maven:_com.zaxxer:hikaricp:3.2.0.classpath"/>
+    <path refid="library.maven:_commons-io:commons-io:2.6.classpath"/>
+    <path refid="library.maven:_io.netty:netty-all:4.1.30.final.classpath"/>
+    <path refid="library.maven:_mysql:mysql-connector-java:8.0.14.classpath"/>
+    <path refid="library.maven:_org.apache.logging.log4j:log4j-api:2.11.2.classpath"/>
+    <path refid="library.maven:_org.apache.logging.log4j:log4j-core:2.11.2.classpath"/>
+    <path refid="library.maven:_org.apache.logging.log4j:log4j-slf4j-impl:2.11.2.classpath"/>
+    <path refid="library.maven:_org.slf4j:slf4j-api:1.7.25.classpath"/>
+  </path>
+  
+  
+  <patternset id="excluded.from.module.lucian-channel">
+    <patternset refid="ignored.files"/>
+  </patternset>
+  
+  <patternset id="excluded.from.compilation.lucian-channel">
+    <patternset refid="excluded.from.module.lucian-channel"/>
+  </patternset>
+  
+  <path id="lucian-channel.module.sourcepath">
+    <dirset dir="${module.lucian-channel.basedir}">
+      <include name="src"/>
+    </dirset>
+  </path>
+  
+  
+  <target name="compile.module.lucian-channel" depends="compile.module.lucian-channel.production,compile.module.lucian-channel.tests" description="Compile module lucian-channel"/>
+  
+  <target name="compile.module.lucian-channel.production" depends="register.custom.compilers,compile.module.lucian-core" description="Compile module lucian-channel; production classes">
+    <mkdir dir="${lucian-channel.output.dir}"/>
+    <javac2 destdir="${lucian-channel.output.dir}" debug="${compiler.debug}" nowarn="${compiler.generate.no.warnings}" memorymaximumsize="${compiler.max.memory}" fork="true" executable="${module.jdk.bin.lucian-channel}/javac">
+      <compilerarg line="${compiler.args.lucian-channel}"/>
+      <bootclasspath refid="lucian-channel.module.bootclasspath"/>
+      <classpath refid="lucian-channel.module.production.classpath"/>
+      <src refid="lucian-channel.module.sourcepath"/>
+      <patternset refid="excluded.from.compilation.lucian-channel"/>
+    </javac2>
+    
+    <copy todir="${lucian-channel.output.dir}">
+      <fileset dir="${module.lucian-channel.basedir}/src">
+        <patternset refid="compiler.resources"/>
+        <type type="file"/>
+      </fileset>
+    </copy>
+  </target>
+  
+  <target name="compile.module.lucian-channel.tests" depends="register.custom.compilers,compile.module.lucian-channel.production" description="compile module lucian-channel; test classes" unless="skip.tests"/>
+  
+  <target name="clean.module.lucian-channel" description="cleanup module">
+    <delete dir="${lucian-channel.output.dir}"/>
+    <delete dir="${lucian-channel.testoutput.dir}"/>
+  </target>
+</project>

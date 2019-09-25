@@ -1,0 +1,31 @@
+<imgdir name="Golems, Golems And More Golems">
+    <imgdir name="info">
+        <int name="questId" value="21"/>
+		<int name="preQuest" value="-1"/>
+        <int name="minLevel" value="25"/>
+		<int name="daily" value="0"/>
+    </imgdir>
+
+    <imgdir name="toKill">
+
+        <imgdir name="0">
+            <int name="monsterId" value="5130101"/>
+            <int name="amount" value="80"/>
+        </imgdir>
+        <imgdir name="1">
+            <int name="monsterId" value="5150000"/>
+            <int name="amount" value="50"/>
+        </imgdir>
+        <imgdir name="2">
+            <int name="monsterId" value="5130102"/>
+            <int name="amount" value="25"/>
+        </imgdir>
+    </imgdir>
+
+    <imgdir name="toCollect">
+    </imgdir>
+
+    <imgdir name="rewards">
+        <int name="exp" value="85000"/>
+    </imgdir>
+</imgdir>

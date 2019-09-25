@@ -1,0 +1,21 @@
+<imgdir name="Memories">
+    <imgdir name="info">
+        <int name="questId" value="37"/>
+		<int name="preQuest" value="36"/>
+		<int name="daily" value="0"/>
+    </imgdir>
+
+    <imgdir name="toKill">
+
+        <imgdir name="0">
+            <int name="monsterId" value="100126"/>
+            <int name="amount" value="10"/>
+        </imgdir>
+    </imgdir>
+
+    <imgdir name="toCollect"></imgdir>
+    <imgdir name="rewards">
+        <int name="meso" value="10000000"/>
+        <int name="exp" value="100000"/>
+    </imgdir>
+</imgdir>

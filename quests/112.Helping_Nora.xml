@@ -1,0 +1,21 @@
+<imgdir name="Nora and the darkness">
+    <imgdir name="info">
+        <int name="questId" value="112"/>
+		<int name="preQuest" value="111"/>
+		<int name="daily" value="0"/>
+    </imgdir>
+
+    <imgdir name="toKill">
+    </imgdir>
+
+    <imgdir name="toCollect">
+        <imgdir name="0">
+            <int name="itemId" value="4011017"/>
+            <int name="quantity" value="1"/>
+        </imgdir>
+    </imgdir>
+    <imgdir name="rewards">
+        <int name="meso" value="15000000"/>
+        <int name="exp" value="1718500"/>
+    </imgdir>
+</imgdir>

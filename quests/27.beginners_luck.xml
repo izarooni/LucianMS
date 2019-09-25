@@ -1,0 +1,37 @@
+<imgdir name="Beginners Luck">
+    <imgdir name="info">
+        <int name="questId" value="27"/>
+		<int name="preQuest" value="-1"/>
+        <int name="minLevel" value="10"/>
+		<int name="daily" value="0"/>
+    </imgdir>
+
+    <imgdir name="toKill">
+
+        <imgdir name="0">
+            <int name="monsterId" value="100101"/>
+            <int name="amount" value="25"/>
+        </imgdir>
+        <imgdir name="1">
+            <int name="monsterId" value="120100"/>
+            <int name="amount" value="10"/>
+        </imgdir>
+        <imgdir name="2">
+            <int name="monsterId" value="130101"/>
+            <int name="amount" value="20"/>
+        </imgdir>
+    </imgdir>
+
+    <imgdir name="toCollect">
+    </imgdir>
+    <imgdir name="rewards">
+
+        <imgdir name="items">
+            <imgdir name="0">
+                <int name="itemId" value="1002508"/>
+                <int name="quantity" value="1"/>
+            </imgdir>
+        </imgdir>
+        <int name="exp" value="2500"/>
+    </imgdir>
+</imgdir>

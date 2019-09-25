@@ -1,0 +1,25 @@
+<imgdir name="Daily - Journey to become a hero">
+    <imgdir name="info">
+        <int name="questId" value="104"/>
+		<int name="preQuest" value="-1"/>
+		<int name="daily" value="1"/>
+    </imgdir>
+
+    <imgdir name="toKill">
+
+        <imgdir name="0">
+            <int name="monsterId" value="8610010"/>
+            <int name="amount" value="99"/>
+        </imgdir>
+    </imgdir>
+
+    <imgdir name="toCollect">
+    </imgdir>
+
+    <imgdir name="rewards">
+        <int name="meso" value="3500000"/>
+        <int name="itemId" value="2049100"/>
+        <int name="quantity" value="2"/>
+        <int name="exp" value="215000"/>
+    </imgdir>
+</imgdir>

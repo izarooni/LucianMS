@@ -1,0 +1,10 @@
+Path:
+MapleCharacter: lucian-core.com.lucianms.client
+Occupation: lucian-core.src.com.lucianms.client.meta
+MapleMonster: lucian-core.src.com.lucianms.server.life
+PlayerDealDamageNearbyEvent: lucian-channel.src.com.lucianms.events
+PlayerDealDamageMagicEvent: lucian-channel.src.com.lucianms.events
+PlayerDealDamageRangedEvent: lucian-channel.src.com.lucianms.events
+LifeMoveEvent: lucian-channel.src.com.lucianms.events
+OccupationCommands: lucian-channel.src.com.lucianms.command.executors
+PlayerCommands: lucian-channel.src.com.lucianms.command.executors

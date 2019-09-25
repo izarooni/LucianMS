@@ -1,0 +1,38 @@
+<imgdir name="Recreating the mask">
+    <imgdir name="info">
+        <int name="questId" value="113"/>
+        <int name="preQuest" value="-1"/>
+        <int name="daily" value="0"/>
+    </imgdir>
+
+    <imgdir name="toKill">
+    </imgdir>
+
+    <imgdir name="toCollect">
+        <imgdir name="0">
+            <int name="itemId" value="4011028"/>
+            <int name="quantity" value="1"/>
+        </imgdir>
+        <imgdir name="1">
+            <int name="itemId" value="4011029"/>
+            <int name="quantity" value="1"/>
+        </imgdir>
+        <imgdir name="2">
+            <int name="itemId" value="4011030"/>
+            <int name="quantity" value="1"/>
+        </imgdir>
+        <imgdir name="3">
+            <int name="itemId" value="4011031"/>
+            <int name="quantity" value="1"/>
+        </imgdir>
+    </imgdir>
+
+    <imgdir name="rewards">
+        <imgdir name="items">
+            <imgdir name="0">
+                <int name="itemId" value="1012205"/>
+                <int name="quantity" value="1"/>
+            </imgdir>
+        </imgdir>
+    </imgdir>
+</imgdir>
