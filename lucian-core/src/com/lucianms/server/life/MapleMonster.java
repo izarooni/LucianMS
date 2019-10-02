@@ -337,8 +337,8 @@ public class MapleMonster extends AbstractLoadedMapleLife {
                 if (isKiller && takenDamage.size() > 1) {
                     portionedExp += 0.05;
                 }
-                int gainExp = (int) (exp * (portionedExp * 100f));
-
+                //int gainExp = (int) (exp * (portionedExp * 100f));
+                int gainExp = (int)exp;
                 MapleParty party = player.getParty();
                 if (party != null) {
                     for (MapleCharacter members : party.getPlayers()) {

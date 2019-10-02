@@ -4274,7 +4274,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Di
         if (forcedStat != null) {
             expRate += forcedStat.getBonusExpRate();
         }
-
+/*
         //region occupation modifiers
         if (occupation != null) {
             byte occupationLevel = (byte) Math.max(1, occupation.getLevel());
@@ -4302,7 +4302,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Di
             }
         }
         //endregion
-
+*/
         ArrayList<Item> coupons = getInventory(MapleInventoryType.CASH).find(i -> i.getItemId() / 10000 == 521);
         if (!coupons.isEmpty()) {
             Item first = coupons.iterator().next();

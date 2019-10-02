@@ -1,7 +1,6 @@
 package com.lucianms.events;
 
 import com.lucianms.client.*;
-import com.lucianms.io.scripting.npc.NPCScriptManager;
 import com.lucianms.nio.receive.MaplePacketReader;
 import com.lucianms.scheduler.TaskExecutor;
 import com.lucianms.server.BuffContainer;
@@ -46,32 +45,6 @@ public class PlayerLoginEvent extends PacketEvent {
         MapleClient client = getClient();
         MapleWorld world = client.getWorldServer();
 
-        final LoginState state = client.checkLoginState();
-
-
-        if (client.getAccID() == 0 || state != LoginState.Transfer) {
-            client.setPlayer(null);
-            client.announce(MaplePacketCreator.getAfterLoginError(7));
-            return null;
-        }/*else if (!client.getLastKnownIP().equals(client.getRemoteAddress())) {
-            client.setPlayer(null);
-            client.announce(MaplePacketCreator.getAfterLoginError(7));
-            return null;
-        }
-        */
-
-        for (Pair<Integer, String> p : client.getCharacterIdentifiers()) {
-            MapleCharacter found = world.getPlayerStorage().get(p.getLeft());
-            if (found != null) {
-                found.saveToDB();
-                found.getClient().setLoginState(LoginState.LogOut); // to prevent any packet handlers i suppose
-                found.getClient().announce(MaplePacketCreator.getNPCTalk(10200, (byte) 0, "You are being disconnected due to your account being logged-in from another location.", "00 00", (byte) 1));
-                found.getClient().setPlayer(null); // don't let a second MapleCharacter#saveToDB execute
-                TaskExecutor.createTask(() -> found.getClient().dispose(), 6500);
-            }
-        }
-        client.updateLoginState(LoginState.Login);
-
         MapleCharacter player; // load character after disconnect checks
         try (Connection con = world.getConnection()) {
             player = MapleCharacter.loadCharFromDB(con, playerID, client, true);
@@ -81,6 +54,30 @@ public class PlayerLoginEvent extends PacketEvent {
             return null;
         }
         client.setAccID(player.getAccountID());
+
+        final LoginState state = client.checkLoginState();
+
+        if (client.getAccID() == 0 || state != LoginState.Transfer) {
+            client.setPlayer(null);
+            client.announce(MaplePacketCreator.getAfterLoginError(7));
+            return null;
+        } else if (!client.getLastKnownIP().equals(client.getRemoteAddress())) {
+            client.setPlayer(null);
+            client.announce(MaplePacketCreator.getAfterLoginError(7));
+            return null;
+        }
+
+        for (Pair<Integer, String> p : client.getCharacterIdentifiers()) {
+            MapleCharacter found = world.getPlayerStorage().get(p.getLeft());
+            if (found != null) {
+                found.getClient().setLoginState(LoginState.LogOut); // to prevent any packet handlers i suppose
+                found.saveToDB();
+                found.getClient().announce(MaplePacketCreator.getNPCTalk(10200, (byte) 0, "You are being disconnected due to your account being logged-in from another location.", "00 00", (byte) 1));
+                found.getClient().setPlayer(null); // don't let a second MapleCharacter#saveToDB execute
+                TaskExecutor.createTask(() -> found.getClient().dispose(), 6500);
+            }
+        }
+        client.updateLoginState(LoginState.Login);
         client.setPlayer(player);
 
         try (Connection con = world.getConnection()) {

@@ -88,7 +88,7 @@ public class CreatePlayerEvent extends PacketEvent {
         int[] items = new int[]{weapon, top, bottom, shoes, hair, face};
         for (int item : items) {
             if (!isLegal(item)) {
-                return;
+                setCanceled(true);
             }
         }
 

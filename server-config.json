@@ -1,5 +1,5 @@
 {
-    "WhitelistEnabled": "false",
+    "WhitelistEnabled": "true",
     "UseNewEncryption": "true",
 
     "ServerHost": "51.159.30.2",
