@@ -1,0 +1,13 @@
+2019-10-17 05:49:46,360 WARN c.l.e.CreatePlayerEvent [nioEventLoopGroup-3-2] Made it to onPacket!
+2019-10-17 05:49:47,548 WARN c.l.e.CreatePlayerEvent [nioEventLoopGroup-3-2] Made it to addNewChar!
+2019-10-17 05:52:33,973 WARN c.l.e.CreatePlayerEvent [nioEventLoopGroup-3-2] Made it to onPacket!
+2019-10-17 07:10:03,164 WARN c.l.s.m.MapleMap [LTask5] No foothold for monster 7120104 at [2151, 878] map 123
+2019-10-17 07:10:03,165 WARN c.l.s.m.MapleMap [LTask5] No foothold for monster 7120104 at [2273, 878] map 123
+2019-10-17 07:10:03,165 WARN c.l.s.m.MapleMap [LTask5] No foothold for monster 7120104 at [2382, 878] map 123
+2019-10-17 07:10:03,165 WARN c.l.s.m.MapleMap [LTask5] No foothold for monster 7120104 at [701, 878] map 123
+2019-10-17 07:10:03,166 WARN c.l.s.m.MapleMap [LTask5] No foothold for monster 7120104 at [1629, 818] map 123
+2019-10-17 07:10:03,166 WARN c.l.s.m.MapleMap [LTask5] No foothold for monster 7120104 at [1753, 818] map 123
+2019-10-17 07:10:03,166 WARN c.l.s.m.MapleMap [LTask5] No foothold for monster 7120104 at [1947, 878] map 123
+2019-10-17 07:10:03,166 WARN c.l.s.m.MapleMap [LTask5] No foothold for monster 7120104 at [627, 878] map 123
+2019-10-17 07:10:03,166 WARN c.l.s.m.MapleMap [LTask5] No foothold for monster 7120104 at [436, 878] map 123
+2019-10-29 14:30:07,564 WARN c.l.e.CreatePlayerEvent [nioEventLoopGroup-3-12] Made it to onPacket!
