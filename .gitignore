@@ -7,4 +7,7 @@
 
 #Server files
 /wz
-ChirithyMSBackup 20190830 0226.sql
+/backups
+/bin
+*.log
+*.sql
