@@ -296,7 +296,7 @@ public class PlayerCashItemUseEvent extends PacketEvent implements Cleaner.Clean
                                 }
                                 if (canWash) {
                                     int minmp = 0;
-                                    if (job.isA(MapleJob.WARRIOR) || job.isA(MapleJob.DAWNWARRIOR1) || job.isA(MapleJob.ARAN1)) {
+                                    if (job.isA(MapleJob.SWORDSMAN) || job.isA(MapleJob.DAWNWARRIOR1) || job.isA(MapleJob.ARAN1)) {
                                         minmp += 4;
                                     } else if (job.isA(MapleJob.MAGICIAN) || job.isA(MapleJob.BLAZEWIZARD1)) {
                                         minmp += 36;
