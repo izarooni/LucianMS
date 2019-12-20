@@ -20,8 +20,9 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 function start() {
-    cm.sendOk("Unfortunately the storage is currently disabled.");
+    //cm.sendOk("Unfortunately the storage is currently disabled.");
+    //cm.dispose();
+    cm.getPlayer().getStorage().sendStorage(cm.getClient(), 9030100);
+    //cm.sendOk("Items in storage:" + cm.getPlayer().getStorage().countItems());
     cm.dispose();
-    /*cm.getPlayer().getStorage().sendStorage(cm.getClient(), 9030100);
-    cm.dispose();*/
 }

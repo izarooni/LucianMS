@@ -120,8 +120,8 @@ public class MapleStorage extends EnumMap<MapleInventoryType, Set<Item>> {
     public synchronized void sendStorage(MapleClient c, int npcID) {
         if (opened) return;
         opened = true;
-        items.clear();
-        values().forEach(l -> items.addAll(l));
+        //items.clear();
+        //values().forEach(l -> items.addAll(l));
         c.announce(MaplePacketCreator.getStorage(npcID, this));
     }
 
@@ -164,7 +164,7 @@ public class MapleStorage extends EnumMap<MapleInventoryType, Set<Item>> {
         return false;
     }
 
-    public void saveToDB(Connection con) throws SQLException {
+    public void saveToDB(Connection con, int accID) throws SQLException {
         try (PreparedStatement ps = con.prepareStatement("update storages set slots = ?, meso = ? where storageid = ?")) {
             ps.setInt(1, slotCount);
             ps.setInt(2, money);
@@ -176,7 +176,7 @@ public class MapleStorage extends EnumMap<MapleInventoryType, Set<Item>> {
         for (Entry<MapleInventoryType, Set<Item>> entry : entrySet()) {
             entry.getValue().forEach(item -> itemsPair.add(new Pair<>(item, entry.getKey())));
         }
-        ItemFactory.STORAGE.saveItems(itemsPair, ID, con);
+        ItemFactory.STORAGE.saveItems(itemsPair, accID, con);
         itemsPair.clear();
     }
 }

@@ -31,6 +31,7 @@ import com.lucianms.constants.ItemConstants;
 import com.lucianms.constants.ServerConstants;
 import com.lucianms.cquest.CQuestData;
 import com.lucianms.cquest.requirement.CQuestItemRequirement;
+import com.lucianms.server.maps.MapleMap;
 import com.lucianms.server.maps.MapleMapItem;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -558,6 +559,7 @@ public class MapleInventoryManipulator {
     }
 
     public static MapleMapItem drop(MapleClient c, MapleInventoryType type, short src, short quantity) {
+        MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
         MapleCharacter player = c.getPlayer();
         if (src < 0) {
             type = MapleInventoryType.EQUIPPED;
@@ -587,8 +589,21 @@ public class MapleInventoryManipulator {
         }
         try {
             Point dropPos = new Point(player.getPosition());
+            Item target = source.duplicate();
+            MapleMap map = player.getMap();
+            if (ii.isDropRestricted(target.getItemId()) || ii.isCash(target.getItemId())){
+                player.getInventory(type).removeSlot(src);
+                c.announce(MaplePacketCreator.modifyInventory(true, Collections.singletonList(new ModifyInventory(3, source))));
+                if (src < 0) {
+                    player.equipChanged(true);
+                }
+                return map.disappearingItemDrop(player, player, target, dropPos);
+
+            } else {
+                map.spawnItemDrop(player, player, target, dropPos, true, true);
+            }
             if (quantity < source.getQuantity() && !ItemConstants.isRechargable(itemId)) {
-                Item target = source.duplicate();
+
                 target.setQuantity(quantity);
                 source.setQuantity((short) (source.getQuantity() - quantity));
                 c.announce(MaplePacketCreator.modifyInventory(true, Collections.singletonList(new ModifyInventory(1, source))));

@@ -108,3 +108,4 @@ java.lang.NullPointerException
 2019-12-15 00:34:07,175 WARN c.l.s.m.MapleMap [nioEventLoopGroup-3-2] No foothold for monster 7120104 at [1947, 878] map 123
 2019-12-15 00:34:07,175 WARN c.l.s.m.MapleMap [nioEventLoopGroup-3-2] No foothold for monster 7120104 at [627, 878] map 123
 2019-12-15 00:34:07,175 WARN c.l.s.m.MapleMap [nioEventLoopGroup-3-2] No foothold for monster 7120104 at [436, 878] map 123
+2019-12-20 01:55:52,024 WARN c.l.i.s.n.NPCScriptManager [nioEventLoopGroup-3-2] No initializer function for script 'null' npc '9000036' using player 'Jimmy'

@@ -4234,7 +4234,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Di
                 cashshop.save(con);
             }
             if (storage != null) {
-                storage.saveToDB(con);
+                storage.saveToDB(con, client.getAccID());
             }
             con.setAutoCommit(true);
             LOGGER.info("Saved Player({}) in {}s", getName(), ((System.currentTimeMillis() - beginTimestamp) / 1000d));
