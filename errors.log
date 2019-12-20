@@ -11,3 +11,100 @@
 2019-10-17 07:10:03,166 WARN c.l.s.m.MapleMap [LTask5] No foothold for monster 7120104 at [627, 878] map 123
 2019-10-17 07:10:03,166 WARN c.l.s.m.MapleMap [LTask5] No foothold for monster 7120104 at [436, 878] map 123
 2019-10-29 14:30:07,564 WARN c.l.e.CreatePlayerEvent [nioEventLoopGroup-3-12] Made it to onPacket!
+2019-11-19 04:04:52,904 ERROR c.l.e.PacketEvent [nioEventLoopGroup-3-8] MapleClient{ID=551, accountName='growlie', gmlevel=0, loginState=Login, lastKnownIP='75.140.86.5', discordId=0}
+7B 00 36
+java.lang.NullPointerException: null
+	at com.lucianms.events.PlayerInteractionEvent.processInput(PlayerInteractionEvent.java:50) ~[lucian-channel.jar:?]
+	at com.lucianms.nio.server.MapleServerInboundHandler.channelRead(MapleServerInboundHandler.java:109) [lucian-core.jar:?]
+	at io.netty.channel.AbstractChannelHandlerContext.invokeChannelRead(AbstractChannelHandlerContext.java:362) [netty-all-4.1.30.Final.jar:4.1.30.Final]
+	at io.netty.channel.AbstractChannelHandlerContext.invokeChannelRead(AbstractChannelHandlerContext.java:348) [netty-all-4.1.30.Final.jar:4.1.30.Final]
+	at io.netty.channel.AbstractChannelHandlerContext.fireChannelRead(AbstractChannelHandlerContext.java:340) [netty-all-4.1.30.Final.jar:4.1.30.Final]
+	at io.netty.handler.codec.ByteToMessageDecoder.fireChannelRead(ByteToMessageDecoder.java:323) [netty-all-4.1.30.Final.jar:4.1.30.Final]
+	at io.netty.handler.codec.ByteToMessageDecoder.channelRead(ByteToMessageDecoder.java:297) [netty-all-4.1.30.Final.jar:4.1.30.Final]
+	at io.netty.channel.AbstractChannelHandlerContext.invokeChannelRead(AbstractChannelHandlerContext.java:362) [netty-all-4.1.30.Final.jar:4.1.30.Final]
+	at io.netty.channel.AbstractChannelHandlerContext.invokeChannelRead(AbstractChannelHandlerContext.java:348) [netty-all-4.1.30.Final.jar:4.1.30.Final]
+	at io.netty.channel.AbstractChannelHandlerContext.fireChannelRead(AbstractChannelHandlerContext.java:340) [netty-all-4.1.30.Final.jar:4.1.30.Final]
+	at io.netty.handler.timeout.IdleStateHandler.channelRead(IdleStateHandler.java:286) [netty-all-4.1.30.Final.jar:4.1.30.Final]
+	at io.netty.channel.AbstractChannelHandlerContext.invokeChannelRead(AbstractChannelHandlerContext.java:362) [netty-all-4.1.30.Final.jar:4.1.30.Final]
+	at io.netty.channel.AbstractChannelHandlerContext.invokeChannelRead(AbstractChannelHandlerContext.java:348) [netty-all-4.1.30.Final.jar:4.1.30.Final]
+	at io.netty.channel.AbstractChannelHandlerContext.fireChannelRead(AbstractChannelHandlerContext.java:340) [netty-all-4.1.30.Final.jar:4.1.30.Final]
+	at io.netty.channel.DefaultChannelPipeline$HeadContext.channelRead(DefaultChannelPipeline.java:1434) [netty-all-4.1.30.Final.jar:4.1.30.Final]
+	at io.netty.channel.AbstractChannelHandlerContext.invokeChannelRead(AbstractChannelHandlerContext.java:362) [netty-all-4.1.30.Final.jar:4.1.30.Final]
+	at io.netty.channel.AbstractChannelHandlerContext.invokeChannelRead(AbstractChannelHandlerContext.java:348) [netty-all-4.1.30.Final.jar:4.1.30.Final]
+	at io.netty.channel.DefaultChannelPipeline.fireChannelRead(DefaultChannelPipeline.java:965) [netty-all-4.1.30.Final.jar:4.1.30.Final]
+	at io.netty.channel.nio.AbstractNioByteChannel$NioByteUnsafe.read(AbstractNioByteChannel.java:163) [netty-all-4.1.30.Final.jar:4.1.30.Final]
+	at io.netty.channel.nio.NioEventLoop.processSelectedKey(NioEventLoop.java:644) [netty-all-4.1.30.Final.jar:4.1.30.Final]
+	at io.netty.channel.nio.NioEventLoop.processSelectedKeysOptimized(NioEventLoop.java:579) [netty-all-4.1.30.Final.jar:4.1.30.Final]
+	at io.netty.channel.nio.NioEventLoop.processSelectedKeys(NioEventLoop.java:496) [netty-all-4.1.30.Final.jar:4.1.30.Final]
+	at io.netty.channel.nio.NioEventLoop.run(NioEventLoop.java:458) [netty-all-4.1.30.Final.jar:4.1.30.Final]
+	at io.netty.util.concurrent.SingleThreadEventExecutor$5.run(SingleThreadEventExecutor.java:897) [netty-all-4.1.30.Final.jar:4.1.30.Final]
+	at io.netty.util.concurrent.FastThreadLocalRunnable.run(FastThreadLocalRunnable.java:30) [netty-all-4.1.30.Final.jar:4.1.30.Final]
+	at java.lang.Thread.run(Unknown Source) [?:?]
+2019-11-19 04:05:16,298 ERROR c.l.e.PacketEvent [nioEventLoopGroup-3-9] MapleClient{ID=1118, accountName='linnie', gmlevel=0, loginState=Login, lastKnownIP='67.240.130.76', discordId=0}
+7B 00 36
+java.lang.NullPointerException: null
+	at com.lucianms.events.PlayerInteractionEvent.processInput(PlayerInteractionEvent.java:50) ~[lucian-channel.jar:?]
+	at com.lucianms.nio.server.MapleServerInboundHandler.channelRead(MapleServerInboundHandler.java:109) [lucian-core.jar:?]
+	at io.netty.channel.AbstractChannelHandlerContext.invokeChannelRead(AbstractChannelHandlerContext.java:362) [netty-all-4.1.30.Final.jar:4.1.30.Final]
+	at io.netty.channel.AbstractChannelHandlerContext.invokeChannelRead(AbstractChannelHandlerContext.java:348) [netty-all-4.1.30.Final.jar:4.1.30.Final]
+	at io.netty.channel.AbstractChannelHandlerContext.fireChannelRead(AbstractChannelHandlerContext.java:340) [netty-all-4.1.30.Final.jar:4.1.30.Final]
+	at io.netty.handler.codec.ByteToMessageDecoder.fireChannelRead(ByteToMessageDecoder.java:323) [netty-all-4.1.30.Final.jar:4.1.30.Final]
+	at io.netty.handler.codec.ByteToMessageDecoder.channelRead(ByteToMessageDecoder.java:297) [netty-all-4.1.30.Final.jar:4.1.30.Final]
+	at io.netty.channel.AbstractChannelHandlerContext.invokeChannelRead(AbstractChannelHandlerContext.java:362) [netty-all-4.1.30.Final.jar:4.1.30.Final]
+	at io.netty.channel.AbstractChannelHandlerContext.invokeChannelRead(AbstractChannelHandlerContext.java:348) [netty-all-4.1.30.Final.jar:4.1.30.Final]
+	at io.netty.channel.AbstractChannelHandlerContext.fireChannelRead(AbstractChannelHandlerContext.java:340) [netty-all-4.1.30.Final.jar:4.1.30.Final]
+	at io.netty.handler.timeout.IdleStateHandler.channelRead(IdleStateHandler.java:286) [netty-all-4.1.30.Final.jar:4.1.30.Final]
+	at io.netty.channel.AbstractChannelHandlerContext.invokeChannelRead(AbstractChannelHandlerContext.java:362) [netty-all-4.1.30.Final.jar:4.1.30.Final]
+	at io.netty.channel.AbstractChannelHandlerContext.invokeChannelRead(AbstractChannelHandlerContext.java:348) [netty-all-4.1.30.Final.jar:4.1.30.Final]
+	at io.netty.channel.AbstractChannelHandlerContext.fireChannelRead(AbstractChannelHandlerContext.java:340) [netty-all-4.1.30.Final.jar:4.1.30.Final]
+	at io.netty.channel.DefaultChannelPipeline$HeadContext.channelRead(DefaultChannelPipeline.java:1434) [netty-all-4.1.30.Final.jar:4.1.30.Final]
+	at io.netty.channel.AbstractChannelHandlerContext.invokeChannelRead(AbstractChannelHandlerContext.java:362) [netty-all-4.1.30.Final.jar:4.1.30.Final]
+	at io.netty.channel.AbstractChannelHandlerContext.invokeChannelRead(AbstractChannelHandlerContext.java:348) [netty-all-4.1.30.Final.jar:4.1.30.Final]
+	at io.netty.channel.DefaultChannelPipeline.fireChannelRead(DefaultChannelPipeline.java:965) [netty-all-4.1.30.Final.jar:4.1.30.Final]
+	at io.netty.channel.nio.AbstractNioByteChannel$NioByteUnsafe.read(AbstractNioByteChannel.java:163) [netty-all-4.1.30.Final.jar:4.1.30.Final]
+	at io.netty.channel.nio.NioEventLoop.processSelectedKey(NioEventLoop.java:644) [netty-all-4.1.30.Final.jar:4.1.30.Final]
+	at io.netty.channel.nio.NioEventLoop.processSelectedKeysOptimized(NioEventLoop.java:579) [netty-all-4.1.30.Final.jar:4.1.30.Final]
+	at io.netty.channel.nio.NioEventLoop.processSelectedKeys(NioEventLoop.java:496) [netty-all-4.1.30.Final.jar:4.1.30.Final]
+	at io.netty.channel.nio.NioEventLoop.run(NioEventLoop.java:458) [netty-all-4.1.30.Final.jar:4.1.30.Final]
+	at io.netty.util.concurrent.SingleThreadEventExecutor$5.run(SingleThreadEventExecutor.java:897) [netty-all-4.1.30.Final.jar:4.1.30.Final]
+	at io.netty.util.concurrent.FastThreadLocalRunnable.run(FastThreadLocalRunnable.java:30) [netty-all-4.1.30.Final.jar:4.1.30.Final]
+	at java.lang.Thread.run(Unknown Source) [?:?]
+java.lang.NullPointerException
+	at com.lucianms.server.MapleMiniGame.removeVisitor(MapleMiniGame.java:100)
+	at com.lucianms.client.MapleCharacter.dispose(MapleCharacter.java:4927)
+	at tools.Functions.requireNotNull(Functions.java:17)
+	at com.lucianms.client.MapleClient.disconnect(MapleClient.java:597)
+	at com.lucianms.nio.server.MapleServerInboundHandler.channelUnregistered(MapleServerInboundHandler.java:86)
+	at io.netty.channel.AbstractChannelHandlerContext.invokeChannelUnregistered(AbstractChannelHandlerContext.java:181)
+	at io.netty.channel.AbstractChannelHandlerContext.invokeChannelUnregistered(AbstractChannelHandlerContext.java:167)
+	at io.netty.channel.AbstractChannelHandlerContext.fireChannelUnregistered(AbstractChannelHandlerContext.java:160)
+	at io.netty.channel.ChannelInboundHandlerAdapter.channelUnregistered(ChannelInboundHandlerAdapter.java:53)
+	at io.netty.channel.AbstractChannelHandlerContext.invokeChannelUnregistered(AbstractChannelHandlerContext.java:181)
+	at io.netty.channel.AbstractChannelHandlerContext.invokeChannelUnregistered(AbstractChannelHandlerContext.java:167)
+	at io.netty.channel.AbstractChannelHandlerContext.fireChannelUnregistered(AbstractChannelHandlerContext.java:160)
+	at io.netty.channel.ChannelInboundHandlerAdapter.channelUnregistered(ChannelInboundHandlerAdapter.java:53)
+	at io.netty.channel.AbstractChannelHandlerContext.invokeChannelUnregistered(AbstractChannelHandlerContext.java:181)
+	at io.netty.channel.AbstractChannelHandlerContext.invokeChannelUnregistered(AbstractChannelHandlerContext.java:167)
+	at io.netty.channel.AbstractChannelHandlerContext.fireChannelUnregistered(AbstractChannelHandlerContext.java:160)
+	at io.netty.channel.DefaultChannelPipeline$HeadContext.channelUnregistered(DefaultChannelPipeline.java:1412)
+	at io.netty.channel.AbstractChannelHandlerContext.invokeChannelUnregistered(AbstractChannelHandlerContext.java:181)
+	at io.netty.channel.AbstractChannelHandlerContext.invokeChannelUnregistered(AbstractChannelHandlerContext.java:167)
+	at io.netty.channel.DefaultChannelPipeline.fireChannelUnregistered(DefaultChannelPipeline.java:865)
+	at io.netty.channel.AbstractChannel$AbstractUnsafe$8.run(AbstractChannel.java:830)
+	at io.netty.util.concurrent.AbstractEventExecutor.safeExecute(AbstractEventExecutor.java:163)
+	at io.netty.util.concurrent.SingleThreadEventExecutor.runAllTasks(SingleThreadEventExecutor.java:404)
+	at io.netty.channel.nio.NioEventLoop.run(NioEventLoop.java:462)
+	at io.netty.util.concurrent.SingleThreadEventExecutor$5.run(SingleThreadEventExecutor.java:897)
+	at io.netty.util.concurrent.FastThreadLocalRunnable.run(FastThreadLocalRunnable.java:30)
+	at java.base/java.lang.Thread.run(Unknown Source)
+2019-11-25 20:28:49,796 WARN c.l.e.CreatePlayerEvent [nioEventLoopGroup-3-4] Made it to onPacket!
+2019-11-26 21:00:04,696 WARN c.l.s.m.MapleMap [LTask1] No foothold for monster 9895242 at [179, 192] map 551030808
+2019-12-15 00:34:07,173 WARN c.l.s.m.MapleMap [nioEventLoopGroup-3-2] No foothold for monster 7120104 at [2151, 878] map 123
+2019-12-15 00:34:07,174 WARN c.l.s.m.MapleMap [nioEventLoopGroup-3-2] No foothold for monster 7120104 at [2273, 878] map 123
+2019-12-15 00:34:07,174 WARN c.l.s.m.MapleMap [nioEventLoopGroup-3-2] No foothold for monster 7120104 at [2382, 878] map 123
+2019-12-15 00:34:07,174 WARN c.l.s.m.MapleMap [nioEventLoopGroup-3-2] No foothold for monster 7120104 at [701, 878] map 123
+2019-12-15 00:34:07,175 WARN c.l.s.m.MapleMap [nioEventLoopGroup-3-2] No foothold for monster 7120104 at [1629, 818] map 123
+2019-12-15 00:34:07,175 WARN c.l.s.m.MapleMap [nioEventLoopGroup-3-2] No foothold for monster 7120104 at [1753, 818] map 123
+2019-12-15 00:34:07,175 WARN c.l.s.m.MapleMap [nioEventLoopGroup-3-2] No foothold for monster 7120104 at [1947, 878] map 123
+2019-12-15 00:34:07,175 WARN c.l.s.m.MapleMap [nioEventLoopGroup-3-2] No foothold for monster 7120104 at [627, 878] map 123
+2019-12-15 00:34:07,175 WARN c.l.s.m.MapleMap [nioEventLoopGroup-3-2] No foothold for monster 7120104 at [436, 878] map 123

@@ -91,7 +91,7 @@ public final class DistributeAPEvent extends PacketEvent {
         if (player.getHpMpApUsed() > 9999 || MaxHP >= 30000) {
             return MaxHP;
         }
-        if (job.isA(MapleJob.WARRIOR) || job.isA(MapleJob.DAWNWARRIOR1) || job.isA(MapleJob.ARAN1)) {
+        if (job.isA(MapleJob.SWORDSMAN) || job.isA(MapleJob.DAWNWARRIOR1) || job.isA(MapleJob.ARAN1)) {
             Skill increaseHP = SkillFactory.getSkill(job.isA(MapleJob.DAWNWARRIOR1) ? DawnWarrior.MAX_HP_ENHANCEMENT : Warrior.IMPROVED_MAXHP_INCREASE);
             int sLvl = player.getSkillLevel(increaseHP);
 
@@ -123,7 +123,7 @@ public final class DistributeAPEvent extends PacketEvent {
         if (player.getHpMpApUsed() > 9999 || player.getMaxMp() >= 30000) {
             return MaxMP;
         }
-        if (job.isA(MapleJob.WARRIOR) || job.isA(MapleJob.DAWNWARRIOR1) || job.isA(MapleJob.ARAN1)) {
+        if (job.isA(MapleJob.SWORDSMAN) || job.isA(MapleJob.DAWNWARRIOR1) || job.isA(MapleJob.ARAN1)) {
             MaxMP += 2;
         } else if (job.isA(MapleJob.MAGICIAN) || job.isA(MapleJob.BLAZEWIZARD1)) {
             Skill increaseMP = SkillFactory.getSkill(job.isA(MapleJob.BLAZEWIZARD1) ? BlazeWizard.INCREASING_MAX_MP : Magician.IMPROVED_MAXMP_INCREASE);

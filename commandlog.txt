@@ -1,0 +1,232 @@
+
+[Wed Nov 13 18:02:35 CET 2019] ~ Jimmy: search map wall rose
+[Wed Nov 13 18:02:42 CET 2019] ~ Jimmy: warp 814031200
+[Tue Nov 19 04:03:16 CET 2019] ~ Growlie: warp linnie
+[Tue Nov 19 04:04:01 CET 2019] ~ Growlie: item 4030000
+[Tue Nov 19 04:04:22 CET 2019] ~ Growlie: item 4080000
+[Wed Nov 20 15:51:27 CET 2019] ~ Feint: search item maple dagger
+[Wed Nov 20 15:51:29 CET 2019] ~ Feint: drop 1332095
+[Wed Nov 20 15:51:33 CET 2019] ~ Feint: job 422
+[Wed Nov 20 15:51:34 CET 2019] ~ Feint: heal 
+[Wed Nov 20 15:51:50 CET 2019] ~ Feint: spawn 100100
+[Wed Nov 20 15:52:26 CET 2019] ~ Feint: spawn 100100 5
+[Sat Nov 23 06:40:13 CET 2019] ~ Growlie: lastevent 
+[Sat Nov 23 06:40:18 CET 2019] ~ Growlie: lastevent 
+[Sat Nov 23 06:40:32 CET 2019] ~ Growlie: gmcmds 
+[Sat Nov 23 06:40:40 CET 2019] ~ Growlie: cmds 
+[Sat Nov 23 06:40:41 CET 2019] ~ Growlie: cmd 
+[Sat Nov 23 06:40:48 CET 2019] ~ Growlie: hgmcmds 
+[Sat Nov 23 06:41:28 CET 2019] ~ Growlie: guildrank 2
+[Sat Nov 23 06:41:36 CET 2019] ~ Growlie: guildrank Growlie 2
+[Sat Nov 23 06:41:52 CET 2019] ~ Growlie: guildrank Growlie 3
+[Sat Nov 23 06:42:30 CET 2019] ~ Growlie: ring 
+[Sat Nov 23 06:42:38 CET 2019] ~ Growlie: sudo 
+[Sat Nov 23 06:42:41 CET 2019] ~ Growlie: sudo 
+[Sat Nov 23 06:42:51 CET 2019] ~ Growlie: npc 
+[Sat Nov 23 06:43:52 CET 2019] ~ Growlie: popup weeeeeeeeeeeeeeeee
+[Sat Nov 23 06:43:56 CET 2019] ~ Growlie: popup weeeeeeeeeeeeeeeee
+[Sat Nov 23 06:44:00 CET 2019] ~ Growlie: popup weeeeeeeeeeeeeeeee
+[Sat Nov 23 06:44:24 CET 2019] ~ Growlie: setall 1
+[Sat Nov 23 06:44:33 CET 2019] ~ Growlie: mesos 
+[Sat Nov 23 06:44:44 CET 2019] ~ Growlie: mutem 
+[Sat Nov 23 06:44:49 CET 2019] ~ Growlie: mutem 
+[Sat Nov 23 06:44:54 CET 2019] ~ Growlie: mute growlie
+[Sat Nov 23 06:45:06 CET 2019] ~ Growlie: mute growlie
+[Sat Nov 23 06:45:09 CET 2019] ~ Growlie: unmute growlie
+[Sat Nov 23 06:45:23 CET 2019] ~ Growlie: heal growlie
+[Sat Nov 23 06:45:32 CET 2019] ~ Growlie: jobs 
+[Sat Nov 23 06:45:33 CET 2019] ~ Growlie: job 
+[Mon Nov 25 19:31:49 CET 2019] ~ Feint: warp 9000099
+[Mon Nov 25 19:31:51 CET 2019] ~ Feint: warp 90000099
+[Mon Nov 25 20:29:18 CET 2019] ~ dead: online 
+[Mon Nov 25 20:29:20 CET 2019] ~ dead: hide 
+[Mon Nov 25 20:29:22 CET 2019] ~ dead: gm 910
+[Mon Nov 25 20:29:25 CET 2019] ~ dead: job 910
+[Mon Nov 25 20:32:09 CET 2019] ~ dead: job 910
+[Mon Nov 25 20:32:43 CET 2019] ~ dead: heal 
+[Tue Nov 26 20:59:44 CET 2019] ~ Feint: search map noragami
+[Tue Nov 26 20:59:48 CET 2019] ~ Feint: warp 5510030806
+[Tue Nov 26 20:59:49 CET 2019] ~ Feint: warp 5510030807
+[Tue Nov 26 20:59:51 CET 2019] ~ Feint: warp 5510030800
+[Tue Nov 26 20:59:54 CET 2019] ~ Feint: warp 5510030880
+[Tue Nov 26 21:00:01 CET 2019] ~ Feint: warp 551030806
+[Tue Nov 26 21:00:04 CET 2019] ~ Feint: warp 551030808
+[Tue Nov 26 21:00:06 CET 2019] ~ Feint: warp 551030810
+[Tue Nov 26 21:00:09 CET 2019] ~ Feint: warp 551030812
+[Tue Nov 26 21:00:10 CET 2019] ~ Feint: warp 551030813
+[Tue Nov 26 21:00:19 CET 2019] ~ Feint: search item kuragama
+[Tue Nov 26 21:00:21 CET 2019] ~ Feint: search item kurama
+[Tue Nov 26 21:00:24 CET 2019] ~ Feint: drop 3010799
+[Tue Nov 26 21:01:08 CET 2019] ~ Feint: job 910
+[Tue Nov 26 21:01:09 CET 2019] ~ Feint: heal 
+[Tue Nov 26 21:01:35 CET 2019] ~ Feint: maxstats 
+[Tue Nov 26 21:01:38 CET 2019] ~ Feint: killall 
+[Tue Nov 26 21:01:42 CET 2019] ~ Feint: heal 
+[Tue Nov 26 21:03:01 CET 2019] ~ Feint: killall 
+[Tue Nov 26 21:03:03 CET 2019] ~ Feint: heal 
+[Tue Nov 26 21:03:53 CET 2019] ~ Feint: heal 
+[Wed Nov 27 21:12:02 CET 2019] ~ Growlie: hgmcmds 
+[Wed Nov 27 21:12:15 CET 2019] ~ Growlie: gmcmds 
+[Wed Nov 27 21:12:18 CET 2019] ~ Growlie: gmhelp 
+[Wed Nov 27 21:12:20 CET 2019] ~ Growlie: help 
+[Fri Nov 29 08:39:47 CET 2019] ~ Kill: online 
+[Fri Nov 29 08:40:02 CET 2019] ~ Kill: warp 69
+[Fri Nov 29 08:41:42 CET 2019] ~ Kill: warp 450001000
+[Fri Nov 29 08:43:20 CET 2019] ~ Kill: warp 450003000
+[Fri Nov 29 08:43:52 CET 2019] ~ Kill: job 910
+[Fri Nov 29 08:45:17 CET 2019] ~ Kill: search item just do it
+[Fri Nov 29 08:45:22 CET 2019] ~ Kill: drop 1142828
+[Fri Nov 29 08:46:43 CET 2019] ~ Kill: sethair 31097
+[Fri Nov 29 08:47:43 CET 2019] ~ Kill: style 
+[Fri Nov 29 08:49:08 CET 2019] ~ Kill: warp 912
+[Fri Nov 29 08:49:15 CET 2019] ~ Kill: warp 910
+[Fri Nov 29 08:49:27 CET 2019] ~ Kill: warp 912
+[Fri Nov 29 08:49:29 CET 2019] ~ Kill: warp 911
+[Fri Nov 29 08:49:39 CET 2019] ~ Kill: warp 900
+[Fri Nov 29 08:49:43 CET 2019] ~ Kill: warp 902
+[Tue Dec 03 00:41:46 CET 2019] ~ Kill: search item kaneki
+[Tue Dec 03 00:41:54 CET 2019] ~ Kill: drop 1012498
+[Tue Dec 03 00:42:59 CET 2019] ~ Kill: reloadmap 
+[Tue Dec 03 00:43:29 CET 2019] ~ Kill: reloadmap 
+[Tue Dec 03 00:44:20 CET 2019] ~ Kill: warp 69
+[Tue Dec 03 00:45:00 CET 2019] ~ Kill: search map halloween
+[Tue Dec 03 00:49:09 CET 2019] ~ Kill: warp 229030100
+[Tue Dec 03 00:50:47 CET 2019] ~ Kill: warp 4
+[Tue Dec 03 01:08:23 CET 2019] ~ Kill: warp 229030100
+[Wed Dec 04 08:25:06 CET 2019] ~ Kill: warp 902
+[Wed Dec 04 08:27:52 CET 2019] ~ Kill: search item unwelcome
+[Wed Dec 04 08:28:09 CET 2019] ~ Kill: drop 1372077
+[Wed Dec 04 08:29:58 CET 2019] ~ Kill: whereami 
+[Wed Dec 04 08:30:08 CET 2019] ~ Kill: warp 993050300
+[Wed Dec 04 08:30:12 CET 2019] ~ Kill: warp 993050200
+[Wed Dec 04 08:30:26 CET 2019] ~ Kill: fwarp 993050200
+[Wed Dec 04 08:30:34 CET 2019] ~ Kill: fwarp 993050400
+[Wed Dec 04 08:30:40 CET 2019] ~ Kill: fwarp 993050500
+[Wed Dec 04 08:30:45 CET 2019] ~ Kill: fwarp 993050600
+[Wed Dec 04 08:30:49 CET 2019] ~ Kill: fwarp 993050700
+[Wed Dec 04 08:30:54 CET 2019] ~ Kill: fwarp 993050100
+[Wed Dec 04 08:34:14 CET 2019] ~ Kill: drop 
+[Wed Dec 04 08:34:24 CET 2019] ~ Kill: drop 1053256
+[Wed Dec 04 08:34:30 CET 2019] ~ Kill: itemvac 
+[Wed Dec 04 10:16:35 CET 2019] ~ Kill: search map hideout
+[Wed Dec 04 10:16:58 CET 2019] ~ Kill: search map HQ
+[Wed Dec 04 10:17:05 CET 2019] ~ Kill: warp 331001000
+[Wed Dec 04 10:24:24 CET 2019] ~ Kill: online 
+[Wed Dec 04 10:48:42 CET 2019] ~ Kill: warp 69
+[Wed Dec 04 10:49:39 CET 2019] ~ Kill: warp 4
+[Wed Dec 04 10:50:16 CET 2019] ~ Kill: warp 902
+[Wed Dec 04 10:57:31 CET 2019] ~ Kill: whereami 
+[Wed Dec 04 10:58:47 CET 2019] ~ Kill: fwarp 993050000
+[Wed Dec 04 10:59:03 CET 2019] ~ Kill: fwarp 993050100
+[Wed Dec 04 10:59:10 CET 2019] ~ Kill: fwarp 993050200
+[Wed Dec 04 10:59:17 CET 2019] ~ Kill: fwarp 993050300
+[Wed Dec 04 10:59:50 CET 2019] ~ Kill: fwarp 993050400
+[Wed Dec 04 11:00:00 CET 2019] ~ Kill: fwarp 993050500
+[Wed Dec 04 11:00:04 CET 2019] ~ Kill: fwarp 993050600
+[Fri Dec 06 00:56:04 CET 2019] ~ Growlie: online 
+[Fri Dec 06 08:36:46 CET 2019] ~ Kill: fwarp 400
+[Fri Dec 06 08:40:33 CET 2019] ~ Kill: fwarp 400
+[Fri Dec 06 08:48:00 CET 2019] ~ Kill: fwarp 400
+[Fri Dec 06 09:18:49 CET 2019] ~ Kill: fwarp 400
+[Fri Dec 06 09:56:33 CET 2019] ~ Kill: fwarp 400
+[Fri Dec 06 10:01:31 CET 2019] ~ Kill: fwarp 400
+[Fri Dec 06 10:10:05 CET 2019] ~ Kill: fwarp 400
+[Fri Dec 06 10:28:01 CET 2019] ~ Kill: fwarp 400
+[Fri Dec 06 12:22:38 CET 2019] ~ Kill: fwarp 400
+[Fri Dec 06 12:49:54 CET 2019] ~ Kill: fwarp 400
+[Fri Dec 06 12:52:03 CET 2019] ~ Kill: fwarp 400
+[Fri Dec 06 15:26:38 CET 2019] ~ 6: hide 
+[Fri Dec 06 17:08:04 CET 2019] ~ Kill: fwarp 400
+[Fri Dec 06 17:08:23 CET 2019] ~ Kill: fwarp 403
+[Fri Dec 06 17:10:45 CET 2019] ~ Kill: job 412
+[Fri Dec 06 17:12:57 CET 2019] ~ Kill: fwarp 400
+[Fri Dec 06 17:39:05 CET 2019] ~ Kill: fwarp 403
+[Fri Dec 06 17:40:33 CET 2019] ~ Kill: fwarp 400
+[Fri Dec 06 17:42:40 CET 2019] ~ Kill: fwarp 403
+[Fri Dec 06 17:45:33 CET 2019] ~ Kill: fwarp 400
+[Fri Dec 06 17:46:54 CET 2019] ~ Kill: search item warrior
+[Fri Dec 06 17:46:58 CET 2019] ~ Kill: search item warrior's throne
+[Fri Dec 06 17:47:03 CET 2019] ~ Kill: search item throne
+[Fri Dec 06 17:47:11 CET 2019] ~ Kill: drop 3010012
+[Sat Dec 07 04:49:55 CET 2019] ~ Kill: fwarp 400
+[Sat Dec 07 04:50:03 CET 2019] ~ Kill: fwarp 404
+[Sat Dec 07 04:59:42 CET 2019] ~ Kill: fwarp 400
+[Sat Dec 07 05:02:19 CET 2019] ~ Kill: fwarp 404
+[Sat Dec 07 05:03:13 CET 2019] ~ Kill: fwarp 400
+[Sat Dec 07 05:05:58 CET 2019] ~ Kill: fwarp 404
+[Sat Dec 07 05:06:08 CET 2019] ~ Kill: fwarp 400
+[Sat Dec 07 05:06:49 CET 2019] ~ Kill: warp 69
+[Sat Dec 07 05:07:07 CET 2019] ~ Kill: warp 902
+[Sat Dec 07 05:07:23 CET 2019] ~ Kill: fwarp 400
+[Sat Dec 07 07:24:57 CET 2019] ~ Kill: fwarp 405
+[Sat Dec 07 07:45:15 CET 2019] ~ Kill: fwarp 404
+[Sat Dec 07 08:05:06 CET 2019] ~ Kill: fwarp 405
+[Tue Dec 10 06:45:54 CET 2019] ~ Kill: fwarp 405
+[Tue Dec 10 07:16:57 CET 2019] ~ Kill: fwarp 404
+[Tue Dec 10 07:17:08 CET 2019] ~ Kill: fwarp 404
+[Tue Dec 10 07:17:22 CET 2019] ~ Kill: fwarp 405
+[Thu Dec 12 15:02:57 CET 2019] ~ Kill: fwarp 410
+[Thu Dec 12 15:29:38 CET 2019] ~ Kill: fwarp 410
+[Thu Dec 12 15:55:47 CET 2019] ~ Kill: fwarp 404
+[Thu Dec 12 15:56:30 CET 2019] ~ Kill: fwarp 410
+[Thu Dec 12 15:57:14 CET 2019] ~ Kill: fwarp 400
+[Thu Dec 12 15:57:26 CET 2019] ~ Kill: fwarp 405
+[Thu Dec 12 16:18:09 CET 2019] ~ Kill: fwarp 410
+[Thu Dec 12 16:19:12 CET 2019] ~ Kill: fwarp 404
+[Thu Dec 12 16:20:07 CET 2019] ~ Kill: fwarp 400
+[Thu Dec 12 16:20:15 CET 2019] ~ Kill: fwarp 405
+[Thu Dec 12 16:21:01 CET 2019] ~ Kill: warp 902
+[Thu Dec 12 16:21:36 CET 2019] ~ Kill: fwarp 410
+[Thu Dec 12 16:22:45 CET 2019] ~ Kill: warp 69
+[Thu Dec 12 16:23:18 CET 2019] ~ Kill: fwarp 400
+[Thu Dec 12 17:02:01 CET 2019] ~ Kill: fwarp 410
+[Thu Dec 12 17:02:40 CET 2019] ~ Kill: search map magatia
+[Thu Dec 12 17:04:13 CET 2019] ~ Kill: warp 261000000
+[Thu Dec 12 17:29:12 CET 2019] ~ Kill: fwarp 410
+[Thu Dec 12 17:44:17 CET 2019] ~ Kill: fwarp 410
+[Thu Dec 12 18:10:41 CET 2019] ~ Kill: fwarp 410
+[Thu Dec 12 18:22:01 CET 2019] ~ Kill: fwarp 410
+[Thu Dec 12 18:26:21 CET 2019] ~ Kill: fwarp 404
+[Thu Dec 12 18:26:28 CET 2019] ~ Kill: fwarp 405
+[Thu Dec 12 18:26:34 CET 2019] ~ Kill: warp 69
+[Thu Dec 12 18:26:36 CET 2019] ~ Kill: fwarp 405
+[Fri Dec 13 00:01:32 CET 2019] ~ Growlie: heal 
+[Fri Dec 13 00:03:28 CET 2019] ~ Growlie: gmcmds 
+[Fri Dec 13 00:03:32 CET 2019] ~ Growlie: hgmcmds 
+[Fri Dec 13 00:03:40 CET 2019] ~ Growlie: onpc 
+[Fri Dec 13 20:04:48 CET 2019] ~ Growlie: warp 180000000
+[Fri Dec 13 20:04:52 CET 2019] ~ Growlie: warp 180000001
+[Sun Dec 15 00:34:15 CET 2019] ~ Feint: warp 900000999
+[Sun Dec 15 00:34:17 CET 2019] ~ Feint: warp 900000999
+[Sun Dec 15 00:34:20 CET 2019] ~ Feint: warp 90000000999
+[Sun Dec 15 00:34:22 CET 2019] ~ Feint: warp 900000999
+[Sun Dec 15 00:34:25 CET 2019] ~ Feint: warp 90009999
+[Sun Dec 15 00:34:28 CET 2019] ~ Feint: warp 90000999
+[Mon Dec 16 05:54:28 CET 2019] ~ Kill: fwarp 405
+[Mon Dec 16 05:54:56 CET 2019] ~ Kill: fwarp 404
+[Thu Dec 19 03:32:08 CET 2019] ~ Growlie: rules 
+[Thu Dec 19 23:07:37 CET 2019] ~ Feint: warp 090000999
+[Thu Dec 19 23:20:06 CET 2019] ~ Feint: warp 900000999
+[Thu Dec 19 23:20:08 CET 2019] ~ Feint: warp 90000999
+[Thu Dec 19 23:22:57 CET 2019] ~ Feint: warp 900000999
+[Thu Dec 19 23:22:59 CET 2019] ~ Feint: warp 9000000999
+[Thu Dec 19 23:23:01 CET 2019] ~ Feint: warp 900000999
+[Thu Dec 19 23:23:03 CET 2019] ~ Feint: warp 9000999
+[Thu Dec 19 23:23:05 CET 2019] ~ Feint: warp 90000999
+[Thu Dec 19 23:26:54 CET 2019] ~ Feint: warp 90000999
+[Thu Dec 19 23:28:04 CET 2019] ~ Kill: fwarp 410
+[Thu Dec 19 23:28:32 CET 2019] ~ Kill: fwarp 400
+[Thu Dec 19 23:30:24 CET 2019] ~ Feint: warp 90000999
+[Thu Dec 19 23:35:14 CET 2019] ~ Feint: warp 900000999
+[Thu Dec 19 23:35:16 CET 2019] ~ Feint: warp 90000999
+[Thu Dec 19 23:45:57 CET 2019] ~ Feint: warp 90000999
+[Thu Dec 19 23:46:39 CET 2019] ~ Feint: heal 
+[Fri Dec 20 00:22:34 CET 2019] ~ Kill: fwarp 405
+[Fri Dec 20 00:30:17 CET 2019] ~ Kill: fwarp 405
+[Fri Dec 20 01:16:45 CET 2019] ~ Kill: online 
+[Fri Dec 20 01:16:51 CET 2019] ~ Kill: fwarp 405
+[Fri Dec 20 01:31:17 CET 2019] ~ Kill: online 
+[Fri Dec 20 01:31:35 CET 2019] ~ Kill: fwarp 405
+[Fri Dec 20 01:36:36 CET 2019] ~ Kill: fwarp 410
+[Fri Dec 20 01:37:43 CET 2019] ~ Kill: fwarp 405
+[Fri Dec 20 01:38:21 CET 2019] ~ Kill: online 
