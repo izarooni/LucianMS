@@ -113,7 +113,7 @@ public class Server {
         try (Connection con = getConnection()) {
             BanManager.createCache(con);
         } catch (SQLException e) {
-            LOGGER.error("Failed to acquire banned accounts");
+            LOGGER.error("Failed to acquire banned accounts", e);
         }
 
         TaskExecutor.prestartAllCoreThreads();

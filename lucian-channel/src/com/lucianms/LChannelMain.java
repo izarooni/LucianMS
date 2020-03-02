@@ -60,6 +60,13 @@ public class LChannelMain {
         Runtime.getRuntime().addShutdownHook(new Thread(new Runnable() {
             @Override
             public void run() {
+                if (DiscordConnection.getDiscordSession() != null) {
+                    try {
+                        DiscordConnection.getDiscordSession().close();
+                    } catch (InterruptedException e) {
+                        LOGGER.error("Failed to closed Discord socket acceptor", e);
+                    }
+                }
                 for (MapleWorld world : Server.getWorlds()) {
                     world.sendPacket(MaplePacketCreator.serverNotice(1, "The server is now restarting."));
                 }
@@ -75,7 +82,7 @@ public class LChannelMain {
                         System.out.println("Internal server communicator closed");
                     }
                 } catch (Exception e) {
-                    LOGGER.error("Failed to close Netty socket", e);
+                    LOGGER.error("Failed to close Netty socket acceptor", e);
                 }
 
                 System.out.printf("Disposing %d worlds\r\n", Server.getWorlds().size());

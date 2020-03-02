@@ -38,13 +38,13 @@ public class LLoginMain {
         String address = config.getString("ServerHost");
         Long port = config.getNumber("LoginBasePort");
         try {
-            NettyDiscardServer interServer = new NettyDiscardServer(address, port.intValue() + 1,
+            NettyDiscardServer interServer = new NettyDiscardServer("127.0.0.1", port.intValue() + 1,
                     new InternalLoginCommunicationsHandler(),
                     new NioEventLoopGroup(),
                     DirectPacketDecoder.class,
                     DirectPacketEncoder.class);
             interServer.run();
-            LOGGER.info("Internal server bound to {}:{}", address, (port + 1));
+            LOGGER.info("Internal server bound to {}", (port + 1));
         } catch (Exception e) {
             LOGGER.error("Failed to bind internal server to {}:{}", address, (port + 1), e);
             System.exit(0);
