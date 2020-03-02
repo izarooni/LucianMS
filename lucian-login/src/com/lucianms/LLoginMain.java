@@ -62,6 +62,8 @@ public class LLoginMain {
         LoginConsoleCommands cmd = new LoginConsoleCommands();
         cmd.beginReading();
         ConsoleCommands.setInstance(cmd);
+
+        LOGGER.info("Login startup complete");
     }
 
     public static MapleServerInboundHandler getServerHandler() {

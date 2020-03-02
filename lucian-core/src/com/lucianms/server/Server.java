@@ -44,7 +44,7 @@ public class Server {
     private static final ConcurrentHashMap<Integer, MapleAlliance> alliances = new ConcurrentHashMap<>();
     private static final GProperties<Boolean> toggles = new GProperties<>();
 
-    private static HikariDataSource hikari = Database.createDataSource("hikari-server");
+    private static HikariDataSource hikari = Database.createDataSource("ms-server");
     private static Config config = null;
 
     public static Connection getConnection() throws SQLException {
@@ -112,6 +112,7 @@ public class Server {
 
         try (Connection con = getConnection()) {
             BanManager.createCache(con);
+            LOGGER.info("Banned accounts cached successfully");
         } catch (SQLException e) {
             LOGGER.error("Failed to acquire banned accounts", e);
         }

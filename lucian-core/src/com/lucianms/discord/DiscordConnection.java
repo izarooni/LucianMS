@@ -41,7 +41,7 @@ public class DiscordConnection {
             return;
         }
         try {
-            hikari = Database.createDataSource("hikari-discord");
+            hikari = Database.createDataSource("ms-discord");
             discordSession = new DiscordSessionHandler(ListeningPort);
         } catch (Exception e) {
             LOGGER.warn("Unable to create Discord listener on port {}", ListeningPort, e);

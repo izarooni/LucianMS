@@ -12,7 +12,7 @@
 /server-config.json
 /whitelist.json
 /*.bat
-/hikari-db.properties
+/database.properties
 
 /#Ian's PC
 backups
