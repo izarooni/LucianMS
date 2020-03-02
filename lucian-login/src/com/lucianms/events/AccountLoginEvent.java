@@ -1,9 +1,11 @@
 package com.lucianms.events;
 
+import at.favre.lib.crypto.bcrypt.BCrypt;
 import com.lucianms.BanManager;
 import com.lucianms.Whitelist;
 import com.lucianms.client.LoginState;
 import com.lucianms.client.MapleClient;
+import com.lucianms.constants.ServerConstants;
 import com.lucianms.nio.receive.MaplePacketReader;
 import com.lucianms.server.Server;
 import org.slf4j.Logger;
@@ -12,6 +14,10 @@ import tools.ArrayUtil;
 import tools.HexTool;
 import tools.MaplePacketCreator;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.regex.Pattern;
 
 /**
@@ -64,13 +70,26 @@ public class AccountLoginEvent extends PacketEvent {
         if (client.getGMLevel() == 0 && Server.getConfig().getBoolean("WhitelistEnabled") && !Whitelist.hasAccount(client.getAccID())) {
             LOGGER.info("Attempted non-whitelist account username: '{}' , accountID: '{}'", username, client.getAccID());
             client.announce(MaplePacketCreator.getLoginFailed(7));
-            client.announce(MaplePacketCreator.serverNotice(1, "The server is in whitelist mode! Only certain users will have access to the game right now."));
+            client.sendPopup("The server is in whitelist mode! Only certain users will have access to the game right now.");
             return null;
+        }
+
+        if (loginResult == 5 && ServerConstants.ENABLE_AUTO_REGISTER) {
+            if (client.getPassword() == null) {
+                client.setPassword(password);
+                client.announce(MaplePacketCreator.getLoginFailed(loginResult));
+                client.sendPopup("This account does not exist.\r\nPress LOGIN once again to register this account.");
+                return null;
+            } else if (password.equalsIgnoreCase(client.getPassword())) {
+                if (createAccount(username, password) == 0) {
+                    loginResult = client.getLoginResponse(username, password);
+                }
+            }
         }
 
         if (loginResult == 3) {
             client.announce(MaplePacketCreator.getAccountBanned(client.getTemporaryBanLength()));
-            client.announce(MaplePacketCreator.serverNotice(1, String.format("You have been banned for\r\n'%s'", client.getBanReason())));
+            client.sendPopup("You have been banned for \r\n'%s'", client.getBanReason());
         } else if (loginResult != 0) {
             client.announce(MaplePacketCreator.getLoginFailed(loginResult));
         } else {
@@ -83,5 +102,33 @@ public class AccountLoginEvent extends PacketEvent {
             client.announce(MaplePacketCreator.getAuthSuccess(client));
         }
         return null;
+    }
+
+    private int createAccount(String name, String password) {
+        MapleClient client = getClient();
+        String cPassword = BCrypt.with(BCrypt.Version.VERSION_2Y).hashToString(12, password.toCharArray());
+        try (Connection con = Server.getConnection()) {
+            try (PreparedStatement ps = con.prepareCall("select count(*) from accounts where name = ?")) {
+                ps.setString(1, name);
+                try (ResultSet rs = ps.executeQuery()) {
+                    if (rs.next()) {
+                        if (rs.getInt(1) > 0) {
+                            client.sendPopup("Username is already taken.");
+                            return 6;
+                        }
+                    }
+                }
+            }
+            try (PreparedStatement ps = con.prepareStatement("insert into accounts (name, password) values (?, ?)")) {
+                ps.setString(1, name);
+                ps.setString(2, cPassword);
+                ps.executeUpdate();
+                return 0;
+            }
+        } catch (SQLException e) {
+            client.sendPopup("Failed to create an account.");
+            LOGGER.error("Failed to created account", e);
+            return 6;
+        }
     }
 }

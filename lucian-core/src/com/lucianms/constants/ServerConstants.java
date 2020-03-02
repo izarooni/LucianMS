@@ -16,7 +16,12 @@ public class ServerConstants {
     /**
      * should the SPW be enabled upon character selection
      */
-    public static final boolean ENABLE_PIC = true;
+    public static final boolean ENABLE_PIC = false;
+
+    /**
+     * Should the server automatically register accounts if they don't exist
+     */
+    public static final boolean ENABLE_AUTO_REGISTER = true;
     //endregion
 
     //region Game Settings
@@ -28,7 +33,7 @@ public class ServerConstants {
 
     public static final int HOME_MAP = 910000000;
     public static final int CURRENCY = 4260002;
-    public static final int BOMB_MOB= 9300166;
+    public static final int BOMB_MOB = 9300166;
 
     public static final boolean NX_FROM_MONSTERS = false;
     public static final double LEVEL_TO_NX_MULTIPLIER = 1.2;

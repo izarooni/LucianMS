@@ -34,7 +34,6 @@ public class Tester {
 //        initConfig();
 //        TaskExecutor.initPoolSize(1);
 //        Server.createServer();
-        System.out.println(Randomizer.rand(1, 1));
     }
 
     private static void initConfig() {

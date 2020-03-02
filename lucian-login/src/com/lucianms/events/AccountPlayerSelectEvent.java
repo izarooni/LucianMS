@@ -17,6 +17,8 @@ public class AccountPlayerSelectEvent extends UserTransferEvent {
     public void processInput(MaplePacketReader reader) {
         playerID = reader.readInt();
         macs = reader.readMapleAsciiString();
+
+        checkLoginAvailability();
     }
 
     @Override

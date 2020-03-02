@@ -1,5 +1,6 @@
 package com.lucianms.events;
 
+import com.lucianms.client.MapleClient;
 import com.lucianms.nio.SendOpcode;
 import com.lucianms.nio.receive.MaplePacketReader;
 import com.lucianms.nio.send.MaplePacketWriter;
@@ -35,9 +36,11 @@ public class WorldChannelSelectEvent extends PacketEvent {
 
     @Override
     public Object onPacket() {
-        getClient().setWorld(world);
-        getClient().setChannel(channel + 1);
-        getClient().sendCharList(world);
+        MapleClient client = getClient();
+
+        client.setWorld(world);
+        client.setChannel(channel + 1);
+        client.announce(MaplePacketCreator.getCharList(client, world));
         return null;
     }
 }

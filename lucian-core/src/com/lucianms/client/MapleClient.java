@@ -42,6 +42,7 @@ import io.netty.channel.Channel;
 import io.netty.util.AttributeKey;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.slf4j.helpers.MessageFormatter;
 import tools.*;
 
 import java.sql.*;
@@ -78,6 +79,7 @@ public class MapleClient implements Disposable {
     private String pic;
     private String lastKnownIP;
     private String accountName;
+    private String password;
     private String createUsername;
 
     private Timestamp temporaryBanLength;
@@ -127,8 +129,8 @@ public class MapleClient implements Disposable {
         this.player = player;
     }
 
-    public void sendCharList(int server) {
-        announce(MaplePacketCreator.getCharList(this, server));
+    public void sendPopup(String message, Object... objects) {
+        announce(MaplePacketCreator.serverNotice(1, MessageFormatter.arrayFormat(message, objects).getMessage()));
     }
 
     /**
@@ -398,7 +400,6 @@ public class MapleClient implements Disposable {
         this.loginState = loginState;
     }
 
-
     public void updateLoginState(LoginState loginState) {
         setLoginState(loginState);
         try (Connection con = Server.getConnection()) {
@@ -412,7 +413,6 @@ public class MapleClient implements Disposable {
             LOGGER.error("Failed to update login state for account {}", this, e);
         }
     }
-
 
     public LoginState checkLoginState() {
         if (getAccID() == 0) return LoginState.LogOut;
@@ -576,6 +576,20 @@ public class MapleClient implements Disposable {
         this.accountName = accountName;
     }
 
+    /**
+     * The last attempted password during the account login process
+     */
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    /**
+     * The username used in the character creation screen
+     */
     public String getCreateUsername() {
         return createUsername;
     }
