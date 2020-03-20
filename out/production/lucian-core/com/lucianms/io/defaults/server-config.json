@@ -1,0 +1,11 @@
+{
+  "WhitelistEnabled": "true",
+  "UseNewEncryption": "true",
+
+  "ServerHost": "0.0.0.0",
+  "ChannelServer": "REMOTE_ADDRESS",
+  "LoginBasePort": "8484",
+  "ChannelBasePort": "7575",
+
+  "EmergencyExcludes": ""
+}

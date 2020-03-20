@@ -42,13 +42,13 @@ function action(mode, type, selection) {
         else
             status--;
         if (status == 0) {
-            cm.sendSimple("Do you want to enter the arcade?\r\n#b#L1#Yes.#k#l\r\n\#r#L2#Im not ready yet.#k#l");
+            cm.sendSimple("Do you want to enter the Casino?\r\n#b#L1#Yes#k#l\r\n\#r#L2#No#k#l");
         } else if (status == 1) {
             if (selection == 1) {
-                cm.warp(978, 0);
+                cm.warp(810, 0);
                 cm.dispose();
             } else if (selection == 2) {
-                cm.sendOk("Come back when you are ready.");
+                cm.sendOk("#eOkay, bye. Maybe another time?.#k");
                 cm.dispose();
             }
         }

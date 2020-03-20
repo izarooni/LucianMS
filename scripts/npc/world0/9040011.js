@@ -34,7 +34,7 @@ function action(m, t, s) {
     }
     else if (s == 1) {
         cm.sendOk("Frequently Asked Questions:\r\n"
-        + "\r\n#eWhat are the rates for Chirithy?#n\r\nEXP: 500x // Mesos: 250x // Drop: 3x\r\n\r\n#eWhat is the server's currency?#n\r\n#i4260002#\r\n\r\n#eHow do I make an MSI?#n\r\nIn order to make a MSI, you will need to speak to Chirithy which is located in the Free Market. As well, you will need to acquire 32k in all stats and fulfill specific conditions depending on what MSI option you select");
+        + "\r\n#eWhat are the rates for Chirithy?#n\r\nEXP: 15x // Mesos: 3x // Drop: 2x\r\n\r\n#eWhat is the server's currency?#n\r\n#i4260002#\r\n\r\n#eHow do I make an MSI?#n\r\nIn order to make a MSI, you will need to speak to Chirithy which is located in the Free Market. As well, you will need to acquire 32k in all stats and fulfill specific conditions depending on what MSI option you select");
         cm.dispose();
     } else if (s == 2) {
         cm.openNpc(9000037, "f_daily_login");
@@ -47,11 +47,11 @@ function action(m, t, s) {
         cm.dispose();
     } else if (s == 5) {
         cm.sendOk("#r[Notice]: This staff list may not always be up to date.\r\n"
-        + "\r\n\t\t\t\t\t\t\t\t#r#eOwners :#n#k\r\n\t\t\t\t\t\t\tFeinT UTC+2"
-        + "\r\n\t\t\t\t\t\t\t\t#b#eDevelopers :#n#k\r\n\t\t\t\t\t\t\tizarooni\r\n\t\t\t\t\t\t\t69/Jeemie \r\n\t\t\t\t\t\t\t Kerrigan \r\n\t\t\t\t\t\t\t yeehaw\r\n"
-        + "\r\n\t\t\t\t\t\t\t\t#k#eAdministrators :#n#k\r\n\t\t\t\t\t\t\tRai\r\n\t\t\t\t\t\t\t\r\n"
-        + "\r\n\t\t\t\t\t\t\t\t#d#eGame Masters#e :#n#k\r\n\t\t\t\t\t\t\tDesco\r\n\t\t\t\t\t\t\tBrazzers\r\n\t\t\t\t\t\t\tImp\r\n\t\t\t\t\t\t\t\r\n"
-        + "\r\n\t\t\t\t\t\t\t\t#g#eGFX :#n#k\r\n\t\t\t\t\t\t\tnoona");
+        + "\r\n\t\t\t\t\t\t\t\t#r#eOwners :#n#k\r\n\t\t\t\t\t\t\tFeinT UTC+2\r\n\t\t\t\t\t\t\t\r\n"
+        + "\r\n\t\t\t\t\t\t\t\t#b#eDevelopers :#n#k\r\n\t\t\t\t\t\t\t\t\tJeemie \r\n\t\t\t\t\t\t\t\t\tKerrigan\r\n\t\t\t\t\t\t\t\r\n"
+        + "\r\n\t\t\t\t\t\t\t\t#k#eAdministrators :#n#k\r\n\t\t\t\t\t\t\t\t\t\t\tRai\r\n\t\t\t\t\t\t\t\r\n"
+        + "\r\n\t\t\t\t\t\t\t\t#d#eGame Masters#e :#n#k\r\n\t\t\t\t\t\t\t\t\t\tLinnie\r\n\t\t\t\t\t\t\t\t\t\tLucifer\r\n\t\t\t\t\t\t\t\t\t\tDead\r\n\t\t\t\t\t\t\t\t\t\tTay\r\n\t\t\t\t\t\t\t\r\n"
+        + "\r\n\t\t\t\t\t\t\t\t#g#eGFX :#n#k\r\n\t\t\t\t#rCurrently Open Position");
         cm.dispose();
     } else if (s == 6) {
         cm.sendOk("#eTo donate, go to our Website #b(www.maplechirithy.com)#k, Click on the donate tab, Enter your username and the amount of money you would like to donate, then you will be redirected to PayPal to complete your donation,  ");

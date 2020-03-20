@@ -599,9 +599,12 @@ public class MapleInventoryManipulator {
                 }
                 return map.disappearingItemDrop(player, player, target, dropPos);
 
-            } else {
+            }
+            /*else {
                 map.spawnItemDrop(player, player, target, dropPos, true, true);
             }
+
+             */
             if (quantity < source.getQuantity() && !ItemConstants.isRechargable(itemId)) {
 
                 target.setQuantity(quantity);

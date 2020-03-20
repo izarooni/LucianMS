@@ -67,11 +67,11 @@ public class DonorCommands extends CommandExecutor {
                 switch(ordinal){
                     case 0:
                         player.setChatType(ChatType.NORMAL);
-                        player.dropMessage("Chat type set to '" + ChatType.NORMAL.name().toLowerCase() + "'");
+                        player.dropMessage("Chat type is set to '" + ChatType.NORMAL.name().toLowerCase() + "'");
                         break;
                     case 1:
                         player.setChatType(ChatType.YELLOW);
-                        player.dropMessage("Chat type set to '" + ChatType.YELLOW.name().toLowerCase() + "'");
+                        player.dropMessage("Chat type is set to '" + ChatType.YELLOW.name().toLowerCase() + "'");
                         break;
                     default:
                         player.sendMessage("Please choose 0 for normal, 1 for yellow");

@@ -6,7 +6,12 @@
 
     <groupId>com.lucianms</groupId>
     <artifactId>LucianMS</artifactId>
+    <packaging>pom</packaging>
     <version>1.0-Development</version>
+    <modules>
+        <module>classes/lucian-core-mod</module>
+        <module>lucian-core</module>
+    </modules>
 
     <properties>
         <maven.compiler.source>10</maven.compiler.source>

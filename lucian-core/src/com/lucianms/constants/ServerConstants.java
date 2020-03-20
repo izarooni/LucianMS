@@ -23,7 +23,7 @@ public class ServerConstants {
     //endregion
 
     //region Game Settings
-    public static final boolean SAVE_CHARACTER_SKILLS = false;
+    public static final boolean SAVE_CHARACTER_SKILLS = true;
     public static final boolean USE_FAMILY_SYSTEM = false;
     public static final boolean USE_PARTY_SEARCH = false;
 

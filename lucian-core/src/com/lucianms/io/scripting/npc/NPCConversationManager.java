@@ -493,6 +493,21 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
         MapleInventoryManipulator.addFromDrop(getPlayer().getClient(), modified, true);
     }
 
+    public void createItemWithStatsAndUpgradeSlots(int eq, short stat, short atk, int slots){
+
+        Equip modified = MapleItemInformationProvider.getInstance().getEquipById(eq);
+
+        modified.setStr(stat);
+        modified.setDex(stat);
+        modified.setInt(stat);
+        modified.setLuk(stat);
+        modified.setWatk(atk);
+        modified.setMatk(atk);
+        modified.setUpgradeSlots(slots);
+
+        MapleInventoryManipulator.addFromDrop(getPlayer().getClient(), modified, true);
+    }
+
     public void createItemWithExpiration(int etc, long expiration){
         Item modified = new Item(etc, (byte) 0, (short)1);
 
