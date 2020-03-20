@@ -5,8 +5,6 @@
 .vs
 *.code-workspace
 /out
-/lucian-channel/target
-/lucian-core/target
 
 #Server files
 /wz
