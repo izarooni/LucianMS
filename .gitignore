@@ -4,6 +4,9 @@
 /target
 .vs
 *.code-workspace
+/out
+/lucian-channel/target
+/lucian-core/target
 
 #Server files
 /wz
@@ -11,3 +14,6 @@
 /bin
 *.log
 *.sql
+*.txt
+*.properties
+*.json

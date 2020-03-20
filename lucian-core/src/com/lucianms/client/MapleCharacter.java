@@ -1006,7 +1006,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Di
         }
         if (jobtype.isA(MapleJob.BEGINNER)) {
             MaxHP += 8;
-        } else if (jobtype.isA(MapleJob.SWORDSMAN) || jobtype.isA(MapleJob.DAWNWARRIOR1)) {
+        } else if (jobtype.isA(MapleJob.WARRIOR) || jobtype.isA(MapleJob.DAWNWARRIOR1)) {
             if (player.getSkillLevel(player.isCygnus() ? SkillFactory.getSkill(10000000) : SkillFactory.getSkill(1000001)) > 0) {
                 MaxHP += 20;
             } else {
@@ -1036,7 +1036,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Di
         }
         if (player.getJob().isA(MapleJob.BEGINNER) || player.getJob().isA(MapleJob.NOBLESSE) || player.getJob().isA(MapleJob.LEGEND)) {
             MaxMP += 6;
-        } else if (player.getJob().isA(MapleJob.SWORDSMAN) || player.getJob().isA(MapleJob.DAWNWARRIOR1) || player.getJob().isA(MapleJob.ARAN1)) {
+        } else if (player.getJob().isA(MapleJob.WARRIOR) || player.getJob().isA(MapleJob.DAWNWARRIOR1) || player.getJob().isA(MapleJob.ARAN1)) {
             MaxMP += 2;
         } else if (player.getJob().isA(MapleJob.MAGICIAN) || player.getJob().isA(MapleJob.BLAZEWIZARD1)) {
             if (player.getSkillLevel(player.isCygnus() ? SkillFactory.getSkill(12000000) : SkillFactory.getSkill(2000001)) > 0) {
@@ -3141,9 +3141,9 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Di
         if (job == MapleJob.BEGINNER || job == MapleJob.NOBLESSE || job == MapleJob.LEGEND || job == MapleJob.EVAN) {
             localMaxHp = Randomizer.rand(12, 16);
             localMaxMp = Randomizer.rand(10, 12);
-        } else if (job.isA(MapleJob.SWORDSMAN) || job.isA(MapleJob.DAWNWARRIOR1)) {
+        } else if (job.isA(MapleJob.WARRIOR) || job.isA(MapleJob.DAWNWARRIOR1)) {
             if (isCygnus()) improvingMaxHP = SkillFactory.getSkill(DawnWarrior.MAX_HP_ENHANCEMENT);
-            else improvingMaxHP = SkillFactory.getSkill(Swordsman.IMPROVED_MAXHP_INCREASE);
+            else improvingMaxHP = SkillFactory.getSkill(Warrior.IMPROVED_MAXHP_INCREASE);
             improvingMaxHPLevel = getSkillLevel(improvingMaxHP);
 
             if (job.isA(MapleJob.CRUSADER)) improvingMaxMP = SkillFactory.getSkill(WhiteKnight.IMPROVING_MP_RECOVERY);
@@ -3175,7 +3175,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Di
         }
         //endregion
 
-        if (improvingMaxHPLevel > 0 && (job.isA(MapleJob.SWORDSMAN) || job.isA(MapleJob.PIRATE) || job.isA(MapleJob.DAWNWARRIOR1))) {
+        if (improvingMaxHPLevel > 0 && (job.isA(MapleJob.WARRIOR) || job.isA(MapleJob.PIRATE) || job.isA(MapleJob.DAWNWARRIOR1))) {
             localMaxHp += improvingMaxHP.getEffect(improvingMaxHPLevel).getX();
         }
         if (improvingMaxMPLevel > 0 && (job.isA(MapleJob.MAGICIAN) || job.isA(MapleJob.CRUSADER) || job.isA(MapleJob.BLAZEWIZARD1))) {
