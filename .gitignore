@@ -4,10 +4,13 @@
 /target
 .vs
 *.code-workspace
+/out
 
 #Server files
 /wz
 /backups
 /bin
 *.log
+*.json
+*.txt
 *.sql

@@ -24,7 +24,7 @@ package com.lucianms.client;
 public enum MapleJob {
     BEGINNER(0),
 
-    SWORDSMAN(100),
+    WARRIOR(100),
     FIGHTER(110), CRUSADER(111), HERO(112),
     PAGE(120), WHITEKNIGHT(121), PALADIN(122),
     SPEARMAN(130), DRAGONKNIGHT(131), DARKKNIGHT(132),
@@ -86,7 +86,7 @@ public enum MapleJob {
     public static MapleJob getBy5ByteEncoding(int encoded) {
         switch (encoded) {
             case 2:
-                return SWORDSMAN;
+                return WARRIOR;
             case 4:
                 return MAGICIAN;
             case 8:
@@ -114,7 +114,7 @@ public enum MapleJob {
 
     public boolean isBeginner(MapleJob beginners) {
         return MAGICIAN == beginners
-                || SWORDSMAN == beginners
+                || WARRIOR == beginners
                 || THIEF == beginners
                 || PIRATE == beginners
                 || BOWMAN == beginners
