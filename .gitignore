@@ -4,6 +4,7 @@
 /target
 .vs
 *.code-workspace
+/out
 
 #Server files
 /wz
@@ -11,3 +12,6 @@
 /bin
 *.log
 *.sql
+*.txt
+*.properties
+*.json
