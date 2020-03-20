@@ -749,23 +749,26 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Di
                                 continue;
                             }
                             // auto-fix for maxing skills
-                            byte skillLevel = (byte) Math.max(rs.getByte("skilllevel"), s.getMaxLevel());
-                            byte maxLevel = (byte) Math.max(rs.getInt("masterlevel"), s.getMaxLevel());
+                            //byte skillLevel = (byte) Math.max(rs.getByte("skilllevel"), s.getMaxLevel());
+                            byte skillLevel = rs.getByte("skilllevel");
+                            //byte maxLevel = (byte) Math.max(rs.getInt("masterlevel"), s.getMaxLevel());
+                            byte maxLevel = rs.getByte("masterlevel");
 
-                            skillLevel = (byte) Math.max(skillLevel, s.getMaxLevel());
+                            //skillLevel = (byte) Math.max(skillLevel, s.getMaxLevel());
                             SkillEntry sentry = new SkillEntry(skillLevel, maxLevel, rs.getLong("expiration"));
                             ret.skills.put(s.getId(), sentry);
                         }
                     }
                 }
-            } else {
+            }
+/*            else {
                 for (Skill skill : SkillFactory.getSkills().values()) {
                     if (ret.isGM() || (skill.getJob() / 100 != 9
                             && !GameConstants.isPqSkill(skill.getId()))) {
                         ret.skills.put(skill.getId(), new SkillEntry(skill.getMaxLevel(), skill.getMaxLevel(), -1));
                     }
                 }
-            }
+            }*/
             try (PreparedStatement ps = con.prepareStatement("select * from cooldowns where player_id = ?")) {
                 ps.setInt(1, ret.getId());
                 try (ResultSet rs = ps.executeQuery()) {
@@ -3793,7 +3796,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Di
 
             ItemFactory.INVENTORY.saveItems(itemsWithType, id, con);
 
-            if (ServerConstants.SAVE_CHARACTER_SKILLS) {
+/*            if (ServerConstants.SAVE_CHARACTER_SKILLS) {
                 try (PreparedStatement ps = con.prepareStatement("INSERT INTO skills VALUES (?, ?, ?, ?, ?)")) {
                     ps.setInt(2, id);
                     ps.setLong(5, -1);
@@ -3809,7 +3812,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Di
                     }
                     ps.executeBatch();
                 }
-            }
+            }*/
             con.setAutoCommit(true);
             return true;
         } catch (Throwable t) {

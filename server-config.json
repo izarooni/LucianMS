@@ -1,9 +1,9 @@
 {
-    "WhitelistEnabled": "true",
+    "WhitelistEnabled": "false",
     "UseNewEncryption": "true",
 
-    "ServerHost": "51.159.30.2",
-    "ChannelServer": "51.159.30.2",
+    "ServerHost": "108.61.37.98",
+    "ChannelServer": "108.61.37.98",
     "LoginBasePort": "8484",
     "ChannelBasePort": "7575",
 

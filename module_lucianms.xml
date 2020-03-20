@@ -19,30 +19,30 @@
     <path refid="${module.jdk.classpath.lucianms}"/>
     <path refid="library.maven:_at.favre.lib:bcrypt:0.8.0.classpath"/>
     <path refid="library.maven:_at.favre.lib:bytes:1.1.0.classpath"/>
-    <path refid="library.maven:_com.google.protobuf:protobuf-java:3.6.1.classpath"/>
     <path refid="library.maven:_com.zaxxer:hikaricp:3.2.0.classpath"/>
+    <path refid="library.maven:_org.slf4j:slf4j-api:1.7.25.classpath"/>
     <path refid="library.maven:_commons-io:commons-io:2.6.classpath"/>
     <path refid="library.maven:_io.netty:netty-all:4.1.30.final.classpath"/>
     <path refid="library.maven:_mysql:mysql-connector-java:8.0.14.classpath"/>
-    <path refid="library.maven:_org.apache.logging.log4j:log4j-api:2.11.2.classpath"/>
+    <path refid="library.maven:_com.google.protobuf:protobuf-java:3.6.1.classpath"/>
     <path refid="library.maven:_org.apache.logging.log4j:log4j-core:2.11.2.classpath"/>
+    <path refid="library.maven:_org.apache.logging.log4j:log4j-api:2.11.2.classpath"/>
     <path refid="library.maven:_org.apache.logging.log4j:log4j-slf4j-impl:2.11.2.classpath"/>
-    <path refid="library.maven:_org.slf4j:slf4j-api:1.7.25.classpath"/>
   </path>
   
   <path id="lucianms.runtime.production.module.classpath">
     <pathelement location="${lucianms.output.dir}"/>
     <path refid="library.maven:_at.favre.lib:bcrypt:0.8.0.classpath"/>
     <path refid="library.maven:_at.favre.lib:bytes:1.1.0.classpath"/>
-    <path refid="library.maven:_com.google.protobuf:protobuf-java:3.6.1.classpath"/>
     <path refid="library.maven:_com.zaxxer:hikaricp:3.2.0.classpath"/>
+    <path refid="library.maven:_org.slf4j:slf4j-api:1.7.25.classpath"/>
     <path refid="library.maven:_commons-io:commons-io:2.6.classpath"/>
     <path refid="library.maven:_io.netty:netty-all:4.1.30.final.classpath"/>
     <path refid="library.maven:_mysql:mysql-connector-java:8.0.14.classpath"/>
-    <path refid="library.maven:_org.apache.logging.log4j:log4j-api:2.11.2.classpath"/>
+    <path refid="library.maven:_com.google.protobuf:protobuf-java:3.6.1.classpath"/>
     <path refid="library.maven:_org.apache.logging.log4j:log4j-core:2.11.2.classpath"/>
+    <path refid="library.maven:_org.apache.logging.log4j:log4j-api:2.11.2.classpath"/>
     <path refid="library.maven:_org.apache.logging.log4j:log4j-slf4j-impl:2.11.2.classpath"/>
-    <path refid="library.maven:_org.slf4j:slf4j-api:1.7.25.classpath"/>
   </path>
   
   <path id="lucianms.module.classpath">
@@ -50,15 +50,15 @@
     <pathelement location="${lucianms.output.dir}"/>
     <path refid="library.maven:_at.favre.lib:bcrypt:0.8.0.classpath"/>
     <path refid="library.maven:_at.favre.lib:bytes:1.1.0.classpath"/>
-    <path refid="library.maven:_com.google.protobuf:protobuf-java:3.6.1.classpath"/>
     <path refid="library.maven:_com.zaxxer:hikaricp:3.2.0.classpath"/>
+    <path refid="library.maven:_org.slf4j:slf4j-api:1.7.25.classpath"/>
     <path refid="library.maven:_commons-io:commons-io:2.6.classpath"/>
     <path refid="library.maven:_io.netty:netty-all:4.1.30.final.classpath"/>
     <path refid="library.maven:_mysql:mysql-connector-java:8.0.14.classpath"/>
-    <path refid="library.maven:_org.apache.logging.log4j:log4j-api:2.11.2.classpath"/>
+    <path refid="library.maven:_com.google.protobuf:protobuf-java:3.6.1.classpath"/>
     <path refid="library.maven:_org.apache.logging.log4j:log4j-core:2.11.2.classpath"/>
+    <path refid="library.maven:_org.apache.logging.log4j:log4j-api:2.11.2.classpath"/>
     <path refid="library.maven:_org.apache.logging.log4j:log4j-slf4j-impl:2.11.2.classpath"/>
-    <path refid="library.maven:_org.slf4j:slf4j-api:1.7.25.classpath"/>
   </path>
   
   <path id="lucianms.runtime.module.classpath">
@@ -66,15 +66,15 @@
     <pathelement location="${lucianms.output.dir}"/>
     <path refid="library.maven:_at.favre.lib:bcrypt:0.8.0.classpath"/>
     <path refid="library.maven:_at.favre.lib:bytes:1.1.0.classpath"/>
-    <path refid="library.maven:_com.google.protobuf:protobuf-java:3.6.1.classpath"/>
     <path refid="library.maven:_com.zaxxer:hikaricp:3.2.0.classpath"/>
+    <path refid="library.maven:_org.slf4j:slf4j-api:1.7.25.classpath"/>
     <path refid="library.maven:_commons-io:commons-io:2.6.classpath"/>
     <path refid="library.maven:_io.netty:netty-all:4.1.30.final.classpath"/>
     <path refid="library.maven:_mysql:mysql-connector-java:8.0.14.classpath"/>
-    <path refid="library.maven:_org.apache.logging.log4j:log4j-api:2.11.2.classpath"/>
+    <path refid="library.maven:_com.google.protobuf:protobuf-java:3.6.1.classpath"/>
     <path refid="library.maven:_org.apache.logging.log4j:log4j-core:2.11.2.classpath"/>
+    <path refid="library.maven:_org.apache.logging.log4j:log4j-api:2.11.2.classpath"/>
     <path refid="library.maven:_org.apache.logging.log4j:log4j-slf4j-impl:2.11.2.classpath"/>
-    <path refid="library.maven:_org.slf4j:slf4j-api:1.7.25.classpath"/>
   </path>
   
   
@@ -86,10 +86,32 @@
     <patternset refid="excluded.from.module.lucianms"/>
   </patternset>
   
+  <path id="lucianms.module.sourcepath">
+    <dirset dir="${module.lucianms.basedir}">
+      <include name="lucian-channel/src"/>
+    </dirset>
+  </path>
+  
   
   <target name="compile.module.lucianms" depends="compile.module.lucianms.production,compile.module.lucianms.tests" description="Compile module LucianMS"/>
   
-  <target name="compile.module.lucianms.production" depends="register.custom.compilers" description="Compile module LucianMS; production classes"/>
+  <target name="compile.module.lucianms.production" depends="register.custom.compilers" description="Compile module LucianMS; production classes">
+    <mkdir dir="${lucianms.output.dir}"/>
+    <javac2 destdir="${lucianms.output.dir}" debug="${compiler.debug}" nowarn="${compiler.generate.no.warnings}" memorymaximumsize="${compiler.max.memory}" fork="true" executable="${module.jdk.bin.lucianms}/javac">
+      <compilerarg line="${compiler.args.lucianms}"/>
+      <bootclasspath refid="lucianms.module.bootclasspath"/>
+      <classpath refid="lucianms.module.production.classpath"/>
+      <src refid="lucianms.module.sourcepath"/>
+      <patternset refid="excluded.from.compilation.lucianms"/>
+    </javac2>
+    
+    <copy todir="${lucianms.output.dir}">
+      <fileset dir="${module.lucianms.basedir}/lucian-channel/src">
+        <patternset refid="compiler.resources"/>
+        <type type="file"/>
+      </fileset>
+    </copy>
+  </target>
   
   <target name="compile.module.lucianms.tests" depends="register.custom.compilers,compile.module.lucianms.production" description="compile module LucianMS; test classes" unless="skip.tests"/>
   
