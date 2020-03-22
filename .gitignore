@@ -15,3 +15,7 @@
 *.txt
 *.properties
 *.json
+server-config.json
+hikari-db.properties
+*.properties
+*.json
