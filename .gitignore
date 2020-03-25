@@ -17,4 +17,4 @@
 *.json
 server-config.json
 hikari-db.properties
-
+commandlog.txt
