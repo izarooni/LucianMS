@@ -93,7 +93,7 @@ public class MapleMonster extends AbstractLoadedMapleLife {
     private void initWithStats(MapleMonsterStats stats) {
         setStance(5);
         this.stats = stats;
-        hp = stats.getHp() * 25;
+        hp = stats.getHp();
         mp = stats.getMp();
     }
 

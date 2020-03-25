@@ -330,3 +330,312 @@
 [Sat Mar 21 10:59:27 EDT 2020] ~ chief: hide 
 [Sat Mar 21 11:01:48 EDT 2020] ~ chief: hide 
 [Sat Mar 21 11:03:03 EDT 2020] ~ chief: hide 
+[Tue Mar 24 20:32:36 EDT 2020] ~ Jeemie: hide 
+[Tue Mar 24 20:33:41 EDT 2020] ~ Jeemie: admincmds 
+[Tue Mar 24 20:33:57 EDT 2020] ~ Jeemie: hgmcmds 
+[Tue Mar 24 20:34:17 EDT 2020] ~ Jeemie: debug 
+[Tue Mar 24 20:38:06 EDT 2020] ~ Jeemie: debug 
+[Tue Mar 24 20:38:28 EDT 2020] ~ Jeemie: debug 
+[Tue Mar 24 20:38:33 EDT 2020] ~ Jeemie: debug 
+[Tue Mar 24 20:39:57 EDT 2020] ~ Jeemie: debug 
+[Tue Mar 24 20:41:22 EDT 2020] ~ Jeemie: map 810
+[Tue Mar 24 20:41:28 EDT 2020] ~ Jeemie: warp 810
+[Tue Mar 24 20:41:36 EDT 2020] ~ Jeemie: search map beginner
+[Tue Mar 24 20:41:47 EDT 2020] ~ Jeemie: search map chirithy
+[Tue Mar 24 20:44:33 EDT 2020] ~ Jeemie: warp 0
+[Tue Mar 24 20:45:06 EDT 2020] ~ Jeemie: search map train1
+[Tue Mar 24 20:45:07 EDT 2020] ~ Jeemie: search map train
+[Tue Mar 24 20:45:41 EDT 2020] ~ Jeemie: debug 
+[Tue Mar 24 20:46:01 EDT 2020] ~ Jeemie: search map beginner
+[Tue Mar 24 20:46:42 EDT 2020] ~ Jeemie: warp 9000000
+[Tue Mar 24 20:46:44 EDT 2020] ~ Jeemie: warp 90000000
+[Tue Mar 24 20:46:57 EDT 2020] ~ Jeemie: debug 
+[Tue Mar 24 20:47:01 EDT 2020] ~ Jeemie: whereami 
+[Tue Mar 24 20:48:12 EDT 2020] ~ Jeemie: debug 
+[Tue Mar 24 20:48:17 EDT 2020] ~ Jeemie: debug 
+[Tue Mar 24 21:01:24 EDT 2020] ~ Jeemie: warp 90000000
+[Tue Mar 24 21:01:41 EDT 2020] ~ Jeemie: debug 
+[Tue Mar 24 21:01:45 EDT 2020] ~ Jeemie: god 
+[Tue Mar 24 21:01:49 EDT 2020] ~ Jeemie: godmode 
+[Tue Mar 24 21:02:13 EDT 2020] ~ Jeemie: warp 90000000
+[Tue Mar 24 21:02:31 EDT 2020] ~ Jeemie: job 910
+[Tue Mar 24 21:02:42 EDT 2020] ~ Jeemie: sp 5
+[Tue Mar 24 21:03:44 EDT 2020] ~ Jeemie: debug 
+[Tue Mar 24 21:06:12 EDT 2020] ~ Jeemie: debug 
+[Tue Mar 24 21:06:17 EDT 2020] ~ Jeemie: warp 90000009
+[Tue Mar 24 21:10:56 EDT 2020] ~ Jeemie: search job
+[Tue Mar 24 21:35:05 EDT 2020] ~ Jeemie: job 910
+[Tue Mar 24 21:35:12 EDT 2020] ~ Jeemie: sp 4
+[Tue Mar 24 21:35:21 EDT 2020] ~ Jeemie: sp 2
+[Tue Mar 24 21:36:42 EDT 2020] ~ Jeemie: whereami 
+[Tue Mar 24 21:43:50 EDT 2020] ~ Jeemie: job 900
+[Tue Mar 24 21:44:07 EDT 2020] ~ Jeemie: job 2000
+[Tue Mar 24 21:45:37 EDT 2020] ~ Jeemie: warp 90000003
+[Tue Mar 24 21:49:01 EDT 2020] ~ Jeemie: search item keyblade
+[Tue Mar 24 21:49:09 EDT 2020] ~ Jeemie: item 1442999
+[Tue Mar 24 21:49:20 EDT 2020] ~ Jeemie: item 1442297
+[Tue Mar 24 21:49:29 EDT 2020] ~ Jeemie: item 1442295
+[Tue Mar 24 21:49:35 EDT 2020] ~ Jeemie: item 1442296
+[Tue Mar 24 21:52:37 EDT 2020] ~ Jeemie: warp 90000003
+[Tue Mar 24 21:52:53 EDT 2020] ~ Jeemie: whereami 
+[Tue Mar 24 21:57:43 EDT 2020] ~ Jeemie: spawn 100100
+[Tue Mar 24 21:59:04 EDT 2020] ~ Jeemie: job 2100
+[Tue Mar 24 21:59:09 EDT 2020] ~ Jeemie: spawn 100100
+[Tue Mar 24 21:59:13 EDT 2020] ~ Jeemie: spawn 100100
+[Tue Mar 24 21:59:15 EDT 2020] ~ Jeemie: spawn 100100
+[Tue Mar 24 22:00:34 EDT 2020] ~ Jeemie: level 1
+[Tue Mar 24 22:00:36 EDT 2020] ~ Jeemie: job 0
+[Tue Mar 24 22:00:41 EDT 2020] ~ Jeemie: spawn 100100
+[Tue Mar 24 22:03:02 EDT 2020] ~ Jeemie: job 2112
+[Tue Mar 24 22:03:11 EDT 2020] ~ Jeemie: spawn 100100
+[Tue Mar 24 22:06:16 EDT 2020] ~ hehehehe: spawn 100100
+[Tue Mar 24 22:06:19 EDT 2020] ~ hehehehe: hide 
+[Tue Mar 24 22:07:14 EDT 2020] ~ Jeemie: job 132
+[Tue Mar 24 22:07:20 EDT 2020] ~ Jeemie: spawn 100100
+[Tue Mar 24 22:10:39 EDT 2020] ~ Jeemie: onlnie 
+[Tue Mar 24 22:10:40 EDT 2020] ~ Jeemie: online 
+[Tue Mar 24 22:15:49 EDT 2020] ~ Jeemie: level 1
+[Tue Mar 24 22:15:51 EDT 2020] ~ Jeemie: spawn 100100
+[Tue Mar 24 22:16:25 EDT 2020] ~ kerrigan: job 100
+[Tue Mar 24 22:16:57 EDT 2020] ~ kerrigan: hide 
+[Tue Mar 24 22:19:02 EDT 2020] ~ kerrigan: search 
+[Tue Mar 24 22:19:07 EDT 2020] ~ kerrigan: searchitem wizet invincible
+[Tue Mar 24 22:19:12 EDT 2020] ~ kerrigan: search item wizet
+[Tue Mar 24 22:19:16 EDT 2020] ~ kerrigan: item 1002140
+[Tue Mar 24 22:20:56 EDT 2020] ~ kerrigan: job 411
+[Tue Mar 24 22:20:58 EDT 2020] ~ kerrigan: hide 
+[Tue Mar 24 22:22:51 EDT 2020] ~ kerrigan: hide 
+[Tue Mar 24 22:22:56 EDT 2020] ~ kerrigan: level 20
+[Tue Mar 24 22:23:05 EDT 2020] ~ kerrigan: level 10
+[Tue Mar 24 22:23:12 EDT 2020] ~ kerrigan: job 100
+[Tue Mar 24 22:23:16 EDT 2020] ~ kerrigan: level 20
+[Tue Mar 24 22:23:19 EDT 2020] ~ kerrigan: level 9
+[Tue Mar 24 22:23:22 EDT 2020] ~ kerrigan: level 2
+[Tue Mar 24 22:23:38 EDT 2020] ~ Jeemie: level 15
+[Tue Mar 24 22:23:48 EDT 2020] ~ Jeemie: online 
+[Tue Mar 24 22:23:53 EDT 2020] ~ Jeemie: spawn 100100 10
+[Tue Mar 24 22:24:01 EDT 2020] ~ Jeemie: job 2100
+[Tue Mar 24 22:24:11 EDT 2020] ~ Jeemie: spawn 100101 10
+[Tue Mar 24 22:24:23 EDT 2020] ~ Jeemie: spawn 100102 10
+[Tue Mar 24 22:24:25 EDT 2020] ~ Jeemie: spawn 100103 10
+[Tue Mar 24 22:24:29 EDT 2020] ~ Jeemie: spawn 100101 10
+[Tue Mar 24 22:24:48 EDT 2020] ~ Jeemie: cleardrops 
+[Tue Mar 24 22:24:49 EDT 2020] ~ kerrigan: hide 
+[Tue Mar 24 22:24:50 EDT 2020] ~ Jeemie: level 10
+[Tue Mar 24 22:24:53 EDT 2020] ~ Jeemie: spawn 100101 10
+[Tue Mar 24 22:24:55 EDT 2020] ~ kerrigan: level 11
+[Tue Mar 24 22:25:10 EDT 2020] ~ Jeemie: level 9
+[Tue Mar 24 22:25:14 EDT 2020] ~ Jeemie: level 9
+[Tue Mar 24 22:25:16 EDT 2020] ~ Jeemie: spawn 100101 10
+[Tue Mar 24 22:26:54 EDT 2020] ~ kerrigan: level 2
+[Tue Mar 24 22:29:17 EDT 2020] ~ kerrigan: job 0
+[Tue Mar 24 22:31:25 EDT 2020] ~ kerrigan: level 5
+[Tue Mar 24 22:44:06 EDT 2020] ~ Jeemie: level 4
+[Tue Mar 24 22:44:10 EDT 2020] ~ Jeemie: spawn 100100
+[Tue Mar 24 22:46:54 EDT 2020] ~ Jeemie: spawn 100100
+[Tue Mar 24 22:48:57 EDT 2020] ~ Jeemie: spawn 100100
+[Tue Mar 24 22:48:59 EDT 2020] ~ Jeemie: spawn 100100
+[Tue Mar 24 23:06:50 EDT 2020] ~ kerrigan: hide 
+[Tue Mar 24 23:06:51 EDT 2020] ~ kerrigan: level 1
+[Tue Mar 24 23:06:53 EDT 2020] ~ kerrigan: level 2
+[Tue Mar 24 23:12:15 EDT 2020] ~ Jeemie: level 15
+[Tue Mar 24 23:12:37 EDT 2020] ~ Jeemie: search map zakum
+[Tue Mar 24 23:12:47 EDT 2020] ~ Jeemie: search map last mission
+[Tue Mar 24 23:12:49 EDT 2020] ~ Jeemie: search map last
+[Tue Mar 24 23:13:09 EDT 2020] ~ Jeemie: map 63
+[Tue Mar 24 23:13:13 EDT 2020] ~ Jeemie: warp 63
+[Tue Mar 24 23:13:30 EDT 2020] ~ Jeemie: search map final
+[Tue Mar 24 23:13:39 EDT 2020] ~ Jeemie: warp 280030100
+[Tue Mar 24 23:13:54 EDT 2020] ~ Jeemie: warp 28003010
+[Tue Mar 24 23:13:58 EDT 2020] ~ Jeemie: warp 28030100
+[Tue Mar 24 23:14:29 EDT 2020] ~ Jeemie: warp 280300000
+[Tue Mar 24 23:14:30 EDT 2020] ~ Jeemie: warp 2803000000
+[Tue Mar 24 23:14:37 EDT 2020] ~ Jeemie: warp 28030000
+[Tue Mar 24 23:14:42 EDT 2020] ~ Jeemie: warp 280030000
+[Tue Mar 24 23:15:01 EDT 2020] ~ Jeemie: warp 280030001
+[Tue Mar 24 23:15:03 EDT 2020] ~ Jeemie: warp 280030100
+[Tue Mar 24 23:15:06 EDT 2020] ~ Jeemie: warp 280030000
+[Tue Mar 24 23:15:15 EDT 2020] ~ Jeemie: search item eye of fire
+[Tue Mar 24 23:15:18 EDT 2020] ~ Jeemie: item 4001017
+[Tue Mar 24 23:15:33 EDT 2020] ~ Jeemie: debug 
+[Tue Mar 24 23:16:09 EDT 2020] ~ Jeemie: cleardrops 
+[Tue Mar 24 23:18:13 EDT 2020] ~ Jeemie: search item timeless
+[Tue Mar 24 23:18:33 EDT 2020] ~ Jeemie: item 1122012
+[Tue Mar 24 23:19:45 EDT 2020] ~ Jeemie: level 140
+[Tue Mar 24 23:21:34 EDT 2020] ~ Jeemie: item 4001017
+[Tue Mar 24 23:21:43 EDT 2020] ~ Jeemie: item 4001017 100
+[Tue Mar 24 23:21:49 EDT 2020] ~ Jeemie: warp 2800030000
+[Tue Mar 24 23:21:50 EDT 2020] ~ Jeemie: warp 280003000
+[Tue Mar 24 23:21:53 EDT 2020] ~ Jeemie: warp 280030000
+[Tue Mar 24 23:57:27 EDT 2020] ~ Jeemie: search item timeless pendant
+[Tue Mar 24 23:57:32 EDT 2020] ~ Jeemie: item 1122012 5
+[Tue Mar 24 23:57:36 EDT 2020] ~ Jeemie: item 1122012 5
+[Tue Mar 24 23:57:37 EDT 2020] ~ Jeemie: item 1122012 5
+[Tue Mar 24 23:57:37 EDT 2020] ~ Jeemie: item 1122012 5
+[Tue Mar 24 23:59:43 EDT 2020] ~ Jeemie: msi 1
+[Tue Mar 24 23:59:49 EDT 2020] ~ Jeemie: msi 122012 1
+[Tue Mar 24 23:59:58 EDT 2020] ~ Jeemie: msi 1222012 1
+[Wed Mar 25 00:00:10 EDT 2020] ~ Jeemie: search item timeless pendant
+[Wed Mar 25 00:00:15 EDT 2020] ~ Jeemie: msi 1122012 1
+[Wed Mar 25 00:00:52 EDT 2020] ~ Jeemie: search item zakum helm
+[Wed Mar 25 00:00:57 EDT 2020] ~ Jeemie: item 1002357
+[Wed Mar 25 00:01:15 EDT 2020] ~ Jeemie: msi 1002357 1
+[Wed Mar 25 00:01:29 EDT 2020] ~ Jeemie: warp 280030000
+[Wed Mar 25 00:01:50 EDT 2020] ~ Jeemie: debug 
+[Wed Mar 25 00:04:43 EDT 2020] ~ Yuki: online 
+[Wed Mar 25 00:05:28 EDT 2020] ~ Yuki: maxskills 
+[Wed Mar 25 00:10:16 EDT 2020] ~ Yuki: level 11
+[Wed Mar 25 00:10:23 EDT 2020] ~ Yuki: warp 405
+[Wed Mar 25 00:10:31 EDT 2020] ~ Yuki: warp 406
+[Wed Mar 25 00:10:33 EDT 2020] ~ Yuki: warp 404
+[Wed Mar 25 00:10:42 EDT 2020] ~ Yuki: warp 405
+[Wed Mar 25 00:10:46 EDT 2020] ~ Yuki: warp 401
+[Wed Mar 25 00:10:48 EDT 2020] ~ Yuki: warp 402
+[Wed Mar 25 00:10:49 EDT 2020] ~ Yuki: warp 403
+[Wed Mar 25 00:10:52 EDT 2020] ~ Yuki: warp 400
+[Wed Mar 25 00:11:28 EDT 2020] ~ Yuki: online 
+[Wed Mar 25 00:11:36 EDT 2020] ~ Yuki: warp 405
+[Wed Mar 25 00:11:56 EDT 2020] ~ Yuki: online 
+[Wed Mar 25 00:12:00 EDT 2020] ~ Yuki: warp 400
+[Wed Mar 25 00:12:09 EDT 2020] ~ Yuki: warp 100000
+[Wed Mar 25 00:12:11 EDT 2020] ~ Yuki: warp 100000000
+[Wed Mar 25 00:25:10 EDT 2020] ~ Yuki: online 
+[Wed Mar 25 00:31:24 EDT 2020] ~ Jeemie: search item zakum helm
+[Wed Mar 25 00:31:31 EDT 2020] ~ Jeemie: msi 1002357 1
+[Wed Mar 25 00:31:51 EDT 2020] ~ Jeemie: warp 2800300000
+[Wed Mar 25 00:31:56 EDT 2020] ~ Jeemie: warp 280030000
+[Wed Mar 25 00:32:15 EDT 2020] ~ Jeemie: debug 
+[Wed Mar 25 00:32:24 EDT 2020] ~ Yuki: hair 31097
+[Wed Mar 25 00:33:19 EDT 2020] ~ Yuki: search item red bruma
+[Wed Mar 25 00:33:23 EDT 2020] ~ Yuki: drop 1052032
+[Wed Mar 25 00:37:30 EDT 2020] ~ Jeemie: warp 280030000
+[Wed Mar 25 00:37:45 EDT 2020] ~ Jeemie: search item zakum helmet
+[Wed Mar 25 00:37:49 EDT 2020] ~ Jeemie: msi 1002357 1
+[Wed Mar 25 00:38:07 EDT 2020] ~ Jeemie: debug 
+[Wed Mar 25 00:38:16 EDT 2020] ~ Yuki: search item red brume
+[Wed Mar 25 00:38:19 EDT 2020] ~ Yuki: search item red bruma
+[Wed Mar 25 00:38:23 EDT 2020] ~ Yuki: drop 1052032
+[Wed Mar 25 00:42:44 EDT 2020] ~ Yuki: save 
+[Wed Mar 25 00:42:58 EDT 2020] ~ Yuki: warp 10000
+[Wed Mar 25 00:43:11 EDT 2020] ~ Yuki: saveall 
+[Wed Mar 25 00:43:53 EDT 2020] ~ Yuki: spy yuki
+[Wed Mar 25 00:46:20 EDT 2020] ~ Jeemie: saveall 
+[Wed Mar 25 00:46:29 EDT 2020] ~ Jeemie: warp 280030000
+[Wed Mar 25 00:46:35 EDT 2020] ~ Jeemie: debug 
+[Wed Mar 25 00:46:42 EDT 2020] ~ Jeemie: online 
+[Wed Mar 25 00:46:47 EDT 2020] ~ Jeemie: online 
+[Wed Mar 25 00:47:44 EDT 2020] ~ Jeemie: save 
+[Wed Mar 25 00:47:48 EDT 2020] ~ Jeemie: saveall 
+[Wed Mar 25 00:59:08 EDT 2020] ~ Jeemie: online 
+[Wed Mar 25 00:59:16 EDT 2020] ~ Jeemie: warp yuki
+[Wed Mar 25 01:01:03 EDT 2020] ~ Jeemie: warp 280030000
+[Wed Mar 25 01:01:22 EDT 2020] ~ Jeemie: debug 
+[Wed Mar 25 01:06:14 EDT 2020] ~ Jeemie: warp 28030000
+[Wed Mar 25 01:06:17 EDT 2020] ~ Jeemie: warp 280030000
+[Wed Mar 25 01:06:40 EDT 2020] ~ Jeemie: debug 
+[Wed Mar 25 01:24:27 EDT 2020] ~ Jeemie: warp 280030000
+[Wed Mar 25 01:24:50 EDT 2020] ~ Jeemie: denig 
+[Wed Mar 25 01:24:52 EDT 2020] ~ Jeemie: debug 
+[Wed Mar 25 01:25:09 EDT 2020] ~ Jeemie: search item zakum helm
+[Wed Mar 25 01:25:22 EDT 2020] ~ Jeemie: makemsi 1002357
+[Wed Mar 25 01:25:44 EDT 2020] ~ Jeemie: admincmds 
+[Wed Mar 25 01:25:54 EDT 2020] ~ Jeemie: hgmcmds 
+[Wed Mar 25 01:26:07 EDT 2020] ~ Jeemie: gmcmds 
+[Wed Mar 25 01:26:31 EDT 2020] ~ Jeemie: search item zakum helm
+[Wed Mar 25 01:26:35 EDT 2020] ~ Jeemie: msi 1002357 1
+[Wed Mar 25 01:36:41 EDT 2020] ~ Lucifer: online 
+[Wed Mar 25 01:36:51 EDT 2020] ~ Lucifer: warp jeemie
+[Wed Mar 25 01:41:03 EDT 2020] ~ Lucifer: warp Jeemie
+[Wed Mar 25 01:41:39 EDT 2020] ~ Jeemie: kill lallaa
+[Wed Mar 25 01:41:59 EDT 2020] ~ Jeemie: killed 
+[Wed Mar 25 01:42:14 EDT 2020] ~ Jeemie: fwarp 
+[Wed Mar 25 01:45:11 EDT 2020] ~ Lucifer: godmeup 32767
+[Wed Mar 25 01:45:34 EDT 2020] ~ Lucifer: search item glasses
+[Wed Mar 25 01:45:55 EDT 2020] ~ Lucifer: item 102207
+[Wed Mar 25 01:46:47 EDT 2020] ~ Lucifer: search item clear earrings
+[Wed Mar 25 01:47:02 EDT 2020] ~ Lucifer: search item transparent earrings
+[Wed Mar 25 01:47:13 EDT 2020] ~ Lucifer: item 1032024
+[Wed Mar 25 01:47:27 EDT 2020] ~ Lucifer: search item earrings
+[Wed Mar 25 01:47:38 EDT 2020] ~ Lucifer: item 1032262
+[Wed Mar 25 01:47:52 EDT 2020] ~ Lucifer: item 1802354
+[Wed Mar 25 01:48:12 EDT 2020] ~ Lucifer: item 1032254
+[Wed Mar 25 01:48:27 EDT 2020] ~ Lucifer: item 1032257
+[Wed Mar 25 01:48:58 EDT 2020] ~ Lucifer: item 1032163
+[Wed Mar 25 01:49:12 EDT 2020] ~ Lucifer: godmeup 32767
+[Wed Mar 25 01:51:01 EDT 2020] ~ Lucifer: search item transparent hat
+[Wed Mar 25 01:51:11 EDT 2020] ~ Lucifer: item 104109
+[Wed Mar 25 01:51:23 EDT 2020] ~ Lucifer: item 1002186
+[Wed Mar 25 01:51:35 EDT 2020] ~ Lucifer: search item wizet hat
+[Wed Mar 25 01:51:44 EDT 2020] ~ Lucifer: item 1002140
+[Wed Mar 25 01:52:06 EDT 2020] ~ Lucifer: search item fallen angel wings
+[Wed Mar 25 01:52:14 EDT 2020] ~ Lucifer: item 1102063
+[Wed Mar 25 01:58:06 EDT 2020] ~ Lucifer: godmeup 32767
+[Wed Mar 25 01:59:13 EDT 2020] ~ Lucifer: search item chirithy coin
+[Wed Mar 25 01:59:19 EDT 2020] ~ Lucifer: search item chirithy coins
+[Wed Mar 25 02:10:03 EDT 2020] ~ Jeemie: online 
+[Wed Mar 25 02:10:46 EDT 2020] ~ Jeemie: msi 1002357 1
+[Wed Mar 25 02:10:59 EDT 2020] ~ Jeemie: saveall 
+[Wed Mar 25 02:11:10 EDT 2020] ~ Lucifer: job 910
+[Wed Mar 25 02:11:46 EDT 2020] ~ Lucifer: godmeup 32767
+[Wed Mar 25 02:12:10 EDT 2020] ~ Lucifer: maxskills 
+[Wed Mar 25 02:13:20 EDT 2020] ~ Lucifer: maxstats 
+[Wed Mar 25 02:13:28 EDT 2020] ~ Lucifer: godmeup 32767
+[Wed Mar 25 02:13:35 EDT 2020] ~ Lucifer: godmeup 32767
+[Wed Mar 25 02:13:44 EDT 2020] ~ Lucifer: godmeup 32767
+[Wed Mar 25 02:14:13 EDT 2020] ~ Lucifer: godmeup 32767
+[Wed Mar 25 02:14:21 EDT 2020] ~ Lucifer: godmeup 32767
+[Wed Mar 25 02:14:24 EDT 2020] ~ Jeemie: level 200
+[Wed Mar 25 02:14:31 EDT 2020] ~ Lucifer: godmeup 32767
+[Wed Mar 25 02:14:47 EDT 2020] ~ Lucifer: godmeup 32767
+[Wed Mar 25 02:15:09 EDT 2020] ~ Lucifer: godmeup 32767
+[Wed Mar 25 02:15:50 EDT 2020] ~ Lucifer: godmeup 32767
+[Wed Mar 25 02:16:04 EDT 2020] ~ Jeemie: saveall 
+[Wed Mar 25 02:16:07 EDT 2020] ~ Jeemie: online 
+[Wed Mar 25 02:16:25 EDT 2020] ~ Lucifer: godmeup 32767
+[Wed Mar 25 02:16:33 EDT 2020] ~ Lucifer: godmeup 32767
+[Wed Mar 25 02:16:42 EDT 2020] ~ Lucifer: godmeup 32767
+[Wed Mar 25 02:17:23 EDT 2020] ~ Lucifer: godmeup 32767
+[Wed Mar 25 02:18:30 EDT 2020] ~ Jeemie: level 140
+[Wed Mar 25 02:18:43 EDT 2020] ~ Jeemie: warp 280030000
+[Wed Mar 25 02:19:03 EDT 2020] ~ Jeemie: debug 
+[Wed Mar 25 02:19:45 EDT 2020] ~ Lucifer: godmeup 32767
+[Wed Mar 25 02:22:06 EDT 2020] ~ Jeemie: online 
+[Wed Mar 25 02:23:25 EDT 2020] ~ Jeemie: level 200
+[Wed Mar 25 02:23:40 EDT 2020] ~ Jeemie: level 140
+[Wed Mar 25 02:27:32 EDT 2020] ~ Jeemie: search item zakum heam
+[Wed Mar 25 02:27:35 EDT 2020] ~ Jeemie: search item zakum helm
+[Wed Mar 25 02:27:41 EDT 2020] ~ Jeemie: msi 1002357
+[Wed Mar 25 02:27:44 EDT 2020] ~ Jeemie: msi 1002357 1
+[Wed Mar 25 02:30:51 EDT 2020] ~ Jeemie: search item transparent ha
+[Wed Mar 25 02:30:55 EDT 2020] ~ Jeemie: item 1002186
+[Wed Mar 25 02:30:58 EDT 2020] ~ Jeemie: item 1002186 -1
+[Wed Mar 25 02:31:39 EDT 2020] ~ Jeemie: search item blue snail shell
+[Wed Mar 25 02:31:47 EDT 2020] ~ Jeemie: item 4000000
+[Wed Mar 25 02:31:49 EDT 2020] ~ Jeemie: item 4000000 10
+[Wed Mar 25 02:32:50 EDT 2020] ~ Jeemie: warp 2800300000
+[Wed Mar 25 02:32:52 EDT 2020] ~ Jeemie: warp 280030000
+[Wed Mar 25 02:33:09 EDT 2020] ~ Jeemie: job 910
+[Wed Mar 25 02:33:19 EDT 2020] ~ Jeemie: sp 1
+[Wed Mar 25 02:33:28 EDT 2020] ~ Jeemie: sp 1
+[Wed Mar 25 02:33:35 EDT 2020] ~ Jeemie: sp 1
+[Wed Mar 25 02:34:23 EDT 2020] ~ Lucifer: godmeup 32767
+[Wed Mar 25 02:35:02 EDT 2020] ~ Lucifer: search item pendant
+[Wed Mar 25 02:35:18 EDT 2020] ~ Lucifer: item 3994792
+[Wed Mar 25 02:35:39 EDT 2020] ~ Lucifer: item 4001250
+[Wed Mar 25 02:36:04 EDT 2020] ~ Lucifer: seach item horntail pendant
+[Wed Mar 25 02:36:08 EDT 2020] ~ Jeemie: search map horntail
+[Wed Mar 25 02:36:13 EDT 2020] ~ Lucifer: seach item horntail
+[Wed Mar 25 02:36:20 EDT 2020] ~ Jeemie: warp 240060201
+[Wed Mar 25 02:36:24 EDT 2020] ~ Jeemie: warp 240060200
+[Wed Mar 25 02:36:35 EDT 2020] ~ Lucifer: item 3994397
+[Wed Mar 25 02:37:14 EDT 2020] ~ Lucifer: item 1122158
+[Wed Mar 25 02:37:35 EDT 2020] ~ Lucifer: search item clear pendant
+[Wed Mar 25 02:37:44 EDT 2020] ~ Lucifer: search item trans[arent pendant
+[Wed Mar 25 02:38:06 EDT 2020] ~ Lucifer: godmeup 32767
+[Wed Mar 25 02:39:05 EDT 2020] ~ Lucifer: search item promise ring
+[Wed Mar 25 02:39:16 EDT 2020] ~ Lucifer: item 3800165
+[Wed Mar 25 02:39:53 EDT 2020] ~ Lucifer: item 1112415
+[Wed Mar 25 02:40:26 EDT 2020] ~ Lucifer: item 1112416
+[Wed Mar 25 02:40:53 EDT 2020] ~ Lucifer: item 1112417
+[Wed Mar 25 02:41:11 EDT 2020] ~ Lucifer: search item maple shield
+[Wed Mar 25 02:41:25 EDT 2020] ~ Lucifer: item 1092030

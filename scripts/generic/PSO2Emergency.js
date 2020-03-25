@@ -46,12 +46,12 @@ var spawnPoints = map.getMonsterSpawnPoints();
 var spawned = 0;
 var timeout = 120;
 cancelTask = null;
-
+var beginnerMaps = [90000003, 90000007];
 if (player.getParty() != null && player.getParty().getMembers().size() > 2) {
     timeout = 60;
 }
 
-if (!map.isTown() && !spawnPoints.isEmpty()) {
+if (!map.isTown() && !spawnPoints.isEmpty() && !beginnerMaps.contains(player.getMapId())) {
     map.killAllMonsters();
     map.setRespawnEnabled(false);
     cancelTask = TaskExecutor.createTask(function() {

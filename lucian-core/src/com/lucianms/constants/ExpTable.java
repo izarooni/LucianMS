@@ -28,7 +28,7 @@ public final class ExpTable {
 
     public static int getExpNeededForLevel(int level) {
         // [0078D166]
-        if (level > 200) return 0x7FFFFFFF;
+        if (level > 250) return 0x7FFFFFFF;
         else if (level < 1) return 1;
         else return exp[level];
     }

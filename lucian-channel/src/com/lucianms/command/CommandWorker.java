@@ -83,12 +83,18 @@ public class CommandWorker {
                 }
                 spamTracker.record();
 
-                TaskExecutor.execute(() -> PLAYER_COMMANDs.executeCommand(client, command, args));
+                if(PLAYER_COMMANDs.getCommands().containsKey(command.getName().toLowerCase())) {
+                    TaskExecutor.execute(() -> PLAYER_COMMANDs.executeCommand(client, command, args));
+                } else {
+                    player.dropMessage(5, "Command does not exist.");
+                }
             }
             return true;
         } else if (h == '$'){
-            if(player.getClient().isDonor()){
+            if(player.getClient().isDonor() && DONOR_COMMANDS.getCommands().containsKey(command.getName().toLowerCase())){
                 TaskExecutor.execute(() -> DONOR_COMMANDS.executeCommand(client,command,args));
+            } else {
+                player.dropMessage(5, "Command does not exist or you are not a donor!");
             }
             return true;
         }

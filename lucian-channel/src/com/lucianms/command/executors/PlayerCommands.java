@@ -102,17 +102,17 @@ public class PlayerCommands extends CommandExecutor {
         addCommand("dex", this::SetStat, "Distribute Ability Points into DEX");
         addCommand("int", this::SetStat, "Distribute Ability Points into INT");
         addCommand("luk", this::SetStat, "Distribute Ability Points into LUK");
-        addCommand("maxstats", this::MaxStat, "Maxes all stats with remaining AP");
+        //addCommand("maxstats", this::MaxStat, "Maxes all stats with remaining AP");
 
         addCommand("checkme", this::CheckPlayer, "Check stats of your character");
-        addCommand("spy", this::CheckPlayer, "Check stats of another character");
+        //addCommand("spy", this::CheckPlayer, "Check stats of another character");
 
         addCommand("fixexp", this::FixExp, "Resets your EXP to 0");
         addCommand("quests", this::Quests, "View available and completed custom quests");
 //        addCommand("afk", this::SetAFK);
         addCommand("uptime", this::ServerUptime, "View how long the server has been online");
         addCommand("time", this::ServerTime, "View the server's current time");
-        addCommand("house", this::House, "Opens the housing management NPC");
+        //addCommand("house", this::House, "Opens the housing management NPC");
         addCommand("jobs", this::Jobs, "View a list of current custom and cover-up jobs");
         addCommand("chalktalk", this::ChalkTalk, "Display a chalkboard with a message above your character");
         addCommand("rebirth", this::Rebirth, "Rebirth your character");
@@ -124,7 +124,7 @@ public class PlayerCommands extends CommandExecutor {
         addCommand("tradeep", this::TradePoints, "Trade your Event Points with another player");
         addCommand("tradevp", this::TradePoints, "Trade your Vote Points with another player");
         addCommand("tradejq", this::TradePoints, "Trade your Jump Quest Points with another player");
-        addCommand("autorb", this::ToggleAutoRebirth, "Toggle the auto-rebirth ability");
+        //addCommand("autorb", this::ToggleAutoRebirth, "Toggle the auto-rebirth ability");
 
         addCommand("ping", this::Ping, "View your Round-Trip delay with the server");
         addCommand("emo", this::Emo, "Kills your character");
@@ -132,7 +132,7 @@ public class PlayerCommands extends CommandExecutor {
 
         addCommand("tag", this::Tag, "Tag nearby players");
         addCommand("bomb", this::Bomb, "Spawns a bomb on your character");
-        addCommand("chattype", this::DonorChat, "Changes your donor chat on and off");
+        //addCommand("chattype", this::DonorChat, "Changes your donor chat on and off");
 
         MAPS = new TreeMap<>();
         MAPS.put("amoria", 680000000);
@@ -451,7 +451,7 @@ public class PlayerCommands extends CommandExecutor {
     }
 
     private void Rebirth(MapleCharacter player, Command cmd, CommandArgs args) {
-        if (player.getLevel() >= player.getMaxLevel()) {
+        if (player.getLevel() >= 200) {
             player.doRebirth();
         } else {
             player.sendMessage("You must be at least level {} before you can rebirth", player.getMaxLevel());

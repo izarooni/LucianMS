@@ -3097,7 +3097,8 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Di
     }
 
     public boolean isBeginnerJob() {
-        return (getJob().getId() == 0 || getJob().getId() == 1000 || getJob().getId() == 2000) && getLevel() < 11;
+        //return (getJob().getId() == 0 || getJob().getId() == 1000 || getJob().getId() == 2000) && getLevel() < 11;
+        return false;
     }
 
     public boolean isGM() {
@@ -3806,7 +3807,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Di
                                 && !GameConstants.isPqSkill(skill.getId()))) {*/
                         if (FourthJob.FourthJobSkills.contains(skill.getId())) {
                             ps.setInt(1, skill.getId());
-                            ps.setInt(3, 1);
+                            ps.setInt(3, 0);
                             ps.setInt(4, skill.getMaxLevel());
                             ps.addBatch();
                         }
@@ -4878,9 +4879,12 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Di
                 continue;
             }
 
-            if ((itemName.contains("Reverse") && nEquip.getItemLevel() < 4) || itemName.contains("Timeless") && nEquip.getItemLevel() < 6) {
+            /*if ((itemName.contains("Reverse") && nEquip.getItemLevel() < 4) || itemName.contains("Timeless") && nEquip.getItemLevel() < 6) {
                 nEquip.gainItemExp(client, mobexp, itemName.contains("Timeless"));
             }
+
+             */
+            nEquip.gainItemExp(client, mobexp, true);
         }
     }
 
@@ -5126,11 +5130,11 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Di
             updateSingleStat(MapleStat.JOB, job.getId());
         }*/
 
-        level = 1;
+        level = 10;
 
         exp.set(0);
         updateSingleStat(MapleStat.EXP, 0);
-
+        updateSingleStat(MapleStat.LEVEL, 10);
         if (rebirths % 10 == 0) {
             sendMessage(6, "You have reached {} rebirths. You now have {} rebirth points", rebirths, rebirthPoints);
         }
