@@ -2,8 +2,8 @@
     "WhitelistEnabled": "false",
     "UseNewEncryption": "true",
 
-    "ServerHost": "108.61.37.98",
-    "ChannelServer": "108.61.37.98",
+    "ServerHost": "localhost",
+    "ChannelServer": "localhost",
     "LoginBasePort": "8484",
     "ChannelBasePort": "7575",
 
