@@ -3796,23 +3796,24 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Di
 
             ItemFactory.INVENTORY.saveItems(itemsWithType, id, con);
 
-/*            if (ServerConstants.SAVE_CHARACTER_SKILLS) {
+            if (ServerConstants.SAVE_CHARACTER_SKILLS) {
                 try (PreparedStatement ps = con.prepareStatement("INSERT INTO skills VALUES (?, ?, ?, ?, ?)")) {
                     ps.setInt(2, id);
                     ps.setLong(5, -1);
                     for (Skill skill : SkillFactory.getSkills().values()) {
-                        if (isGM() || (skill.getJob() / 100 != 9
+/*                        if (isGM() || (skill.getJob() / 100 != 9
                                 && !GameConstants.isHiddenSkills(skill.getId())
-                                && !GameConstants.isPqSkill(skill.getId()))) {
+                                && !GameConstants.isPqSkill(skill.getId()))) {*/
+                        if (FourthJob.FourthJobSkills.contains(skill.getId())) {
                             ps.setInt(1, skill.getId());
-                            ps.setInt(3, skill.getMaxLevel());
+                            ps.setInt(3, 1);
                             ps.setInt(4, skill.getMaxLevel());
                             ps.addBatch();
                         }
                     }
                     ps.executeBatch();
                 }
-            }*/
+            }
             con.setAutoCommit(true);
             return true;
         } catch (Throwable t) {
