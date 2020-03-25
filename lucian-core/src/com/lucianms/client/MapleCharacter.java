@@ -1343,8 +1343,9 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Di
         if (GameConstants.hasSPTable(newJob) || newJob.getId() % 10 == 2) {
             nGainSkillPoints = 2;
         }
-        gainSp(nGainSkillPoints);
-
+        //gainSp(nGainSkillPoints);
+        setRemainingSp(getRemainingSp() + nGainSkillPoints);
+        updateSingleStat(MapleStat.AVAILABLESP, getRemainingSp());
         if (newJob.getId() % 10 > 1) {
             gainAp(5);
         }
@@ -3097,8 +3098,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Di
     }
 
     public boolean isBeginnerJob() {
-        //return (getJob().getId() == 0 || getJob().getId() == 1000 || getJob().getId() == 2000) && getLevel() < 11;
-        return false;
+        return (getJob().getId() == 0 || getJob().getId() == 1000 || getJob().getId() == 2000) && getLevel() < 11;
     }
 
     public boolean isGM() {
@@ -3188,6 +3188,11 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Di
             sendMessage("Your AP has exceeded 32,767 and will not display properly in the stats window. Use @checkme to view your AP");
         }
         remainingAp += (5 * levels);
+        if(!isBeginnerJob()){
+            //gainSp(3);
+            setRemainingSp(getRemainingSp() + 3);
+            updateSingleStat(MapleStat.AVAILABLESP, getRemainingSp());
+        }
         setLevel(level + levels);
         setMaxHp(maxhp + (localMaxHp * levels));
         setMaxMp(maxmp + (localMaxMp * levels));

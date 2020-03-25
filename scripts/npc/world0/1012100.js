@@ -79,7 +79,7 @@ function action(mode, type, selection) {
     }
     if (actionx["1stJob"]){
         if (status == 0)
-            cm.sendNextPrev("It is an important and final choice. You will not be able to turn back.");
+            cm.sendYesNo("It is an important and final choice. You will not be able to turn back. Are you sure you want to become a bowman?");
         else if (status == 1){
             if (cm.canHold(1452051) && cm.canHold(2060000)){
                 if (cm.getJobId() == 0){

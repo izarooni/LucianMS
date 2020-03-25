@@ -639,3 +639,221 @@
 [Wed Mar 25 02:40:53 EDT 2020] ~ Lucifer: item 1112417
 [Wed Mar 25 02:41:11 EDT 2020] ~ Lucifer: search item maple shield
 [Wed Mar 25 02:41:25 EDT 2020] ~ Lucifer: item 1092030
+[Wed Mar 25 11:24:01 EDT 2020] ~ Jeemie: search item timeless pendant
+[Wed Mar 25 11:24:04 EDT 2020] ~ Jeemie: item 1122012
+[Wed Mar 25 11:24:21 EDT 2020] ~ Jeemie: search mob zakum
+[Wed Mar 25 11:24:27 EDT 2020] ~ Jeemie: spawn 9400911
+[Wed Mar 25 11:24:52 EDT 2020] ~ Jeemie: spawn 8800110
+[Wed Mar 25 11:25:00 EDT 2020] ~ Jeemie: spawn 8800148
+[Wed Mar 25 11:25:37 EDT 2020] ~ Jeemie: spawn 8800111
+[Wed Mar 25 11:25:44 EDT 2020] ~ Jeemie: search mob snail
+[Wed Mar 25 11:26:00 EDT 2020] ~ Jeemie: search mob pink bean
+[Wed Mar 25 11:26:13 EDT 2020] ~ Jeemie: spawn 8820000
+[Wed Mar 25 11:26:17 EDT 2020] ~ Jeemie: debug 
+[Wed Mar 25 11:26:27 EDT 2020] ~ Jeemie: warp 180000000
+[Wed Mar 25 11:26:32 EDT 2020] ~ Jeemie: spawn 8820001
+[Wed Mar 25 11:26:44 EDT 2020] ~ Jeemie: spawn 8820001
+[Wed Mar 25 11:26:47 EDT 2020] ~ Jeemie: spawn 8820001 2
+[Wed Mar 25 11:26:57 EDT 2020] ~ Jeemie: spawn 8820001 2
+[Wed Mar 25 11:27:03 EDT 2020] ~ Jeemie: spawn 8820001 2
+[Wed Mar 25 11:27:19 EDT 2020] ~ Jeemie: killall 
+[Wed Mar 25 11:27:24 EDT 2020] ~ Jeemie: search mob zakum
+[Wed Mar 25 11:27:30 EDT 2020] ~ Jeemie: spawn 9300689
+[Wed Mar 25 11:27:37 EDT 2020] ~ Jeemie: spawn 9101077
+[Wed Mar 25 11:27:43 EDT 2020] ~ Jeemie: spawn 9390301
+[Wed Mar 25 11:27:47 EDT 2020] ~ Jeemie: spwan 9010000
+[Wed Mar 25 11:27:51 EDT 2020] ~ Jeemie: spawn 9010000
+[Wed Mar 25 11:27:53 EDT 2020] ~ Jeemie: spawn 9010001
+[Wed Mar 25 11:27:54 EDT 2020] ~ Jeemie: spawn 9010002
+[Wed Mar 25 11:33:01 EDT 2020] ~ kerrigan: hide 
+[Wed Mar 25 11:33:07 EDT 2020] ~ kerrigan: job 0
+[Wed Mar 25 11:35:51 EDT 2020] ~ kerrigan: search map maple island
+[Wed Mar 25 11:35:57 EDT 2020] ~ kerrigan: search map maple road
+[Wed Mar 25 11:36:09 EDT 2020] ~ kerrigan: warp 690000000
+[Wed Mar 25 11:36:10 EDT 2020] ~ kerrigan: warp 69000000
+[Wed Mar 25 11:36:13 EDT 2020] ~ kerrigan: warp 6900000000
+[Wed Mar 25 11:36:18 EDT 2020] ~ kerrigan: map 6900000000
+[Wed Mar 25 11:36:29 EDT 2020] ~ kerrigan: warp 690000000
+[Wed Mar 25 11:36:33 EDT 2020] ~ kerrigan:  690000000
+[Wed Mar 25 11:37:03 EDT 2020] ~ kerrigan: hide 
+[Wed Mar 25 11:37:07 EDT 2020] ~ kerrigan: map 69000000
+[Wed Mar 25 11:37:12 EDT 2020] ~ kerrigan: warp 69000000
+[Wed Mar 25 11:37:18 EDT 2020] ~ kerrigan: warp 690000000
+[Wed Mar 25 11:37:21 EDT 2020] ~ kerrigan: warp 6900000
+[Wed Mar 25 11:37:29 EDT 2020] ~ kerrigan: warp 690000001
+[Wed Mar 25 11:37:32 EDT 2020] ~ kerrigan: warp 69000001
+[Wed Mar 25 11:37:39 EDT 2020] ~ kerrigan: warp 690000001
+[Wed Mar 25 11:37:40 EDT 2020] ~ kerrigan: warp 690000002
+[Wed Mar 25 11:37:44 EDT 2020] ~ kerrigan: warp 690000003
+[Wed Mar 25 11:37:45 EDT 2020] ~ kerrigan: warp 69000000
+[Wed Mar 25 11:37:48 EDT 2020] ~ kerrigan: warp 690000004
+[Wed Mar 25 11:50:34 EDT 2020] ~ kerrigan: hide 
+[Wed Mar 25 11:50:37 EDT 2020] ~ kerrigan: warp 69000000
+[Wed Mar 25 11:50:39 EDT 2020] ~ kerrigan: warp 690000000
+[Wed Mar 25 11:50:45 EDT 2020] ~ kerrigan: search map maple road
+[Wed Mar 25 11:50:54 EDT 2020] ~ kerrigan: warp 690000009
+[Wed Mar 25 11:51:06 EDT 2020] ~ kerrigan: search map henesys
+[Wed Mar 25 11:51:23 EDT 2020] ~ kerrigan: warp 690000025
+[Wed Mar 25 11:53:28 EDT 2020] ~ kerrigan: hide 
+[Wed Mar 25 11:53:31 EDT 2020] ~ kerrigan: warp 100000000
+[Wed Mar 25 11:53:37 EDT 2020] ~ kerrigan: warp 0
+[Wed Mar 25 11:54:36 EDT 2020] ~ kerrigan: warp 2
+[Wed Mar 25 11:59:25 EDT 2020] ~ kerrigan: hide 
+[Wed Mar 25 12:00:31 EDT 2020] ~ kerrigan: job 200
+[Wed Mar 25 12:00:45 EDT 2020] ~ kerrigan: level 10
+[Wed Mar 25 12:02:34 EDT 2020] ~ bicepsboy: reloadmap 
+[Wed Mar 25 12:08:21 EDT 2020] ~ bicepsboy: level 122
+[Wed Mar 25 12:08:38 EDT 2020] ~ bicepsboy: level 123
+[Wed Mar 25 12:08:41 EDT 2020] ~ bicepsboy: level 124
+[Wed Mar 25 12:08:42 EDT 2020] ~ bicepsboy: level 125
+[Wed Mar 25 12:08:43 EDT 2020] ~ bicepsboy: level 126
+[Wed Mar 25 12:08:44 EDT 2020] ~ bicepsboy: level 127
+[Wed Mar 25 12:08:46 EDT 2020] ~ bicepsboy: level 128
+[Wed Mar 25 12:09:02 EDT 2020] ~ bicepsboy: level 90000015
+[Wed Mar 25 12:09:06 EDT 2020] ~ bicepsboy: warp 90000015
+[Wed Mar 25 12:09:30 EDT 2020] ~ bicepsboy: warp 90000016
+[Wed Mar 25 12:09:34 EDT 2020] ~ bicepsboy: warp 90000015
+[Wed Mar 25 12:09:37 EDT 2020] ~ bicepsboy: reloadmap 
+[Wed Mar 25 12:09:50 EDT 2020] ~ bicepsboy: reloadmap 
+[Wed Mar 25 12:10:06 EDT 2020] ~ bicepsboy: warp 90000016
+[Wed Mar 25 12:10:15 EDT 2020] ~ bicepsboy: warp 90000016
+[Wed Mar 25 12:10:20 EDT 2020] ~ bicepsboy: reloadmap 
+[Wed Mar 25 12:26:07 EDT 2020] ~ kerrigan: hide 
+[Wed Mar 25 12:26:12 EDT 2020] ~ kerrigan: job 110
+[Wed Mar 25 12:28:24 EDT 2020] ~ kerrigan: level 30
+[Wed Mar 25 12:29:53 EDT 2020] ~ kerrigan: job 411
+[Wed Mar 25 12:30:04 EDT 2020] ~ kerrigan: maxskills 
+[Wed Mar 25 12:30:09 EDT 2020] ~ kerrigan: job 900
+[Wed Mar 25 12:31:04 EDT 2020] ~ kerrigan: search item gachapon
+[Wed Mar 25 12:31:11 EDT 2020] ~ kerrigan: item 5220000
+[Wed Mar 25 12:34:03 EDT 2020] ~ kerrigan: hide 
+[Wed Mar 25 13:08:33 EDT 2020] ~ kerrigan: hide 
+[Wed Mar 25 13:11:46 EDT 2020] ~ kerrigan: job 0
+[Wed Mar 25 13:13:45 EDT 2020] ~ kerrigan: job 0
+[Wed Mar 25 13:13:57 EDT 2020] ~ kerrigan: hide 
+[Wed Mar 25 13:13:58 EDT 2020] ~ kerrigan: debug 
+[Wed Mar 25 13:14:10 EDT 2020] ~ kerrigan: debug 
+[Wed Mar 25 13:19:00 EDT 2020] ~ kerrigan: debug 
+[Wed Mar 25 13:19:53 EDT 2020] ~ asdf: job 900
+[Wed Mar 25 13:19:59 EDT 2020] ~ asdf: hide 
+[Wed Mar 25 13:20:36 EDT 2020] ~ asdf: job 0
+[Wed Mar 25 13:20:39 EDT 2020] ~ asdf: level 10
+[Wed Mar 25 13:22:57 EDT 2020] ~ asdf: level 11
+[Wed Mar 25 13:23:13 EDT 2020] ~ asdf: hide 
+[Wed Mar 25 13:23:24 EDT 2020] ~ asdf: search item wizet invincible
+[Wed Mar 25 13:23:27 EDT 2020] ~ asdf: item 1003142
+[Wed Mar 25 13:28:09 EDT 2020] ~ dead: online 
+[Wed Mar 25 13:28:31 EDT 2020] ~ dead: spy asdf
+[Wed Mar 25 13:28:37 EDT 2020] ~ dead: cmds 
+[Wed Mar 25 13:28:39 EDT 2020] ~ dead: gmcmds 
+[Wed Mar 25 13:33:35 EDT 2020] ~ asdf: hide 
+[Wed Mar 25 13:34:03 EDT 2020] ~ asdf: search item wizet invincible
+[Wed Mar 25 13:34:06 EDT 2020] ~ asdf: item 1003142
+[Wed Mar 25 13:35:30 EDT 2020] ~ dead: online 
+[Wed Mar 25 13:35:41 EDT 2020] ~ dead: say hacking the mainframe ?
+[Wed Mar 25 13:37:46 EDT 2020] ~ asdf: hide 
+[Wed Mar 25 13:38:12 EDT 2020] ~ asdf: heal 
+[Wed Mar 25 13:41:51 EDT 2020] ~ Jeemie: level 11
+[Wed Mar 25 13:42:16 EDT 2020] ~ Jeemie: job 100
+[Wed Mar 25 13:42:21 EDT 2020] ~ Jeemie: sp 3
+[Wed Mar 25 13:44:34 EDT 2020] ~ asdf: hide 
+[Wed Mar 25 13:44:37 EDT 2020] ~ asdf: sp 3
+[Wed Mar 25 13:45:34 EDT 2020] ~ asdf: meso 010000000
+[Wed Mar 25 13:45:42 EDT 2020] ~ Jeemie: mesos 
+[Wed Mar 25 13:45:55 EDT 2020] ~ Jeemie: mesos 100
+[Wed Mar 25 13:47:17 EDT 2020] ~ asdf: mesos 1000
+[Wed Mar 25 13:47:31 EDT 2020] ~ asdf: debug 
+[Wed Mar 25 13:47:34 EDT 2020] ~ asdf: mesos 800
+[Wed Mar 25 13:56:26 EDT 2020] ~ asdf: hide 
+[Wed Mar 25 14:00:59 EDT 2020] ~ asdf: search item wizet invicible
+[Wed Mar 25 14:01:03 EDT 2020] ~ asdf: search item wizet invincible
+[Wed Mar 25 14:01:07 EDT 2020] ~ asdf: item 1003142
+[Wed Mar 25 14:01:31 EDT 2020] ~ asdf: level 40
+[Wed Mar 25 14:02:51 EDT 2020] ~ asdf: job 110
+[Wed Mar 25 14:05:49 EDT 2020] ~ asdf: hide 
+[Wed Mar 25 14:06:16 EDT 2020] ~ asdf: debug 
+[Wed Mar 25 14:08:25 EDT 2020] ~ asdf: debug 
+[Wed Mar 25 14:08:31 EDT 2020] ~ asdf: debug 
+[Wed Mar 25 14:08:44 EDT 2020] ~ asdf: search npc dalair
+[Wed Mar 25 14:09:26 EDT 2020] ~ asdf: debug 
+[Wed Mar 25 14:09:39 EDT 2020] ~ asdf: debug 
+[Wed Mar 25 14:09:58 EDT 2020] ~ asdf: debug 
+[Wed Mar 25 14:10:00 EDT 2020] ~ asdf: debug 
+[Wed Mar 25 14:10:27 EDT 2020] ~ asdf: debug 
+[Wed Mar 25 14:11:49 EDT 2020] ~ asdf: debug 
+[Wed Mar 25 14:14:56 EDT 2020] ~ asdf: job 900
+[Wed Mar 25 14:15:00 EDT 2020] ~ asdf: sp 3
+[Wed Mar 25 14:15:07 EDT 2020] ~ Jeemie: oshop 10055
+[Wed Mar 25 14:15:34 EDT 2020] ~ Jeemie: oshop 11000
+[Wed Mar 25 14:15:40 EDT 2020] ~ Jeemie: oshop 1337
+[Wed Mar 25 14:17:42 EDT 2020] ~ Jeemie: gmmap 
+[Wed Mar 25 14:17:48 EDT 2020] ~ asdf: hide 
+[Wed Mar 25 14:18:03 EDT 2020] ~ Jeemie: npc 10200
+[Wed Mar 25 14:18:20 EDT 2020] ~ Jeemie: npc 1012100
+[Wed Mar 25 14:18:27 EDT 2020] ~ Jeemie: job 0
+[Wed Mar 25 14:18:37 EDT 2020] ~ asdf: mesos 100000
+[Wed Mar 25 14:19:39 EDT 2020] ~ asdf: debug 
+[Wed Mar 25 14:20:03 EDT 2020] ~ Jeemie: job 0
+[Wed Mar 25 14:21:04 EDT 2020] ~ asdf: search item tree branch
+[Wed Mar 25 14:21:11 EDT 2020] ~ asdf: item 1300000 40
+[Wed Mar 25 14:21:24 EDT 2020] ~ asdf: item 4000003 40
+[Wed Mar 25 14:21:36 EDT 2020] ~ asdf: search item slime
+[Wed Mar 25 14:21:49 EDT 2020] ~ asdf: search item squishy liquid
+[Wed Mar 25 14:21:59 EDT 2020] ~ asdf: item 4000004 40
+[Wed Mar 25 14:22:03 EDT 2020] ~ asdf: level 12
+[Wed Mar 25 14:22:04 EDT 2020] ~ Jeemie: level 30
+[Wed Mar 25 14:22:19 EDT 2020] ~ Jeemie: item 4031012
+[Wed Mar 25 14:23:56 EDT 2020] ~ asdf: job 100
+[Wed Mar 25 14:24:12 EDT 2020] ~ Jeemie: search npc
+[Wed Mar 25 14:24:17 EDT 2020] ~ Jeemie: search npc 123
+[Wed Mar 25 14:24:24 EDT 2020] ~ Jeemie: search npc athena
+[Wed Mar 25 14:24:38 EDT 2020] ~ Jeemie: search npc warrior
+[Wed Mar 25 14:24:46 EDT 2020] ~ Jeemie: npc 1072004
+[Wed Mar 25 14:25:22 EDT 2020] ~ asdf: search item orange mushroom cap
+[Wed Mar 25 14:25:25 EDT 2020] ~ asdf: item 4000001 40
+[Wed Mar 25 14:25:35 EDT 2020] ~ asdf: search item mushroom spore
+[Wed Mar 25 14:25:39 EDT 2020] ~ asdf: item 4000011 10
+[Wed Mar 25 14:27:14 EDT 2020] ~ asdf: debug 
+[Wed Mar 25 14:27:22 EDT 2020] ~ asdf: level 25
+[Wed Mar 25 14:27:23 EDT 2020] ~ Jeemie: search npc dances with
+[Wed Mar 25 14:27:29 EDT 2020] ~ Jeemie: npc 1022108
+[Wed Mar 25 14:27:31 EDT 2020] ~ asdf: go perion
+[Wed Mar 25 14:30:17 EDT 2020] ~ bicepsboy: job 100
+[Wed Mar 25 14:30:21 EDT 2020] ~ bicepsboy: maxskills 
+[Wed Mar 25 14:33:27 EDT 2020] ~ asdf: job 110
+[Wed Mar 25 14:34:15 EDT 2020] ~ asdf: job 111
+[Wed Mar 25 14:34:59 EDT 2020] ~ asdf: job 112
+[Wed Mar 25 14:35:30 EDT 2020] ~ asdf: job 120
+[Wed Mar 25 14:36:16 EDT 2020] ~ asdf: job 121
+[Wed Mar 25 14:36:53 EDT 2020] ~ asdf: job 122
+[Wed Mar 25 14:37:32 EDT 2020] ~ asdf: job 130
+[Wed Mar 25 14:38:22 EDT 2020] ~ asdf: job 131
+[Wed Mar 25 14:38:57 EDT 2020] ~ asdf: job 132
+[Wed Mar 25 14:39:23 EDT 2020] ~ asdf: job 200
+[Wed Mar 25 14:40:02 EDT 2020] ~ asdf: job 210
+[Wed Mar 25 14:40:27 EDT 2020] ~ asdf: job 211
+[Wed Mar 25 14:40:47 EDT 2020] ~ asdf: job 212
+[Wed Mar 25 14:41:32 EDT 2020] ~ asdf: job 220
+[Wed Mar 25 14:41:56 EDT 2020] ~ asdf: job 221
+[Wed Mar 25 14:42:01 EDT 2020] ~ bicepsboy: job 910
+[Wed Mar 25 14:42:23 EDT 2020] ~ asdf: job 222
+[Wed Mar 25 14:42:52 EDT 2020] ~ asdf: job 230
+[Wed Mar 25 14:44:54 EDT 2020] ~ asdf: job 231
+[Wed Mar 25 14:45:27 EDT 2020] ~ asdf: job 232
+[Wed Mar 25 14:49:43 EDT 2020] ~ asdf: job 231
+[Wed Mar 25 14:49:57 EDT 2020] ~ asdf: search item the summoning rock
+[Wed Mar 25 14:50:01 EDT 2020] ~ asdf: item 4006001 100
+[Wed Mar 25 14:57:54 EDT 2020] ~ asdf: hide 
+[Wed Mar 25 14:58:46 EDT 2020] ~ asdf: debug 
+[Wed Mar 25 14:59:38 EDT 2020] ~ asdf: job 200
+[Wed Mar 25 14:59:42 EDT 2020] ~ asdf: level 11
+[Wed Mar 25 14:59:46 EDT 2020] ~ asdf: level 24
+[Wed Mar 25 14:59:52 EDT 2020] ~ asdf: level 25
+[Wed Mar 25 14:59:58 EDT 2020] ~ asdf: debug 
+[Wed Mar 25 15:00:07 EDT 2020] ~ asdf: job 231
+[Wed Mar 25 15:02:21 EDT 2020] ~ asdf: hide 
+[Wed Mar 25 16:53:43 EDT 2020] ~ asdf: hide 
+[Wed Mar 25 16:53:54 EDT 2020] ~ asdf: sp 100
+[Wed Mar 25 16:54:42 EDT 2020] ~ asdf: search item bathrobe for men
+[Wed Mar 25 16:54:48 EDT 2020] ~ asdf: item 1050100
+[Wed Mar 25 16:57:42 EDT 2020] ~ asdf: job 411

@@ -120,8 +120,8 @@ public class MapleStorage extends EnumMap<MapleInventoryType, Set<Item>> {
     public synchronized void sendStorage(MapleClient c, int npcID) {
         if (opened) return;
         opened = true;
-        //items.clear();
-        //values().forEach(l -> items.addAll(l));
+        items.clear();
+        values().forEach(l -> items.addAll(l));
         c.announce(MaplePacketCreator.getStorage(npcID, this));
     }
 
