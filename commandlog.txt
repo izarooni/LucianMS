@@ -297,3 +297,36 @@
 [Fri Dec 20 05:08:25 CET 2019] ~ kerrigan: saveall 
 [Fri Dec 20 05:08:35 CET 2019] ~ kerrigan: saveall 
 [Fri Mar 20 00:52:17 EDT 2020] ~ Jimbo: online 
+[Fri Mar 20 01:59:06 EDT 2020] ~ Skillwork: level 120
+[Fri Mar 20 02:00:13 EDT 2020] ~ Skillwork: level 1
+[Fri Mar 20 02:00:14 EDT 2020] ~ Skillwork: level 10
+[Fri Mar 20 02:00:57 EDT 2020] ~ Skillwork: level 100
+[Fri Mar 20 02:02:36 EDT 2020] ~ Jimbo: maxskills 
+[Fri Mar 20 02:03:00 EDT 2020] ~ Jimbo: level 11
+[Fri Mar 20 02:06:49 EDT 2020] ~ Jimbo: search item ain
+[Fri Mar 20 02:06:51 EDT 2020] ~ Jimbo: search item ains
+[Fri Mar 20 02:06:56 EDT 2020] ~ Jimbo: search item token
+[Fri Mar 20 02:07:27 EDT 2020] ~ Jimbo: search item Ains doll
+[Fri Mar 20 02:07:30 EDT 2020] ~ Jimbo: search item doll
+[Fri Mar 20 13:00:48 EDT 2020] ~ D: online 
+[Fri Mar 20 13:01:47 EDT 2020] ~ D: maxskills 
+[Fri Mar 20 13:02:06 EDT 2020] ~ D: job 412
+[Fri Mar 20 13:02:11 EDT 2020] ~ D: job 910
+[Fri Mar 20 13:02:22 EDT 2020] ~ D: setname dead
+[Fri Mar 20 13:03:24 EDT 2020] ~ dead: cleardrops 
+[Sat Mar 21 09:18:41 EDT 2020] ~ chief: hide 
+[Sat Mar 21 09:19:23 EDT 2020] ~ chief: gift 
+[Sat Mar 21 09:19:25 EDT 2020] ~ chief: gift 
+[Sat Mar 21 09:19:43 EDT 2020] ~ chief: gift ep chief 2000
+[Sat Mar 21 09:20:55 EDT 2020] ~ chief: job 
+[Sat Mar 21 09:20:59 EDT 2020] ~ chief: job 910 chief
+[Sat Mar 21 10:18:28 EDT 2020] ~ chief: level 
+[Sat Mar 21 10:18:38 EDT 2020] ~ chief: level 148 chief
+[Sat Mar 21 10:23:49 EDT 2020] ~ chief: hide 
+[Sat Mar 21 10:58:07 EDT 2020] ~ chie: hide 
+[Sat Mar 21 10:58:40 EDT 2020] ~ chie: item 3010435
+[Sat Mar 21 10:58:53 EDT 2020] ~ chie: setname 
+[Sat Mar 21 10:58:57 EDT 2020] ~ chie: setname chie chief
+[Sat Mar 21 10:59:27 EDT 2020] ~ chief: hide 
+[Sat Mar 21 11:01:48 EDT 2020] ~ chief: hide 
+[Sat Mar 21 11:03:03 EDT 2020] ~ chief: hide 

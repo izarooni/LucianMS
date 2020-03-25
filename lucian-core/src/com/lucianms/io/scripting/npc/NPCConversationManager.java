@@ -517,4 +517,8 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
 
 
     }
+
+    public void teachSkill(int skillid, byte level, byte master){
+        teachSkill(skillid, level, master, -1);
+    }
 }
