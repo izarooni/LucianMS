@@ -83,7 +83,7 @@ function action(mode, type, selection) {
         } else if (selection == 4) {
 
             let dialog = "BETA ONLY. FREE RING FOR YOU!!";
-            cm.createItemWithStats(1112400,1,1);
+            cm.createItemWithStatsAndUpgradeSlots(1112400,1,1,6);
             cm.sendOk(dialog);
             cm.dispose();
         }
@@ -170,7 +170,7 @@ function doUpgrade(selectedItem, tier) {
         selectedItem.setJump(selectedItem.getJump() + randNum(min, max));
     }
 
-    selectedItem.setUpgradeSlots(selectedItem.getUpgradeSlots - 1);
+    selectedItem.setUpgradeSlots(selectedItem.getUpgradeSlots() - 1);
     let mods = new java.util.ArrayList();
     mods.add(new ModifyInventory(3, selectedItem));
     mods.add(new ModifyInventory(0, selectedItem));
