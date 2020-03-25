@@ -197,7 +197,7 @@ public class MapleInventoryManipulator {
 
         MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
         MapleInventoryType type = ItemConstants.getInventoryType(item.getItemId());
-        if (ii.isPickupRestricted(item.getItemId()) && player.getItemQuantity(item.getItemId(), true) > 0) {
+        if (c.getPlayer().getGMLevel() == 0 && ii.isPickupRestricted(item.getItemId()) && player.getItemQuantity(item.getItemId(), true) > 0) {
             c.announce(MaplePacketCreator.getInventoryFull());
             c.announce(MaplePacketCreator.showItemUnavailable());
             return false;

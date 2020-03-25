@@ -52,6 +52,8 @@ public class GameMasterCommands extends CommandExecutor {
     public GameMasterCommands() {
         addCommand("gmcmds", this::CommandList, "");
         addCommand("fwarp", this::ForceWarp, "");
+        addCommand("hair", this::ChangeHair, "");
+        addCommand("eye", this::ChangeFace, "");
         addCommand("killed", this::Killed, "");
         addCommand("itemq", this::ItemQ, "");
         addCommand("stalker", this::Stalker, "");
@@ -517,6 +519,38 @@ public class GameMasterCommands extends CommandExecutor {
         }
     }
 
+    private void ChangeHair(MapleCharacter player, Command cmd, CommandArgs args) {
+        MapleWorld world = player.getClient().getWorldServer();
+
+        if (args.length() > 0) {
+            Integer hair = args.parseNumber(0, int.class);
+            String error = args.getFirstError();
+            if (error != null) {
+                player.dropMessage(5, error);
+                return;
+            }
+
+            player.setHair(hair);
+            player.updateSingleStat(MapleStat.HAIR, hair);
+            player.equipChanged(true);
+        }
+    }
+    private void ChangeFace(MapleCharacter player, Command cmd, CommandArgs args) {
+        MapleWorld world = player.getClient().getWorldServer();
+
+        if (args.length() > 0) {
+            Integer face = args.parseNumber(0, int.class);
+            String error = args.getFirstError();
+            if (error != null) {
+                player.dropMessage(5, error);
+                return;
+            }
+
+            player.setFace(face);
+            player.updateSingleStat(MapleStat.FACE, face);
+            player.equipChanged(true);
+        }
+    }
     private void Job(MapleCharacter player, Command cmd, CommandArgs args) {
         MapleWorld world = player.getClient().getWorldServer();
 
