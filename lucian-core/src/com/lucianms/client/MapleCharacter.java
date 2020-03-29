@@ -26,6 +26,7 @@ import com.lucianms.client.inventory.*;
 import com.lucianms.client.meta.Achievement;
 import com.lucianms.client.meta.ForcedStat;
 import com.lucianms.client.meta.Occupation;
+import com.lucianms.client.meta.Union;
 import com.lucianms.constants.ExpTable;
 import com.lucianms.constants.GameConstants;
 import com.lucianms.constants.ItemConstants;
@@ -252,6 +253,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Di
     private Occupation occupation;
     private ForcedStat forcedStat;
     private final SpamTracker spamTracker = new SpamTracker();
+    private Union union;
 
     // EVENTS
     private byte team;
@@ -537,6 +539,8 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Di
                     }
                     ret.msiCreations = rs.getInt("msi_creations");
                     ret.partyQuestPoints = rs.getInt("party_quest_points");
+                    ret.union = new Union(rs.getString("union"));
+                    ret.union.setRank(rs.getInt("union_rank"));
                 }
                 if (ret.guildid > 0) {
                     ret.mgc = new MapleGuildCharacter(ret);
@@ -1960,6 +1964,13 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Di
                 equip = (int) Math.max(Integer.MAX_VALUE, gain * (spiritPendantModifier / 10));
             }
         }
+
+        if (getParty() != null) {
+            if (getParty().hasUnion("Kirin") && getParty().getPlayers().size() > 1) {
+                gain += (long) (getParty().unionBonus("Kirin") * 0.02 * gain);
+            }
+        }
+
         long totalExpGain = gain + equip + party;
         int localLevel = level;
         long newExp = exp.get() + totalExpGain;
@@ -2664,6 +2675,15 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Di
     public MapleParty getParty() {
         if (getPartyID() == 0) return null;
         return getClient().getWorldServer().getParty(getPartyID());
+    }
+
+    public Union getUnion() {
+        return union;
+    }
+
+    public boolean setUnion(Union union) {
+        this.union = union;
+        return true;
     }
 
     public int getPartyID() {
@@ -3474,7 +3494,18 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Di
             localdex += getDex() * mwarr / 100;
             localint_ += getInt() * mwarr / 100;
             localluk += getLuk() * mwarr / 100;
+    }
+
+        if (getParty() != null) {
+            if (getParty().hasUnion("Ursus")) {
+                int bonus = getParty().unionBonus("Ursus");
+                localstr += getStr() * bonus / 100;
+                localdex += getDex() * bonus / 100;
+                localint_ += getInt() * bonus / 100;
+                localluk += getLuk() * bonus / 100;
+            }
         }
+
         if (job.isA(MapleJob.BOWMAN)) {
             Skill expert = null;
             if (job.isA(MapleJob.MARKSMAN)) {
@@ -3891,7 +3922,9 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Di
                     "    normal_bosspoints    = ?,\n" +
                     "    hard_bosspoints      = ?,\n" +
                     "    hell_bosspoints      = ?,\n" +
-                    "    occupation_exp      = ?\n" +
+                    "    occupation_exp       = ?,\n" +
+                    "    `union`              = ?,\n" +
+                    "    union_rank           = ?\n"  +
                     "WHERE id = ?")) {
                 ps.setInt(1, level);
                 ps.setInt(2, fame);
@@ -4003,7 +4036,9 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Di
                 ps.setInt(63, hardBossPoints);
                 ps.setInt(64, hellBossPoints);
                 ps.setInt(65, occupation.map(Occupation::getExperience).orElse(0));
-                ps.setInt(66, id);
+                ps.setString(66, union.getName());
+                ps.setInt(67, union.getRank());
+                ps.setInt(68, id);
                 int updateRows = ps.executeUpdate();
                 if (updateRows < 1) {
                     throw new RuntimeException("Character not in database (" + id + ")");

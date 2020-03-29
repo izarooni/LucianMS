@@ -373,7 +373,12 @@ public class AbstractPlayerInteraction {
 
     public void givePartyExp(int amount, List<MapleCharacter> party) {
         for (MapleCharacter chr : party) {
-            chr.gainExp((amount * chr.getExpRate()), true, true);
+            if (chr.getUnion().getName().equalsIgnoreCase("Kirin")) {
+                //long bonus = (long) (amount * chr.getParty().unionBonus(chr.getParty(), "Kirin") * 0.02);
+                chr.gainExp((100 * chr.getExpRate()), true, true);
+            } else {
+                chr.gainExp((amount * chr.getExpRate()), true, true);
+            }
         }
     }
 

@@ -7,14 +7,19 @@
 /out
 
 #Server files
-/wz
-/backups
-/bin
+/wz/
+/backups/
+/bin/
 *.log
 *.sql
 *.txt
 *.properties
 *.json
+*.class
 server-config.json
 hikari-db.properties
 commandlog.txt
+.gitignore
+TODO chirithy
+/scripts
+

@@ -533,10 +533,8 @@ public class PlayerCommands extends CommandExecutor {
         }
         player.sendMessage("========== Etc ==========");
         player.sendMessage("Currency: {}", target.getItemQuantity(ServerConstants.CURRENCY, false));
-        Optional<Occupation> occupation = Optional.ofNullable(target.getOccupation());
         player.sendMessage("Rebirths: {}", target.getRebirths());
-        player.sendMessage("Specialization: {} Lv.{}", occupation.map(o -> o.getType().name()).orElse("N/A"), occupation.map(Occupation::getLevel).orElse((byte) 0));
-        player.sendMessage("Specialization EXP: {} / {}", occupation.map(Occupation::getExperience).orElse(0), occupation.map(o -> o.getType().getExperienceForLv(o.getLevel())).orElse(0));
+        player.sendMessage("Union: {}", target.getUnion().getName());
         if (target.isImmortal()) {
             long endAt = (target.getImmortalTimestamp() + TimeUnit.HOURS.toMillis(1));
             player.sendMessage("Immortal for {}", StringUtil.getTimeElapse(endAt - System.currentTimeMillis()));

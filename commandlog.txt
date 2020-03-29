@@ -299,3 +299,14 @@
 [Fri Mar 20 00:52:17 EDT 2020] ~ Jimbo: online 
 [Sun Mar 22 12:26:58 EDT 2020] ~ Kerrigan: hide 
 [Sun Mar 22 12:26:59 EDT 2020] ~ Kerrigan: job 0
+[Sat Mar 28 23:19:25 EDT 2020] ~ kerrigan: hide 
+[Sat Mar 28 23:20:09 EDT 2020] ~ kerrigan: level 12
+[Sat Mar 28 23:22:01 EDT 2020] ~ kerrigan: job 232
+[Sat Mar 28 23:22:04 EDT 2020] ~ kerrigan: sp 20
+[Sat Mar 28 23:29:51 EDT 2020] ~ kerrigan: hide 
+[Sat Mar 28 23:30:15 EDT 2020] ~ kerrigan: level 12
+[Sat Mar 28 23:30:24 EDT 2020] ~ kerrigan: level 10
+[Sat Mar 28 23:30:28 EDT 2020] ~ kerrigan: level 9
+[Sat Mar 28 23:30:33 EDT 2020] ~ kerrigan: level 1
+[Sat Mar 28 23:35:41 EDT 2020] ~ kerrigan: hide 
+[Sat Mar 28 23:48:39 EDT 2020] ~ kerrigan: hide 
