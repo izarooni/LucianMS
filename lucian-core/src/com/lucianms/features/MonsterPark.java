@@ -1,11 +1,14 @@
 package com.lucianms.features;
 
 import com.lucianms.client.MapleCharacter;
+import com.lucianms.client.inventory.Item;
 import com.lucianms.constants.ExpTable;
+import com.lucianms.constants.ServerConstants;
 import com.lucianms.io.scripting.npc.NPCScriptManager;
 import com.lucianms.scheduler.Task;
 import com.lucianms.scheduler.TaskExecutor;
 import com.lucianms.server.FieldBuilder;
+import com.lucianms.server.MapleInventoryManipulator;
 import com.lucianms.server.MaplePortal;
 import com.lucianms.server.life.MapleMonster;
 import com.lucianms.server.life.MapleMonsterStats;
@@ -30,6 +33,7 @@ public class MonsterPark extends GenericEvent {
     private static final int Increment = 100;
 
     private final AtomicInteger totalExp = new AtomicInteger(0);
+    private short bonus = 0;
     private final int mapId;
     private final HashMap<Integer, MapleMap> maps = new HashMap<>(5);
     private long timestampStart = 0;
@@ -38,7 +42,7 @@ public class MonsterPark extends GenericEvent {
 
     public MonsterPark(int worldID, int channelID, final int mapID, int baseLevel) {
         this.mapId = mapID;
-
+        LOGGER.warn("Made it to constructor instance");
         for (int i = mapID; i <= (mapID + (Stages * Increment)); i += Increment) {
             MapleMap instanceMap = new FieldBuilder(worldID, channelID, i).loadFootholds().loadPortals().build();
             if (instanceMap != null) {
@@ -55,13 +59,25 @@ public class MonsterPark extends GenericEvent {
                     }
                 }
                 for (SpawnPoint spawnPoint : instanceMap.getMonsterSpawnPoints()) {
+                    LOGGER.warn("Made it to spawnpoints instance");
                     MapleMonsterStats overrides = spawnPoint.createOverrides();
-                    overrides.setExp((int) (ExpTable.getExpNeededForLevel(baseLevel) * (Math.random() * 0.01) + 0.01));
+                    double range =  (Math.random() * (1 - 0.8)) + 0.8;
+
+                    //overrides.setExp((int) ((ExpTable.getExpNeededForLevel(baseLevel) * (range * 0.01) + 0.01))/ServerConstants.EXP_Rate);
+                    overrides.setExp((int) ((ExpTable.getExpNeededForLevel(baseLevel) * (range * 0.01) + 0.01))/20);
                     MapleMonster monster = spawnPoint.summonMonster();
                     if (monster != null) {
                         monster.getListeners().add(new MPMonsterHandler(portal));
+                        LOGGER.warn("Made it to Listeners");
                     } else {
                         LOGGER.warn("Invalid monster {} for map {}", spawnPoint.getMonsterID(), mapID);
+                    }
+                    if(ServerConstants.botCatchers.contains(monster.getId())){
+                        LOGGER.warn("Made it to botcatchers instance");
+                        monster.setHp(0);
+                        monster.killBy(null);
+                        instanceMap.broadcastMessage(MaplePacketCreator.killMonster(monster.getObjectId(), true));
+                        instanceMap.removeMapObject(monster);
                     }
                 }
             } else {
@@ -83,6 +99,8 @@ public class MonsterPark extends GenericEvent {
             player.announce(MaplePacketCreator.getClock((60 * 20)));
             player.announce(MaplePacketCreator.showEffect("monsterPark/stageEff/stage"));
             TaskExecutor.createTask(() -> player.announce(MaplePacketCreator.showEffect("monsterPark/stageEff/number/1")), 2345);
+        } else {
+            LOGGER.warn("Made it Register Player failing");
         }
     }
 
@@ -156,7 +174,6 @@ public class MonsterPark extends GenericEvent {
         @Override
         public void monsterKilled(MapleMonster monster, MapleCharacter player) {
             MapleMap map = monster.getMap();
-
             totalExp.addAndGet(monster.getExp());
             if (map.getMonsters().stream().noneMatch(m -> m.getHp() > 0)) {
                 if (portal != null) {

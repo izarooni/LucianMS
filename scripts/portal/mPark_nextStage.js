@@ -1,5 +1,5 @@
 var MonsterPark = Java.type("com.lucianms.features.MonsterPark");
-
+const NPCScriptManager = Java.type('com.lucianms.io.scripting.npc.NPCScriptManager');
 function enter(ms) {
 
     // get monster park event handler
@@ -16,9 +16,12 @@ function enter(ms) {
             return true;
         } else {
             ms.getPlayer().sendMessage("You must defeat all the monsters in the map before you proceed to the next stage");
+            ms.getPlayer.dispose();
+            NPCScriptManager.dispose(ms.getClient());
         }
     } else {
         ms.getPlayer().sendMessage("You may not use this portal");
     }
+    //ms.getPlayer.getClient().dispose();
     return false;
 }

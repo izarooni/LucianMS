@@ -32,6 +32,7 @@ import provider.MapleDataTool;
 import tools.Database;
 import tools.MaplePacketCreator;
 import tools.Pair;
+import tools.StringUtil;
 
 import java.io.File;
 import java.sql.Connection;
@@ -52,6 +53,8 @@ public class GameMasterCommands extends CommandExecutor {
     public GameMasterCommands() {
         addCommand("gmcmds", this::CommandList, "");
         addCommand("fwarp", this::ForceWarp, "");
+        addCommand("hair", this::ChangeHair, "");
+        addCommand("eye", this::ChangeFace, "");
         addCommand("killed", this::Killed, "");
         addCommand("itemq", this::ItemQ, "");
         addCommand("stalker", this::Stalker, "");
@@ -88,6 +91,7 @@ public class GameMasterCommands extends CommandExecutor {
         addCommand("killmap", this::KillMap, "");
         addCommand("reloadmap", this::ReloadMap, "");
         addCommand("killall", this::KillAll, "");
+        addCommand("mobhp", this::MobHP, "Lists all mob HP and IDs");
         addCommand("cleardrops", this::ClearDrops, "");
         addCommand("clearinv", this::ClearInventory, "");
         addCommand("hide", this::SetHide, "");
@@ -122,7 +126,7 @@ public class GameMasterCommands extends CommandExecutor {
         HELP_LIST.sort(String::compareTo);
     }
 
-    private void Smega(MapleCharacter player, Command cmd, CommandArgs args){
+    private void Smega(MapleCharacter player, Command cmd, CommandArgs args) {
         String medal = "";
         Item medalItem = player.getInventory(MapleInventoryType.EQUIPPED).getItem((short) -49);
         if (medalItem != null) {
@@ -159,6 +163,18 @@ public class GameMasterCommands extends CommandExecutor {
         } else {
             HELP_LIST.forEach(player::dropMessage);
         }
+    }
+
+    private void MobHP(MapleCharacter player, Command cmd, CommandArgs args) {
+
+        for (MapleMonster monster : player.getMap().getMonsters()) {
+
+            player.sendMessage(5, "Name: '{}', Level: {}, HP: {} / {}, ID: {}",
+                    monster.getName(), monster.getLevel(),
+                    StringUtil.formatNumber(monster.getHp()), StringUtil.formatNumber(monster.getMaxHp()), StringUtil.formatNumber(monster.getId()));
+
+        }
+
     }
 
     private void ForceWarp(MapleCharacter player, Command cmd, CommandArgs args) {
@@ -517,6 +533,40 @@ public class GameMasterCommands extends CommandExecutor {
         }
     }
 
+    private void ChangeHair(MapleCharacter player, Command cmd, CommandArgs args) {
+        MapleWorld world = player.getClient().getWorldServer();
+
+        if (args.length() > 0) {
+            Integer hair = args.parseNumber(0, int.class);
+            String error = args.getFirstError();
+            if (error != null) {
+                player.dropMessage(5, error);
+                return;
+            }
+
+            player.setHair(hair);
+            player.updateSingleStat(MapleStat.HAIR, hair);
+            player.equipChanged(true);
+        }
+    }
+
+    private void ChangeFace(MapleCharacter player, Command cmd, CommandArgs args) {
+        MapleWorld world = player.getClient().getWorldServer();
+
+        if (args.length() > 0) {
+            Integer face = args.parseNumber(0, int.class);
+            String error = args.getFirstError();
+            if (error != null) {
+                player.dropMessage(5, error);
+                return;
+            }
+
+            player.setFace(face);
+            player.updateSingleStat(MapleStat.FACE, face);
+            player.equipChanged(true);
+        }
+    }
+
     private void Job(MapleCharacter player, Command cmd, CommandArgs args) {
         MapleWorld world = player.getClient().getWorldServer();
 
@@ -654,26 +704,26 @@ public class GameMasterCommands extends CommandExecutor {
             String reason = args.concatFrom(1);
             MapleCharacter target = world.findPlayer(p -> p.getName().equalsIgnoreCase(username));
 
-                if (target != null) {
-                    BanManager.setBanned(target.getAccountID(), reason);
-                    target.getClient().disconnect();
-                    player.sendMessage(6, "'{}' has been banned", username);
+            if (target != null) {
+                BanManager.setBanned(target.getAccountID(), reason);
+                target.getClient().disconnect();
+                player.sendMessage(6, "'{}' has been banned", username);
+            } else {
+                int accountID = MapleCharacter.getAccountIdByName(username);
+                if (accountID > 0) {
+                    BanManager.setBanned(accountID, reason);
+                    player.sendMessage(6, "Offline banned '{}'", username);
                 } else {
-                    int accountID = MapleCharacter.getAccountIdByName(username);
-                    if (accountID > 0) {
-                        BanManager.setBanned(accountID, reason);
-                        player.sendMessage(6, "Offline banned '{}'", username);
-                    } else {
-                        player.sendMessage("Unable to find any player named '{}'", username);
-                    }
+                    player.sendMessage("Unable to find any player named '{}'", username);
                 }
+            }
 
         } else {
             player.dropMessage(5, "You must specify a username and a reason");
         }
     }
 
-    private void AccountBan(MapleCharacter player, Command cmd, CommandArgs args){
+    private void AccountBan(MapleCharacter player, Command cmd, CommandArgs args) {
         MapleWorld world = player.getClient().getWorldServer();
         String username = args.get(0);
         String reason = args.concatFrom(1);
@@ -683,7 +733,7 @@ public class GameMasterCommands extends CommandExecutor {
             ps.setString(1, username);
             try (ResultSet rs = ps.executeQuery()) {
                 if (rs.next()) {
-                    accountid= rs.getInt("id");
+                    accountid = rs.getInt("id");
                 }
             }
         } catch (SQLException e) {
@@ -698,7 +748,9 @@ public class GameMasterCommands extends CommandExecutor {
                 while (rs.next()) {
                     String charname = rs.getString("name");
                     MapleCharacter target = world.findPlayer(p -> p.getName().equalsIgnoreCase(charname));
-                    if(target != null){target.getClient().disconnect();}
+                    if (target != null) {
+                        target.getClient().disconnect();
+                    }
                 }
             }
         } catch (SQLException e) {
@@ -707,6 +759,7 @@ public class GameMasterCommands extends CommandExecutor {
 
         player.sendMessage(6, "'{}' has been banned", username);
     }
+
     private void Unban(MapleCharacter player, Command cmd, CommandArgs args) {
         if (args.length() != 1) {
             player.dropMessage("Syntax: !unban <username>");
@@ -1027,15 +1080,15 @@ public class GameMasterCommands extends CommandExecutor {
     }
 
 
-    private void MultiUser(MapleCharacter player, Command cmd, CommandArgs args){
+    private void MultiUser(MapleCharacter player, Command cmd, CommandArgs args) {
         if (args.length() == 0) {
-            HashMap<String,String> HWIDs = new HashMap<String,String>();
+            HashMap<String, String> HWIDs = new HashMap<String, String>();
 
             for (MapleChannel channel : player.getClient().getWorldServer().getChannels()) {
                 StringBuilder sb = new StringBuilder();
                 Collection<MapleCharacter> players = channel.getPlayers();
                 for (MapleCharacter online : players) {
-                    if(!HWIDs.containsKey(online.getClient().getHWID())) {
+                    if (!HWIDs.containsKey(online.getClient().getHWID())) {
                         HWIDs.put(online.getClient().getHWID(), online.getName());
                     } else {
                         sb.append(online.getName()).append(", ");
@@ -1052,6 +1105,7 @@ public class GameMasterCommands extends CommandExecutor {
 
         }
     }
+
     private void Online(MapleCharacter player, Command cmd, CommandArgs args) {
         if (args.length() == 0) {
             for (MapleChannel channel : player.getClient().getWorldServer().getChannels()) {

@@ -21,13 +21,18 @@
  */
 package com.lucianms.client.inventory;
 
+import com.lucianms.client.MapleCharacter;
 import com.lucianms.client.MapleClient;
 import com.lucianms.server.MapleItemInformationProvider;
+import provider.MapleDataTool;
 import tools.MaplePacketCreator;
 import tools.Pair;
+import tools.Randomizer;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Random;
 
 public class Equip extends Item {
 
@@ -309,8 +314,22 @@ public class Equip extends Item {
     }
 
     public void gainLevel(MapleClient c, boolean timeless) {
-        List<Pair<String, Integer>> stats = MapleItemInformationProvider.getInstance().getItemLevelupStats(getItemId(), itemLevel, timeless);
-        for (Pair<String, Integer> stat : stats) {
+
+        if (itemLevel < 8) {
+            this.dex = randomStats(dex);
+            this.str = randomStats(str);
+            this.$int = randomStats($int);
+            this.luk = randomStats(luk);
+            this.hp = randomStats(hp);
+            this.mp = randomStats(mp);
+            this.watk = randomStats(watk);
+            this.matk = randomStats(matk);
+            this.wdef = randomStats(wdef);
+            this.mdef = randomStats(mdef);
+            this.speed = randomStats(speed);
+            this.jump = randomStats(jump);
+            //List<Pair<String, Integer>> stats = MapleItemInformationProvider.getInstance().getItemLevelupStats(getItemId(), itemLevel, timeless);
+        /*for (Pair<String, Integer> stat : stats) {
             switch (stat.getLeft()) {
                 case "incDEX":
                     dex += stat.getRight();
@@ -355,11 +374,33 @@ public class Equip extends Item {
                     jump += stat.getRight();
                     break;
             }
+        }*/
+
+
+            this.itemLevel++;
+            c.announce(MaplePacketCreator.showEquipmentLevelUp());
+            c.getPlayer().getMap().broadcastMessage(c.getPlayer(), MaplePacketCreator.showForeignEffect(c.getPlayer().getId(), 15));
+            c.getPlayer().forceUpdateItem(this);
         }
-        this.itemLevel++;
-        c.announce(MaplePacketCreator.showEquipmentLevelUp());
-        c.getPlayer().getMap().broadcastMessage(c.getPlayer(), MaplePacketCreator.showForeignEffect(c.getPlayer().getId(), 15));
-        c.getPlayer().forceUpdateItem(this);
+    }
+    private short randomStats(short stat) {
+
+        if(stat > 0) {
+            short temp = stat;
+            Random r = new Random();
+            //int low = (int) Math.ceil(stats[i] * 1.06);
+            int low = 6; //1.0x ex: if 6, it's 1.06
+            //int high = (int) Math.ceil(stats[i] * 1.10);
+            int high = 9; //1.0x ex: if 10, it's 1.10
+            double base = (double) (r.nextInt(high - low) + low);
+            short add = ((short) (stat * (1 + (base / 100))));
+            int handicap = (r.nextInt(3 - 1) + 1);
+
+            stat = (short) Math.max(add, temp+handicap);
+        }
+
+        return stat;
+
     }
 
     public int getItemExp() {
@@ -367,14 +408,20 @@ public class Equip extends Item {
     }
 
     public void gainItemExp(MapleClient c, int gain, boolean timeless) {
-        int expneeded = timeless ? (10 * itemLevel + 70) : (5 * itemLevel + 65);
-        float modifier = 364 / expneeded;
-        float exp = (expneeded / (1000000 * modifier * modifier)) * gain;
-        itemExp += exp;
-        if (itemExp >= 364) {
-            itemExp = (itemExp - 364);
-            gainLevel(c, timeless);
+
+        if (itemLevel < 8) {
+            int expneeded = timeless ? (10 * itemLevel + 70) : (5 * itemLevel + 65);
+            float modifier = 364 / expneeded;
+            float exp = (expneeded / (1000000 * modifier * modifier)) * gain;
+            itemExp += exp;
+            if (itemExp >= 364) {
+                itemExp = (itemExp - 364);
+                gainLevel(c, timeless);
+            } else {
+                c.getPlayer().forceUpdateItem(this);
+            }
         } else {
+            itemExp = 0;
             c.getPlayer().forceUpdateItem(this);
         }
     }
