@@ -4,6 +4,7 @@ import com.lucianms.BanManager;
 import com.lucianms.client.MapleClient;
 import com.lucianms.nio.receive.MaplePacketReader;
 import com.lucianms.server.channel.MapleChannel;
+import tools.MaplePacketCreator;
 
 /**
  * @author izarooni
@@ -30,14 +31,20 @@ public class SPWSelectPlayerEvent extends UserTransferEvent {
         MapleClient client = getClient();
         MapleChannel cserv = client.getChannelServer();
 
-        if (BanManager.isBanned(client) || !client.isPlayerBelonging(playerID)) {
-            client.getSession().close();
-            return null;
-        }
+        if(client.checkPic(PIC)) {
+            if (BanManager.isBanned(client) || !client.isPlayerBelonging(playerID)) {
+                client.getSession().close();
 
-        client.updateMacs(macs);
-        client.updateHWID(hwid);
-        issueConnect(cserv.getNetworkAddress(), cserv.getPort(), playerID);
+            }
+
+            client.updateMacs(macs);
+            client.updateHWID(hwid);
+            issueConnect(cserv.getNetworkAddress(), cserv.getPort(), playerID);
+
+        } else {
+            client.announce(MaplePacketCreator.wrongPic());
+
+        }
         return null;
     }
 }

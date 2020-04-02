@@ -1,6 +1,7 @@
 package com.lucianms.events;
 
 import com.lucianms.client.MapleCharacter;
+import com.lucianms.client.MapleClient;
 import com.lucianms.client.SpamTracker;
 import com.lucianms.io.scripting.npc.NPCConversationManager;
 import com.lucianms.io.scripting.npc.NPCScriptManager;
@@ -10,6 +11,7 @@ import com.lucianms.server.maps.MapleMapObject;
 import com.lucianms.server.maps.PlayerNPC;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import tools.MaplePacketCreator;
 
 /**
  * @author izarooni
@@ -66,4 +68,5 @@ public class NpcTalkEvent extends PacketEvent {
         }
         return null;
     }
+
 }

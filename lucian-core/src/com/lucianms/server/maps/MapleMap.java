@@ -38,6 +38,8 @@ import com.lucianms.events.gm.MapleFitness;
 import com.lucianms.events.gm.MapleOla;
 import com.lucianms.events.gm.MapleOxQuiz;
 import com.lucianms.events.gm.MapleSnowball;
+import com.lucianms.features.GenericEvent;
+import com.lucianms.features.MonsterPark;
 import com.lucianms.features.carnival.MCarnivalMonsterLocation;
 import com.lucianms.features.carnival.MonsterCarnival;
 import com.lucianms.features.coconut.CoconutEvent;
@@ -393,14 +395,26 @@ public class MapleMap implements PacketAnnouncer {
             }
         }
 
-        for (CQuestData qData : chr.getCustomQuests().values()) {
-            if (!qData.isCompleted()) {
-                for (CQuestItemRequirement.CQuestItem qItem : qData.getToCollect().getItems().values()) {
-                    if (qItem.getMonsterId() == mob.getId()) {
-                        int chance = (MAX_DROP_CHANCE / 1000) * qItem.getChance();
-                        dropEntry.add(new MonsterDropEntry(qItem.getItemId(), chance, qItem.getMinQuantity(), qItem.getMaxQuantity(), (short) -1));
-                    }
+        List<GenericEvent> gevent = chr.getGenericEvents();
+
+
+        if(gevent != null){
+            for(GenericEvent event: gevent){
+                if(event instanceof MonsterPark){
+                    Item qItem = new Item(4310020);
+                    dropEntry.add(new MonsterDropEntry(qItem.getItemId(), 50000, 1, 1, (short) -1));
                 }
+            }
+        }
+
+        for (CQuestData qData : chr.getCustomQuests().values()) {
+                    if (!qData.isCompleted()) {
+                        for (CQuestItemRequirement.CQuestItem qItem : qData.getToCollect().getItems().values()) {
+                            if (qItem.getMonsterId() == mob.getId()) {
+                                int chance = (MAX_DROP_CHANCE / 1000) * qItem.getChance();
+                                dropEntry.add(new MonsterDropEntry(qItem.getItemId(), chance, qItem.getMinQuantity(), qItem.getMaxQuantity(), (short) -1));
+                            }
+                        }
             }
         }
 

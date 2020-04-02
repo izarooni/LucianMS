@@ -22,6 +22,8 @@ public class ServerConstants {
     public static final boolean ENABLE_PIC = true;
     //endregion
 
+    //Not affected by things, must change when changing rates.
+    public static final int EXP_Rate = 50;
     //region Game Settings
     public static final boolean SAVE_CHARACTER_SKILLS = true;
     public static final boolean USE_FAMILY_SYSTEM = false;
@@ -30,9 +32,10 @@ public class ServerConstants {
     public static final int PARTY_EXPERIENCE_MOD = 1;
 
     public static final int[] NO_SKILL_MAPS = {910000000, 109020001};
+    public static final List<Integer> botCatchers = Arrays.asList(5090000, 6090001, 7090000, 8090000, 6090004);
     public static final int HOME_MAP = 910000000;
     public static final int CURRENCY = 4260002;
-    public static final int BOMB_MOB= 9300166;
+    public static final int BOMB_MOB = 9300166;
     public static final List<Integer> bannedItems = Arrays.asList(1832000, 1822000, 1812007);
     public static final List<Integer> WizetItems = Arrays.asList(1002140, 1003142, 1042003, 1062007, 1322013);
     public static final int JAIL = 80;

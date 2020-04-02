@@ -97,6 +97,7 @@ public final class SpawnPoint {
 
     public MapleMonster summonMonster() {
         MapleMonster monster = getMonster();
+
         map.spawnMonsterOnGroudBelow(monster, monster.getPosition());
         spawnedMonsters.incrementAndGet();
         return monster;
