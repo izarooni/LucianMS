@@ -1,6 +1,7 @@
 package com.lucianms.server.world;
 
 import com.lucianms.client.MapleCharacter;
+import com.lucianms.client.meta.Union;
 import tools.Disposable;
 import tools.MaplePacketCreator;
 
@@ -76,4 +77,24 @@ public class MapleParty extends SocialGroup<MaplePartyCharacter> implements Disp
             sendPacket(MaplePacketCreator.updateParty(player.getClient().getChannel(), this, expelled ? PartyOperation.EXPEL : PartyOperation.LEAVE, remove));
         }
     }
+
+    public int unionBonus(String union) {
+        int bonus = 0;
+        for (MapleCharacter partymember : this.getPlayers()) {
+            if (union.equalsIgnoreCase(partymember.getUnion().getName())) {
+                bonus ++;
+            }
+        }
+        return bonus;
+    }
+
+    public boolean hasUnion(String union) {
+        for (MapleCharacter partymember : this.getPlayers()) {
+            if (union.equalsIgnoreCase(partymember.getUnion().getName())) {
+                return true;
+            }
+        }
+        return false;
+    }
+
 }

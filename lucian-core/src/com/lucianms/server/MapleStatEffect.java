@@ -798,7 +798,7 @@ public class MapleStatEffect {
         localDuration = alchemistModifyVal(chr, localDuration, false);
         CancelEffectAction cancelAction = new CancelEffectAction(chr, this, starttime);
         Task task = TaskExecutor.createTask(cancelAction, ((starttime + localDuration) - System.currentTimeMillis()));
-//        chr.registerEffect(this, starttime, task);
+        //chr.registerEffect(this, starttime, task);
         SummonMovementType summonMovementType = getSummonMovementType();
         if (summonMovementType != null) {
             final MapleSummon summon = new MapleSummon(chr, sourceid, chr.getPosition(), summonMovementType);
