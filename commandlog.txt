@@ -1330,3 +1330,76 @@
 [Wed Apr 01 22:18:11 EDT 2020] ~ Jeemie: spawn 9209000
 [Wed Apr 01 22:18:20 EDT 2020] ~ Jeemie: npc 9209000
 [Wed Apr 01 22:18:41 EDT 2020] ~ Jeemie: job 1000
+[Wed Apr 01 23:00:53 EDT 2020] ~ Jeemie: spawn 100100
+[Wed Apr 01 23:01:00 EDT 2020] ~ Jeemie: spawn 100100
+[Wed Apr 01 23:02:20 EDT 2020] ~ Jeemie: search map monster park entrance
+[Wed Apr 01 23:02:22 EDT 2020] ~ Jeemie: search map monster park
+[Wed Apr 01 23:02:27 EDT 2020] ~ Jeemie: warp 951000000
+[Wed Apr 01 23:11:14 EDT 2020] ~ Jeemie: warp 951000000
+[Wed Apr 01 23:18:06 EDT 2020] ~ Jeemie: warp 951000000
+[Wed Apr 01 23:18:30 EDT 2020] ~ Jeemie: level 130
+[Wed Apr 01 23:18:46 EDT 2020] ~ Jeemie: level 120
+[Wed Apr 01 23:21:30 EDT 2020] ~ Jeemie: debug 
+[Thu Apr 02 00:02:58 EDT 2020] ~ Yuki: online 
+[Thu Apr 02 00:03:19 EDT 2020] ~ Yuki: search item wooden staff
+[Thu Apr 02 00:03:24 EDT 2020] ~ Yuki: drop 1382000
+[Thu Apr 02 00:03:34 EDT 2020] ~ Yuki: job 310
+[Thu Apr 02 00:03:44 EDT 2020] ~ Yuki: job 210
+[Thu Apr 02 00:03:54 EDT 2020] ~ Yuki: job 202
+[Thu Apr 02 00:03:59 EDT 2020] ~ Yuki: job 222
+[Thu Apr 02 00:04:05 EDT 2020] ~ Yuki: job 212
+[Thu Apr 02 00:04:11 EDT 2020] ~ Yuki: job 202
+[Thu Apr 02 00:04:19 EDT 2020] ~ Yuki: job 222
+[Thu Apr 02 00:04:23 EDT 2020] ~ Yuki: job 232
+[Thu Apr 02 00:04:29 EDT 2020] ~ Yuki: job 212
+[Thu Apr 02 00:04:42 EDT 2020] ~ Yuki: job 230
+[Thu Apr 02 00:05:22 EDT 2020] ~ Yuki: search item onyx apple
+[Thu Apr 02 00:05:28 EDT 2020] ~ Yuki: drop 2022179
+[Thu Apr 02 00:06:13 EDT 2020] ~ Yuki: drop 2022179 200
+[Thu Apr 02 00:30:36 EDT 2020] ~ Yuki: warp 405
+[Thu Apr 02 02:05:58 EDT 2020] ~ Jeemie: search item onyx apple
+[Thu Apr 02 02:06:02 EDT 2020] ~ Jeemie: item 2022179
+[Thu Apr 02 02:07:03 EDT 2020] ~ Jeemie: level 120
+[Thu Apr 02 10:31:31 EDT 2020] ~ Jeemie: search item claw
+[Thu Apr 02 10:31:42 EDT 2020] ~ Jeemie: search item steel tita
+[Thu Apr 02 10:31:47 EDT 2020] ~ Jeemie: item 1472001
+[Thu Apr 02 10:34:07 EDT 2020] ~ Jeemie: search mob silver slime
+[Thu Apr 02 10:34:11 EDT 2020] ~ Jeemie: spawn 9400203
+[Thu Apr 02 10:39:21 EDT 2020] ~ Jeemie: search item timeless claw
+[Thu Apr 02 10:39:24 EDT 2020] ~ Jeemie: search item timeless
+[Thu Apr 02 10:39:45 EDT 2020] ~ Jeemie: item 1472068
+[Thu Apr 02 10:40:27 EDT 2020] ~ Jeemie: search blue snail shell
+[Thu Apr 02 10:40:33 EDT 2020] ~ Jeemie: search item blue snail shell
+[Thu Apr 02 10:40:36 EDT 2020] ~ Jeemie: item 4000000
+[Thu Apr 02 10:40:38 EDT 2020] ~ Jeemie: item 4000000 10
+[Thu Apr 02 10:42:59 EDT 2020] ~ Jeemie: search wall
+[Thu Apr 02 10:43:01 EDT 2020] ~ Jeemie: search map wall
+[Thu Apr 02 10:43:04 EDT 2020] ~ Jeemie: search map titan
+[Thu Apr 02 10:43:07 EDT 2020] ~ Jeemie: search map rose
+[Thu Apr 02 10:43:23 EDT 2020] ~ Jeemie: warp 814000900
+[Thu Apr 02 10:48:15 EDT 2020] ~ Jeemie: search map maria
+[Thu Apr 02 10:48:19 EDT 2020] ~ Jeemie: search map wall
+[Thu Apr 02 10:48:39 EDT 2020] ~ Jeemie: warp 814031200
+[Thu Apr 02 10:49:56 EDT 2020] ~ Jeemie: revive 
+[Thu Apr 02 10:49:58 EDT 2020] ~ Jeemie: healme 
+[Thu Apr 02 10:50:00 EDT 2020] ~ Jeemie: healm 
+[Thu Apr 02 10:50:06 EDT 2020] ~ Jeemie: hp 30000
+[Thu Apr 02 10:50:35 EDT 2020] ~ Jeemie: healm 
+[Thu Apr 02 10:51:31 EDT 2020] ~ Jeemie: healm 
+[Thu Apr 02 10:54:33 EDT 2020] ~ Jeemie: search mob loki
+[Thu Apr 02 10:54:42 EDT 2020] ~ Jeemie: spawn 9400567
+[Thu Apr 02 10:54:49 EDT 2020] ~ Jeemie: spawn 9400566
+[Thu Apr 02 10:55:59 EDT 2020] ~ Jeemie: search item ains
+[Thu Apr 02 10:56:03 EDT 2020] ~ Jeemie: search item Ain
+[Thu Apr 02 10:56:05 EDT 2020] ~ Jeemie: search item Ains
+[Thu Apr 02 13:25:45 EDT 2020] ~ Yuki: warp 405
+[Thu Apr 02 13:26:09 EDT 2020] ~ Yuki: spawn 8641000
+[Thu Apr 02 13:26:52 EDT 2020] ~ Yuki: spawn 8642000
+[Thu Apr 02 13:26:58 EDT 2020] ~ Yuki: spawn 8643000
+[Thu Apr 02 13:27:04 EDT 2020] ~ Yuki: killall 
+[Thu Apr 02 13:27:17 EDT 2020] ~ Yuki: spawn 8643001
+[Thu Apr 02 13:27:21 EDT 2020] ~ Yuki: spawn 8643002
+[Thu Apr 02 13:27:35 EDT 2020] ~ Yuki: spawn 8642001
+[Thu Apr 02 13:27:39 EDT 2020] ~ Yuki: spawn 8642000
+[Thu Apr 02 13:27:51 EDT 2020] ~ Yuki: spawn 8643010
+[Thu Apr 02 13:29:03 EDT 2020] ~ Yuki: killall 
