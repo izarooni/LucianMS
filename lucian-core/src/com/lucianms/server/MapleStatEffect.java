@@ -111,7 +111,8 @@ public class MapleStatEffect {
         if (!ret.skill && ret.duration > -1) {
             ret.overTime = true;
         } else {
-            ret.duration = Integer.MAX_VALUE;
+            //ret.duration = Integer.MAX_VALUE;
+            ret.duration *= 1000;
             ret.overTime = overTime;
         }
         Map<MapleBuffStat, Integer> statups = new HashMap<>(6);
@@ -883,8 +884,9 @@ public class MapleStatEffect {
 //                local = MaplePacketCreator.giveBuff((skill ? sourceid : -sourceid), duration, localStats);
 //            }
             CancelEffectAction cancelAction = new CancelEffectAction(applyto, this, currentTime);
-            Task task = TaskExecutor.createTask(cancelAction, duration * 1000L);
-            applyto.registerEffect(this, localStats, currentTime, task);
+            //Task task = TaskExecutor.createTask(cancelAction, duration * 1000L);
+            Task task = TaskExecutor.createTask(cancelAction, duration * 1000);
+            applyto.registerEffect(this, localStats, currentTime + duration, task);
 
             if (sourceid == Corsair.BATTLESHIP) {
                 applyto.announce(MaplePacketCreator.skillCooldown(5221999, applyto.getBattleshipHp() / 10));

@@ -69,7 +69,7 @@ import java.sql.*;
 import java.util.List;
 import java.util.*;
 import java.util.Map.Entry;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Predicate;
 import java.util.regex.Pattern;
@@ -177,6 +177,9 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Di
     private AtomicInteger gachaexp = new AtomicInteger();
 
     //region collections
+    private ScheduledExecutorService executor = Executors.newScheduledThreadPool(1);
+    private ScheduledFuture<?> destroyBuffs = null;
+    private final Map<MapleStatEffect, Long> currentBuffs = new HashMap<>();
     private final ArrayList<Task> tasks = new ArrayList<>();
     private final ArrayList<String> blockedPortals = new ArrayList<>();
     private final ArrayList<Integer> excluded = new ArrayList<>();
@@ -855,6 +858,8 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Di
             ret.vehicle.setLevel(mountlevel);
             ret.vehicle.setTiredness(mounttiredness);
         }
+
+
         return ret;
     }
 
@@ -1116,7 +1121,9 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Di
     }
 
     public void setCombo(short count) {
-        if (count < combocounter) { cancelBuffs(Set.of(MapleBuffStat.COMBO_ABILITY_BUFF)); }
+        if (count < combocounter) {
+            cancelBuffs(Set.of(MapleBuffStat.COMBO_ABILITY_BUFF));
+        }
         /*if(getLastCombo() >= System.currentTimeMillis() - 5000){
             combocounter = (short) 0;
         }
@@ -1319,6 +1326,23 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Di
 
     public boolean canDoor() {
         return canDoor;
+    }
+
+    public void startBuffTask() {
+        if (destroyBuffs == null) {
+            Runnable destroy = () -> {
+                currentBuffs.forEach((key, value) -> {
+                    //LOGGER.warn(" "+ System.currentTimeMillis() + " " + value + " ");
+                    if (System.currentTimeMillis() > value) {
+                        cancelEffect(key, -1, false);
+
+                    }
+                });
+
+            };
+            LOGGER.warn("startBuffTask started");
+            destroyBuffs = executor.scheduleAtFixedRate(destroy, 5, 1, TimeUnit.SECONDS);
+        }
     }
 
     public FameStatus canGiveFame(MapleCharacter from) {
@@ -3208,7 +3232,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Di
             sendMessage("Your AP has exceeded 32,767 and will not display properly in the stats window. Use @checkme to view your AP");
         }
         remainingAp += (5 * levels);
-        if(!isBeginnerJob()){
+        if (!isBeginnerJob()) {
             //gainSp(3);
             setRemainingSp(getRemainingSp() + 3);
             updateSingleStat(MapleStat.AVAILABLESP, getRemainingSp());
@@ -3637,6 +3661,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Di
                 }
             }, 5000, 5000);
         }
+        currentBuffs.put(effect, starttime);
         effects.putAll(stats);
         updateLocalizedStats();
     }
@@ -5067,7 +5092,9 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Di
         return jumpQuestPoints;
     }
 
-    public void setJumpQuestPoints(int jumpQuestPoints) { this.jumpQuestPoints = jumpQuestPoints; }
+    public void setJumpQuestPoints(int jumpQuestPoints) {
+        this.jumpQuestPoints = jumpQuestPoints;
+    }
 
     public int getPartyQuestPoints() {
         return partyQuestPoints;
