@@ -25,6 +25,7 @@ import com.lucianms.client.*;
 import com.lucianms.client.inventory.Equip;
 import com.lucianms.client.inventory.MapleInventoryType;
 import com.lucianms.client.meta.Occupation;
+import com.lucianms.client.meta.Union;
 import com.lucianms.client.status.MonsterStatus;
 import com.lucianms.client.status.MonsterStatusEffect;
 import com.lucianms.constants.skills.*;
@@ -340,7 +341,7 @@ public class MapleMonster extends AbstractLoadedMapleLife {
                 //int gainExp = (int) (exp * (portionedExp * 100f));
                 int gainExp = (int)exp;
                 MapleParty party = player.getParty();
-                if (party != null) {
+                if (party != null && (party.getPlayers().size() > 1)) {
                     for (MapleCharacter members : party.getPlayers()) {
                         if (members.getMap() == getMap()) {
                             partyDist.compute(party.getID(), (id, inc) -> (inc == null ? 0 : inc) + gainExp);
