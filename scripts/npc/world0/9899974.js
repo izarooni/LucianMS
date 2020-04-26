@@ -7,7 +7,7 @@ let status = 0;
 let options = {
     "Spinel": {npc:9000020, script:null},
     "Fun Maps": {npc:1022101, script:null},
-    "Training": {npc:9899941, script:null},
+  //  "Training": {npc:9899941, script:null},
     get: function(idx) {
         let current = 0;
         for (let o in options) {

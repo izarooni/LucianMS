@@ -13,9 +13,9 @@ function testForPlayer(player) {
 }
 
 function reward(player) {
-    return tryGiveItem(player, [new RewardItem(ServerConstants.CURRENCY, 100)]);
+    return tryGiveItem(player, [new RewardItem(ServerConstants.CURRENCY, 2)]);
 }
 
 function readableRewards(rr) {
-    return rr.add(`100x #z${ServerConstants.CURRENCY}#`);
+    return rr.add(`2x #z${ServerConstants.CURRENCY}#`);
 }

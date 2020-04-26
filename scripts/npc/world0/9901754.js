@@ -33,7 +33,7 @@ function action(mode, type, selection) {
 
     if (status == 0) {
             cm.sendSimple("Hello. I'm the Chirithy #bVote Points#k NPC.\r\n"
-            + "\r\n#d#L0#I would like to buy Lidium(AutoRB) with my VP#l"
+          //  + "\r\n#d#L0#I would like to buy Lidium(AutoRB) with my VP#l"
             + "\r\n#L1#Open the VP Shop!#l");
 
     }

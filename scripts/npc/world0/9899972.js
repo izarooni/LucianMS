@@ -1,51 +1,57 @@
-/* original by izarooni */
-/* remade by kerrigan */
-/* jshint esversion: 6 */
+/*
+	This file is part of the OdinMS Maple Story Server
+    Copyright (C) 2008 Patrick Huy <patrick.huy@frz.cc> 
+                       Matthias Butz <matze@odinms.de>
+                       Jan Christian Meyer <vimes@odinms.de>
 
-let status = 0;
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU Affero General Public License version 3
+    as published by the Free Software Foundation. You may not use, modify
+    or distribute this program under any other version of the
+    GNU Affero General Public License.
 
-let options = {
-    "#kI would like to create an MSI with #drebirth points#k": {npc:9899972, script:"msi_rb"},
-    "I would like to create an MSI with #bChirithy coin#k": {npc:9899972, script:"msi_coin"},
-    "I would like to create an MSI with rare monster drops": {npc:9899972, script:"msi_drop"},
-    get: function(idx) {
-        let cidx = 0;
-        for (let o in options) {
-            if (cidx++ == idx)
-              return o;
-        }
-        return null;
-    }
-};
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU Affero General Public License for more details.
+
+    You should have received a copy of the GNU Affero General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+*/
+
+/* 
+	Machine Apparatus
+*/
+var status = 0;
+
+function start() {
+	status = -1;
+	action(1, 0, 0);
+}
 
 function action(mode, type, selection) {
-    if (mode < 1) {
-        cm.dispose();
-        return;
-    } else {
-        status++;
-    }
-    if (status == 1) {
-        this.optional = player.getGenericEvents().stream().filter(function(e){
-            return (e instanceof MonsterPark);
-        }).findFirst();
-        let content = "Welcome to #bChirithy#k! What can I help you with?\r\n#b";
-        let i = 0;
-        for (let o in options) {
-            if (options.hasOwnProperty(o) && typeof options[o] != "function") {
-                content += "\r\n#L" + (i++) + "#" + o + "#l";
-            }
-        }
-        cm.sendSimple(content);
-    } else if (status == 2) {
-        let option = options.get(selection);
-        if (option != null) {
-            let obj = options[option];
-            let npc = (obj.npc >= 9901000) ? null: obj.npc;
-            let script = (npc == null) ? obj.npc + "" : obj.script;
-            cm.openNpc((npc == null) ? 9899972 : npc, script);
-        } else {
-            cm.dispose();
-        }
-    }
+	if (mode == -1) {
+		cm.dispose();
+	} else {
+		if (mode == 0 && status == 0) {
+			cm.dispose();
+			return;
+		}
+		if (mode == 1)
+			status++;
+		else
+			status--;
+		if (status == 0) {
+			cm.sendSimple("Oh no! The #rBlack Hole#k has returned! This means that we are facing chaos in the universe and that worlds are being split apart. It must be a part of #rXehanorts#k plan.\r\n\r\nHe wants to create a world split into two.\r\nOne with pure #rDarkness#k and one with pure #bLight#k. We must stop him and recreate balance! \r\n#b#L1#I will do it!#k#l\r\n\#r#L2#I do not think I am strong enough..yet.#k#l");
+		} else if (status == 1) {
+			if (selection == 1) {
+				cm.warp(90000000, 0);
+				player.announce(Packages.tools.MaplePacketCreator.showEffect("quest/party/clear3"));
+				cm.dispose();
+			} else if (selection == 2) {
+				cm.sendOk("Okay, but hurry though.");
+				cm.dispose();
+			}
+		}
+	}
 }

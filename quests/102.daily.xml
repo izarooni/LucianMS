@@ -1,4 +1,4 @@
-<imgdir name="Daily - Dangerous Cave">
+<imgdir name="Daily - Fresh Cloth of Memories">
     <imgdir name="info">
         <int name="questId" value="102"/>
 		<int name="preQuest" value="-1"/>
@@ -8,22 +8,22 @@
     <imgdir name="toKill">
 
         <imgdir name="0">
-            <int name="monsterId" value="8130100"/>
-            <int name="amount" value="1"/>
+            <int name="monsterId" value="82000010"/>
+            <int name="amount" value="200"/>
         </imgdir>
     </imgdir>
 
     <imgdir name="toCollect">
         <imgdir name="0">
-            <int name="itemId" value="4020008"/>
-            <int name="quantity" value="1"/>
+            <int name="itemId" value="4000444"/>
+            <int name="quantity" value="40"/>
         </imgdir>
     </imgdir>
 
     <imgdir name="rewards">
-        <int name="meso" value="7000000"/>
+        <int name="meso" value="2000000"/>
         <int name="itemId" value="4011033"/>
         <int name="quantity" value="1"/>
-        <int name="exp" value="200000"/>
+        <int name="exp" value="15000"/>
     </imgdir>
 </imgdir>

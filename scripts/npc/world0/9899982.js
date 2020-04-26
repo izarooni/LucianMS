@@ -9,10 +9,11 @@ function action(mode, type, selection) {
         status++;
     }
     if (status == 1) {
-        cm.sendNext("You are beginning to feel different..You are beginning to remember your past. You are beginning to feel who you used to be.\r\n\r\nIt all makes sense now..I....\r\nI.......\r\n#eI...\r\n\r\n#eI AM \r\n#e...#r#h #", 1);
+        cm.sendNext("#eThe energy from this orb seems weird. Perhaps it is worth checking out", 1);
     } else if (status == 2) {
-        player.changeMap(910000000);
-        player.sendMessage("You have completed the tutorial. Welcome to Chirithy!");
+        player.changeMap(90000015);
+		player.announce(Packages.tools.MaplePacketCreator.showEffect("quest/party/clear5"));
+        player.sendMessage("You traveled through time! Current year: Unknown");
         cm.dispose();
     }
 }

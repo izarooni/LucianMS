@@ -447,7 +447,7 @@ public abstract class AbstractDealDamageEvent extends PacketEvent {
         if (magic && ret.skill != 0) {
             calcDmgMax = (player.getTotalMagic() * player.getTotalMagic() / 1000 + player.getTotalMagic()) / 30 + player.getTotalInt() / 200;
         } else if (ret.skill == 4001344 || ret.skill == NightWalker.LUCKY_SEVEN || ret.skill == NightLord.TRIPLE_THROW) {
-            calcDmgMax = (player.getTotalLuk() * 5) * player.getTotalWatk() / 100;
+            calcDmgMax = (player.getTotalLuk() * (player.getTotalWatk() * 3) * player.getSkillLevel(ret.skill)) / 100;
         } else if (ret.skill == DragonKnight.DRAGON_ROAR) {
             calcDmgMax = (player.getTotalStr() * 4 + player.getTotalDex()) * player.getTotalWatk() / 100;
         } else if (ret.skill == NightLord.VENOMOUS_STAR || ret.skill == Shadower.VENOMOUS_STAB) {
@@ -645,8 +645,10 @@ public abstract class AbstractDealDamageEvent extends PacketEvent {
                 }
 
                 if (ret.skill == Marksman.SNIPE) {
-                    damage = 195000 + Randomizer.nextInt(5000);
-                    hitDmgMax = 200000;
+                    damage = (int) ((player.getDex() * 0.5 + player.getTotalWatk() * 3) * 3.5 + Randomizer.nextInt(player.getDex()));
+
+                    //damage = 195000 + Randomizer.nextInt(5000);
+                    //hitDmgMax = 200000;
                 }
 
                 if (ret.skill == Marksman.SNIPE || (canCrit && damage > hitDmgMax)) {

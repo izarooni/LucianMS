@@ -1,20 +1,15 @@
 const MonsterPark = Java.type("com.lucianms.features.MonsterPark");
 
 /* izarooni */
+
 let status = 0;
 let options = {
-    "Warper":   {npc:9899974,    script:null},
-    "Job advancement":     {npc:9900000,    script:null},
-    "Vote point trader":   {npc:9901754,    script:null},
-    "BossPQ point trader":  {npc:9901752,    script:null},
-    "Donor point trader":  {npc:9901755,    script:null},
-    "Eye Scanner trader":  {npc:9901753,    script:null},
-    "Chirithy Coin trader":{npc:2007,       script:"shop_monster_coin"},
-    "Overwatch lootbox":   {npc:9270043,    script:null},
+    "Vote Point Trader":   {npc:9901754,    script:null},
+    "Donor Point Trader":   {npc:9901755, script:null},
     "Styler":              {npc:9900001,    script:null},
-    "Transparent NX shop": {npc:2007, script:"shop_transparent"},
-    // "Skill Fixer":         {npc:2007,       script:"f_skill_fixer"},
-    "All In One":          {npc:2007,       script:"_all_in_one"},
+	"Monster Park Shuttle": {npc:9071000, 	script:9071003},
+    "Job Advancement": {npc: 9900000, script:9900000},
+
     get: function(idx) {
         let cidx = 0;
         for (let o in options) {
@@ -38,7 +33,7 @@ function action(mode, type, selection) {
         if (this.optional.isPresent()) {
             cm.openNpc(9071000, "f_monster_park_quit");
         } else {
-            let content = "Welcome to #bChirithy#k! What can I help you with?\r\n#b";
+            let content = "Welcome to the #bChirithy#k navigation panel. What would you like to do?\r\n#d";
             let i = 0;
             for (let o in options) {
                 if (options.hasOwnProperty(o) && typeof options[o] != "function") {

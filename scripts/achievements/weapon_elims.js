@@ -1,6 +1,6 @@
 load('scripts/util_achievements.js');
 /* izarooni */
-const Rewards = [500, 1500, 3000, 4500, 5000, 6999, 10000];
+const Rewards = [5000, 10000, 20000, 50000, 100000, 250000, 500000];
 
 function getName() {
     return "Attain monster eliminations";

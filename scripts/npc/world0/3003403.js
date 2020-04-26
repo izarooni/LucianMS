@@ -23,6 +23,6 @@
  * @author BubblesDev, Rich for text
  */
 function start() {
-    cm.sendOk("#rBoss Arena#k #ecoming soon.#n \r\n\r\n#eWhat is Boss Arena?#n\r\nBoss Arena is an optional feature that lets you fight higher version bosses such as Cygnus, Hilla, Crimson Queens and more! You will be rewarded with rewards that can differ from each boss you fight.");
+    cm.sendOk("TBA");
     cm.dispose();
 }

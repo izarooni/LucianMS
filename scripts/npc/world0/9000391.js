@@ -45,7 +45,7 @@ function action(mode, type, selection) {
             cm.sendSimple("Do you want to enter the Casino?\r\n#b#L1#Yes#k#l\r\n\#r#L2#No#k#l");
         } else if (status == 1) {
             if (selection == 1) {
-                cm.warp(810, 0);
+                cm.warp(430, 0);
                 cm.dispose();
             } else if (selection == 2) {
                 cm.sendOk("#eOkay, bye. Maybe another time?.#k");

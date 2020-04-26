@@ -35,9 +35,9 @@ var NORMAL = 2;
 var MAJOR = 3;
 var upgradeType = 0;
 var upgradeItem = 0;
-var tier1 = 4000000;
-var tier2 = 4000000;
-var tier3 = 4000000;
+var tier1 = 4011510;
+var tier2 = 4011509;
+var tier3 = 4011508;
 
 function start() {
     status = -1;
@@ -63,17 +63,17 @@ function action(mode, type, selection) {
         if (selection == 0) {
             upgradeType = MINOR;
             upgradeItem = tier1;
-            let dialog = "Certainly. We need 1 snail shell #i" + tier1 + "# and we can upgrade your stats from +1~3!";
+            let dialog = "Certainly. We need 1 Chirithy Scroll (Bronze) #i" + tier1 + "# and we can upgrade your stats from +1~3!";
             cm.sendYesNo(dialog);
         } else if (selection == 1) {
             upgradeType = NORMAL;
             upgradeItem = tier2;
-            let dialog = "Certainly. We need 1 snail shell #i" + tier2 + "# and we can upgrade your stats from +3~9!";
+            let dialog = "Certainly. We need 1 Chirithy Scroll (Silver) #i" + tier2 + "# and we can upgrade your stats from +3~9!";
             cm.sendYesNo(dialog);
         } else if (selection == 2) {
             upgradeType = MAJOR;
             upgradeItem = tier3;
-            let dialog = "Certainly. We need 1 snail shell #i" + tier3 + "# and we can upgrade your stats from +5~15!";
+            let dialog = "Certainly. We need 1 Chirithy Scroll (Gold) #i" + tier3 + "# and we can upgrade your stats from +5~15!";
             cm.sendYesNo(dialog);
         } else if (selection == 3) {
 

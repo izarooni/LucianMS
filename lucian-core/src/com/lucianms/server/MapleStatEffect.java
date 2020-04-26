@@ -40,6 +40,9 @@ import provider.MapleDataTool;
 import tools.MaplePacketCreator;
 import tools.Pair;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.awt.*;
 import java.lang.ref.WeakReference;
 import java.util.List;
@@ -69,6 +72,7 @@ public class MapleStatEffect {
     private int damage, attackCount, fixdamage;
     private Point lt, rb;
     private byte bulletCount, bulletConsume;
+    private static final Logger LOGGER = LoggerFactory.getLogger(MapleClient.class);
 
     public static MapleStatEffect loadSkillEffectFromData(MapleData source, int skillid, boolean overtime) {
         return loadFromData(source, skillid, true, overtime);
@@ -418,7 +422,7 @@ public class MapleStatEffect {
                 case NightWalker.DARKNESS:
                 case ThunderBreaker.LIGHTNING:
                 case BlazeWizard.IFRIT:
-//                    statups.put(MapleBuffStat.SUMMON, 1);
+                    //statups.put(MapleBuffStat.SUMMON, 1);
                     break;
                 // ----------------------------- MONSTER STATUS ---------------------------------- //
                 case Crusader.ARMOR_CRASH:
@@ -692,6 +696,7 @@ public class MapleStatEffect {
                 remove.dispose();
             }
             applyfrom.getMap().spawnSummon(summon);
+            applyfrom.handleSummons(System.currentTimeMillis() + getDuration(), summon);
             summon.addHP(x);
             if (isBeholder()) {
                 summon.addHP(1);
@@ -828,15 +833,18 @@ public class MapleStatEffect {
         }
 
         if (isMonsterRiding) {
+            //LOGGER.warn("Yo I'm riding a monster :)");
             MapleMount vehicle = applyto.getVehicle();
 
             if (sourceid == Corsair.BATTLESHIP) {
                 applyto.setVehicle(vehicle = new MapleMount(applyto, 1932000, sourceid));
+                //LOGGER.warn("I made it to Corsair :D");
                 if (applyto.getBattleshipHp() == 0) {
                     applyto.resetBattleshipHp();
                 }
                 localStats = Map.of(MapleBuffStat.RIDE_VEHICLE, new BuffContainer(this, null, currentTime, vehicle.getItemId()));
             } else if (sourceid == Beginner.MONSTER_RIDER) {
+                //LOGGER.warn("I made it to Monster Rider");
                 Item item = applyfrom.getInventory(MapleInventoryType.EQUIPPED).getItem((byte) -18);
                 if (item == null) {
                     return;
@@ -858,7 +866,10 @@ public class MapleStatEffect {
         applyto.announce(MaplePacketCreator.setTempStats(localStats));
         if (!localStats.isEmpty()) {
             if (isMonsterRiding) {
+                //LOGGER.warn("Final Monster check");
+                //applyto.announce(MaplePacketCreator.showMonsterRiding(applyto.getId(), applyto.getVehicle()));
                 map.sendPacketExclude(MaplePacketCreator.setRemoteTempStats(applyto, localStats), applyto);
+                //applyto.registerEffect(this, localStats, duration, task);
             } else if (isMorph()) {
                 map.sendPacketExclude(MaplePacketCreator.giveForeignBuff(applyto.getId(), Map.of(MapleBuffStat.MORPH, getMorph(applyto))), applyto);
             }
@@ -869,7 +880,8 @@ public class MapleStatEffect {
 //                remote = MaplePacketCreator.giveForeignBuff(applyto.getId(), Map.of(MapleBuffStat.DARK_SIGHT, 0));
 //            } else if (isCombo()) {
 //                remote = MaplePacketCreator.giveForeignBuff(applyto.getId(), statups);
-//            } else if (isMonsterRiding()) {
+//            } else
+//            if (isMonsterRiding()) {
 //                local = MaplePacketCreator.giveBuff(vehicle.getItemId(), duration, localStats);
 //                remote = MaplePacketCreator.showMonsterRiding(applyto.getId(), vehicle);
 //            } else if (isShadowPartner()) {
@@ -886,9 +898,11 @@ public class MapleStatEffect {
             CancelEffectAction cancelAction = new CancelEffectAction(applyto, this, currentTime);
             //Task task = TaskExecutor.createTask(cancelAction, duration * 1000L);
             Task task = TaskExecutor.createTask(cancelAction, duration * 1000);
-            applyto.registerEffect(this, localStats, currentTime + duration, task);
+            //applyto.registerEffect(this, localStats, currentTime + duration, task);
+            applyto.registerEffect(this, localStats, duration, task);
 
             if (sourceid == Corsair.BATTLESHIP) {
+                //LOGGER.warn("Battleship time");
                 applyto.announce(MaplePacketCreator.skillCooldown(5221999, applyto.getBattleshipHp() / 10));
             }
         }

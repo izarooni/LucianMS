@@ -32,14 +32,16 @@ function action(mode, type, selection) {
             //+ "\r\n#L3#Give me vote points#l"
             + "\r\n#L3#Make me immortal#l"
             + "\r\n#L4#Give me NX#l"
-            + "\r\n#L5#Clone me#l");
+            + "\r\n#L5#Clone me#l"
+            + "\r\n#L6#Give me a Lucid Crystal#l");
     } else if (status == 2) {
         switch (selection) {
         //    case 1:
         //        cm.sendGetText(usernameError + "\r\nWho is it that you wish to kill?");
          //       return;
             case 1: {
-                let amount = Packages.tools.Randomizer.rand(5, 12);
+                //let amount = Packages.tools.Randomizer.rand(5, 12);
+                let amount = 1;
                 if (InventoryModifier.checkSpace(client, ServerConstants.CURRENCY, amount, "")) {
                     cm.gainItem(ServerConstants.CURRENCY, amount, true);
                     cm.sendOk(`Wish granted. I shall give you #b${amount} #z${ServerConstants.CURRENCY}#`);
@@ -81,6 +83,16 @@ function action(mode, type, selection) {
                     cm.sendOk("Wish granted. I shall give you a clone that will battle with you for 60 minutes");
                 } else {
                     cm.sendOk("You already have a clone!");
+                    return cm.dispose();
+                }
+                break;
+            case 6:
+                amount = 1;
+                if (InventoryModifier.checkSpace(client, 4011502, amount, "")) {
+                    cm.gainItem(4011502, amount, true);
+                    cm.sendOk(`Wish granted. I shall give you #b${amount} #z${4011502}#`);
+                } else {
+                    cm.sendOk("You currently do not have enough space in your #b" + ItemConstants.getInventoryType(crystal).name() + "#k inventory");
                     return cm.dispose();
                 }
                 break;

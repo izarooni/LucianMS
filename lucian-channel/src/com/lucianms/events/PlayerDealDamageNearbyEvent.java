@@ -35,6 +35,7 @@ import com.lucianms.server.life.FakePlayer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import tools.MaplePacketCreator;
+import tools.Randomizer;
 
 import java.util.Iterator;
 import java.util.List;
@@ -134,11 +135,12 @@ public final class PlayerDealDamageNearbyEvent extends AbstractDealDamageEvent {
         }
         if (attackInfo.numAttacked > 0 && attackInfo.skill == DragonKnight.SACRIFICE) {
             int totDamageToOneMonster = 0; // sacrifice attacks only 1 mob with 1 attack
-            final Iterator<List<Integer>> dmgIt = attackInfo.allDamage.values().iterator();
+            /* final Iterator<List<Integer>> dmgIt = attackInfo.allDamage.values().iterator();
             if (dmgIt.hasNext()) {
                 totDamageToOneMonster = dmgIt.next().get(0);
-            }
-            int remainingHP = player.getHp() - totDamageToOneMonster * attackInfo.getAttackEffect(player, null).getX() / 100;
+            } */
+            int remainingHP = player.getHp() - player.getMaxHp() * (int) ((5 + Randomizer.nextDouble(2)) / 100);
+            //int remainingHP = player.getHp() - totDamageToOneMonster * attackInfo.getAttackEffect(player, null).getX() / 100;
             if (remainingHP > 1) {
                 player.setHp(remainingHP);
             } else {

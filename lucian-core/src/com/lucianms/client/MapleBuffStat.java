@@ -114,7 +114,8 @@ public enum MapleBuffStat {
         }
     },
     GUIDED_BULLET(87),
-    ZOMBIFY(88);
+    ZOMBIFY(88),
+    ITEM_PAD(89);
     private final int i;
     private final int index;
 

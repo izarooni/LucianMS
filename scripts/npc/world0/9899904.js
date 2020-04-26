@@ -19,23 +19,40 @@
     You should have received a copy of the GNU Affero General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
-/* @Author Aexr
- * 2401000.js: Horntail's Cave - Summons Horntail.
-*/
 /*
-function act() {
-    rm.changeMusic("Bgm14/HonTale");
-    if (rm.getReactor().getMap().getMonsterById(8810026) == null) {
-        rm.spawnMonster(8810026,71,260);
-    }
-    rm.mapMessage(6, "From the depths of his cave, here comes Horntail!");
-}*/
+ * @author BubblesDev, Rich for text
+ */
 
-function act() {
-	rm.changeMusic("Bgm14/HonTale");
-	rm.spawnMonster(8810026, 71, 260);
-	rm.killMonster(8810026);
-	rm.mapMessage(6, "From the depths of his cave, here comes Horntail!");
-	rm.createMapMonitor(240050400,"sp");
-	rm.getReactor().getMap().addMapTimer(12 * 60 * 60, 240000000);
+
+function start() {
+    cm.sendOk("The Vulpes Union is not implemented yet.");
+    cm.dispose();
 }
+
+
+/*
+function start() {
+    status = -1;
+    action(1, 0, 0);
+}
+
+function action(mode, type, selection) {
+    if (mode < 1) {
+        cm.dispose();
+        return;
+    } else {
+        status++;
+    }
+    if (status == 0) {
+        cm.sendGetNumber("#?", 1, 1, 10000);
+    }
+    if (status == 1) {
+        if (selection == 3332) {
+            cm.warp(331001000);
+        }
+        else {
+            cm.dispose();
+        }
+    }
+}
+*/

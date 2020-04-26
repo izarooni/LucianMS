@@ -24,6 +24,7 @@ package com.lucianms.client;
 import at.favre.lib.crypto.bcrypt.BCrypt;
 import com.lucianms.BanManager;
 import com.lucianms.client.inventory.MapleInventoryType;
+import com.lucianms.features.GenericEvent;
 import com.lucianms.io.scripting.npc.NPCConversationManager;
 import com.lucianms.io.scripting.npc.NPCScriptManager;
 import com.lucianms.io.scripting.quest.QuestActionManager;
@@ -543,8 +544,11 @@ public class MapleClient implements Disposable {
             if (player != null) {
                 player.getMap().removePlayer(player);
                 getWorldServer().getPlayerStorage().remove(player.getId());
-                player.getGenericEvents().forEach(e -> e.onPlayerDisconnect(player));
-                player.getGenericEvents().clear();
+                List<GenericEvent> events = player.getGenericEvents();
+                if(!events.isEmpty()) {
+                    events.forEach(e -> e.onPlayerDisconnect(player));
+                    player.getGenericEvents().clear();
+                }
 
                 for (MapleQuestStatus status : player.getStartedQuests()) {
                     //This is for those quests that you have to stay logged in for a certain amount of time

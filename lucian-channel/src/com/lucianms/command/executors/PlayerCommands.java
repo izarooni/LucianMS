@@ -68,6 +68,7 @@ public class PlayerCommands extends CommandExecutor {
         addCommand("help", this::Help, "Show a list of player commands");
         addCommand("commands", this::Help, "Show a list of player commands");
         addCommand("chirithy", this::Chirithy, "Opens the Chirithy NPC");
+        addCommand("exppermin", this::ExpRate,"Shows how much EXP you've gained per minute");
 
         addCommand("joinevent", this::ParticipateEvent, "Join a GM hosted event");
         addCommand("leaveevent", this::ParticipateEvent, "Leave a GM hosted event");
@@ -207,6 +208,11 @@ public class PlayerCommands extends CommandExecutor {
         }
     }
 
+    private void ExpRate(MapleCharacter player, Command cmd, CommandArgs args){
+
+       player.getExpPerMin();
+        //player.sendMessage("Usage: !{} <username> <amount>", cmd.getName());
+    }
     private void Tag(MapleCharacter player, Command cmd, CommandArgs args) {
         MapleMap map = player.getMap();
         if (!((boolean) map.getVariables().checkProperty(TAG_TOGGLE, false))) {
@@ -257,7 +263,7 @@ public class PlayerCommands extends CommandExecutor {
 
     private void Chirithy(MapleCharacter player, Command cmd, CommandArgs args) {
         if (!JailManager.isJailed(player.getId())) {
-            NPCScriptManager.start(player.getClient(), 2007, "f_multipurpose");
+            NPCScriptManager.start(player.getClient(), 9899972, "f_multipurpose");
         } else {
             player.sendMessage(5, "You cannot do that while jailed.");
         }

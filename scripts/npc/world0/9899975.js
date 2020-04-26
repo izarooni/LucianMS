@@ -40,7 +40,7 @@ function action(mode, type, selection) {
         status++;
     }
     if (status == 1) {
-        let content = "Hello, #h #!\r\nHere you can attempt the easiest or hardest challenges of your life.\r\n\r\nEvery jump quest completion rewards arcade coins. Depending on the difficulty, you will be rewarded different amounts of coins.\r\n\r\n#bEasy#k: 5 #barcade coins#k\r\n#dIntermediate#k: 7 #barcade coins#k\r\n#rHard#k: 10 #barcade coins#k\r\n\r\n#eEasy Difficulty#n:";
+        let content = "Hello, #b#h #!#k\r\nHere you can attempt the easiest or hardest challenges of your life.";
         for (let i = 0; i < maps_easy.length; i++) {
             let map_name = maps_easy[i][1];
             content += `\r\n#L${i}#${map_name}#l`;

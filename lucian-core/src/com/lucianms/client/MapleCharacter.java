@@ -157,6 +157,8 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Di
     private long portaldelay, lastcombo;
     private long dojoFinish, lastfametime, lastHealed;
     private long createDate;
+    private long expGained = 0;
+    private long timeSinceLastExp = System.currentTimeMillis();
     private boolean muted;
     private boolean debug;
     private boolean isbanned;
@@ -177,9 +179,10 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Di
     private AtomicInteger gachaexp = new AtomicInteger();
 
     //region collections
-    private ScheduledExecutorService executor = Executors.newScheduledThreadPool(1);
+    private ScheduledExecutorService executor = Executors.newScheduledThreadPool(2);
     private ScheduledFuture<?> destroyBuffs = null;
-    private final Map<MapleStatEffect, Long> currentBuffs = new HashMap<>();
+    private ScheduledFuture<?> destroySummons = null;
+    private final Map<MapleStatEffect, Map<Long, Long>> currentBuffs = new HashMap<>();
     private final ArrayList<Task> tasks = new ArrayList<>();
     private final ArrayList<String> blockedPortals = new ArrayList<>();
     private final ArrayList<Integer> excluded = new ArrayList<>();
@@ -202,6 +205,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Di
     private Map<String, Achievement> achievements = new HashMap<>();
     private Map<Integer, CQuestData> customQuests = new HashMap<>();
     private Map<Integer, MapleSummon> summons = new LinkedHashMap<>();
+    private Map<MapleSummon, Long> currentSummons = new LinkedHashMap<>();
     private HashMap<Integer, MapleKeyBinding> keymap = new HashMap<>();
     private HashMap<Integer, CoolTimeContainer> coolDowns = new HashMap<>(50);
     //endregion
@@ -1328,19 +1332,42 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Di
         return canDoor;
     }
 
+    public void handleSummons(long endTime, MapleSummon summon){
+        currentSummons.put(summon, endTime);
+    }
+    public void startSummonTask() {
+
+        if (destroySummons == null) {
+            Runnable destroy = () -> {
+                currentSummons.forEach((summon, endTime) -> {
+                        if (System.currentTimeMillis() > endTime) {
+                            getMap().sendPacket(MaplePacketCreator.removeSummon(summon, true));
+                            getMap().removeMapObject(summon);
+                            summon.dispose();
+                        }
+                });
+
+            };
+            //LOGGER.warn("startBuffTask started");
+            destroySummons = executor.scheduleAtFixedRate(destroy, 5, 1, TimeUnit.SECONDS);
+        }
+
+    }
+
     public void startBuffTask() {
         if (destroyBuffs == null) {
             Runnable destroy = () -> {
                 currentBuffs.forEach((key, value) -> {
                     //LOGGER.warn(" "+ System.currentTimeMillis() + " " + value + " ");
-                    if (System.currentTimeMillis() > value) {
-                        cancelEffect(key, -1, false);
-
-                    }
+                    value.forEach((duration, start) -> {
+                        if (System.currentTimeMillis() - start > duration) {
+                            cancelEffect(key, -1, false);
+                        }
+                    });
                 });
 
             };
-            LOGGER.warn("startBuffTask started");
+            //LOGGER.warn("startBuffTask started");
             destroyBuffs = executor.scheduleAtFixedRate(destroy, 5, 1, TimeUnit.SECONDS);
         }
     }
@@ -1595,6 +1622,14 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Di
             client.announce(MaplePacketCreator.showOwnBerserk(skillLevel, enabled));
             getMap().broadcastMessage(this, MaplePacketCreator.showBerserk(getId(), skillLevel, enabled), false);
         }
+    }
+
+    public void getExpPerMin(){
+        long timeSince = (System.currentTimeMillis() - timeSinceLastExp);
+        timeSinceLastExp = System.currentTimeMillis();
+        long rate = (expGained / (timeSince/1000)) * 60;
+        expGained = 0;
+        sendMessage("Your current EXP/Min is {}.", rate);
     }
 
     public void checkMonsterAggro(MapleMonster monster) {
@@ -1992,11 +2027,12 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Di
 
         if (getParty() != null) {
             if (getParty().hasUnion("Kirin") && getParty().getPlayers().size() > 1) {
-                gain += (long) (getParty().unionBonus("Kirin") * 0.02 * gain);
+                gain += (long) (getParty().unionBonus("Kirin") * 0.05 * gain);
             }
         }
 
         long totalExpGain = gain + equip + party;
+        expGained += totalExpGain;
         int localLevel = level;
         long newExp = exp.get() + totalExpGain;
         if (show) {
@@ -3182,7 +3218,16 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Di
         int localMaxHp = 0;
         int localMaxMp = 0;
 
-        //region inc hp/mp
+        //autojob
+        if (!(isBeginnerJob()) && (getRebirths() < 1)) {
+            for (int i = 1; i <= levels; i++) {
+                if ((getLevel() + i) == 70 || (getLevel() + i) == 120) {
+                    MapleJob newJob = MapleJob.getById(getJob().getId() + 1);
+                    changeJob(newJob);
+                }
+            }
+        }
+
         if (job == MapleJob.BEGINNER || job == MapleJob.NOBLESSE || job == MapleJob.LEGEND || job == MapleJob.EVAN) {
             localMaxHp = Randomizer.rand(12, 16);
             localMaxMp = Randomizer.rand(10, 12);
@@ -3231,7 +3276,18 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Di
         if (remainingAp <= Short.MAX_VALUE && remainingAp + (5 * levels) > Short.MAX_VALUE) {
             sendMessage("Your AP has exceeded 32,767 and will not display properly in the stats window. Use @checkme to view your AP");
         }
+
         remainingAp += (5 * levels);
+
+        //union
+        if (getUnion().getName().equalsIgnoreCase("Ursus")) {
+            for(int i = 1; i < levels; i++) {
+                if ((getLevel() + i) % 10 == 0) {
+                    remainingAp += 5;
+                }
+            }
+        }
+
         if (!isBeginnerJob()) {
             //gainSp(3);
             setRemainingSp(getRemainingSp() + 3);
@@ -3524,8 +3580,8 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Di
             localdex += getDex() * mwarr / 100;
             localint_ += getInt() * mwarr / 100;
             localluk += getLuk() * mwarr / 100;
-    }
-
+        }
+/*
         if (getParty() != null) {
             if (getParty().hasUnion("Ursus")) {
                 int bonus = getParty().unionBonus("Ursus");
@@ -3535,7 +3591,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Di
                 localluk += getLuk() * bonus / 100;
             }
         }
-
+*/
         if (job.isA(MapleJob.BOWMAN)) {
             Skill expert = null;
             if (job.isA(MapleJob.MARKSMAN)) {
@@ -3661,7 +3717,14 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Di
                 }
             }, 5000, 5000);
         }
-        currentBuffs.put(effect, starttime);
+        LOGGER.warn(" " + effect.getSourceId() + " " + Beginner.MONSTER_RIDER);
+        if (effect.getSourceId() != Beginner.MONSTER_RIDER) {
+            LOGGER.warn("I'm not a monster rider!");
+            Map<Long, Long> timerMap = new HashMap<>();
+            timerMap.put(starttime, System.currentTimeMillis());
+            currentBuffs.put(effect, timerMap);
+        }
+
         effects.putAll(stats);
         updateLocalizedStats();
     }
@@ -3955,7 +4018,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Di
                     "    hell_bosspoints      = ?,\n" +
                     "    occupation_exp       = ?,\n" +
                     "    `union`              = ?,\n" +
-                    "    union_rank           = ?\n"  +
+                    "    union_rank           = ?\n" +
                     "WHERE id = ?")) {
                 ps.setInt(1, level);
                 ps.setInt(2, fame);

@@ -17,7 +17,7 @@ function action(mode, type, selection) {
         status++;
     }
     if (status == 1) {
-        var content = "Hello, #r#h ##k! I am the #rPVP Master#k, where would you like to go?\r\n";
+        var content = "Hello, #r#h ##k! I am the #rPVP Master#k, where would you like to go?\r\n\r\nYou can turn on PVP by using the command #e@PVP#k\r\n\r\n";
         for (var i = 0; i < maps.length; i++) {
             content += "\r\n#L" + i + "#" + maps[i][1] + "#l";
         }

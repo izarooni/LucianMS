@@ -2,10 +2,10 @@
     "WhitelistEnabled": "false",
     "UseNewEncryption": "true",
 
-    "ServerHost": "localhost",
-    "ChannelServer": "localhost",
+    "ServerHost": "108.61.37.98",
+    "ChannelServer": "108.61.37.98",
     "LoginBasePort": "8484",
     "ChannelBasePort": "7575",
 
-    "EmergencyExcludes": ""
+    "EmergencyExcludes": "400, 405, 406, 407, 408, 409, 410, 599000002, 599000001, 599000003"
 }

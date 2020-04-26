@@ -21,7 +21,7 @@ function action(mode, type, selection) {
         .setMaxLevel(200) // set the max level for entering the dungeon
         .setMinLevel(20) // set the minimal level for entering the dungeon
         .setScaleEXP(true) // scale EXP to level
-        .setScaleFromTotal(10) // if scaleEXP is true, set how much to scale it
+        .setScaleFromTotal(300) // if scaleEXP is true, set how much to scale it
         .setTimeLimit(60) // time limit in seconds
         .setReturnMap(910000000) // set return point
         .setMonstersPerPoint(1) // monsters per spawnpoint

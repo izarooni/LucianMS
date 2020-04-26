@@ -20,9 +20,9 @@ function testForKill(player, monsterId) {
 }
 
 function reward(player) {
-    return tryGiveItem(player, [new RewardItem(ServerConstants.CURRENCY, 10)]);
+    return tryGiveItem(player, [new RewardItem(ServerConstants.CURRENCY, 1)]);
 }
 
 function readableRewards(rr) {
-    return rr.add(`10x #z${ServerConstants.CURRENCY}#`);
+    return rr.add(`1x #z${ServerConstants.CURRENCY}#`);
 }

@@ -621,15 +621,16 @@ public class PlayerCashItemUseEvent extends PacketEvent implements Cleaner.Clean
                 break;
             }
             case 545: { // MiuMiu's travel store
-                if (player.getShop() == null) {
+                //if (player.getShop() == null) {
                     MapleShop shop = MapleShopFactory.getInstance().getShop(1338);
                     if (shop != null) {
                         shop.sendShop(client);
                         remove(client, itemID);
                     }
-                } else {
+                //} else {
                     client.announce(MaplePacketCreator.enableActions());
-                }
+                //}
+                //}
                 break;
             }
             case 552: {

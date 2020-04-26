@@ -228,6 +228,7 @@ public class PlayerLoginEvent extends PacketEvent {
         player.checkBerserk();
         player.setRates();
         player.startBuffTask();
+        player.startSummonTask();
         // NPCScriptManager.start(client, 9000037, "f_daily_login");
         return null;
     }

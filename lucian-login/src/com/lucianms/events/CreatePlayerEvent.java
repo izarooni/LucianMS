@@ -129,10 +129,12 @@ public class CreatePlayerEvent extends PacketEvent {
         newchar.setHair(hair);
         newchar.setFace(face);
 
-        newchar.setMapId(90000000);
+        newchar.setMapId(749081000);
         if (jobID == 0) { // Knights of Cygnus
-            newchar.setJob(MapleJob.NOBLESSE);
-            newchar.getInventory(MapleInventoryType.ETC).addItem(new Item(4161047, (short) 0, (short) 1));
+            //newchar.setJob(MapleJob.NOBLESSE);
+            newchar.setJob(MapleJob.BEGINNER);
+            newchar.getInventory(MapleInventoryType.ETC).addItem(new Item(4161001, (short) 0, (short) 1));
+            //newchar.getInventory(MapleInventoryType.ETC).addItem(new Item(4161047, (short) 0, (short) 1));
         } else if (jobID == 1) { // Adventurer
             newchar.setJob(MapleJob.BEGINNER);
             newchar.getInventory(MapleInventoryType.ETC).addItem(new Item(4161001, (short) 0, (short) 1));

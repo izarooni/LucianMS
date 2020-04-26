@@ -32,10 +32,7 @@ function action(mode, type, selection) {
     }
 
     if (status == 0) {
-
-            cm.sendSimple("Hello. I'm the Chirithy #bDonor Points#k NPC.\r\n"
-            + "\r\n#d#L0#I would like to buy Perma Lidium with my DP#l"
-            + "\r\n#L1#Open the DP Shop!#l");
+        cm.openNpc(9901755, "dp-shop");
     }
 
     else if(status ==1){

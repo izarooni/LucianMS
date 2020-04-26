@@ -1,12 +1,15 @@
 /* izarooni */
 let status = 0;
 let MirrorSelections = [
-    new Mirror(0, "Ariant Coliseum", 980010000, 3),
-    new Mirror(0, "Mu Lung Dojo", 925020000),
-    new Mirror(0, "Monster Carnival 1", 980000000),
-    new Mirror(0, "Monster Carnival 2", 980030000),
-    undefined,
-    new Mirror(0, "Construction Site", 910320000),
+    new Mirror(0, "Lion Kings Castle", 211060010),
+	new Mirror(0, "Gate to the future", 271000000),
+	new Mirror(0, "Noragami Aragato", 551030800),
+	new Mirror(0, "Twilight Perion", 273000000),
+	new Mirror(0, "Dark World Tree", 105300100),
+	new Mirror(0, "Arcane River", 450001000),
+	new Mirror(0, "End of The World", 90000015),
+
+	
 ];
 
 function action(mode, type, selection) {
