@@ -7,9 +7,7 @@ var quests = [
     2, // maple collector
     [3, 20], // evolve ring
     21, // golems
-    22,  // just toys
-    23, // castle crusader
-    24, // from the past
+    [22, 24], // Arcane River
     27, // beginners luck
     32, // dark cave
     33, // mystery in space

@@ -5643,3 +5643,869 @@
 [Sun Apr 26 14:47:25 EDT 2020] ~ kerrigan: hide 
 [Sun Apr 26 14:47:55 EDT 2020] ~ kerrigan: search item black mage
 [Sun Apr 26 14:47:59 EDT 2020] ~ kerrigan: item 4011504
+[Sun Apr 26 15:11:53 EDT 2020] ~ Kyle: online 
+[Sun Apr 26 15:13:31 EDT 2020] ~ Kyle: search item oceanic
+[Sun Apr 26 15:14:14 EDT 2020] ~ Kyle: search item water granos
+[Sun Apr 26 15:17:49 EDT 2020] ~ Kyle: search cash erda
+[Sun Apr 26 15:19:11 EDT 2020] ~ Kyle: item 1073019
+[Sun Apr 26 15:19:52 EDT 2020] ~ Kyle: item 1052865
+[Sun Apr 26 15:20:07 EDT 2020] ~ Kyle: item 1004384
+[Sun Apr 26 15:20:19 EDT 2020] ~ Kyle: item 1082364
+[Sun Apr 26 15:20:31 EDT 2020] ~ Kyle: item 1082634
+[Sun Apr 26 15:23:46 EDT 2020] ~ Kyle: search item sealed genesis
+[Sun Apr 26 15:23:53 EDT 2020] ~ Kyle: search item genesis
+[Sun Apr 26 15:24:05 EDT 2020] ~ Kyle: search item arcane umbra
+[Sun Apr 26 15:24:20 EDT 2020] ~ Kyle: item 1382265
+[Sun Apr 26 15:25:34 EDT 2020] ~ Kyle: cleardrops 
+[Sun Apr 26 15:27:57 EDT 2020] ~ Kyle: itemvac 
+[Sun Apr 26 15:28:46 EDT 2020] ~ Kyle: itemvac 
+[Sun Apr 26 15:30:09 EDT 2020] ~ Kyle: item 1382265
+[Sun Apr 26 15:30:10 EDT 2020] ~ Kyle: cleardrops 
+[Sun Apr 26 15:30:34 EDT 2020] ~ Kyle: itemvac 
+[Sun Apr 26 15:30:41 EDT 2020] ~ Kyle: itemvac 
+[Sun Apr 26 15:32:20 EDT 2020] ~ Kyle: search item balanced
+[Sun Apr 26 15:32:29 EDT 2020] ~ Kyle: item 2070018
+[Sun Apr 26 15:32:30 EDT 2020] ~ Kyle: item 2070018
+[Sun Apr 26 15:32:31 EDT 2020] ~ Kyle: item 2070018
+[Sun Apr 26 15:32:31 EDT 2020] ~ Kyle: item 2070018
+[Sun Apr 26 15:33:07 EDT 2020] ~ Kyle: search item arcane umbra
+[Sun Apr 26 15:33:32 EDT 2020] ~ Kyle: item 1152199
+[Sun Apr 26 15:33:43 EDT 2020] ~ Kyle: item 1152199
+[Sun Apr 26 15:33:55 EDT 2020] ~ Kyle: item 1472265
+[Sun Apr 26 15:34:17 EDT 2020] ~ Kyle: job 412
+[Sun Apr 26 15:35:15 EDT 2020] ~ Kyle: search item summoning
+[Sun Apr 26 15:35:24 EDT 2020] ~ Kyle: item 4006001 100
+[Sun Apr 26 15:35:42 EDT 2020] ~ Kyle: warper 
+[Sun Apr 26 15:35:43 EDT 2020] ~ Kyle: warper 
+[Sun Apr 26 15:38:16 EDT 2020] ~ Kyle: level 140
+[Sun Apr 26 15:39:31 EDT 2020] ~ Kyle: buffme 
+[Sun Apr 26 15:39:33 EDT 2020] ~ Kyle: buff 
+[Sun Apr 26 15:43:04 EDT 2020] ~ Kyle: buff 
+[Sun Apr 26 15:43:20 EDT 2020] ~ Kyle: level 178
+[Sun Apr 26 15:43:27 EDT 2020] ~ Kyle: level 196
+[Sun Apr 26 15:43:57 EDT 2020] ~ Kyle: level 250
+[Sun Apr 26 15:46:37 EDT 2020] ~ Kyle: job 1412
+[Sun Apr 26 15:48:26 EDT 2020] ~ Kyle: search item arcane umbra
+[Sun Apr 26 15:48:42 EDT 2020] ~ Kyle: item 1332279
+[Sun Apr 26 15:49:14 EDT 2020] ~ Kyle: job 422
+[Sun Apr 26 15:50:43 EDT 2020] ~ Kyle: buff 
+[Sun Apr 26 15:51:27 EDT 2020] ~ Kyle: itemvac 
+[Sun Apr 26 15:53:09 EDT 2020] ~ Kyle: buff 
+[Sun Apr 26 15:54:43 EDT 2020] ~ Kyle: itemvac 
+[Sun Apr 26 15:55:31 EDT 2020] ~ Kyle: itemvac 
+[Sun Apr 26 15:55:52 EDT 2020] ~ Kyle: itemvac 
+[Sun Apr 26 15:56:30 EDT 2020] ~ Kyle: job 312
+[Sun Apr 26 15:56:57 EDT 2020] ~ Kyle: search item arcane umbra
+[Sun Apr 26 15:57:10 EDT 2020] ~ Kyle: item 1452257
+[Sun Apr 26 16:00:01 EDT 2020] ~ Kyle: job 1312
+[Sun Apr 26 16:01:27 EDT 2020] ~ Kyle: job 232
+[Sun Apr 26 16:01:40 EDT 2020] ~ Kyle: job 222
+[Sun Apr 26 16:04:40 EDT 2020] ~ Kyle: itemvac 
+[Sun Apr 26 16:05:27 EDT 2020] ~ Kyle: buff 
+[Sun Apr 26 16:05:39 EDT 2020] ~ Kyle: itemvac 
+[Sun Apr 26 16:07:03 EDT 2020] ~ Kyle: job 232
+[Sun Apr 26 16:08:57 EDT 2020] ~ Kyle: job 1212
+[Sun Apr 26 16:10:17 EDT 2020] ~ Kyle: itemvac 
+[Sun Apr 26 16:10:21 EDT 2020] ~ Kyle: debuff 
+[Sun Apr 26 16:11:08 EDT 2020] ~ Kyle: buff 
+[Sun Apr 26 16:13:33 EDT 2020] ~ Kyle: cleardrops 
+[Sun Apr 26 16:13:39 EDT 2020] ~ chief: warp smoothie
+[Sun Apr 26 16:13:45 EDT 2020] ~ Kyle: job 222
+[Sun Apr 26 16:13:47 EDT 2020] ~ chief: hide 
+[Sun Apr 26 16:14:44 EDT 2020] ~ Kyle: buff 
+[Sun Apr 26 16:16:15 EDT 2020] ~ Kyle: level 145
+[Sun Apr 26 16:16:26 EDT 2020] ~ Kyle: search item piece of time
+[Sun Apr 26 16:16:37 EDT 2020] ~ Kyle: item 4009096
+[Sun Apr 26 16:18:15 EDT 2020] ~ Kyle: clearinv etc
+[Sun Apr 26 16:18:27 EDT 2020] ~ Kyle: search item piece of dimensional
+[Sun Apr 26 16:18:35 EDT 2020] ~ Kyle: search item dimensional
+[Sun Apr 26 16:19:02 EDT 2020] ~ Kyle: search item cracked
+[Sun Apr 26 16:19:18 EDT 2020] ~ Kyle: item 4031179
+[Sun Apr 26 16:21:21 EDT 2020] ~ chief: warp smoothie
+[Sun Apr 26 16:21:47 EDT 2020] ~ Kyle: buff 
+[Sun Apr 26 16:22:15 EDT 2020] ~ Kyle: online 
+[Sun Apr 26 16:22:30 EDT 2020] ~ Kyle: warp smoothie
+[Sun Apr 26 16:23:19 EDT 2020] ~ Touka: hide 
+[Sun Apr 26 16:23:20 EDT 2020] ~ Touka: online 
+[Sun Apr 26 16:24:54 EDT 2020] ~ Touka: hide 
+[Sun Apr 26 16:25:51 EDT 2020] ~ Kyle: cleardrops 
+[Sun Apr 26 16:27:22 EDT 2020] ~ Touka: drop 5390029 50
+[Sun Apr 26 16:27:44 EDT 2020] ~ Kyle: warp smoothie
+[Sun Apr 26 16:28:05 EDT 2020] ~ Touka: drop 5390027 50
+[Sun Apr 26 16:28:11 EDT 2020] ~ Touka: drop 5390027 1
+[Sun Apr 26 16:29:52 EDT 2020] ~ Kyle: online 
+[Sun Apr 26 16:31:01 EDT 2020] ~ chief: stalker 
+[Sun Apr 26 16:31:39 EDT 2020] ~ Kyle: hide 
+[Sun Apr 26 16:31:40 EDT 2020] ~ Kyle: hide 
+[Sun Apr 26 16:31:44 EDT 2020] ~ Kyle: warp touka
+[Sun Apr 26 16:31:57 EDT 2020] ~ Kyle: hide 
+[Sun Apr 26 16:32:44 EDT 2020] ~ Touka: pnpc 2141000
+[Sun Apr 26 16:33:17 EDT 2020] ~ chief: warp smoothie
+[Sun Apr 26 16:36:14 EDT 2020] ~ chief: warp smoothie
+[Sun Apr 26 16:36:33 EDT 2020] ~ chief: warp smoothie
+[Sun Apr 26 16:37:19 EDT 2020] ~ Kyle: online 
+[Sun Apr 26 16:45:33 EDT 2020] ~ chief: heal smoothie
+[Sun Apr 26 16:49:22 EDT 2020] ~ chief: hide 
+[Sun Apr 26 16:49:23 EDT 2020] ~ chief: hide 
+[Sun Apr 26 16:49:38 EDT 2020] ~ chief: warp smoothie
+[Sun Apr 26 16:53:55 EDT 2020] ~ chief: warp smoothie
+[Sun Apr 26 16:53:59 EDT 2020] ~ chief: warp smoothie
+[Sun Apr 26 16:54:05 EDT 2020] ~ chief: hide 
+[Sun Apr 26 16:57:50 EDT 2020] ~ chief: hide 
+[Sun Apr 26 16:58:29 EDT 2020] ~ Kyle: online 
+[Sun Apr 26 16:59:04 EDT 2020] ~ Kyle: warp smoothie
+[Sun Apr 26 16:59:06 EDT 2020] ~ Kyle: warp smoothie
+[Sun Apr 26 16:59:15 EDT 2020] ~ Kyle: hide 
+[Sun Apr 26 17:03:35 EDT 2020] ~ Kyle: itemvac 
+[Sun Apr 26 17:05:00 EDT 2020] ~ chief: hide 
+[Sun Apr 26 17:05:18 EDT 2020] ~ Kyle: itemvac 
+[Sun Apr 26 17:05:27 EDT 2020] ~ Kyle: itemvac 
+[Sun Apr 26 17:06:09 EDT 2020] ~ Kyle: itemvac 
+[Sun Apr 26 17:07:17 EDT 2020] ~ Kyle: itemvac 
+[Sun Apr 26 17:07:22 EDT 2020] ~ Kyle: itemvac 
+[Sun Apr 26 17:07:30 EDT 2020] ~ Kyle: itemvac 
+[Sun Apr 26 17:08:03 EDT 2020] ~ Kyle: itemvac 
+[Sun Apr 26 17:08:35 EDT 2020] ~ Kyle: itemvac 
+[Sun Apr 26 17:08:38 EDT 2020] ~ chief: hide 
+[Sun Apr 26 17:08:46 EDT 2020] ~ Kyle: itemvac 
+[Sun Apr 26 17:08:50 EDT 2020] ~ Kyle: itemvac 
+[Sun Apr 26 17:09:05 EDT 2020] ~ Kyle: occupation 
+[Sun Apr 26 17:09:07 EDT 2020] ~ chief: hide 
+[Sun Apr 26 17:09:28 EDT 2020] ~ Kyle: occupation 3
+[Sun Apr 26 17:11:04 EDT 2020] ~ Kyle: level 30
+[Sun Apr 26 17:11:45 EDT 2020] ~ chief: warp smoothie
+[Sun Apr 26 17:11:48 EDT 2020] ~ chief: hide 
+[Sun Apr 26 17:12:13 EDT 2020] ~ Kyle: itemvac 
+[Sun Apr 26 17:13:23 EDT 2020] ~ Kyle: itemvac 
+[Sun Apr 26 17:13:27 EDT 2020] ~ Kyle: itemvac 
+[Sun Apr 26 17:13:47 EDT 2020] ~ Kyle: itemvac 
+[Sun Apr 26 17:14:07 EDT 2020] ~ Kyle: itemvac 
+[Sun Apr 26 17:14:48 EDT 2020] ~ Kyle: itemvac 
+[Sun Apr 26 17:14:52 EDT 2020] ~ Kyle: itemvac 
+[Sun Apr 26 17:15:01 EDT 2020] ~ Kyle: itemvac 
+[Sun Apr 26 17:15:21 EDT 2020] ~ Kyle: itemvac 
+[Sun Apr 26 17:15:24 EDT 2020] ~ Kyle: itemvac 
+[Sun Apr 26 17:15:27 EDT 2020] ~ Kyle: itemvac 
+[Sun Apr 26 17:15:31 EDT 2020] ~ Kyle: itemvac 
+[Sun Apr 26 17:15:41 EDT 2020] ~ Kyle: itemvac 
+[Sun Apr 26 17:15:47 EDT 2020] ~ Touka: hie 
+[Sun Apr 26 17:15:48 EDT 2020] ~ Touka: hide 
+[Sun Apr 26 17:15:52 EDT 2020] ~ Kyle: level 180
+[Sun Apr 26 17:16:07 EDT 2020] ~ Kyle: level 180
+[Sun Apr 26 17:16:09 EDT 2020] ~ Kyle: itemvac 
+[Sun Apr 26 17:16:48 EDT 2020] ~ Touka: hide 
+[Sun Apr 26 17:16:51 EDT 2020] ~ Kyle: itemvac 
+[Sun Apr 26 17:16:59 EDT 2020] ~ Kyle: occupation 1
+[Sun Apr 26 17:17:07 EDT 2020] ~ Kyle: occupation 1
+[Sun Apr 26 17:17:10 EDT 2020] ~ Kyle: itemvac 
+[Sun Apr 26 17:17:21 EDT 2020] ~ Kyle: itemvac 
+[Sun Apr 26 17:17:31 EDT 2020] ~ Kyle: itemvac 
+[Sun Apr 26 17:18:01 EDT 2020] ~ Kyle: itemvac 
+[Sun Apr 26 17:18:08 EDT 2020] ~ Touka: hide 
+[Sun Apr 26 17:18:21 EDT 2020] ~ Kyle: job 212
+[Sun Apr 26 17:19:07 EDT 2020] ~ Kyle: job 212
+[Sun Apr 26 17:19:08 EDT 2020] ~ Kyle: itemvac 
+[Sun Apr 26 17:19:53 EDT 2020] ~ Kyle: itemvac 
+[Sun Apr 26 17:20:06 EDT 2020] ~ Touka: reloadmap 
+[Sun Apr 26 17:21:12 EDT 2020] ~ Kyle: itemvac 
+[Sun Apr 26 17:21:26 EDT 2020] ~ Kyle: itemvac 
+[Sun Apr 26 17:21:32 EDT 2020] ~ Kyle: itemvac 
+[Sun Apr 26 17:21:51 EDT 2020] ~ Touka: search item arcane
+[Sun Apr 26 17:21:55 EDT 2020] ~ Kyle: job 422
+[Sun Apr 26 17:22:18 EDT 2020] ~ Touka: drop 1004809
+[Sun Apr 26 17:23:25 EDT 2020] ~ Kyle: search item arcane umbra
+[Sun Apr 26 17:23:37 EDT 2020] ~ Kyle: item 1332279
+[Sun Apr 26 17:23:47 EDT 2020] ~ Kyle: item 1342104
+[Sun Apr 26 17:23:59 EDT 2020] ~ chief: hide 
+[Sun Apr 26 17:24:04 EDT 2020] ~ Kyle: level 200
+[Sun Apr 26 17:24:28 EDT 2020] ~ Kyle: job 212
+[Sun Apr 26 17:25:56 EDT 2020] ~ Kyle: gmmap 
+[Sun Apr 26 17:26:17 EDT 2020] ~ Kyle: cleardrops 
+[Sun Apr 26 17:26:44 EDT 2020] ~ Kyle: search item arcane umbra mage
+[Sun Apr 26 17:26:54 EDT 2020] ~ Kyle: item 1004809
+[Sun Apr 26 17:27:01 EDT 2020] ~ Kyle: item 1192941
+[Sun Apr 26 17:27:09 EDT 2020] ~ Kyle: item 1102941
+[Sun Apr 26 17:27:20 EDT 2020] ~ Kyle: item 1082696
+[Sun Apr 26 17:27:34 EDT 2020] ~ Kyle: item 1053064
+[Sun Apr 26 17:27:44 EDT 2020] ~ Kyle: item 1073159
+[Sun Apr 26 17:27:58 EDT 2020] ~ Kyle: item 1152197
+[Sun Apr 26 17:29:20 EDT 2020] ~ Kyle: search item arcane umbra
+[Sun Apr 26 17:32:48 EDT 2020] ~ Kyle: gmmap 
+[Sun Apr 26 17:39:34 EDT 2020] ~ Touka: spawn 8641000
+[Sun Apr 26 17:39:35 EDT 2020] ~ Touka: killall 
+[Sun Apr 26 17:41:51 EDT 2020] ~ chief: gender 
+[Sun Apr 26 17:46:16 EDT 2020] ~ Touka: hide 
+[Sun Apr 26 17:51:03 EDT 2020] ~ Kyle: item 1582023
+[Sun Apr 26 17:51:33 EDT 2020] ~ Kyle: item 1482221
+[Sun Apr 26 17:55:41 EDT 2020] ~ pofo: hide 
+[Sun Apr 26 17:59:46 EDT 2020] ~ Touka: drop 1004808
+[Sun Apr 26 18:00:06 EDT 2020] ~ Touka: drop 1102940
+[Sun Apr 26 18:00:14 EDT 2020] ~ pofo: hide 
+[Sun Apr 26 18:00:34 EDT 2020] ~ pofo: hide 
+[Sun Apr 26 18:01:05 EDT 2020] ~ pofo: item 1012458
+[Sun Apr 26 18:01:18 EDT 2020] ~ Touka: drop 1082695
+[Sun Apr 26 18:03:04 EDT 2020] ~ Touka: drop 1053063
+[Sun Apr 26 18:03:52 EDT 2020] ~ Touka: drop 1073158
+[Sun Apr 26 18:05:05 EDT 2020] ~ pofo: hide 
+[Sun Apr 26 18:05:44 EDT 2020] ~ pofo: item 1053397
+[Sun Apr 26 18:11:06 EDT 2020] ~ pofo: hide 
+[Sun Apr 26 18:12:21 EDT 2020] ~ pofo: item 1052625
+[Sun Apr 26 18:12:26 EDT 2020] ~ Kyle: gmcmds 
+[Sun Apr 26 18:12:53 EDT 2020] ~ pofo: item 1053377
+[Sun Apr 26 18:16:14 EDT 2020] ~ pofo: hide 
+[Sun Apr 26 18:19:53 EDT 2020] ~ pofo: hide 
+[Sun Apr 26 18:21:36 EDT 2020] ~ Kyle: item 1004089
+[Sun Apr 26 18:21:47 EDT 2020] ~ Kyle: item 1102941
+[Sun Apr 26 18:22:00 EDT 2020] ~ Kyle: item 1082696
+[Sun Apr 26 18:22:13 EDT 2020] ~ Kyle: item 1053064
+[Sun Apr 26 18:22:13 EDT 2020] ~ pofo: hide 
+[Sun Apr 26 18:22:18 EDT 2020] ~ FeinT: hide 
+[Sun Apr 26 18:22:32 EDT 2020] ~ Kyle: item 1073159
+[Sun Apr 26 18:22:55 EDT 2020] ~ pofo: hide 
+[Sun Apr 26 18:23:07 EDT 2020] ~ Kyle: item 1004089
+[Sun Apr 26 18:23:17 EDT 2020] ~ Kyle: item 1004089
+[Sun Apr 26 18:23:23 EDT 2020] ~ pofo: hide 
+[Sun Apr 26 18:23:41 EDT 2020] ~ Kyle: search item arcane
+[Sun Apr 26 18:24:09 EDT 2020] ~ Kyle: item 1004809
+[Sun Apr 26 18:25:18 EDT 2020] ~ FeinT: drop 1008588
+[Sun Apr 26 18:25:18 EDT 2020] ~ FeinT: drop 1008589
+[Sun Apr 26 18:26:02 EDT 2020] ~ FeinT: drop 1008589
+[Sun Apr 26 18:26:05 EDT 2020] ~ FeinT: drop 1008590
+[Sun Apr 26 18:26:07 EDT 2020] ~ FeinT: drop 1008591
+[Sun Apr 26 18:28:47 EDT 2020] ~ pofo: item 1053399
+[Sun Apr 26 18:30:43 EDT 2020] ~ pofo: item 1004089
+[Sun Apr 26 18:40:15 EDT 2020] ~ pofo: warp fern
+[Sun Apr 26 18:49:57 EDT 2020] ~ pofo: hide 
+[Sun Apr 26 18:50:26 EDT 2020] ~ FeinT: hide 
+[Sun Apr 26 18:50:28 EDT 2020] ~ FeinT: saveall 
+[Sun Apr 26 18:51:35 EDT 2020] ~ FeinT: heal 
+[Sun Apr 26 18:52:13 EDT 2020] ~ FeinT: heal 
+[Sun Apr 26 18:52:33 EDT 2020] ~ FeinT: heal 
+[Sun Apr 26 18:52:35 EDT 2020] ~ pofo: warp smoothie
+[Sun Apr 26 18:52:40 EDT 2020] ~ pofo: warp fern
+[Sun Apr 26 18:54:17 EDT 2020] ~ FeinT: heal 
+[Sun Apr 26 18:54:40 EDT 2020] ~ FeinT: heal 
+[Sun Apr 26 18:54:50 EDT 2020] ~ FeinT: heal 
+[Sun Apr 26 18:54:57 EDT 2020] ~ FeinT: level 180
+[Sun Apr 26 18:55:46 EDT 2020] ~ FeinT: drop 4011506
+[Sun Apr 26 18:59:32 EDT 2020] ~ pofo: drop 3012016
+[Sun Apr 26 19:00:13 EDT 2020] ~ Kyle: search item lucid star
+[Sun Apr 26 19:00:46 EDT 2020] ~ Kyle: item 4011506 300
+[Sun Apr 26 19:00:50 EDT 2020] ~ pofo: drop 3010038
+[Sun Apr 26 19:00:51 EDT 2020] ~ pofo: drop 3010038
+[Sun Apr 26 19:00:53 EDT 2020] ~ Kyle: search item golden maple leaf
+[Sun Apr 26 19:01:05 EDT 2020] ~ Kyle: item 4000313 300
+[Sun Apr 26 19:04:28 EDT 2020] ~ Kyle: itemvac 
+[Sun Apr 26 19:05:08 EDT 2020] ~ Kyle: itemvac 
+[Sun Apr 26 19:05:17 EDT 2020] ~ Kyle: itemvac 
+[Sun Apr 26 19:05:21 EDT 2020] ~ Kyle: itemvac 
+[Sun Apr 26 19:05:45 EDT 2020] ~ Kyle: itemvac 
+[Sun Apr 26 19:05:54 EDT 2020] ~ Kyle: itemvac 
+[Sun Apr 26 19:06:14 EDT 2020] ~ Kyle: itemvac 
+[Sun Apr 26 19:06:16 EDT 2020] ~ Kyle: itemvac 
+[Sun Apr 26 19:06:18 EDT 2020] ~ Kyle: itemvac 
+[Sun Apr 26 19:06:20 EDT 2020] ~ Kyle: itemvac 
+[Sun Apr 26 19:06:38 EDT 2020] ~ Kyle: itemvac 
+[Sun Apr 26 19:06:45 EDT 2020] ~ Kyle: itemvac 
+[Sun Apr 26 19:06:59 EDT 2020] ~ Kyle: itemvac 
+[Sun Apr 26 19:07:40 EDT 2020] ~ Kyle: itemvac 
+[Sun Apr 26 19:08:22 EDT 2020] ~ Kyle: gmcmds 
+[Sun Apr 26 19:08:37 EDT 2020] ~ Kyle: itemq 
+[Sun Apr 26 19:09:11 EDT 2020] ~ Kyle: online 
+[Sun Apr 26 19:09:45 EDT 2020] ~ Kyle: search mob joyful
+[Sun Apr 26 19:09:59 EDT 2020] ~ Kyle: spawn 8641003
+[Sun Apr 26 19:12:12 EDT 2020] ~ Kyle: itemvac 
+[Sun Apr 26 19:15:29 EDT 2020] ~ Kyle: job 212
+[Sun Apr 26 19:18:44 EDT 2020] ~ Kyle: eventcmds 
+[Sun Apr 26 19:19:18 EDT 2020] ~ FeinT: heal 
+[Sun Apr 26 19:19:45 EDT 2020] ~ FeinT: heal 
+[Sun Apr 26 19:19:47 EDT 2020] ~ Kyle: rules 
+[Sun Apr 26 19:20:12 EDT 2020] ~ FeinT: heal 
+[Sun Apr 26 19:20:28 EDT 2020] ~ FeinT: saveall 
+[Sun Apr 26 19:22:18 EDT 2020] ~ pofo: warp fern
+[Sun Apr 26 19:22:25 EDT 2020] ~ pofo: warp fern
+[Sun Apr 26 19:22:28 EDT 2020] ~ pofo: hide 
+[Sun Apr 26 19:22:37 EDT 2020] ~ pofo: warp fern
+[Sun Apr 26 19:23:01 EDT 2020] ~ Kyle: warp pofo
+[Sun Apr 26 19:23:04 EDT 2020] ~ pofo: heal 
+[Sun Apr 26 19:23:50 EDT 2020] ~ FeinT: heal 
+[Sun Apr 26 19:28:12 EDT 2020] ~ Kyle: eventcmds 
+[Sun Apr 26 19:28:31 EDT 2020] ~ FeinT: level 15
+[Sun Apr 26 19:28:33 EDT 2020] ~ FeinT: level 180
+[Sun Apr 26 19:28:45 EDT 2020] ~ Kyle: oxmap 
+[Sun Apr 26 19:28:48 EDT 2020] ~ Kyle: warp ox
+[Sun Apr 26 19:29:02 EDT 2020] ~ Kyle: eventcmds 
+[Sun Apr 26 19:29:14 EDT 2020] ~ Kyle: event 
+[Sun Apr 26 19:29:45 EDT 2020] ~ Kyle: event start
+[Sun Apr 26 19:29:46 EDT 2020] ~ pofo: heal 
+[Sun Apr 26 19:29:47 EDT 2020] ~ pofo: heal 
+[Sun Apr 26 19:29:48 EDT 2020] ~ pofo: heal 
+[Sun Apr 26 19:30:00 EDT 2020] ~ Kyle: event new
+[Sun Apr 26 19:30:16 EDT 2020] ~ Kyle: event name Hide N Seek
+[Sun Apr 26 19:30:16 EDT 2020] ~ pofo: hp 2500
+[Sun Apr 26 19:30:19 EDT 2020] ~ Kyle: event start
+[Sun Apr 26 19:31:25 EDT 2020] ~ chief: hide 
+[Sun Apr 26 19:31:33 EDT 2020] ~ FeinT: saveall 
+[Sun Apr 26 19:33:29 EDT 2020] ~ FeinT: heal 
+[Sun Apr 26 19:33:50 EDT 2020] ~ FeinT: search npc dame knight
+[Sun Apr 26 19:33:59 EDT 2020] ~ chief: hide 
+[Sun Apr 26 19:41:05 EDT 2020] ~ FeinT: saveall 
+[Sun Apr 26 19:42:45 EDT 2020] ~ chief: hide 
+[Sun Apr 26 19:50:12 EDT 2020] ~ FeinT: search item susano
+[Sun Apr 26 19:50:16 EDT 2020] ~ FeinT: drop 3010813
+[Sun Apr 26 19:52:03 EDT 2020] ~ FeinT: search item cursed sasuke
+[Sun Apr 26 19:52:07 EDT 2020] ~ FeinT: drop 1004010
+[Sun Apr 26 19:52:08 EDT 2020] ~ FeinT: drop 1004011
+[Sun Apr 26 19:52:29 EDT 2020] ~ FeinT: search item susano
+[Sun Apr 26 19:52:35 EDT 2020] ~ FeinT: drop 1114523
+[Sun Apr 26 19:53:28 EDT 2020] ~ FeinT: drop 1114523
+[Sun Apr 26 19:53:29 EDT 2020] ~ FeinT: drop 1004011
+[Sun Apr 26 19:53:30 EDT 2020] ~ FeinT: drop 1004010
+[Sun Apr 26 19:53:40 EDT 2020] ~ FeinT: search item the god
+[Sun Apr 26 19:56:01 EDT 2020] ~ FeinT: drop 1008588
+[Sun Apr 26 19:56:29 EDT 2020] ~ FeinT: drop 01008586
+[Sun Apr 26 19:56:36 EDT 2020] ~ FeinT: drop 0100858
+[Sun Apr 26 19:56:39 EDT 2020] ~ FeinT: drop 0100854
+[Sun Apr 26 19:56:46 EDT 2020] ~ FeinT: drop 1008584
+[Sun Apr 26 19:56:51 EDT 2020] ~ FeinT: drop 1008584
+[Sun Apr 26 19:57:06 EDT 2020] ~ FeinT: search item monster can
+[Sun Apr 26 19:57:11 EDT 2020] ~ FeinT: drop 1442259
+[Sun Apr 26 19:57:18 EDT 2020] ~ FeinT: search item monster cap
+[Sun Apr 26 19:57:22 EDT 2020] ~ FeinT: drop 1008554
+[Sun Apr 26 19:57:56 EDT 2020] ~ FeinT: drop 1008582
+[Sun Apr 26 19:58:01 EDT 2020] ~ FeinT: drop 1008582
+[Sun Apr 26 19:58:51 EDT 2020] ~ FeinT: job 910
+[Sun Apr 26 20:00:38 EDT 2020] ~ FeinT: drop 1442094
+[Sun Apr 26 20:01:13 EDT 2020] ~ FeinT: search item pso2
+[Sun Apr 26 20:01:17 EDT 2020] ~ FeinT: drop 1008556
+[Sun Apr 26 20:01:36 EDT 2020] ~ FeinT: drop 1008555
+[Sun Apr 26 20:02:26 EDT 2020] ~ FeinT: heal 
+[Sun Apr 26 20:03:10 EDT 2020] ~ FeinT: search item d.va mech
+[Sun Apr 26 20:03:12 EDT 2020] ~ FeinT: drop 1902015
+[Sun Apr 26 20:08:29 EDT 2020] ~ FeinT: buff feint
+[Sun Apr 26 20:08:30 EDT 2020] ~ FeinT: buff chief
+[Sun Apr 26 20:08:33 EDT 2020] ~ FeinT: buff smoothie
+[Sun Apr 26 20:08:54 EDT 2020] ~ chief: warp smoothie
+[Sun Apr 26 20:08:57 EDT 2020] ~ FeinT: reloadmap 
+[Sun Apr 26 20:09:19 EDT 2020] ~ chief: warp smoothie
+[Sun Apr 26 20:10:30 EDT 2020] ~ FeinT: online 
+[Sun Apr 26 20:10:32 EDT 2020] ~ chief: warp feint
+[Sun Apr 26 20:10:37 EDT 2020] ~ chief: whx smoothie
+[Sun Apr 26 20:11:19 EDT 2020] ~ FeinT: heal 
+[Sun Apr 26 20:11:25 EDT 2020] ~ FeinT: heal 
+[Sun Apr 26 20:11:31 EDT 2020] ~ FeinT: heal 
+[Sun Apr 26 20:11:37 EDT 2020] ~ FeinT: heal 
+[Sun Apr 26 20:11:50 EDT 2020] ~ FeinT: heal 
+[Sun Apr 26 20:12:02 EDT 2020] ~ FeinT: heal 
+[Sun Apr 26 20:12:03 EDT 2020] ~ chief: heal 
+[Sun Apr 26 20:12:07 EDT 2020] ~ FeinT: heal 
+[Sun Apr 26 20:12:08 EDT 2020] ~ FeinT: heal 
+[Sun Apr 26 20:12:12 EDT 2020] ~ FeinT: heal 
+[Sun Apr 26 20:12:27 EDT 2020] ~ FeinT: job 910
+[Sun Apr 26 20:12:28 EDT 2020] ~ FeinT: heal 
+[Sun Apr 26 20:12:42 EDT 2020] ~ FeinT: job 422
+[Sun Apr 26 20:12:51 EDT 2020] ~ FeinT: job 910
+[Sun Apr 26 20:12:52 EDT 2020] ~ FeinT: heal 
+[Sun Apr 26 20:12:57 EDT 2020] ~ FeinT: heal 
+[Sun Apr 26 20:13:05 EDT 2020] ~ FeinT: heal 
+[Sun Apr 26 20:13:07 EDT 2020] ~ FeinT: heal 
+[Sun Apr 26 20:13:13 EDT 2020] ~ FeinT: heal 
+[Sun Apr 26 20:13:14 EDT 2020] ~ chief: heal 
+[Sun Apr 26 20:13:18 EDT 2020] ~ FeinT: heal 
+[Sun Apr 26 20:13:19 EDT 2020] ~ FeinT: heal 
+[Sun Apr 26 20:13:28 EDT 2020] ~ FeinT: heal 
+[Sun Apr 26 20:13:33 EDT 2020] ~ FeinT: heal 
+[Sun Apr 26 20:13:34 EDT 2020] ~ FeinT: heal 
+[Sun Apr 26 20:13:36 EDT 2020] ~ FeinT: heal 
+[Sun Apr 26 20:13:50 EDT 2020] ~ FeinT: warp smoothie 551030902
+[Sun Apr 26 20:13:54 EDT 2020] ~ FeinT: warp chief 551030902
+[Sun Apr 26 20:14:06 EDT 2020] ~ FeinT: warp feint 551030902
+[Sun Apr 26 20:14:16 EDT 2020] ~ FeinT: warp feint 551030902
+[Sun Apr 26 20:14:23 EDT 2020] ~ chief: warp smoothie
+[Sun Apr 26 20:14:27 EDT 2020] ~ chief: warp smoothie
+[Sun Apr 26 20:14:33 EDT 2020] ~ chief: warp smoothie
+[Sun Apr 26 20:14:34 EDT 2020] ~ FeinT: hide 
+[Sun Apr 26 20:14:47 EDT 2020] ~ FeinT: warp 99
+[Sun Apr 26 20:14:51 EDT 2020] ~ FeinT: warp chief99
+[Sun Apr 26 20:14:53 EDT 2020] ~ FeinT: warp chief 99
+[Sun Apr 26 20:14:58 EDT 2020] ~ FeinT: warp smoothie 99
+[Sun Apr 26 20:15:16 EDT 2020] ~ FeinT: buff feint
+[Sun Apr 26 20:15:17 EDT 2020] ~ FeinT: warp 97
+[Sun Apr 26 20:15:32 EDT 2020] ~ FeinT: warp smoothie 97
+[Sun Apr 26 20:15:36 EDT 2020] ~ FeinT: warp chief 97
+[Sun Apr 26 20:15:54 EDT 2020] ~ FeinT: heal 
+[Sun Apr 26 20:16:00 EDT 2020] ~ FeinT: heal 
+[Sun Apr 26 20:16:02 EDT 2020] ~ FeinT: heal 
+[Sun Apr 26 20:16:04 EDT 2020] ~ FeinT: heal 
+[Sun Apr 26 20:16:06 EDT 2020] ~ FeinT: heal 
+[Sun Apr 26 20:16:08 EDT 2020] ~ chief: heal 
+[Sun Apr 26 20:16:36 EDT 2020] ~ FeinT: warp chief 333
+[Sun Apr 26 20:17:36 EDT 2020] ~ FeinT: warp chief 333
+[Sun Apr 26 20:18:37 EDT 2020] ~ FeinT: online 
+[Sun Apr 26 20:18:39 EDT 2020] ~ chief: hide 
+[Sun Apr 26 20:18:41 EDT 2020] ~ FeinT: warp chief 333
+[Sun Apr 26 20:18:43 EDT 2020] ~ FeinT: warp 333
+[Sun Apr 26 20:20:58 EDT 2020] ~ FeinT: heal 
+[Sun Apr 26 20:21:00 EDT 2020] ~ FeinT: job 910
+[Sun Apr 26 20:21:05 EDT 2020] ~ chief: warp smoothie
+[Sun Apr 26 20:21:19 EDT 2020] ~ FeinT: heal 
+[Sun Apr 26 20:22:13 EDT 2020] ~ FeinT: heal 
+[Sun Apr 26 20:22:29 EDT 2020] ~ FeinT: heal 
+[Sun Apr 26 20:23:00 EDT 2020] ~ chief: warp smoothie
+[Sun Apr 26 20:26:52 EDT 2020] ~ chief: hide 
+[Sun Apr 26 20:30:02 EDT 2020] ~ FeinT: spawn 82000003
+[Sun Apr 26 20:30:05 EDT 2020] ~ FeinT: spawn 8200003
+[Sun Apr 26 20:30:15 EDT 2020] ~ FeinT: spawn 8200000
+[Sun Apr 26 20:30:17 EDT 2020] ~ FeinT: spawn 82000000
+[Sun Apr 26 20:43:50 EDT 2020] ~ chief: drop 1042511
+[Sun Apr 26 20:44:02 EDT 2020] ~ chief: drop 1042511
+[Sun Apr 26 20:46:35 EDT 2020] ~ chief: drop 1042512
+[Sun Apr 26 20:48:12 EDT 2020] ~ chief: drop 1042512
+[Sun Apr 26 20:48:18 EDT 2020] ~ chief: drop 1042512
+[Sun Apr 26 20:53:57 EDT 2020] ~ chief: stalker 
+[Sun Apr 26 20:54:16 EDT 2020] ~ chief: drop 1004057
+[Sun Apr 26 20:58:38 EDT 2020] ~ linnie: online 
+[Sun Apr 26 20:58:54 EDT 2020] ~ linnie: tag 
+[Sun Apr 26 20:59:00 EDT 2020] ~ linnie: warp smoothie
+[Sun Apr 26 20:59:23 EDT 2020] ~ chief: hide 
+[Sun Apr 26 20:59:42 EDT 2020] ~ chief: hide 
+[Sun Apr 26 21:03:55 EDT 2020] ~ linnie: warp 109020001
+[Sun Apr 26 21:03:57 EDT 2020] ~ chief: help 
+[Sun Apr 26 21:04:01 EDT 2020] ~ linnie: event new
+[Sun Apr 26 21:04:02 EDT 2020] ~ chief: eventcmds 
+[Sun Apr 26 21:04:15 EDT 2020] ~ linnie: event name BoD for Babygirl's heart
+[Sun Apr 26 21:04:18 EDT 2020] ~ linnie: event start
+[Sun Apr 26 21:04:29 EDT 2020] ~ chief: bod 1- 20
+[Sun Apr 26 21:04:32 EDT 2020] ~ chief: bod 1-20
+[Sun Apr 26 21:04:37 EDT 2020] ~ chief: bod 1 20
+[Sun Apr 26 21:04:40 EDT 2020] ~ chief: killall 
+[Sun Apr 26 21:04:44 EDT 2020] ~ chief: warp smoothie
+[Sun Apr 26 21:05:17 EDT 2020] ~ linnie: bomb o
+[Sun Apr 26 21:05:36 EDT 2020] ~ linnie: eventhelp 
+[Sun Apr 26 21:05:38 EDT 2020] ~ linnie: help 
+[Sun Apr 26 21:05:42 EDT 2020] ~ linnie: eventcmd 
+[Sun Apr 26 21:05:44 EDT 2020] ~ linnie: eventcmds 
+[Sun Apr 26 21:05:54 EDT 2020] ~ linnie: bombo 
+[Sun Apr 26 21:05:56 EDT 2020] ~ linnie: bombo 5
+[Sun Apr 26 21:06:04 EDT 2020] ~ linnie: bombo 5
+[Sun Apr 26 21:07:08 EDT 2020] ~ linnie: bombo 12
+[Sun Apr 26 21:07:33 EDT 2020] ~ linnie: bod 1 2
+[Sun Apr 26 21:08:20 EDT 2020] ~ linnie: eventcmds 
+[Sun Apr 26 21:08:36 EDT 2020] ~ linnie: coconut 
+[Sun Apr 26 21:09:47 EDT 2020] ~ linnie: tag 
+[Sun Apr 26 21:10:09 EDT 2020] ~ linnie: bombo 2
+[Sun Apr 26 21:10:13 EDT 2020] ~ linnie: bombo 2
+[Sun Apr 26 21:10:16 EDT 2020] ~ linnie: bombo 2
+[Sun Apr 26 21:10:19 EDT 2020] ~ linnie: bombo 2
+[Sun Apr 26 21:10:31 EDT 2020] ~ linnie: bomb 3
+[Sun Apr 26 21:10:33 EDT 2020] ~ linnie: bombo 3
+[Sun Apr 26 21:10:40 EDT 2020] ~ linnie: bombo 3
+[Sun Apr 26 21:10:43 EDT 2020] ~ linnie: bombo 3
+[Sun Apr 26 21:11:14 EDT 2020] ~ linnie: bombo 3
+[Sun Apr 26 21:11:18 EDT 2020] ~ linnie: bombo 3
+[Sun Apr 26 21:11:20 EDT 2020] ~ linnie: bombo 3
+[Sun Apr 26 21:11:23 EDT 2020] ~ linnie: bombo 3
+[Sun Apr 26 21:11:25 EDT 2020] ~ linnie: bombo 3
+[Sun Apr 26 21:11:26 EDT 2020] ~ linnie: bombo 3
+[Sun Apr 26 21:11:28 EDT 2020] ~ linnie: bombo 3
+[Sun Apr 26 21:11:30 EDT 2020] ~ linnie: bombo 3
+[Sun Apr 26 21:11:32 EDT 2020] ~ linnie: bombo 3
+[Sun Apr 26 21:11:34 EDT 2020] ~ linnie: bombo 3
+[Sun Apr 26 21:11:57 EDT 2020] ~ linnie: tag 
+[Sun Apr 26 21:11:58 EDT 2020] ~ linnie: tag 
+[Sun Apr 26 21:13:30 EDT 2020] ~ linnie: bod 1-20
+[Sun Apr 26 21:13:33 EDT 2020] ~ linnie: bod 1 20
+[Sun Apr 26 21:14:47 EDT 2020] ~ linnie: eventcmds 
+[Sun Apr 26 21:14:59 EDT 2020] ~ linnie: rnum 
+[Sun Apr 26 21:15:02 EDT 2020] ~ linnie: rnum 1 10
+[Sun Apr 26 21:15:07 EDT 2020] ~ linnie: rnum 10
+[Sun Apr 26 21:15:10 EDT 2020] ~ chief: bod 
+[Sun Apr 26 21:15:14 EDT 2020] ~ chief: bod 1 10
+[Sun Apr 26 21:15:44 EDT 2020] ~ linnie: kill chief
+[Sun Apr 26 21:17:32 EDT 2020] ~ linnie: tag 
+[Sun Apr 26 21:17:49 EDT 2020] ~ linnie: box 1 15
+[Sun Apr 26 21:17:58 EDT 2020] ~ linnie: bod 1 20
+[Sun Apr 26 21:20:25 EDT 2020] ~ linnie: search map coconut
+[Sun Apr 26 21:21:23 EDT 2020] ~ linnie: warp 109080002
+[Sun Apr 26 21:21:27 EDT 2020] ~ linnie: coconut 
+[Sun Apr 26 21:21:33 EDT 2020] ~ linnie: event end
+[Sun Apr 26 21:21:36 EDT 2020] ~ linnie: event start
+[Sun Apr 26 21:21:41 EDT 2020] ~ linnie: event new
+[Sun Apr 26 21:21:47 EDT 2020] ~ linnie: event name test
+[Sun Apr 26 21:21:49 EDT 2020] ~ linnie: event start
+[Sun Apr 26 21:23:15 EDT 2020] ~ linnie: stalker 
+[Sun Apr 26 21:26:28 EDT 2020] ~ linnie: tag 
+[Sun Apr 26 21:26:48 EDT 2020] ~ linnie: warp smoothie
+[Sun Apr 26 21:28:54 EDT 2020] ~ linnie: heal 
+[Sun Apr 26 21:37:58 EDT 2020] ~ linnie: eventcmds 
+[Sun Apr 26 21:38:23 EDT 2020] ~ linnie: tag 
+[Sun Apr 26 21:38:24 EDT 2020] ~ chief: tag 
+[Sun Apr 26 21:38:24 EDT 2020] ~ linnie: tag 
+[Sun Apr 26 21:39:33 EDT 2020] ~ linnie: setcouple smoothie linnie
+[Sun Apr 26 21:40:52 EDT 2020] ~ linnie: bombo 2
+[Sun Apr 26 21:40:55 EDT 2020] ~ linnie: bombo 2
+[Sun Apr 26 21:41:05 EDT 2020] ~ linnie: bombx 2
+[Sun Apr 26 21:41:08 EDT 2020] ~ linnie: bombx 2
+[Sun Apr 26 21:41:12 EDT 2020] ~ linnie: bombx 2
+[Sun Apr 26 21:41:19 EDT 2020] ~ linnie: bombx 2
+[Sun Apr 26 21:41:21 EDT 2020] ~ linnie: bombx 2
+[Sun Apr 26 21:41:24 EDT 2020] ~ linnie: bombx 2
+[Sun Apr 26 21:41:30 EDT 2020] ~ chief: eventcmd 
+[Sun Apr 26 21:41:30 EDT 2020] ~ linnie: ak 
+[Sun Apr 26 21:41:31 EDT 2020] ~ chief: eventcmds 
+[Sun Apr 26 21:41:41 EDT 2020] ~ chief: weenie 
+[Sun Apr 26 21:41:42 EDT 2020] ~ linnie: ak down
+[Sun Apr 26 21:42:00 EDT 2020] ~ chief: winnie 
+[Sun Apr 26 21:42:01 EDT 2020] ~ linnie: heal 
+[Sun Apr 26 21:42:33 EDT 2020] ~ linnie: ak cancel
+[Sun Apr 26 21:42:53 EDT 2020] ~ linnie: ak reset
+[Sun Apr 26 21:46:40 EDT 2020] ~ linnie: eventcmds 
+[Sun Apr 26 21:46:53 EDT 2020] ~ linnie: seduce chief right 5
+[Sun Apr 26 21:47:04 EDT 2020] ~ linnie: seduce 5 chief
+[Sun Apr 26 21:47:09 EDT 2020] ~ linnie: seduce 5 chief down
+[Sun Apr 26 21:47:13 EDT 2020] ~ linnie: seduce 5 down chief
+[Sun Apr 26 21:47:25 EDT 2020] ~ linnie: seduce 5 down smoothie
+[Sun Apr 26 21:47:52 EDT 2020] ~ linnie: eventcmds 
+[Sun Apr 26 21:47:59 EDT 2020] ~ linnie: tbm 
+[Sun Apr 26 21:48:02 EDT 2020] ~ linnie: tag 
+[Sun Apr 26 21:48:33 EDT 2020] ~ linnie: ttm 
+[Sun Apr 26 21:49:09 EDT 2020] ~ linnie: online 
+[Sun Apr 26 21:49:50 EDT 2020] ~ chief: tag 
+[Sun Apr 26 21:50:59 EDT 2020] ~ linnie: ttm 
+[Sun Apr 26 21:51:02 EDT 2020] ~ linnie: tbm 
+[Sun Apr 26 21:51:17 EDT 2020] ~ linnie: admincmds 
+[Sun Apr 26 21:51:28 EDT 2020] ~ linnie: setgmlevel 66 linnie
+[Sun Apr 26 21:51:34 EDT 2020] ~ linnie: setgmlevel linnie 66
+[Sun Apr 26 21:52:05 EDT 2020] ~ chief: hide 
+[Sun Apr 26 21:52:42 EDT 2020] ~ chief: stalker 
+[Sun Apr 26 21:52:49 EDT 2020] ~ chief: hide 
+[Sun Apr 26 21:52:54 EDT 2020] ~ linnie: setgmlevel linnie 6
+[Sun Apr 26 21:56:41 EDT 2020] ~ linnie: cleardrops 
+[Sun Apr 26 21:56:52 EDT 2020] ~ linnie: rnum 
+[Sun Apr 26 21:56:54 EDT 2020] ~ linnie: rnum 2
+[Sun Apr 26 21:57:38 EDT 2020] ~ linnie: rnum 2
+[Sun Apr 26 21:58:32 EDT 2020] ~ linnie: settime 
+[Sun Apr 26 21:59:11 EDT 2020] ~ linnie: rnum 2
+[Sun Apr 26 21:59:18 EDT 2020] ~ linnie: rnum 2
+[Sun Apr 26 21:59:19 EDT 2020] ~ linnie: rnum 2
+[Sun Apr 26 21:59:22 EDT 2020] ~ linnie: rnum 2
+[Sun Apr 26 21:59:29 EDT 2020] ~ chief: r 
+[Sun Apr 26 21:59:33 EDT 2020] ~ chief: rn 
+[Sun Apr 26 22:00:00 EDT 2020] ~ linnie: eventcmds 
+[Sun Apr 26 22:00:07 EDT 2020] ~ chief: eventcmds 
+[Sun Apr 26 22:00:33 EDT 2020] ~ linnie: potato 
+[Sun Apr 26 22:01:00 EDT 2020] ~ chief: rnum 1 2
+[Sun Apr 26 22:01:03 EDT 2020] ~ linnie: potato 
+[Sun Apr 26 22:01:11 EDT 2020] ~ chief: rnum 2
+[Sun Apr 26 22:01:43 EDT 2020] ~ linnie: eventcmds 
+[Sun Apr 26 22:02:15 EDT 2020] ~ linnie: potato 
+[Sun Apr 26 22:04:07 EDT 2020] ~ linnie:  
+[Sun Apr 26 22:05:30 EDT 2020] ~ linnie: kill chief
+[Sun Apr 26 22:06:27 EDT 2020] ~ linnie: stalker 
+[Sun Apr 26 22:08:09 EDT 2020] ~ linnie: cleardrops 
+[Sun Apr 26 22:08:24 EDT 2020] ~ linnie: eventcmds 
+[Sun Apr 26 22:09:31 EDT 2020] ~ linnie: item 1060026
+[Sun Apr 26 22:17:12 EDT 2020] ~ linnie: setcouple 1112804 smoothie linnie
+[Sun Apr 26 22:17:45 EDT 2020] ~ linnie: tbm 
+[Sun Apr 26 22:18:33 EDT 2020] ~ linnie: setcouple 2240003 smoothie linnie
+[Sun Apr 26 22:19:11 EDT 2020] ~ linnie: warp smoothie
+[Sun Apr 26 22:20:19 EDT 2020] ~ linnie: setcouple 2240002 smoothie linnie
+[Sun Apr 26 22:20:25 EDT 2020] ~ linnie: gmcmds 
+[Sun Apr 26 22:20:41 EDT 2020] ~ linnie: hgmcmds 
+[Sun Apr 26 22:21:00 EDT 2020] ~ linnie: tag 
+[Sun Apr 26 22:21:09 EDT 2020] ~ linnie: admincmds 
+[Sun Apr 26 22:21:25 EDT 2020] ~ linnie: test 
+[Sun Apr 26 22:22:27 EDT 2020] ~ linnie: divorce 
+[Sun Apr 26 22:22:31 EDT 2020] ~ linnie: wedding 
+[Sun Apr 26 22:22:36 EDT 2020] ~ linnie: admincmds 
+[Sun Apr 26 22:23:00 EDT 2020] ~ linnie: setcouple 2240002 smoothie linnie
+[Sun Apr 26 22:23:04 EDT 2020] ~ linnie: warp smoothie
+[Sun Apr 26 22:24:06 EDT 2020] ~ linnie: warp smoothie
+[Sun Apr 26 22:24:21 EDT 2020] ~ linnie: setcouple 2240002 smoothie linnie
+[Sun Apr 26 22:26:31 EDT 2020] ~ linnie: wh smoothie
+[Sun Apr 26 22:26:44 EDT 2020] ~ linnie: whx smoothie
+[Sun Apr 26 22:26:48 EDT 2020] ~ chief: whx smoothie
+[Sun Apr 26 22:27:04 EDT 2020] ~ linnie: whx smoothie
+[Sun Apr 26 22:27:24 EDT 2020] ~ linnie: whx smoothie
+[Sun Apr 26 22:27:31 EDT 2020] ~ chief: whx smoothie
+[Sun Apr 26 22:27:43 EDT 2020] ~ linnie: event start
+[Sun Apr 26 22:28:04 EDT 2020] ~ chief: whx smoothie
+[Sun Apr 26 22:28:06 EDT 2020] ~ linnie: whx smoothie
+[Sun Apr 26 22:28:21 EDT 2020] ~ linnie: setcouple 2240002 smoothie linnie
+[Sun Apr 26 22:29:07 EDT 2020] ~ linnie: warp smoothie
+[Sun Apr 26 22:31:12 EDT 2020] ~ linnie: setcouple 2240002 smoothie
+[Sun Apr 26 22:35:39 EDT 2020] ~ chief: hide 
+[Sun Apr 26 22:35:49 EDT 2020] ~ chief: warp smoothie
+[Sun Apr 26 22:35:51 EDT 2020] ~ chief: hide 
+[Sun Apr 26 22:38:21 EDT 2020] ~ linnie: bomb chief
+[Sun Apr 26 22:38:39 EDT 2020] ~ linnie: bomb chief
+[Sun Apr 26 22:39:06 EDT 2020] ~ chief: bomb linnie
+[Sun Apr 26 22:39:13 EDT 2020] ~ chief: bomb linnie
+[Sun Apr 26 22:43:13 EDT 2020] ~ linnie: bombx 9
+[Sun Apr 26 22:43:35 EDT 2020] ~ linnie: bombx 9
+[Sun Apr 26 22:43:55 EDT 2020] ~ linnie: bombx 9
+[Sun Apr 26 22:44:10 EDT 2020] ~ linnie: bombo 19
+[Sun Apr 26 22:44:12 EDT 2020] ~ linnie: bombx 9
+[Sun Apr 26 22:44:17 EDT 2020] ~ linnie: bombo 19
+[Sun Apr 26 22:44:21 EDT 2020] ~ linnie: bombx 9
+[Sun Apr 26 22:44:26 EDT 2020] ~ linnie: bombx 9
+[Sun Apr 26 22:44:33 EDT 2020] ~ linnie: bombx 9
+[Sun Apr 26 22:44:41 EDT 2020] ~ linnie: bombx 9
+[Sun Apr 26 22:44:58 EDT 2020] ~ linnie: bombo 2
+[Sun Apr 26 22:45:33 EDT 2020] ~ linnie: bombo 2
+[Sun Apr 26 22:45:37 EDT 2020] ~ linnie: bombo 2
+[Sun Apr 26 22:45:39 EDT 2020] ~ linnie: bombo 2
+[Sun Apr 26 22:45:45 EDT 2020] ~ linnie: bombo 2
+[Sun Apr 26 22:45:46 EDT 2020] ~ linnie: bombo 2
+[Sun Apr 26 22:45:48 EDT 2020] ~ linnie: bombo 2
+[Sun Apr 26 22:45:50 EDT 2020] ~ linnie: bombo 2
+[Sun Apr 26 22:45:52 EDT 2020] ~ linnie: bombo 2
+[Sun Apr 26 22:45:53 EDT 2020] ~ linnie: bombo 2
+[Sun Apr 26 22:46:05 EDT 2020] ~ linnie: bombo 2
+[Sun Apr 26 22:46:07 EDT 2020] ~ linnie: bombo 2
+[Sun Apr 26 22:46:09 EDT 2020] ~ linnie: bombo 2
+[Sun Apr 26 22:46:11 EDT 2020] ~ linnie: bombo 2
+[Sun Apr 26 22:46:13 EDT 2020] ~ linnie: bombo 2
+[Sun Apr 26 22:46:15 EDT 2020] ~ linnie: bombo 2
+[Sun Apr 26 22:46:17 EDT 2020] ~ linnie: bombo 2
+[Sun Apr 26 22:46:19 EDT 2020] ~ linnie: bombo 2
+[Sun Apr 26 22:46:20 EDT 2020] ~ linnie: bombo 2
+[Sun Apr 26 22:46:23 EDT 2020] ~ linnie: bombo 2
+[Sun Apr 26 22:46:28 EDT 2020] ~ linnie: bombo 3
+[Sun Apr 26 22:46:30 EDT 2020] ~ linnie: tag 
+[Sun Apr 26 22:46:48 EDT 2020] ~ linnie: bombo 3
+[Sun Apr 26 22:46:50 EDT 2020] ~ linnie: bombo 3
+[Sun Apr 26 22:46:52 EDT 2020] ~ linnie: bombo 3
+[Sun Apr 26 22:46:54 EDT 2020] ~ linnie: bombo 3
+[Sun Apr 26 22:46:56 EDT 2020] ~ linnie: bombo 3
+[Sun Apr 26 22:46:58 EDT 2020] ~ linnie: bombo 3
+[Sun Apr 26 22:47:02 EDT 2020] ~ linnie: bombo 3
+[Sun Apr 26 22:47:04 EDT 2020] ~ linnie: bombo 3
+[Sun Apr 26 22:47:09 EDT 2020] ~ linnie: bombo 3
+[Sun Apr 26 22:47:10 EDT 2020] ~ linnie: bombo 3
+[Sun Apr 26 22:47:15 EDT 2020] ~ linnie: bombo 3
+[Sun Apr 26 22:47:17 EDT 2020] ~ linnie: bombo 3
+[Sun Apr 26 22:47:19 EDT 2020] ~ linnie: bombo 3
+[Sun Apr 26 22:47:21 EDT 2020] ~ linnie: bombo 3
+[Sun Apr 26 22:47:27 EDT 2020] ~ linnie: bombo 3
+[Sun Apr 26 22:47:35 EDT 2020] ~ linnie: bombo 3
+[Sun Apr 26 22:47:39 EDT 2020] ~ linnie: bombo 3
+[Sun Apr 26 22:47:41 EDT 2020] ~ linnie: bombo 3
+[Sun Apr 26 22:47:47 EDT 2020] ~ linnie: bombo 3
+[Sun Apr 26 22:47:51 EDT 2020] ~ linnie: bombo 3
+[Sun Apr 26 22:47:53 EDT 2020] ~ linnie: bombo 3
+[Sun Apr 26 22:47:56 EDT 2020] ~ linnie: bombo 3
+[Sun Apr 26 22:47:58 EDT 2020] ~ linnie: bombo 3
+[Sun Apr 26 22:48:00 EDT 2020] ~ linnie: bombo 3
+[Sun Apr 26 22:48:02 EDT 2020] ~ linnie: bombo 3
+[Sun Apr 26 22:48:08 EDT 2020] ~ linnie: bombo 3
+[Sun Apr 26 22:48:12 EDT 2020] ~ linnie: bombo 3
+[Sun Apr 26 22:48:14 EDT 2020] ~ linnie: bombo 3
+[Sun Apr 26 22:48:16 EDT 2020] ~ linnie: bombo 3
+[Sun Apr 26 22:48:18 EDT 2020] ~ linnie: bombo 3
+[Sun Apr 26 22:48:21 EDT 2020] ~ linnie: bombo 3
+[Sun Apr 26 22:48:23 EDT 2020] ~ linnie: bombo 3
+[Sun Apr 26 22:48:26 EDT 2020] ~ linnie: bombo 4
+[Sun Apr 26 22:48:28 EDT 2020] ~ linnie: bombo 4
+[Sun Apr 26 22:48:31 EDT 2020] ~ linnie: bombo 4
+[Sun Apr 26 22:48:33 EDT 2020] ~ linnie: bombo 4
+[Sun Apr 26 22:48:36 EDT 2020] ~ linnie: bombo 4
+[Sun Apr 26 22:48:38 EDT 2020] ~ linnie: bombo 4
+[Sun Apr 26 22:48:40 EDT 2020] ~ linnie: bombo 5
+[Sun Apr 26 22:48:46 EDT 2020] ~ linnie: bombo 5
+[Sun Apr 26 22:48:48 EDT 2020] ~ linnie: bombo 5
+[Sun Apr 26 22:49:00 EDT 2020] ~ linnie: bombo 5
+[Sun Apr 26 22:49:06 EDT 2020] ~ linnie: bombo 5
+[Sun Apr 26 22:49:07 EDT 2020] ~ linnie: bombo 5
+[Sun Apr 26 22:49:08 EDT 2020] ~ linnie: bombo 4
+[Sun Apr 26 22:49:08 EDT 2020] ~ linnie: bombo 4
+[Sun Apr 26 22:49:14 EDT 2020] ~ linnie: bombo 4
+[Sun Apr 26 22:49:19 EDT 2020] ~ linnie: bombo 2
+[Sun Apr 26 22:49:29 EDT 2020] ~ linnie: bombo 2
+[Sun Apr 26 22:49:31 EDT 2020] ~ linnie: bombo 2
+[Sun Apr 26 22:49:33 EDT 2020] ~ linnie: bombo 2
+[Sun Apr 26 22:49:36 EDT 2020] ~ linnie: bombo 2
+[Sun Apr 26 22:51:57 EDT 2020] ~ chief: jail linnie
+[Sun Apr 26 22:51:58 EDT 2020] ~ linnie: jail chief
+[Sun Apr 26 22:52:02 EDT 2020] ~ chief: jail linnie perish
+[Sun Apr 26 22:52:08 EDT 2020] ~ linnie: unjail linnie
+[Sun Apr 26 22:52:23 EDT 2020] ~ linnie: warp smoothie
+[Sun Apr 26 23:10:44 EDT 2020] ~ chief: bomb 
+[Sun Apr 26 23:11:27 EDT 2020] ~ chief: bomb 
+[Sun Apr 26 23:11:30 EDT 2020] ~ chief: bomb 
+[Sun Apr 26 23:13:05 EDT 2020] ~ chief: stalker 
+[Sun Apr 26 23:13:33 EDT 2020] ~ chief: drop 1702224
+[Sun Apr 26 23:14:02 EDT 2020] ~ chief: stalker 
+[Sun Apr 26 23:14:57 EDT 2020] ~ chief: stalker 
+[Sun Apr 26 23:19:56 EDT 2020] ~ chief: drop 1142730
+[Sun Apr 26 23:28:07 EDT 2020] ~ chief: item 1004260
+[Sun Apr 26 23:29:56 EDT 2020] ~ chief: drop 1003212
+[Sun Apr 26 23:29:58 EDT 2020] ~ chief: drop 1003212
+[Sun Apr 26 23:30:20 EDT 2020] ~ chief: drop 1003213
+[Sun Apr 26 23:30:21 EDT 2020] ~ chief: drop 1003213
+[Sun Apr 26 23:31:20 EDT 2020] ~ chief: item 1003501
+[Sun Apr 26 23:31:52 EDT 2020] ~ chief: item 1003467
+[Sun Apr 26 23:32:12 EDT 2020] ~ chief: item 1003502
+[Sun Apr 26 23:32:43 EDT 2020] ~ chief: item 1003676
+[Sun Apr 26 23:34:38 EDT 2020] ~ chief: item 1008578
+[Sun Apr 26 23:36:04 EDT 2020] ~ chief:  
+[Sun Apr 26 23:36:38 EDT 2020] ~ chief: drop 1004089
+[Sun Apr 26 23:36:39 EDT 2020] ~ chief: drop 1004089
+[Sun Apr 26 23:39:59 EDT 2020] ~ chief: stalker 
+[Sun Apr 26 23:40:17 EDT 2020] ~ chief: drop 1002820
+[Mon Apr 27 15:27:28 EDT 2020] ~ linnie: online 
+[Mon Apr 27 15:29:42 EDT 2020] ~ linnie: item 1702822
+[Mon Apr 27 15:30:27 EDT 2020] ~ linnie: item 1702680
+[Mon Apr 27 15:31:34 EDT 2020] ~ linnie: item 1012291
+[Mon Apr 27 15:32:52 EDT 2020] ~ linnie: item 1004881
+[Mon Apr 27 15:34:18 EDT 2020] ~ linnie: item 1004589
+[Mon Apr 27 15:35:55 EDT 2020] ~ linnie: item 1003935
+[Mon Apr 27 15:39:23 EDT 2020] ~ linnie: item 1053257
+[Mon Apr 27 15:41:16 EDT 2020] ~ linnie: item 1102844
+[Mon Apr 27 15:42:05 EDT 2020] ~ linnie: item 1102507
+[Mon Apr 27 15:42:29 EDT 2020] ~ linnie: item 1102409
+[Mon Apr 27 15:43:26 EDT 2020] ~ linnie: item 1112143
+[Mon Apr 27 15:43:51 EDT 2020] ~ linnie: item 1112179
+[Mon Apr 27 15:44:23 EDT 2020] ~ linnie: item 1112199
+[Mon Apr 27 15:44:33 EDT 2020] ~ linnie: cleardrops 
+[Mon Apr 27 17:48:54 EDT 2020] ~ FeinT: heal 
+[Mon Apr 27 17:48:56 EDT 2020] ~ FeinT: saveall 
+[Mon Apr 27 18:25:19 EDT 2020] ~ chief: level 255
+[Mon Apr 27 18:25:25 EDT 2020] ~ chief: level 198
+[Mon Apr 27 21:02:04 EDT 2020] ~ linnie: online 
+[Mon Apr 27 21:02:23 EDT 2020] ~ linnie: online 
+[Mon Apr 27 21:02:39 EDT 2020] ~ linnie: tag 
+[Mon Apr 27 21:02:49 EDT 2020] ~ linnie: level 250
+[Mon Apr 27 21:02:55 EDT 2020] ~ linnie: level 250
+[Mon Apr 27 21:02:59 EDT 2020] ~ linnie: level 250
+[Mon Apr 27 21:07:11 EDT 2020] ~ linnie: online 
+[Mon Apr 27 21:10:49 EDT 2020] ~ linnie: online 
+[Mon Apr 27 21:18:03 EDT 2020] ~ linnie: online 
+[Mon Apr 27 21:18:05 EDT 2020] ~ linnie: online 
+[Mon Apr 27 22:28:53 EDT 2020] ~ chief: hide 
+[Mon Apr 27 22:49:18 EDT 2020] ~ chief: warp smoothie
+[Tue Apr 28 00:00:00 EDT 2020] ~ chief: help smoothie
+[Tue Apr 28 00:00:05 EDT 2020] ~ chief: heal smoothie
+[Tue Apr 28 00:01:05 EDT 2020] ~ chief: heal 
+[Tue Apr 28 00:01:36 EDT 2020] ~ chief: heal smoothie
+[Tue Apr 28 00:03:55 EDT 2020] ~ chief: heal smoothie
+[Tue Apr 28 00:05:07 EDT 2020] ~ chief: heal 
+[Tue Apr 28 00:06:08 EDT 2020] ~ chief: heal smoothie
+[Tue Apr 28 00:10:01 EDT 2020] ~ chief: heal smoothie
+[Tue Apr 28 00:10:20 EDT 2020] ~ chief: heal 
+[Tue Apr 28 00:12:11 EDT 2020] ~ 1234: hide 
+[Tue Apr 28 00:20:41 EDT 2020] ~ 1234: heal kitten
+[Tue Apr 28 00:31:44 EDT 2020] ~ 1234: heal kiiten
+[Tue Apr 28 00:31:49 EDT 2020] ~ 1234: heal kitten
+[Tue Apr 28 00:31:53 EDT 2020] ~ 1234: heal kitten
+[Tue Apr 28 00:32:14 EDT 2020] ~ 1234: killall 
+[Tue Apr 28 00:33:38 EDT 2020] ~ 1234: heal 
+[Tue Apr 28 00:34:13 EDT 2020] ~ 1234: warp kitten
+[Tue Apr 28 00:36:57 EDT 2020] ~ 1234: jov 
+[Tue Apr 28 00:36:59 EDT 2020] ~ 1234: job 
+[Tue Apr 28 00:37:03 EDT 2020] ~ 1234: job 512 kitten
+[Tue Apr 28 00:40:31 EDT 2020] ~ 1234: drop 1482042
+[Tue Apr 28 00:50:35 EDT 2020] ~ 1234: healm 
+[Tue Apr 28 10:00:41 EDT 2020] ~ dead: online 
+[Tue Apr 28 15:42:34 EDT 2020] ~ Serzen: job 222
+[Tue Apr 28 15:42:38 EDT 2020] ~ Serzen: level 255
+[Tue Apr 28 15:42:41 EDT 2020] ~ Serzen: hide 1
+[Tue Apr 28 15:42:46 EDT 2020] ~ Serzen: online 
+[Tue Apr 28 15:42:54 EDT 2020] ~ Serzen: maxskills 
+[Tue Apr 28 15:43:11 EDT 2020] ~ Serzen: hpmp 30000
+[Tue Apr 28 15:43:18 EDT 2020] ~ Serzen: job 212
+[Tue Apr 28 15:43:25 EDT 2020] ~ Serzen: heal 
+[Tue Apr 28 15:43:30 EDT 2020] ~ Serzen: mp 30000
+[Tue Apr 28 15:43:42 EDT 2020] ~ Serzen: level 199
+[Tue Apr 28 15:43:45 EDT 2020] ~ Serzen: levelup 
+[Tue Apr 28 15:49:18 EDT 2020] ~ Serzen: search map arcane
+[Tue Apr 28 15:49:25 EDT 2020] ~ Serzen: search map river
+[Tue Apr 28 15:50:08 EDT 2020] ~ Serzen: warp 993000870
+[Tue Apr 28 15:50:18 EDT 2020] ~ Serzen: warp 993000870
+[Tue Apr 28 15:50:27 EDT 2020] ~ Serzen: warp 450003700
+[Tue Apr 28 16:27:22 EDT 2020] ~ 1234: hide 
+[Tue Apr 28 16:27:48 EDT 2020] ~ 1234: hide 
+[Tue Apr 28 16:30:47 EDT 2020] ~ 1234: warp kitten
+[Tue Apr 28 16:48:11 EDT 2020] ~ 1234: healm 
+[Tue Apr 28 16:48:21 EDT 2020] ~ 1234: healm 
+[Tue Apr 28 16:49:43 EDT 2020] ~ 1234: killalll 
+[Tue Apr 28 16:49:46 EDT 2020] ~ 1234: killall 
+[Tue Apr 28 16:50:01 EDT 2020] ~ 1234: healm 
+[Tue Apr 28 16:50:24 EDT 2020] ~ 1234: job 910
+[Tue Apr 28 16:51:06 EDT 2020] ~ 1234: warp kitten
+[Tue Apr 28 16:55:35 EDT 2020] ~ 1234: godmeup 100
+[Tue Apr 28 16:55:43 EDT 2020] ~ 1234: godmeup 0
+[Tue Apr 28 16:55:50 EDT 2020] ~ 1234: godmeup 100
+[Tue Apr 28 16:55:52 EDT 2020] ~ 1234: godmeup 0
+[Tue Apr 28 16:57:16 EDT 2020] ~ 1234: godmeup 100
+[Tue Apr 28 16:57:32 EDT 2020] ~ 1234: stalker 
+[Tue Apr 28 16:58:35 EDT 2020] ~ 1234: gender 
+[Tue Apr 28 16:58:41 EDT 2020] ~ 1234: gender 1234 uni
+[Tue Apr 28 16:58:54 EDT 2020] ~ 1234: gender 1234 female
+[Tue Apr 28 16:59:22 EDT 2020] ~ 1234: gender 
+[Tue Apr 28 16:59:27 EDT 2020] ~ 1234: gender 1234 male
+[Tue Apr 28 16:59:55 EDT 2020] ~ 1234: stalker 
+[Tue Apr 28 17:00:55 EDT 2020] ~ 1234: stalker 
+[Tue Apr 28 17:03:03 EDT 2020] ~ 1234: warp kitten
+[Tue Apr 28 17:07:37 EDT 2020] ~ 1234: job 112
+[Tue Apr 28 17:08:31 EDT 2020] ~ 1234: job 122
+[Tue Apr 28 17:11:07 EDT 2020] ~ 1234: job 1112
+[Tue Apr 28 17:14:00 EDT 2020] ~ 1234: item 1492000
+[Tue Apr 28 17:17:36 EDT 2020] ~ 1234: item 1332054
+[Tue Apr 28 17:17:45 EDT 2020] ~ 1234: job 422
+[Tue Apr 28 17:18:01 EDT 2020] ~ 1234: job 421
+[Tue Apr 28 17:23:19 EDT 2020] ~ 1234: item 1702700
+[Tue Apr 28 17:23:42 EDT 2020] ~ 1234: job 421
+[Tue Apr 28 17:26:05 EDT 2020] ~ 1234: healm 
+[Tue Apr 28 17:29:27 EDT 2020] ~ 1234: stalker 
+[Tue Apr 28 17:31:04 EDT 2020] ~ 1234: healm 
+[Tue Apr 28 17:57:06 EDT 2020] ~ 1234: !!! 
+[Tue Apr 28 18:14:26 EDT 2020] ~ 1234: killall 
+[Tue Apr 28 18:17:30 EDT 2020] ~ 1234: drop 1702700
+[Tue Apr 28 18:18:55 EDT 2020] ~ 1234: healm 
+[Tue Apr 28 18:38:16 EDT 2020] ~ Jeemie: jail Jeemie
+[Tue Apr 28 18:38:28 EDT 2020] ~ Jeemie: jail Jeemie test
+[Tue Apr 28 18:40:36 EDT 2020] ~ 1234: stalker 
+[Tue Apr 28 18:47:42 EDT 2020] ~ 1234: killall 
+[Tue Apr 28 19:01:29 EDT 2020] ~ 1234: setcouple 
+[Tue Apr 28 19:01:56 EDT 2020] ~ 1234: setcouple 2240000 1234 kitten
+[Tue Apr 28 19:03:38 EDT 2020] ~ 1234: warp kitten
+[Tue Apr 28 19:32:10 EDT 2020] ~ 1234: whereami 
+[Tue Apr 28 19:32:27 EDT 2020] ~ 1234: stalker 
+[Tue Apr 28 19:50:22 EDT 2020] ~ 1234: item 2212000
+[Tue Apr 28 19:51:42 EDT 2020] ~ 1234: item 21900000
+[Tue Apr 28 19:51:44 EDT 2020] ~ 1234: item 2190000
+[Tue Apr 28 19:55:48 EDT 2020] ~ 1234: reloadmap 
+[Tue Apr 28 19:56:13 EDT 2020] ~ 1234: help 
+[Tue Apr 28 19:56:18 EDT 2020] ~ 1234: admincmds 
+[Tue Apr 28 21:00:50 EDT 2020] ~ 1234: healm 
+[Tue Apr 28 22:05:22 EDT 2020] ~ 1234: heal kitten
+[Tue Apr 28 22:09:40 EDT 2020] ~ 1234: healn 
+[Tue Apr 28 22:09:41 EDT 2020] ~ 1234: healm 
+[Tue Apr 28 22:13:06 EDT 2020] ~ 1234: healm 
+[Tue Apr 28 22:22:17 EDT 2020] ~ 1234: heal 
+[Tue Apr 28 22:25:15 EDT 2020] ~ 1234: heal 
+[Tue Apr 28 22:28:48 EDT 2020] ~ 1234: healm 
+[Tue Apr 28 22:46:06 EDT 2020] ~ 1234: whx kitten
+[Tue Apr 28 22:58:56 EDT 2020] ~ 1234: whx kitten
+[Wed Apr 29 01:35:19 EDT 2020] ~ 1234: healm 
+[Wed Apr 29 07:07:04 EDT 2020] ~ izarooni: hide 
+[Wed Apr 29 07:20:40 EDT 2020] ~ izarooni: hide 
+[Wed Apr 29 07:22:53 EDT 2020] ~ 1234: hide 
+[Wed Apr 29 07:24:18 EDT 2020] ~ 1234: hide 
+[Wed Apr 29 07:24:19 EDT 2020] ~ 1234: hide 
+[Wed Apr 29 07:36:09 EDT 2020] ~ 1234: spawn 
+[Wed Apr 29 07:42:59 EDT 2020] ~ 1234: spawn 9500153
+[Wed Apr 29 07:43:28 EDT 2020] ~ 1234: spawn 9500153
+[Wed Apr 29 07:48:23 EDT 2020] ~ 1234: spawn 9300028
+[Wed Apr 29 07:48:34 EDT 2020] ~ 1234: healm 
+[Wed Apr 29 07:48:53 EDT 2020] ~ 1234: healm 
+[Wed Apr 29 07:49:31 EDT 2020] ~ izarooni: online 
+[Wed Apr 29 07:49:48 EDT 2020] ~ izarooni: online 
+[Wed Apr 29 07:49:58 EDT 2020] ~ 1234: healm 
+[Wed Apr 29 07:50:12 EDT 2020] ~ 1234: healm 
+[Wed Apr 29 07:50:22 EDT 2020] ~ 1234: healm 
+[Wed Apr 29 07:52:10 EDT 2020] ~ izarooni: stalker 
+[Wed Apr 29 07:52:38 EDT 2020] ~ izarooni: stalker 
+[Wed Apr 29 07:52:57 EDT 2020] ~ 1234: spawn 100130
+[Wed Apr 29 07:53:25 EDT 2020] ~ 1234: spawn 100130
