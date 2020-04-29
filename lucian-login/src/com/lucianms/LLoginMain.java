@@ -38,7 +38,7 @@ public class LLoginMain {
         String address = config.getString("ServerHost");
         Long port = config.getNumber("LoginBasePort");
         try {
-            NettyDiscardServer interServer = new NettyDiscardServer(address, port.intValue() + 1,
+            NettyDiscardServer interServer = new NettyDiscardServer("127.0.0.1", port.intValue() + 1,
                     new InternalLoginCommunicationsHandler(),
                     new NioEventLoopGroup(),
                     DirectPacketDecoder.class,
