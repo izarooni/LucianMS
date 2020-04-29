@@ -56,6 +56,8 @@ public class MapleSummon extends AbstractAnimatedMapleMapObject implements Dispo
 
     @Override
     public void dispose() {
+        owner.getMap().sendPacket(MaplePacketCreator.removeSummon(this, true));
+        owner.getMap().removeMapObject(this);
         owner = null;
     }
 

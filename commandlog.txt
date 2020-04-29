@@ -6509,3 +6509,16 @@
 [Wed Apr 29 07:52:38 EDT 2020] ~ izarooni: stalker 
 [Wed Apr 29 07:52:57 EDT 2020] ~ 1234: spawn 100130
 [Wed Apr 29 07:53:25 EDT 2020] ~ 1234: spawn 100130
+[Wed Apr 29 10:50:10 EDT 2020] ~ izarooni: job 232
+[Wed Apr 29 10:50:13 EDT 2020] ~ izarooni: maxskills 
+[Wed Apr 29 10:50:22 EDT 2020] ~ izarooni: job 322
+[Wed Apr 29 10:50:28 EDT 2020] ~ izarooni: hide 
+[Wed Apr 29 10:50:36 EDT 2020] ~ izarooni: maxstats 
+[Wed Apr 29 10:50:36 EDT 2020] ~ izarooni: heal 
+[Wed Apr 29 10:50:41 EDT 2020] ~ izarooni: heal 
+[Wed Apr 29 10:50:43 EDT 2020] ~ izarooni: kill izarooni
+[Wed Apr 29 10:50:44 EDT 2020] ~ izarooni: heal 
+[Wed Apr 29 10:50:47 EDT 2020] ~ izarooni: warp izarooni
+[Wed Apr 29 10:56:36 EDT 2020] ~ izarooni: hide 
+[Wed Apr 29 10:56:41 EDT 2020] ~ izarooni: clearcache skills
+[Wed Apr 29 10:59:34 EDT 2020] ~ izarooni: warp izarooni
