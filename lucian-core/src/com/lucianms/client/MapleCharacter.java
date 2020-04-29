@@ -3091,16 +3091,13 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Di
         }
     }
 
-    public void handleOrbconsume() {
-        int skillID = isCygnus() ? DawnWarrior.COMBO_ATTACK : Crusader.COMBO_ATTACK;
-        Skill combo = SkillFactory.getSkill(skillID);
-        MapleStatEffect effect = combo.getEffect(this);
-        BuffContainer container = effects.get(MapleBuffStat.COMBO_ABILITY_BUFF);
+    public void consumeComboCounter() {
+        BuffContainer container = effects.get(MapleBuffStat.COMBO_COUNTER);
         if (container == null) {
             return;
         }
         container.setValue(1);
-        Map<MapleBuffStat, BuffContainer> map = Map.of(MapleBuffStat.COMBO_ABILITY_BUFF, container);
+        Map<MapleBuffStat, BuffContainer> map = Map.of(MapleBuffStat.COMBO_COUNTER, container);
         announce(MaplePacketCreator.setTempStats(map));
         getMap().sendPacketExclude(MaplePacketCreator.setRemoteTempStats(this, map), this);
     }

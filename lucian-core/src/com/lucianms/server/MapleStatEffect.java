@@ -610,6 +610,8 @@ public class MapleStatEffect {
         }
         if (isComboReset()) {
             applyto.setCombo((short) 0);
+        } else if (sourceid == Hero.ENRAGE) {
+            applyfrom.consumeComboCounter();
         }
         if (hpchange != 0) {
             if (hpchange < 0 && (-hpchange) > applyto.getHp()) {

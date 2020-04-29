@@ -37,8 +37,6 @@ import org.slf4j.LoggerFactory;
 import tools.MaplePacketCreator;
 import tools.Randomizer;
 
-import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -98,9 +96,9 @@ public final class PlayerDealDamageNearbyEvent extends AbstractDealDamageEvent {
             if (comboBuff != null) {
                 numFinisherOrbs = comboBuff - 1;
             }
-            player.handleOrbconsume();
+            player.consumeComboCounter();
         } else if (attackInfo.numAttacked > 0) {
-            if (attackInfo.skill != 1111008 && comboBuff != null) {
+            if (attackInfo.skill != Crusader.SHOUT && comboBuff != null) {
                 int orbcount = player.getBuffedValue(MapleBuffStat.COMBO_COUNTER);
                 int oid = player.isCygnus() ? DawnWarrior.COMBO_ATTACK : Crusader.COMBO_ATTACK;
                 int advcomboid = player.isCygnus() ? DawnWarrior.ADVANCED_COMBO : Hero.ADVANCED_COMBO_ATTACK;
