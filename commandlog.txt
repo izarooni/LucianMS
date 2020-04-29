@@ -6542,3 +6542,16 @@
 [Wed Apr 29 11:29:48 EDT 2020] ~ izarooni: hp 4
 [Wed Apr 29 11:29:49 EDT 2020] ~ izarooni: mp 
 [Wed Apr 29 11:29:50 EDT 2020] ~ izarooni: mp 4
+[Wed Apr 29 11:35:10 EDT 2020] ~ izarooni: job 910
+[Wed Apr 29 11:35:14 EDT 2020] ~ izarooni: job 0
+[Wed Apr 29 11:35:21 EDT 2020] ~ izarooni: hp 50
+[Wed Apr 29 11:35:23 EDT 2020] ~ izarooni: mp 50
+[Wed Apr 29 11:35:37 EDT 2020] ~ izarooni: hide 
+[Wed Apr 29 11:39:18 EDT 2020] ~ izarooni: debug 
+[Wed Apr 29 11:39:19 EDT 2020] ~ izarooni: debug 
+[Wed Apr 29 11:49:14 EDT 2020] ~ izarooni: heal 
+[Wed Apr 29 11:49:26 EDT 2020] ~ izarooni: job 0
+[Wed Apr 29 11:49:29 EDT 2020] ~ izarooni: level 0
+[Wed Apr 29 11:49:31 EDT 2020] ~ izarooni: level 1
+[Wed Apr 29 11:49:32 EDT 2020] ~ izarooni: hide 
+[Wed Apr 29 11:59:44 EDT 2020] ~ Serzen: hide 

@@ -302,8 +302,8 @@ public class MapleClient implements Disposable {
                         donor = rs.getInt("donor");
                         String cryptoPassword = rs.getString("password");
                         int logged = rs.getInt("loggedin");
-                        if(logged > 0){
-                            return 6;
+                        if (logged > 0) {
+                            return 7;
                         }
 
                         if (BCrypt.verifyer().verify(password.getBytes(), cryptoPassword.getBytes()).verified) {

@@ -44,7 +44,7 @@ public class LLoginMain {
                     DirectPacketDecoder.class,
                     DirectPacketEncoder.class);
             interServer.run();
-            LOGGER.info("Internal server bound to {}:{}", address, (port + 1));
+            LOGGER.info("Internal server started");
         } catch (Exception e) {
             LOGGER.error("Failed to bind internal server to {}:{}", address, (port + 1), e);
             System.exit(0);

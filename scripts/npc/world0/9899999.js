@@ -10,7 +10,8 @@ var status = 0;
 var quest_id = 0;
 
 if (System.getProperties().getProperty(DAILY_PROP) == null) {
-    quest_id = Randomizer.rand(100, 105); // currently there is only 6 avaialble quests
+    // no longer using randomization due to  high possibility of repeats due to only having 5 daily quests
+    quest_id = 100 + Math.min(new Date().getDay(), 5);
     System.getProperties().setProperty(DAILY_PROP, quest_id);
 } else {
     // Integer#parseInt my fucking ass javascript fuck off

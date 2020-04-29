@@ -1,8 +1,8 @@
 <imgdir name="Daily - Arcane stars">
     <imgdir name="info">
         <int name="questId" value="102"/>
-		<int name="preQuest" value="-1"/>
-		<int name="daily" value="1"/>
+        <int name="preQuest" value="-1"/>
+        <int name="daily" value="1"/>
     </imgdir>
 
     <imgdir name="toKill">
@@ -10,26 +10,29 @@
         <imgdir name="0">
             <int name="monsterId" value="8641000"/>
             <int name="amount" value="50"/>
-			<imgdir name="1">
+        </imgdir>
+        <imgdir name="1">
             <int name="monsterId" value="8641001"/>
             <int name="amount" value="100"/>
-			<imgdir name="2">
+        </imgdir>
+        <imgdir name="2">
             <int name="monsterId" value="8641002"/>
             <int name="amount" value="100"/>
-			<imgdir name="3">
+        </imgdir>
+        <imgdir name="3">
             <int name="monsterId" value="8641003"/>
             <int name="amount" value="100"/>
         </imgdir>
     </imgdir>
 
     <imgdir name="toCollect">
-        </imgdir>
-    </imgdir>
-
-    <imgdir name="rewards">
-        <int name="meso" value="5000000"/>
-        <int name="itemId" value="4011506"/>
-        <int name="quantity" value="50"/>
-        <int name="exp" value="649568646"/>
     </imgdir>
 </imgdir>
+
+<imgdir name="rewards">
+<int name="meso" value="5000000"/>
+<int name="itemId" value="4011506"/>
+<int name="quantity" value="50"/>
+<int name="exp" value="649568646"/>
+</imgdir>
+        </imgdir>

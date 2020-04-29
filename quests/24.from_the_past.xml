@@ -1,9 +1,9 @@
 <imgdir name="Arcane River - 3">
     <imgdir name="info">
         <int name="questId" value="24"/>
-		<int name="preQuest" value="23"/>
+        <int name="preQuest" value="23"/>
         <int name="minLevel" value="150"/>
-		<int name="daily" value="0"/>
+        <int name="daily" value="0"/>
     </imgdir>
 
     <imgdir name="toKill">
@@ -19,21 +19,25 @@
         <imgdir name="2">
             <int name="monsterId" value="8641002"/>
             <int name="amount" value="500"/>
-			</imgdir>
+        </imgdir>
         <imgdir name="3">
-		 <int name="monsterId" value="8641003"/>
+            <int name="monsterId" value="8641003"/>
             <int name="amount" value="500"/>
-			 <imgdir name="4">
-		 <int name="monsterId" value="8641004"/>
+        </imgdir>
+        <imgdir name="4">
+            <int name="monsterId" value="8641004"/>
             <int name="amount" value="500"/>
-			 <imgdir name="5">
-		 <int name="monsterId" value="8641005"/>
+        </imgdir>
+        <imgdir name="5">
+            <int name="monsterId" value="8641005"/>
             <int name="amount" value="500"/>
-			 <imgdir name="6">
-		 <int name="monsterId" value="8641006"/>
+        </imgdir>
+        <imgdir name="6">
+            <int name="monsterId" value="8641006"/>
             <int name="amount" value="500"/>
-			 <imgdir name="7">
-		 <int name="monsterId" value="8641007"/>
+        </imgdir>
+        <imgdir name="7">
+            <int name="monsterId" value="8641007"/>
             <int name="amount" value="500"/>
         </imgdir>
     </imgdir>

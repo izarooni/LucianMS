@@ -163,8 +163,8 @@ public class LChannelMain {
 
         try {
             Config config = Server.getConfig();
-            LOGGER.info("Initializing communications connector");
-            communicationsHandler = new InternalChannelCommunicationsHandler(config.getString("ServerHost"), config.getNumber("LoginBasePort").intValue() + 1);
+            LOGGER.info("Connecting to internal server");
+            communicationsHandler = new InternalChannelCommunicationsHandler("127.0.0.1", config.getNumber("LoginBasePort").intValue() + 1);
         } catch (Exception e) {
             e.printStackTrace();
             System.exit(0);

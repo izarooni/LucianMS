@@ -67,14 +67,11 @@ public class AccountLoginEvent extends PacketEvent {
             client.announce(MaplePacketCreator.serverNotice(1, "The server is in whitelist mode! Only certain users will have access to the game right now."));
             return null;
         }
-        if(loginResult == 6){
-            client.announce(MaplePacketCreator.getLoginFailed(7));
-            return null;
-        }
         if (loginResult == 3) {// normally 3
             client.announce(MaplePacketCreator.getAccountBanned(client.getTemporaryBanLength()));
             client.announce(MaplePacketCreator.serverNotice(1, String.format("You have been banned for\r\n'%s'", client.getBanReason())));
         } else if (loginResult != 0) {
+            if (loginResult == 7) client.announce(MaplePacketCreator.serverNotice(1, "Account is already logged-in"));
             client.announce(MaplePacketCreator.getLoginFailed(loginResult));
         } else {
             if (client.hasBannedIP() || BanManager.isBanned(client) || BanManager.isMachineBanned(machineID)) {
