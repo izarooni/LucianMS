@@ -74,7 +74,7 @@ public class AccountLoginEvent extends PacketEvent {
             return null;
         }
 
-        if (loginResult == 5 && ServerConstants.ENABLE_AUTO_REGISTER) {
+        if (loginResult == 5 && ServerConstants.LOGIN.EnableAutoRegister) {
             if (client.getPassword() == null) {
                 client.setPassword(password);
                 client.announce(MaplePacketCreator.getLoginFailed(loginResult));

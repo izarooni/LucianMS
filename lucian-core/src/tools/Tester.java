@@ -13,6 +13,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.sql.Connection;
@@ -20,6 +21,7 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Properties;
 import java.util.concurrent.Executors;
 
 /**
@@ -34,6 +36,21 @@ public class Tester {
 //        initConfig();
 //        TaskExecutor.initPoolSize(1);
 //        Server.createServer();
+
+        Properties properties = new Properties();
+        properties.setProperty("key1", new String("value1"));
+        properties.setProperty("key2", new String("value2"));
+        properties.setProperty("key3", new String("value3"));
+
+        try (FileWriter fw = new FileWriter("test.json")) {
+            JSONObject json = new JSONObject();
+            for (Map.Entry<Object, Object> e : properties.entrySet()) {
+                json.put(e.getKey().toString(), e.getValue());
+            }
+            json.write(fw, 4, 1);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     private static void initConfig() {

@@ -178,7 +178,7 @@ public class PlayerCommands extends CommandExecutor {
                 return;
             }
         }
-        MapleMonster bomb = MapleLifeFactory.getMonster(ServerConstants.BOMB_MOB);
+        MapleMonster bomb = MapleLifeFactory.getMonster(ServerConstants.GAME.BombMonster);
         if (bomb == null) {
             player.dropMessage(5, "An error occurred");
             return;
@@ -325,7 +325,7 @@ public class PlayerCommands extends CommandExecutor {
                     break;
                 case "coins":
                 case "chirithy":
-                    CollectLeaderboard(con, usernames, "select c.name, sum(i.quantity) as value from inventoryitems i inner join characters c on c.id = i.characterid and itemid = " + ServerConstants.CURRENCY + " and gm = 0 group by characterid order by value desc limit 25");
+                    CollectLeaderboard(con, usernames, "select c.name, sum(i.quantity) as value from inventoryitems i inner join characters c on c.id = i.characterid and itemid = " + ServerConstants.GAME.SoftCurrency + " and gm = 0 group by characterid order by value desc limit 25");
                     break;
                 case "event":
                 case "ep":
@@ -468,7 +468,7 @@ public class PlayerCommands extends CommandExecutor {
             player.sendMessage("GM Level {}, PID {}, OID {}", target.getGMLevel(), target.getId(), target.getObjectId());
         }
         player.sendMessage("========== Etc ==========");
-        player.sendMessage("Currency: {}", target.getItemQuantity(ServerConstants.CURRENCY, false));
+        player.sendMessage("Currency: {}", target.getItemQuantity(ServerConstants.GAME.SoftCurrency, false));
         Optional<Occupation> occupation = Optional.ofNullable(target.getOccupation());
         player.sendMessage("Rebirths: {}", target.getRebirths());
         player.sendMessage("Occupation: {} Lv.{}", occupation.map(o -> o.getType().name()).orElse("N/A"), occupation.map(Occupation::getLevel).orElse((byte) 0));
@@ -710,7 +710,7 @@ public class PlayerCommands extends CommandExecutor {
 
     private void Home(MapleCharacter player, Command cmd, CommandArgs args) {
         player.saveLocation(SavedLocationType.FREE_MARKET.name());
-        player.changeMap(ServerConstants.HOME_MAP);
+        player.changeMap(ServerConstants.MAPS.Home);
     }
 
     private void Achievements(MapleCharacter player, Command cmd, CommandArgs args) {

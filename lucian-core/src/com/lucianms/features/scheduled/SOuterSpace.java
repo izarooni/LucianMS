@@ -107,7 +107,7 @@ public class SOuterSpace extends SAutoEvent {
     public void end() {
         setOpen(false);
         for (MapleMap maps : mapInstances.values()) {
-            maps.warpEveryone(ServerConstants.HOME_MAP);
+            maps.warpEveryone(ServerConstants.MAPS.Home);
         }
     }
 
@@ -146,7 +146,7 @@ public class SOuterSpace extends SAutoEvent {
 
             map.setInstanced(false);
             map.broadcastMessage(MaplePacketCreator.getClock(60));
-            TaskExecutor.createTask(() -> map.warpEveryone(ServerConstants.HOME_MAP), (1000 * 60));
+            TaskExecutor.createTask(() -> map.warpEveryone(ServerConstants.MAPS.Home), (1000 * 60));
         }
     }
 }

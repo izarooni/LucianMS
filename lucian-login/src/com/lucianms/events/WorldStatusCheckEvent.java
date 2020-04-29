@@ -21,9 +21,9 @@ public class WorldStatusCheckEvent extends PacketEvent {
     public Object onPacket() {
         int status;
         int userCount = Server.getWorld(world).getPlayerStorage().size();
-        if (userCount >= ServerConstants.CHANNEL_LOAD) {
+        if (userCount >= ServerConstants.LOGIN.ChannelUserCapacity) {
             status = 2;
-        } else if (userCount >= ServerConstants.CHANNEL_LOAD * 0.8) {
+        } else if (userCount >= ServerConstants.LOGIN.ChannelUserCapacity * 0.8) {
             status = 1;
         } else {
             status = 0;

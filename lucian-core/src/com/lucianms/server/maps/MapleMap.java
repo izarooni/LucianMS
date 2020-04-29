@@ -31,7 +31,6 @@ import com.lucianms.client.status.MonsterStatus;
 import com.lucianms.client.status.MonsterStatusEffect;
 import com.lucianms.constants.GameConstants;
 import com.lucianms.constants.ItemConstants;
-import com.lucianms.constants.ServerConstants;
 import com.lucianms.cquest.CQuestData;
 import com.lucianms.cquest.requirement.CQuestItemRequirement;
 import com.lucianms.events.gm.MapleFitness;
@@ -565,48 +564,6 @@ public class MapleMap implements PacketAnnouncer {
                         } else if (getId() == 551030901 && monster.getId() == 9989996) {
                             TaskExecutor.createTask(() -> warpEveryone(551030902), 3000);
                         }
-
-                        //region NX Cash gain
-                        if (ServerConstants.NX_FROM_MONSTERS) {
-                            int random = (Randomizer.nextInt(100)) + 1;
-                            int levelDifference = chr.getLevel() - monster.getLevel();
-                            int receive = 0;
-                            Collection<MapleCharacter> partyMembers = party == null ? null : party.getPlayers(p -> p.getMap() == this);
-
-                            if (levelDifference > ServerConstants.MAX_LEVELS_ABOVE) {
-                                if (random < ServerConstants.BELOW_LEVERANGEL_NX_CHANCE) {
-                                    if (party != null) {
-                                        receive = (int) (monster.getLevel() * ServerConstants.LEVEL_TO_NX_MULTIPLIER) / Math.min(partyMembers.size(), 1);
-                                    } else {
-                                        receive = monster.getLevel() * 4 / random;
-                                        if (receive > 0) {
-                                            chr.getCashShop().gainCash(1, receive);
-                                            chr.announce(MaplePacketCreator.earnTitleMessage("You gained " + receive + " NX cash"));
-                                        }
-                                    }
-                                }
-                            } else if (levelDifference > -ServerConstants.MAX_LEVELS_BELOW) {
-                                if (random < ServerConstants.BELOW_LEVERANGEL_NX_CHANCE) {
-                                    if (party != null) {
-                                        receive = (int) (monster.getLevel() * ServerConstants.LEVEL_TO_NX_MULTIPLIER + random - (random / 2)) / Math.min(partyMembers.size(), 1);
-                                    } else {
-                                        receive = (int) (monster.getLevel() * ServerConstants.LEVEL_TO_NX_MULTIPLIER + random);
-                                        if (receive > 0) {
-                                            chr.getCashShop().gainCash(1, receive);
-                                            chr.announce(MaplePacketCreator.earnTitleMessage("You gained " + receive + " NX cash"));
-                                        }
-                                    }
-                                }
-                            }
-                            if (receive > 0 && party != null) {
-                                for (MapleCharacter players : partyMembers) {
-                                    players.getCashShop().gainCash(1, receive);
-                                    players.announce(MaplePacketCreator.earnTitleMessage("You gained " + receive + " NX cash"));
-                                }
-                            }
-                        }
-                        //endregion
-
                         killed = true;
                     }
                 } else if (monster.getId() >= 8810002 && monster.getId() <= 8810009) { // horntail

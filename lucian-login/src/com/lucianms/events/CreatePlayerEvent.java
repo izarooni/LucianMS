@@ -8,6 +8,7 @@ import com.lucianms.client.inventory.Equip;
 import com.lucianms.client.inventory.Item;
 import com.lucianms.client.inventory.MapleInventory;
 import com.lucianms.client.inventory.MapleInventoryType;
+import com.lucianms.constants.ServerConstants;
 import com.lucianms.nio.receive.MaplePacketReader;
 import com.lucianms.server.MapleItemInformationProvider;
 import com.lucianms.server.Server;
@@ -129,7 +130,7 @@ public class CreatePlayerEvent extends PacketEvent {
         newchar.setHair(hair);
         newchar.setFace(face);
 
-        newchar.setMapId(90000000);
+        newchar.setMapId(ServerConstants.MAPS.CharacterCreation);
         if (jobID == 0) { // Knights of Cygnus
             newchar.setJob(MapleJob.NOBLESSE);
             newchar.getInventory(MapleInventoryType.ETC).addItem(new Item(4161047, (short) 0, (short) 1));

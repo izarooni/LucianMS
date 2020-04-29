@@ -14,7 +14,7 @@ public class GameConstants {
     public static Integer getMapIDBySlang(String s) {
         switch (s.toLowerCase()) {
             case "ox": return 109020001;
-            case "home": return ServerConstants.HOME_MAP;
+            case "home": return ServerConstants.MAPS.Home;
             default: return null;
         }
     }

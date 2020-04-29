@@ -7,6 +7,7 @@ import com.lucianms.client.SkillFactory;
 import com.lucianms.constants.skills.*;
 import com.lucianms.nio.receive.MaplePacketReader;
 import com.lucianms.server.MapleStatEffect;
+import com.lucianms.server.maps.MapleSummon;
 import tools.MaplePacketCreator;
 
 import java.util.Map;
@@ -50,6 +51,12 @@ public class PlayerBuffCancelEvent extends PacketEvent {
                 if (skill != null && skillLevel > 0) {
                     MapleStatEffect effect = skill.getEffect(skillLevel);
                     if (effect != null) {
+                        if (effect.isSummon()) {
+                            MapleSummon remove = player.getSummons().remove(skillID);
+                            if (remove != null) {
+                                remove.dispose();
+                            }
+                        }
                         // get effects from the skill being cancelled and collect it for removal
                         Set<MapleBuffStat> remove = player.getEffects().entrySet().stream()
                                 .filter(e -> effect.getStatups().containsKey(e.getKey()) && effect.isSameSource(e.getValue().getEffect()))

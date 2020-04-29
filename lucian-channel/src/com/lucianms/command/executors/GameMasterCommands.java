@@ -241,7 +241,7 @@ public class GameMasterCommands extends CommandExecutor {
                 } else if (target.equalsIgnoreCase("ox")) {
                     mapId = 109020001;
                 } else if (target.equalsIgnoreCase("home")) {
-                    mapId = ServerConstants.HOME_MAP;
+                    mapId = ServerConstants.MAPS.Home;
                 } else {
                     player.dropMessage(5, error);
                     return;
@@ -955,7 +955,7 @@ public class GameMasterCommands extends CommandExecutor {
                 if (target != null) {
                     JailManager.removeJail(target.getId());
                     if (JailManager.isJailField(target.getMapId())) {
-                        target.changeMap(ServerConstants.HOME_MAP);
+                        target.changeMap(ServerConstants.MAPS.Home);
                     }
                     target.sendMessage(6, "You have been release from jail by {}", player.getName());
                     player.sendMessage(6, "Success");

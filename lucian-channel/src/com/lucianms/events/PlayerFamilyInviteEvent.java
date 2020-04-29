@@ -16,14 +16,14 @@ public class PlayerFamilyInviteEvent extends PacketEvent {
     @Override
     public void processInput(MaplePacketReader reader) {
         username = reader.readMapleAsciiString();
+        if (!ServerConstants.GAME.EnableFamilies) {
+            setCanceled(true);
+        }
     }
 
     @Override
     public Object onPacket() {
         MapleCharacter player = getClient().getPlayer();
-        if (!ServerConstants.USE_FAMILY_SYSTEM){
-    		return null;
-    	}
         MapleCharacter target = getClient().getWorldServer().getPlayerStorage().find(p -> p.getName().equalsIgnoreCase(username));
         if (target != null) {
             target.getClient().announce(MaplePacketCreator.sendFamilyInvite(player.getId(), username));

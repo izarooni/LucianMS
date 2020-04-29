@@ -1,5 +1,8 @@
 package com.lucianms.constants;
 
+/**
+ * @author izarooni
+ */
 public class ServerConstants {
 
     public static short VERSION = 83;
@@ -7,44 +10,53 @@ public class ServerConstants {
             "Yellonde", "Demethos", "Galicia", "El Nido", "Zenith", "Arcenia", "Kastia", "Judis", "Plana", "Kalluna",
             "Stius", "Croa", "Medere"};
 
-    //region Login Settings
-    /**
-     * the player capacity per channel
-     */
-    public static final int CHANNEL_LOAD = 100;
+    private ServerConstants() {
+    }
 
-    /**
-     * should the SPW be enabled upon character selection
-     */
-    public static final boolean ENABLE_PIC = false;
+    public static class MAPS {
+        public static final int CharacterCreation = 10000;
+        public static final int Home = 910000000;
 
-    /**
-     * Should the server automatically register accounts if they don't exist
-     */
-    public static final boolean ENABLE_AUTO_REGISTER = true;
-    //endregion
+        private MAPS() {
+        }
+    }
 
-    //region Game Settings
-    public static final boolean SAVE_CHARACTER_SKILLS = false;
-    public static final boolean USE_FAMILY_SYSTEM = false;
-    public static final boolean USE_PARTY_SEARCH = false;
+    public static class LOGIN {
+        /**
+         * A.K.A. PIC; Character selection password
+         */
+        public static boolean EnableSPW = false;
+        /**
+         * Should the server automatically register accounts if they don't exist
+         */
+        public static boolean EnableAutoRegister = true;
+        public static final int ChannelUserCapacity = 100;
 
-    public static final int PARTY_EXPERIENCE_MOD = 1;
+        private LOGIN() {
+        }
+    }
 
-    public static final int HOME_MAP = 910000000;
-    public static final int CURRENCY = 4260002;
-    public static final int BOMB_MOB = 9300166;
+    public static class GAME {
+        /**
+         * <p>
+         * 0    : party bonus<br>
+         * 100  : 1x bonus<br>
+         * 200  : 2x bonus<br>
+         * </p>
+         */
+        public static final int BonusPartyExp = 100;
+        public static final int SoftCurrency = 4260002;
+        public static final int BombMonster = 9300166;
+        public static boolean SaveCharacterSkills = false;
+        public static boolean EnableFamilies = false;
+        public static boolean EnablePartySearch = false;
 
-    public static final boolean NX_FROM_MONSTERS = false;
-    public static final double LEVEL_TO_NX_MULTIPLIER = 1.2;
-    public static final int BELOW_LEVERANGEL_NX_CHANCE = 20;
-    public static final int ABOVE_LEVELRANGE_NX_CHANCE = 10;
-    public static final int MAX_LEVELS_BELOW = 20;
-    public static final int MAX_LEVELS_ABOVE = 10;
+        private GAME() {
+        }
+    }
 
     public static int getAutoRebirthItem() {
         // using a method for when we decide to make an item cycle (different daily)
         return 4011008;
     }
-    //endregion
 }

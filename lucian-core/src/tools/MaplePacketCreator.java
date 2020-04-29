@@ -1682,7 +1682,7 @@ public class MaplePacketCreator {
         for (MapleCharacter chr : chars) {
             addCharEntry(mplew, chr, false);
         }
-        if (ServerConstants.ENABLE_PIC) {
+        if (ServerConstants.LOGIN.EnableSPW) {
             mplew.write(c.getPic() == null || c.getPic().length() == 0 ? 0 : 1);
         } else {
             mplew.write(2);
@@ -2728,7 +2728,8 @@ public class MaplePacketCreator {
         mplew.write(addr);
         mplew.writeShort(port);
         mplew.writeInt(clientId);
-        mplew.write(new byte[]{0, 0, 0, 0, 0});
+        mplew.write(0);
+        mplew.writeInt(0);
         return mplew.getPacket();
     }
 
@@ -2763,7 +2764,7 @@ public class MaplePacketCreator {
         mplew.write(channelLoad.size());
         for (MapleChannel ch : channelLoad) {
             mplew.writeMapleString(serverName + "-" + ch.getId());
-            mplew.writeInt((ch.getUserCount() * 1200) / ServerConstants.CHANNEL_LOAD);
+            mplew.writeInt((ch.getUserCount() * 1200) / ServerConstants.LOGIN.ChannelUserCapacity);
             mplew.write(1);
             mplew.writeShort(ch.getId() - 1);
         }
@@ -2800,10 +2801,7 @@ public class MaplePacketCreator {
         if (inChat) { // quest bonus rate stuff
             mplew.write(0);
         }
-
-        int mod = ServerConstants.PARTY_EXPERIENCE_MOD != 1 ? ServerConstants.PARTY_EXPERIENCE_MOD * 100 : 0;
-
-        mplew.write(mod); //0 = party bonus, 100 = 1x Bonus EXP, 200 = 2x Bonus EXP
+        mplew.write(ServerConstants.GAME.BonusPartyExp);
         mplew.writeInt(party); // party bonus
         mplew.writeInt(equip); //equip bonus
         mplew.writeInt(0); //Internet Cafe Bonus

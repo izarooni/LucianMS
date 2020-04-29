@@ -59,8 +59,8 @@ public class House {
                     .loadFootholds()
                     .loadPortals()
                     .build();
-            map.setForcedReturnMap(ServerConstants.HOME_MAP);
-            map.setReturnMapId(ServerConstants.HOME_MAP);
+            map.setForcedReturnMap(ServerConstants.MAPS.Home);
+            map.setReturnMapId(ServerConstants.MAPS.Home);
 
             for (MaplePortal portal : map.getPortals()) {
                 portal.setPortalStatus(false);

@@ -67,7 +67,7 @@ public class FieldUpdateTask implements Runnable {
                             Occupation occupation = player.getOccupation();
                             if (occupation != null) {
                                 if (occupation.getType() == Occupation.Type.Troll &&
-                                        player.getMapId() == ServerConstants.HOME_MAP) {
+                                        player.getMapId() == ServerConstants.MAPS.Home) {
                                     occupation.gainExperience(10);
                                 }
                             }

@@ -367,7 +367,7 @@ public abstract class AbstractDealDamageEvent extends PacketEvent {
             ret.isTempest = true;
         }
 
-        if (ret.skill > 0 && getClient().getPlayer().getMapId() == ServerConstants.HOME_MAP) {
+        if (ret.skill > 0 && getClient().getPlayer().getMapId() == ServerConstants.MAPS.Home) {
             SpamTracker.SpamData spamTracker = player.getSpamTracker(SpamTracker.SpamOperation.SkillUsage);
             if (!spamTracker.testFor(8000)) {
                 player.sendMessage(5, "Skills are disabled in this map and will not show for other players.");

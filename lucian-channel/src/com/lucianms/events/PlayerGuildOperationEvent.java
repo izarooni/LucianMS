@@ -123,7 +123,7 @@ public class PlayerGuildOperationEvent extends PacketEvent {
                 backgroundColor = reader.readByte();
                 logo = reader.readShort();
                 logoColor = reader.readByte();
-                if (player.getGuildId() <= 0 || player.getGuildRank() != 1 || (player.getMapId() != GuildHQ && player.getMapId() != ServerConstants.HOME_MAP)) {
+                if (player.getGuildId() <= 0 || player.getGuildRank() != 1 || (player.getMapId() != GuildHQ && player.getMapId() != ServerConstants.MAPS.Home)) {
                     setCanceled(true);
                 }
                 break;
@@ -159,7 +159,7 @@ public class PlayerGuildOperationEvent extends PacketEvent {
                 if (player.getGuildId() > 0) {
                     player.sendMessage(1, "You cannot create a new Guild while in one.");
                     return null;
-                } else if (player.getMapId() != 200000301 && player.getMapId() != ServerConstants.HOME_MAP) {
+                } else if (player.getMapId() != 200000301 && player.getMapId() != ServerConstants.MAPS.Home) {
                     player.sendMessage(1, "You cannot create a guild here.");
                 } else if (player.getMeso() < MapleGuild.CREATE_GUILD_COST) {
                     player.dropMessage(1, "You do not have enough mesos to create a Guild.");

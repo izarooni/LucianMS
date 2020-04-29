@@ -135,7 +135,7 @@ public class AEmergencyTrial extends GAutoEvent {
 
     @Override
     public void playerUnregistered(MapleCharacter player) {
-        player.changeMap(returnLocations.remove(returnLocations.getOrDefault(player.getId(), ServerConstants.HOME_MAP)));
+        player.changeMap(returnLocations.remove(returnLocations.getOrDefault(player.getId(), ServerConstants.MAPS.Home)));
         player.getGenericEvents().removeIf(g -> g instanceof AEmergencyTrial);
     }
 

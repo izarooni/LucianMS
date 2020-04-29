@@ -83,7 +83,7 @@ public abstract class BossPQ extends GenericEvent {
         player.removeGenericEvent(this);
         int ReturnMap = player.getSavedLocation("OTHER");
         if (ReturnMap == -1) {
-            ReturnMap = ServerConstants.HOME_MAP;
+            ReturnMap = ServerConstants.MAPS.Home;
         }
         player.changeMap(ReturnMap);
         MapleMap mapInstance = maps.get(mapId);

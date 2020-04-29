@@ -29,6 +29,10 @@ public class Config {
         System.gc();
     }
 
+    public void setNumber(String key, Number n) {
+        properties.setProperty(key, n.toString());
+    }
+
     public String getString(String key) {
         return (String) properties.get(key);
     }

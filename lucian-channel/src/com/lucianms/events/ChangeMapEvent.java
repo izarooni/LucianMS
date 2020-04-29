@@ -116,7 +116,7 @@ public class ChangeMapEvent extends PacketEvent {
                         if (to == null) {
                             getLogger().warn("Player '{}' unable to return to map {} from {}", player.getName(), player.getMap().getReturnMapId(), player.getMapId());
                             player.sendMessage("The return map is obstructed");
-                            to = ch.getMap(ServerConstants.HOME_MAP);
+                            to = ch.getMap(ServerConstants.MAPS.Home);
                         }
                         player.setStance(0);
                     }

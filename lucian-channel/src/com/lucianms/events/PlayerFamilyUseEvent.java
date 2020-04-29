@@ -21,13 +21,13 @@ public class PlayerFamilyUseEvent extends PacketEvent {
         if (action == 0 || action == 1) {
             username = reader.readMapleAsciiString();
         }
+        if (!ServerConstants.GAME.EnableFamilies) {
+            setCanceled(true);
+        }
     }
 
     @Override
     public Object onPacket() {
-        if (!ServerConstants.USE_FAMILY_SYSTEM) {
-            return null;
-        }
         MapleCharacter player = getClient().getPlayer();
         int[] repCost = {3, 5, 7, 8, 10, 12, 15, 20, 25, 40, 50};
         if (action == 0 || action == 1) {

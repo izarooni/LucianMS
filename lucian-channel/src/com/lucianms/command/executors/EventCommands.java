@@ -209,7 +209,7 @@ public class EventCommands extends CommandExecutor {
         System.arraycopy(src, 0, dest, 0, src.length);
         player.getMap().sendMessage(5, "Bombing {} platforms", platforms);
         for (int i = 0; i < platforms; i++) {
-            MapleMonster bomb = MapleLifeFactory.getMonster(ServerConstants.BOMB_MOB);
+            MapleMonster bomb = MapleLifeFactory.getMonster(ServerConstants.GAME.BombMonster);
             if (bomb != null) {
                 int selected = Randomizer.nextInt(dest.length);
                 if (dest[selected] == null) {
@@ -781,7 +781,7 @@ public class EventCommands extends CommandExecutor {
         if (command.equals("bombm")) {
             for (MapleCharacter players : player.getMap().getCharacters()) {
                 for (int i = -5; i < 5; i++) {
-                    MapleMonster bomb = MapleLifeFactory.getMonster(ServerConstants.BOMB_MOB);
+                    MapleMonster bomb = MapleLifeFactory.getMonster(ServerConstants.GAME.BombMonster);
                     if (bomb == null) {
                         player.sendMessage(5, "An error occurred");
                         return;
@@ -803,7 +803,7 @@ public class EventCommands extends CommandExecutor {
                 player.sendMessage("Bomb timer set to {}s", time);
             }
             if (args.length() == 0 || (args.length() == 2 && timeIndex > 0)) {
-                MapleMonster bomb = MapleLifeFactory.getMonster(ServerConstants.BOMB_MOB);
+                MapleMonster bomb = MapleLifeFactory.getMonster(ServerConstants.GAME.BombMonster);
                 if (bomb == null) {
                     player.sendMessage(5, "An error occurred");
                     return;
@@ -812,7 +812,7 @@ public class EventCommands extends CommandExecutor {
                 player.getMap().spawnMonsterOnGroudBelow(bomb, player.getPosition());
             } else {
                 for (int i = 0; i < args.length(); i++) {
-                    MapleMonster bomb = MapleLifeFactory.getMonster(ServerConstants.BOMB_MOB);
+                    MapleMonster bomb = MapleLifeFactory.getMonster(ServerConstants.GAME.BombMonster);
                     if (bomb == null) {
                         player.sendMessage(5, "An error occurred");
                         return;
@@ -840,11 +840,11 @@ public class EventCommands extends CommandExecutor {
             if (!players.isGM() || player.isDebug()) {
                 Point location = players.getPosition().getLocation();
                 if (location.x >= -142 && command.equals("warpoxright")) {
-                    players.changeMap(ServerConstants.HOME_MAP);
+                    players.changeMap(ServerConstants.MAPS.Home);
                 } else if (location.x >= -307 && location.x <= -143 && command.equals("warpoxmiddle")) {
-                    players.changeMap(ServerConstants.HOME_MAP);
+                    players.changeMap(ServerConstants.MAPS.Home);
                 } else if (location.x <= -308 && command.equals("warpoxleft")) {
-                    players.changeMap(ServerConstants.HOME_MAP);
+                    players.changeMap(ServerConstants.MAPS.Home);
                 }
             }
         }
@@ -859,7 +859,7 @@ public class EventCommands extends CommandExecutor {
         Integer fieldID = args.parseNumber(0, int.class);
         if (fieldID == null) {
             if (args.get(0).equalsIgnoreCase("home")) {
-                fieldID = ServerConstants.HOME_MAP;
+                fieldID = ServerConstants.MAPS.Home;
             } else {
                 player.sendMessage(5, args.getFirstError());
                 return;

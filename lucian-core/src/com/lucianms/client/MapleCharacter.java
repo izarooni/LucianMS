@@ -584,7 +584,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Di
             ret.map = client.getChannelServer().getMap(ret.mapid);
             if (ret.map == null) {
                 LOGGER.info("'{}' logged-in to an invalid map {}", ret.name, ret.mapid);
-                ret.map = client.getChannelServer().getMap(ServerConstants.HOME_MAP);
+                ret.map = client.getChannelServer().getMap(ServerConstants.MAPS.Home);
             }
             MaplePortal portal = ret.map.getPortal(ret.initialSpawnPoint);
             if (portal == null && (portal = ret.map.getPortal("sp")) != null) {
@@ -725,7 +725,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Di
                     }
                 }
             }
-            if (ServerConstants.SAVE_CHARACTER_SKILLS) {
+            if (ServerConstants.GAME.SaveCharacterSkills) {
                 try (PreparedStatement ps = con.prepareStatement("SELECT * FROM skills WHERE characterid = ?")) {
                     ps.setInt(1, charid);
                     try (ResultSet rs = ps.executeQuery()) {
@@ -1100,7 +1100,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Di
 
     public void setCombo(short count) {
         if (count < combocounter) {
-            cancelBuffs(Set.of(MapleBuffStat.COMBO_COUNTER));
+            cancelBuffs(Set.of(MapleBuffStat.COMBO_ABILITY_BUFF));
         }
         combocounter = (short) Math.min(30000, count);
         if (count > 0) {
@@ -2005,9 +2005,9 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Di
             }
         }
         if (isAutoCurrency() && meso.get() >= 2000000000) {
-            if (MapleInventoryManipulator.checkSpace(getClient(), ServerConstants.CURRENCY, 1, "")) {
+            if (MapleInventoryManipulator.checkSpace(getClient(), ServerConstants.GAME.SoftCurrency, 1, "")) {
                 gainMeso(-2000000000, true);
-                MapleInventoryManipulator.addById(getClient(), ServerConstants.CURRENCY, (short) 1);
+                MapleInventoryManipulator.addById(getClient(), ServerConstants.GAME.SoftCurrency, (short) 1);
 
                 Occupation occupation = getOccupation();
                 if (occupation != null && occupation.getType() == Occupation.Type.Farmer) {
@@ -3787,7 +3787,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Di
 
             ItemFactory.INVENTORY.saveItems(itemsWithType, id, con);
 
-            if (ServerConstants.SAVE_CHARACTER_SKILLS) {
+            if (ServerConstants.GAME.SaveCharacterSkills) {
                 try (PreparedStatement ps = con.prepareStatement("INSERT INTO skills VALUES (?, ?, ?, ?, ?)")) {
                     ps.setInt(2, id);
                     ps.setLong(5, -1);
@@ -4075,7 +4075,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Di
 
             relationship.save(con);
             deleteWhereCharacterId(con, "DELETE FROM skills WHERE characterid = ?");
-            if (ServerConstants.SAVE_CHARACTER_SKILLS) {
+            if (ServerConstants.GAME.SaveCharacterSkills) {
                 try (PreparedStatement ps = con.prepareStatement("INSERT INTO skills VALUES (?, ?, ?, ?, ?)")) {
                     ps.setInt(2, id);
                     for (Entry<Integer, SkillEntry> skill : skills.entrySet()) {

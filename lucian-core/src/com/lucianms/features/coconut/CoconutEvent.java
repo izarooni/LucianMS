@@ -71,7 +71,7 @@ public class CoconutEvent {
                     players.clear();
                 }
                 map.sendPacket(MaplePacketCreator.getClock(getTimeFinish()));
-                TaskExecutor.createTask(() -> map.warpEveryone(ServerConstants.HOME_MAP), getTimeFinish() * 1000);
+                TaskExecutor.createTask(() -> map.warpEveryone(ServerConstants.MAPS.Home), getTimeFinish() * 1000);
             }
         }, getTimeDefault() * 1000);
     }

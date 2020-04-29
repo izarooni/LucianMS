@@ -27,7 +27,7 @@ public class PlayerPartySearchBeginEvent extends PacketEvent {
         max = reader.readInt();
         reader.readInt();
         jobs = reader.readInt();
-        if (!ServerConstants.USE_PARTY_SEARCH) {
+        if (!ServerConstants.GAME.EnablePartySearch) {
             setCanceled(true);
         }
     }

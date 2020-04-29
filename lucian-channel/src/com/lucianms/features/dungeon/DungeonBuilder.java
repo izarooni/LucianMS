@@ -128,8 +128,8 @@ public class DungeonBuilder {
             if (map != null) {
 
                 // Don't want em staying there OwO
-                map.setReturnMapId(ServerConstants.HOME_MAP);
-                map.setForcedReturnMap(ServerConstants.HOME_MAP);
+                map.setReturnMapId(ServerConstants.MAPS.Home);
+                map.setForcedReturnMap(ServerConstants.MAPS.Home);
                 // don't want portals to work nor scripts
                 map.getPortals().forEach((portal) -> {
                     portal.setPortalStatus(false);

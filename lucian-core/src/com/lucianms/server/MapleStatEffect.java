@@ -37,6 +37,7 @@ import com.lucianms.server.world.MapleParty;
 import com.lucianms.server.world.MaplePartyCharacter;
 import provider.MapleData;
 import provider.MapleDataTool;
+import provider.wz.XMLDomMapleData;
 import tools.MaplePacketCreator;
 import tools.Pair;
 
@@ -50,33 +51,6 @@ import java.util.*;
  * @author Frz
  */
 public class MapleStatEffect {
-
-    private short watk, matk, wdef, mdef, acc, avoid, speed, jump;
-    private short hp, mp;
-    private double hpR, mpR;
-    private short mpCon, hpCon;
-    private int duration;
-    private boolean overTime;
-    private int repeatEffect;
-    private int sourceid;
-    private int moveTo;
-    private boolean skill;
-    private Map<MapleBuffStat, Integer> statups;
-    private Map<MonsterStatus, Integer> monsterStatus;
-    private int x, y, mobCount, moneyCon, cooldown, morphId = 0, ghost, fatigue, berserk, booster;
-    private double prop;
-    private int itemCon, itemConNo;
-    private int damage, attackCount, fixdamage;
-    private Point lt, rb;
-    private byte bulletCount, bulletConsume;
-
-    public static MapleStatEffect loadSkillEffectFromData(MapleData source, int skillid, boolean overtime) {
-        return loadFromData(source, skillid, true, overtime);
-    }
-
-    public static MapleStatEffect loadItemEffectFromData(MapleData source, int itemid) {
-        return loadFromData(source, itemid, false, false);
-    }
 
     private static void addBuffStatPairToListIfNotZero(Map<MapleBuffStat, Integer> map, MapleBuffStat buffstat, Integer val) {
         if (val != 0) {
@@ -104,8 +78,9 @@ public class MapleStatEffect {
 
         ret.sourceid = sourceid;
 
-//        XMLDomMapleData parent = (XMLDomMapleData) source.getParent().getParent();
-//        MapleData summon = parent.getChildByPath("summon");
+        XMLDomMapleData parent = (XMLDomMapleData) source.getParent().getParent();
+        MapleData summon = parent.getChildByPath("summon");
+        ret.summon = summon != null;
 
         ret.skill = skill;
         if (!ret.skill && ret.duration > -1) {
@@ -397,12 +372,12 @@ public class MapleStatEffect {
                 // SUMMON
                 case Ranger.SILVER_HAWK:
                 case Sniper.GOLDEN_EAGLE:
-//                    statups.put(MapleBuffStat.SUMMON, 1);
+                    statups.put(MapleBuffStat.BEHOLDER, 1);
                     monsterStatus.put(MonsterStatus.STUN, 1);
                     break;
                 case FPArchMage.ELQUINES:
                 case Marksman.FROSTPREY:
-//                    statups.put(MapleBuffStat.SUMMON, 1);
+                    statups.put(MapleBuffStat.BEHOLDER, 1);
                     monsterStatus.put(MonsterStatus.FREEZE, 1);
                     break;
                 case Priest.SUMMON_DRAGON:
@@ -417,7 +392,7 @@ public class MapleStatEffect {
                 case NightWalker.DARKNESS:
                 case ThunderBreaker.LIGHTNING:
                 case BlazeWizard.IFRIT:
-//                    statups.put(MapleBuffStat.SUMMON, 1);
+                    statups.put(MapleBuffStat.BEHOLDER, 1);
                     break;
                 // ----------------------------- MONSTER STATUS ---------------------------------- //
                 case Crusader.ARMOR_CRASH:
@@ -534,6 +509,34 @@ public class MapleStatEffect {
         ret.statups = statups;
         return ret;
     }
+
+    public static MapleStatEffect loadItemEffectFromData(MapleData source, int itemid) {
+        return loadFromData(source, itemid, false, false);
+    }
+
+    public static MapleStatEffect loadSkillEffectFromData(MapleData source, int skillid, boolean overtime) {
+        return loadFromData(source, skillid, true, overtime);
+    }
+
+    private short watk, matk, wdef, mdef, acc, avoid, speed, jump;
+    private short hp, mp;
+    private double hpR, mpR;
+    private short mpCon, hpCon;
+    private int duration;
+    private boolean overTime;
+    private boolean summon;
+    private int repeatEffect;
+    private int sourceid;
+    private int moveTo;
+    private boolean skill;
+    private Map<MapleBuffStat, Integer> statups;
+    private Map<MonsterStatus, Integer> monsterStatus;
+    private int x, y, mobCount, moneyCon, cooldown, morphId = 0, ghost, fatigue, berserk, booster;
+    private double prop;
+    private int itemCon, itemConNo;
+    private int damage, attackCount, fixdamage;
+    private Point lt, rb;
+    private byte bulletCount, bulletConsume;
 
     private boolean isEnergy() {
         return sourceid == ThunderBreaker.ENERGY_CHARGE || sourceid == Buccaneer.ENERGY_ORB;
@@ -683,13 +686,11 @@ public class MapleStatEffect {
 
         SummonMovementType summonMovementType = getSummonMovementType();
         if (summonMovementType != null && pos != null) {
+            applyfrom.getSummons().values().forEach(MapleSummon::dispose);
+            applyfrom.getSummons().clear();
+
             MapleSummon summon = new MapleSummon(applyfrom, sourceid, pos, summonMovementType);
-            MapleSummon remove = applyfrom.getSummons().put(sourceid, summon);
-            if (remove != null) {
-                applyfrom.getMap().sendPacket(MaplePacketCreator.removeSummon(remove, true));
-                applyfrom.getMap().removeMapObject(remove);
-                remove.dispose();
-            }
+            applyfrom.getSummons().put(sourceid, summon);
             applyfrom.getMap().spawnSummon(summon);
             summon.addHP(x);
             if (isBeholder()) {
@@ -1218,19 +1219,12 @@ public class MapleStatEffect {
         return null;
     }
 
-
-    public boolean hasNoIcon() {
-        return (sourceid == 3111002 || sourceid == 3211002 || + // puppet, puppet
-                sourceid == 3211005 || sourceid == 2311002 || + // golden eagle, mystic door
-                sourceid == 2121005 || sourceid == 2221005 || + // elquines, ifrit
-                sourceid == 2321003 || sourceid == 3121006 || + // bahamut, phoenix
-                sourceid == 3221005 || sourceid == 3111005 || + // frostprey, silver hawk
-                sourceid == 2311006 || sourceid == 5220002 || + // summon dragon, wrath of the octopi
-                sourceid == 5211001 || sourceid == 5211002); // octopus, gaviota
-    }
-
     public boolean isSkill() {
         return skill;
+    }
+
+    public boolean isSummon() {
+        return summon;
     }
 
     public int getSourceId() {
@@ -1239,28 +1233,6 @@ public class MapleStatEffect {
 
     public boolean makeChanceResult() {
         return prop == 1.0 || Math.random() < prop;
-    }
-
-    private static class CancelEffectAction implements Runnable {
-
-        private MapleStatEffect effect;
-        private WeakReference<MapleCharacter> target;
-        private long startTime;
-
-        public CancelEffectAction(MapleCharacter target, MapleStatEffect effect, long startTime) {
-            this.effect = effect;
-            this.target = new WeakReference<>(target);
-            this.startTime = startTime;
-        }
-
-        @Override
-        public void run() {
-            MapleCharacter realTarget = target.get();
-            if (realTarget != null) {
-                realTarget.cancelEffect(effect, startTime, false);
-            }
-            target.clear();
-        }
     }
 
     public short getHp() {
@@ -1341,5 +1313,27 @@ public class MapleStatEffect {
 
     public Map<MonsterStatus, Integer> getMonsterStati() {
         return monsterStatus;
+    }
+
+    private static class CancelEffectAction implements Runnable {
+
+        private MapleStatEffect effect;
+        private WeakReference<MapleCharacter> target;
+        private long startTime;
+
+        public CancelEffectAction(MapleCharacter target, MapleStatEffect effect, long startTime) {
+            this.effect = effect;
+            this.target = new WeakReference<>(target);
+            this.startTime = startTime;
+        }
+
+        @Override
+        public void run() {
+            MapleCharacter realTarget = target.get();
+            if (realTarget != null) {
+                realTarget.cancelEffect(effect, startTime, false);
+            }
+            target.clear();
+        }
     }
 }
