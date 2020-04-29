@@ -3717,9 +3717,9 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Di
                 }
             }, 5000, 5000);
         }
-        LOGGER.warn(" " + effect.getSourceId() + " " + Beginner.MONSTER_RIDER);
+        LOGGER.info(" " + effect.getSourceId() + " " + Beginner.MONSTER_RIDER);
         if (effect.getSourceId() != Beginner.MONSTER_RIDER) {
-            LOGGER.warn("I'm not a monster rider!");
+            LOGGER.info("I'm not a monster rider!");
             Map<Long, Long> timerMap = new HashMap<>();
             timerMap.put(starttime, System.currentTimeMillis());
             currentBuffs.put(effect, timerMap);
