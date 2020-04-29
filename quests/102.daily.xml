@@ -27,12 +27,11 @@
 
     <imgdir name="toCollect">
     </imgdir>
-</imgdir>
 
-<imgdir name="rewards">
-<int name="meso" value="5000000"/>
-<int name="itemId" value="4011506"/>
-<int name="quantity" value="50"/>
-<int name="exp" value="649568646"/>
+    <imgdir name="rewards">
+        <int name="meso" value="5000000"/>
+        <int name="itemId" value="4011506"/>
+        <int name="quantity" value="50"/>
+        <int name="exp" value="649568646"/>
+    </imgdir>
 </imgdir>
-        </imgdir>

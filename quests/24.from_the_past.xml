@@ -1,6 +1,6 @@
 <imgdir name="Arcane River - 3">
     <imgdir name="info">
-        <int name="questId" value="24"/>
+        <int name="questId" value="0"/>
         <int name="preQuest" value="23"/>
         <int name="minLevel" value="150"/>
         <int name="daily" value="0"/>
