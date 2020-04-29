@@ -68,7 +68,7 @@ public class AccountLoginEvent extends PacketEvent {
             return null;
         }
         if(loginResult == 6){
-            client.announce(MaplePacketCreator.serverNotice(1, String.format("Account is already logged in")));
+            client.announce(MaplePacketCreator.getLoginFailed(7));
             return null;
         }
         if (loginResult == 3) {// normally 3
