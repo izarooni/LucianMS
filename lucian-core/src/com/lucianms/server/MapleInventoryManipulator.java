@@ -104,6 +104,7 @@ public class MapleInventoryManipulator {
         MapleCharacter player = c.getPlayer();
         MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
         MapleInventoryType type = ItemConstants.getInventoryType(itemId);
+        if (type == MapleInventoryType.UNDEFINED) return false;
 
         if (type != MapleInventoryType.EQUIP) {
             short slotMax = ii.getSlotMax(c, itemId);

@@ -3018,7 +3018,7 @@ public class MaplePacketCreator {
         final MaplePacketWriter mplew = new MaplePacketWriter();
         mplew.writeShort(SendOpcode.PLAYER_INTERACTION.getValue());
         mplew.write(CommunityActions.ROOM.value);
-        mplew.write(3);
+        mplew.write(3); // room type
         mplew.write(2);
         mplew.write(number);
         if (number == 1) {
@@ -6116,7 +6116,7 @@ public class MaplePacketCreator {
         mplew.writeShort(SendOpcode.REACTOR_SPAWN.getValue());
         mplew.writeInt(reactor.getObjectId());
         mplew.writeInt(reactor.getId());
-        mplew.write(1);
+        mplew.write(reactor.getState());
         mplew.writeLocation(pos);
         mplew.write(0);
         mplew.writeMapleString("");

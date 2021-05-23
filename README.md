@@ -3,31 +3,44 @@ Now known as Chirithy!
 **Java 8** and above is required so long as the [Nashorn Script Engine](https://docs.oracle.com/javase/8/docs/jdk/api/nashorn/jdk/nashorn/api/scripting/NashornScriptEngine.html) is available.  
 _I'm look at you Java 11 (They [deprecated](https://github.com/junit-team/junit5/issues/1481) the feature)._
 
-# Starting the server
-#### Understand the bound ports
+# Start The Server
+[Download the latest release](https://github.com/izarooni/LucianMS/releases)  
+In your favorite [MySQL](https://dev.mysql.com/downloads/mysql/) browser, execute the .sql script `backups/chirithy_clean.sql`.  
+Edit worlds (rates, messages, etc.) in `world.ini`.  
+Edit all IP inside `server-config.json` depending if you want a local or remote server.  
+Edit `database.properties` to connect to your server database.  
+Add your own `wz` folder containing your server XMLs. You can make these files using HaRepacker or similar tools.
+
+### Windows
+Simply run `launch-channel.bat` and `launch-login.bat`. Follow any given instructions.
+
+---
+### Java arguments
+If using your own script, these arguments must be included in your Java CLI:
+```
+-Dwzpath=wz
+-Dlog4j.configurationFile=log4j.xml
+```
+
+The `-D` prefix assigns the key and value to your system properties.  
+`wzpath` is a relative path to your wz directory containing server XMLs.  
+`log4j.configurationFile` is a relative path to your log4j configuration file.  
+Both are typically contained in your root directory (where the `scripts` folder is contained).
+
+### Understand the bound ports
 This server emulator is required to run as two separate JVM processes.  
-One for the Login Server (default bound to port `8484`) and one for the Channel Server (default bound to `7575 + i + (n * 100)`) where `i` is the Channel ID and `n` is the World ID.  
-The default ports (`8484` and `7575`) can be configured via `server-config.json` but the channel port calculation remains the same.  
-Be sure to un-block the Login Server and Channel Server range of `TCP` ports from your in-bound firewall rules.  
+The ports used are as follows and can be configured via file editing `server-config.json`:  
+```
+Login Server:   8484  
+Channel Server: 7575 + channel-ID + (world-ID * 100)  
+``` 
+If using windows, be sure to un-block the `TCP` ports from your in-bound firewall rules.  
 
-If using a Discord bot, the bound port is `8483` and should not be allowed through firewall.
-
-All three of these processes a currently programmed to run on the same system as they connect and communicate via localized network connections and raw packet data (No packet encryption modifications are used whatsoever as data is transferred through the local network).
+All three of these processes are to run on the same system as they connect via LAN and communicate with raw packet data.
 
 ---
 
-#### Creating your .bat file
-Your most basic command line with **required** arguments for starting a server JVM is as follows:
-```
-java -jar SERVER.jar -Dwzpath=wz -Dnashorn.args=--language=es6
-```
-- `-jar SERVER.jar` runs the JAR file as an executable file where `SERVER.jar` is to be replaced with the path to your compiled JAR file for your login and channel server
-- `-Dwzpath=wz` creates a System property called `wzpath` and assigns the value `wz`
-- `-Dnashorn.args=--language=es6` creates a System property which enables _some_ ES6 features in the JDK8+ script engine processor
- 
----
-
-#### Utilizing the new encryption
+### Modifying the IGCihper
 Under your `server-config.json` properties, should the `UseNewEncryption` property be assigned to `true`, your game client localhost will need to update its `IGCipher` hash numbers.  
 In the IGCipher client functions, the number will need to be changed from `F25350C6` to `FF11252D`.
 **Note:** These numbers are represented in the Big Endian format in the client, and Little Endian in the server. 

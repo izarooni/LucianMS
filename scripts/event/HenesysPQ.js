@@ -32,8 +32,12 @@ function setup() {
     var eim = em.newInstance("HenesysPQ_" + em.getProperty("LeaderName"));
     eim.setProperty("clear", "false");
     eim.setProperty("ActivatedPlants", "0");
-    eim.getMapInstance(M_Stage).setSummonState(false);
-    eim.getMapInstance(M_Stage).killAllMonsters();
+
+    let map = eim.getMapInstance(M_Stage);
+    map.setSummonState(false);
+    map.killAllMonsters();
+    map.resetReactors();
+
     var timer = 1000 * 60 * T_Deadline;
     eim.schedule("disbandParty", timer);
     eim.startEventTimer(timer);
@@ -47,7 +51,7 @@ function playerEntry(eim, player) {
 
 function playerDead(eim, player) {
     if (eim.isLeader(player)) {
-        eim.getPlayers().forEach(function(chr) {
+        eim.getPlayers().forEach(function (chr) {
             playerExit(eim, chr);
         });
         eim.dispose();
@@ -68,7 +72,7 @@ function leftParty(eim, player) {
 
 function disbandParty(eim) {
     let concurrent = new java.util.ArrayList(eim.getPlayers());
-    concurrent.forEach(function(chr) {
+    concurrent.forEach(function (chr) {
         playerExit(eim, chr);
     });
     concurrent.clear();
@@ -92,17 +96,17 @@ function removePlayer(eim, player) {
 }
 
 function clearPQ(eim) {
-    eim.getPlayers().forEach(function(chr) {
-        playerExitClear(eim, party.get(i));
+    eim.getPlayers().forEach(function (chr) {
+        playerExitClear(eim, chr);
     });
     eim.dispose();
 }
 
-function moveMap(eim, player, map) { 
+function moveMap(eim, player, map) {
     return true;
 }
 
-function allMonstersDead(eim) {}
+function allMonstersDead(eim) { }
 
 function dispose() {
     em.schedule("OpenHPQ", 5000);

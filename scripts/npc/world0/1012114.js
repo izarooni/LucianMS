@@ -61,13 +61,15 @@ function action(mode, type, selection) {
         } else if (this.chosen == 1) {
             cm.gainItem(4001101, -10);
             cm.givePartyExp("HenesysPQ");
+
+            var em = cm.getEventManager("HenesysPQ");
+            var eim = em.getInstance("HenesysPQ_" + cm.getParty().getLeader().getUsername());
             var map = eim.getMapInstance(cm.getPlayer().getMapId());
-            map.allowSummonState(false);
+            map.setSummonState(false);
             map.killAllMonstersNotFriendly();
-            map.broadcastMessage(MaplePacketCreator.showEffect("quest/party/clear"));
-            map.broadcastMessage(MaplePacketCreator.playSound("Party1/Clear"));
+            map.broadcastMessage(Packages.tools.MaplePacketCreator.showEffect("quest/party/clear"));
+            map.broadcastMessage(Packages.tools.MaplePacketCreator.playSound("Party1/Clear"));
             cm.sendNext("Mmmm ... this is delicious. Please come see me next time for more #b#t4001101##k. Have a safe trip home!");
-            cm.dispose();
         } else if (this.chosen == 2) {
             this.event.disbandParty();
             cm.dispose();

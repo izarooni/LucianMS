@@ -647,8 +647,8 @@ public class GameMasterCommands extends CommandExecutor {
 
         if (args.length() == 3) {
             String type = args.get(0);
-            String username = args.get(1);
-            Integer amount = args.parseNumber(2, int.class);
+            Integer amount = args.parseNumber(1, int.class);
+            String username = args.get(2);
             String error = args.getFirstError();
             if (error != null) {
                 player.dropMessage(5, error);
@@ -688,7 +688,6 @@ public class GameMasterCommands extends CommandExecutor {
             }
 
         } else {
-            player.dropMessage(5, "Syntax: !gift <point_type> <username> <amount> OR");
             player.dropMessage(5, "Syntax: !gift <point_type> <amount> <usernames..>");
         }
     }
@@ -815,7 +814,7 @@ public class GameMasterCommands extends CommandExecutor {
                 player.sendMessage(5, "{} is not a number", args.get(0));
                 return;
             } else if (number < 1 || number > player.getGMLevel()) {
-                player.sendMessage(5, "You must enter a value btween 1 and {}", player.getGMLevel());
+                player.sendMessage(5, "You must enter a value between 1 and {}", player.getGMLevel());
                 return;
             }
         }

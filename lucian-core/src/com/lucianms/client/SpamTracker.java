@@ -39,7 +39,7 @@ public class SpamTracker {
 
     public enum SpamOperation {
         PlayerCommands, NpcTalk, PortalScripts, SkillUsage, MoneyDrop, CashItemUse, PetFeeding, InventorySort, ChangeChannel,
-        ItemUse, InventoryMove, IdleHeal, CatchItem, PlayerSave,
+        ItemUse, InventoryMove, IdleHeal, CatchItem, PlayerSave, Smega,
 
         // occupations
         OccTrollDebuff

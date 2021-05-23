@@ -22,7 +22,7 @@ public class ScriptProcessor {
     }
 
     public NashornScriptEngine newEngine() {
-        return (NashornScriptEngine) factory.getScriptEngine();
+        return (NashornScriptEngine) factory.getScriptEngine("--language=es6", "--no-deprecation-warning", "-scripting");
     }
 
     public CompiledScript compile(NashornScriptEngine engine, FileReader reader, Bindings bindings) throws ScriptException {

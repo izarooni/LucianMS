@@ -85,7 +85,7 @@ public class Server {
         try {
             p.load(new FileInputStream("world.ini"));
         } catch (Exception e) {
-            LOGGER.info("Please start create_server.bat");
+            LOGGER.info("world.ini file not found");
             System.exit(0);
             return;
         }

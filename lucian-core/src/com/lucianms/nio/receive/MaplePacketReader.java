@@ -16,8 +16,22 @@ public class MaplePacketReader extends LittleEndianAccessor {
                 ((arr[3] & 0xFF) << 24);
     }
 
+    public MaplePacketReader(int[] arr) {
+        super(new byte[arr.length]);
+        for (int i = 0; i < arr.length; i++) {
+            if (arr[i] >= 0xFF) throw new UnsupportedOperationException("non-byte number");
+            super.arr[i] = (byte) arr[i];
+        }
+    }
+
     public MaplePacketReader(byte[] arr) {
         super(arr);
+    }
+
+    public byte[] toArray() {
+        byte[] b = new byte[super.arr.length];
+        System.arraycopy(super.arr, 0, b, 0, arr.length);
+        return b;
     }
 
     public short getHeader() {

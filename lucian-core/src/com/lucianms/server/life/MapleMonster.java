@@ -325,16 +325,16 @@ public class MapleMonster extends AbstractLoadedMapleLife {
             return;
         }
         final int exp = getExp();
-        final long maxHP = getMaxHp();
+        final double maxHP = getMaxHp();
 
         Map<Integer, Long> partyDist = new HashMap<>();
         for (Entry<Integer, AtomicLong> entry : takenDamage.entrySet()) {
             MapleCharacter player = getMap().getCharacterById(entry.getKey());
             if (player != null) {
                 boolean isKiller = player.getId() == killerId;
-                AtomicLong atomicDamage = entry.getValue();
-                float portionedExp = Math.min(maxHP, atomicDamage.get()) / maxHP;
-                if (isKiller && takenDamage.size() > 1) {
+                AtomicLong dmgDealt = entry.getValue();
+                float portionedExp = (float) (Math.min(maxHP, dmgDealt.get()) / maxHP);
+                if (isKiller) {
                     portionedExp += 0.05;
                 }
                 int gainExp = (int) (exp * (portionedExp * 100f));

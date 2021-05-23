@@ -133,7 +133,6 @@ public class AdministratorCommands extends CommandExecutor {
             player.getMap().removeMapObject(reactor);
             player.getMap().sendPacket(reactor.makeDestroyData());
         }
-        reactors.clear();
     }
 
     private void CommandWipePlayer(MapleCharacter player, Command cmd, CommandArgs args) {
@@ -338,7 +337,7 @@ public class AdministratorCommands extends CommandExecutor {
                 player.sendMessage("Listing reactors...");
                 for (MapleMapObject object : player.getMap().getReactors()) {
                     MapleReactor reactor = (MapleReactor) object;
-                    player.sendMessage("{} / id:{} / oid:{} / name:{}", readable.apply(reactor.getPosition()), reactor.getId(), reactor.getObjectId(), reactor.getName());
+                    player.sendMessage("{} / id:{} / oid:{} / name:{} / state:{}", readable.apply(reactor.getPosition()), reactor.getId(), reactor.getObjectId(), reactor.getName(), reactor.getState());
                 }
             } else if (args.get(0).equalsIgnoreCase("monsters")) {
                 player.sendMessage("Listing monsters...");

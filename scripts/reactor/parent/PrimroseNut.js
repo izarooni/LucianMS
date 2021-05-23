@@ -3,7 +3,7 @@ var Integer = Java.type("java.lang.Integer");
 function action(rm) {
     var em = rm.getEventManager("HenesysPQ");
     if (em != null) {
-        var eim = em.getInstance("HenesysPQ_" + rm.getParty().getLeader().getName());
+        var eim = em.getInstance("HenesysPQ_" + rm.getParty().getLeader().getUsername());
         if (eim != null) {
             var react = rm.getReactor().getMap().getReactorByName("fullmoon");
     		react.forceHitReactor(react.getState() + 1);
@@ -18,8 +18,6 @@ function action(rm) {
     			map.setSummonState(true);
     			map.spawnMonsterOnGroudBelow(9300061, -183, -433).setEventInstance(eim);
     		}
-        } else {
-            print("Event instance not found for player " + rm.getParty().getLeader().getName());
         }
     }
 }

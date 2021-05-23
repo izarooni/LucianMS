@@ -13,6 +13,4 @@
 /whitelist.json
 /*.bat
 /database.properties
-
-/#Ian's PC
-backups
+/errors.log

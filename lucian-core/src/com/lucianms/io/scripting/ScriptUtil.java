@@ -19,7 +19,10 @@ public final class ScriptUtil {
     }
 
     private static NashornScriptEngine getEngine(Collection<Pair<String, Object>> binds) {
-        NashornScriptEngine engine = (NashornScriptEngine) FACTORY.getScriptEngine();
+        NashornScriptEngine engine = (NashornScriptEngine) FACTORY.getScriptEngine(
+                "--language=es6",
+                "--no-deprecation-warning",
+                "-scripting");
         if (binds != null) {
             Bindings b = engine.createBindings();
             for (Pair<String, Object> pair : binds) {

@@ -1,19 +1,15 @@
 package tools;
 
-import com.lucianms.io.Config;
 import com.lucianms.io.defaults.Defaults;
 import com.lucianms.nio.receive.MaplePacketReader;
 import com.lucianms.scheduler.TaskExecutor;
 import com.lucianms.server.Server;
 import com.zaxxer.hikari.HikariDataSource;
-import org.json.JSONObject;
-import org.json.JSONTokener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.sql.Connection;
@@ -21,7 +17,6 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Properties;
 import java.util.concurrent.Executors;
 
 /**
@@ -30,27 +25,9 @@ import java.util.concurrent.Executors;
 public class Tester {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(Tester.class);
-    private static Config config = null;
 
     public static void main(String[] args) throws IOException {
-//        initConfig();
-//        TaskExecutor.initPoolSize(1);
-//        Server.createServer();
-
-        Properties properties = new Properties();
-        properties.setProperty("key1", new String("value1"));
-        properties.setProperty("key2", new String("value2"));
-        properties.setProperty("key3", new String("value3"));
-
-        try (FileWriter fw = new FileWriter("test.json")) {
-            JSONObject json = new JSONObject();
-            for (Map.Entry<Object, Object> e : properties.entrySet()) {
-                json.put(e.getKey().toString(), e.getValue());
-            }
-            json.write(fw, 4, 1);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        initConfig();
     }
 
     private static void initConfig() {
@@ -59,7 +36,8 @@ public class Tester {
                 LOGGER.info("Server config created. Configure settings and restart the server");
                 System.exit(0);
             } else {
-                config = new Config(new JSONObject(new JSONTokener(new FileInputStream("server-config.json"))));
+                Server.reloadConfig();
+                LOGGER.info("Server config already exists.");
             }
         } catch (URISyntaxException | IOException e) {
             e.printStackTrace();

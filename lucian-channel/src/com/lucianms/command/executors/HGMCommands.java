@@ -13,8 +13,7 @@ import com.lucianms.server.channel.MapleChannel;
 import com.lucianms.server.guild.MapleGuild;
 import com.lucianms.server.guild.MapleGuildCharacter;
 import com.lucianms.server.life.*;
-import com.lucianms.server.maps.MapleFoothold;
-import com.lucianms.server.maps.MapleMap;
+import com.lucianms.server.maps.*;
 import com.lucianms.server.world.MapleWorld;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -49,6 +48,7 @@ public class HGMCommands extends CommandExecutor {
         addCommand("drop", this::CreateDrop, "");
         addCommand("respawn", this::RespawnMap, "");
         addCommand("spawn", this::SpawnMonster, "");
+        addCommand("reactor", this::SpawnReactor, "");
         addCommand("npc", this::SpawnNpc, "");
         addCommand("pnpc", this::SpawnNpc, "");
         addCommand("pmob", this::SpawnPermMob, "");
@@ -258,13 +258,35 @@ public class HGMCommands extends CommandExecutor {
     }
 
     private void RespawnMap(MapleCharacter player, Command cmd, CommandArgs args) {
-        for (SpawnPoint sp : player.getMap().getMonsterSpawnPoints()) {
-            if (sp.canSpawn(true)) {
-                sp.summonMonster();
+        MapleMap map = player.getMap();
+        if (map.getSummonState()) {
+            for (SpawnPoint sp : map.getMonsterSpawnPoints()) {
+                if (sp.canSpawn(true)) {
+                    sp.summonMonster();
+                }
             }
+        } else {
+            player.sendMessage(5, "The summon state of monsters is disabled so it will be skipped");
         }
-        player.getMap().resetReactors();
-        player.sendMessage("Monsters and reactors have respawned and reset");
+        map.resetReactors();
+    }
+
+    private void SpawnReactor(MapleCharacter player, Command cmd, CommandArgs args) {
+        if (args.length() > 0) {
+            Integer id = args.parseNumber(0, int.class);
+            String error = args.getFirstError();
+            if (error != null) {
+                player.dropMessage(1, error);
+                return;
+            }
+            MapleReactorStats rstats = MapleReactorFactory.getReactor(id);
+            MapleReactor reactor = new MapleReactor(rstats, id);
+            reactor.getPosition().setLocation(player.getPosition());
+            player.getMap().spawnReactor(reactor);
+            player.dropMessage(5, String.format("Spawn reactor %d %s", reactor.getId(), reactor.getName()));
+        } else {
+            player.dropMessage(6, "You must specify a reactor ID");
+        }
     }
 
     private void SpawnMonster(MapleCharacter player, Command cmd, CommandArgs args) {

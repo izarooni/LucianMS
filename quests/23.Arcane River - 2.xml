@@ -1,0 +1,58 @@
+<imgdir name="Arcane River - 2">
+    <imgdir name="info">
+        <int name="questId" value="23"/>
+        <int name="preQuest" value="22"/>
+        <int name="minLevel" value="150"/>
+        <int name="daily" value="0"/>
+    </imgdir>
+
+    <imgdir name="toKill">
+
+        <imgdir name="0">
+            <int name="monsterId" value="8641000"/>
+            <int name="amount" value="200"/>
+        </imgdir>
+        <imgdir name="1">
+            <int name="monsterId" value="8641001"/>
+            <int name="amount" value="200"/>
+        </imgdir>
+        <imgdir name="2">
+            <int name="monsterId" value="8641002"/>
+            <int name="amount" value="200"/>
+        </imgdir>
+        <imgdir name="3">
+            <int name="monsterId" value="8641003"/>
+            <int name="amount" value="200"/>
+        </imgdir>
+        <imgdir name="4">
+            <int name="monsterId" value="8641004"/>
+            <int name="amount" value="200"/>
+        </imgdir>
+        <imgdir name="5">
+            <int name="monsterId" value="8641005"/>
+            <int name="amount" value="200"/>
+        </imgdir>
+        <imgdir name="6">
+            <int name="monsterId" value="8641006"/>
+            <int name="amount" value="200"/>
+        </imgdir>
+        <imgdir name="7">
+            <int name="monsterId" value="8641007"/>
+            <int name="amount" value="200"/>
+        </imgdir>
+    </imgdir>
+
+    <imgdir name="toCollect">
+    </imgdir>
+
+    <imgdir name="rewards">
+
+        <imgdir name="items">
+            <imgdir name="0">
+                <int name="itemId" value="4011506"/>
+                <int name="quantity" value="100"/>
+            </imgdir>
+        </imgdir>
+        <int name="exp" value="583827855"/>
+    </imgdir>
+</imgdir>

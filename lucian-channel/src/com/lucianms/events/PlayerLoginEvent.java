@@ -43,6 +43,7 @@ public class PlayerLoginEvent extends PacketEvent {
 
     @Override
     public Object onPacket() {
+
         MapleClient client = getClient();
         MapleWorld world = client.getWorldServer();
 
